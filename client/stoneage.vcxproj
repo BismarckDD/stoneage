@@ -1,0 +1,335 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="VER25_DEBUG|Win32">
+      <Configuration>VER25_DEBUG</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="VER25_RELEASE|Win32">
+      <Configuration>VER25_RELEASE</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="stoneage\red_memoy.h" />
+    <ClInclude Include="stoneage\mylua\lssproto.h" />
+    <ClInclude Include="stoneage\mylua\winlua.h" />
+    <ClInclude Include="stoneage\newproto\autil.h" />
+    <ClInclude Include="stoneage\newproto\protocol.h" />
+    <ClInclude Include="stoneage\oft\sys2.h" />
+    <ClInclude Include="stoneage\oft\vg410.h" />
+    <ClInclude Include="stoneage\oft\work.h" />
+    <ClInclude Include="stoneage\other\ItemsMall.h" />
+    <ClInclude Include="stoneage\other\md5_encrypt.h" />
+    <ClInclude Include="stoneage\other\PtternSeparationBin.h" />
+    <ClInclude Include="stoneage\systeminc\action.h" />
+    <ClInclude Include="stoneage\systeminc\battlebcdeb.h" />
+    <ClInclude Include="stoneage\systeminc\battlemvdeb.h" />
+    <ClInclude Include="stoneage\systeminc\BinLoad.h" />
+    <ClInclude Include="stoneage\systeminc\character.h" />
+    <ClInclude Include="stoneage\systeminc\CharSignDay.h" />
+    <ClInclude Include="stoneage\systeminc\chat.h" />
+    <ClInclude Include="stoneage\systeminc\directdraw.h" />
+    <ClInclude Include="stoneage\systeminc\EncryptClient.h" />
+    <ClInclude Include="stoneage\systeminc\field.h" />
+    <ClInclude Include="stoneage\systeminc\font.h" />
+    <ClInclude Include="stoneage\systeminc\gemini.h" />
+    <ClInclude Include="stoneage\systeminc\handletime.h" />
+    <ClInclude Include="stoneage\systeminc\ime_sa.h" />
+    <ClInclude Include="stoneage\systeminc\init.h" />
+    <ClInclude Include="stoneage\systeminc\loadrealbin.h" />
+    <ClInclude Include="stoneage\systeminc\loadsprbin.h" />
+    <ClInclude Include="stoneage\systeminc\login.h" />
+    <ClInclude Include="stoneage\systeminc\lssproto_cli.h" />
+    <ClInclude Include="stoneage\systeminc\lssproto_util.h" />
+    <ClInclude Include="stoneage\systeminc\magicitem.h" />
+    <ClInclude Include="stoneage\systeminc\map.h" />
+    <ClInclude Include="stoneage\systeminc\menu.h" />
+    <ClInclude Include="stoneage\systeminc\mouse.h" />
+    <ClInclude Include="stoneage\systeminc\netmain.h" />
+    <ClInclude Include="stoneage\systeminc\netproc.h" />
+    <ClInclude Include="stoneage\systeminc\onlinegm.h" />
+    <ClInclude Include="stoneage\systeminc\pattern.h" />
+    <ClInclude Include="stoneage\systeminc\pc.h" />
+    <ClInclude Include="stoneage\systeminc\pet_skillinfo.h" />
+    <ClInclude Include="stoneage\systeminc\process.h" />
+    <ClInclude Include="stoneage\systeminc\produce.h" />
+    <ClInclude Include="stoneage\systeminc\savedata.h" />
+    <ClInclude Include="stoneage\systeminc\shop.h" />
+    <ClInclude Include="stoneage\systeminc\sndcnf.h" />
+    <ClInclude Include="stoneage\systeminc\sprdisp.h" />
+    <ClInclude Include="stoneage\systeminc\sprmgr.h" />
+    <ClInclude Include="stoneage\systeminc\system.h" />
+    <ClInclude Include="stoneage\systeminc\talkwindow.h" />
+    <ClInclude Include="stoneage\systeminc\testview.h" />
+    <ClInclude Include="stoneage\systeminc\tool.h" />
+    <ClInclude Include="stoneage\systeminc\Turntable.h" />
+    <ClInclude Include="stoneage\systeminc\t_music.h" />
+    <ClInclude Include="stoneage\systeminc\unpack.h" />
+    <ClInclude Include="stoneage\wgs\descrypt.h" />
+    <ClInclude Include="stoneage\wgs\message.h" />
+    <ClInclude Include="stoneage\wgs\ping.h" />
+    <ClInclude Include="stoneage\wgs\tea.h" />
+    <ClInclude Include="resources\resource.h" />
+    <ClInclude Include="resources\version.h" />
+    <ClInclude Include="resources\pet_name.h" />
+    <ClInclude Include="stoneage\game\anim_tbl.h" />
+    <ClInclude Include="stoneage\game\anim_tbl_set.h" />
+    <ClInclude Include="stoneage\game\battle_map.h" />
+    <ClInclude Include="stoneage\game\battle_map_name.h" />
+    <ClInclude Include="stoneage\game\battle_menu.h" />
+    <ClInclude Include="stoneage\game\battle_proc.h" />
+    <ClInclude Include="stoneage\game\game_main.h" />
+    <ClInclude Include="stoneage\game\main.h" />
+    <ClInclude Include="stoneage\game\radar.h" />
+    <ClInclude Include="stoneage\tools\math2.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="stoneage\char_title.cpp" />
+    <ClCompile Include="stoneage\red_memoy.cpp" />
+    <ClCompile Include="stoneage\mylua\data.cpp" />
+    <ClCompile Include="stoneage\mylua\lssproto.cpp" />
+    <ClCompile Include="stoneage\mylua\sa.cpp" />
+    <ClCompile Include="stoneage\mylua\ServerList.cpp" />
+    <ClCompile Include="stoneage\mylua\win.cpp" />
+    <ClCompile Include="stoneage\mylua\winlua.cpp" />
+    <ClCompile Include="stoneage\newproto\autil.cpp" />
+    <ClCompile Include="stoneage\newproto\protocol.cpp" />
+    <ClCompile Include="stoneage\oft\oft.cpp" />
+    <ClCompile Include="stoneage\oft\sys2.cpp" />
+    <ClCompile Include="stoneage\oft\tekecess.cpp" />
+    <ClCompile Include="stoneage\oft\work.cpp" />
+    <ClCompile Include="stoneage\other\getip.cpp" />
+    <ClCompile Include="stoneage\other\ItemsMall.cpp" />
+    <ClCompile Include="stoneage\other\md5_encrypt.cpp" />
+    <ClCompile Include="stoneage\other\PtternSeparationBin.cpp" />
+    <ClCompile Include="stoneage\system\action.cpp" />
+    <ClCompile Include="stoneage\system\ai_setting.cpp" />
+    <ClCompile Include="stoneage\system\character.cpp" />
+    <ClCompile Include="stoneage\system\CharSignDay.cpp" />
+    <ClCompile Include="stoneage\system\chat.cpp" />
+    <ClCompile Include="stoneage\system\directdraw.cpp" />
+    <ClCompile Include="stoneage\system\field.cpp" />
+    <ClCompile Include="stoneage\system\font.cpp" />
+    <ClCompile Include="stoneage\system\gemini.cpp" />
+    <ClCompile Include="stoneage\system\handletime.cpp" />
+    <ClCompile Include="stoneage\system\help.cpp" />
+    <ClCompile Include="stoneage\system\ime.cpp" />
+    <ClCompile Include="stoneage\system\init.cpp" />
+    <ClCompile Include="stoneage\system\loadrealbin.cpp" />
+    <ClCompile Include="stoneage\system\loadsprbin.cpp" />
+    <ClCompile Include="stoneage\system\login.cpp" />
+    <ClCompile Include="stoneage\system\lssproto_cli.cpp" />
+    <ClCompile Include="stoneage\system\lssproto_util.cpp" />
+    <ClCompile Include="stoneage\system\magicitem.cpp" />
+    <ClCompile Include="stoneage\system\map.cpp" />
+    <ClCompile Include="stoneage\system\menu.cpp" />
+    <ClCompile Include="stoneage\system\menu2.cpp" />
+    <ClCompile Include="stoneage\system\mouse.cpp" />
+    <ClCompile Include="stoneage\system\netmain.cpp" />
+    <ClCompile Include="stoneage\system\netproc.cpp" />
+    <ClCompile Include="stoneage\system\onlinegm.cpp" />
+    <ClCompile Include="stoneage\system\pattern.cpp" />
+    <ClCompile Include="stoneage\system\pc.cpp" />
+    <ClCompile Include="stoneage\system\phonemsg.cpp" />
+    <ClCompile Include="stoneage\system\process.cpp" />
+    <ClCompile Include="stoneage\system\produce.cpp" />
+    <ClCompile Include="stoneage\system\savedata.cpp" />
+    <ClCompile Include="stoneage\system\shop.cpp" />
+    <ClCompile Include="stoneage\system\skyisland.cpp" />
+    <ClCompile Include="stoneage\system\sprdisp.cpp" />
+    <ClCompile Include="stoneage\system\sprmgr.cpp" />
+    <ClCompile Include="stoneage\system\talkwindow.cpp" />
+    <ClCompile Include="stoneage\system\testview.cpp" />
+    <ClCompile Include="stoneage\system\tool.cpp" />
+    <ClCompile Include="stoneage\system\Turntable.cpp" />
+    <ClCompile Include="stoneage\system\t_music.cpp" />
+    <ClCompile Include="stoneage\system\unpack.cpp" />
+    <ClCompile Include="stoneage\wgs\common.cpp" />
+    <ClCompile Include="stoneage\wgs\descrypt.cpp" />
+    <ClCompile Include="stoneage\wgs\message.cpp" />
+    <ClCompile Include="stoneage\wgs\ping.cpp" />
+    <ClCompile Include="stoneage\wgs\tea.cpp" />
+    <ClCompile Include="stoneage\game\game_main.cpp" />
+    <ClCompile Include="stoneage\game\main.cpp" />
+    <ClCompile Include="stoneage\game\radar.cpp" />
+    <ClCompile Include="stoneage\game\battle_map.cpp" />
+    <ClCompile Include="stoneage\game\battle_menu.cpp" />
+    <ClCompile Include="stoneage\game\battle_proc.cpp" />
+    <ClCompile Include="stoneage\tools\math2.cpp" />
+    <ClCompile Include="stoneage\tools\sunday.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="resources\script.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="resources\pointer1.cur" />
+    <None Include="resources\pointer2.cur" />
+    <None Include="resources\icon20.ico" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{7BCA4759-A8C8-4746-ABD8-C2B4C3C2DEFE}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>stoneage</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VER25_DEBUG|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VER25_RELEASE|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+    <PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='VER25_DEBUG|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='VER25_RELEASE|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VER25_DEBUG|Win32'">
+    <OutDir>$(ProjectDir)..\build\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\build\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='VER25_DEBUG|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>
+      </PrecompiledHeader>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DI_2;_SA_VERSION_25;_DEBUG__;_SA_VERSION_SPECIAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+        .;
+        stoneage;
+        resources;
+        third_party;
+        %(AdditionalIncludeDirectories)
+      </AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <SubSystem>Windows</SubSystem>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>$(ProjectDir)sdk;%(AdditionalIncludeDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>odbc32.lib;
+odbccp32.lib;
+ddraw.lib;dxguid.lib;
+dsound.lib;winmm.lib;imm32.lib;dinput.lib;
+        wsock32.lib;
+        caryIme.lib;
+        GetMacAddress.lib;lua51.lib;
+libeay32.lib;
+VMProtectSDK32.lib;
+%(AdditionalDependencies)
+      </AdditionalDependencies>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <IgnoreSpecificDefaultLibraries>LIBC.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <OutputFile>$(ProjectDir)..\build\$(Configuration)\stoneage.exe</OutputFile>
+    </Link>
+    <CustomBuildStep>
+      <Command>
+      </Command>
+    </CustomBuildStep>
+    <ProjectReference>
+      <UseLibraryDependencyInputs>true</UseLibraryDependencyInputs>
+    </ProjectReference>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='VER25_RELEASE|Win32'">
+    <ClCompile>
+      <WarningLevel>TurnOffAllWarnings</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;DI_2;_SA_VERSION_25;_SA_VERSION_SPECIAL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>
+        .;
+        stoneage;
+        resources;
+        third_party;
+        %(AdditionalIncludeDirectories)
+      </AdditionalIncludeDirectories>
+      <ExceptionHandling>Sync</ExceptionHandling>
+      <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>$(ProjectDir)\sdk;</AdditionalLibraryDirectories>
+      <AdditionalDependencies>odbc32.lib;
+        odbccp32.lib;
+        ddraw.lib;
+        dxguid.lib;
+        dsound.lib;
+        winmm.lib;
+        imm32.lib;
+        dinput.lib;
+        wsock32.lib;
+        caryIme.lib;
+        GetMacAddress.lib;
+        lua51.lib;
+        libeay32.lib;
+        VMProtectSDK32.lib;
+        dbghelp.lib;
+        %(AdditionalDependencies)
+      </AdditionalDependencies>
+      <IgnoreSpecificDefaultLibraries>LIBC.lib;msvcrt.lib;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <GenerateMapFile>true</GenerateMapFile>
+      <SubSystem>Windows</SubSystem>
+      <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
+      <OutputFile>$(ProjectDir)..\build\$(Configuration)\stoneage.exe</OutputFile>
+    </Link>
+    <CustomBuildStep />
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Link>
+      <OutputFile>$(ProjectDir)..\build\$(Configuration)\stoneage.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(ProjectDir)\sdk;</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Link>
+      <OutputFile>$(ProjectDir)..\build\$(Configuration)\stoneage.exe</OutputFile>
+      <AdditionalLibraryDirectories>$(ProjectDir)\sdk;</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
