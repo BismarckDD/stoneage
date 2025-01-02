@@ -1,4 +1,4 @@
-export CC=gcc
+export CC=gcc -m32
 export RM=rm -f
 export AR=ar cr
 export MV=mv
@@ -24,7 +24,7 @@ SRC=item.c item_event.c item_gen.c
 OBJ=$(SRC:.c=.o)
 
 ifeq (0,$(MAKELEVEL))
-CC=gcc
+CC=gcc -m32
 RM=rm -f
 AR=ar cr
 MV=mv
@@ -70,11 +70,11 @@ item.o: item.c ../include/version.h ../include/correct_bug.h \
   ../include/common.h /usr/include/stdio.h /usr/include/features.h \
   /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
   /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stddef.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/stddef.h \
   /usr/include/bits/types.h /usr/include/bits/typesizes.h \
   /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
   /usr/include/bits/wchar.h /usr/include/gconv.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stdarg.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/stdarg.h \
   /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
   /usr/include/errno.h /usr/include/bits/errno.h \
   /usr/include/linux/errno.h /usr/include/asm/errno.h \
@@ -93,8 +93,8 @@ item.o: item.c ../include/version.h ../include/correct_bug.h \
   ../include/autil.h /usr/include/netinet/in.h /usr/include/stdint.h \
   /usr/include/sys/socket.h /usr/include/sys/uio.h \
   /usr/include/bits/uio.h /usr/include/bits/socket.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/limits.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/syslimits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/limits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/syslimits.h \
   /usr/include/limits.h /usr/include/bits/posix1_lim.h \
   /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
   /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h \
@@ -116,11 +116,11 @@ item_event.o: item_event.c ../include/version.h ../include/correct_bug.h \
   ../include/common.h /usr/include/stdio.h /usr/include/features.h \
   /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
   /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stddef.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/stddef.h \
   /usr/include/bits/types.h /usr/include/bits/typesizes.h \
   /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
   /usr/include/bits/wchar.h /usr/include/gconv.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stdarg.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/stdarg.h \
   /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
   /usr/include/errno.h /usr/include/bits/errno.h \
   /usr/include/linux/errno.h /usr/include/asm/errno.h \
@@ -139,8 +139,8 @@ item_event.o: item_event.c ../include/version.h ../include/correct_bug.h \
   ../include/autil.h /usr/include/netinet/in.h /usr/include/stdint.h \
   /usr/include/sys/socket.h /usr/include/sys/uio.h \
   /usr/include/bits/uio.h /usr/include/bits/socket.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/limits.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/syslimits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/limits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/syslimits.h \
   /usr/include/limits.h /usr/include/bits/posix1_lim.h \
   /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
   /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h \
@@ -176,11 +176,11 @@ item_gen.o: item_gen.c ../include/version.h ../include/correct_bug.h \
   ../include/common.h /usr/include/stdio.h /usr/include/features.h \
   /usr/include/sys/cdefs.h /usr/include/bits/wordsize.h \
   /usr/include/gnu/stubs.h /usr/include/gnu/stubs-32.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stddef.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/stddef.h \
   /usr/include/bits/types.h /usr/include/bits/typesizes.h \
   /usr/include/libio.h /usr/include/_G_config.h /usr/include/wchar.h \
   /usr/include/bits/wchar.h /usr/include/gconv.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/stdarg.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/stdarg.h \
   /usr/include/bits/stdio_lim.h /usr/include/bits/sys_errlist.h \
   /usr/include/errno.h /usr/include/bits/errno.h \
   /usr/include/linux/errno.h /usr/include/asm/errno.h \
@@ -202,8 +202,8 @@ item_gen.o: item_gen.c ../include/version.h ../include/correct_bug.h \
   ../include/net.h ../include/autil.h /usr/include/netinet/in.h \
   /usr/include/stdint.h /usr/include/sys/socket.h /usr/include/sys/uio.h \
   /usr/include/bits/uio.h /usr/include/bits/socket.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/limits.h \
-  /usr/lib/gcc/i386-redhat-linux/4.1.2/include/syslimits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/limits.h \
+  /usr/lib/gcc/x86_64-redhat-linux/4.4.4/include/syslimits.h \
   /usr/include/limits.h /usr/include/bits/posix1_lim.h \
   /usr/include/bits/local_lim.h /usr/include/linux/limits.h \
   /usr/include/bits/posix2_lim.h /usr/include/bits/sockaddr.h \

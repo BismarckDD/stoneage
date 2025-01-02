@@ -735,6 +735,7 @@ int main( int argc , char **argv )
 		UNlockM_Init();
     
     if(readConfig( "acserv.cf" )<0){
+        printf("Unable to find acserv.cf\n");
         log( "无法在当前目录里读取 acserv.cf .\n" );
         exit(1);
     }

@@ -1,18 +1,17 @@
-﻿#define UNPACK2    0
+﻿#define UNPACK2 0
 #define WIN32_LEAN_AND_MEAN
-#include "version.h"
-#include "../systeminc/system.h"
-#include "../systeminc/loadrealbin.h"
-#include "../systeminc/unpack.h"
 
-#include <io.h>
+#include "systeminc/system.h"
+#include "systeminc/loadrealbin.h"
+#include "systeminc/unpack.h"
+
+
 #include <time.h>
 #include <sys\types.h>
 #include <sys\stat.h>
-#include <stdio.h>
-#include <stdlib.h>
 
-unsigned char autoMapColorTbl[MAX_GRAPHICS];    // ?????????????????
+
+unsigned char autoMapColorTbl[MAX_GRAPHICS];
 
 #ifdef _STONDEBUG_
 extern int g_iMallocCount;
@@ -35,9 +34,9 @@ HANDLE hAdrntrueFile;
 HANDLE hRealtrueFile;
 RGBQUAD g_rgbPal[256];
 #endif
-void initAutoMapColor( char *addrbinfilename )
+void initAutoMapColor(const char *addrbinfilename )
 {
-    char *filename = "data\\auto.dat";
+    const char *filename = "data/auto.dat";
     if( readAutoMapColor( filename, addrbinfilename ) == 0 ){
         makeAutoMapColor();
         writeAutoMapColor( filename, addrbinfilename );
@@ -65,7 +64,7 @@ void makeAutoMapColor( void )
     }
 }
 
-int writeAutoMapColor( char *wFName, char *addrbinfilename )
+int writeAutoMapColor(const char *wFName, const char *addrbinfilename)
 {
     FILE *wfp, *rfp;
     int rfh;
@@ -75,30 +74,28 @@ int writeAutoMapColor( char *wFName, char *addrbinfilename )
     unsigned short autoMapColorVersion = 4;    
     char *tmpStr;
 
-    // adrn.bin???????????
-    tmpStr = strstr( addrbinfilename, "adrn" );
-    if( tmpStr == NULL )
-        return 0;    // ????????
-    if( tmpStr[4] == '.' )
-        adrnNo = 0;    // ?????????
-    else{
+    tmpStr = strstr(const_cast<char *>(addrbinfilename), "adrn");
+    if ( tmpStr == NULL )
+        return 0;  
+    if ( tmpStr[4] == '.' )
+        adrnNo = 0;
+    else {
         adrnNo = -1;
         sscanf_s( tmpStr, "adrn_%d.bin", &adrnNo );
-        if( adrnNo < 0 )
-            return 0;
+        if ( adrnNo < 0 ) return 0;
     }
-    // adrn.bin??????
-    if( (rfp = fopen( addrbinfilename, "rb" )) == NULL )
+    // rfp: a file handle of adrn.bin
+    if ((rfp = fopen( addrbinfilename, "rb" )) == NULL)
         return 0;
     rfh = _fileno( rfp );
-    if( _fstat( rfh, &statBuf ) < 0 ){
+    if ( _fstat( rfh, &statBuf ) < 0 ) {
         fclose( rfp );
         return 0;
     }
-    adrnTime = (UINT)statBuf.st_ctime;
+    adrnTime = (uint32_t) statBuf.st_ctime;
     fclose( rfp );
-    // ???????
-    if( (wfp = fopen( wFName, "wb" )) == NULL )
+    // wfp: a file handle of wfp.
+    if ( (wfp = fopen( wFName, "wb" )) == NULL )
         return 0;
     fwrite( &autoMapColorVersion, sizeof( autoMapColorVersion ), 1, wfp );
     fwrite( &adrnNo, sizeof( adrnNo ), 1, wfp );
@@ -108,7 +105,7 @@ int writeAutoMapColor( char *wFName, char *addrbinfilename )
     return 1;
 }
 
-int readAutoMapColor( char *wFName, char *addrbinfilename )
+int readAutoMapColor(const char *wFName, const char *addrbinfilename)
 {
     FILE *rfp;
     int rfh;
@@ -118,16 +115,15 @@ int readAutoMapColor( char *wFName, char *addrbinfilename )
     unsigned short autoMapColorVersion = 4, rAutoMapColorVersion;
     char *tmpStr;
     // adrn.bin???????
-    tmpStr = strstr( addrbinfilename, "adrn" );
-    if( tmpStr == NULL )
-        return 0;    // ????????
-    if( tmpStr[4] == '.' )
-        adrnNo = 0;    // ?????????
-    else{
+    tmpStr = strstr(const_cast<char *>(addrbinfilename), "adrn");
+    if ( tmpStr == NULL )
+        return 0;
+    if ( tmpStr[4] == '.' )
+        adrnNo = 0;
+    else {
         adrnNo = -1;
         sscanf_s( tmpStr, "adrn_%d.bin", &adrnNo );
-        if( adrnNo < 0 )
-            return 0;
+        if( adrnNo < 0 ) return 0;
     }
     // adrn.bin??
     if( (rfp = fopen( addrbinfilename, "rb" )) == NULL )
@@ -139,36 +135,36 @@ int readAutoMapColor( char *wFName, char *addrbinfilename )
     }
     adrnTime = (UINT)statBuf.st_ctime;
     fclose( rfp );
-    if( (rfp = fopen( wFName, "rb" )) == NULL )
+    if ((rfp = fopen( wFName, "rb" )) == NULL)
         return 0;
 
-    if( fread( &rAutoMapColorVersion, sizeof( rAutoMapColorVersion ), 1, rfp ) != 1 ){
+    if ( fread( &rAutoMapColorVersion, sizeof( rAutoMapColorVersion ), 1, rfp ) != 1 ) {
         fclose( rfp );
         return 0;
     }
-    if( autoMapColorVersion != rAutoMapColorVersion ){
+    if ( autoMapColorVersion != rAutoMapColorVersion ) {
         fclose( rfp );
         return 0;
     }
     // adrn.bin????????
-    if( fread( &rAdrnNo, sizeof( rAdrnNo ), 1, rfp ) != 1 ){
+    if ( fread( &rAdrnNo, sizeof( rAdrnNo ), 1, rfp ) != 1 ) {
         fclose( rfp );
         return 0;
     }
-    if( adrnNo != rAdrnNo ){
+    if ( adrnNo != rAdrnNo ){
         fclose( rfp );
         return 0;
     }
     // adrn.bin?????
-    if( fread( &rAdrnTime, sizeof( rAdrnTime ), 1, rfp ) != 1 ){
+    if ( fread( &rAdrnTime, sizeof( rAdrnTime ), 1, rfp ) != 1 ) {
         fclose( rfp );
         return 0;
     }
-    if( adrnTime != rAdrnTime ){
+    if ( adrnTime != rAdrnTime ){
         fclose( rfp );
         return 0;
     }
-    if( fread( &autoMapColorTbl, sizeof( autoMapColorTbl ), 1, rfp ) != 1 ){
+    if ( fread( &autoMapColorTbl, sizeof( autoMapColorTbl ), 1, rfp ) != 1 ) {
         fclose( rfp );
         return 0;
     }
@@ -176,7 +172,7 @@ int readAutoMapColor( char *wFName, char *addrbinfilename )
     return TRUE;
 }
 
-BOOL initRealbinFileOpen(char *realbinfilename, char *addrbinfilename)
+BOOL initRealbinFileOpen(const char *realbinfilename, const char *addrbinfilename)
 {
     ADRNBIN tmpadrnbuff;
     if ((Addrbinfp = fopen(addrbinfilename, "rb"))==NULL)

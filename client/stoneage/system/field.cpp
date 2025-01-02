@@ -4,10 +4,10 @@
 #include <direct.h>
 #include <math.h>
 
-#include "version.h"
 #include "systeminc/system.h"
 #include "systeminc/loadrealbin.h"
 #include "systeminc/loadsprbin.h"
+#include "systeminc/field.h"
 #include "game/anim_tbl.h"
 #include "systeminc/login.h"
 #include "systeminc/menu.h"
@@ -17,29 +17,19 @@
 #include "systeminc/netmain.h"
 #include "systeminc/handletime.h"
 #include "systeminc/character.h"
-#include "sdk/caryime.h"
 #include "systeminc/ime_sa.h"
 #include "systeminc/t_music.h"
 #include "systeminc/netproc.h"
 #include "systeminc/tool.h"
 #include "systeminc/onlinegm.h"
+#include "sdk/caryime.h"
+
 
 extern int ProcNo2;
 #ifdef _PET_ITEM        
 extern int nPetItemEquipBmpNumber[PET_EQUIPNUM][2];
 #endif
 
-#if 0
-
-#include"netproc.h"
-#include"character.h"
-#include "battleProc.h"
-
-#endif
-
-#include "systeminc/field.h"
-
-// ???????
 short drawFieldButtonFlag = 1;
 int fieldBtnHitId[FIELD_FUNC_END];    // ?????????
 short drawTimeAnimeFlag = 0;
@@ -65,11 +55,11 @@ BOOL OnlineGmFlag = FALSE;
 #endif
 
 #ifdef _JOBDAILY
-//BOOL     JobDailyFlag = FALSE;
+// BOOL JobDailyFlag = FALSE;
 JOBDAILY jobdaily[MAXMISSION];
 int     JobdailyGetMax = FALSE;
-//int      MaxPage = 0;
-//int         PageIndex = 0;
+// int MaxPage = 0;
+// int PageIndex = 0;
 #endif
 
 #ifdef _CLOUD_EFFECT                // (不可开) ROG ADD云层效果
@@ -548,7 +538,6 @@ int SellPriceWndfunc()
 }
 
 // 摆摊功能视窗
-
 extern void CheckSpace(char *buf);
 ACTION *pShowPet = NULL;
 Show_Sell_Item ShowSellItem[MAX_SELL_ITEM];
@@ -5667,7 +5656,7 @@ void joinChannel2WN(void)
                 else
                     old_lssproto_FM_send(sockfd, buf);
                 closeJoinChannelWN();
-                play_se(203, 320, 240);    // ????????
+                play_se(203, 320, 240);
                 break;                
             case 1:
                 if (pc.channel == channelData.index)
@@ -5679,7 +5668,7 @@ void joinChannel2WN(void)
                         old_lssproto_FM_send(sockfd, buf);
                 }
                 closeJoinChannel2WN();
-                play_se(203, 320, 240);    // ????????
+                play_se(203, 320, 240);
                 break;
             case 2:
                 if (pageNum > 0)

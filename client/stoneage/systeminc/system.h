@@ -1,10 +1,13 @@
 ﻿#pragma once
 
 /**** SYSTEM INCLUDE ****/
+#include <io.h>
+#include <cstdint>
+#include <cstdio>
+#include <cstring>
 #include <windows.h>
 #include <windowsx.h>
-#include <cstring>
-#include <cstdio>
+
 
 /**** DirectDraw Include ****/
 #include <ddraw.h>

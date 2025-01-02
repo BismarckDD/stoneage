@@ -3,3 +3,8 @@
 build
 Rca*
 stone_data
+docker
+*.so
+*.a
+*.o
+tmp

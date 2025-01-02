@@ -60,6 +60,3 @@ void lssproto_upshopdata_recv(int fd,char shop[5][1024])
 	lssproto_ShopOK_send(fd);
 }
 
-
-
-

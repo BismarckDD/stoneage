@@ -12,9 +12,9 @@ int createFile( char *fn , char *line );
 char *   makeStringFromEscaped( char* src );
 char *   makeEscapeString( char* src , char* dest, int sizeofdest);
 char *   makeEscapeString1( char* src , char* dest, int sizeofdest);
-int getHash ( char* s );
+int getHash (const char* s );
 char * chop( char *s );
-int hashpjw ( char* s );
+int hashpjw (const char* s );
 
 // CoolFish: Family 2001/5/30
 //void easyGetTokenFromBuf(char *src, char delim, int count, char*output, int len);

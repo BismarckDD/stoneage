@@ -1,1 +1,1 @@
-#define SERVER_VERSION "All Blue's Saserver 8.0 2016年10月10日21:36:06\n"
+#define SERVER_VERSION "All Blue's Saserver 8.0 2025年01月02日11:19:12\n"

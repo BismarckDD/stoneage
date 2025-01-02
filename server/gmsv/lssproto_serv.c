@@ -10,7 +10,6 @@
 #include <stdio.h>
 #include <time.h>
 #include <net.h>
-#include <zutil.h>
 #include "shop.h"
 #include "npc_lua_interface.h"
 #ifdef _ABSOLUTE_DEBUG

@@ -24,10 +24,11 @@
 #define max( x,y ) ({typeof(x) __x=(x),__y=(y);(__x < __y) ? __y : __x; })
 #define IS_2BYTEWORD( _a_ ) ( (char)(0x80) <= (_a_) && (_a_) <= (char)(0xFF) )
 #define PRIME 211
-int hashpjw ( char* s )
+
+int hashpjw (const char* s)
 {
     char *p;
-    unsigned int h= 0 ,g;
+    unsigned int h = 0, g;
     for( p = s ; *p ; p ++ ){
         h = ( h<< 4 ) + (*p);
         if( (g = h & 0xf0000000) != 0){
@@ -38,7 +39,7 @@ int hashpjw ( char* s )
     return h % PRIME;
 }
 
-int getHash ( char* s )
+int getHash (const char* s)
 {
     int i;
     int h=0;

@@ -3362,119 +3362,59 @@ void check_se_loop(void){
     bgm_fade_check();
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 int cdda_no = -1;
 int stereo_flg = T_MUSIC_STEREO;
 int t_music_se_volume = 15;
 int t_music_bgm_volume = 15;
-static MCI_OPEN_PARMS open  = {0};
+static MCI_OPEN_PARMS mci_open_params  = {0};
 static MCIERROR       dwRes = {0};
 static int cdda_flg;
 static int cdda_check_cnt = -1;
-/////////////////////////////////////////////////////////////////////
-//  CD-DA???? n?????
-//     ???? true?刺??
-//     ???? ???????????? false?刺??
+
 bool cdda_open(int n)
 {
     cdda_flg = 0;
-// ?????? 2???????
     _ASSERT( n > 1);
-
-//    MCI_OPEN_PARMS open  = {0};
-//  MCIERROR       dwRes = {0};
-
-// ???????
-    open.lpstrDeviceType  = "cdaudio";
-    dwRes = mciSendCommand( 0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD)&open);
-    if ( dwRes)
-    {
-#ifdef _STONDEBUG_
-//        MessageBoxNew(hWnd, "湖羲CD秞寢囮啖ㄐ", "隅", MB_OK);
-#endif
+    mci_open_params.lpstrDeviceType  = "cdaudio";
+    dwRes = mciSendCommand( 0, MCI_OPEN, MCI_OPEN_TYPE, (DWORD)&mci_open_params);
+    if (dwRes) {
         cdda_flg = 1;
-        return FALSE;
+        return false;
     }
-
-// ?????????????叉???
     MCI_SET_PARMS set;
     set.dwTimeFormat = MCI_FORMAT_TMSF;
-    dwRes = mciSendCommand( open.wDeviceID, MCI_SET, 
-                            MCI_SET_TIME_FORMAT, (DWORD)&set); 
-    if ( dwRes)
-    {
-#ifdef _STONDEBUG_
-//        MessageBoxNew(hWnd, "湖羲CD秞寢囮啖ㄐ", "隅", MB_OK);
-#endif
+    dwRes = mciSendCommand(mci_open_params.wDeviceID, MCI_SET, MCI_SET_TIME_FORMAT, (DWORD)&set); 
+    if (dwRes) {
         cdda_flg = 1;
-        return FALSE;
+        return false;
     }
-    return TRUE;
+    return true;
 }
-/*--------------------------------------------
-            ?????????
----------------------------------------------*/
+
 bool cdda_start(int n)
 {
-// ???
-    // ???? n???
     MCI_PLAY_PARMS play;
-    play.dwFrom = MCI_MAKE_TMSF( n,0,0,0);
-    play.dwTo   = MCI_MAKE_TMSF( n+1,0,0,0);
-    dwRes = mciSendCommand( open.wDeviceID, 
-                            MCI_PLAY, MCI_FROM | MCI_TO,
-                            (DWORD)&play);
-    if ( dwRes)
+    play.dwFrom = MCI_MAKE_TMSF(n,0, 0, 0);
+    play.dwTo   = MCI_MAKE_TMSF(n+1, 0, 0, 0);
+    dwRes = mciSendCommand(mci_open_params.wDeviceID, MCI_PLAY, MCI_FROM | MCI_TO, (DWORD)&play);
+    if (dwRes)
     {
-#ifdef _STONDEBUG_
-//        MessageBoxNew(hWnd, "??????????????", "隅", MB_OK);
-#endif
-        cdda_flg = 2;        //?????????
+        cdda_flg = 2;
         return FALSE;
     }
     return TRUE;
 }
-/*--------------------------------------------
-            ?????于
----------------------------------------------*/
+
 bool cdda_stop(void)
 {
-    if(cdda_flg == 1)        //??????????
-        return TRUE;
-
-    mciSendCommand(open.wDeviceID, MCI_STOP, 0, NULL);
-
-// ????????
-    dwRes = mciSendCommand( open.wDeviceID, MCI_CLOSE, 0, (DWORD)NULL);
-    if ( dwRes)
-    {
-#ifdef _STONDEBUG_
-//        MessageBoxNew(hWnd, "??????????????", "隅", MB_OK);
-#endif
-        return FALSE;
-    }
-    return TRUE;
+    if(cdda_flg == 1)
+        return true;
+    dwRes = mciSendCommand(mci_open_params.wDeviceID, MCI_STOP, 0, NULL);
+    dwRes = mciSendCommand(mci_open_params.wDeviceID, MCI_CLOSE, 0, (DWORD)NULL);
+    return !dwRes;
 }
-/*--------------------------------------------
-            ??????
----------------------------------------------*/
-extern    DWORD NowTime;
-//extern    double NowTime;
+
+extern DWORD NowTime;
 
 bool cdda_play(int n)
 {
@@ -3501,7 +3441,7 @@ bool cdda_play(int n)
 
     if(cdda_no == n ){        //????
         MCI_STATUS_PARMS mcisp;    mcisp.dwItem = MCI_STATUS_MODE;
-        if(mciSendCommand(open.wDeviceID, MCI_STATUS, MCI_STATUS_ITEM, (DWORD)&mcisp)){        //???
+        if(mciSendCommand(mci_open_params.wDeviceID, MCI_STATUS, MCI_STATUS_ITEM, (DWORD)&mcisp)){        //???
             cdda_flg = 3;        //??????????
             return FALSE;
         }
