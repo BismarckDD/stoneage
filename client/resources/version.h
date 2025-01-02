@@ -580,7 +580,6 @@ unsigned int TimeGetTime(void);
 #define _FAMILYBADGE_                 // 家族徽章
 #define _SHOWFAMILYBADGE_             // 显示家族徽章
 #define _NEWNET_                      // 新封包机制
-//#define _LOGIP_                     // 登陆时获取IP
 //#define _SHOWIPSLEEP_               // 显示线路延时
 //#define _MEMORYLEAK_CHECK           // 内存泄漏检测
 //#define _COMFIRM_TRADE_REQUEST      // 交易请求确认

@@ -31,8 +31,6 @@
     <ClInclude Include="stoneage\other\md5_encrypt.h" />
     <ClInclude Include="stoneage\other\PtternSeparationBin.h" />
     <ClInclude Include="stoneage\systeminc\action.h" />
-    <ClInclude Include="stoneage\systeminc\battlebcdeb.h" />
-    <ClInclude Include="stoneage\systeminc\battlemvdeb.h" />
     <ClInclude Include="stoneage\systeminc\BinLoad.h" />
     <ClInclude Include="stoneage\systeminc\character.h" />
     <ClInclude Include="stoneage\systeminc\CharSignDay.h" />
@@ -63,7 +61,6 @@
     <ClInclude Include="stoneage\systeminc\process.h" />
     <ClInclude Include="stoneage\systeminc\produce.h" />
     <ClInclude Include="stoneage\systeminc\savedata.h" />
-    <ClInclude Include="stoneage\systeminc\shop.h" />
     <ClInclude Include="stoneage\systeminc\sndcnf.h" />
     <ClInclude Include="stoneage\systeminc\sprdisp.h" />
     <ClInclude Include="stoneage\systeminc\sprmgr.h" />
@@ -77,6 +74,7 @@
     <ClInclude Include="stoneage\wgs\descrypt.h" />
     <ClInclude Include="stoneage\wgs\message.h" />
     <ClInclude Include="stoneage\wgs\ping.h" />
+    <ClInclude Include="stoneage\wgs\shop.h" />
     <ClInclude Include="stoneage\wgs\tea.h" />
     <ClInclude Include="resources\resource.h" />
     <ClInclude Include="resources\version.h" />
@@ -107,7 +105,6 @@
     <ClCompile Include="stoneage\oft\sys2.cpp" />
     <ClCompile Include="stoneage\oft\tekecess.cpp" />
     <ClCompile Include="stoneage\oft\work.cpp" />
-    <ClCompile Include="stoneage\other\getip.cpp" />
     <ClCompile Include="stoneage\other\ItemsMall.cpp" />
     <ClCompile Include="stoneage\other\md5_encrypt.cpp" />
     <ClCompile Include="stoneage\other\PtternSeparationBin.cpp" />
@@ -143,7 +140,6 @@
     <ClCompile Include="stoneage\system\process.cpp" />
     <ClCompile Include="stoneage\system\produce.cpp" />
     <ClCompile Include="stoneage\system\savedata.cpp" />
-    <ClCompile Include="stoneage\system\shop.cpp" />
     <ClCompile Include="stoneage\system\skyisland.cpp" />
     <ClCompile Include="stoneage\system\sprdisp.cpp" />
     <ClCompile Include="stoneage\system\sprmgr.cpp" />
@@ -157,6 +153,7 @@
     <ClCompile Include="stoneage\wgs\descrypt.cpp" />
     <ClCompile Include="stoneage\wgs\message.cpp" />
     <ClCompile Include="stoneage\wgs\ping.cpp" />
+    <ClCompile Include="stoneage\wgs\shop.cpp" />
     <ClCompile Include="stoneage\wgs\tea.cpp" />
     <ClCompile Include="stoneage\game\game_main.cpp" />
     <ClCompile Include="stoneage\game\main.cpp" />

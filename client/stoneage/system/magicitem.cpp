@@ -1,7 +1,7 @@
 ﻿#include "version.h"
 #include "systeminc/system.h"
 #include "systeminc/pc.h"
-#include "systeminc/shop.h"
+#include "wgs/shop.h"
 #include "systeminc/tool.h"
 #include "systeminc/menu.h"
 #include "systeminc/t_music.h"

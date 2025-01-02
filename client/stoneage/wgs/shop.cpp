@@ -1,8 +1,6 @@
-﻿/************************/
-#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
+#include "wgs/shop.h"
 #include "systeminc/pc.h"
-#include "systeminc/shop.h"
 #include "systeminc/tool.h"
 #include "systeminc/menu.h"
 #include "systeminc/t_music.h"
@@ -61,7 +59,7 @@ typedef struct {
 }商品数据结构;
 
 
-商城文件_ 商城文件[5];
+ShopClass shop_file[5];
 
 typedef struct {
   short 当前;
@@ -169,11 +167,11 @@ void 在线商城窗口初始化(char * 内容)
     商城数据.玩家彩币 = getIntegerToken(内容,'|',2);
     商城数据.窗口ID = getIntegerToken(内容,'|',3);
     商城数据.滚动条.当前=1;
-    if(商城文件[商城数据.窗口ID-1].商城数据!=NULL){
-        int strlena=strlen(商城文件[商城数据.窗口ID-1].商城数据);
+    if(shop_file[商城数据.窗口ID-1].商城数据!=NULL){
+        int strlena=strlen(shop_file[商城数据.窗口ID-1].商城数据);
         char *临时商城内容 = new char [strlena+1];
         memset(临时商城内容,0,strlena+1);
-        memcpy(临时商城内容,商城文件[商城数据.窗口ID-1].商城数据,strlena);
+        memcpy(临时商城内容,shop_file[商城数据.窗口ID-1].商城数据,strlena);
         char *临时全部道具数据[200] ={0};
         char *临时单个道具数据[5]={0};
         商城数据.商品数量 = 字符串切割(临时全部道具数据,临时商城内容,"#");
@@ -718,7 +716,7 @@ void 购物车商品删除(short 索引)
     }
 }
 
-void 商城文件读取(char * 路径,商城文件_ *商城)
+void shop_file读取(char * 路径,ShopClass *商城)
 {
     FILE *fp;
     fopen_s(&fp,路径,"rb");    
@@ -741,8 +739,7 @@ void 商城文件读取(char * 路径,商城文件_ *商城)
     free(临时);
 }
 
-
-void 商城文件保存(char * 路径,商城文件_ *商城)
+void ShopClasssave(char * 路径, ShopClass *商城)
 {
     FILE *fp;
     fopen_s(&fp,路径,"wb");
@@ -762,27 +759,12 @@ void 商城文件保存(char * 路径,商城文件_ *商城)
     fclose(fp);
 }
 
-
 void 商城初始化()
 {
-    商城文件读取("./data/shop1.bin",&商城文件[0]);
-    商城文件读取("./data/shop2.bin",&商城文件[1]);
-    商城文件读取("./data/shop3.bin",&商城文件[2]);
-    商城文件读取("./data/shop4.bin",&商城文件[3]);
-    商城文件读取("./data/shop5.bin",&商城文件[4]);
+    shop_file读取("./data/shop1.bin",&shop_file[0]);
+    shop_file读取("./data/shop2.bin",&shop_file[1]);
+    shop_file读取("./data/shop3.bin",&shop_file[2]);
+    shop_file读取("./data/shop4.bin",&shop_file[3]);
+    shop_file读取("./data/shop5.bin",&shop_file[4]);
 }
 #endif
-
-
-
-
-
-
-
-
-
-
-
-
-
-

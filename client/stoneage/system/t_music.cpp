@@ -5,57 +5,54 @@
 #include "systeminc/t_music.h"
 #include "systeminc/handletime.h"
 #include "systeminc/savedata.h"
-#define ACTIVE    1
+#define ACTIVE 1
 
-extern    DWORD NowTime;
+extern DWORD NowTime;
 
-#define DEBUG_ON    1
-#define THREAD_ON    1
+#define DEBUG_ON      1
+#define THREAD_ON     1
 #define MODE98        0
-#define CLASS_UP    1
-#define VOICE_KILL_ON    0
+#define CLASS_UP      1
+#define VOICE_KILL_ON 0
 
-//噙秞梓祩
 BOOL MuteFlag = FALSE;
 
 typedef struct{
-    int name;
-    int tone_no;
-    int volume;
-    int note_no;
-    int release_cnt;
-    int release_spd;
-    int lfo_h;
-    int lfo_m;
-    int lfo_s;
-    int lfo_s_cnt;
-    int lfo_s_ang;
-    int pan;
-    int loop_flg;
-    int delay_cnt;
-    long freq;
+  int name;
+  int tone_no;
+  int volume;
+  int note_no;
+  int release_cnt;
+  int release_spd;
+  int lfo_h;
+  int lfo_m;
+  int lfo_s;
+  int lfo_s_cnt;
+  int lfo_s_ang;
+  int pan;
+  int loop_flg;
+  int delay_cnt;
+  long freq;
 } VOICE_EQU;
 
-#define    MAX_ENV        20
+#define MAX_ENV 20
 typedef struct{
-    int voice_address;    //???????????????
-    int tone;
-    int count;
-    int distance;
-    int volume;
-    int volume_old;
-    int side;
-    int panpot;
-    int panpot_old;
+  int voice_address;    //???????????????
+  int tone;
+  int count;
+  int distance;
+  int volume;
+  int volume_old;
+  int side;
+  int panpot;
+  int panpot_old;
 } ENVIRONMENT_EQU;
 ENVIRONMENT_EQU env_tbl[MAX_ENV];
 
-#define DEBUG    0
-#define MY_TIMER    1
-#define VOICE_MAX    64
-#define TRACK_MAX    32
-//#define STRICT
-#include <windows.h>
+#define DEBUG     0
+#define MY_TIMER  1
+#define VOICE_MAX 64
+#define TRACK_MAX 32
 #include <dsound.h>
 #include <stdio.h>
 #include <winuser.h>
@@ -66,8 +63,8 @@ ENVIRONMENT_EQU env_tbl[MAX_ENV];
 #include <crtdbg.h>
 #include <mmsystem.h>
 extern int MessageBoxNew(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType);
-#define RELEASE(x)     if(x){x->Release();x=NULL;}
-#define    LOG(a,b)    (log((float)b)/log((float)a))
+#define RELEASE(x) if(x){x->Release();x=NULL;}
+#define LOG(a, b) (log((float)b)/log((float)a))
 
 static int mes_flg=0;
 
@@ -2435,75 +2432,6 @@ void t_music_end()
 
 
 #if 0
-//??????????  ????  ??????????
-//static voice_seek_point=0;
-int play_se(int tone, int x, int y)
-{
-    int distance;
-    //?????????
-    if(dsound_flg == -1){
-        return -1;
-    }
-
-    if(tone > TONE_MAX){        //???????
-        return -1;
-    }
-
-    if(tone_tbl[ tone ].voice_place == -1){        //叉????
-        return -1;
-    }
-
-    if(tone_tbl[ tone ].play_time){        //??????
-        return 0;
-    }
-
-    if(voice[ voice_seek_point ].tone_no != tone){        //可??吻??????
-        voice[ voice_seek_point ].tone_no = tone;        //?吻?卒㎏
-        RELEASE(pDSData[voice_seek_point]);        //??
-        //????
-        if( pDSound->DuplicateSoundBuffer(pDSData_tone[tone_tbl[ tone ].voice_place],&pDSData[voice_seek_point]) != DS_OK ){
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "葩秶汒秞buffer囮啖ㄐ", "Error", MB_OK);
-#endif
-            return -1;
-        }
-    }
-
-    if(stereo_flg == T_MUSIC_MONO){        //??????
-        distance = 127 * tone_tbl[ tone ].voice_volume / 10;
-        x = 64;
-    } else {        //??????
-        distance = abs(y - 240);        //??????火???
-        y = abs(x - 320);        //??????火???
-        if(distance < y)        //?????
-            distance = y;        //
-
-        distance = distance << 4;        //?????π?阪?
-        distance /= 0x5a;                //
-
-        if(distance >= 127)        //吳????
-            return 0;            //?????
-
-        x /= 5;            //?????π?阪?
-        if(x < 0)        //
-            x = 0;        //
-        if(x > 127)        //
-            x = 127;    //
-
-        distance = (127 - distance) * tone_tbl[ tone ].voice_volume / 10;        //???????
-    }
-
-    pDSData[ voice_seek_point ]->SetVolume(volume_tbl[ distance ]);        // ????????
-    pDSData[ voice_seek_point ]->SetPan(panpot_tbl[ x ]);            // ????????
-    pDSData[ voice_seek_point ]->Play(0, 0, 0);                        //????
-
-    voice_seek_point = voice_seek_point++;        //??????
-    voice_seek_point&=VOICE_MAX-1;                //
-    tone_tbl[ tone ].play_time = 8;        //???????
-
-    return 0;
-}
-
 #else
 
 //???????????????  ??  ???????????????
@@ -2756,18 +2684,12 @@ static BOOL dwSoundInit2( WAVEFORMATEX *pWfmtx, DWORD DataSize, LPDIRECTSOUNDBUF
         if(thread_start_flg)
             break;
     }
-
-//    SetThreadPriority(hThreadHandle,THREAD_PRIORITY_HIGHEST);
-//    SetThreadPriority(hThreadHandle,THREAD_PRIORITY_ABOVE_NORMAL);
-//    pDSData_tone[ TONE_MAX ]->Play(0, 0, DSBPLAY_LOOPING);
     return TRUE;
 }
 //???????????????  ??  ???????????????
 
 int t_music_bgm_no = -1;
-char t_music_bgm_pitch[16]={
-    0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-};
+char t_music_bgm_pitch[16] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
 
 //aaa
 //??????????  ????  ??????????
@@ -2777,7 +2699,7 @@ T_MUSIC_BGM bgm_tbl[] = {
     {"data\\bgm\\sabgm_s1.wav",    120,0,0},            //01    ????
     {"data\\bgm\\sabgm_s1.wav",    105,2,0},            //02    ???︻??代??
     {"data\\bgm\\sabgm_t1.wav",    127,2,0},            //03    ?????代??
-    {"data\\bgm\\sabgm_t0.wav",    95,2,0},            //04    ??代??
+    {"data\\bgm\\sabgm_t0.wav",    95,2,0},             //04    ??代??
 
     {"data\\bgm\\sabgm_b0.wav",    122,1,0},            //05    ???·卯??！卡?
     {"data\\bgm\\sabgm_b1.wav",    122,2,0},            //06    ???·卯??代??
@@ -2817,18 +2739,12 @@ T_MUSIC_BGM bgm_tbl[] = {
 int play_bgm(int bgm_no)
 {
     if (MuteFlag) return -1;
+    HMMIO        hmmio;           //????????
+    WAVEFORMATEX Wfmtx;           //WAVE??????????????
+    DWORD        DataSize;        //?????????
+    DWORD        WaveSize;        //Wave????????
 
-
-
-    HMMIO hmmio;            //????????
-    WAVEFORMATEX    Wfmtx;            //WAVE??????????????
-    DWORD            DataSize;        //?????????
-    DWORD            WaveSize;        //Wave????????
-
-//    bgm_no = 0;
-    //cary 2001 7 17
-    if( bgm_no < 0)
-        bgm_no = 0;
+    if (bgm_no < 0) bgm_no = 0;
 
     //??????????
     t_music_fade_flg = 0;
@@ -2872,49 +2788,44 @@ int play_bgm(int bgm_no)
 #endif
             return FALSE;
         }
-        d2 = 8;                            //??????????????
+        d2 = 8;                         //??????????????
         d2 += 4;                        //??????????????
         d2 += 4;                        //????  ?????????
-        d2 += 16;                        //?????????
-        fseek(fp,d2,SEEK_CUR);            //??????????去
-        d0 = fgetc(fp);                    //?????????????
-        d0 |= fgetc(fp) << 8;            //
-        d2 = 2;                            //????????
-        d2 += 12+DataSize;                //??????????  ?  ??????????
-        if(DataSize&1){                    //????????
-            d2++;                        //?????
+        d2 += 16;                       //?????????
+        fseek(fp, d2, SEEK_CUR);        //??????????去
+        d0 = fgetc(fp);                 //?????????????
+        d0 |= fgetc(fp) << 8;
+        d2 = 2;                         //????????
+        d2 += 12+DataSize;              //??????????  ?  ??????????
+        if(DataSize&1){                 //????????
+            d2++;                       //?????
         }
-        d2 += 12*4;                        //??????????
-        fseek(fp,d2,SEEK_CUR);            //??????????去
+        d2 += 12*4;                     //??????????
+        fseek(fp,d2,SEEK_CUR);          //??????????去
 
         //?????ㄅ
-        d1 = fgetc(fp);                    //??????????
-        d1 |= fgetc(fp) << 8;            //
-        d1 |= fgetc(fp) << 16;            //
-        d1 |= fgetc(fp) << 24;            //
-        if( d1 < 0)
-            thread_loop_start = 0;
+        d1 = fgetc(fp);                 //??????????
+        d1 |= fgetc(fp) << 8; 
+        d1 |= fgetc(fp) << 16;
+        d1 |= fgetc(fp) << 24;
+        if (d1 < 0)
+          thread_loop_start = 0;
         else
-            thread_loop_start = d1 * d0;    //????ㄅ???
+          thread_loop_start = d1 * d0;
         //?????ㄅ
         d1 = fgetc(fp);
         d1 |= fgetc(fp) << 8;
         d1 |= fgetc(fp) << 16;
         d1 |= fgetc(fp) << 24;
-//        thread_loop_end = d1 * d0;
-
         fclose(fp);
 #else
         thread_loop_start = bgm_tbl[bgm_no].loop_point << 1;
 #endif
-//        thread_loop_start = bgm_tbl[bgm_no].loop_start;
-//        thread_loop_end = bgm_tbl[bgm_no].loop_end;
-//        if( dwSoundInit2( &Wfmtx, DataSize, &pDSData_tone[TONE_MAX], hmmio ) == FALSE ){
-        if( dwSoundInit2( &Wfmtx, DataSize, &pDSData_stream, hmmio ) == FALSE ){
+        if (dwSoundInit2( &Wfmtx, DataSize, &pDSData_stream, hmmio ) == FALSE ){
 #ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "膘蕾汒秞腔buffer囮啖ㄐ", "Error", MB_OK);
+          MessageBoxNew(hWnd, "膘蕾汒秞腔buffer囮啖ㄐ", "Error", MB_OK);
 #endif
-            return FALSE;
+          return FALSE;
         }
 #if BGM_AUTO_LOOP
         if( d1 > 0)
@@ -2997,7 +2908,7 @@ void set_gbm_pitch(void)
 }
 
 int t_music_se_no = -1;
-//static voice_seek_point=0;
+// static voice_seek_point = 0;
 int play_se(int tone, int x, int y)
 {
     if (MuteFlag) return -1;
@@ -3005,21 +2916,10 @@ int play_se(int tone, int x, int y)
     int total_level = 127;
     t_music_se_no = tone;
 
-    if(dsound_flg == -1)
-        return -1;
-
-    if(tone > TONE_MAX){        //???????
-        return -1;
-    }
-
-    if(tone_tbl[ tone ].voice_place == -1){        //叉????
-        return -1;
-    }
-
-    if(tone_tbl[ tone ].play_time){        //??????
-        return 0;
-    }
-
+    if (dsound_flg == -1) return -1;
+    if (tone > TONE_MAX) return -1;
+    if (tone_tbl[ tone ].voice_place == -1) return -1;
+    if (tone_tbl[ tone ].play_time) return 0;
     //〈???吻????
     d0 = voice[ voice_seek_point ].tone_no;
     if(voice[ voice_seek_point ].tone_no != tone){        //可??吻??????
@@ -3040,39 +2940,15 @@ int play_se(int tone, int x, int y)
     } else {
         pDSData[voice_seek_point]->SetCurrentPosition(0);    //?????????
     }
-#if 0
-    total_level = abs(y - 240);        //??????火???
-    y = abs(x - 320) >> 1;        //??????火???
-    if(total_level < y)        //?????
-        total_level = y;        //
-
-    total_level = total_level << 4;        //?????π?阪?
-    total_level /= 0x5a;                //
-
-    if(total_level >= 127)        //吳????
-        return 0;            //?????
-
-    total_level = 127 - total_level;                //
-
-#endif
-
-    if(stereo_flg == T_MUSIC_MONO){        //??????
-        x = 64;
+    if (stereo_flg == T_MUSIC_MONO) {        //??????
+      x = 64;
     } else {
-        x /= 5;            //?????π?阪?
-        if(x < 0)        //
-            x = 0;        //
-        if(x > 127)        //
-            x = 127;    //
+      x /= 5;
+      if (x < 0) x = 0;
+      if (x > 127) x = 127;
     }
-
-    //??????
     total_level = 127 * tone_tbl[ tone ].voice_volume / 127;
-//    total_level = total_level * tone_tbl[ tone ].voice_volume / 127;
-
-    //?????????
     total_level = total_level * t_music_se_volume / 15;
-
     pDSData[ voice_seek_point ]->SetVolume(volume_tbl[ total_level ]);        // ????????
     pDSData[ voice_seek_point ]->SetPan(panpot_tbl[ x ]);            // ????????
     if(tone_tbl[ tone ].voice_note){        //???吻?叉??
@@ -3080,25 +2956,15 @@ int play_se(int tone, int x, int y)
             (DWORD)freq_tbl[tone_tbl[ tone ].voice_note + tone_tbl[ tone ].voice_rate]);
     }
 
-#if 0
-    if(tone_tbl[ tone ].voice_loop == 0 ){        //???????
-        pDSData[ voice_seek_point ]->Play(0, 0, 0);            //????
-    } else {
-        voice[ voice_seek_point ].loop_flg = 1;        //????
-        pDSData[ voice_seek_point ]->Play(0, 0, DSBPLAY_LOOPING);        //????
-    }
-#else
     pDSData[ voice_seek_point ]->Play(0, 0, 0);            //????
-#endif
-    while(1){
-        voice_seek_point++;        //??????
-        voice_seek_point&=VOICE_MAX-1;                //
-        if(voice[ voice_seek_point ].loop_flg == 0){        //??????????
+    while(true){
+        voice_seek_point++;
+        voice_seek_point&=VOICE_MAX-1;
+        if(voice[ voice_seek_point ].loop_flg == 0){
             break;
         }
     }
-    tone_tbl[ tone ].play_time = 5;        //???????
-
+    tone_tbl[ tone ].play_time = 5;
     return 0;
 }
 #endif

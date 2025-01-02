@@ -17,7 +17,7 @@
 #include "systeminc/savedata.h"
 #include "systeminc/field.h"
 
-extern    ACTION* oft_test();
+extern ACTION* oft_test();
 extern void damage_num( ACTION *a0 );
 extern void WindowDisp( ACTION *a0 );
 extern int piyo_point;
@@ -69,31 +69,20 @@ static ACTION *BattleWaterAct[8];   //环境动画
 // ??????
 extern int check_all_dead( void );
 
-// ????????
 extern char att_select_flg;
 
-
-// ???
-
-// ??????????
 int BattleDebTurnNo = 0;
-// ?????????
-char *BattleBcDeb[] =
+
+const char *BattleCmdDeb[] =
 {
-#include "../systeminc/BattleBcDeb.h"
-};
-// ??????????
-char *BattleCmdDeb[] =
-{
-#include "../systeminc/BattleMvDeb.h"
+  "BH|a0|r17|f4|dBE|FF|BH|aF|r0|f20|d0|rF|f10|counter56|FF|BH|a5|rC|f402|d5|FF|bg|b|bg|a|BH|a10|r0|f20|d0|r10|f30|counter0|FF|BV|15|0|",
+  "BH|a0|r10|f3|dC6|FF|BH|a5|rC|fA|dB|FF|BH|aF|r0|f20|d0|rF|f14|counterA0|FF|bg|b|bg|a|",
+  "BY|r10|a0|fC|d49|a5|fA|d1|FF|BH|aF|r0|f20|d0|FF|BJ|aB|m31|e188F8|e188FD|r0|FF|bg|a|",
+  "BH|a0|r17|f45|dCD|FF|BH|a5|rF|f2|dEA|FF|BH|aF|r0|f20|d0|rF|f15|counterBA|FF|bg|a|"
 };
 
-
-
-
-
-    extern 
-/* 佋 *********************************************************/
+/* 模拟战斗中的震动场景 */
+extern 
 void battle_quake( void )
 {
     switch(quake_vct_no){
@@ -232,7 +221,6 @@ void die_flash( void )
     }
 }
 
-/* ??????? *********************************************************/
 void damage_dispx( void )
 {
     ACTION *pActLoop = pActTop->pNext;     /* ???????? */
@@ -304,7 +292,7 @@ void SurprisalDisp( void )
 
 int xxx;
 
-/*Battle Process处理******************************************************************/
+/* Battle Process处理 */
 #ifdef _AI_OTHER
 #ifdef _AI_CAPTURE
 extern int AI_OtherSetting[2];
@@ -357,16 +345,16 @@ void BattleProc( void )
             DeathAllAction();
 
             // 战斗初始时释放掉水世界所有的动画
-#ifdef _AniRandom   // Syu ADD 随机产生环境动画
+#ifdef _AniRandom  // Syu ADD 随机产生环境动画
             extern void AniRandomRelease();
             AniRandomRelease();
 #endif
 
-#ifdef _AniCrossFrame       // Syu ADD 动画层游过画面生物
+#ifdef _AniCrossFrame  // Syu ADD 动画层游过画面生物
             extern void crossAniRelease();
             crossAniRelease();
 #endif
-#ifdef _AniCharBubble       // Syu ADD 动画层人物吐出气泡
+#ifdef _AniCharBubble // Syu ADD 动画层人物吐出气泡
             extern void CharbubbleRelease();
             CharbubbleRelease();
 #endif
@@ -378,7 +366,7 @@ void BattleProc( void )
             extern void ReleaseSpecAnim();
             ReleaseSpecAnim();
 #endif
-#ifdef _NEWDRAWBATTLEMAP           // Syu ADD 自动产生BattleMap
+#ifdef _NEWDRAWBATTLEMAP  // Syu ADD 自动产生BattleMap
             if ( nowFloor == 817 || nowFloor == 8007 || nowFloor == 8101 || nowFloor == 8100 || 
                 nowFloor == 8027 || nowFloor == 8028 || nowFloor == 8029 || nowFloor == 8015 || nowFloor == 8113 || nowFloor == 8114 )
             {
@@ -635,7 +623,6 @@ void BattleProc( void )
                     "17|enemy|title|18813|2|20|20|1|"
                     );
 #endif
-                //strcpy( BattleStatus, BattleBcDeb[ BattleDebTurnNo ] );
                 //设置BC封包
                 set_bc();
                 SubProcNo++;
@@ -813,7 +800,6 @@ void BattleProc( void )
                 piyo_point++;
                 piyo_point &= 63;
             }
-
 
             {
 #ifndef __AI

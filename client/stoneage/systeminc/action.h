@@ -1,17 +1,11 @@
-﻿/************************/
-/*    action.h            */
-/************************/
-#ifndef _ACTION_H_
-#define _ACTION_H_
+﻿#pragma once
 
 #include "version.h"
-#include "../newproto/autil.h"
+#include "newproto/autil.h"
 //处理优先顺序
 enum{
     PRIO_TOP,            //最优先
-
     PRIO_CHR,            //同Char
-
     PRIO_BG,            /* ??     */
     PRIO_JIKI,            /* ?     */
     PRIO_ENEMY,            /*          */
@@ -231,5 +225,3 @@ void ClearAction( ACTION *pAct );
 
 /* ???????? *********************************************************/
 void EndAction( void );
-
-#endif

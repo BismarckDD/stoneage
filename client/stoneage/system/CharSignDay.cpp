@@ -3,7 +3,7 @@
 #include "../systeminc/CharSignDay.h"
 #include "../newproto/autil.h"
 #include "../systeminc/menu.h"
-#include "../systeminc/shop.h"
+#include "wgs/shop.h"
 #include "../systeminc/t_music.h"
 #include "../newproto/protocol.h"
 #include "../sdk/caryime.h"

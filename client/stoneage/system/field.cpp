@@ -2893,18 +2893,19 @@ void fieldProc( void )
                     wnCloseFlag = 1;
                     商城动作地址 = 0;
                 }else{
-                    extern 商城文件_ 商城文件[5];
+#include "wgs/shop.h"
+                    ShopClass shop_file[5];
                     extern int util_mkint(char *buffer, int value);
                     extern void util_SendMesg(int fd, int func, char *buffer);
                     extern int util_mkstring(char *buffer, char *value);
                     int checksum=0;
                     char buf[1024*4*4];
                     memset(buf,0,1024*4*4);
-                    checksum += util_mkstring(buf,商城文件[0].MD5码);
-                    checksum += util_mkstring(buf,商城文件[1].MD5码);
-                    checksum += util_mkstring(buf,商城文件[2].MD5码);
-                    checksum += util_mkstring(buf,商城文件[3].MD5码);
-                    checksum += util_mkstring(buf,商城文件[4].MD5码);
+                    checksum += util_mkstring(buf,shop_file[0].MD5码);
+                    checksum += util_mkstring(buf,shop_file[1].MD5码);
+                    checksum += util_mkstring(buf,shop_file[2].MD5码);
+                    checksum += util_mkstring(buf,shop_file[3].MD5码);
+                    checksum += util_mkstring(buf,shop_file[4].MD5码);
                     util_mkint(buf, checksum);
                     util_SendMesg(sockfd, 203, buf);
                 }

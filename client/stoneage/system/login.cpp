@@ -49,9 +49,6 @@ extern Landed PcLanded;
 #endif
 int nGroup = 0;
 int nServerGroup = 0;
-#ifdef _LOGIP_
-char public_ip[128];
-#endif
 BOOL logOutFlag = FALSE;
 unsigned int MsgCooltime = 0;
 
@@ -249,33 +246,19 @@ void idPasswordProc(void)
 
     // 可以输入
     if (SubProcNo == 2)
-        flag = TRUE;    // 可以输入
-
+      flag = TRUE;
     ret = inputIdPassword(flag);
-
     if (ret == 1) {
-#ifdef _LOGIP_
-        memset(public_ip, 0, 128);
-        extern BOOL get_user_public_ip(const char *);
-        if (!get_user_public_ip(public_ip)) {
-            SubProcNo = 100;
-            ret = -1;
-            strcpy( msg, "获取游戏线路失败，请重新尝试！" );
-        } else
-#endif
-        {
-            SubProcNo = 3;
-            play_se(217, 320, 240);
-        }
-
+      SubProcNo = 3;
+      play_se(217, 320, 240);
     }
-    else if (ret == 2){
-        play_se(217, 320, 240);    // ?????
-        PostMessage(hWnd, WM_CLOSE, 0, 0L);
+    else if (ret == 2) {
+      play_se(217, 320, 240);
+      PostMessage(hWnd, WM_CLOSE, 0, 0L);
     }
-    else if (ret < 0){
-        SubProcNo = 100;
-        strcpy(msg, "请输入您的帐号与密码！");
+    else if (ret < 0) {
+      SubProcNo = 100;
+      strcpy(msg, "请输入您的帐号与密码！");
     }
     if (SubProcNo == 3){
 #ifdef _STONDEBUG_
@@ -512,14 +495,7 @@ int inputIdPassword(BOOL flag)
     {
         ret = 2;
     }
-    if (flag)
-    {
-        selOkFlag = 2;
-    }
-    else
-    {
-        selOkFlag = 0;
-    }
+    selOkFlag = flag ? 2 : 0;
 
     StockFontBuffer2(&idKey);
     StockFontBuffer2(&passwd);

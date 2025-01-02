@@ -1,12 +1,12 @@
 ﻿#include "version.h"
-#include "../systeminc/talkwindow.h"
+#include "systeminc/talkwindow.h"
 #include "game/main.h"
-#include "../resources/resource.h"
-#include "../systeminc/loadrealbin.h"
-#include "../oft/work.h"
-#include "../systeminc/font.h"
-#include "../systeminc/mouse.h"
-#include "../systeminc/tool.h"
+#include "resources/resource.h"
+#include "systeminc/loadrealbin.h"
+#include "oft/work.h"
+#include "systeminc/font.h"
+#include "systeminc/mouse.h"
+#include "systeminc/tool.h"
 
 #ifdef _TALK_WINDOW
 

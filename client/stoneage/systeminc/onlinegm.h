@@ -2,15 +2,15 @@
 #ifndef _ONLINEGM_
 #define _ONLINEGM_
 
-#define ONLINEGM_BACKGROUND        OLD_GRAPHICS_START+821  //背景图
+#define ONLINEGM_BACKGROUND     OLD_GRAPHICS_START+821  //背景图
 #define ONLINEGM_YES_OR_NO      35322                   //小长方石板背景图 26195有问题的图
 #define ONLINEGM_CHECK_U        OLD_GRAPHICS_START+820    //查询(弹起)
 #define ONLINEGM_CHECK_D        35319                    //查询(按下)        
-#define ONLINEGM_DELETE_U        OLD_GRAPHICS_START+819    //删除(弹起)
-#define ONLINEGM_DELETE_D        35321                    //删除(按下)
+#define ONLINEGM_DELETE_U       OLD_GRAPHICS_START+819    //删除(弹起)
+#define ONLINEGM_DELETE_D       35321                    //删除(按下)
 #define ONLINEGM_ENTER_U        26099                    //传送(弹起)
 #define ONLINEGM_ENTER_D        35320//传送(按下)
-#define    ONLINEGM_CLEAR_U        26298                    //清除(弹起)
+#define ONLINEGM_CLEAR_U        26298                    //清除(弹起)
 #define ONLINEGM_CLEAR_D        26299                    //清除(按下)
 #define ONLINEGM_HELP_U            OLD_GRAPHICS_START+818    //注意事项(弹起)
 #define ONLINEGM_HELP_D            35318                    //注意事项(按下)

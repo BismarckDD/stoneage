@@ -1,40 +1,37 @@
-﻿#ifndef _PC_H_ 
-#define _PC_H_
+﻿#pragma once
 
-#include "action.h"
+#include "systeminc/action.h"
+
 #ifdef _MORECHARACTERS_
 #define MAXCHARACTER            4
 #else
 #define MAXCHARACTER            2
 #endif
-#define CHAR_NAME_LEN            16
-#define CHAR_FREENAME_LEN        32
-#define MAGIC_NAME_LEN            28
-#define MAGIC_MEMO_LEN            72
-#define ITEM_NAME_LEN            28
-#define ITEM_NAME2_LEN            16
-#define ITEM_MEMO_LEN            84
+#define CHAR_NAME_LEN           16
+#define CHAR_FREENAME_LEN       32
+#define MAGIC_NAME_LEN          28
+#define MAGIC_MEMO_LEN          72
+#define ITEM_NAME_LEN           28
+#define ITEM_NAME2_LEN          16
+#define ITEM_MEMO_LEN           84
 #define PET_NAME_LEN            16
 #define PET_FREENAME_LEN        32
-#define CHAR_FMNAME_LEN            33      // 家族名称
-
-#ifdef _CHAR_PROFESSION            // WON ADD 人物职业
-#define PROFESSION_MEMO_LEN        84
+#define CHAR_FMNAME_LEN         33  // 家族名称
+#ifdef _CHAR_PROFESSION         // WON ADD 人物职业
+#define PROFESSION_MEMO_LEN     84
 #endif
 
-#ifdef _GM_IDENTIFY        // Rog ADD GM识别
-#define GM_NAME_LEN                32
+#ifdef _GM_IDENTIFY // Rog ADD GM识别
+#define GM_NAME_LEN             32
 #endif
 
 //#define CHARNAMELEN                256        // ???????
 
-#define MAX_PET                    5
+#define MAX_PET                 5
+#define MAX_MAGIC               9
+#define MAX_PARTY               5
 
-#define MAX_MAGIC                9
-
-#define MAX_PARTY                5
-
-#define    MAX_ADR_BOOK_COUNT        4
+#define MAX_ADR_BOOK_COUNT      4
 #ifdef _EXTEND_AB
     #define    MAX_ADR_BOOK_PAGE        20//20  //10   20050214 cyg 10 add to 20
 #else
@@ -77,15 +74,15 @@ typedef enum
 typedef enum
 {
 // 宠物道具,共九种
-    ITEM_PET_HEAD = 29,        // 头
-    ITEM_PET_WING,            // 翼
-    ITEM_PET_TOOTH,            // 牙
-    ITEM_PET_PLATE,            // 身体护甲
-    ITEM_PET_BACK,            // 背部护甲
-    ITEM_PET_CLAW,            // 爪
+    ITEM_PET_HEAD = 29,     // 头
+    ITEM_PET_WING,          // 翼
+    ITEM_PET_TOOTH,         // 牙
+    ITEM_PET_PLATE,         // 身体护甲
+    ITEM_PET_BACK,          // 背部护甲
+    ITEM_PET_CLAW,          // 爪
     ITEM_PET_1_FOOT,        // 脚部,双足
     ITEM_PET_2_FOOT,        // 脚部,四足
-    ITEM_PET_FIN,            // 脚部,鳍
+    ITEM_PET_FIN,           // 脚部,鳍
     ITEM_CATEGORYNUM  
 }ITEM_CATEGORY;
 #define MAX_PET_ITEM    7
@@ -101,56 +98,51 @@ int 判断玩家道具数量();
 #endif
 #else
 #define MAX_ITEMSTART 5
-#define MAX_ITEM                20
+#define MAX_ITEM      20
 #endif
 
 #define RESULT_ITEM_COUNT        3
-#define RESULT_ITEM_NAME_LEN    24
-//#define RESULT_CHR_EXP            4
-#define RESULT_CHR_EXP            5
+#define RESULT_ITEM_NAME_LEN     24
+#define RESULT_CHR_EXP           5
 
-#define SKILL_NAME_LEN            24
-#define SKILL_MEMO_LEN            72
+#define SKILL_NAME_LEN           24
+#define SKILL_MEMO_LEN           72
 #define MAX_SKILL                7
 
-
-
-#define MAX_GOLD                1000000
-#define MAX_BANKGOLD            10000000
-#define MAX_FMBANKGOLD            100000000
-
-
-#define MAX_PERSONAL_BANKGOLD 50000000
+#define MAX_GOLD                 1000000
+#define MAX_BANKGOLD             10000000
+#define MAX_FMBANKGOLD           100000000
+#define MAX_PERSONAL_BANKGOLD    50000000
 
 #ifdef _FMVER21
-#define FAMILY_MAXMEMBER                100     // 家族人数
+#define FAMILY_MAXMEMBER        100    // 家族人数
 #else
-#define FAMILY_MAXMEMBER                50     // 家族人数
+#define FAMILY_MAXMEMBER        50     // 家族人数
 #endif
 
 enum
 {
     PC_ETCFLAG_PARTY        = (1 << 0),
-    PC_ETCFLAG_DUEL            = (1 << 1),
-    PC_ETCFLAG_CHAT_MODE    = (1 << 2),        //队伍频道开关
-    PC_ETCFLAG_MAIL            = (1 << 3),       //名片频道
+    PC_ETCFLAG_DUEL         = (1 << 1),
+    PC_ETCFLAG_CHAT_MODE    = (1 << 2),     //队伍频道开关
+    PC_ETCFLAG_MAIL         = (1 << 3),     //名片频道
     PC_ETCFLAG_TRADE        = (1 << 4)
 #ifdef _CHANNEL_MODIFY
-    ,PC_ETCFLAG_CHAT_TELL = (1 << 5)            //密语频道开关
-    ,PC_ETCFLAG_CHAT_FM        = (1 << 6)            //家族频道开关
+    ,PC_ETCFLAG_CHAT_TELL   = (1 << 5)      //密语频道开关
+    ,PC_ETCFLAG_CHAT_FM     = (1 << 6)      //家族频道开关
 #ifdef _CHAR_PROFESSION
-    ,PC_ETCFLAG_CHAT_OCC    = (1 << 7)            //职业频道开关
+    ,PC_ETCFLAG_CHAT_OCC    = (1 << 7)      //职业频道开关
 #endif
-    ,PC_ETCFLAG_CHAT_SAVE    =    (1 << 8)            //对话储存开关
+    ,PC_ETCFLAG_CHAT_SAVE   = (1 << 8)      //对话储存开关
 #ifdef _CHATROOMPROTOCOL
-    ,PC_ETCFLAG_CHAT_CHAT    =    (1 << 9)            //聊天室开关
+    ,PC_ETCFLAG_CHAT_CHAT   = (1 << 9)      //聊天室开关
 #endif
 #endif
 #ifdef _CHANNEL_WORLD
-    ,PC_ETCFLAG_CHAT_WORLD    =    (1 << 10)            //世界频道开关
+    ,PC_ETCFLAG_CHAT_WORLD  = (1 << 10)      //世界频道开关
 #endif
 #ifdef _CHANNEL_ALL_SERV
-    ,PC_ETCFLAG_ALL_SERV    =    (1 << 11)            //星球频道开关
+    ,PC_ETCFLAG_ALL_SERV    = (1 << 11)      //星球频道开关
 #endif
     ,PC_AI_MOD = (1 << 12)
 };
@@ -158,7 +150,6 @@ enum
 enum
 {
     PC_ETCFLAG_CHAT_MODE_ID = 0
-    
 #ifdef _CHANNEL_MODIFY
     ,PC_ETCFLAG_CHAT_TELL_ID        //密语频道
     ,PC_ETCFLAG_CHAT_PARTY_ID        //队伍频道
@@ -354,41 +345,41 @@ typedef struct
 #ifdef _FMVER21
 enum
 {
-    FMMEMBER_NONE   = -1,  // 未加入任何家族
-    FMMEMBER_MEMBER = 1,   // 一般成员
-    FMMEMBER_APPLY,        // 申请加入家族
-    FMMEMBER_LEADER,       // 家族族长        
-    FMMEMBER_ELDER,        // 长老
-    //FMMEMBER_INVITE,     // 祭司
-    //FMMEMBER_BAILEE,     // 财务长
-    //FMMEMBER_VICELEADER, // 副族长
-    FMMEMBER_NUMBER,
+  FMMEMBER_NONE   = -1,  // 未加入任何家族
+  FMMEMBER_MEMBER = 1,   // 一般成员
+  FMMEMBER_APPLY,        // 申请加入家族
+  FMMEMBER_LEADER,       // 家族族长        
+  FMMEMBER_ELDER,        // 长老
+  //FMMEMBER_INVITE,     // 祭司
+  //FMMEMBER_BAILEE,     // 财务长
+  //FMMEMBER_VICELEADER, // 副族长
+  FMMEMBER_NUMBER,
 };
 #endif
 
 enum
 {
-    MAGIC_FIELD_ALL,
-    MAGIC_FIELD_BATTLE,
-    MAGIC_FIELD_MAP
+  MAGIC_FIELD_ALL,
+  MAGIC_FIELD_BATTLE,
+  MAGIC_FIELD_MAP
 };
 
 enum
 {
-    MAGIC_TARGET_MYSELF,
-    MAGIC_TARGET_OTHER,
-    MAGIC_TARGET_ALLMYSIDE,
-    MAGIC_TARGET_ALLOTHERSIDE,
-    MAGIC_TARGET_ALL,
-    MAGIC_TARGET_NONE,
-    MAGIC_TARGET_OTHERWITHOUTMYSELF,
-    MAGIC_TARGET_WITHOUTMYSELFANDPET,
-    MAGIC_TARGET_WHOLEOTHERSIDE,
-    #ifdef __ATTACK_MAGIC
-    MAGIC_TARGET_SINGLE,                // 针对敌方某一方
-    MAGIC_TARGET_ONE_ROW,                // 针对敌方某一列
-    MAGIC_TARGET_ALL_ROWS,                // 针对敌方所有人
-    #endif
+  MAGIC_TARGET_MYSELF,
+  MAGIC_TARGET_OTHER,
+  MAGIC_TARGET_ALLMYSIDE,
+  MAGIC_TARGET_ALLOTHERSIDE,
+  MAGIC_TARGET_ALL,
+  MAGIC_TARGET_NONE,
+  MAGIC_TARGET_OTHERWITHOUTMYSELF,
+  MAGIC_TARGET_WITHOUTMYSELFANDPET,
+  MAGIC_TARGET_WHOLEOTHERSIDE,
+  #ifdef __ATTACK_MAGIC
+  MAGIC_TARGET_SINGLE,   // 针对敌方某一方
+  MAGIC_TARGET_ONE_ROW,  // 针对敌方某一列
+  MAGIC_TARGET_ALL_ROWS, // 针对敌方所有人
+  #endif
 };
 
 enum
@@ -568,22 +559,22 @@ typedef struct
 } PROFESSION_SKILL;
 #endif
 
-
 typedef struct
 {
-    char name[CHAR_NAME_LEN+1];        // SJIS?????
+    char name[CHAR_NAME_LEN+1];     // SJIS?????
     short level;                    // ???
-    int login;                        // ??????
+    int login;                      // ??????
 
-    int faceGraNo;                    // ????
-    int hp;                            // ??
+    int faceGraNo;                  // ????
+    int hp;                         // ??
     int str;                        // ???
     int def;                        // ??
     int agi;                        // ?
     int app;                        // ?
     int attr[4];                    // ?佋???????
-    int dp;                            // ????????
+    int dp;                         // ????????
 } CHARLISTTABLE;
+
 #ifdef _AIDENGLU_
 typedef struct
 {
@@ -597,6 +588,7 @@ typedef struct
     char 登陆人物名称[4][32];
     int 登陆延时时间;
 }Landed;
+
 #endif
 
 extern PC pc;
@@ -717,7 +709,3 @@ void initAddressBook( void );
 void addressBookProc( void );
 
 int CHAR_getMaxHaveGold( void);
-
-#endif
-
-

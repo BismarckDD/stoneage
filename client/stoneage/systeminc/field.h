@@ -1,7 +1,7 @@
-﻿#ifndef _FIELD_H_ 
-#define _FIELD_H_
+﻿#pragma once
 
-#include<time.h>
+#include <time.h>
+#include "systeminc/pc.h"
 
 // ??????????
 #define FIELD_BTN_PUSH_WAIT            500        // 0.5
@@ -191,5 +191,4 @@ void actionShortCutKeyProc( void );
 void SpecAnim ( int ) ; 
 void ReleaseSpecAnim( void );
 
-#endif
 #endif

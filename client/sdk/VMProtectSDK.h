@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <windows.h>
+
 #ifdef _WIN64
     #pragma comment(lib, "VMProtectSDK64.lib")
 #else

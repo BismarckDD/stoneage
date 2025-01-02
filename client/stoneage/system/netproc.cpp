@@ -174,6 +174,7 @@ void LogToRecvdata2(char *data)
 }
 
 extern int iEncrypt;
+
 int ConnectWGS()
 {
     if (connectServerCounter == 0)
@@ -626,14 +627,10 @@ int connectServer(void)
 #ifdef _SA_MAC_VERSION_CONTROL
             CHAR token[64];
             sprintf_s(token, "%s-%s",_SA_MAC_VERSION, mac);
-#ifdef _LOGIP_
-            extern char 玩家公网IP[];
-            lssproto_ClientLogin_send(sockfd, userId,userPassword, token, selectServerIndex,玩家公网IP);
+            // TODO: 这里移除了玩家公网IP的获取，后面是否有问题还需要观察.
+            lssproto_ClientLogin_send(sockfd, userId, userPassword, token, selectServerIndex, "192.168.1.1");
 #else
-            lssproto_ClientLogin_send(sockfd, userId,userPassword, token, selectServerIndex,"192.168.1.1");
-#endif
-#else
-            lssproto_ClientLogin_send(sockfd, userId,userPassword, mac, selectServerIndex,"192.168.1.1");
+            lssproto_ClientLogin_send(sockfd, userId, userPassword, mac, selectServerIndex, "192.168.1.1");
 #endif
 #endif
             if ((bNewServer & 0xf000000) == 0xf000000)
@@ -685,6 +682,7 @@ int connectServer(void)
     SETTIMEOUT2(NET_ERRMSG_CONNECTTIMEOUT);
     return 0;
 }
+
 void lssproto_ClientLogin_recv(int fd, char *result)
 {
     if (netproc_sending == NETPROC_SENDING)
