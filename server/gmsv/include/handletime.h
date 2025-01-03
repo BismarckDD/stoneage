@@ -13,9 +13,9 @@
 #endif
 
 EXTERN struct timeval NowTime;
-EXTERN int     DEBUG_ADJUSTTIME;
+EXTERN int    DEBUG_ADJUSTTIME;
 
-BOOL setNewTime( void );
+BOOL setNewTime(void);
 #ifdef _ASSESS_SYSEFFICACY
 void Assess_InitSysEfficacy( void);
 void Assess_SysEfficacy( int flg);
@@ -28,16 +28,16 @@ void ASSESS_getSysEfficacy_sub( float *TVsec, int loop);
 // WON REM
 //struct tm *localtime(const time_t *timep);
 
-/*³ð³ð¾®ÈÕÆ±£ýHiO£ÛLSÁÝÃÞèúÒç£Û*/
-/*    ÁÝÃÞ150(ÛÐ)*60=9000  =750*12 Æ¥   LS1     */
-/*  LS1200ÁÝÃÞ  LS1     */
+/*ï¿½ï¿½ï¿½ï¿½ï¿½Æ±ï¿½ï¿½HiOï¿½ï¿½LSï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
+/*    ï¿½ï¿½ï¿½ï¿½150(ï¿½ï¿½)*60=9000  =750*12 Æ¥   LS1     */
+/*  LS1200ï¿½ï¿½ï¿½ï¿½  LS1     */
 /*  LS100  Æ¥   LS1     */
 typedef struct tagLSTIME
 {
 	int year;
 	int day;
 	int hour;
-}LSTIME;
+} LSTIME;
 
 #define NIGHT_TO_MORNING	700
 #define MORNING_TO_NOON		930

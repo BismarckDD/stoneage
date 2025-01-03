@@ -1,10 +1,10 @@
-#ifndef __READNPCTEMPLATE_H__
-#define __READNPCTEMPLATE_H__
+#ifndef __NPC_TEMPLATE_H__
+#define __NPC_TEMPLATE_H__
 
 #include "util.h"
 #include "char_base.h"
 
-#define NPC_TEMPLATEFILEMAGIC   "NPCTEMPLATE\n"
+#define NPC_TEMPLATEFILEMAGIC "NPCTEMPLATE\n"
 
 #undef EXTERN
 #ifdef __NPCTEMPLATE__
@@ -12,8 +12,6 @@
 #else
 #define EXTERN extern
 #endif /*__NPCTEMPLATE__*/
-
-
 
 typedef struct tagNPC_haveItem
 {
@@ -56,49 +54,35 @@ typedef enum
 
 typedef enum
 {
-    NPC_TEMPLATEMAKEATNOBODY,           /* 簿手中卅中凛卞手综月井升丹井 */
-    NPC_TEMPLATEMAKEATNOSEE,            /* 苇尹卅中赭匹综月井升丹井    */
-    NPC_TEMPLATEIMAGENUMBER,            /*   飓  寞    */
-    NPC_TEMPLATETYPE,                   /*     瑁户月凛卞瑁户月        */
+  NPC_TEMPLATEMAKEATNOBODY,           /* 簿手中卅中凛卞手综月井升丹井 */
+  NPC_TEMPLATEMAKEATNOSEE,            /* 苇尹卅中赭匹综月井升丹井    */
+  NPC_TEMPLATEIMAGENUMBER,            /*   飓  寞    */
+  NPC_TEMPLATETYPE,                   /*     瑁户月凛卞瑁户月        */
 
-    NPC_TEMPLATEMINHP,                  /* HP   */
-
-    NPC_TEMPLATEMINMP,                  /* MP   */
-
-    NPC_TEMPLATEMINSTR,                 /* STR  */
-
-    NPC_TEMPLATEMINTOUGH,               /* TOUGH    */
-
-    NPC_TEMPLATEISFLYING,               /*  氏匹月井升丹井  */
-
-    NPC_TEMPLATEITEMNUM,                /*   切丹月失奶  丞及    醒    */
-
-    NPC_TEMPLATELOOPFUNCTIME,           /*
-                                         * 窒立伉  仍午卞伙□皿楮醒
-                                         * 毛裟少井
-                                         */
-    NPC_TEMPLATEFUNCTIONINDEX,         /*
-                                        * fucntionSet 及窒    及
-                                        * 奶件犯永弁旦井
-                                        */
-
-    NPC_TEMPLATEINTNUM,
-}NPC_TEMPLATEINT;
+  NPC_TEMPLATEMINHP,                  /* HP   */
+  NPC_TEMPLATEMINMP,                  /* MP   */
+  NPC_TEMPLATEMINSTR,                 /* STR  */
+  NPC_TEMPLATEMINTOUGH,               /* TOUGH    */
+  NPC_TEMPLATEISFLYING,               /*  氏匹月井升丹井  */
+  NPC_TEMPLATEITEMNUM,                /*   切丹月失奶  丞及    醒    */
+  NPC_TEMPLATELOOPFUNCTIME,
+  NPC_TEMPLATEFUNCTIONINDEX,
+  NPC_TEMPLATEINTNUM,
+} NPC_TEMPLATEINT;
 
 typedef struct tagNPC_Template
 {
-    STRING64    chardata[NPC_TEMPLATECHARNUM];
-    int         intdata[NPC_TEMPLATEINTNUM];
-    int         randomdata[NPC_TEMPLATEINTNUM]; /*  仿件母丞及  五今
-                                                    互  匀化中月  */
-    int         hash;
-    NPC_haveItem*   haveitem;
+  STRING64    chardata[NPC_TEMPLATECHARNUM];
+  int         intdata[NPC_TEMPLATEINTNUM];
+  int         randomdata[NPC_TEMPLATEINTNUM];
+  int         hash;
+  NPC_haveItem* haveitem;
 }NPC_Template;
 
 
-EXTERN NPC_Template*   NPC_template;
-EXTERN int             NPC_templatenum;
-EXTERN int             NPC_template_readindex;
+EXTERN NPC_Template* NPC_template;
+EXTERN int           NPC_templatenum;
+EXTERN int           NPC_template_readindex;
 
 INLINE int NPC_CHECKTEMPLATEINDEX(int index);
 
@@ -108,4 +92,4 @@ BOOL NPC_readNPCTemplateFiles( char* topdirectory ,int templatesize);
 int NPC_templateGetTemplateIndex( char* templatename );
 
 #endif
- /*__READNPCTEMPLATE_H__*/
+

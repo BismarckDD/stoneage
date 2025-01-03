@@ -6,9 +6,6 @@
 #include "net.h"
 #include "char_data.h"
 
-/*------------------------------------------------------------
- *°×ÇÉ¼şĞş¼°çÆ¼°ÀÃñø
- *------------------------------------------------------------*/
 #ifdef _NEW_STREET_VENDOR
 typedef enum
 {
@@ -50,31 +47,28 @@ typedef enum
 	CHAR_COLORBLUE2,
 	CHAR_COLORGREEN2,
 	CHAR_COLORNUM
-}CHAR_COLOR;
-/*====================Æ½ÅÒ·Â¼°×ÛÔÀ±åèúÔÊÔÂèúĞÑ====================*/
-void CHAR_createNewChar( int clifd, int dataplacenum,char* charname ,
-						  int imgno,int faceimgno,
-						  int vital,int str,int tgh,int dex,
-						  int earth,int water,int fire,int wind,
-						  int hometown , char *cdkey );
+} CHAR_COLOR;
 
-/*====================Æ½ÅÒ·Â¼°·òºëÄÌ¼ş====================*/
+void CHAR_createNewChar(int clifd, int dataplacenum, char* charname,
+						  int imgno, int faceimgno,
+						  int vital, int str, int tgh, int dex,
+						  int earth, int water, int fire, int wind,
+						  int hometown, char *cdkey);
 
-void CHAR_login( int clifd, char* data, int saveindex );
+void CHAR_login(int clifd, char* data, int saveindex);
 
-#define		CHAR_warpToSpecificPoint( cindex, fl, x, y)	_CHAR_warpToSpecificPoint( __FILE__, __LINE__, cindex, fl, x, y)
-BOOL _CHAR_warpToSpecificPoint( char *file, int line, 
-							int charaindex, int fl, int x, int y);
+#define	CHAR_warpToSpecificPoint(cindex, fl, x, y)\
+_CHAR_warpToSpecificPoint(__FILE__, __LINE__, cindex, fl, x, y)
+
+BOOL _CHAR_warpToSpecificPoint(char *file, int line, int charaindex, int fl, int x, int y);
 
 
-/*====================Æ½ÅÒ·Â¼°±¾¡õÆ¤====================*/
-/*====================Æ½ÅÒ·Â¼°·òºëÊ§ËüĞş====================*/
-BOOL CHAR_charSaveFromConnectAndChar( int fd,Char* ch, int unlock );
+BOOL CHAR_charSaveFromConnectAndChar(int fd, Char* ch, int unlock);
 BOOL CHAR_charSaveFromConnect( int charaindex,int unlock );
 #define	CHAR_logout( charaindex, save)	_CHAR_logout( __FILE__, __LINE__, charaindex, save)
 BOOL _CHAR_logout( char *file, int line, int charaindex, BOOL save);
 
-/*====================watch event    ====================*/
+/*==================== watch event    ====================*/
 void CHAR_sendWatchEvent( int objindex, int chac, int* opt,int optlen,BOOL myflg );
 
 /*====================µ©Æ½»ï====================*/
@@ -92,7 +86,7 @@ typedef enum
     CHAR_WALKPREWALK,       /*  prewalkÄÌÃ¬¼şĞşÆ¥ĞÚØêØ¦¾®ÔÈĞ×( éŞ¼À ) */
     CHAR_WALKDIE,           /*  ÉØÊÏÆ¥ÖĞ»¯ĞÚØêØ¦ÖĞ  */
     CHAR_WALK1357,          /*  ±ê»§  éù±åĞÚ³ğµ¤ÎçØÆ»¯ĞÚØêØ¦¾®ÔÈĞ×  */
-}CHAR_WALKRET;
+} CHAR_WALKRET;
 
 /*====================Æ½ÅÒ·Â¼°à¢  ±åèúÔÊÔÂèúĞÑ====================*/
 void CHAR_ctodirmode(char moji , int* dir , int* mode);

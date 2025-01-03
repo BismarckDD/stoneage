@@ -1,76 +1,77 @@
 #ifndef __VERSION_H__
 #define __VERSION_H__
-#include "correct_bug.h"  //BUG FIX
+
+#include "correct_bug.h"
 #include "common.h"
 #include "longzoro/version.h"
 #include "longzoro/debug.h"
 
 /*  网络模型  */
-//#define _EPOLL_ET_MODE									//EPOLL ET模型
-//#define _EPOLL_POOL_COUNT		5					//线程池数量
+//#define _EPOLL_ET_MODE         // EPOLL_ET模型
+//#define _EPOLL_POOL_COUNT 5    // 线程池数量
 
 /*Server 版本控制*/
 #define _NEW_SERVER_
 #define _SERVER_NUMS
 
-#define UNIQUE_KEYCODEITEM	100
-#define UNIQUE_KEYCODEPET	"i"
+#define UNIQUE_KEYCODEITEM 100
+#define UNIQUE_KEYCODEPET  "i"
 
-#define _FAMILY_MANORNUM_CHANGE	 // CoolFish 用来修改装园数量(4.0)
+#define _FAMILY_MANORNUM_CHANGE   // CoolFish 用来修改装园数量(4.0)
 #ifdef _FAMILY_MANORNUM_CHANGE
-#define FAMILY_MAXHOME 		MANOR_MAX_NUM        // (4.0) 家族据点
-#define MANORNUM       		MANOR_MAX_NUM        // (4.0) 庄园数量
-#define FMPOINTNUM     		MANOR_MAX_NUM        // (4.0) 有据点家族的最大数量
+#define FAMILY_MAXHOME     MANOR_MAX_NUM        // (4.0) 家族据点
+#define MANORNUM           MANOR_MAX_NUM        // (4.0) 庄园数量
+#define FMPOINTNUM         MANOR_MAX_NUM        // (4.0) 有据点家族的最大数量
 #endif
-#define _FMVER21                 // (可开放) 家族职掌功能
-#define _PERSONAL_FAME           // (可开放) Arminius 8.30 家族个人声望
+#define _FMVER21           // (可开放) 家族职掌功能
+#define _PERSONAL_FAME     // (可开放) Arminius 8.30 家族个人声望
 // -------------------------------------------------------------------
-//专案：石器活动自动化		人员：晓威、家麟
+//专案：石器活动自动化    人员：晓威、家麟
 
-//#define _COMFIRM_TRADE_REQUEST    //接收交易请求确认
+//#define _COMFIRM_TRADE_REQUEST  // 接收交易请求确认
 
 #define _EVERYONE_RIDE           // (可开放) Robin 0924 骑宠平民化
 // -------------------------------------------------------------------
-//专案：攻击性咒术的制作	人员：笃志
-#define _ATTACK_MAGIC            // (可开放)	提供战场中的攻击性咒术
+//专案：攻击性咒术的制作  人员：笃志
+#define _ATTACK_MAGIC            // (可开放)  提供战场中的攻击性咒术
 #define _ADD_ACTION              // (可开放) 一般NPC动作状况的设定
 
 // -------------------------------------------------------------------
-//专案：宠物、道具编码		人员：小瑜
+//专案：宠物、道具编码    人员：小瑜
 #define _UNIQUE_P_I              // (可开放) CoolFish 2001/10/11
 
 // -------------------------------------------------------------------
-//专案：新版人物储存pn 及 当机不回朔 1018	人员：彦勋
+//专案：新版人物储存pn 及 当机不回朔 1018  人员：彦勋
 #define _NEWSAVE                 // (可开放) Robin
 #define _STORECHAR               // (可开放) Robin
 #define _DROPCHECK               // (可开放) Robin 防止重复丢道具
 #define _DROPCHECK2              // (可开放) Robin 防止重复丢道具
 // -------------------------------------------------------------------
-//专案 : 精灵王	人员 : 彦豪
+//专案 : 精灵王  人员 : 彦豪
 #define _PET_TRANS               // (可开放) 宠物转生功能
 #define _NEW_WARPMAN             // (可开放) NPC多重WARP功能
 #define _PET_TALK                // (可开放) 宠物对话
 #define _PET_LIMITLEVEL          // (可开放) 特殊宠设计(玛蕾)
 #define _MAP_NOEXIT              // (可开放) 特殊地图不得原登&原登回指定点
 // -------------------------------------------------------------------
-// 专案：GM指令、层级Reload		人员：小瑜
+// 专案：GM指令、层级Reload    人员：小瑜
 #define _GMRELOAD                // (可开放) CoolFish: 2001/11/12
 // -------------------------------------------------------------------
-// 专案：伊甸大陆	人员：彦豪、阿民、小瑜
-#define _GAMBLE_ROULETTE         // (可开放) 彦豪 赌场轮盘	宝宝小猪
+// 专案：伊甸大陆  人员：彦豪、阿民、小瑜
+#define _GAMBLE_ROULETTE         // (可开放) 彦豪 赌场轮盘  宝宝小猪
 #define _FIX_GAMBLENUM           // (可开放) 轮盘修正 : 下线扣积分
 #define _GAMBLE_BANK             // (可开放) 彦豪  赌场银行
 #define _DROPSTAKENEW            // (可开放) CoolFish:  赌场下注
 #define _PETRACE                 // (可开放) CoolFish: 2001/12/3 宠物竞速场
 #define _NEWEVENT                // (可开放) CoolFish: 2001/12/5 新的任务旗标
 // -------------------------------------------------------------------
-//专案：鞭炮制作	人员：晓威
+//专案：鞭炮制作  人员：晓威
 #define _ITEM_FIRECRACKER        // (可开放) 战斗中使用鞭炮可以把年兽吓走
 // -------------------------------------------------------------------
-//新功能：庄园PK规则(酷哥定的)		人员：志伟、志旺
+//新功能：庄园PK规则(酷哥定的)    人员：志伟、志旺
 #define _MANOR_PKRULE            // (可开放)
 // -------------------------------------------------------------------
-// 新功能：新功能&宠物技能		人员：彦豪
+// 新功能：新功能&宠物技能    人员：彦豪
 #define _PSKILL_FALLGROUND       // (可开放) 宠物技能  (落马术)
 #define _ENEMY_FALLGROUND        // (可开放) NPC 落马
 #define _Item_MoonAct            // (可开放) 月神的守护
@@ -134,18 +135,18 @@
 #define _PSKILL_MDFYATTACK       // (可开放) ANDY 攻击转化属性
 #define _MAGIC_DEFMAGICATT       // (可开放) ANDY 魔法防御
 #define _MAGIC_SUPERWALL         // (可开放) ANDY 铁壁防御
-#define _OTHER_MAGICSTAUTS       // (可开放) ANDY
-#define _SKILL_TOOTH             // (可开放) ANDY   齿术
-#define _MAGIC_DEEPPOISON        // (可开放) vincent  精灵:剧毒
-#define _MAGIC_BARRIER           // (可开放) vincent  精灵:魔障
-#define _MAGIC_NOCAST            // (可开放) vincent  精灵:沉默
-#define _ITEM_CRACKER            // (可开放) vincent  道具:拉炮 //需要开#define _MIND_ICON
-#define _SKILL_DEEPPOISON        // (可开放) vincent  宠技:剧毒 //需要开#define _MAGIC_DEEPPOISON
-#define _SKILL_BARRIER           // (可开放) vincent  宠技:魔障 //需要开#define _MAGIC_BARRIER
-#define _SKILL_ROAR              // (可开放) vincent  宠技:大吼(克年兽)
-#define _SKILL_REFRESH           // (可开放) vincent  宠技:解除异常状态
-#define _ITEM_REFRESH            // (可开放) vincent  解除异常状态道具
-#define _MAGIC_TOCALL            // (可开放) kjl     召唤  02/06/20 kjl
+#define _OTHER_MAGICSTAUTS       // (可开放) ANDY 其他魔法状态
+#define _SKILL_TOOTH             // (可开放) ANDY 齿术
+#define _MAGIC_DEEPPOISON        // (可开放) vincent 精灵:剧毒
+#define _MAGIC_BARRIER           // (可开放) vincent 精灵:魔障
+#define _MAGIC_NOCAST            // (可开放) vincent 精灵:沉默
+#define _ITEM_CRACKER            // (可开放) vincent 道具:拉炮 //需要开#define _MIND_ICON
+#define _SKILL_DEEPPOISON        // (可开放) vincent 宠技:剧毒 //需要开#define _MAGIC_DEEPPOISON
+#define _SKILL_BARRIER           // (可开放) vincent 宠技:魔障 //需要开#define _MAGIC_BARRIER
+#define _SKILL_ROAR              // (可开放) vincent 宠技:大吼(克年兽)
+#define _SKILL_REFRESH           // (可开放) vincent 宠技:解除异常状态
+#define _ITEM_REFRESH            // (可开放) vincent 解除异常状态道具
+#define _MAGIC_TOCALL            // (可开放) kjl 召唤 02/06/20
 
 // -------------------------------------------------------------------
 // 新功能：来吉卡功能  人员：彦豪
@@ -184,11 +185,9 @@
 #define _BATTLECOMMAND_TIME      // (可开放) ANDY 防止玩家开缓速(回合战斗时间)
 #define _NPCENEMY_ADDPOWER       // (可开放) ANDY 修改怪物的能力值
 
-
 // -------------------------------------------------------------------
 // 新功能：专案6.0    人员：
-//
-#define _PETSKILL_CANNEDFOOD     // (可开放) ANDY 宠物技能罐头  for 6.0
+#define _PETSKILL_CANNEDFOOD     // (可开放) ANDY 宠物技能罐头
 #define _TEST_DROPITEMS          // (可开放) ANDY 测试丢宠
 #define _MAP_WARPPOINT           // (可开放) ANDY Map WarpPoint
 #define _BENEMY_EVENTRUN         // (可开放) ANDY 战斗npc给道具
@@ -197,6 +196,7 @@
 #define _BATTLE_ATTCRAZED        // (可开放) ANDY 疯狂暴走
 #define _CAPTURE_FREES           // (可开放) ANDY 补抓条件
 #define _THROWITEM_ITEMS         // (可开放) 丢掷後有奖品
+
 //--------------------------------------------------------------------------
 //专案 7.0  职业系统  人员：彦豪 志旺 旭诚 奇铨
 #define _ACFMPK_LIST             // (可开放) ANDY 家族对战列表修正
@@ -216,55 +216,50 @@
 #define _NET_REDUCESEND          // (可开放) ANDY 减少DB资料传送
 #define _FEV_ADD_NEW_ITEM        // (可开放) Change 增加复活守精
 #define _LOCKHELP_OK             // (可开放) Syu ADD 锁定不可加入战斗
-//系统改良
+// 系统改良
 #define _SIMPLIFY_ITEMSTRING     // (可开放) ANDY 简化道具字串
-
 #define _SIMPLIFY_PETSTRING      // (可开放) ANDY 简化宠物存档字串
 #define _SIMPLIFY_ITEMSTRING2    // (可开放) ANDY 简化道具字串2
 #define _WOLF_TAKE_AXE           // (可开放) WON ADD 抓双头狼的限制
 #define _FIX_UNNECESSARY         // (可开放) ANDY 修正不必要的判断
 #define _ITEM_MAGICRECOVERY      // (可开放) ANDY 新光镜守
-//9/17更新
+// 2003/9/17更新
 #define _PETSKILL_GYRATE         // (可开放) Change 宠技:回旋攻击
 #define _PETSKILL_RETRACE        // (可开放) Change 宠技:追迹攻击
 #define _PETSKILL_HECTOR         // (可开放) Change 宠技:威吓
-//10/13更新
+// 2003/10/13更新
 #define _PETSKILL_FIREKILL       // (可开放) Change 宠技:火线猎杀
 #define _PETSKILL_DAMAGETOHP     // (可开放) Change 宠技:暗月狂狼(嗜血技的变体)
 #define _PETSKILL_BECOMEFOX      // (可开放) Change 宠技:媚惑术
-
-//11/12更新
+// 2003/11/12更新
 #define _PETSKILL_SHOWMERCY      // (可开) Change 宠技:手下留情
 #define _NPC_ActionFreeCmp       // (可开) Change 替NPC参数加入新的比较方式
-//--------------------------------------------------------------------------
-
-
-//11/26
+// 2003/11/26
 #define _NPC_NewDelPet           // (可开) Change 替NPC加入删除宠物(原本就有了,只是用warpman使用时不成功,所以先做一个顶一下)
-
-//20031217
+// 2003/12/17
 #define _CHRISTMAS_REDSOCKS_NEW  // (可开) Change 新圣诞红袜
 #define _PETSKILL_COMBINED       // (可开) Change 宠技:难得糊涂 [综合魔法(依参数乱数取出魔法)]
-//情人节活动
+// 2004情人节活动
 #define _NPC_ADDWARPMAN1         // (可开放) Change npcgen_warpman增加功能(设定组队人数、设定组队男女人数)
 #define _ITEM_QUITPARTY          // (可开放) Change 队伍解散时特定道具即会消失
 #define _ITEM_ADDEQUIPEXP        // (可开) Change 装备後经验值增加
-//2004/2/18
+// 2004/2/18
 #define _ITEM_LVUPUP             // (可开) Change 突破宠物等级限制的药(玄武专用)
-//2004/02/25
+// 2004/02/25
 #define _PETSKILL_BECOMEPIG      // (可开) Change 宠技:乌力化
 #define _ITEM_UNBECOMEPIG        // (可开) Change 乌力化的解药
 #define _PET_TALKBBI             // (可开) Change 增加判断bbi
 #define _ITEM_USEMAGIC           // (可开) Change 由道具使用魔法
-//2004/04/07
+// 2004/04/07
 #define _ITEM_PROPERTY           // (可开) Change 改变四属性道具
 #define _SUIT_ADDENDUM           // (可开) Change 替套装增加功能 (_SUIT_ITEM要开)
-//2004/05/05
+// 2004/05/05
 #define _ITEM_CHECKDROPATLOGOUT  // (可开) Change 检查回纪录点时身上有无登出後消失道具,若有,不可回纪录点
 #define _FM_MODIFY               // 家族功能修改(开放)
-#define  _PETSKILL_OPTIMUM       // Robin 宠物技能处理最佳化
+#define _PETSKILL_OPTIMUM        // Robin 宠物技能处理最佳化
 #define _MAGIC_OPTIMUM           // Robin Magic table 最佳化
 #define _AC_PIORITY              // Nuke 提高AC的优先权(可开)
+
 // -------------------------------------------------------------------
 //专案 7.5  精灵的招唤  人员：彦勋 奇铨 小威
 // Terry define start -------------------------------------------------------------------
