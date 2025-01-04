@@ -1,13 +1,13 @@
 #include "version.h"
 #include "autil.h"
 #include "lssproto_serv.h"
+#include <errno.h>
 #include "common.h"	// for StoneAge
 #include "log.h"	// for StoneAge
 #include "char.h"
 #include "battle.h"
 #include "descrypt.h"
 #include "configfile.h"
-#include <stdio.h>
 #include <time.h>
 #include <net.h>
 #include "shop.h"

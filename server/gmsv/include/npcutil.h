@@ -1,6 +1,8 @@
 #ifndef _NPCUTIL_H_
 #define _NPCUTIL_H_
 
+#include "util.h"
+
 BOOL NPC_Util_AddOneTitle( int charindex, int titleindex );
 BOOL NPC_Util_HaveTitle( int charindex , int titleindex );
 BOOL NPC_Util_Nearby( int x1 , int y1, int x2 , int y2 );

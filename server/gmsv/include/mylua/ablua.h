@@ -1,5 +1,5 @@
-#ifndef __ABLUA_H__
-#define __ABLUA_H__
+#ifndef __MYLUA_ABLUA_H__
+#define __MYLUA_ABLUA_H__
 
 void LoadAllbluesLUA(char *path);
 void ReLoadAllbluesLUA();

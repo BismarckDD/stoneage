@@ -21,36 +21,27 @@
 #define EXTERN extern
 #endif
 
-
 #define LSGENWORKINGBUFFER  SLICE_SIZE
 
-
-/*
- * ·òºëÄÌ¼þØÆ»¯ÖÐØ¦ÖÐ£ý ·òºëÄÌ¼þØÆ»¯ÖÐÔÂ£ý ·òºëÄÌ¼þ   Æ½ÅÒ·Â×ÛÔ»
- * ·òºëÊ§ËüÐþ  ( ±¾¡õÆ¤   ) , ·òºëÊ§ËüÐþ  ( Ê§¼þ·òÓÀÛÍ   )
- *  N ·´ NOT £ý W ·´ WHILE , UL ·´ UNLOCK ¼°ÒÇ
- */
 typedef enum
 {
 	NULLCONNECT,
-    NOTLOGIN,           /*  ·òºëÄÌ¼þØÆ»¯ÖÐØ¦ÖÐ  */
-    LOGIN,              /*  ·òºëÄÌ¼þ            */
-    WHILELOGIN,         /*  ·òºëÄÌ¼þØÆ»¯ÖÐÔÂ    */
-    WHILECREATE,        /*  ×ÛÔÈ»¯ÖÐÔÂ          */
-    WHILELOGOUTSAVE,    /*  ·òºëÊ§ËüÐþ¼°±¾¡õÆ¤      */
-    WHILECANNOTLOGIN,   /*  ·òºëÄÌ¼þÆ¥ÎåØ¦¾®ÔÈÐ×ÁÝ¼°Ê§¼þ·òÓÀÛÍÖÊ        */
-    WHILECHARDELETE,    /*  Æ½ÅÒ·Â´ÂÂÖ      */
-    WHILEDOWNLOADCHARLIST,  /*  Æ½ÅÒ·ÂØøµ©ÐþÄ¸Ëü¼þ·ò¡õÓñ    */
-    WHILECHANGEPASSWD,  /*  ÓÉµ©·¥¡õÓñ  µÊ      */
-
-    WHILELOSTCHARSAVE,  /*  ·òµ©ÐþÆ¥Æ½ÅÒ·Â±¾¡õÆ¤ØÆ      */
-    WHILELOSTCHARDELETE,/*  ·òµ©ÐþÆ¥Æ½ÅÒ·ÂÛÕØÆ      */
-
-    WHILECLOSEALLSOCKETSSAVE, /* closeallsockets Æ¥Æ½ÅÒ·Â±¾¡õÆ¤ØÆ  */
-    WHILESAVEWAIT,              /* ·òºëÊ§ËüÐþ¼°±¾¡õÆ¤±åµæÈÊó¡¼°´Í  ½÷ÇÐ  */
+    NOTLOGIN,           /*  ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½Æ»ï¿½ï¿½ï¿½Ø¦ï¿½ï¿½  */
+    LOGIN,              /*  ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½            */
+    WHILELOGIN,         /*  ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½    */
+    WHILECREATE,        /*  ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½          */
+    WHILELOGOUTSAVE,    /*  ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¤      */
+    WHILECANNOTLOGIN,   /*  ï¿½ï¿½ï¿½ï¿½Ì¼ï¿½Æ¥ï¿½ï¿½Ø¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½        */
+    WHILECHARDELETE,    /*  Æ½ï¿½Ò·Â´ï¿½ï¿½ï¿½      */
+    WHILEDOWNLOADCHARLIST,  /*  Æ½ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½    */
+    WHILECHANGEPASSWD,  /*  ï¿½Éµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½      */
+    WHILELOSTCHARSAVE,  /*  ï¿½ï¿½ï¿½ï¿½Æ¥Æ½ï¿½Ò·Â±ï¿½ï¿½ï¿½Æ¤ï¿½ï¿½      */
+    WHILELOSTCHARDELETE,/*  ï¿½ï¿½ï¿½ï¿½Æ¥Æ½ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½      */
+    WHILECLOSEALLSOCKETSSAVE, /* closeallsockets Æ¥Æ½ï¿½Ò·Â±ï¿½ï¿½ï¿½Æ¤ï¿½ï¿½  */
+    WHILESAVEWAIT,              /* ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¤ï¿½ï¿½ï¿½ï¿½ï¿½ó¡¼°ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½  */
 }LoginType;
 
-/*     ØÆ»¯ÖÐØ¦ÖÐ£ýÊ§ÊÐËü¼þÐþÈÓ¡õÌï£ýÛÍ·ÂÄÌÊ§¼þÐþ£ýÊ§ÓñØ© */
+/*     ï¿½Æ»ï¿½ï¿½ï¿½Ø¦ï¿½Ð£ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½ï¿½Í·ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½Ø© */
 typedef enum
 {
     NOTDETECTED,
@@ -63,22 +54,22 @@ typedef enum
 }ConnectType;
 
 
-/*  ÈÓ¡õÌï»¥âçÐåØÆ»¯ÔÆÈÊÓ®½ñ    */
+/*  ï¿½Ó¡ï¿½ï¿½ï»¥ï¿½ï¿½ï¿½ï¿½ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½Ó®ï¿½ï¿½    */
 #define CDKEYLEN    16
 #define PASSWDLEN   33
-/* ³ðÄ¾¼°  µÊ·´æØµÚ(ÔÊÔÂØ¦ÈÕ Char ¼°STRING64 ÊÖØÍå©Ø¦°À±åå©Ô»¾§ÔÂ³ðÎç*/
+/* ï¿½ï¿½Ä¾ï¿½ï¿½  ï¿½Ê·ï¿½ï¿½Øµï¿½(ï¿½ï¿½ï¿½ï¿½Ø¦ï¿½ï¿½ Char ï¿½ï¿½STRING64 ï¿½ï¿½ï¿½ï¿½ï¿½Ø¦ï¿½ï¿½ï¿½ï¿½ï¿½Ô»ï¿½ï¿½ï¿½Â³ï¿½ï¿½ï¿½*/
 #define CHARNAMELEN     32
 
-#define CLITIMEOUT_SEC  120     /* ÛÍ·ÂÄÌÊ§¼þÐþ¾®ÈÕreadØÆØ¦¾®ÔÈÐ×ÈÕ£ý
-                                   ³ð¼°ÁÝÃÞÆ¥ÕýÄÌØ©Ê§ËüÐþ£ý·òºëÊ§ËüÐþ£Û */
+#define CLITIMEOUT_SEC  120     /* ï¿½Í·ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½readï¿½ï¿½Ø¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ£ï¿½
+                                   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½ï¿½Ø©Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 
 #define		NET_STRING_SUCCESSFULL	"successful"
 #define		NET_STRING_FAILED		"failed"
 
-// ¿×¹´µ¤¼°    ¼°Øø¡õÓñ£Ý·ÂÄÌÐþÌïÓÀ°×ÑëÈÓÄÌÊõ
+// ï¿½×¹ï¿½ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #define RBSIZE (1024*64)
 #define WBSIZE (1024*256)
-// Ê§ÊÐËü¼þÐþÈÓ¡õÌï¡õåÃ
+// Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 
 //#define	AC_RBSIZE (65536*48)
 //#define	AC_RBSIZE (65536*32)
@@ -96,10 +87,10 @@ EXTERN int      svfd;
 #ifdef _OTHER_SAAC_LINK
 EXTERN int      osfd;
 #endif
-EXTERN int      ConnectLen;   /*Æ±¼°°À¼°Ó®½ñ*/
+EXTERN int      ConnectLen;   /*Æ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó®ï¿½ï¿½*/
 #define CONNECT_WINDOWBUFSIZE 7
 
-/* Ïæ  Ð×ÇÐ */
+/* ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½ */
 BOOL initConnect( int size );
 void endConnect( void );
 #define		CONNECT_endOne( sockfd, lin) \
@@ -137,14 +128,14 @@ void SERVSTATE_setDsptime(int a);
 void SERVSTATE_setLimittime(int a);
 
 
-/* ¹«¼°»Ã¾® */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½Ã¾ï¿½ */
 void outputNetProcLog( int fd, int mode);
 void chardatasavecheck( void );
 void closeAllConnectionandSaveData( void );
 BOOL SetShutdown( BOOL nvalue );
 int GetShutdown( void );
 
-/* »ï¡õÃóØÆ»¯¸¹³ñèúÐÑ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 int getfdFromCdkey( char* cd );
 int getfdFromCharaIndex( int charaindex );
 int getcdkeyFromCharaIndex( int charaindex , char *out, int outlen );
@@ -154,7 +145,7 @@ int getfdFromFdid( int fdid );
 int getfdFromCdkeyWithLogin( char* cd );
 
 
-/* ØÆÈÕÍÍ */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
 INLINE int CONNECT_checkfd( int fd );
 BOOL CONNECT_isCLI( int fd );
 BOOL CONNECT_isAC( int fd );
@@ -194,10 +185,10 @@ void CONNECT_setJoinpartycharaindex( int fd, int i , int a);
 int CONNECT_getJoinpartycharaindex( int fd, int i );
 void CONNECT_setTradecardcharaindex( int fd, int i , int a );
 int CONNECT_getTradecardcharaindex( int fd, int i );
-/* MT·¸ÌïÓÀºëåÃÑ¨ÛÍ·ò */
+/* MTï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¨ï¿½Í·ï¿½ */
 #define CONNECT_endOne_debug(a) CONNECT_endOne( (a) , __LINE__ )
 
-/* ·¸¡õÕý³ó×ÛèúÐÑ(ÒýÔÂÇÐÔÊÄ¾ÔÈÉý¸²É±åÃ) */
+/* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É±ï¿½ï¿½) */
 void CONNECT_setCDKEY( int sockfd, char *cd );
 void CONNECT_getCDKEY( int sockfd , char *out, int outlen );
 void CONNECT_setState( int fd, int s );
@@ -306,9 +297,9 @@ BOOL OtherSaacConnect( void );
 
 #ifdef _EPOLL_ET_MODE
 int doSocketAccept();
-//½ÓÊÕ
+//ï¿½ï¿½ï¿½ï¿½
 void doSocketRecv(struct epoll_event ev);
-//·¢ËÍ
+//ï¿½ï¿½ï¿½ï¿½
 void doSocketSend(struct epoll_event ev);
 //void doSocketSend();
 BOOL CONNECT_checkthreadflag( int fd, int flag );

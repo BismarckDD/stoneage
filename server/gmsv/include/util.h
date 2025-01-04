@@ -2,11 +2,8 @@
 #define __UTIL_H__
 
 #include <sys/time.h>
-#include <stdio.h>
-#include <stdlib.h>
 
 #include "common.h"
-
 
 typedef struct tagSTRING32
 {
@@ -137,4 +134,4 @@ char * itoa(long n, int base);
                              |( (d)     &0x000000ff))
 
 #endif
- /* __UTIL_H__ */
+

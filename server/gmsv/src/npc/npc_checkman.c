@@ -1,472 +1,410 @@
 #include "version.h"
-#include <string.h>
 #include "char.h"
-#include "object.h"
-#include "char_base.h"
-#include "npcutil.h"
 #include "lssproto_serv.h"
+#include "npcutil.h"
+#include "object.h"
 
-
-//òØ»þ¼°ÒøåÃÆ¥ÎåÔÂ°×·Âºë¼°ÐÑ
+// ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½Â°×·Âºë¼°ï¿½ï¿½
 #define MAXEVENTFLG 96
 
-/*
- * ÄÌÃ¬¼þÐþ¼°°×·ÂºëÃ«ÃñÄáÓÀÛÍÔÊÔÂ      
- *
- */
- 
-static void NPC_CheckMan_selectWindow( int meindex, int toindex, int num);
-int NPC_NowFlgCheck(int meindex,int talker,int now[MAXEVENTFLG]);
-int NPC_EndFlgCheck(int meindex,int talker ,int nowflg[MAXEVENTFLG]);
-BOOL NPC_FlgCheckMain( int meindex,int talker,int nowindex,int now[MAXEVENTFLG],char *work2);
+static void NPC_CheckMan_selectWindow(int meindex, int toindex, int num);
+int NPC_NowFlgCheck(int meindex, int talker, int now[MAXEVENTFLG]);
+int NPC_EndFlgCheck(int meindex, int talker, int nowflg[MAXEVENTFLG]);
+BOOL NPC_FlgCheckMain(int meindex, int talker, int nowindex,
+                      int now[MAXEVENTFLG], char *work2);
 
-/*********************************
-* âÙÓåÖÊ  
-*********************************/
-BOOL NPC_CheckManInit( int meindex )
-{
-	/*--Æ½ÅÒ·Â¼°ÕýÄÌÃóÃ«É¬ÀÃ--*/
-    CHAR_setInt( meindex , CHAR_WHICHTYPE , CHAR_TYPECHECKMAN);
-
-	return TRUE;
+BOOL NPC_CheckManInit(int meindex) {
+  CHAR_setInt(meindex, CHAR_WHICHTYPE, CHAR_TYPECHECKMAN);
+  return TRUE;
 }
 
+void NPC_CheckManTalked(int meindex, int talkerindex, char *szMes, int color) {
 
-/*********************************
-*   ØÆ¾®ØêÈÕÄ¾Ð×ÁÝ¼°ÖÊ  
-*********************************/
-void NPC_CheckManTalked( int meindex , int talkerindex , char *szMes ,int color )
-{
+  if (CHAR_getInt(talkerindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER) {
+    return;
+  }
+  if (NPC_Util_isFaceToFace(meindex, talkerindex, 2) == FALSE) {
+    if (NPC_Util_isFaceToChara(talkerindex, meindex, 1) == FALSE)
+      return;
+  }
+  NPC_CheckMan_selectWindow(meindex, talkerindex, 0);
+}
 
-    /* ÃóÒÁÄÌØÀ¡õ±å¸²ØÆ»¯·ÖØê  É±ÔÊÔÂ */
-    if( CHAR_getInt( talkerindex , CHAR_WHICHTYPE ) != CHAR_TYPEPLAYER )
-    {
-    	return;
+static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
+
+  char token[1024];
+  char work[256];
+  char work2[512];
+
+  char escapedname[1024];
+  int fd = getfdFromCharaIndex(talker);
+  int buttontype = 0;
+  int windowtype = 0;
+  int windowno = 0;
+  int now[MAXEVENTFLG];
+  int nowindex;
+  int i;
+  int page;
+
+  work[0] = 0;
+  work2[0] = 0;
+  token[0] = 0;
+
+  now[0] = 0;
+
+  windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+
+  switch (num) {
+
+  case 0:
+    CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 0);
+    CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, 0);
+
+    /*--ï¿½ï¿½      --*/
+    sprintf(token, "3\n ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "
+                   "\nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½×·Âºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+                   "ï¿½"
+                   "ï¿½"
+                   "\n"
+                   "\nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "
+                   "ï¿½Õ£ï¿½NOWï¿½×·Âºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ "
+                   "\nï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "
+                   "ï¿½Õ£ï¿½ENDï¿½×·Âºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ "
+                   "\n\nï¿½ï¿½ï¿½ï¿½ ï¿½Õ£ï¿½NOWï¿½×·Âºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ "
+                   " "
+                   "ï¿½ï¿½ "
+                   "\nï¿½ï¿½ï¿½ï¿½ ï¿½Õ£ï¿½ENDï¿½×·Âºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ "
+                   " "
+                   "ï¿½ï¿½ ");
+
+    buttontype = WINDOW_BUTTONTYPE_CANCEL;
+    windowtype = WINDOW_MESSAGETYPE_SELECT;
+    windowno = CHAR_WINDOWTYPE_CHECKMAN_START;
+    break;
+  case 1:
+    nowindex = NPC_NowFlgCheck(meindex, talker, now);
+    // ï¿½ï¿½Ê¸ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½
+    page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
+    if (page == 0 || page == 1) {
+      i = 0;
+    } else {
+      i = 83;
+    }
+    for (; i < nowindex; i++) {
+      sprintf(work, "%d,", now[i]);
+      strcat(work2, work);
+    }
+    sprintf(token,
+            "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "
+            "\nï¿½ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½  ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ NOWï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½"
+            "\n%s",
+            work2);
+
+    if (page != 2 && nowindex > 83) {
+      // Æ¹ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 1);
+      // Ê¸ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, 2);
+
+      buttontype = WINDOW_BUTTONTYPE_NEXT;
+      windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+      windowno = CHAR_WINDOWTYPE_CHECKMAN_MAIN;
+
+    } else {
+      buttontype = WINDOW_BUTTONTYPE_OK;
+      windowtype = WINDOW_MESSAGETYPE_MESSAGE;
     }
 
-	/*--  ¼°ó¡±åÖÐÔÂ¾®Éýµ¤¾®£¢--*/
-	if(NPC_Util_isFaceToFace( meindex ,talkerindex , 2) == FALSE) {
-		/* ¨àºëØøÓÀÓñ¶¯  ¼°ÐÄ */
-		if(NPC_Util_isFaceToChara( talkerindex, meindex, 1) == FALSE) return;
-	}
+    break;
 
-	//  âÙ¼°ËüÄÌ¼þÓñËü±å
-	NPC_CheckMan_selectWindow( meindex, talkerindex, 0);
+    // ENDï¿½×·Âºë¼°ï¿½ï¿½Ç©  ï¿½ï¿½
+  case 2:
+    // ï¿½ï¿½  ï¿½×·Âºë¼°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    nowindex = NPC_EndFlgCheck(meindex, talker, now);
 
+    // ï¿½ï¿½Ê¸ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½
+    page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
+
+    if (page == 0 || page == 1) {
+      i = 0;
+    } else {
+      i = 83;
+    }
+    work2[0] = 0;
+
+    // Ê¸ï¿½ï¿½ï¿½ï¿½
+    for (; i < nowindex; i++) {
+      sprintf(work, "%d,", now[i]);
+      strcat(work2, work);
+    }
+    sprintf(token,
+            "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "
+            "\nï¿½ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½  ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ ENDï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½"
+            "\n%s",
+            work2);
+
+    if (page != 2 && nowindex > 83) {
+      // Æ¹ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 2);
+      // Ê¸ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, 2);
+
+      buttontype = WINDOW_BUTTONTYPE_NEXT;
+      windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+      windowno = CHAR_WINDOWTYPE_CHECKMAN_MAIN;
+
+    } else {
+      buttontype = WINDOW_BUTTONTYPE_OK;
+      windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+    }
+
+    break;
+
+    // NOWï¿½×·Âºë¼°ï¿½ï¿½ï¿½  ï¿½ï¿½
+  case 4: {
+
+    // NOWï¿½×·Âºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    nowindex = NPC_NowFlgCheck(meindex, talker, now);
+
+    if (NPC_FlgCheckMain(meindex, talker, nowindex, now, work2) == FALSE) {
+      return;
+    }
+
+    sprintf(token,
+            "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "
+            "\nï¿½ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½  ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ NOWï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½"
+            "\n%s",
+            work2);
+
+    page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
+    nowindex = (nowindex / ((6 * page) + 1));
+
+    if (page != 16 && nowindex != 0) {
+      // Æ¹ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 4);
+      // Ê¸ï¿½ï¿½ï¿½ï¿½
+      page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
+      page++;
+      CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, page);
+
+      buttontype = WINDOW_BUTTONTYPE_NEXT;
+      windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+      windowno = CHAR_WINDOWTYPE_CHECKMAN_MAIN;
+    } else {
+      buttontype = WINDOW_BUTTONTYPE_OK;
+      windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+    }
+
+  } break;
+
+    // ENDï¿½×·Âºë¼°ï¿½ï¿½ï¿½  ï¿½ï¿½
+  case 5: {
+    // ENDï¿½×·Âºë¼°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    nowindex = NPC_EndFlgCheck(meindex, talker, now);
+
+    if (NPC_FlgCheckMain(meindex, talker, nowindex, now, work2) == FALSE) {
+      return;
+    }
+
+    sprintf(token,
+            "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ñ¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ "
+            "\nï¿½ï¿½ï¿½ï¿½ï¿½Ø»ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½  ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ ENDï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½"
+            "\n%s",
+            work2);
+
+    page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
+
+    nowindex = (nowindex / ((6 * page) + 1));
+
+    if (page != 16 && nowindex != 0) {
+      // Æ¹ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 5);
+      // Ê¸ï¿½ï¿½ï¿½ï¿½
+      page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
+      page++;
+      CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, page);
+
+      buttontype = WINDOW_BUTTONTYPE_NEXT;
+      windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+      windowno = CHAR_WINDOWTYPE_CHECKMAN_MAIN;
+    } else {
+      buttontype = WINDOW_BUTTONTYPE_OK;
+      windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+    }
+  }
+  }
+
+  makeEscapeString(token, escapedname, sizeof(escapedname));
+  /*-ï¿½ï¿½ï¿½Æ¥Ëªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½--*/
+  lssproto_WN_send(fd, windowtype, buttontype, windowno,
+                   CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), escapedname);
 }
-
-
-/*
- * ±¸ÖÊ  ±åÛÐØêÔÂ
- */
-static void NPC_CheckMan_selectWindow( int meindex, int talker, int num)
-{
-
-	char token[1024];
-	char work[256];
-	char work2[512];
-
-	char escapedname[1024];
-	int fd = getfdFromCharaIndex( talker);
-	int buttontype = 0;
-	int windowtype = 0;
-	int windowno = 0;
-	int now[MAXEVENTFLG];
-	int nowindex;
-	int i;	
-	int page;
-	
-	work[0] = 0;
-	work2[0] = 0;
-	token[0] = 0;
-
-	now[0] =0;
-	
-	/*--ËüÄÌ¼þÓñËüÕýÄÌÃó¶ªÓÀ±¾¡õ³â»¥ÔÆÔÆÖÐ¼°Æ¥ÛÆ±åÉ¬ÀÃ--*/
-  	windowtype = WINDOW_MESSAGETYPE_MESSAGE;
-
-	switch( num) {
-	
-	  case 0:
-		CHAR_setWorkInt(talker,CHAR_WORKSHOPRELEVANT,0);
-		CHAR_setWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC,0);
-		
-  		/*--¼»      --*/
-		sprintf(token,"3\n £û£û£û£û£¾£¾£ûÃñÄáÓÀÛÍÑ¨¼þ£û£¾£¾ "
-				  "\n£û£û£ûòØ»þ¼°°×·ÂºëÃñÄáÓÀÛÍÃ«ØÆÒý¡õÔÊ"
-				  "\n"
-				  "\n£û£û£û£û £Õ£ûNOW°×·ÂºëÃñÄáÓÀÛÍ£û£Ö "
-				  "\n£û£û£û£û £Õ£ûEND°×·ÂºëÃñÄáÓÀÛÍ£û£Ö "
-				  "\n\n£û£û £Õ£ûNOW°×·ÂºëÃñÄáÓÀÛÍ  Ôñ³Æ  £Ö "
-				  "\n£û£û £Õ£ûEND°×·ÂºëÃñÄáÓÀÛÍ  Ôñ³Æ  £Ö "
-		);
-
-	  	buttontype = WINDOW_BUTTONTYPE_CANCEL;
-	  	windowtype = WINDOW_MESSAGETYPE_SELECT;
-	  	windowno = CHAR_WINDOWTYPE_CHECKMAN_START; 
-	  	break;
-
-	//NOW°×·Âºë¼°¿ÃÇ©  Ô÷
-	  case 1:
-	  	
-	  	//NOW°×·Âºë¼°ÃñÄáÓÀÛÍ
-		nowindex = NPC_NowFlgCheck( meindex, talker, now);
-
-		//ÖÏÊ¸¡õ³â  ¾®
-		page = CHAR_getWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC) ;
-		
-		if(page == 0 || page == 1){
-			i = 0;
-		}else{
-			i = 83;
-		}
-		
-		//Ê¸¡õ³â
-		for(; i < nowindex ; i++)
-		{
-			sprintf(work,"%d,",now[ i]);
-			strcat(work2,work);
-		}
-		
-		sprintf(token,"£û£û£û£û£û£¾£¾£ûÃñÄáÓÀÛÍÑ¨¼þ£û£¾£¾ "
-					"\n£û£ûòØ»þ¼°Öþ  ¼°  ÔÈ»¯ÖÐÔÂ NOWÄÌÃ¬¼þÐþ"
-					"\n%s"
-			 	,work2);	
-	  	
-	  	if(page != 2 && nowindex > 83)
-	  	{
-	  		//Æ¹¡õÓñ
-	  		CHAR_setWorkInt(talker,CHAR_WORKSHOPRELEVANT,1);
-	  		//Ê¸¡õ³â
-	  		CHAR_setWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC,2);
-
-			buttontype = WINDOW_BUTTONTYPE_NEXT;
-			windowtype = WINDOW_MESSAGETYPE_MESSAGE;
-		  	windowno = CHAR_WINDOWTYPE_CHECKMAN_MAIN; 
-
-		}else{
-			buttontype = WINDOW_BUTTONTYPE_OK;
-			windowtype = WINDOW_MESSAGETYPE_MESSAGE;
-		}
-		
-		break;
-
-
-	//END°×·Âºë¼°¿ÃÇ©  Ô÷
-	  case 2:
-		//±Î  °×·Âºë¼°ÃñÄáÓÀÛÍ
-		nowindex = NPC_EndFlgCheck( meindex, talker, now);
-		
-		//ÖÏÊ¸¡õ³â  ¾®
-		page = CHAR_getWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC) ;
-		
-		if(page == 0 || page == 1){
-			i = 0;
-		}else{
-			i = 83;
-		}
-		work2[0]=0;
-		
-		//Ê¸¡õ³â
-		for(; i < nowindex ; i++)
-		{
-			sprintf(work,"%d,",now[ i]);
-			strcat(work2,work);
-		}
-		sprintf(token,"£û£û£û£û£û£¾£¾£ûÃñÄáÓÀÛÍÑ¨¼þ£û£¾£¾ "
-					"\n£û£ûòØ»þ¼°Öþ  ¼°  ÔÈ»¯ÖÐÔÂ ENDÄÌÃ¬¼þÐþ"
-					"\n%s"
-			 	,work2);	
-	  	
-	  	if(page != 2 && nowindex > 83)
-	  	{
-	  		//Æ¹¡õÓñ
-	  		CHAR_setWorkInt(talker,CHAR_WORKSHOPRELEVANT,2);
-	  		//Ê¸¡õ³â
-	  		CHAR_setWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC,2);
-
-			buttontype = WINDOW_BUTTONTYPE_NEXT;
-			windowtype = WINDOW_MESSAGETYPE_MESSAGE;
-		  	windowno = CHAR_WINDOWTYPE_CHECKMAN_MAIN; 
-
-		}else{
-			buttontype = WINDOW_BUTTONTYPE_OK;
-			windowtype = WINDOW_MESSAGETYPE_MESSAGE;
-		}
-		
-		break;
-		
-	
-	// NOW°×·Âºë¼°Ôñ³Æ  Ô÷
-	  case 4:
-		{
-			
-			//NOW°×·ÂºëÃñÄáÓÀÛÍ
-			nowindex = NPC_NowFlgCheck( meindex, talker, now);
-
-			if(NPC_FlgCheckMain( meindex, talker, nowindex,now,work2)
-			 == FALSE)
-			 {
-			 	return;
-			 }
-			
-
-			sprintf(token,"£û£û£û£û£û£¾£¾£ûÃñÄáÓÀÛÍÑ¨¼þ£û£¾£¾ "
-						"\n£û£ûòØ»þ¼°Öþ  ¼°  ÔÈ»¯ÖÐÔÂ NOWÄÌÃ¬¼þÐþ"
-						"\n%s"
-				 	,work2);	
-
-			page = CHAR_getWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC) ;
-		  	nowindex = (nowindex / ((6*page)+1));
-
-		  	if(page != 16 &&  nowindex != 0)
-		  	{
-		  		//Æ¹¡õÓñ
-		  		CHAR_setWorkInt(talker,CHAR_WORKSHOPRELEVANT,4);
-		  		//Ê¸¡õ³â
-		  		page = CHAR_getWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC);
-		  		page++;
-		  		CHAR_setWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC,page);
-			
-				buttontype = WINDOW_BUTTONTYPE_NEXT;
-				windowtype = WINDOW_MESSAGETYPE_MESSAGE;
-			  	windowno = CHAR_WINDOWTYPE_CHECKMAN_MAIN; 
-			}else{
-				buttontype = WINDOW_BUTTONTYPE_OK;
-				windowtype = WINDOW_MESSAGETYPE_MESSAGE;
-			}
-
-		}
-	break;
-
-	// END°×·Âºë¼°Ôñ³Æ  Ô÷
-	  case 5:
-		{
-			//END°×·Âºë¼°ÃñÄáÓÀÛÍ
-			nowindex = NPC_EndFlgCheck( meindex, talker, now);
-			
-			
-			if(NPC_FlgCheckMain( meindex, talker, nowindex, now, work2)
-			 == FALSE)
-			 {
-			 	return;
-			 }
-
-			sprintf(token,"£û£û£û£û£û£¾£¾£ûÃñÄáÓÀÛÍÑ¨¼þ£û£¾£¾ "
-						"\n£û£ûòØ»þ¼°Öþ  ¼°  ÔÈ»¯ÖÐÔÂ ENDÄÌÃ¬¼þÐþ"
-						"\n%s"
-				 	,work2);	
-
-			page = CHAR_getWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC) ;
-
-		  	nowindex = (nowindex / ((6*page)+1));
-
-		  	if(page != 16 &&  nowindex != 0)
-		  	{
-		  		//Æ¹¡õÓñ
-		  		CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 5);
-		  		//Ê¸¡õ³â
-		  		page = CHAR_getWorkInt( talker, CHAR_WORKSHOPRELEVANTSEC);
-		  		page++;
-		  		CHAR_setWorkInt( talker, CHAR_WORKSHOPRELEVANTSEC, page);
-			
-				buttontype = WINDOW_BUTTONTYPE_NEXT;
-				windowtype = WINDOW_MESSAGETYPE_MESSAGE;
-			  	windowno = CHAR_WINDOWTYPE_CHECKMAN_MAIN; 
-			}else{
-				buttontype = WINDOW_BUTTONTYPE_OK;
-				windowtype = WINDOW_MESSAGETYPE_MESSAGE;
-			}
-
-		}
-	}
-	
-	makeEscapeString( token, escapedname, sizeof( escapedname));
-	/*-³ð³ðÆ¥ËªññÔÊÔÂ--*/
-	lssproto_WN_send( fd, windowtype, 
-					buttontype, 
-					windowno,
-					CHAR_getWorkInt( meindex, CHAR_WORKOBJINDEX),
-					escapedname);
-
-}
-
 
 /*-----------------------------------------
-ÛÍ·ÂÄÌÊ§¼þÐþ¾®ÈÕß¯ÔÈ»¯ÎåÐ×ÁÝ±åôÄÌ«Çë½ñÄ¾ÔÂ£Û
+ï¿½Í·ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¯ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½Ì«ï¿½ï¿½ï¿½Ä¾ï¿½Â£ï¿½
 -------------------------------------------*/
-void NPC_CheckManWindowTalked( int meindex, int talkerindex, 
-								int seqno, int select, char *data)
-{
-	int datano;
-	
-	if( NPC_Util_CharDistance( talkerindex, meindex ) > 2) return;
+void NPC_CheckManWindowTalked(int meindex, int talkerindex, int seqno,
+                              int select, char *data) {
+  int datano;
 
-	datano = atoi(data);
-	
-	if(select == WINDOW_BUTTONTYPE_OK) 
-	{
-		NPC_CheckMan_selectWindow( meindex, talkerindex, 0 );
-	}else if(select == WINDOW_BUTTONTYPE_CANCEL) {
-		return;
-	}
+  if (NPC_Util_CharDistance(talkerindex, meindex) > 2)
+    return;
 
+  datano = atoi(data);
 
+  if (select == WINDOW_BUTTONTYPE_OK) {
+    NPC_CheckMan_selectWindow(meindex, talkerindex, 0);
+  } else if (select == WINDOW_BUTTONTYPE_CANCEL) {
+    return;
+  }
 
-	
-	switch(CHAR_getWorkInt(talkerindex,CHAR_WORKSHOPRELEVANT)){
-	  case 1:
-	  	if(CHAR_getWorkInt(talkerindex,CHAR_WORKSHOPRELEVANTSEC) == 2){
-			NPC_CheckMan_selectWindow( meindex, talkerindex, 1 );
-	  	}
-	  	break;
+  switch (CHAR_getWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT)) {
+  case 1:
+    if (CHAR_getWorkInt(talkerindex, CHAR_WORKSHOPRELEVANTSEC) == 2) {
+      NPC_CheckMan_selectWindow(meindex, talkerindex, 1);
+    }
+    break;
 
-	  case 2:
-	  	if(CHAR_getWorkInt(talkerindex,CHAR_WORKSHOPRELEVANTSEC) == 2){
-			NPC_CheckMan_selectWindow( meindex, talkerindex, 2 );
-	  	}
-	  	break;
+  case 2:
+    if (CHAR_getWorkInt(talkerindex, CHAR_WORKSHOPRELEVANTSEC) == 2) {
+      NPC_CheckMan_selectWindow(meindex, talkerindex, 2);
+    }
+    break;
 
-	  case 4:
-	  	if(CHAR_getWorkInt(talkerindex,CHAR_WORKSHOPRELEVANTSEC) >= 2){
-			NPC_CheckMan_selectWindow( meindex, talkerindex, 4 );
-	  	}
+  case 4:
+    if (CHAR_getWorkInt(talkerindex, CHAR_WORKSHOPRELEVANTSEC) >= 2) {
+      NPC_CheckMan_selectWindow(meindex, talkerindex, 4);
+    }
 
-	  case 5:
-		if(CHAR_getWorkInt(talkerindex,CHAR_WORKSHOPRELEVANTSEC) >= 2){
-			NPC_CheckMan_selectWindow( meindex, talkerindex, 5 );
-		}
+  case 5:
+    if (CHAR_getWorkInt(talkerindex, CHAR_WORKSHOPRELEVANTSEC) >= 2) {
+      NPC_CheckMan_selectWindow(meindex, talkerindex, 5);
+    }
 
-		break;
-	}
+    break;
+  }
 
-	switch( datano ){
-	  case 1:
-			NPC_CheckMan_selectWindow( meindex, talkerindex, 1 );
-		break;
+  switch (datano) {
+  case 1:
+    NPC_CheckMan_selectWindow(meindex, talkerindex, 1);
+    break;
 
-	  case 2:
-			NPC_CheckMan_selectWindow( meindex, talkerindex, 2 );
-		break;
+  case 2:
+    NPC_CheckMan_selectWindow(meindex, talkerindex, 2);
+    break;
 
-	  case 4:
-			NPC_CheckMan_selectWindow( meindex, talkerindex, 4 );
-		break;
-		
-	  case 5:
-			NPC_CheckMan_selectWindow( meindex, talkerindex, 5 );
-		break;
-	}
+  case 4:
+    NPC_CheckMan_selectWindow(meindex, talkerindex, 4);
+    break;
 
+  case 5:
+    NPC_CheckMan_selectWindow(meindex, talkerindex, 5);
+    break;
+  }
 }
 
 /*
- *£ûÄÌÃ¬¼þÐþ  °×·ÂºëÃ«ÃñÄáÓÀÛÍÔÊÔÂ
+ *ï¿½ï¿½ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½  ï¿½×·Âºï¿½Ã«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
-int NPC_NowFlgCheck(int meindex,int talker ,int nowflg[MAXEVENTFLG])
-{
-	int i = 0;
-	int j = 0;
-	
-	for(i= 0; i < MAXEVENTFLG ; i++){
-		if(NPC_NowEventCheckFlg( talker, i) == TRUE)
-		{
-			nowflg[j] = i;
-			j++;
-		}
- 	}
- 	
-	return j;
+int NPC_NowFlgCheck(int meindex, int talker, int nowflg[MAXEVENTFLG]) {
+  int i = 0;
+  int j = 0;
+
+  for (i = 0; i < MAXEVENTFLG; i++) {
+    if (NPC_NowEventCheckFlg(talker, i) == TRUE) {
+      nowflg[j] = i;
+      j++;
+    }
+  }
+
+  return j;
 }
 
 /*
- *£ûÄÌÃ¬¼þÐþ±Î  °×·ÂºëÃ«ÃñÄáÓÀÛÍÔÊÔÂ
+ *ï¿½ï¿½ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ *ï¿½×·Âºï¿½Ã«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
  */
-int NPC_EndFlgCheck(int meindex,int talker ,int nowflg[MAXEVENTFLG])
-{
-	int i = 0;
-	int j = 0;
-	
-	for(i= 0; i < MAXEVENTFLG ; i++){
+int NPC_EndFlgCheck(int meindex, int talker, int nowflg[MAXEVENTFLG]) {
+  int i = 0;
+  int j = 0;
 
-		if(NPC_EventCheckFlg( talker, i) == TRUE)
-		{
-			nowflg[j] = i;
-			j++;
-		}
- 	}
- 	
-	return j;
+  for (i = 0; i < MAXEVENTFLG; i++) {
+
+    if (NPC_EventCheckFlg(talker, i) == TRUE) {
+      nowflg[j] = i;
+      j++;
+    }
+  }
+
+  return j;
 }
 
 /*
- * Ôñ³Æ
+ * ï¿½ï¿½ï¿½
  *
  */
-BOOL NPC_FlgCheckMain( int meindex,int talker,int nowindex,int now[MAXEVENTFLG],char *work2)
-{
-	int page;
-	int max;
-	int i;
-	int shou;
-	int j=1;
-	char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
-	char work[512];
-	char buf[40];
-	char buf2[42];
-	
-	//ÖÏÊ¸¡õ³â  ¾®
-	page = CHAR_getWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC) ;
+BOOL NPC_FlgCheckMain(int meindex, int talker, int nowindex,
+                      int now[MAXEVENTFLG], char *work2) {
+  int page;
+  int max;
+  int i;
+  int shou;
+  int j = 1;
+  char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
+  char work[512];
+  char buf[40];
+  char buf2[42];
 
-	if(page == 0) {
-		page =1;
-		CHAR_setWorkInt(talker,CHAR_WORKSHOPRELEVANTSEC,1) ;
-	}
+  // ï¿½ï¿½Ê¸ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½
+  page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
 
-	if(page == 1){
-		i = 0;
-		if( nowindex >6 ){
-			max =7;
-		}else{
-			max =nowindex;
-		}
-	}else{
-		max = (page * 6) +1;
-		i = max - 7;
-		shou = nowindex / max;
+  if (page == 0) {
+    page = 1;
+    CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, 1);
+  }
 
-		if(shou == 0){
-			max = nowindex;
-		}else{
-			i = max - 7;
-		}
-	}
-			
-	//ÄÌÃ¬¼þÐþ¼°Ôñ³Æ»¥Ì¤¾®Ä¾»¯ÖÐÔÂ°×ÑëÄÌ»ïÃ«  ÐÄ³ð¸ê
-	if(NPC_Util_GetArgStr( meindex, argstr, sizeof(argstr)) == NULL) {
-		print("NPC_CheckMan:GetArgStrErr");
-		return FALSE;
-	}
-			
-	work[0] = 0;
-	work2[0] = 0;
+  if (page == 1) {
+    i = 0;
+    if (nowindex > 6) {
+      max = 7;
+    } else {
+      max = nowindex;
+    }
+  } else {
+    max = (page * 6) + 1;
+    i = max - 7;
+    shou = nowindex / max;
 
-	//Ê¸¡õ³â
-	for(; i < max ; i++)
-	{
-		sprintf(work,"#%d:",now[ i]);
-		j = 1;
-		while( getStringFromIndexWithDelim(argstr, "|", j, buf,sizeof( buf))
-		 !=FALSE )
-		 {	
-			j++;
-			if(strstr(buf,work) != NULL){
-				sprintf(buf2,"%s\n",buf);
-				strcat(work2,buf2);
-				break;
-			}
-		}
-	}
-	
-	return TRUE;
+    if (shou == 0) {
+      max = nowindex;
+    } else {
+      i = max - 7;
+    }
+  }
+
+  // ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ»ï¿½Ì¤ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½Â°ï¿½ï¿½ï¿½ï¿½Ì»ï¿½Ã«  ï¿½Ä³ï¿½ï¿½
+  if (NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr)) == NULL) {
+    print("NPC_CheckMan:GetArgStrErr");
+    return FALSE;
+  }
+
+  work[0] = 0;
+  work2[0] = 0;
+
+  // Ê¸ï¿½ï¿½ï¿½ï¿½
+  for (; i < max; i++) {
+    sprintf(work, "#%d:", now[i]);
+    j = 1;
+    while (getStringFromIndexWithDelim(argstr, "|", j, buf, sizeof(buf)) !=
+           FALSE) {
+      j++;
+      if (strstr(buf, work) != NULL) {
+        sprintf(buf2, "%s\n", buf);
+        strcat(work2, buf2);
+        break;
+      }
+    }
+  }
+
+  return TRUE;
 }

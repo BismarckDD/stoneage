@@ -1,498 +1,476 @@
-
 #ifndef __ITEM_H__
 #define __ITEM_H__
 
-//#include "char.h"
-
-#define NULLITEM    "0"
+#define NULLITEM "0"
 
 #ifdef _SIMPLIFY_ITEMSTRING
-typedef struct ITEM_tag_intDataSetting
-{
-	char*   dumpchar;
-	int     defaults;
-	int table;
-	char*   string;
-}ITEM_intDataSetting;
+typedef struct ITEM_tag_intDataSetting {
+  char *dumpchar;
+  int defaults;
+  int table;
+  char *string;
+} ITEM_intDataSetting;
 
-typedef struct ITEM_tag_charDataSetting
-{
-	char*   dumpchar;
-	char*   defaults;
-	int table;
-	char*   string;
-}ITEM_charDataSetting;
+typedef struct ITEM_tag_charDataSetting {
+  char *dumpchar;
+  char *defaults;
+  int table;
+  char *string;
+} ITEM_charDataSetting;
 #endif
 
-typedef enum
-{
-    ITEM_FIST =0,//¿ÕÊÖ
-    ITEM_AXE,		//¸«×Ó
-    ITEM_CLUB,	//°ô×Ó
-    ITEM_SPEAR,//Ç¹
-    ITEM_BOW,		//¹­¼ý
-    ITEM_SHIELD,//¶ÜÅÆ
-    ITEM_HELM,	//Í·¿ø
-    ITEM_ARMOUR,	//îø¼×
+typedef enum {
+  ITEM_FIST = 0, // ï¿½ï¿½ï¿½ï¿½
+  ITEM_AXE,      // ï¿½ï¿½ï¿½ï¿½
+  ITEM_CLUB,     // ï¿½ï¿½ï¿½ï¿½
+  ITEM_SPEAR,    // Ç¹
+  ITEM_BOW,      // ï¿½ï¿½ï¿½ï¿½
+  ITEM_SHIELD,   // ï¿½ï¿½ï¿½ï¿½
+  ITEM_HELM,     // Í·ï¿½ï¿½
+  ITEM_ARMOUR,   // ï¿½ï¿½ï¿½ï¿½
 
-	ITEM_BRACELET =8,
-	ITEM_MUSIC,
-	ITEM_NECKLACE,
-	ITEM_RING,
-	ITEM_BELT,
-	ITEM_EARRING,
-	ITEM_NOSERING,
-	ITEM_AMULET,
-    /* ****** */
-    ITEM_OTHER =16,
-    ITEM_BOOMERANG,		// »ØÐý±ê
-    ITEM_BOUNDTHROW,	// Í¶ÖÀ¸«Í·
-    ITEM_BREAKTHROW,	// Í¶ÖÀÊ¯
-    ITEM_DISH =20,
+  ITEM_BRACELET = 8,
+  ITEM_MUSIC,
+  ITEM_NECKLACE,
+  ITEM_RING,
+  ITEM_BELT,
+  ITEM_EARRING,
+  ITEM_NOSERING,
+  ITEM_AMULET,
+  /* ****** */
+  ITEM_OTHER = 16,
+  ITEM_BOOMERANG,  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  ITEM_BOUNDTHROW, // Í¶ï¿½ï¿½ï¿½ï¿½Í·
+  ITEM_BREAKTHROW, // Í¶ï¿½ï¿½Ê¯
+  ITEM_DISH = 20,
 #ifdef _ITEM_INSLAY
-	ITEM_METAL,
-	ITEM_JEWEL,
+  ITEM_METAL,
+  ITEM_JEWEL,
 #endif
 #ifdef _ITEM_CHECKWARES
-	ITEM_WARES,			//»õÎï
+  ITEM_WARES, // ï¿½ï¿½ï¿½ï¿½
 #endif
 
 #ifdef _ITEM_EQUITSPACE
-	ITEM_WBELT,			//Ñü´ø
-	ITEM_WSHIELD,		//¶Ü
-	ITEM_WSHOES,		//Ð¬×Ó
+  ITEM_WBELT,   // ï¿½ï¿½ï¿½ï¿½
+  ITEM_WSHIELD, // ï¿½ï¿½
+  ITEM_WSHOES,  // Ð¬ï¿½ï¿½
 #endif
-#ifdef _EQUIT_NEWGLOVE 
-	ITEM_WGLOVE,		//ÊÖÌ×
+#ifdef _EQUIT_NEWGLOVE
+  ITEM_WGLOVE, // ï¿½ï¿½ï¿½ï¿½
 #endif
 
 #ifdef _ALCHEMIST
-	ITEM_ALCHEMIST =30,
+  ITEM_ALCHEMIST = 30,
 #endif
 
 #ifdef _PET_ITEM
-    ITEM_PET_HEAD,
-    ITEM_PET_TOOTH, 
-    ITEM_PET_CLAW,
-    ITEM_PET_BREAST,
-    ITEM_PET_BACK,
-    ITEM_PET_WING,
-    ITEM_PET_FEET,
+  ITEM_PET_HEAD,
+  ITEM_PET_TOOTH,
+  ITEM_PET_CLAW,
+  ITEM_PET_BREAST,
+  ITEM_PET_BACK,
+  ITEM_PET_WING,
+  ITEM_PET_FEET,
 #endif
 
 #ifdef _ANGEL_SUMMON
-	//ITEM_ANGELTOKEN,
-	//ITEM_HEROTOKEN,
+// ITEM_ANGELTOKEN,
+// ITEM_HEROTOKEN,
 #endif
 
-    ITEM_CATEGORYNUM,
-    
-}ITEM_CATEGORY;
+  ITEM_CATEGORYNUM,
 
-typedef enum
-{
-	ITEM_FIELD_ALL,
-	ITEM_FIELD_BATTLE,
-	ITEM_FIELD_MAP,
-}ITEM_FIELDTYPE;
+} ITEM_CATEGORY;
 
-typedef enum
-{
-	ITEM_TARGET_MYSELF,
-	ITEM_TARGET_OTHER,
-	ITEM_TARGET_ALLMYSIDE,
-	ITEM_TARGET_ALLOTHERSIDE,
-	ITEM_TARGET_ALL,
-}ITEM_TARGETTYPE;
+typedef enum {
+  ITEM_FIELD_ALL,
+  ITEM_FIELD_BATTLE,
+  ITEM_FIELD_MAP,
+} ITEM_FIELDTYPE;
 
-typedef enum
-{
-    ITEM_ID,
-    ITEM_BASEIMAGENUMBER,
-    ITEM_COST,
-    ITEM_TYPE,
-		ITEM_ABLEUSEFIELD,
-		ITEM_TARGET,
-    ITEM_LEVEL,                     /*  LEVEL  */
+typedef enum {
+  ITEM_TARGET_MYSELF,
+  ITEM_TARGET_OTHER,
+  ITEM_TARGET_ALLMYSIDE,
+  ITEM_TARGET_ALLOTHERSIDE,
+  ITEM_TARGET_ALL,
+} ITEM_TARGETTYPE;
+
+typedef enum {
+  ITEM_ID,
+  ITEM_BASEIMAGENUMBER,
+  ITEM_COST,
+  ITEM_TYPE,
+  ITEM_ABLEUSEFIELD,
+  ITEM_TARGET,
+  ITEM_LEVEL, /*  LEVEL  */
 #ifdef _ITEM_MAXUSERNUM
-	ITEM_DAMAGEBREAK,				//ÎïÆ·Ê¹ÓÃ´ÎÊý
+  ITEM_DAMAGEBREAK, // ï¿½ï¿½Æ·Ê¹ï¿½Ã´ï¿½ï¿½ï¿½
 #endif
 
 #ifdef _ITEMSET4_TXT
-	ITEM_USEPILENUMS,				//ÎïÆ·¶Ñµþ´ÎÊý
-	ITEM_CANBEPILE,					//ÊÇ·ñ¿É¶Ñµþ
+  ITEM_USEPILENUMS, // ï¿½ï¿½Æ·ï¿½Ñµï¿½ï¿½ï¿½ï¿½ï¿½
+  ITEM_CANBEPILE,   // ï¿½Ç·ï¿½É¶Ñµï¿½
 
-	ITEM_NEEDSTR,
-	ITEM_NEEDDEX,
-	ITEM_NEEDTRANS,
-	ITEM_NEEDPROFESSION,
+  ITEM_NEEDSTR,
+  ITEM_NEEDDEX,
+  ITEM_NEEDTRANS,
+  ITEM_NEEDPROFESSION,
 #endif
 
-	ITEM_DAMAGECRUSHE,
-	ITEM_MAXDAMAGECRUSHE,
+  ITEM_DAMAGECRUSHE,
+  ITEM_MAXDAMAGECRUSHE,
 
 #ifdef _ADD_DEAMGEDEFC
-	ITEM_OTHERDAMAGE,
-	ITEM_OTHERDEFC,
+  ITEM_OTHERDAMAGE,
+  ITEM_OTHERDEFC,
 #endif
 
 #ifdef _SUIT_ITEM
-	ITEM_SUITCODE,
+  ITEM_SUITCODE,
 #endif
 
-    ITEM_ATTACKNUM_MIN,             /*    ìµ  »«¼ÔÐÑ  */
-    ITEM_ATTACKNUM_MAX,             /*    æÎ  »«¼ÔÐÑ  */
-    ITEM_MODIFYATTACK,              /*    »«    ¼ÀÐÚ  */
-    ITEM_MODIFYDEFENCE,             /*    »¿    ¼ÀÐÚ  */
-    ITEM_MODIFYQUICK,               /*  QUICK  ¼ÀÐÚ  */
+  ITEM_ATTACKNUM_MIN, /*    ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  */
+  ITEM_ATTACKNUM_MAX, /*    ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  */
+  ITEM_MODIFYATTACK,  /*    ï¿½ï¿½    ï¿½ï¿½ï¿½ï¿½  */
+  ITEM_MODIFYDEFENCE, /*    ï¿½ï¿½    ï¿½ï¿½ï¿½ï¿½  */
+  ITEM_MODIFYQUICK,   /*  QUICK  ï¿½ï¿½ï¿½ï¿½  */
 
-    ITEM_MODIFYHP,                  /*  HP  ¼ÀÐÚ    */
-    ITEM_MODIFYMP,                  /*  MP  ¼ÀÐÚ    */
-    ITEM_MODIFYLUCK,                /*  LUCK  ¼ÀÐÚ    */
-    ITEM_MODIFYCHARM,               /*  CHARM  ¼ÀÐÚ    */
-    ITEM_MODIFYAVOID,               /*  ¼Ô    Ä¤¿Ò    */
-	ITEM_MODIFYATTRIB,				/*  óìÁëÄ¤¿Ò */
-	ITEM_MODIFYATTRIBVALUE,			/*  óìÁëÄ¤¿Ò°À */
-	ITEM_MAGICID,					/*  ÈÈÖî  Ä¯ */
-	ITEM_MAGICPROB,					/*  ÈÈÖî       */
-	ITEM_MAGICUSEMP,				/*  ÛÕ  MP */
+  ITEM_MODIFYHP,          /*  HP  ï¿½ï¿½ï¿½ï¿½    */
+  ITEM_MODIFYMP,          /*  MP  ï¿½ï¿½ï¿½ï¿½    */
+  ITEM_MODIFYLUCK,        /*  LUCK  ï¿½ï¿½ï¿½ï¿½    */
+  ITEM_MODIFYCHARM,       /*  CHARM  ï¿½ï¿½ï¿½ï¿½    */
+  ITEM_MODIFYAVOID,       /*  ï¿½ï¿½    Ä¤ï¿½ï¿½    */
+  ITEM_MODIFYATTRIB,      /*  ï¿½ï¿½ï¿½ï¿½Ä¤ï¿½ï¿½ */
+  ITEM_MODIFYATTRIBVALUE, /*  ï¿½ï¿½ï¿½ï¿½Ä¤ï¿½Ò°ï¿½ */
+  ITEM_MAGICID,           /*  ï¿½ï¿½ï¿½ï¿½  Ä¯ */
+  ITEM_MAGICPROB,         /*  ï¿½ï¿½ï¿½ï¿½       */
+  ITEM_MAGICUSEMP,        /*  ï¿½ï¿½  MP */
 
 #ifdef _ITEMSET5_TXT
-	ITEM_MODIFYARRANGE,
-	ITEM_MODIFYSEQUENCE,
+  ITEM_MODIFYARRANGE,
+  ITEM_MODIFYSEQUENCE,
 
-	ITEM_ATTACHPILE,
-	ITEM_HITRIGHT,	//¶îÍâÃüÖÐ
+  ITEM_ATTACHPILE,
+  ITEM_HITRIGHT, // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #endif
 #ifdef _ITEMSET6_TXT
-	ITEM_NEGLECTGUARD,
+  ITEM_NEGLECTGUARD,
 //	ITEM_BEMERGE,
 #endif
-    /*  µ©  ¡õÕýµ©Ä¤¿Ò°À£Û*/
-    ITEM_POISON,					/*   ÐÚÈÊÐ×Ì«±åÄ¸¶ª¡õ³â          */
-    ITEM_PARALYSIS,          		/* ØÆÌ«Ä¾£ý1  ¼°µæ  »¥Æ¥ÎåØ¦ÖÐ£Û */
-    ITEM_SLEEP,              		/* ìæÔ»£Ûµæ  Æ¥ÎåØ¦ÖÐ            */
-    ITEM_STONE,              		/* éÞ£Ûµæ  Æ¥ÎåØ¦ÖÐ              */
-    ITEM_DRUNK,              		/* °ìµ¤£Û      »¥Æ±»¥ÔÂ     */
-    ITEM_CONFUSION,          		/* ÓæØÙ£Û  »«    Ã«êßÔÂ     */
+  /*  ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¤ï¿½Ò°ï¿½ï¿½ï¿½*/
+  ITEM_POISON, /*   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ì«ï¿½ï¿½Ä¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½          */
+  ITEM_PARALYSIS, /* ï¿½ï¿½Ì«Ä¾ï¿½ï¿½1  ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½Æ¥ï¿½ï¿½Ø¦ï¿½Ð£ï¿½ */
+  ITEM_SLEEP,     /* ï¿½ï¿½Ô»ï¿½Ûµï¿½  Æ¥ï¿½ï¿½Ø¦ï¿½ï¿½            */
+  ITEM_STONE,     /* ï¿½Þ£Ûµï¿½  Æ¥ï¿½ï¿½Ø¦ï¿½ï¿½              */
+  ITEM_DRUNK,     /* ï¿½ìµ¤ï¿½ï¿½      ï¿½ï¿½Æ±ï¿½ï¿½ï¿½ï¿½     */
+  ITEM_CONFUSION, /* ï¿½ï¿½ï¿½Ù£ï¿½  ï¿½ï¿½    Ã«ï¿½ï¿½ï¿½ï¿½     */
 
-	ITEM_CRITICAL,					/* ÛÍØø  Å«ÊÐ»ï  Ä¤¿Ò */
+  ITEM_CRITICAL, /* ï¿½ï¿½ï¿½ï¿½  Å«ï¿½Ð»ï¿½  Ä¤ï¿½ï¿½ */
 
-	ITEM_USEACTION,					/* ÒøÔÈÐ×ÁÝ¼°Ê§ÛÍÆËÒà¼þ */
-    ITEM_DROPATLOGOUT,              /* ·òºëÊ§ËüÐþÔÊÔÂÁÝ±å  ÔÊ¾®Éýµ¤¾®  */
-    ITEM_VANISHATDROP,              /*   ØÆÐ×ÁÝ±åÛÕÒüÔÂ¾®Éýµ¤¾® */
-    ITEM_ISOVERED,                  /*  Ïþ±åê¼ÔÈ¾®ÈÕÈÕÄ¾ÔÂ¾®Éýµ¤¾®£Û*/
-	ITEM_CANPETMAIL,				/* Ê¸ÓÀÐþ¶ª¡õ»ïÆ¥ËªÄ¾ÔÂ¾® */
-	ITEM_CANMERGEFROM,				/* ÄþÔÀÝç±åØ¦Ä¾ÔÂ¾® */
-	ITEM_CANMERGETO,				/* ÄþÔÀÛÆ±åØ¦Ä¾ÔÂ¾® */
+  ITEM_USEACTION, /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý¼ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+  ITEM_DROPATLOGOUT, /* ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½  ï¿½Ê¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  */
+  ITEM_VANISHATDROP, /*   ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+  ITEM_ISOVERED, /*  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¾ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½Â¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½*/
+  ITEM_CANPETMAIL,   /* Ê¸ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¥ËªÄ¾ï¿½Â¾ï¿½ */
+  ITEM_CANMERGEFROM, /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ø¦Ä¾ï¿½Â¾ï¿½ */
+  ITEM_CANMERGETO,   /* ï¿½ï¿½ï¿½ï¿½ï¿½Æ±ï¿½Ø¦Ä¾ï¿½Â¾ï¿½ */
 
-    ITEM_INGVALUE0,                 /* ÔÀÛÐ(5òÛÛÐ) */
-    ITEM_INGVALUE1,
-    ITEM_INGVALUE2,
-    ITEM_INGVALUE3,
-    ITEM_INGVALUE4,
-    
-	ITEM_PUTTIME,					/*  Ê§ÄÌ  Ø©»¥  ¾®Ä¾Ð×ÁÝÃÞ */
-    ITEM_LEAKLEVEL,                 /*    âô»¥ÉýÄ¾·ÖØêÈÉÄ¾Ð×¾®  */
-	ITEM_MERGEFLG,					/*  ÄþÔÀ½ñÄ¾Ð×Ê§ÄÌ  Ø©¾®Éýµ¤¾® */
-	ITEM_CRUSHLEVEL,				/*  Ã§Ä¾ÕºÄþÖÐ 0  2 ¨ß·´Ã§Ä¾»¯Ø¦ÖÐ 2·´òåÃ§ */
+  ITEM_INGVALUE0, /* ï¿½ï¿½ï¿½ï¿½(5ï¿½ï¿½ï¿½ï¿½) */
+  ITEM_INGVALUE1,
+  ITEM_INGVALUE2,
+  ITEM_INGVALUE3,
+  ITEM_INGVALUE4,
 
-    ITEM_VAR1,              	/*    åÃ×Û½ö       */
-    ITEM_VAR2,              	/*    åÃ×Û½ö       */
-    ITEM_VAR3,              	/*    åÃ×Û½ö       */
-    ITEM_VAR4,              	/*    åÃ×Û½ö       */
+  ITEM_PUTTIME,   /*  Ê§ï¿½ï¿½  Ø©ï¿½ï¿½  ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+  ITEM_LEAKLEVEL, /*    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½×¾ï¿½  */
+  ITEM_MERGEFLG, /*  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½Ê§ï¿½ï¿½  Ø©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ */
+  ITEM_CRUSHLEVEL, /*  Ã§Ä¾Õºï¿½ï¿½ï¿½ï¿½ 0  2 ï¿½ß·ï¿½Ã§Ä¾ï¿½ï¿½Ø¦ï¿½ï¿½ 2ï¿½ï¿½ï¿½ï¿½Ã§ */
 
-#ifdef _ITEM_COLOER	
-		ITEM_COLOER,
+  ITEM_VAR1, /*    ï¿½ï¿½ï¿½Û½ï¿½       */
+  ITEM_VAR2, /*    ï¿½ï¿½ï¿½Û½ï¿½       */
+  ITEM_VAR3, /*    ï¿½ï¿½ï¿½Û½ï¿½       */
+  ITEM_VAR4, /*    ï¿½ï¿½ï¿½Û½ï¿½       */
+
+#ifdef _ITEM_COLOER
+  ITEM_COLOER,
 #endif
 
 #ifdef _VERSION_GF
-	ITEM_UNKNOWN1,
-	ITEM_UNKNOWN2,
-	ITEM_UNKNOWN3,
-	ITEM_UNKNOWN4,
-	ITEM_UNKNOWN5,
-	ITEM_UNKNOWN6,
-	ITEM_UNKNOWN7,
-	ITEM_UNKNOWN8,
-	ITEM_UNKNOWN9,
+  ITEM_UNKNOWN1,
+  ITEM_UNKNOWN2,
+  ITEM_UNKNOWN3,
+  ITEM_UNKNOWN4,
+  ITEM_UNKNOWN5,
+  ITEM_UNKNOWN6,
+  ITEM_UNKNOWN7,
+  ITEM_UNKNOWN8,
+  ITEM_UNKNOWN9,
 #endif
-#ifdef _ITEM_USE_TIME	
-		ITEM_USETIME,
+#ifdef _ITEM_USE_TIME
+  ITEM_USETIME,
 #endif
-	ITEM_DATAINTNUM,
+  ITEM_DATAINTNUM,
 
-}ITEM_DATAINT;
+} ITEM_DATAINT;
 
-typedef enum
-{
-    ITEM_NAME,                      /*    ó¡     ñ²¼°  ó¡     */
-    ITEM_SECRETNAME,                /*    ó¡    µÊ½ñÄ¾ÔÂµÚ  Áë  Ô»    */
-    ITEM_EFFECTSTRING,              /*  ¶ã°í  Ù¯    */
-    ITEM_ARGUMENT,                  /*  Ê§ÄÌ  Ø©¼°Â¦ÐÑ  */
+typedef enum {
+  ITEM_NAME,         /*    ï¿½     ñ²¼°  ï¿½     */
+  ITEM_SECRETNAME,   /*    ï¿½    ï¿½Ê½ï¿½Ä¾ï¿½Âµï¿½  ï¿½ï¿½  Ô»    */
+  ITEM_EFFECTSTRING, /*  ï¿½ï¿½ï¿½  Ù¯    */
+  ITEM_ARGUMENT,     /*  Ê§ï¿½ï¿½  Ø©ï¿½ï¿½Â¦ï¿½ï¿½  */
 #ifdef _ITEM_INSLAY
-	ITEM_TYPECODE,
-	ITEM_INLAYCODE,
+  ITEM_TYPECODE,
+  ITEM_INLAYCODE,
 #endif
-	ITEM_CDKEY,						/*  Ê§ÄÌ  Ø©¼°  ó¡Ã«  âÙ±å  µÊØÆÐ×ÚÐ¼°           */
+  ITEM_CDKEY, /*  Ê§ï¿½ï¿½  Ø©ï¿½ï¿½  ï¿½Ã«  ï¿½Ù±ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½           */
 #ifdef _ITEM_FORUSERNAMES
-	ITEM_FORUSERNAME,
-	ITEM_FORUSERCDKEY,
+  ITEM_FORUSERNAME,
+  ITEM_FORUSERCDKEY,
 #endif
 // CoolFish: 2001/10/11
 #ifdef _UNIQUE_P_I
-    ITEM_UNIQUECODE,		  /* ÎïÆ·±àÂë */
+  ITEM_UNIQUECODE, /* ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ */
 #endif
 
-    ITEM_INGNAME0,                  /*  ÔÀÛÐ¼°  ó¡(5òÛÛÐ) */
-    ITEM_INGNAME1,
-    ITEM_INGNAME2,
-    ITEM_INGNAME3,
-    ITEM_INGNAME4,
+  ITEM_INGNAME0, /*  ï¿½ï¿½ï¿½Ð¼ï¿½  ï¿½(5ï¿½ï¿½ï¿½ï¿½) */
+  ITEM_INGNAME1,
+  ITEM_INGNAME2,
+  ITEM_INGNAME3,
+  ITEM_INGNAME4,
 
-
-    ITEM_INITFUNC,                  /* Â¦ÐÑ
-                                     * ITEM_Item*
-                                     * ß¯Ô»°À BOOL
-                                     * ß¯Ô»°À¼°À²  ·´ CHAR_INITFUNC
-                                     * Îç  Ôª  */
-    ITEM_FIRSTFUNCTION = ITEM_INITFUNC,
-    ITEM_PREOVERFUNC,               /* CHAR_PREOVERFUNC Ã«¸¨å¾ */
-    ITEM_POSTOVERFUNC,              /* CHAR_POSTOVERFUNC Ã«¸¨å¾*/
-    ITEM_WATCHFUNC,                 /* CHAR_WATCHFUNC Ã«¸¨å¾ */
-    ITEM_USEFUNC,                   /* Â¦ÐÑ·´£ý
-                                     * int charaindex Æ½ÅÒ·ÂÄÌ¼þ·¸ÓÀÛÍµ©
-                                     * int charitemindex ·ßÛÐ¼°
-                                     *              Ê§ÄÌ  Ø©    ¼°ÖÏ
-                                     *              Ã«ÒøÔÈÐ×¾®
-                                     */
-    ITEM_ATTACHFUNC,                /* Â¦ÐÑ·´£ý
-                                     * int charaindex Æ½ÅÒ·ÂÄÌ¼þ·¸ÓÀÛÍµ©
-                                     * int itemindex  Ê§ÄÌ  Ø©ÄÌ¼þ·¸ÓÀÛÍµ©
-                                     *      Æ½ÅÒ·ÂÛÍÕý¼°  ÔÈ»¯ÖÐÔÂÊ§ÄÌ  Ø©
-                                     *      ¼°Ê§ÄÌ  Ø©  Æ¥¼°ÄÌ¼þ·¸ÓÀÛÍµ©
-                                     *      Æ¥·´Ø¦ÖÐÒÇ±åïÛÀ²£Û
-                                     */
-    ITEM_DETACHFUNC,                /* Â¦ÐÑ·´£ý
-                                     * int charaindex Æ½ÅÒ·ÂÄÌ¼þ·¸ÓÀÛÍµ©
-                                     * int itemindex  Ê§ÄÌ  Ø©ÄÌ¼þ·¸ÓÀÛÍµ©
-                                     *      Æ½ÅÒ·ÂÛÍÕý¼°  ÔÈ»¯ÖÐÔÂÊ§ÄÌ  Ø©
-                                     *      ¼°Ê§ÄÌ  Ø©  Æ¥¼°ÄÌ¼þ·¸ÓÀÛÍµ©
-                                     *      Æ¥·´Ø¦ÖÐÒÇ±åïÛÀ²£Û
-                                     */
-    ITEM_DROPFUNC, 		            /*   ÎçØÆÐ×ÎçÎå
-                                     * Â¦ÐÑ·´
-                                     *  int charaindex   ÎçØÆÐ×Æ½ÅÒ·Â
-                                     *  int itemindex Ê§ÄÌ  Ø©ÄÌ¼þ·¸ÓÀÛÍµ©
-                                     */
-    ITEM_PICKUPFUNC,              /* Ê§ÄÌ  Ø©Ã«½ºÔÈÐ×ÁÝ
-                                     * Â¦ÐÑ·´
-                                     *  int charaindex  ½ºÔÈÐ×Æ½ÅÒ·Âindex
-                                     *  int itemindex Ê§ÄÌ  Ø©ÄÌ¼þ·¸ÓÀÛÍµ©
-                                     */
+  ITEM_INITFUNC, /* Â¦ï¿½ï¿½
+                  * ITEM_Item*
+                  * ß¯Ô»ï¿½ï¿½ BOOL
+                  * ß¯Ô»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ CHAR_INITFUNC
+                  * ï¿½ï¿½  Ôª  */
+  ITEM_FIRSTFUNCTION = ITEM_INITFUNC,
+  ITEM_PREOVERFUNC,  /* CHAR_PREOVERFUNC Ã«ï¿½ï¿½ï¿½ */
+  ITEM_POSTOVERFUNC, /* CHAR_POSTOVERFUNC Ã«ï¿½ï¿½ï¿½*/
+  ITEM_WATCHFUNC,    /* CHAR_WATCHFUNC Ã«ï¿½ï¿½ï¿½ */
+  ITEM_USEFUNC,      /* Â¦ï¿½Ñ·ï¿½ï¿½ï¿½
+                      * int charaindex Æ½ï¿½Ò·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+                      * int charitemindex ï¿½ï¿½ï¿½Ð¼ï¿½
+                      *              Ê§ï¿½ï¿½  Ø©    ï¿½ï¿½ï¿½ï¿½
+                      *              Ã«ï¿½ï¿½ï¿½ï¿½ï¿½×¾ï¿½
+                      */
+  ITEM_ATTACHFUNC,   /* Â¦ï¿½Ñ·ï¿½ï¿½ï¿½
+                      * int charaindex Æ½ï¿½Ò·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+                      * int itemindex  Ê§ï¿½ï¿½  Ø©ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+                      *      Æ½ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½  Ø©
+                      *      ï¿½ï¿½Ê§ï¿½ï¿½  Ø©  Æ¥ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+                      *      Æ¥ï¿½ï¿½Ø¦ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                      */
+  ITEM_DETACHFUNC,   /* Â¦ï¿½Ñ·ï¿½ï¿½ï¿½
+                      * int charaindex Æ½ï¿½Ò·ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+                      * int itemindex  Ê§ï¿½ï¿½  Ø©ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+                      *      Æ½ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½ï¿½  Ø©
+                      *      ï¿½ï¿½Ê§ï¿½ï¿½  Ø©  Æ¥ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+                      *      Æ¥ï¿½ï¿½Ø¦ï¿½ï¿½ï¿½Ç±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                      */
+  ITEM_DROPFUNC,     /*   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                      * Â¦ï¿½Ñ·ï¿½
+                      *  int charaindex   ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ½ï¿½Ò·ï¿½
+                      *  int itemindex Ê§ï¿½ï¿½  Ø©ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+                      */
+  ITEM_PICKUPFUNC,   /* Ê§ï¿½ï¿½  Ø©Ã«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                      * Â¦ï¿½Ñ·ï¿½
+                      *  int charaindex  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ½ï¿½Ò·ï¿½index
+                      *  int itemindex Ê§ï¿½ï¿½  Ø©ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+                      */
 #ifdef _Item_ReLifeAct
-		ITEM_DIERELIFEFUNC,					/*ANDY_ADD ¸´»îµÀ¾ß	 */
+  ITEM_DIERELIFEFUNC, /*ANDY_ADD ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½	 */
 #endif
 
-    ITEM_LASTFUNCTION,
+  ITEM_LASTFUNCTION,
 
-    ITEM_DATACHARNUM = ITEM_LASTFUNCTION,
+  ITEM_DATACHARNUM = ITEM_LASTFUNCTION,
 
 #ifdef _ANGEL_SUMMON
-	ITEM_ANGELMISSION = ITEM_INGNAME0,
-	ITEM_ANGELINFO = ITEM_INGNAME1,
-	ITEM_HEROINFO = ITEM_INGNAME2,
+  ITEM_ANGELMISSION = ITEM_INGNAME0,
+  ITEM_ANGELINFO = ITEM_INGNAME1,
+  ITEM_HEROINFO = ITEM_INGNAME2,
 #endif
 #ifdef _VERSION_GF
-	ITEM_UNKNOWN10,
+  ITEM_UNKNOWN10,
 #endif
-}ITEM_DATACHAR;
+} ITEM_DATACHAR;
 
-typedef enum
-{
-    ITEM_WORKOBJINDEX,
-    ITEM_WORKCHARAINDEX,
+typedef enum {
+  ITEM_WORKOBJINDEX,
+  ITEM_WORKCHARAINDEX,
 #ifdef _ITEM_ORNAMENTS
-	ITEM_CANPICKUP,
+  ITEM_CANPICKUP,
 #endif
 #ifdef _ITEM_TIME_LIMIT
-	ITEM_WORKTIMELIMIT,
+  ITEM_WORKTIMELIMIT,
 #endif
 
 #ifdef _ITEM_TALK_CHECK
-	ITEM_WORKTALKCHECK,
+  ITEM_WORKTALKCHECK,
 #endif
 #ifdef _PET_AND_ITEM_UP
-	ITEM_WORKCDKEY,
+  ITEM_WORKCDKEY,
 #endif
 
-    ITEM_WORKDATAINTNUM,
-}ITEM_WORKDATAINT;
+  ITEM_WORKDATAINTNUM,
+} ITEM_WORKDATAINT;
 
+typedef struct tagItem {
+  int data[ITEM_DATAINTNUM];
+  STRING64 string[ITEM_DATACHARNUM];
+  int workint[ITEM_WORKDATAINTNUM];
 
-
-typedef struct tagItem
-{
-    int         data[ITEM_DATAINTNUM];
-    STRING64    string[ITEM_DATACHARNUM];
-    int         workint[ITEM_WORKDATAINTNUM];
-
-    void*       functable[ITEM_LASTFUNCTION-ITEM_FIRSTFUNCTION];
+  void *functable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
 #ifdef _ALLBLUES_LUA_1_2
-		lua_State *lua[ITEM_LASTFUNCTION-ITEM_FIRSTFUNCTION];
-		char *luafunctable[ITEM_LASTFUNCTION-ITEM_FIRSTFUNCTION];
+  lua_State *lua[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
+  char *luafunctable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
 #endif
 #ifdef _JZ_NEWSCRIPT_LUA
-	STRING32 lua_charfunctable[ITEM_LASTFUNCTION-ITEM_FIRSTFUNCTION];
+  STRING32 lua_charfunctable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
 
-	void* sur_functable[ITEM_LASTFUNCTION-ITEM_FIRSTFUNCTION];
-	STRING32 sur_charfunctable[ITEM_LASTFUNCTION-ITEM_FIRSTFUNCTION];
+  void *sur_functable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
+  STRING32 sur_charfunctable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
 #endif
-}ITEM_Item;
+} ITEM_Item;
 
-typedef struct tagITEM_table
-{
-    int         use; 
-    ITEM_Item   itm;
-    int         randomdata[ITEM_DATAINTNUM];
-}ITEM_table;
+typedef struct tagITEM_table {
+  int use;
+  ITEM_Item itm;
+  int randomdata[ITEM_DATAINTNUM];
+} ITEM_table;
 
-typedef struct tagITEM_index
-{
-    BOOL         use; 
-    int         index;
-}ITEM_index;
+typedef struct tagITEM_index {
+  BOOL use;
+  int index;
+} ITEM_index;
 
-typedef struct tagITEM_exists
-{
-    BOOL        use;
-    ITEM_Item   itm;
-}ITEM_exists;
+typedef struct tagITEM_exists {
+  BOOL use;
+  ITEM_Item itm;
+} ITEM_exists;
 
-#define		ITEM_CHECKINDEX(index)		\
-	_ITEM_CHECKINDEX( __FILE__, __LINE__, index)
-INLINE BOOL _ITEM_CHECKINDEX( char *file, int line, int index);
+#define ITEM_CHECKINDEX(index) _ITEM_CHECKINDEX(__FILE__, __LINE__, index)
+INLINE BOOL _ITEM_CHECKINDEX(char *file, int line, int index);
 
+BOOL ITEM_initExistItemsArray(int num);
+BOOL ITEM_endExistItemsArray(ITEM_table *ITEM_item);
+#define ITEM_initExistItemsOne(itm)                                            \
+  _ITEM_initExistItemsOne(__FILE__, __LINE__, itm)
+int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *itm);
 
-BOOL ITEM_initExistItemsArray( int num );
-BOOL ITEM_endExistItemsArray( ITEM_table* ITEM_item );
-#define		ITEM_initExistItemsOne( itm) \
-	_ITEM_initExistItemsOne( __FILE__, __LINE__, itm)
-int _ITEM_initExistItemsOne( char *file, int line, ITEM_Item* itm );
+#define ITEM_endExistItemsOne(index)                                           \
+  _ITEM_endExistItemsOne(index, __FILE__, __LINE__)
 
-#define		ITEM_endExistItemsOne( index ) \
-			_ITEM_endExistItemsOne( index, __FILE__, __LINE__)
+void _ITEM_endExistItemsOne(int index, char *file, int line);
 
-void _ITEM_endExistItemsOne( int index , char *file, int line);
+#define ITEM_getInt(Index, element)                                            \
+  _ITEM_getInt(__FILE__, __LINE__, Index, element)
+INLINE int _ITEM_getInt(char *file, int line, int index, ITEM_DATAINT element);
 
-#define ITEM_getInt( Index, element) _ITEM_getInt( __FILE__, __LINE__, Index, element )
-INLINE int _ITEM_getInt( char *file, int line, int index ,ITEM_DATAINT element);
+#define ITEM_setInt(Index, element, data)                                      \
+  _ITEM_setInt(__FILE__, __LINE__, Index, element, data)
+INLINE int _ITEM_setInt(char *file, int line, int index, ITEM_DATAINT element,
+                        int data);
 
+INLINE char *ITEM_getChar(int index, ITEM_DATACHAR element);
+INLINE BOOL ITEM_setChar(int index, ITEM_DATACHAR element, char *new);
 
-#define ITEM_setInt( Index, element, data) _ITEM_setInt( __FILE__, __LINE__, Index, element, data)
-INLINE int _ITEM_setInt( char *file, int line, int index ,ITEM_DATAINT element, int data);
+INLINE int ITEM_getWorkInt(int index, ITEM_WORKDATAINT element);
+INLINE int ITEM_setWorkInt(int index, ITEM_WORKDATAINT element, int data);
+INLINE int ITEM_getITEM_itemnum(void);
+INLINE int ITEM_getITEM_UseItemnum(void);
+INLINE BOOL ITEM_getITEM_use(int index);
+void ITEM_constructFunctable(int itemindex);
+#define ITEM_getFunctionPointer(itemindex, functype)                           \
+  _ITEM_getFunctionPointer(itemindex, functype, __FILE__, __LINE__)
+void *_ITEM_getFunctionPointer(int itemindex, int functype, char *file,
+                               int line);
+#ifdef _ALLBLUES_LUA_1_2
+typedef struct tagITEM_LuaFunc {
+  lua_State *lua;
+  char luafuncname[128];
+  char luafunctable[128];
+  struct tagITEM_LuaFunc *next;
+} ITEM_LuaFunc;
 
+INLINE BOOL ITEM_setLUAFunction(int itemindex, int functype,
+                                const char *luafuncname);
+INLINE lua_State *ITEM_getLUAFunction(int itemindex, int functype);
 
-INLINE char* ITEM_getChar( int index ,ITEM_DATACHAR element );
-INLINE BOOL ITEM_setChar( int index ,ITEM_DATACHAR element , char* new);
-
-INLINE int ITEM_getWorkInt( int index ,ITEM_WORKDATAINT element);
-INLINE int ITEM_setWorkInt( int index ,ITEM_WORKDATAINT element, int data);
-INLINE int ITEM_getITEM_itemnum( void );
-INLINE int ITEM_getITEM_UseItemnum( void );
-INLINE BOOL ITEM_getITEM_use( int index );
-void ITEM_constructFunctable( int itemindex );
-#define ITEM_getFunctionPointer( itemindex, functype) _ITEM_getFunctionPointer( itemindex, functype, __FILE__, __LINE__)
-void* _ITEM_getFunctionPointer( int itemindex, int functype, char *file, int line );
-#ifdef _ALLBLUES_LUA_1_2 
-typedef struct tagITEM_LuaFunc
-{
-	lua_State *lua;
-	char luafuncname[128];
-	char luafunctable[128];
-  struct tagITEM_LuaFunc	*next;
-}ITEM_LuaFunc;
-
-
-INLINE BOOL ITEM_setLUAFunction( int itemindex, int functype, const char *luafuncname);
-INLINE lua_State *ITEM_getLUAFunction( int itemindex, int functype);
-
-BOOL ITEM_addLUAListFunction( lua_State *L, const char *luafuncname, const char *luafunctable );
+BOOL ITEM_addLUAListFunction(lua_State *L, const char *luafuncname,
+                             const char *luafunctable);
 #endif
-INLINE ITEM_Item *ITEM_getItemPointer( int index );
-int ITEM_getItemMaxIdNum( void);
+INLINE ITEM_Item *ITEM_getItemPointer(int index);
+int ITEM_getItemMaxIdNum(void);
 
+char *ITEM_makeStringFromItemData(ITEM_Item *one, int mode);
+char *ITEM_makeStringFromItemIndex(int index, int mode);
 
-char* ITEM_makeStringFromItemData( ITEM_Item* one, int mode );
-char* ITEM_makeStringFromItemIndex( int index, int mode );
+BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode);
+void ITEM_getDefaultItemSetting(ITEM_Item *itm);
 
-BOOL ITEM_makeExistItemsFromStringToArg( char* src , ITEM_Item* item, int mode );
-void ITEM_getDefaultItemSetting( ITEM_Item* itm);
+INLINE BOOL ITEM_CHECKITEMTABLE(int number);
+BOOL ITEM_readItemConfFile(char *filename);
 
+CHAR_EquipPlace ITEM_getEquipPlace(int charaindex, int itmid);
 
-INLINE BOOL ITEM_CHECKITEMTABLE( int number );
-BOOL    ITEM_readItemConfFile( char* filename );
+char *ITEM_makeItemStatusString(int haveitemindex, int itemindex);
+char *ITEM_makeItemFalseString(void);
+char *ITEM_makeItemFalseStringWithNum(int haveitemindex);
 
+BOOL ITEM_makeItem(ITEM_Item *itm, int number);
+int ITEM_makeItemAndRegist(int number);
 
-CHAR_EquipPlace ITEM_getEquipPlace( int charaindex, int itmid );
+void ITEM_equipEffect(int index);
 
+void Other_DefcharWorkInt(int index);
 
-char*  ITEM_makeItemStatusString( int haveitemindex, int itemindex );
-char*   ITEM_makeItemFalseString( void );
-char*   ITEM_makeItemFalseStringWithNum( int haveitemindex );
+char *ITEM_getAppropriateName(int itemindex);
+char *ITEM_getEffectString(int itemindex);
 
+int ITEM_getcostFromITEMtabl(int itemid);
 
-BOOL ITEM_makeItem( ITEM_Item* itm, int number );
-int ITEM_makeItemAndRegist( int number );
+#define ITEM_getNameFromNumber(id)                                             \
+  _ITEM_getNameFromNumber(__FILE__, __LINE__, id)
+INLINE char *_ITEM_getNameFromNumber(char *file, int line, int itemid);
 
+#define ITEM_getArgumentString(id)                                             \
+  _ITEM_getArgumentString(__FILE__, __LINE__, id)
+INLINE char *_ITEM_getArgumentString(char *file, int line, int itemid);
 
-void ITEM_equipEffect( int index );
+int ITEM_getlevelFromITEMtabl(int itemid);
+int ITEM_getgraNoFromITEMtabl(int itemid);
+char *ITEM_getItemInfoFromNumber(int itemid);
 
-void Other_DefcharWorkInt( int index);
-
-char* ITEM_getAppropriateName(int itemindex);
-char* ITEM_getEffectString( int itemindex );
-
-int ITEM_getcostFromITEMtabl( int itemid );
-
-#define ITEM_getNameFromNumber( id) _ITEM_getNameFromNumber( __FILE__, __LINE__, id)
-INLINE char* _ITEM_getNameFromNumber( char *file, int line, int itemid );
-
-#define ITEM_getArgumentString( id) _ITEM_getArgumentString( __FILE__, __LINE__, id)
-INLINE char* _ITEM_getArgumentString( char *file, int line, int itemid );
-
-
-int ITEM_getlevelFromITEMtabl( int itemid );
-int ITEM_getgraNoFromITEMtabl( int itemid );
-char *ITEM_getItemInfoFromNumber( int itemid );
-
-int ITEM_getdropatlogoutFromITEMtabl( int itemid );
-int ITEM_getvanishatdropFromITEMtabl( int itemid );
-int ITEM_getcanpetmailFromITEMtabl( int itemid );
-int ITEM_getmergeItemFromFromITEMtabl( int itemid );
+int ITEM_getdropatlogoutFromITEMtabl(int itemid);
+int ITEM_getvanishatdropFromITEMtabl(int itemid);
+int ITEM_getcanpetmailFromITEMtabl(int itemid);
+int ITEM_getmergeItemFromFromITEMtabl(int itemid);
 
 #ifdef _ITEM_CHECKWARES
-BOOL CHAR_CheckInItemForWares( int charaindex, int flg);
+BOOL CHAR_CheckInItemForWares(int charaindex, int flg);
 #endif
 
-BOOL ITEM_canuseMagic( int itemindex);
+BOOL ITEM_canuseMagic(int itemindex);
 // Nuke +1 08/23 : For checking the validity of item target
-int ITEM_isTargetValid( int charaindex, int itemindex, int toindex);
+int ITEM_isTargetValid(int charaindex, int itemindex, int toindex);
 
-int ITEMTBL_getInt( int ItemID, ITEM_DATAINT datatype);
-char *ITEMTBL_getChar( int ItemID, ITEM_DATACHAR datatype);
+int ITEMTBL_getInt(int ItemID, ITEM_DATAINT datatype);
+char *ITEMTBL_getChar(int ItemID, ITEM_DATACHAR datatype);
 
-int ITEM_getItemDamageCrusheED( int itemindex);
-void ITEM_RsetEquit( int charaindex);//×Ô¶¯Ð¶³ý×°±¸Î»ÖÃ´íÎóÖ®ÎïÆ·
-void ITEM_reChangeItemToPile( int itemindex);
-void ITEM_reChangeItemName( int itemindex);
+int ITEM_getItemDamageCrusheED(int itemindex);
+void ITEM_RsetEquit(int charaindex);
+void ITEM_reChangeItemToPile(int itemindex);
+void ITEM_reChangeItemName(int itemindex);
 
 #ifdef _SIMPLIFY_ITEMSTRING
-void ITEM_getDefaultItemData( int itemID, ITEM_Item* itm);
+void ITEM_getDefaultItemData(int itemID, ITEM_Item *itm);
 #endif
 
 #ifdef _PET_ITEM
-char*  ITEM_petmakeItemStatusString( int petindex, int itemid );
+char *ITEM_petmakeItemStatusString(int petindex, int itemid);
 #endif
 
 #endif

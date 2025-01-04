@@ -1,483 +1,405 @@
 #include "version.h"
-#include <string.h>
 #include "char.h"
-#include "object.h"
-#include "char_base.h"
-#include "npcutil.h"
 #include "lssproto_serv.h"
 #include "npc_windowhealer.h"
-
-
-
-
-/*
- *µü£ûÊ¾·¸Å«·Â¼þ±Ø¡õ³âÃ«ÒøÒüÈÉ  É±ÔÊÔÂNPC
- * ÒýÄÚ  ØÆ¾®ØêÈÕÄ¾Ð×ÈÕ£ý¹«¼°ÃóÒÁÄÌØÀ¡õ±å
- * ³ð¼°NPC¼°INDEXÃ«âçÐåÔÊÔÂ£Û
- *
- *ÆÈ£ûNPC¼°Á§Ô»Æ¥Ê§ÛÍÆËÒà¼þ»¥Ø¤ÔÈÐ×ÈÕ£ýÊ§ÛÍÆËÒà¼þÃ«ËÚ³ðØÆÐ×ÃóÒÁÄÌØÀ¡õ»¥
- *NPC¼°INDEXÃ«âç  ØÆ»¯ÖÐÔÂ¾®ÃñÄáÓÀÛÍ
- *ÃñÄáÓÀÛÍ    Ø¦ÈÕÆÝ·´Ê§ÛÍÆËÒà¼þ¼°ÆË¡õ¸¥¼þµ©ÃñÄáÓÀÛÍÔÊÔÂ
- *ÎÐ¶±¼°Ê§ÛÍÆËÒà¼þÃ«ØÆ»¯ÖÐÐ×ÈÕÃóÒÁÄÌØÀ¡õ¼°ÊÐËü¼þÐþÃ«Ê§ÓÀÃó½ñÁùÔÂ£Û
- *ÊÐËü¼þÐþÊ§ÓÀÃó  £ýòåÆË¡õ¸¥¼þµ©    Ø¦ÈÕÏ¶ÀÃ¼°èëô÷³ß·¥¡õÃó½ñÁùÔÂ
- *
- */
+#include "npcutil.h"
+#include "object.h"
 
 enum {
-	BODYLAN_E_COMMANDNUM = CHAR_NPCWORKINT1,	// ÎìÑ¨¼þÓñ¼°Ó®½ñ
+  BODYLAN_E_COMMANDNUM = CHAR_NPCWORKINT1, // ï¿½ï¿½Ñ¨ï¿½ï¿½ï¿½ï¿½Ó®ï¿½ï¿½
 };
 
-
-// ËüÄÌ¼þÓñËüÆ¹¡õÓñ
-enum{
-	BODYLAN_WIN_FIRST,
-	BODYLAN_WIN_LAST_GOOD,
-	BODYLAN_WIN_LAST_NG,
-	BODYLAN_WIN_GOOD_NO,
-	BODYLAN_WIN_ALREADY,
-	BODYLAN_WIN_NOT_PREEVENT,
-	BODYLAN_WIN_END
+// ï¿½ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½Æ¹ï¿½ï¿½ï¿½ï¿½
+enum {
+  BODYLAN_WIN_FIRST,
+  BODYLAN_WIN_LAST_GOOD,
+  BODYLAN_WIN_LAST_NG,
+  BODYLAN_WIN_GOOD_NO,
+  BODYLAN_WIN_ALREADY,
+  BODYLAN_WIN_NOT_PREEVENT,
+  BODYLAN_WIN_END
 };
 
-static void NPC_BodyLan_Profit( int meindex, int playerindex );
+static void NPC_BodyLan_Profit(int meindex, int playerindex);
 
-static void NPC_BodyLan_Window(
-	int meindex,
-	int talkerindex,
-	int mode
-);
+static void NPC_BodyLan_Window(int meindex, int talkerindex, int mode);
 
+BOOL NPC_BodyLanInit(int meindex) {
 
-/*********************************
-* âÙÓåÖÊ  
-*********************************/
-BOOL NPC_BodyLanInit( int meindex )
-{
+  char szP[256], szArg[4096];
+  char buf[256];
+  int i, needSeq;
 
-	char szP[256], szArg[4096];
-	char buf[256];
-	int i, needSeq;
+  CHAR_setInt(meindex, CHAR_WHICHTYPE, CHAR_TYPEEVENT);
 
-    CHAR_setInt( meindex , CHAR_WHICHTYPE , CHAR_TYPEEVENT );
+  if (NPC_Util_GetArgStr(meindex, szArg, sizeof(szArg)) == NULL) {
+    print("npc_bodylan.c:Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n",
+          CHAR_getChar(meindex, CHAR_NPCARGUMENT));
+    return FALSE;
+  }
 
-    if( NPC_Util_GetArgStr( meindex, szArg, sizeof( szArg ) ) == NULL ){
-    	print( "npc_bodylan.c:Ã»ÓÐÒýÊý(%s)\n",
-    		CHAR_getChar(meindex,CHAR_NPCARGUMENT) );
-    	return FALSE;
+  if (NPC_Util_GetStrFromStrWithDelim(szArg, "Act", szP, sizeof(szP)) == NULL) {
+    print("npc_bodylan:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½è¶¨(%s)\n", szArg);
+    return FALSE;
+  }
+
+  for (i = 0;; i++) {
+    //   Û¢Ø¦ï¿½ï¿½
+    if (getStringFromIndexWithDelim(szP, ",", i, buf, sizeof(buf)) != FALSE) {
+      needSeq = atoi(buf);
+      // Ñ¨ï¿½Ì¹Ïµï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½Õ³ï¿½ï¿½ï¿½ï¿½Æ¥
+      if (needSeq < 0) {
+        if (i <= 0) {
+          print("npc_bodylan:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½è¶¨(%s)\n", szArg);
+        }
+        //     ï¿½ï¿½Ã«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+        CHAR_setWorkInt(meindex, BODYLAN_E_COMMANDNUM, i);
+        break;
+      } else {
+      }
+    } else {
+      if (i <= 0) {
+        print("npc_bodylan:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½è¶¨(%s)\n", szArg);
+      }
+      CHAR_setWorkInt(meindex, BODYLAN_E_COMMANDNUM, i);
+      break;
     }
+  }
 
-
-	// ÆË¡õ¸¥¼þµ©Ã«¼ëÔÊ
-	if( NPC_Util_GetStrFromStrWithDelim( szArg, "Act", szP, sizeof( szP ) ) == NULL ){
-		print( "npc_bodylan:¶¯×÷ÎÄ×ÖÁÐÉÐÎ´Éè¶¨(%s)\n",	szArg );
-		return FALSE;
-	}
-
-	for( i = 0 ; ; i ++ ){
-		//   Û¢Ø¦´Í  
-		if( getStringFromIndexWithDelim( szP, ",", i, buf, sizeof( buf)) != FALSE ){
-			needSeq = atoi(buf);
-			// Ñ¨ÄÌ¹Ïµ©»¥  Ð×ÈÕ³ð³ðÒýÆ¥
-			if( needSeq < 0 ){
-				if( i <= 0 ){
-					print( "npc_bodylan:¶¯×÷ÁÐÉÐÎ´Éè¶¨(%s)\n", szArg );
-				}
-				//     ÐÑÃ«±¾ÓÀÐþ
-				CHAR_setWorkInt( meindex, BODYLAN_E_COMMANDNUM, i );
-				break;
-			}else{
-				// »ï¡õÃóØÆ»¯ÐÑÒüÔÂ
-			}
-		}else{
-			if( i <= 0 ){
-				print( "npc_bodylan:¶¯×÷ÁÐÉÐÎ´Éè¶¨(%s)\n", szArg );
-			}
-			//     ÐÑÃ«±¾ÓÀÐþ
-			CHAR_setWorkInt( meindex, BODYLAN_E_COMMANDNUM, i );
-			break;
-		}
-	}
-
-
-
-    return TRUE;
-
+  return TRUE;
 }
 
+void NPC_BodyLanTalked(int meindex, int talkerindex, char *szMes, int color) {
+  char szP[256], szArg[4096];
+  int EventNo = -1, Pre_Event = -1;
 
+  if (CHAR_getInt(talkerindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER) {
+    return;
+  }
 
+  if (NPC_Util_CharDistance(talkerindex, meindex) > 2) {
+    return;
+  }
 
-/*********************************
-*   ØÆ¾®ØêÈÕÄ¾Ð×ÁÝ¼°ÖÊ  
-*********************************/
-void NPC_BodyLanTalked( int meindex , int talkerindex , char *szMes ,int color )
-{
-	char szP[256], szArg[4096];
-	int EventNo = -1,Pre_Event = -1;
-
-    /* ÃóÒÁÄÌØÀ¡õ±å¸²ØÆ»¯·ÖØê  É±ÔÊÔÂ */
-    if( CHAR_getInt( talkerindex , CHAR_WHICHTYPE ) != CHAR_TYPEPLAYER ) {
-    	return;
+  if (NPC_Util_GetArgStr(meindex, szArg, sizeof(szArg)) == NULL) {
+    print("npc_bodylan.c:Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n",
+          CHAR_getChar(meindex, CHAR_NPCARGUMENT));
+    return;
+  } else {
+    if (NPC_Util_GetStrFromStrWithDelim(szArg, "EventNo", szP, sizeof(szP)) != NULL) {
+      EventNo = atoi(szP);
     }
+    if (NPC_Util_GetStrFromStrWithDelim(szArg, "Pre_Event", szP, sizeof(szP)) != NULL) {
+      Pre_Event = atoi(szP);
+    }
+  }
 
-	/* ¨àºëØøÓÀÓñ¶¯  ¼°ÐÄ */
-	if( NPC_Util_CharDistance( talkerindex, meindex ) > 2 )
-	{
-		return;
-	}
+  // ï¿½ï¿½ï¿½ï¿½  Û¢ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½  Ä¯ï¿½ï¿½Ø¤Ä¾ï¿½ï¿½
+  if (Pre_Event >= 0) {
+    // ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½ï¿½å¸²ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ»ï¿½ï¿½ï¿½ï¿½Â¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    if (NPC_EventCheckFlg(talkerindex, Pre_Event) == FALSE) {
+      //   Û¢ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½Ã«ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Æ»ï¿½ï¿½ï¿½Ø¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ³ð¼°±ï¿½ï¿½ï¿½ï¿½ï¿½
+      NPC_BodyLan_Window(meindex, talkerindex, BODYLAN_WIN_NOT_PREEVENT);
+      return;
+    }
+  }
+  // ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½  Ä¯ï¿½ï¿½Ø¤Ä¾ï¿½ï¿½
+  if (EventNo >= 0) {
+    // ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½ï¿½å¸²ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ»ï¿½ï¿½ï¿½ï¿½Â¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    if (NPC_EventCheckFlg(talkerindex, EventNo) == TRUE) {
+      //   ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ³ð¼°±ï¿½ï¿½ï¿½ï¿½ï¿½
+      NPC_BodyLan_Window(meindex, talkerindex, BODYLAN_WIN_ALREADY);
+      return;
+    }
+  }
 
-	// Â¦ÐÑ  Ù¯  
-    if( NPC_Util_GetArgStr( meindex, szArg, sizeof( szArg ) ) == NULL ){
-    	print( "npc_bodylan.c:Ã»ÓÐÒýÊý(%s)\n",
-    		CHAR_getChar(meindex,CHAR_NPCARGUMENT) );
-    	return ;
-    }else{
-		// ÄÌÃ¬¼þÐþ  Ä¯äú  
-		if( NPC_Util_GetStrFromStrWithDelim( szArg, "EventNo", szP, sizeof( szP ) ) != NULL ){
-			EventNo = atoi(szP);
-		}
-		// ÒÇó¡  Û¢ÄÌÃ¬¼þÐþ  Ä¯äú  
-		if( NPC_Util_GetStrFromStrWithDelim( szArg, "Pre_Event", szP, sizeof( szP ) ) != NULL ){
-			Pre_Event = atoi(szP);
-		}
-	}
+  // ï¿½Ô³ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È»ï¿½ï¿½ï¿½ï¿½×¾ï¿½
+  if (CHAR_getWorkInt(talkerindex, CHAR_WORKTRADER) == meindex) {
 
-	// ÒÇó¡±å  Û¢ÄÌÃ¬¼þÐþ  Ä¯»¥Ø¤Ä¾ÈÉ
-	if( Pre_Event >= 0 ){
-		// ÄÌÃ¬¼þÐþ±å¸²ØÆ»¯Éýµ¤ØÆ»¯ÖÐÔÂ¾®ÃñÄáÓÀÛÍ
-		if( NPC_EventCheckFlg( talkerindex, Pre_Event ) == FALSE ){
-			//   Û¢ÄÌÃ¬¼þÐþÃ«ÛÍØøÊ§ØÆ»¯ÖÐØ¦¾®ÔÈÐ×ÈÕ³ð¼°±¾Øø°×
-			NPC_BodyLan_Window( meindex, talkerindex, BODYLAN_WIN_NOT_PREEVENT );
-			return;
-		}
-	}
-	// ÄÌÃ¬¼þÐþ  Ä¯»¥Ø¤Ä¾ÈÉ
-	if( EventNo >= 0 ){
-		// ÄÌÃ¬¼þÐþ±å¸²ØÆ»¯Éýµ¤ØÆ»¯ÖÐÔÂ¾®ÃñÄáÓÀÛÍ
-		if( NPC_EventCheckFlg( talkerindex, EventNo ) == TRUE ){
-			//   ÔÈ»¯ÖÐÐ×ÈÕ³ð¼°±¾Øø°×
-			NPC_BodyLan_Window( meindex, talkerindex, BODYLAN_WIN_ALREADY );
-			return;
-		}
-	}
+    // ï¿½ï¿½ï¿½Õ±ï¿½ï¿½ï¿½Ñ¨ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½  ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    if (CHAR_getWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT) >=
+        CHAR_getWorkInt(meindex, BODYLAN_E_COMMANDNUM)) {
+      // ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½ï¿½ï¿½
+      NPC_BodyLan_Window(meindex, talkerindex, BODYLAN_WIN_LAST_GOOD);
+      return;
+    } else {
+      // ï¿½ï¿½
+      NPC_BodyLan_Window(meindex, talkerindex, BODYLAN_WIN_LAST_NG);
+      return;
+    }
+  } else {
+    // ï¿½Ù»ï¿½ï¿½ï¿½Ø¦ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½Ã«ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    CHAR_setWorkInt(talkerindex, CHAR_WORKTRADER, meindex);
+    // ï¿½Ë¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½Ù¾ï¿½ï¿½Õ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT, 1);
 
-	// ó¡¼Ô³ð¼°ÃóÒÁÄÌØÀ¡õ·´·ßÛÐÎçÔÏÔÈ»¯ÖÐÐ×¾®
-	if( CHAR_getWorkInt( talkerindex, CHAR_WORKTRADER ) == meindex ){
-
-		// ½ñÈÕ±åÎìÑ¨¼þÓñ»¥òå  ÔÀ  ØÆ»¯ÖÐÐ×ÈÕ
-		if( CHAR_getWorkInt( talkerindex, CHAR_WORKSHOPRELEVANT )
-		 >= CHAR_getWorkInt( meindex, BODYLAN_E_COMMANDNUM )
-		){
-			// ÔÀ  ¡å¡åÈÔ    ¾®£¢
-			NPC_BodyLan_Window( meindex, talkerindex, BODYLAN_WIN_LAST_GOOD );
-			return;
-		}else{
-			// ÁÃ  
-			NPC_BodyLan_Window( meindex, talkerindex, BODYLAN_WIN_LAST_NG );
-			return;
-		}
-	}else{
-		// âÙ»§»¯Ø¦¼°Æ¥´´ÒüÔÂ
-		// ÃóÒÁÄÌØÀ¡õ±å·ßÛÐ¼°ÄÌ¼þ·¸ÓÀÛÍµ©Ã«âçÐå½ñÁùÔÂ
-		CHAR_setWorkInt( talkerindex, CHAR_WORKTRADER, meindex );
-		// ÆË¡õ¸¥¼þµ©·´  âÙ¾®ÈÕ±åâÙÓå¼À
-		CHAR_setWorkInt( talkerindex, CHAR_WORKSHOPRELEVANT, 1 );
-
-		// ¹«¼°¶Ë±¾Øø°×Îç¾®ÔÏÔÂÍÍÎå¾®Ø¦Ø¤¡¯¡¯¡¯
-		NPC_BodyLan_Window( meindex, talkerindex, BODYLAN_WIN_FIRST );
-		return;
-	}
+    // ï¿½ï¿½ï¿½ï¿½ï¿½Ë±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ç¾®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å¾®Ø¦Ø¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    NPC_BodyLan_Window(meindex, talkerindex, BODYLAN_WIN_FIRST);
+    return;
+  }
 }
-
 
 /*=======================================
- * watch ÖÊ  
+ * watch ï¿½ï¿½
  *======================================*/
-void NPC_BodyLanWatch(
-	int objmeindex,
-	int objmoveindex,
-    CHAR_ACTION act,
-    int x,
-    int y,
-    int dir,
-    int* opt,
-    int optlen
-)
-{
-	char szP[256], szArg[4096];
-	char buf[256];
-	int actindex;
-	int meindex;
-	int seqNo, needSeq;
+void NPC_BodyLanWatch(int objmeindex, int objmoveindex, CHAR_ACTION act, int x,
+                      int y, int dir, int *opt, int optlen) {
+  char szP[256], szArg[4096];
+  char buf[256];
+  int actindex;
+  int meindex;
+  int seqNo, needSeq;
 
-	// Æ½ÅÒ·ÂÛÍÕý¶¯Â½·´ØøÕý¡õ¼þ
-	if( OBJECT_getType(objmoveindex) != OBJTYPE_CHARA ) return;
-	actindex = OBJECT_getIndex(objmoveindex);
-	// ÃóÒÁÄÌØÀ¡õ¶¯Â½·´ØøÕý¡õ¼þ
-	if( CHAR_getInt( actindex, CHAR_WHICHTYPE ) != CHAR_TYPEPLAYER ) return;
+  // Æ½ï¿½Ò·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  if (OBJECT_getType(objmoveindex) != OBJTYPE_CHARA)
+    return;
+  actindex = OBJECT_getIndex(objmoveindex);
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Â½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  if (CHAR_getInt(actindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
+    return;
 
-	// ·ßÛÐ¼°ÄÌ¼þ·¸ÓÀÛÍµ©
-	meindex = OBJECT_getIndex(objmeindex);
+  // ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+  meindex = OBJECT_getIndex(objmeindex);
 
-	// ·ßÛÐ¼°INDEXÃ«âç  ØÆ»¯ÖÐÔÂ¾®£¢ÖÐØ¦ØêÄ¾ÈÉØøÕý¡õ¼þ
-	if( CHAR_getWorkInt( actindex, CHAR_WORKTRADER ) != meindex ){
-		return;
-	}
+  // ï¿½ï¿½ï¿½Ð¼ï¿½INDEXÃ«ï¿½ï¿½  ï¿½Æ»ï¿½ï¿½ï¿½ï¿½Â¾ï¿½ï¿½ï¿½ï¿½ï¿½Ø¦ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  if (CHAR_getWorkInt(actindex, CHAR_WORKTRADER) != meindex) {
+    return;
+  }
 
-	// Éý³ðÒýÆ¥Ê§ÛÍÆËÒà¼þÃ«ØÆ»¯ÖÐÔÂ¾®
-	seqNo = CHAR_getWorkInt( actindex, CHAR_WORKSHOPRELEVANT );
-	//   Ø¦èëÄþ·´  âÙ¾®ÈÕ
-	if( seqNo < 1 )seqNo = 1;
+  // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ¥Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã«ï¿½Æ»ï¿½ï¿½ï¿½ï¿½Â¾ï¿½
+  seqNo = CHAR_getWorkInt(actindex, CHAR_WORKSHOPRELEVANT);
+  //   Ø¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½Ù¾ï¿½ï¿½ï¿½
+  if (seqNo < 1)
+    seqNo = 1;
 
-	// Â¦ÐÑ  Ù¯  
-    if( NPC_Util_GetArgStr( meindex, szArg, sizeof( szArg ) ) == NULL ){
-    	print( "npc_bodylan.c:Ã»ÓÐÒýÊý(%s)\n",
-    		CHAR_getChar(meindex,CHAR_NPCARGUMENT) );
-    	return ;
+  // Â¦ï¿½ï¿½  Ù¯
+  if (NPC_Util_GetArgStr(meindex, szArg, sizeof(szArg)) == NULL) {
+    print("npc_bodylan.c:Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n",
+          CHAR_getChar(meindex, CHAR_NPCARGUMENT));
+    return;
+  }
+
+  // ï¿½Ë¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã«ï¿½ï¿½ï¿½ï¿½
+  if (NPC_Util_GetStrFromStrWithDelim(szArg, "Act", szP, sizeof(szP)) == NULL) {
+    print("npc_bodylan:ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î´ï¿½è¶¨(%s)\n", szArg);
+    return;
+  }
+
+  //   Û¢Ø¦ï¿½ï¿½
+  if (getStringFromIndexWithDelim(szP, ",", seqNo, buf, sizeof(buf)) != FALSE) {
+    needSeq = atoi(buf);
+  } else {
+    // Ø¦ï¿½â¾®Ø¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½Ù¾ï¿½ï¿½ï¿½
+    CHAR_setWorkInt(actindex, CHAR_WORKSHOPRELEVANT, 1);
+
+    //		print( "ï¿½ï¿½ï¿½ï¿½Í·ï¿½Ë¡ï¿½ï¿½Øµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n", seqNo, needSeq );
+    // ï¿½Ï¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½å¾®ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    return;
+  }
+
+  // ï¿½ï¿½ï¿½  Û¢Ø¦Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+  if (needSeq == act) {
+    // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½×£Û³ï¿½Ä¾ï¿½ï¿½    ï¿½ï¿½
+    //		print( "ï¿½É¹ï¿½\(%dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½%d)\n", seqNo, needSeq );
+    seqNo++;
+    if (seqNo >= CHAR_getWorkInt(meindex, BODYLAN_E_COMMANDNUM)) {
+      //			print( "ï¿½Ú´Ë½ï¿½ï¿½ï¿½ï¿½ï¿½\n" );
     }
-
-
-	// ÆË¡õ¸¥¼þµ©Ã«¼ëÔÊ
-	if( NPC_Util_GetStrFromStrWithDelim( szArg, "Act", szP, sizeof( szP ) ) == NULL ){
-		print( "npc_bodylan:¶¯×÷ÎÄ×ÖÁÐÉÐÎ´Éè¶¨(%s)\n",	szArg );
-		return;
-	}
-
-	//   Û¢Ø¦´Í  
-	if(getStringFromIndexWithDelim( szP, ",", seqNo, buf, sizeof( buf)) != FALSE ){
-		needSeq = atoi(buf);
-	}else{
-		// Ø¦Ùâ¾®Ø¦¾®ÔÈÐ×ÈÕ  âÙ¾®ÈÕ
-		CHAR_setWorkInt( actindex, CHAR_WORKSHOPRELEVANT, 1 );
-
-//		print( "×ö¹ýÍ·ÁË¡£»Øµ½×î³õ¡£\n", seqNo, needSeq );
-		// ÖÏ¾®ÔÏÔÂÍÍÎå¾®¡¯¡¯¡¯
-		return;
-	}
-
-	// Æá¼Ô  Û¢Ø¦Ê§ÛÍÆËÒà¼þ»¥ÓòÚÛØÆÐ×
-	if( needSeq == act ){
-		// ÓòÚÛØÆÐ×£Û³ðÄ¾»¥    ¾®
-//		print( "³É¹¦\(%d´ÎÊýÊÇ%d)\n", seqNo, needSeq );
-		seqNo ++;
-		if( seqNo >= CHAR_getWorkInt( meindex, BODYLAN_E_COMMANDNUM ) ){
-//			print( "ÔÚ´Ë½áÊø¡£\n" );
-		}
-		// ³ð¼°ÞË  Ã«âçÐå
-		CHAR_setWorkInt( actindex, CHAR_WORKSHOPRELEVANT, seqNo );
-	}else{
-		// ÁÃ  ØÆÐ×èëÄþ·´  âÙ¾®ÈÕÖ§Ô»  ØÆ
-		CHAR_setWorkInt( actindex, CHAR_WORKSHOPRELEVANT, 1 );
-//		print( "(%d´ÎÊýÊÇ%d)\n", seqNo, needSeq );
-	}
-
+    // ï¿½ï¿½ï¿½ï¿½  Ã«ï¿½ï¿½ï¿½ï¿½
+    CHAR_setWorkInt(actindex, CHAR_WORKSHOPRELEVANT, seqNo);
+  } else {
+    // ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½Ù¾ï¿½ï¿½ï¿½Ö§Ô»  ï¿½ï¿½
+    CHAR_setWorkInt(actindex, CHAR_WORKSHOPRELEVANT, 1);
+    //		print( "(%dï¿½ï¿½ï¿½ï¿½ï¿½ï¿½%d)\n", seqNo, needSeq );
+  }
 }
 
+//********* ï¿½ï¿½  ï¿½Ý¼ï¿½ï¿½ï¿½     *********
+static void NPC_BodyLan_Profit(int meindex, int playerindex) {
+  char szArg[4096], szP[256];
+  int fl, x, y, pmode, i, subindex, parent;
 
+  // Â¦ï¿½ï¿½  Ù¯
+  if (NPC_Util_GetArgStr(meindex, szArg, sizeof(szArg)) == NULL) {
+    print("npc_bodylan.c:Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n",
+          CHAR_getChar(meindex, CHAR_NPCARGUMENT));
+    return;
+  }
 
-//********* ÔÀ  ÁÝ¼°ÈÔ     *********
-static void NPC_BodyLan_Profit( int meindex, int playerindex )
-{
-	char szArg[4096], szP[256];
-	int fl, x, y, pmode, i, subindex, parent;
-
-	// Â¦ÐÑ  Ù¯  
-    if( NPC_Util_GetArgStr( meindex, szArg, sizeof( szArg ) ) == NULL ){
-    	print( "npc_bodylan.c:Ã»ÓÐÒýÊý(%s)\n",
-    		CHAR_getChar(meindex,CHAR_NPCARGUMENT) );
-    	return ;
+  //*********************************************
+  //
+  //   ï¿½ï¿½    ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Û·ï¿½ï¿½ï¿½ï¿½ï¿½É¬ï¿½ï¿½
+  //
+  //*********************************************
+  if (NPC_Util_GetStrFromStrWithDelim(szArg, "Warp", szP, sizeof(szP)) !=
+      NULL) {
+    // ï¿½ï¿½    ï¿½å·¥ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½ï¿½
+    if (sscanf(szP, "%d,%d,%d", &fl, &x, &y) == 3) {
+    } else {
+      return;
     }
 
-	//*********************************************
-	//
-	//   ÈÔ    ¹«¼°¨à£Û·¥¡õÃóÉ¬ÀÃ
-	//
-	//*********************************************
-	if( NPC_Util_GetStrFromStrWithDelim( szArg, "Warp", szP, sizeof( szP ) ) != NULL ){
-		// ÈÔ    ±å·¥¡õÃó£ÛÕç  äúÔÂ
-		if( sscanf( szP, "%d,%d,%d", &fl, &x, &y ) == 3 ){
-		}else{
-			return;
-		}
-
-		pmode = CHAR_getWorkInt( playerindex, CHAR_WORKPARTYMODE );
-		switch( pmode ){
-		case 1: 
-			parent = playerindex;
-			break;
-		case 2:
-			parent = CHAR_getWorkInt( playerindex, CHAR_WORKPARTYINDEX1 );
-			break;
-		default:
-			CHAR_warpToSpecificPoint( playerindex, fl, x, y );
-			return;
-		}
-		for( i = 0; i < getPartyNum(parent  ); i ++ ){
-			subindex = CHAR_getWorkInt( parent, CHAR_WORKPARTYINDEX1+i );
-			if( CHAR_CHECKINDEX( subindex ) == FALSE )continue;
-			CHAR_warpToSpecificPoint( subindex, fl, x, y );
-		}
-	}
-
-
-
+    pmode = CHAR_getWorkInt(playerindex, CHAR_WORKPARTYMODE);
+    switch (pmode) {
+    case 1:
+      parent = playerindex;
+      break;
+    case 2:
+      parent = CHAR_getWorkInt(playerindex, CHAR_WORKPARTYINDEX1);
+      break;
+    default:
+      CHAR_warpToSpecificPoint(playerindex, fl, x, y);
+      return;
+    }
+    for (i = 0; i < getPartyNum(parent); i++) {
+      subindex = CHAR_getWorkInt(parent, CHAR_WORKPARTYINDEX1 + i);
+      if (CHAR_CHECKINDEX(subindex) == FALSE)
+        continue;
+      CHAR_warpToSpecificPoint(subindex, fl, x, y);
+    }
+  }
 }
 
 #if 1
-static void NPC_BodyLan_Window(
-	int meindex,
-	int talkerindex,
-	int mode
-)
-{
-	char token[1024];
-	char escapedname[2048];
-	char szArg[4096];
-	char szP[256];
-	int fd;
-	int buttontype = 0, windowtype = 0, windowno = 0;
+static void NPC_BodyLan_Window(int meindex, int talkerindex, int mode) {
+  char token[1024];
+  char escapedname[2048];
+  char szArg[4096];
+  char szP[256];
+  int fd;
+  int buttontype = 0, windowtype = 0, windowno = 0;
 
-	if( CHAR_CHECKINDEX( talkerindex ) == FALSE )return;
-	fd = getfdFromCharaIndex( talkerindex );
+  if (CHAR_CHECKINDEX(talkerindex) == FALSE)
+    return;
+  fd = getfdFromCharaIndex(talkerindex);
 
-	// Â¦ÐÑ  Ù¯  
-    if( NPC_Util_GetArgStr( meindex, szArg, sizeof( szArg ) ) == NULL ){
-    	print( "npc_bodylan.c:Ã»ÓÐÒýÊý(%s)\n",
-    		CHAR_getChar(meindex,CHAR_NPCARGUMENT) );
-    	return ;
+  // Â¦ï¿½ï¿½  Ù¯
+  if (NPC_Util_GetArgStr(meindex, szArg, sizeof(szArg)) == NULL) {
+    print("npc_bodylan.c:Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n",
+          CHAR_getChar(meindex, CHAR_NPCARGUMENT));
+    return;
+  }
+
+  szP[0] = 0;
+
+  switch (mode) {
+  case BODYLAN_WIN_FIRST:
+    //   ï¿½Ù±ï¿½  ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    if (NPC_Util_GetStrFromStrWithDelim(szArg, "First", szP, sizeof(szP)) ==
+        NULL) {
+      print("npc_bodylan:Ò»ï¿½ï¿½Ê¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n", szArg);
+      return;
     }
+    sprintf(token, "%s", szP);
+    buttontype = WINDOW_BUTTONTYPE_YES | WINDOW_BUTTONTYPE_NO;
+    windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+    windowno = mode;
+    break;
 
-	szP[0] = 0;
+  case BODYLAN_WIN_LAST_GOOD:
+    //     Æ¥ï¿½ï¿½Ý©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    if (NPC_Util_GetStrFromStrWithDelim(szArg, "Good", szP, sizeof(szP)) ==
+        NULL) {
+      print("npc_bodylan:ï¿½ï¿½ï¿½Ê±Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n", szArg);
+      return;
+    }
+    sprintf(token, "%s", szP);
+    buttontype = WINDOW_BUTTONTYPE_YESNO; // YES|NO
+    windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+    windowno = mode;
+    break;
 
-	switch( mode ){
-	  case BODYLAN_WIN_FIRST:
-		//   âÙ±å  ½ñÄ¾Ð×èëÄþ¼°±¾Øø°×
-		if( NPC_Util_GetStrFromStrWithDelim( szArg, "First", szP, sizeof( szP ) ) == NULL ){
-			print( "npc_bodylan:Ò»¿ªÊ¼½²»°µÄÎÄ×ÖÃ»ÓÐÊäÈë(%s)\n",	szArg );
-			return;
-		}
-		sprintf( token,"%s", szP );
-		buttontype=WINDOW_BUTTONTYPE_YES|WINDOW_BUTTONTYPE_NO;
-	  	windowtype=WINDOW_MESSAGETYPE_MESSAGE;
-	  	windowno=mode;
-	  	break;
+  case BODYLAN_WIN_LAST_NG:
+    //     Æ¥ï¿½ï¿½Ý©ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    if (NPC_Util_GetStrFromStrWithDelim(szArg, "Ng", szP, sizeof(szP)) ==
+        NULL) {
+      print("npc_bodylan:ï¿½ï¿½ï¿½Ê±Ëµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n", szArg);
+      return;
+    }
+    sprintf(token, "%s", szP);
+    buttontype = WINDOW_BUTTONTYPE_OK; // OK
+    windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+    windowno = mode;
+    break;
 
-	  case BODYLAN_WIN_LAST_GOOD:
-		//     Æ¥¿ÒÝ©·ÖÔÈÐ×ÈÕ
-		if( NPC_Util_GetStrFromStrWithDelim( szArg, "Good", szP, sizeof( szP ) ) == NULL ){
-			print( "npc_bodylan:´ð¶ÔÊ±ËµµÄÎÄ×ÖÃ»ÓÐÊäÈë(%s)\n",	szArg );
-			return;
-		}
-		sprintf( token,"%s", szP );
-		buttontype=WINDOW_BUTTONTYPE_YESNO;// YES|NO
-	  	windowtype=WINDOW_MESSAGETYPE_MESSAGE;
-	  	windowno=mode;
-	  	break;
+  case BODYLAN_WIN_GOOD_NO:
+    // ï¿½ï¿½Ý©ï¿½Ý±ï¿½    Ã«Æ½ï¿½Ò¼ï¿½ï¿½ï¿½ï¿½ï¿½
+    if (NPC_Util_GetStrFromStrWithDelim(szArg, "Good_No", szP, sizeof(szP)) ==
+        NULL) {
+      print("npc_bodylan:ï¿½ï¿½ï¿½Ê±È¡ï¿½ï¿½ï¿½ï¿½Æ·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n", szArg);
+      return;
+    }
+    sprintf(token, "%s", szP);
+    buttontype = WINDOW_BUTTONTYPE_OK; // OK
+    windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+    windowno = mode;
+    break;
 
-	  case BODYLAN_WIN_LAST_NG:
-		//     Æ¥¿ÒÝ©·ÖÔÈÐ×ÈÕ
-		if( NPC_Util_GetStrFromStrWithDelim( szArg, "Ng", szP, sizeof( szP ) ) == NULL ){
-			print( "npc_bodylan:´ð´íÊ±ËµµÄÎÄ×ÖÃ»ÓÐÊäÈë(%s)\n",	szArg );
-			return;
-		}
-		sprintf( token,"%s", szP );
-		buttontype=WINDOW_BUTTONTYPE_OK;// OK
-	  	windowtype=WINDOW_MESSAGETYPE_MESSAGE;
-	  	windowno=mode;
-	  	break;
+  case BODYLAN_WIN_ALREADY:
+    // ï¿½ï¿½Æ¥ï¿½ï¿½ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½Ã«ï¿½ï¿½  ï¿½Æ»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    if (NPC_Util_GetStrFromStrWithDelim(szArg, "Good_No", szP, sizeof(szP)) ==
+        NULL) {
+      print("npc_bodylan:ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½Ê±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n", szArg);
+      return;
+    }
+    sprintf(token, "%s", szP);
+    buttontype = WINDOW_BUTTONTYPE_OK; // OK
+    windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+    windowno = mode;
+    break;
 
-	  case BODYLAN_WIN_GOOD_NO:
-		// ¿ÒÝ©ÁÝ±å    Ã«Æ½ÅÒ¼þ±¾»ï
-		if( NPC_Util_GetStrFromStrWithDelim( szArg, "Good_No", szP, sizeof( szP ) ) == NULL ){
-			print( "npc_bodylan:´ð¶ÔÊ±È¡Ïû½±Æ·µÄÎÄ×ÖÃ»ÓÐÊäÈë(%s)\n",	szArg );
-			return;
-		}
-		sprintf( token,"%s", szP );
-		buttontype=WINDOW_BUTTONTYPE_OK;// OK
-	  	windowtype=WINDOW_MESSAGETYPE_MESSAGE;
-	  	windowno=mode;
-	  	break;
+  case BODYLAN_WIN_NOT_PREEVENT:
+    // ï¿½ï¿½ï¿½ï¿½  Û¢Ø¦ï¿½ï¿½Ã¬ï¿½ï¿½ï¿½ï¿½Ã«ï¿½ï¿½Ø¦ï¿½Æ»ï¿½ï¿½ï¿½Ø¦ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+    if (NPC_Util_GetStrFromStrWithDelim(szArg, "Pre_Not", szP, sizeof(szP)) ==
+        NULL) {
+      print("npc_bodylan:?ï¿½ï¿½Ç°ï¿½Â¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½(%s)\n", szArg);
+      return;
+    }
+    sprintf(token, "%s", szP);
+    buttontype = WINDOW_BUTTONTYPE_OK; // OK
+    windowtype = WINDOW_MESSAGETYPE_MESSAGE;
+    windowno = mode;
+    break;
+  default:
+    return;
+  }
 
-	  case BODYLAN_WIN_ALREADY:
-		// ÔÊÆ¥±åÄÌÃ¬¼þÐþÃ«±Î  ØÆ»¯ÖÐÐ×èëÄþ
-		if( NPC_Util_GetStrFromStrWithDelim( szArg, "Good_No", szP, sizeof( szP ) ) == NULL ){
-			print( "npc_bodylan:ÊÂ¼þ½áÊøÊ±µÄÎÄ×ÖÃ»ÓÐÊäÈë(%s)\n",	szArg );
-			return;
-		}
-		sprintf( token,"%s", szP );
-		buttontype=WINDOW_BUTTONTYPE_OK;	// OK
-	  	windowtype=WINDOW_MESSAGETYPE_MESSAGE;
-	  	windowno=mode;
-	  	break;
-
-	case BODYLAN_WIN_NOT_PREEVENT:
-		// ÒÇó¡±å  Û¢Ø¦ÄÌÃ¬¼þÐþÃ«³ðØ¦ØÆ»¯ÖÐØ¦ÖÐèëÄþ
-		if( NPC_Util_GetStrFromStrWithDelim( szArg, "Pre_Not", szP, sizeof( szP ) ) == NULL ){
-			print( "npc_bodylan:?ÊÂÇ°ÊÂ¼þ½áÊøµÄÎÄ×ÖÃ»ÓÐÊäÈë(%s)\n",	szArg );
-			return;
-		}
-		sprintf( token,"%s", szP );
-		buttontype=WINDOW_BUTTONTYPE_OK;	// OK
-	  	windowtype=WINDOW_MESSAGETYPE_MESSAGE;
-	  	windowno=mode;
-	  	break;
-	  default:
-	  	return;
-	}
-
-	makeEscapeString( token, escapedname, sizeof(escapedname));
-	/*-³ð³ðÆ¥ËªññÔÊÔÂ--*/
-	lssproto_WN_send( fd, windowtype,
-					buttontype,
-					windowno,
-					CHAR_getWorkInt( meindex, CHAR_WORKOBJINDEX),
-					escapedname);
-
-
+  makeEscapeString(token, escapedname, sizeof(escapedname));
+  /*-ï¿½ï¿½ï¿½Æ¥Ëªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½--*/
+  lssproto_WN_send(fd, windowtype, buttontype, windowno,
+                   CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), escapedname);
 }
-
-
 
 /*-----------------------------------------
-ÛÍ·ÂÄÌÊ§¼þÐþ¾®ÈÕß¯ÔÈ»¯ÎåÐ×ÁÝ±åôÄÌ«Çë½ñÄ¾ÔÂ£Û
+ï¿½Í·ï¿½ï¿½ï¿½Ê§ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß¯ï¿½È»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½Ì«ï¿½ï¿½ï¿½Ä¾ï¿½Â£ï¿½
 -------------------------------------------*/
-void NPC_BodyLanWindowTalked(
-	int meindex,
-	int talkerindex,
-	int seqno,
-	int select,
-	char *data
-)
-{
+void NPC_BodyLanWindowTalked(int meindex, int talkerindex, int seqno,
+                             int select, char *data) {
 
+  if (NPC_Util_CharDistance(talkerindex, meindex) > 2)
+    return;
 
-	if( NPC_Util_CharDistance( talkerindex, meindex ) > 2) return;
-
-	switch( seqno){
-	case BODYLAN_WIN_LAST_GOOD:	// ¿ÒÝ©ÁÝ±åOK´É½ñÄ¾Ð×ÈÕ
-		if(select==WINDOW_BUTTONTYPE_YES ){
-			NPC_BodyLan_Profit( meindex, talkerindex );
-			// ÃóÒÁÄÌØÀ¡õ±å·ßÛÐ¼°ÄÌ¼þ·¸ÓÀÛÍµ©Ã«Ù¨Ä¾½ñÁùÔÂ
-			CHAR_setWorkInt( talkerindex, CHAR_WORKTRADER, -1 );
-			// ÆË¡õ¸¥¼þµ©·´  âÙ¾®ÈÕ±åâÙÓå¼À
-			CHAR_setWorkInt( talkerindex, CHAR_WORKSHOPRELEVANT, 1 );
-		}else
-		if( select == WINDOW_BUTTONTYPE_NO ){
-			// ¿ÒÝ©ÁÝ±åÆ½ÅÒ¼þ±¾»ï½ñÄ¾Ð×ÈÕ
-			NPC_BodyLan_Window( meindex, talkerindex, BODYLAN_WIN_GOOD_NO );
-			// ÃóÒÁÄÌØÀ¡õ±å·ßÛÐ¼°ÄÌ¼þ·¸ÓÀÛÍµ©Ã«Ù¨Ä¾½ñÁùÔÂ
-			CHAR_setWorkInt( talkerindex, CHAR_WORKTRADER, -1 );
-			// ÆË¡õ¸¥¼þµ©·´  âÙ¾®ÈÕ±åâÙÓå¼À
-			CHAR_setWorkInt( talkerindex, CHAR_WORKSHOPRELEVANT, 1 );
-		}
-		break;
-	default:
-		break;
-	}
-
+  switch (seqno) {
+  case BODYLAN_WIN_LAST_GOOD: // ï¿½ï¿½Ý©ï¿½Ý±ï¿½OKï¿½É½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½
+    if (select == WINDOW_BUTTONTYPE_YES) {
+      NPC_BodyLan_Profit(meindex, talkerindex);
+      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½Ã«Ù¨Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talkerindex, CHAR_WORKTRADER, -1);
+      // ï¿½Ë¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½Ù¾ï¿½ï¿½Õ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT, 1);
+    } else if (select == WINDOW_BUTTONTYPE_NO) {
+      // ï¿½ï¿½Ý©ï¿½Ý±ï¿½Æ½ï¿½Ò¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ï¿½
+      NPC_BodyLan_Window(meindex, talkerindex, BODYLAN_WIN_GOOD_NO);
+      // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½Ã«Ù¨Ä¾ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talkerindex, CHAR_WORKTRADER, -1);
+      // ï¿½Ë¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½  ï¿½Ù¾ï¿½ï¿½Õ±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+      CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT, 1);
+    }
+    break;
+  default:
+    break;
+  }
 }
 
-
-
 #endif
-

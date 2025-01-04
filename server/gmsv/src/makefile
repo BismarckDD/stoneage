@@ -40,7 +40,7 @@ ANIMDATAFILE=char/ls2data.h
 SUBDIR=char npc map item battle magic longzoro mylua lua npc_lua
 LIBS=char/libchar.a npc/libnpc.a map/libmap.a item/libitem.a magic/libmagic.a battle/libbattle.a longzoro/custom.a mylua/libmylua.a npc_lua/libnpc_lua.a lua/libluajit.a
 
-SRC=main.c init.c configfile.c util.c epollnet.c net.c buf.c msignal.c link.c  md5.c shop.c callfromac.c callfromcli.c object.c handletime.c function.c log.c autil.c descrypt.c const.c $(CLIRPCSRC) $(SERVRPCSRC)
+SRC=main.c init.c configfile.c util.c epollnet.c net.c buf.c msignal.c md5.c shop.c callfromac.c callfromcli.c object.c handletime.c function.c log.c autil.c descrypt.c const.c $(CLIRPCSRC) $(SERVRPCSRC)
 
 # SRC=$(wildcard *.c)
 # convert *.c -> *.o, means OBJ is the counter part of SRC.

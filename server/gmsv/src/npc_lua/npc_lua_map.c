@@ -52,7 +52,7 @@ int NPC_ABLua_map_getfloorY(lua_State *_NLL)
 #endif
 
 
-int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL)           //¼ì²âÄ³µãÊÇ·ñÔÚµØÍ¼·¶Î§ÄÚ¡£
+int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL)           //ï¿½ï¿½ï¿½Ä³ï¿½ï¿½ï¿½Ç·ï¿½ï¿½Úµï¿½Í¼ï¿½ï¿½Î§ï¿½Ú¡ï¿½
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);
@@ -64,7 +64,7 @@ int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL)           //¼ì²âÄ³µãÊÇ·ñÔÚµØÍ¼
 }
 
 
-int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL)           //¼ì²âµØÍ¼ÊÇ·ñÖ§³ÖµÇ³ö
+int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL)           //ï¿½ï¿½ï¿½ï¿½Í¼ï¿½Ç·ï¿½Ö§ï¿½ÖµÇ³ï¿½
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -74,8 +74,8 @@ int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL)           //¼ì²âµØÍ¼ÊÇ·ñÖ§³ÖµÇ³ö
 	unsigned int point;
 	point = MAP_getExFloor_XY( map , &map_type);
 	if( point > 0 )	{
-		if( map_type >= 0 )	{	// map_type >= 0 ÓÅÏÈ»Ø¼ÍÂ¼µã
-			if( map == map_type && map >= 0 )	{//»Ø¼ÍÂ¼µã
+		if( map_type >= 0 )	{	// map_type >= 0 ï¿½ï¿½ï¿½È»Ø¼ï¿½Â¼ï¿½ï¿½
+			if( map == map_type && map >= 0 )	{//ï¿½Ø¼ï¿½Â¼ï¿½ï¿½
 			}else	{
 				maparray[0] = (point>>16)&0xffffff;
 				maparray[1] = (point>>8)&0xff;
@@ -88,7 +88,7 @@ int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL)           //¼ì²âµØÍ¼ÊÇ·ñÖ§³ÖµÇ³ö
 		maparray[1] = 52;
 		maparray[2] = 36;
 	}
-#ifdef _MAP_TIME
+#ifdef _MAP_TIMEP
 	else if (map >= 30017 && map >= 30021) 
 	{
 		maparray[0]= 30008;
@@ -104,7 +104,7 @@ int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL)           //¼ì²âµØÍ¼ÊÇ·ñÖ§³ÖµÇ³ö
 	LRetArray(_NLL,maparray,arraysizeof(maparray));
 }
 
-int NPC_Lua_Map_GetfloorX(lua_State *_NLL)           //»ñÈ¡µØÍ¼X³¤¶È
+int NPC_Lua_Map_GetfloorX(lua_State *_NLL)           //ï¿½ï¿½È¡ï¿½ï¿½Í¼Xï¿½ï¿½ï¿½ï¿½
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -114,7 +114,7 @@ int NPC_Lua_Map_GetfloorX(lua_State *_NLL)           //»ñÈ¡µØÍ¼X³¤¶È
 	LRetInt(_NLL, x);
 }
 
-int NPC_Lua_Map_GetfloorY(lua_State *_NLL)           //»ñÈ¡µØÍ¼Y³¤¶È
+int NPC_Lua_Map_GetfloorY(lua_State *_NLL)           //ï¿½ï¿½È¡ï¿½ï¿½Í¼Yï¿½ï¿½ï¿½ï¿½
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -124,7 +124,7 @@ int NPC_Lua_Map_GetfloorY(lua_State *_NLL)           //»ñÈ¡µØÍ¼Y³¤¶È
 	LRetInt(_NLL, y);
 }
 
-int NPC_Lua_Map_GetTileAndObjId(lua_State *_NLL)          //»ñÈ¡µØÍ¼Ä³µãµÄµØ°åºÍ×°ÊÎ²ã
+int NPC_Lua_Map_GetTileAndObjId(lua_State *_NLL)          //ï¿½ï¿½È¡ï¿½ï¿½Í¼Ä³ï¿½ï¿½ÄµØ°ï¿½ï¿½×°ï¿½Î²ï¿½
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);
@@ -139,7 +139,7 @@ int NPC_Lua_Map_GetTileAndObjId(lua_State *_NLL)          //»ñÈ¡µØÍ¼Ä³µãµÄµØ°åºÍ
 	LRetArray(_NLL,maparray,arraysizeof(maparray));
 }
 
-int NPC_Lua_Map_SetTileAndObjId(lua_State *_NLL)           //ÉèÖÃµØÍ¼Ä³µãµÄµØ°åºÍ×°ÊÎ²ã
+int NPC_Lua_Map_SetTileAndObjId(lua_State *_NLL)           //ï¿½ï¿½ï¿½Ãµï¿½Í¼Ä³ï¿½ï¿½ÄµØ°ï¿½ï¿½×°ï¿½Î²ï¿½
 {
 	CheckEx(_NLL, 5);
 	CheckIndexNull(_NLL, 1);
@@ -152,7 +152,7 @@ int NPC_Lua_Map_SetTileAndObjId(lua_State *_NLL)           //ÉèÖÃµØÍ¼Ä³µãµÄµØ°åº
 	LRetInt(_NLL, -1);
 }
 
-int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *_NLL)           //»ñÈ¡Ä³µãÊÇ·ñ¿ÉÒÔÐÐ×ß
+int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *_NLL)           //ï¿½ï¿½È¡Ä³ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	CheckEx2(_NLL, 3,4);
 	CheckIndexNull(_NLL, 1);
@@ -168,7 +168,7 @@ int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *_NLL)           //»ñÈ¡Ä³µãÊÇ·ñ¿É
 	LRetBool(_NLL, IsFly);
 }
 
-int NPC_Lua_Map_GetImageData(lua_State *_NLL)          //»ñÈ¡Í¼Æ¬Êý¾Ý
+int NPC_Lua_Map_GetImageData(lua_State *_NLL)          //ï¿½ï¿½È¡Í¼Æ¬ï¿½ï¿½ï¿½ï¿½
 {
 	CheckEx(_NLL, 2);
 	CheckIndexNull(_NLL, 1);
@@ -183,9 +183,9 @@ int NPC_Lua_Map_GetImageData(lua_State *_NLL)          //»ñÈ¡Í¼Æ¬Êý¾Ý
 			LRetInt(_NLL, TM_RetInt);
 		}
 	}
-	LRetErrNull(_NLL, "´«ÈëµÄ±êÖ¾ÊÇ´íÎóµÄ¡£");
+	LRetErrNull(_NLL, "ï¿½ï¿½ï¿½ï¿½Ä±ï¿½Ö¾ï¿½Ç´ï¿½ï¿½ï¿½Ä¡ï¿½");
 }
-int NPC_Lua_Map_SetImageData(lua_State *_NLL)           //ÉèÖÃÍ¼Æ¬Êý¾Ý
+int NPC_Lua_Map_SetImageData(lua_State *_NLL)           //ï¿½ï¿½ï¿½ï¿½Í¼Æ¬ï¿½ï¿½ï¿½ï¿½
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);
@@ -201,10 +201,10 @@ int NPC_Lua_Map_SetImageData(lua_State *_NLL)           //ÉèÖÃÍ¼Æ¬Êý¾Ý
 			LRetBool(_NLL, TM_RetBool);
 		}
 	}
-	LRetErrNull(_NLL, "´«ÈëµÄ±êÖ¾ÊÇ´íÎóµÄ¡£");
+	LRetErrNull(_NLL, "ï¿½ï¿½ï¿½ï¿½Ä±ï¿½Ö¾ï¿½Ç´ï¿½ï¿½ï¿½Ä¡ï¿½");
 }
 static OBJECT TM_Object = NULL;
-int NPC_Lua_Map_GetTopObj(lua_State *_NLL)           //ÓÃÀ´»ñÈ¡µØÍ¼Ä³µãÉÏ¶ÔÏó
+int NPC_Lua_Map_GetTopObj(lua_State *_NLL)           //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½Í¼Ä³ï¿½ï¿½ï¿½Ï¶ï¿½ï¿½ï¿½
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);
@@ -215,7 +215,7 @@ int NPC_Lua_Map_GetTopObj(lua_State *_NLL)           //ÓÃÀ´»ñÈ¡µØÍ¼Ä³µãÉÏ¶ÔÏó
 	LRetBool(_NLL, TRUE);
 }
 
-int NPC_Lua_Map_GetNextObj(lua_State *_NLL)           //»ñÈ¡ÏÂÒ»¸ö¶ÔÏóË÷Òý
+int NPC_Lua_Map_GetNextObj(lua_State *_NLL)           //ï¿½ï¿½È¡ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	CheckEx(_NLL, 0);
 	int TM_ObjIndex = GET_OBJINDEX(TM_Object);
@@ -228,7 +228,7 @@ int NPC_Lua_Map_GetNextObj(lua_State *_NLL)           //»ñÈ¡ÏÂÒ»¸ö¶ÔÏóË÷Òý
 	LRetInt(_NLL, TM_ObjIndex);
 }
 
-int NPC_Lua_Map_CheckImageIndex(lua_State *_NLL)           //¼ì²âÄ³µØÍ¼ºÅÍ¼Æ¬ÊÇ·ñ´æÔÚ
+int NPC_Lua_Map_CheckImageIndex(lua_State *_NLL)           //ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Í¼ï¿½ï¿½Í¼Æ¬ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -237,7 +237,7 @@ int NPC_Lua_Map_CheckImageIndex(lua_State *_NLL)           //¼ì²âÄ³µØÍ¼ºÅÍ¼Æ¬ÊÇ·
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_CheckIndex(lua_State *_NLL)          //¼ì²âÄ³µØÍ¼ºÅµØÍ¼ÊÇ·ñ´æÔÚ
+int NPC_Lua_Map_CheckIndex(lua_State *_NLL)          //ï¿½ï¿½ï¿½Ä³ï¿½ï¿½Í¼ï¿½Åµï¿½Í¼ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -246,7 +246,7 @@ int NPC_Lua_Map_CheckIndex(lua_State *_NLL)          //¼ì²âÄ³µØÍ¼ºÅµØÍ¼ÊÇ·ñ´æÔÚ
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_MakeNewMap(lua_State *_NLL)          //ÖÆÔìÒ»¸ö¸±±¾µØÍ¼£¬²¢·µ»ØÐÂµØÍ¼ºÅ
+int NPC_Lua_Map_MakeNewMap(lua_State *_NLL)          //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Âµï¿½Í¼ï¿½ï¿½
 {
 	CheckEx2(_NLL, 1, 2);
 	CheckIndexNull(_NLL, 1);
@@ -262,7 +262,7 @@ int NPC_Lua_Map_MakeNewMap(lua_State *_NLL)          //ÖÆÔìÒ»¸ö¸±±¾µØÍ¼£¬²¢·µ»ØÐ
 	LRetInt(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_DelNewMap(lua_State *_NLL)          //É¾³ýÒ»¸ö¸±±¾µØÍ¼
+int NPC_Lua_Map_DelNewMap(lua_State *_NLL)          //É¾ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -271,7 +271,7 @@ int NPC_Lua_Map_DelNewMap(lua_State *_NLL)          //É¾³ýÒ»¸ö¸±±¾µØÍ¼
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_SetExWarp(lua_State *_NLL)          //ÉèÖÃÒ»¸öµØÍ¼µÄÍË³ö´«ËÍµã
+int NPC_Lua_Map_SetExWarp(lua_State *_NLL)          //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Ë³ï¿½ï¿½ï¿½ï¿½Íµï¿½
 {
 	CheckEx(_NLL, 5);
 	CheckIndexNull(_NLL, 1);
@@ -279,12 +279,12 @@ int NPC_Lua_Map_SetExWarp(lua_State *_NLL)          //ÉèÖÃÒ»¸öµØÍ¼µÄÍË³ö´«ËÍµã
 	int exfl = (int)lua_tointeger(_NLL, 2);
 	int exx = (int)lua_tointeger(_NLL, 3);
 	int exy = (int)lua_tointeger(_NLL, 4);
-	int type = (int)lua_tointeger(_NLL, 4);//µØÍ¼ÀàÐÍ
+	int type = (int)lua_tointeger(_NLL, 4);//ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½
 	BOOL TM_Ret = MAP_SetExWarp( map, exfl,exx,exy,type) ;
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_SetMapPoint(lua_State *_NLL)          //ÉèÖÃÒ»¸öµØÍ¼´«ËÍµã ·µ»ØÒ»¸ö´«ËÍµãË÷Òý
+int NPC_Lua_Map_SetMapPoint(lua_State *_NLL)          //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½ï¿½Íµï¿½ ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ï¿½ï¿½ï¿½ï¿½
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -293,7 +293,7 @@ int NPC_Lua_Map_SetMapPoint(lua_State *_NLL)          //ÉèÖÃÒ»¸öµØÍ¼´«ËÍµã ·µ»ØÒ
 	LRetInt(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_DelMapPoint(lua_State *_NLL)          //É¾³ýÒ»¸ö´«ËÍµã
+int NPC_Lua_Map_DelMapPoint(lua_State *_NLL)          //É¾ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -302,7 +302,7 @@ int NPC_Lua_Map_DelMapPoint(lua_State *_NLL)          //É¾³ýÒ»¸ö´«ËÍµã
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_getFloorName(lua_State *_NLL)          //·µ»ØÒ»¸öµØÍ¼Ãû
+int NPC_Lua_Map_getFloorName(lua_State *_NLL)          //ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½Í¼ï¿½ï¿½
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -311,7 +311,7 @@ int NPC_Lua_Map_getFloorName(lua_State *_NLL)          //·µ»ØÒ»¸öµØÍ¼Ãû
 	LRetMsg(_NLL, MapName);
 }
 /*
-int NPC_Lua_Map_Upmap(lua_State *_NLL)          //¸üÐÂµØÍ¼
+int NPC_Lua_Map_Upmap(lua_State *_NLL)          //ï¿½ï¿½ï¿½Âµï¿½Í¼
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);

@@ -1,5 +1,4 @@
-#include <string.h>
-#include "longzoro/version.h"
+#include "version.h"
 #include "char_base.h"
 #include "enemy.h"
 #include "object.h"

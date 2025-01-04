@@ -1,15 +1,14 @@
 #ifndef __COMMON_H__
 #define __COMMON_H__
 
-#include <stdio.h>
-#include <errno.h>
+#include "std_c.h"
 
 /* MACROS */
 #define RETURNFALSEIFFALSE(x) if(!x)return FALSE;
 #define EXITWITHEXITCODEIFFALSE(x,code) if(!x)exit(code);
 #ifdef __GNUC__
-#define print(format,arg...) fprintf( stderr, format ,##arg)
-#define fprint(format,arg...) fprintf( stderr, "%s:%d " format , __FILE__ , __LINE__ , ##arg)
+#define print(format,arg...) fprintf(stderr, format, ##arg)
+#define fprint(format,arg...) fprintf(stderr, "%s:%d:", format, __FILE__, __LINE__, ##arg)
 #endif
 
 #define mj_sprintf(format,arg...) ((sizeof(format)==4)?sprintf(format,##arg):snprintf(format,sizeof(format),##arg))
@@ -18,7 +17,7 @@
 #define debug(x,y) fprintf( stderr, #x " = %" #y "\n" , x)
 #define arraysizeof( x ) (sizeof(x)/sizeof(x[0]))
 
-#define errorprint    {extern int errno;fprint( "%s\n" ,strerror(errno));}
+#define errorprint {extern int errno;fprint( "%s\n" ,strerror(errno));}
 
 #define BACKSLASH '\\'
 #define NEWLINE '\n'
@@ -36,10 +35,7 @@
 
 #define STRINGBUFSIZ 16384 // 4096*4
 
-#define OPEN {FILE* f;f=fopen("a.txt","a");
-#define CLOSE fclose(f);}
-
-#define time_diff_us(new, old) ((unsigned)( (new.tv_sec - old.tv_sec)*1000000 + (new.tv_usec - old.tv_usec)))
+#define time_diff_us(new, old) ((unsigned)((new.tv_sec - old.tv_sec)*1000000 + (new.tv_usec - old.tv_usec)))
 
 extern int snprintf(char*, size_t, const char*, ...)
 #ifdef __GNUC__

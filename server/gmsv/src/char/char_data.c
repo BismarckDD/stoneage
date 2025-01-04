@@ -1,5 +1,4 @@
 #include "version.h"
-#include <string.h>
 #include <math.h>
 #ifdef _REDHAT_V9
 #include <errno.h>
@@ -24,14 +23,10 @@
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
-
 #include "defaultPlayer.h"
-
-#include "ls2data.dat"
-
+#include "../ls2data.h"
 #include "family.h"
 #include "saacproto_cli.h"
-
 #ifdef	_PET_LIMITLEVEL
 void CHAR_CheckPetDoLimitlevel( int petindex , int toindex, int level);	
 #endif
@@ -471,60 +466,6 @@ int CHAR_getNewImagenumberFromEquip(int index, int basebaseimagenumber, ITEM_CAT
     return -1;
 }
 
-
-
-
-/*------------------------------------------------------------
- * hash ��ë�ƻ��£�
- * ¦��
- * ߯Ի��
- *  ئ��
- ------------------------------------------------------------*/
-/*
-void CHAR_initSeekGraphicNumberFromString( void )
-{
-    int     i;
-    char buf[257];
-    FILE *fp;
-    char *name;
-    char *ip;
-    fp = fopen("./ls2data.dat", "r");
-    if(!fp) {
-	    printf("Cannot load graphics, please check ls2data.dat\n");
-	    exit(0);
-    }
-    memset(buf, 0, 257);
-    fgets(buf, 256, fp);
-    cconvertStringNumber = atoi(buf);
-    convertStringNumber = malloc(12 * cconvertStringNumber);
-    for( i = 0 ; i < cconvertStringNumber ; i ++ ) {
-    	memset(buf, 0, 257);
-    	fgets(buf, 256, fp);
-      name = buf;
-      for(ip = buf; *ip != ' '; ip++);
-      *ip = 0;
-      ip++;
-    	convertStringNumber[i].hash = 0;
-    	convertStringNumber[i].name = (char *)malloc(strlen(name) + 1);
-    	memset(convertStringNumber[i].name, 0, strlen(name) + 1);
-    	memcpy(convertStringNumber[i].name, name, strlen(name));
-    	convertStringNumber[i].graphicnumber = atoi(ip);
-    	printf("Graphic %d loaded, name: [%s], graphicnumber: [%d]\n", i+1, convertStringNumber[i].name, convertStringNumber[i].graphicnumber);
-    }
-    fclose(fp);
-//    for( i = 0 ; i < arraysizeof( convertStringNumber ) ; i ++ )
-    for( i = 0 ; i < cconvertStringNumber ; i ++ )
-        convertStringNumber[i].hash = hashpjw(convertStringNumber[i].name);
-}
-*/
-/*------------------------------------------------------------
- *   ٯ  ����  �  įë  �£�
- * ¦��
- *  string      char*         ٯ
- * ߯Ի��
- *  �޷¡� -1
- *  ��ľ��½�����°�ū����  į
- ------------------------------------------------------------*/
 int CHAR_seekGraphicNumberFromString( char* string )
 {
     int     hashvalue;
@@ -543,10 +484,6 @@ int CHAR_seekGraphicNumberFromString( char* string )
 }
 
 
-
-
-/*====================  ������====================*/
-/*  ������ë��  ����    */
 typedef struct tagCHAR_invinsibleArea
 {
     CHAR_AREAKIND   kind;
@@ -557,14 +494,6 @@ typedef struct tagCHAR_invinsibleArea
 CHAR_invincibleArea*    CHAR_invarea;
 int                     CHAR_invareanum;
 
-/*------------------------------------------------------------
- *   �������������ë���£�
- * ¦��
- *  filename        char*       ɬ�ð����̻�
- * ߯Ի��
- *  ��      TRUE(1)
- *  ��      FALSE(0)
- *------------------------------------------------------------*/
 BOOL CHAR_initInvinciblePlace( char* filename )
 {
     FILE*   f;

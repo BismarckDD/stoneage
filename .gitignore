@@ -8,3 +8,8 @@ docker
 *.a
 *.o
 tmp
+gmsvjt
+saacjt
+luajit
+**/lua/*
+copyright.h

@@ -1,8 +1,8 @@
 INCFLAGS=-I../../include -I../lua
 CFLAGS=-w -O3 -Wall -pipe $(INCFLAGS)
 
-PROG=libitem.a
-SRC=item.c item_event.c item_gen.c
+TARGET=libitem.a
+SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
 
 ifeq (0,$(MAKELEVEL))
@@ -12,24 +12,20 @@ AR=ar cr
 MV=mv
 RANLIB=ranlib
 SED=sed
-SHELL=/bin/sh
 endif
 
-all: $(PROG)
+all: $(TARGET)
 
-$(PROG): $(OBJ)
-	$(RM) $(PROG)
-	$(AR) $(PROG) $(OBJ)
-	$(RANLIB) $(PROG)
+$(TARGET): $(OBJ)
+	$(RM) $(TARGET)
+	$(AR) $(TARGET) $(OBJ)
+	$(RANLIB) $(TARGET)
 
-depend:
-	$(MV) makefile makefile.bak
-	$(SED) -ne '1,/^# DO NOT DELETE THIS LINE/p' makefile.bak>makefile
-	$(CC) $(INCFLAGS) -M $(SRC) >> makefile 
-	chmod 777 makefile
-	
+*.o: *.c
+	$(CC) $(CFLAGS) -c $< -o $@
+
 clean:
-	$(RM) $(PROG)
+	$(RM) $(TARGET)
 	$(RM) $(OBJ)
 	$(RM) *~
 

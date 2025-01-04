@@ -1,4 +1,5 @@
 #include "version.h"
+#include <errno.h>
 #include <time.h>
 #include "char.h"
 #include "object.h"
@@ -13,7 +14,6 @@
 #include "battle.h"
 #include "handletime.h"
 #include "family.h"
-#include "errno.h"
 #include "configfile.h"
 
 #ifdef _FM_POINT_PK

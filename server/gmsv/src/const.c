@@ -1,6 +1,4 @@
 #include "version.h"
-#include "common.h"
-
 #include "char.h"
 #include "char_data.h"
 #include "item.h"
