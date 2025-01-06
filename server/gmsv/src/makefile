@@ -69,15 +69,6 @@ $(TARGET): copyright $(RPCSRC) $(ANIMDATAFILE) $(LIBS) $(OBJ)
 copyright:
 	$(SHELL) ./copyright.sh
 	
-depend: $(RPCSRC) $(ANIMDATAFILE)
-	@for dir in $(SUBDIR); do \
-		$(MAKE) -C $$dir depend;\
-	done
-	$(MV) makefile makefile.bak
-	$(SED) -ne '1,/^# DO NOT DELETE THIS LINE/p' makefile.bak>makefile
-	$(CC) $(INCFLAGS) -M $(SRC) >> makefile 
-	chmod 777 makefile
-
 clean:
 	@for dir in $(SUBDIR); do \
 		$(MAKE) -C $$dir clean;\

@@ -24,15 +24,15 @@ extern char *CHAR_setchardata[CHAR_DATACHARNUM];
 
 /* General Config of server. */
 typedef struct tagConfig {
-  char progname[8];         /* program name. */
-  char configfilename[32];  /* config�����̻�   */
-  unsigned char debuglevel; /* ����������ì�� */
+  char progname[8];            /* program name. */
+  char configfilename[32];     /* usually as setup.cf */
+  unsigned char debuglevel;    /* usually as 3 */
   unsigned int usememoryunit; /*��ƹ������������������ */
   unsigned int usememoryunitnum; /*��ƹ�������������� */
   char asname[32];           /*ʧ���������ӡ��Ｐ  �*/
-  unsigned short acservport; /*ʧ���������ӡ��Ｐ�̡���  */
-  char acpasswd[32];     /* ac password, why ac needs password? */
-  char gsnamefromas[32]; /* */
+  unsigned short acservport;   /* Account Server Port*/
+  char acpasswd[32];           /* Account Server Password */
+  char gsnamefromas[32];       /* Game Server Name*/
   // Arminius 7.24 manor pk
   char gsid[32];               // game server chinese id
   unsigned short allowmanorpk; // is this server allow manor pk
@@ -54,51 +54,50 @@ typedef struct tagConfig {
   unsigned int itemnum;      /* item num in Game. */
   unsigned int battlenum;    /* battle num in Game. */
 #ifdef _GET_BATTLE_EXP
-  unsigned int battleexp;   /* �����Ｐ    */
+  unsigned int battleexp;
 #endif
-  char topdir[64];          /* ������ū��������  */
-  char mapdir[64];          /* map description file. */
-  char maptilefile[64];     /* Ѩ����ɬ�ð����̻�  */
-  char battlemapfile[64];   /* ������Ѩ����ɬ�ð����̻�  */
-  char itemfile[64];        /* ʧ��  ةɬ�ð����̻�  */
-  char invfile[64];         /*   ��ɬ�ð����̻�  */
+  char topdir[64];          /* usually as "." */
+  char mapdir[64];          /* data/map. */
+  char maptilefile[64];     /* data/map/ */
+  char battlemapfile[64];   /* data/map/ */
+  char itemfile[64];        /* data/itemfile.txt */
+  char invfile[64];         /* */
   char appearfile[64];      /* ������  ɬ�ð����̻�  */
   char titlenamefile[64];   /* ��į�����̻�   */
   char titleconfigfile[64]; /* ��įɬ�ð����̻�   */
   char encountfile[64];
-  char enemybasefile[64];   /* ����  ɬ�ð����̻�   */
-  char enemyfile[64];       /* ��ɬ�ð����̻�   */
-  char groupfile[64];       /* ������ɬ�ð����̻�   */
-  char magicfile[64];       /* ����ɬ�ð����̻�   */
+  char enemybasefile[64];  /* pet base config file */
+  char enemyfile[64];      /* pet base info file */
+  char groupfile[64];      /* enemy group config file */
+  char magicfile[64];      /* */
 #ifdef _ATTACK_MAGIC
-  char attmagicfile[64];    // ����������
+  char attmagicfile[64]; // ����������
 #endif
   char petskillfile[64]; /* ʸ����  ����ɬ�ð����̻�   */
   char itematomfile[64]; /* ʧ��  ة����    �����̻� */
   char effectfile[64];   /* ����ɬ�ð����̻�  */
   char quizfile[64];     /* ������ɬ�ð����̻�  */
-  char lsgenlog[64]; /*�ӡ��Ｐlsgen ʧ���������������̻�  */
-  char storedir[64]; /*����ʧ��ū��������    */
-  char npcdir[64]; /*NPC��ɬ�ð����̻�ë  �ʷ�ū��������   */
+  char lsgenlog[64];     /*�ӡ��Ｐlsgen ʧ���������������̻�  */
+  char storedir[64];     /*����ʧ��ū��������    */
+  char npcdir[64];       /*NPC��ɬ�ð����̻�ë  �ʷ�ū��������   */
   char logdir[64];
   char logconfname[64];
-  char chatmagicpasswd[64]; /* ��������  ܷ�ɵ������� */
+  char chatmagicpasswd[64]; /**/
 #ifdef _STORECHAR
   char storechar[64];
 #endif
-  unsigned int chatmagiccdkeycheck; /* ��������  ܷƥCDKEYë�����������¾� */
-  unsigned int filesearchnum; /*�����̻�ë����ƥ���°����̻Ｐ��*/
-  unsigned int npctemplatenum; /*NPC��  ���������������̻Ｐ��*/
-  unsigned int npccreatenum;      /*NPC��Ϸǲ�����̻Ｐ��*/
-  unsigned int walksendinterval;  /* ���ʼ�ë˪������ */
-  unsigned int CAsendinterval_ms; /* CAë˪������ (ms)*/
-  unsigned int CDsendinterval_ms; /* CDë˪������ (ms)*/
-  unsigned int Onelooptime_ms; /* 1�����微�������� */
-  unsigned int Petdeletetime; /* ʸ��������  �������� */
-  unsigned int Itemdeletetime; /* ʧ��  ة����  �������� */
-  /* ����̼�  ��ƽ�ҷ¼�����Ƥë�������� */
-  unsigned int CharSavesendinterval;
-  unsigned int addressbookoffmsgnum;
+  unsigned int chatmagiccdkeycheck; /* */
+  unsigned int filesearchnum;       /* */
+  unsigned int npctemplatenum;      /* */
+  unsigned int npccreatenum;        /* */
+  unsigned int walksendinterval;    /* */
+  unsigned int CAsendinterval_ms;   /* What's CA? */
+  unsigned int CDsendinterval_ms;   /* What's CD? */
+  unsigned int Onelooptime_ms;      /* */
+  unsigned int Petdeletetime;       /* */
+  unsigned int Itemdeletetime;      /* */
+  unsigned int CharSavesendinterval;/* */
+  unsigned int addressbookoffmsgnum;/* */
   unsigned int protocolreadfrequency;
   unsigned int allowerrornum;
   unsigned int loghour;
@@ -533,7 +532,8 @@ ReadConf readconf[] = {
     {"topdir", config.topdir, sizeof(config.topdir), NULL, 0},
     {"mapdir", config.mapdir, sizeof(config.mapdir), NULL, 0},
     {"maptilefile", config.maptilefile, sizeof(config.maptilefile), NULL, 0},
-    {"battlemapfile", config.battlemapfile, sizeof(config.battlemapfile), NULL, 0},
+    {"battlemapfile", config.battlemapfile, sizeof(config.battlemapfile), NULL,
+     0},
 #ifdef _ITEMSET6_TXT
     {"itemset6file", config.itemfile, sizeof(config.invfile), NULL, 0},
 #else
@@ -550,21 +550,27 @@ ReadConf readconf[] = {
 #endif
 #endif
     {"invinciblefile", config.invfile, sizeof(config.invfile), NULL, 0},
-    {"appearpositionfile", config.appearfile, sizeof(config.appearfile), NULL, 0},
-    {"titlenamefile", config.titlenamefile, sizeof(config.titlenamefile), NULL, 0},
-    {"titleconfigfile", config.titleconfigfile, sizeof(config.titleconfigfile), NULL, 0},
+    {"appearpositionfile", config.appearfile, sizeof(config.appearfile), NULL,
+     0},
+    {"titlenamefile", config.titlenamefile, sizeof(config.titlenamefile), NULL,
+     0},
+    {"titleconfigfile", config.titleconfigfile, sizeof(config.titleconfigfile),
+     NULL, 0},
     {"encountfile", config.encountfile, sizeof(config.encountfile), NULL, 0},
     {"enemyfile", config.enemyfile, sizeof(config.enemyfile), NULL, 0},
-    {"enemybasefile", config.enemybasefile, sizeof(config.enemybasefile), NULL, 0},
+    {"enemybasefile", config.enemybasefile, sizeof(config.enemybasefile), NULL,
+     0},
     {"groupfile", config.groupfile, sizeof(config.groupfile), NULL, 0},
     {"magicfile", config.magicfile, sizeof(config.magicfile), NULL, 0},
 #ifdef _ATTACK_MAGIC
     {"attmagicfile", config.attmagicfile, sizeof(config.attmagicfile), NULL, 0},
 #endif
 #ifdef _PETSKILL2_TXT
-    {"petskillfile2", config.petskillfile, sizeof(config.petskillfile), NULL, 0},
+    {"petskillfile2", config.petskillfile, sizeof(config.petskillfile), NULL,
+     0},
 #else
-    {"petskillfile1", config.petskillfile, sizeof(config.petskillfile), NULL, 0},
+    {"petskillfile1", config.petskillfile, sizeof(config.petskillfile), NULL,
+     0},
 #endif
     {"itematomfile", config.itematomfile, sizeof(config.itematomfile), NULL, 0},
     {"effectfile", config.effectfile, sizeof(config.effectfile), NULL, 0},
@@ -593,8 +599,10 @@ ReadConf readconf[] = {
     {"Onelooptime", NULL, 0, (void *)&config.Onelooptime_ms, INT},
     {"Petdeletetime", NULL, 0, (void *)&config.Petdeletetime, INT},
     {"Itemdeletetime", NULL, 0, (void *)&config.Itemdeletetime, INT},
-    {"addressbookoffmesgnum", NULL, 0, (void *)&config.addressbookoffmsgnum, INT},
-    {"protocolreadfrequency", NULL, 0, (void *)&config.protocolreadfrequency, INT},
+    {"addressbookoffmesgnum", NULL, 0, (void *)&config.addressbookoffmsgnum,
+     INT},
+    {"protocolreadfrequency", NULL, 0, (void *)&config.protocolreadfrequency,
+     INT},
     {"allowerrornum", NULL, 0, (void *)&config.allowerrornum, INT},
     {"loghour", NULL, 0, (void *)&config.loghour, INT},
     {"battledebugmsg", NULL, 0, (void *)&config.battledebugmsg, INT},
@@ -1583,11 +1591,15 @@ unsigned int getNpccreatenum(void) { return config.npccreatenum; }
 
 unsigned int getWalksendinterval(void) { return config.walksendinterval; }
 
-void setWalksendinterval(unsigned int interval) { config.walksendinterval = interval; }
+void setWalksendinterval(unsigned int interval) {
+  config.walksendinterval = interval;
+}
 
 unsigned int getCAsendinterval_ms(void) { return config.CAsendinterval_ms; }
 
-void setCAsendinterval_ms(unsigned int interval_ms) { config.CAsendinterval_ms = interval_ms; }
+void setCAsendinterval_ms(unsigned int interval_ms) {
+  config.CAsendinterval_ms = interval_ms;
+}
 
 unsigned int getCDsendinterval_ms(void) { return config.CDsendinterval_ms; }
 
@@ -1805,63 +1817,38 @@ BOOL luareadconfigfile(char *data) {
   return TRUE;
 }
 
-/*------------------------------------------------------------
- * ɬ�ð����̻�ë  ��
- * ¦��
- *      filename            �����̻�
- * ߯Ի��
- *      TRUE(1)     ��
- *      FALSE(0)    ��      -> �����̻Ｐ����������  ����
- ------------------------------------------------------------*/
 BOOL readconfigfile(char *filename) {
   FILE *f = NULL;
-  char linebuf[256]; /* ���  ��  ���������� */
-  int linenum = 0;   /* ����ë������ */
-  char realopenfilename[256]; /*    �˱�open ���°����̻�  */
-
+  char linebuf[256];
+  int linenum = 0;
+  char realopenfilename[256];
   char hostname[128];
-
-  /*  ʯ����  ë�ƻ���    */
   if (gethostname(hostname, sizeof(hostname)) != -1) {
     char *initdot;
     initdot = index(hostname, '.');
     if (initdot != NULL)
       *initdot = '\0';
-    snprintf(realopenfilename, sizeof(realopenfilename), "%s.%s", filename,
-             hostname);
-
-    /* �����̻Ｐ������ */
+    snprintf(realopenfilename, sizeof(realopenfilename), "%s.%s",
+             filename, hostname);
     f = fopen(realopenfilename, "r");
-
-    // if( f == NULL )
-    //     print( "Can't open %s.  use %s instead\n", realopenfilename, filename
-    //     );
   }
   if (f == NULL) {
-    f = fopen(filename, "r"); /* �����̻Ｐ������ */
+    f = fopen(filename, "r"); 
     if (f == NULL) {
       print("Can't open %s\n", filename);
       return FALSE;
     }
   }
 
-  /* �����  ��  �� */
   while (fgets(linebuf, sizeof(linebuf), f)) {
     char firstToken[256]; /*1    ��  ٯ  */
     int i;                /*�����  ��*/
     int ret;              /*�������������*/
-
     linenum++;
-
-    deleteWhiteSpace(linebuf); /* remove whitespace    */
-
-    if (linebuf[0] == '#')
-      continue; /* comment */
-    if (linebuf[0] == '\n')
-      continue; /* none    */
-
-    chomp(linebuf); /* remove tail newline  */
-
+    deleteWhiteSpace(linebuf); /* remove whitespace */
+    if (linebuf[0] == '#' || linebuf[0] == '\n')
+      continue; /* comment or blank line. */
+    chomp(linebuf); /* remove tail newline */
     /* delim "=" ƥ  ��(1)�������ͼ�ë  ��*/
     ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
                                       sizeof(firstToken));
@@ -1870,7 +1857,7 @@ BOOL readconfigfile(char *filename) {
       continue;
     }
 
-    /* readconf ��������ƥ����� */
+    /* readconf */
     for (i = 0; i < arraysizeof(readconf); i++) {
       if (strcmp(readconf[i].name, firstToken) == 0) {
         /* match */
@@ -1878,24 +1865,18 @@ BOOL readconfigfile(char *filename) {
         /* delim "=" ƥ2    �������ͼ�ë  ��*/
         ret = getStringFromIndexWithDelim(linebuf, "=", 2, secondToken,
                                           sizeof(secondToken));
-
-        /* NULL  ٯ��������ëƩ���� */
         if (ret == FALSE) {
           print("Find error at %s in line %d. Ignore", filename, linenum);
           break;
         }
-
-        /*NULL��������ҽ  ��ئ��*/
         if (readconf[i].charvalue != NULL)
           strcpysafe(readconf[i].charvalue, readconf[i].charsize, secondToken);
-
         /*NULL��������ҽ  ��ئ��*/
         if (readconf[i].value != NULL) {
           if (strcmp("ON", secondToken) == 0) {
             /*ON��������1ë  ľ��*/
             substitutePointerFromType(readconf[i].value, readconf[i].valuetype,
                                       1.0);
-
           } else if (strcmp("OFF", secondToken) == 0) {
             /*OFF��������1ë  ľ��*/
             substitutePointerFromType(readconf[i].value, readconf[i].valuetype,
@@ -1913,7 +1894,6 @@ BOOL readconfigfile(char *filename) {
   lastConfig();
   return TRUE;
 }
-// ttom add this becaus the second had this function
 /*------------------------------------------------------------
  * �޼������ƽ��ëɬ������
  * ¦��
@@ -1925,13 +1905,6 @@ unsigned int setEncodeKey(void) {
   JENCODE_KEY = config.encodekey;
   return JENCODE_KEY;
 }
-/*------------------------------------------------------------
-* ʧ���������ӡ������̤��  ���������뼰������ëɬ������
-* ¦��
-*  ئ��
-* ߯Ի��
-*  unsigned int ƽ��ë߯��
-------------------------------------------------------------*/
 unsigned int setAcWBSize(void) {
   AC_WBSIZE = config.acwbsize;
   return AC_WBSIZE;

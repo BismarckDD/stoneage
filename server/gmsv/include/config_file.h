@@ -502,8 +502,7 @@ int getFirstLockItem(int index);
 int getPetEnemyDevelopUp();
 #endif
 #ifdef _PETSKILL_NEW_PASSIVE
-int getAutoGetSkill(
-    void); // �Ƿ񿪷�������ñ�������
+int getAutoGetSkill(void);
 int getSkillFusion(void); // ���������Ƿ�����Ŵ�
 int getSkillCount(void);  // ������������
 int getSkillPos(void);    // ��������ϰ��λ��

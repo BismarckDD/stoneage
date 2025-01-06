@@ -198,108 +198,99 @@ BOOL init(int argc, char **argv, char **env) {
       printf("AC WB Size = %d.\n", iWork);
     }
   }
-  // ttom end
 
   if (getDebuglevel() >= 1) {
     //		print("ServerType: %d\n", getServerType() );
-    print("���Եȼ�: %d\n", getDebuglevel());
-    print("���еȼ�: %d\n", getrunlevel());
-    print("���ջ���: %d\n", getrecvbuffer() * 1024);
-    print("���ͻ���: %d\n", getsendbuffer() * 1024);
-    print("���ջ�������: %d\n", getrecvlowatbuffer());
-    print("�ڴ浥Ԫ��С: %d\n", getMemoryunit());
-    print("�ڴ浥Ԫ����: %d\n", getMemoryunitnum());
-    print("�˺ŷ�������ַ: %s\n", getAccountservername());
-    print("�˺ŷ������˿�: %d\n", getAccountserverport());
-    print("��½����������: %s\n", getGameservername());
-    print("��½����������: %s\n", getAccountserverpasswd());
-    print("�ȴ����Ӷ˿�: %d\n", getPortNumber());
-    print("��������к�: %d\n", getServernumber());
-    print("�ظ���ַʹ��: %d\n", getReuseaddr());
-    print("�����������: %d\n", getFdnum());
-    print("������߳���: %d\n", getPetcharnum());
-    print("���������Ŀ: %d\n", getOtherscharnum());
-    print("��������Ŀ: %d\n", getObjnum());
-    print("�����Ʒ��Ŀ: %d\n", getItemnum());
-    print("���ս����Ŀ: %d\n", getBattlenum());
-    print("�����ļ�Ŀ¼: %s\n", getTopdir());
-    print("��ͼ�ļ�Ŀ¼: %s\n", getMapdir());
-    print("��ͼ��ʶ�ļ�: %s\n", getMaptilefile());
-    print("��Ʒ�����ļ�: %s\n", getItemfile());
-    print("����ս���ļ�: %s\n", getInvfile());
-    print("��ʾλ���ļ�: %s\n", getAppearfile());
-    print("���������ļ�: %s\n", getEffectfile());
-    print("ͷ�������ļ�: %s\n", getTitleNamefile());
-    print("ͷ�������ļ�: %s\n", getTitleConfigfile());
-    print("���������ļ�: %s\n", getEncountfile());
-    print("������Ⱥ�ļ�: %s\n", getGroupfile());
-    print("��������ļ�: %s\n", getEnemyBasefile());
-    print("���������ļ�: %s\n", getEnemyfile());
-    print("����ħ���ļ�: %s\n", getMagicfile());
-
+    print("Current Debug Level: %d\n", getDebuglevel());
+    print("Current Run Level: %d\n", getrunlevel());
+    print("Recv Buf Size: %d\n", getrecvbuffer() * 1024);
+    print("Send Buf Size: %d\n", getsendbuffer() * 1024);
+    print("Recv Lowat Buf Size: %d\n", getrecvlowatbuffer());
+    print("Memory Unit size: %d\n", getMemoryunit());
+    print("Memory Unit Num: %d\n", getMemoryunitnum());
+    print("Account Server Name: %s\n", getAccountservername()); // SAAC -> StoneAge Account
+    print("Account Server Port: %d\n", getAccountserverport());
+    print("Account Server Password: %s\n", getAccountserverpasswd());
+    print("Game Server Name: %s\n", getGameservername()); // GMSV -> Game Server
+    print("Game Server Port: %d\n", getPortNumber());
+    print("Game Server Num: %d\n", getServernumber());
+    print("If reuse address: %d\n", getReuseaddr());
+    print("FD number: %d\n", getFdnum());
+    print("PetChar Number: %d\n", getPetcharnum());
+    print("OtherChar Number: %d\n", getOtherscharnum());
+    print("Object Number: %d\n", getObjnum());
+    print("Item Number: %d\n", getItemnum());
+    print("Battle Num: %d\n", getBattlenum());
+    print("TopDir: %s\n", getTopdir());
+    print("MapDir: %s\n", getMapdir());
+    print("MapTilePath: %s\n", getMaptilefile());
+    print("ItemFilePath: %s\n", getItemfile());
+    print("InvinciblePlaceDefinitionFilePath: %s\n", getInvfile());
+    print("AppearFilePath: %s\n", getAppearfile());
+    print("EffectFilePath: %s\n", getEffectfile());
+    print("TitleNameFilePath: %s\n", getTitleNamefile());
+    print("TitleConfigFilePath: %s\n", getTitleConfigfile());
+    print("EncountFilePath: %s\n", getEncountfile());
+    print("Group(EnemyGroup)FilePath: %s\n", getGroupfile());
+    print("EnemyBaseFilePath: %s\n", getEnemyBasefile());
+    print("EnemyConfigFilePath: %s\n", getEnemyfile());
+    print("MagicFilePath: %s\n", getMagicfile());
 #ifdef _ATTACK_MAGIC
-    print("����ħ���ļ�: %s\n", getAttMagicfileName());
+    print("AttackMagicFilepath: %s\n", getAttMagicfileName());
 #endif
-
-    print("���＼���ļ�: %s\n", getPetskillfile());
-
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
-    print("ְҵ�����ļ�: %s\n", getProfession());
+    print("PetSkillFilePath: %s\n", getPetskillfile());
+#ifdef _PROFESSION_SKILL
+    print("ProfessionSkillFilePath: %s\n", getProfession());
 #endif
-
-    print("��Ʒ�ɷ��ļ�: %s\n", getItematomfile());
-    print("���������ļ�: %s\n", getQuizfile());
+    print("ItemAtomFilePath: %s\n", getItematomfile());
+    print("QuizFilePath: %s\n", getQuizfile());
 #ifdef _GMRELOAD
-    print("GM�����ļ�: %s\n", getGMSetfile());
+    print("GM SetFile: %s\n", getGMSetfile());
 #endif
-    print("��־��¼�ļ�: %s\n", getLsgenlogfilename());
-    print("��ԭ����Ŀ¼: %s\n", getStoredir());
-    print("NPC ����Ŀ¼: %s\n", getNpcdir());
-    print("��־�����ļ�: %s\n", getLogdir());
-    print("��־�����ļ�: %s\n", getLogconffile());
-    print("GM��ָ������: %s\n", getChatMagicPasswd());
-    print("ʹ��GM��Ȩ��: %d\n", getChatMagicCDKeyCheck());
-
-    print("NPC ģ����Ŀ: %d\n", getNpctemplatenum());
-    print("NPC �����Ŀ: %d\n", getNpccreatenum());
-
-    print("��·ʱ����: %d\n", getWalksendinterval());
-    print("������м��: %d\n", getCAsendinterval_ms());
-    print("���Ŀ����: %d\n", getCDsendinterval_ms());
-    print("ִ��һ��ʱ��: %d\n", getOnelooptime_ms());
-    print("�������ʱ��: %d\n", getPetdeletetime());
-    print("�������ʱ��: %d\n", getItemdeletetime());
+    print("LsGenLogFile: %s\n", getLsgenlogfilename());
+    print("Store Dir: %s\n", getStoredir());
+    print("NPC Dir: %s\n", getNpcdir());
+    print("Log Dir: %s\n", getLogdir());
+    print("LogConfigFilePath: %s\n", getLogconffile());
+    print("GM Password: %s\n", getChatMagicPasswd());
+    print("GM CDKEY Check: %d\n", getChatMagicCDKeyCheck());
+    print("NPC Template Num: %d\n", getNpctemplatenum());
+    print("NPC Create Num: %d\n", getNpccreatenum());
+    print("Walk Send Interval: %d\n", getWalksendinterval());
+    print("CA Send Interval: %d\n", getCAsendinterval_ms());
+    print("CD Send Interval: %d\n", getCDsendinterval_ms());
+    print("ִOne Loop Time: %d\n", getOnelooptime_ms());
+    print("PetDeleteTime: %d\n", getPetdeletetime());
+    print("ItemDeleteTime: %d\n", getItemdeletetime());
 #ifdef _DEL_DROP_GOLD
     print("ʯ�����ʱ��: %d\n", getGolddeletetime());
 #endif
     print("���ݱ�����: %d\n", getCharSavesendinterval());
-
     print("��Ƭ�����Ŀ: %d\n", getAddressbookoffmsgnum());
     print("��ȡƵ��Э��: %d\n", getProtocolreadfrequency());
-
     print("���Ӵ�������: %d\n", getAllowerrornum());
 #ifdef _GET_BATTLE_EXP
     print("ս�����鱶��: %d��\n", getBattleexp());
 #endif
 #ifdef _NEW_PLAYER_CF
-    print("��������ת��: %dת\n", getNewplayertrans());
-    print("��������ȼ�: %d��\n", getNewplayerlv());
-    print("���������Ǯ: %d S\n", getNewplayergivegold());
-    print("��������ȼ�: %d��\n", getNewplayerpetlv());
+    print("NewPlayerTrans: %d\n", getNewplayertrans());
+    print("NewPlayerLevel: %d\n", getNewplayerlv());
+    print("NewPlayerGold: %d(stone).\n", getNewplayergivegold());
+    print("NewPlayerPetLevel: %d\n", getNewplayerpetlv());
 #ifdef _VIP_SERVER
     print("����ӵ�е���: %d��\n", getNewplayergivevip());
 #endif
-    print("��������ȼ�: %d\n", getRidePetLevel());
+    print("RidePetLevel: %d\n", getRidePetLevel());
 #ifdef _NEW_PLAYER_RIDE
-    print("�����������: %s\n", getPlayerRide());
+    print("NewPlayerRide: %s\n", getPlayerRide());
 #endif
-    print("����ӵ�г���: NO1:%d NO2:%d NO3:%d NO4:%d NO5:%d\n",
+    print("NewPlayerGivePet: NO1:%d NO2:%d NO3:%d NO4:%d NO5:%d\n",
           getNewplayergivepet(0), getNewplayergivepet(1),
           getNewplayergivepet(2), getNewplayergivepet(3),
           getNewplayergivepet(4));
-    print("����ӵ����Ʒ: ITEM1:%d ITEM2:%d ITEM3:%d ITEM4:%d ITEM5:%d\n"
-          "��������������ITEM1:%d ITEM2:%d ITEM3:%d ITEM4:%d ITEM5:%d\n"
-          "��������������ITEM1:%d ITEM2:%d ITEM3:%d ITEM4:%d ITEM5:%d\n",
+    print("NewPlayerGiveItem(1): ITEM1:%d ITEM2:%d ITEM3:%d ITEM4:%d ITEM5:%d\n"
+          "NewPlayerGiveItem(2): ITEM1:%d ITEM2:%d ITEM3:%d ITEM4:%d ITEM5:%d\n"
+          "NewPlayerGiveItem(3): ITEM1:%d ITEM2:%d ITEM3:%d ITEM4:%d ITEM5:%d\n",
           getNewplayergiveitem(0), getNewplayergiveitem(1),
           getNewplayergiveitem(2), getNewplayergiveitem(3),
           getNewplayergiveitem(4), getNewplayergiveitem(5),
@@ -324,7 +315,7 @@ BOOL init(int argc, char **argv, char **env) {
 #endif
 
 #ifdef _BATTLE_FLOOR
-    print("�Ƿ�ǿ��ս��: %s\n", getBattleFloorCF());
+    print("BattleFloorCF: %s\n", getBattleFloorCF());
     if (strcmp(getBattleFloorCF(), "��"))
       print("ǿ��ս����ͼ: ��ͼ1:%d ��ͼ2:%d ��ͼ3:%d ��ͼ4:%d ��ͼ5:%d\n",
             getBattleFloor(1), getBattleFloor(2), getBattleFloor(3),
@@ -358,10 +349,10 @@ BOOL init(int argc, char **argv, char **env) {
 #endif
 
 #ifdef _RIDELEVEL
-    print("���ȼ����: %d��\n", getRideLevel());
+    print("RIDE LEVEL: %d\n", getRideLevel());
 #endif
 #ifdef _REVLEVEL
-    print("��ԭ���޵ȼ�: %s��\n", getRevLevel());
+    print("REV LEVEL: %s\n", getRevLevel());
 #endif
 #ifdef _TRANS_LEVEL_CF
     print("һ��ȼ�����: %d��\n", getYBLevel());
@@ -390,22 +381,21 @@ BOOL init(int argc, char **argv, char **env) {
     print("�����ٻ�����: %d��\n", getAngelPlayerMun());
 #endif
 #ifdef _RIDEMODE_20
-    print("2.0 ���ģʽ: %d\n", getRideMode());
+    print("2.0 RIDE MODE: %d\n", getRideMode());
 #endif
 #ifdef _FM_POINT_PK
-    print("ׯ԰����ģʽ: %s\n", getFmPointPK());
+    print("Family Point PK: %s\n", getFmPointPK());
 #endif
   }
-
   { // andy_add 2003/05/05 check GameServer Name
     char *GameServerName;
     GameServerName = getGameserverID();
     if (GameServerName == NULL || strlen(GameServerName) <= 0) {
       return FALSE;
-      print("\n��Ϸ������ID: %s\n", GameServerName);
+      print("\nGameServerName ID: %s\n", GameServerName);
     }
   }
-  print("��ʼ��ʼ��\n");
+  print("Start to init Resource.\n");
 
   // #define DEBUG1( arg... ) if( getDebuglevel()>1 ){##arg}
   print("start to init memory......");
@@ -413,10 +403,10 @@ BOOL init(int argc, char **argv, char **env) {
   RETURN_FALSE_IF_FALSE(memInit());
   print("memory inited.\n");
 
-  print("ʼ�ջ����ӿռ�......");
+  print("Start to init Connect.");
   if (!initConnect(getFdnum()))
     goto MEMEND;
-  print("���\n");
+  print("succeed.\n");
   while (1) {
     print("start to listen port: %d......", getPortNumber());
 #ifdef _EPOLL_ET_MODE
@@ -429,12 +419,12 @@ BOOL init(int argc, char **argv, char **env) {
     else
       break;
   }
-  print("���\n");
-  print("��������......");
+  print("succeed.\n");
+  print("Start to init object array......");
   if (!initObjectArray(getObjnum()))
     goto CLOSEBIND;
-  print("���\n");
-  print("��������......");
+  print("succeed.\n");
+  print("Start to init char arry......");
 #ifdef _OFFLINE_SYSTEM
   if (!CHAR_initCharArray(getPlayercharnum(), getPetcharnum(),
                           getOtherscharnum()))
@@ -442,12 +432,16 @@ BOOL init(int argc, char **argv, char **env) {
   if (!CHAR_initCharArray(getFdnum(), getPetcharnum(), getOtherscharnum()))
 #endif
     goto CLOSEBIND;
-  print("���\n");
-  print("������Ʒ......");
-  if (!ITEM_readItemConfFile(getItemfile()))
+  print("succeed.\n");
+  print("Start to read item configuration file......");
+  if (!ITEM_readItemConfFile(getItemfile())) {
+    print("read item conf file failed.\n");
     goto CLOSEBIND;
-  if (!ITEM_initExistItemsArray(getItemnum()))
+  }
+  if (!ITEM_initExistItemsArray(getItemnum())) {
+    print("init exist items array failed.\n");
     goto CLOSEBIND;
+  }
   print("succeed.\n");
   print("Start to init battle array......");
   if (!BATTLE_initBattleArray(getBattlenum()))
@@ -457,34 +451,30 @@ BOOL init(int argc, char **argv, char **env) {
   if (!initFunctionTable())
     goto CLOSEBIND;
   print("succeed.\n");
-  print("��ʼ���ʼ�......");
+  print("Start to init address book related......");
   if (!PETMAIL_initOffmsgBuffer(getAddressbookoffmsgnum()))
     goto CLOSEBIND;
-  print("���\n");
-  print("��ȡ����ս���ļ�......");
+  print("succeed.\n");
+  print("Start to init invincible place......");
   if (!CHAR_initInvinciblePlace(getInvfile()))
     goto CLOSEBIND;
-  print("���\n");
+  print("succeed.\n");
   print("��ȡ��ʾλ���ļ�......");
   if (!CHAR_initAppearPosition(getAppearfile()))
     goto CLOSEBIND;
-  print("���\n");
-
+  print("succeed.\n");
   print("��ȡͷ�������ļ�......");
   if (!TITLE_initTitleName(getTitleNamefile()))
     goto CLOSEBIND;
-  print("���\n");
-
+  print("succeed.\n");
   print("��ȡͷ�������ļ�......");
   if (!TITLE_initTitleConfig(getTitleConfigfile()))
     goto CLOSEBIND;
-  print("���\n");
-
-  print("��ȡ���������ļ�......");
+  print("succeed.\n");
+  print("Start to init Encount......");
   if (!ENCOUNT_initEncount(getEncountfile()))
     goto CLOSEBIND;
-  print("���\n");
-
+  print("succeed.\n");
   print("Start to read enemy base config file......");
   if (!ENEMYTEMP_initEnemy(getEnemyBasefile()))
     goto CLOSEBIND;
@@ -502,23 +492,23 @@ BOOL init(int argc, char **argv, char **env) {
     goto CLOSEBIND;
   print("succeed.\n");
 #ifdef _ATTACK_MAGIC
-  print("��ȡħ�������ļ�......");
+  print("Start to init attack magic......");
   if (!ATTMAGIC_initMagic(getAttMagicfileName()))
     goto CLOSEBIND;
-  print("ħ�������ļ� -->%s......", getAttMagicfileName());
+  print("attack magic file path: %s......", getAttMagicfileName());
   print("succeed.\n");
 #endif
-  print("��ȡ���＼���ļ�......");
+  print("Start to init pet skill......");
   if (!PETSKILL_initPetskill(getPetskillfile()))
     goto CLOSEBIND;
   print("succeed.\n");
 #ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
-  print("��ȡְҵ�����ļ�......");
+  print("Start to init profession skill.....");
   if (!PROFESSION_initSkill(getProfession()))
     goto CLOSEBIND;
   print("succeed.\n");
 #endif
-  print("��ȡ��Ʒ�ɷ��ļ�......");
+  print("Start to init Item Atom......");
   if (!ITEM_initItemAtom(getItematomfile()))
     goto CLOSEBIND;
   print("succeed.\n");

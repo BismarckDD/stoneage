@@ -42,24 +42,24 @@ typedef enum
     E_T_IMGNUMBER,
     E_T_PETFLG,
     E_T_SIZE,
-	E_T_ATOMBASEADD1,
-	E_T_ATOMFIXMIN1,
-	E_T_ATOMFIXMAX1,
-	E_T_ATOMBASEADD2,
-	E_T_ATOMFIXMIN2,
-	E_T_ATOMFIXMAX2,
-	E_T_ATOMBASEADD3,
-	E_T_ATOMFIXMIN3,
-	E_T_ATOMFIXMAX3,
-	E_T_ATOMBASEADD4,
-	E_T_ATOMFIXMIN4,
-	E_T_ATOMFIXMAX4,
-	E_T_ATOMBASEADD5,
-	E_T_ATOMFIXMIN5,
-	E_T_ATOMFIXMAX5,
-    E_T_LIMITLEVEL,	// Arminius 7.30 limit level
+  E_T_ATOMBASEADD1,
+  E_T_ATOMFIXMIN1,
+  E_T_ATOMFIXMAX1,
+  E_T_ATOMBASEADD2,
+  E_T_ATOMFIXMIN2,
+  E_T_ATOMFIXMAX2,
+  E_T_ATOMBASEADD3,
+  E_T_ATOMFIXMIN3,
+  E_T_ATOMFIXMAX3,
+  E_T_ATOMBASEADD4,
+  E_T_ATOMFIXMIN4,
+  E_T_ATOMFIXMAX4,
+  E_T_ATOMBASEADD5,
+  E_T_ATOMFIXMIN5,
+  E_T_ATOMFIXMAX5,
+    E_T_LIMITLEVEL,  // Arminius 7.30 limit level
 #ifdef _PET_FUSION
-	E_T_FUSIONCODE,
+  E_T_FUSIONCODE,
 #endif
     E_T_DATAINTNUM,
 }ENEMYTEMP_DATAINT;
@@ -85,9 +85,9 @@ typedef enum
     ENEMY_CREATEMAXNUM,
     ENEMY_CREATEMINNUM,
     ENEMY_TACTICS,
-	ENEMY_EXP,
+  ENEMY_EXP,
     ENEMY_DUELPOINT,
-	ENEMY_STYLE,
+  ENEMY_STYLE,
     ENEMY_PETFLG,               /* Ê¸ÓÀÐþ±åØ¦ÔÂ¾®Éýµ¤¾® */
 
     ENEMY_ITEM1,
@@ -120,7 +120,7 @@ typedef enum
     ENEMY_NAME,
     ENEMY_TACTICSOPTION,
 #ifdef _BATTLENPC_WARP_PLAYER
-	ENEMY_ACT_CONDITION,
+  ENEMY_ACT_CONDITION,
 #endif
     ENEMY_DATACHARNUM,
 }ENEMY_DATACHAR;
@@ -128,8 +128,8 @@ typedef enum
 typedef enum
 {
     GROUP_ID,
-	GROUP_APPEARBYITEMID,		/* ³ð¼°Ê§ÄÌ  Ø©Ã«  ÔÈ»¯ÖÐÐ×ÈÕÇëòØÔÊÔÂ -1 ·´  ÷»*/
-	GROUP_NOTAPPEARBYITEMID,	/* ³ð¼°Ê§ÄÌ  Ø©Ã«  ÔÈ»¯ÖÐÐ×ÈÕÇëòØØÆØ¦ÖÐ -1 ·´  ÷»*/
+  GROUP_APPEARBYITEMID,    /* ³ð¼°Ê§ÄÌ  Ø©Ã«  ÔÈ»¯ÖÐÐ×ÈÕÇëòØÔÊÔÂ -1 ·´  ÷»*/
+  GROUP_NOTAPPEARBYITEMID,  /* ³ð¼°Ê§ÄÌ  Ø©Ã«  ÔÈ»¯ÖÐÐ×ÈÕÇëòØØÆØ¦ÖÐ -1 ·´  ÷»*/
     ENEMY_ID1,
     ENEMY_ID2,
     ENEMY_ID3,
@@ -171,7 +171,7 @@ typedef struct tagENEMY_EnemyTable
 typedef struct tagENEMYTEMP_Table
 {
     int         intdata[E_T_DATAINTNUM];
-	//ANDY_EDIT
+    //ANDY_EDIT
     STRING64    chardata[E_T_DATACHARNUM];
 
 }ENEMYTEMP_Table;
@@ -183,27 +183,23 @@ typedef struct tagGROUP_Table
     int         enemyarray[CREATEPROB1 - ENEMY_ID1];
 }GROUP_Table;
 
-
-
-INLINE BOOL ENEMY_CHECKINDEX( int index);
-INLINE int ENEMY_setInt( int index, ENEMY_DATAINT element, int data);
-INLINE int ENEMY_getInt( int index, ENEMY_DATAINT element);
-
+INLINE BOOL ENEMY_CHECKINDEX(int index);
+INLINE int ENEMY_setInt(int index, ENEMY_DATAINT element, int data);
+INLINE int ENEMY_getInt(int index, ENEMY_DATAINT element);
 INLINE int *ENEMY_getIntdata( int index);
-
-INLINE BOOL ENEMY_setChar( int index ,ENEMY_DATACHAR element, char* new );
-INLINE char *ENEMY_getChar( int index, ENEMY_DATACHAR element);
-int ENEMY_getEnemyNum( void);
-BOOL ENEMY_initEnemy( char* filename );
-BOOL ENEMY_reinitEnemy( void );
-int ENEMY_createEnemy( int array, int baselevel );
-int *ENEMY_getEnemy( int charaindex, int x, int y);
+INLINE BOOL ENEMY_setChar(int index, ENEMY_DATACHAR element, char* new);
+INLINE char *ENEMY_getChar(int index, ENEMY_DATACHAR element);
+int ENEMY_getEnemyNum(void);
+BOOL ENEMY_initEnemy(const char* filename);
+BOOL ENEMY_reinitEnemy(void);
+int ENEMY_createEnemy(int array, int baselevel);
+int *ENEMY_getEnemy(int charaindex, int x, int y);
 int ENEMY_createPetFromEnemyIndex( int charaindex, int array);
-int ENEMY_createPet( int array, int vital, int str, int tgh, int dex);
-int ENEMY_getEnemyArrayFromId( int EnemyId);
-int ENEMY_getEnemyArrayFromTempNo( int EnemyTempNo);
-int ENEMY_getEnemyIdFromTempNo( int EnemyTempNo);
-int ENEMY_getEnemyTempNoFromId( int EnemyId);
+int ENEMY_createPet(int array, int vital, int str, int tgh, int dex);
+int ENEMY_getEnemyArrayFromId(int enemy_id);
+int ENEMY_getEnemyArrayFromTempNo(int EnemyTempNo);
+int ENEMY_getEnemyIdFromTempNo(int EnemyTempNo);
+int ENEMY_getEnemyTempNoFromId(int EnemyId);
 
 #ifdef _TEST_DROPITEMS
 int ENEMY_TEST_createPetIndex( int array);

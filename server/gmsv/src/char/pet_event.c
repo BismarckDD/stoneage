@@ -1,8 +1,4 @@
 #include "version.h"
-#include <stdio.h>
-#include <stdlib.h>
-
-#include "common.h"
 #include "object.h"
 #include "char_base.h"
 #include "char.h"
@@ -13,7 +9,6 @@
 #include "log.h"
 #include "lssproto_serv.h"
 // Arminius 8.14 pet talk
-#include <string.h>
 #include "npc_exchangeman.h"
 #include "npc_eventaction.h"
 #ifdef _ALLBLUES_LUA
@@ -22,7 +17,8 @@
 #ifdef _PET_TALK
 //BOOL PetTalk_CheckFree( int meindex, int  toindex, char *buf);
 BOOL PetTalk_CheckFree( int meindex, int talker, char *buf);
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 extern int CheckCharMaxItem(int charindex);
 #endif
 BOOL PetTalk_BSCheck(int meindex,int talker,char* buf);
@@ -52,7 +48,7 @@ char *Pet_TalkGetFunStr( char *temp , char *buf, int len)
 	char talkfun[ 10240];
 	char buf1[256],buf2[256],buf3[256];
 	FILE *petarg;
-	char	*cStr=NULL; 
+	char *cStr=NULL; 
 	int talkNo=1,mark=1;
 	char	line[4096];
 	BOOL find=FALSE;
@@ -313,11 +309,14 @@ BOOL PetTalk_DelItem(int meindex,int talker,char *buf)
 			itemno = atoi(buf2);
 			getStringFromIndexWithDelim(buff3,"*",2,buf2,sizeof(buf2));
 			kosuu = atoi(buf2);
-#ifdef _NEW_ITEM_
-	int itemMax = CheckCharMaxItem(talker);
+#ifdef _NEW_ITEM_
+
+	int itemMax = CheckCharMaxItem(talker);
+
 #endif
 			for( i =0 ;
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 				i < itemMax 
 #else
 				i < CHAR_MAXITEMHAVE
@@ -355,12 +354,15 @@ BOOL PetTalk_DelItem(int meindex,int talker,char *buf)
 				}
 			}		
 		}else{
-#ifdef _NEW_ITEM_
-	int itemMax = CheckCharMaxItem(talker);
+#ifdef _NEW_ITEM_
+
+	int itemMax = CheckCharMaxItem(talker);
+
 #endif
 			/*--蓟氏分  寞及失奶  丞毛蓟请---*/
 			for( j = 0 ; 
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 				j < itemMax
 #else
 				j < CHAR_MAXITEMHAVE
@@ -402,14 +404,17 @@ BOOL PetTalk_AddItem(int meindex, int talker, char *buf)
 	int spaceNum=5,i;
 	char buff3[256], msgbuf[64], token[256];
 	int ret;
-#ifdef _NEW_ITEM_
-	int itemMax = CheckCharMaxItem(talker);
+#ifdef _NEW_ITEM_
+
+	int itemMax = CheckCharMaxItem(talker);
+
 #endif
 
   while( getStringFromIndexWithDelim(buf , "," , k, buff3, sizeof(buff3)) !=FALSE ){
 	k++;
 		for( i = spaceNum ;
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 			i <itemMax
 #else
 			i < CHAR_MAXITEMHAVE
@@ -422,7 +427,8 @@ BOOL PetTalk_AddItem(int meindex, int talker, char *buf)
 			}
 		}                                                                                                                                                                                                                                                                                                                                      
 		if(
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 			i==itemMax
 #else
 			i == CHAR_MAXITEMHAVE
@@ -443,7 +449,8 @@ BOOL PetTalk_AddItem(int meindex, int talker, char *buf)
 			continue;
 		ret = CHAR_addItemSpecificItemIndex( talker, itemindex);
 		if( ret < 0 ||
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 			ret >= CheckCharMaxItem(talker)
 #else
 			ret >= CHAR_MAXITEMHAVE
@@ -675,11 +682,14 @@ BOOL PetTalk_WarpManReduce(int meindex,int talker,char *buf)
 	itemno = atoi(buf3);
 	getStringFromIndexWithDelim(buf2,"*",2,buf3,sizeof(buf3));
 	kosuu = atoi(buf3);
-#ifdef _NEW_ITEM_
-	int itemMax = CheckCharMaxItem(talker);
+#ifdef _NEW_ITEM_
+
+	int itemMax = CheckCharMaxItem(talker);
+
 #endif
 	for( i=0 ; 
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 		i <itemMax
 #else
 		i < CHAR_MAXITEMHAVE
@@ -749,7 +759,8 @@ BOOL PetTalk_ItemCheck(int meindex,int talker,int itemNo,int flg)
 	int itemMax = CheckCharMaxItem(talker);
 #endif
 	for( i=0;
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 		i<itemMax
 #else
 		i < CHAR_MAXITEMHAVE

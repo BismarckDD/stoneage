@@ -5,7 +5,6 @@
 #endif
 #include "autil.h"
 #include "readmap.h"
-#include "common.h"
 #include "util.h"
 #include "anim_tbl.h"
 #include "battle.h"
@@ -1105,24 +1104,8 @@ static int EnemyExpTbl[]={
 1910,    // 87
 1950,    // 88
 1990    // 89
-};           // 90
+};      // 90
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-// ���ö�ئ��������ң
 int GetEnemyExp( int level ){
 /*
   int exp = 0;
@@ -1215,7 +1198,6 @@ static int LevelUpTbl[] = { // ����ֵ �ȼ� �����
    25996856,  27783000,  29705340,  31776872,  34012224,  36427912,  // 109
    39042666,  41877804,  44957696,  48310329,  51968004,  55968200,  // 115
    60354645,  65178685,  70501009,  76393874,  82944000,
-
     95270613,  // 121 Nuke 0624 EX=(lv^4)/(2.5-0.25*(lv-120))
    110766728, 130792366, 157614250, 195312500,            // 125
    252047376,      // 126 EX=lv^4+60000000*(lv-126)^2 Nuke 0816
@@ -1225,7 +1207,7 @@ static int LevelUpTbl[] = { // ����ֵ �ȼ� �����
 };
 
 int CHAR_GetLevel()
-{  
+{ 
   return arraysizeof( LevelUpTbl )-1;
 }
 int CHAR_GetLevelExp( int charaindex, int level)
@@ -1453,37 +1435,35 @@ int CHAR_PetTakeDrop( int petindex, int floor, int ox, int oy)  //ǿ�ƶ���
   return floor;
 }
 
-int CHAR_PetTakeLevelUp( int petindex, int lv)//ǿ�Ƴ�������
+int CHAR_PetTakeLevelUp(int petindex, int lv)
 {
   int k;
-  for( k = 1; k < lv; k ++ ){
-    CHAR_PetLevelUp( petindex );
-    CHAR_PetAddVariableAi( petindex, AI_FIX_PETLEVELUP );
-    CHAR_setInt( petindex, CHAR_LV, CHAR_getInt( petindex, CHAR_LV) +1 );
+  for(k = 1; k < lv; ++k){
+    CHAR_PetLevelUp(petindex);
+    CHAR_PetAddVariableAi(petindex, AI_FIX_PETLEVELUP);
+    CHAR_setInt(petindex, CHAR_LV, CHAR_getInt(petindex, CHAR_LV) + 1);
   }
-
-  CHAR_complianceParameter( petindex );
+  CHAR_complianceParameter(petindex);
   return k;
 }
 
 #ifdef _NEW_MANOR_LAW
-extern  struct  FM_POINTLIST fmpointlist;
+extern struct FM_POINTLIST fmpointlist;
 #endif
 
-int CHAR_PetLevelUp( int petindex )
+int CHAR_PetLevelUp(int petindex)
 {
   struct _RankRandTbl{
     int min;
     int max;
   }RankRandTbl[] = {
-    { 450, 500 },
-    { 470, 520 },
-    { 490, 540 },
-    { 510, 560 },
-    { 530, 580 },
-    { 550, 600 },
+    { 450, 500 }, // PET_RANK0
+    { 470, 520 }, // PET_RANK1
+    { 490, 540 }, // PET_RANK2
+    { 510, 560 }, // PET_RANK3
+    { 530, 580 }, // PET_RANK4
+    { 550, 600 }, // PET_RANK5
   };
-  
   float Param[4] = { 0.0, 0.0, 0.0, 0.0 };
   int LevelUpPoint, petrank;
   float str, vital, dex, tgh, fRand, i;
@@ -1491,8 +1471,8 @@ int CHAR_PetLevelUp( int petindex )
   int iGetFame = 0;
 #endif  
 
-  if( CHAR_CHECKINDEX( petindex ) == FALSE )  return -1;
-  if( CHAR_getInt( petindex, CHAR_WHICHTYPE ) != CHAR_TYPEPET 
+  if (CHAR_CHECKINDEX(petindex) == FALSE) return -1;
+  if (CHAR_getInt(petindex, CHAR_WHICHTYPE) != CHAR_TYPEPET 
 #ifdef _PLAYER_NPC
       && CHAR_getInt( petindex, CHAR_WHICHTYPE ) != CHAR_TYPEPLAYERNPC
       && CHAR_getInt( petindex, CHAR_WHICHTYPE ) != CHAR_TYPEPLAYERPETNPC
@@ -1501,57 +1481,49 @@ int CHAR_PetLevelUp( int petindex )
       return -1;
   }
 
-  LevelUpPoint = CHAR_getInt( petindex, CHAR_ALLOCPOINT );
-  
-  // ʸ�������¼���
-  petrank = CHAR_getInt( petindex, CHAR_PETRANK );
-  if( petrank < 0 || petrank > 5 ) petrank = 0;
-  
-  vital = (float)(( LevelUpPoint >> 24 ) & 0xFF);
-  str = (float)(( LevelUpPoint >> 16 ) & 0xFF);
-  tgh = (float)(( LevelUpPoint >> 8 ) & 0xFF);
-  dex = (float)(( LevelUpPoint >> 0 ) & 0xFF);
+  LevelUpPoint = CHAR_getInt(petindex, CHAR_ALLOCPOINT);
+  petrank = CHAR_getInt(petindex, CHAR_PETRANK);
+  if (petrank < 0 || petrank > 5) petrank = 0;
+  vital = (float)(( LevelUpPoint >> 24) & 0xFF);
+  str = (float)((LevelUpPoint >> 16) & 0xFF);
+  tgh = (float)((LevelUpPoint >> 8) & 0xFF);
+  dex = (float)((LevelUpPoint >> 0) & 0xFF);
 
-  // ��߼Ԩ�    �������ë���Ȼ�����  �������
-  for( i = 0; i < 10; i ++ ){
-    Param[RAND( 0, 3 )] += 1.0;
+  for (i = 0; i < 10; i++) {
+    Param[RAND(0, 3)] += 1.0;
   }
   
-  // �¼��ͱ巽��  �����¼�ĸة
-  fRand = (float)RAND( RankRandTbl[petrank].min, RankRandTbl[petrank].max )
-    * 0.01;
-  
+  fRand = (float)RAND(RankRandTbl[petrank].min, RankRandTbl[petrank].max) * 0.01;
   // �Ի��Ի���̼�����Ի��ң
   vital = (float)vital * fRand + Param[0] * fRand;
-  str = (float)str   * fRand + Param[1] * fRand;
-  tgh = (float)tgh   * fRand + Param[2] * fRand;
-  dex = (float)dex   * fRand + Param[3] * fRand;
+  str = (float)str * fRand + Param[1] * fRand;
+  tgh = (float)tgh * fRand + Param[2] * fRand;
+  dex = (float)dex * fRand + Param[3] * fRand;
   
-  // ��ң
   CHAR_setInt( petindex, CHAR_VITAL,
-    CHAR_getInt( petindex, CHAR_VITAL ) + max(0, (int)vital) );
+    CHAR_getInt(petindex, CHAR_VITAL) + max(0, (int)vital));
   CHAR_setInt( petindex, CHAR_STR,
-    CHAR_getInt( petindex, CHAR_STR ) + max(0, (int)str) );
+    CHAR_getInt(petindex, CHAR_STR) + max(0, (int)str));
   CHAR_setInt( petindex, CHAR_TOUGH,
-    CHAR_getInt( petindex, CHAR_TOUGH ) + max(0, (int)tgh) );
+    CHAR_getInt(petindex, CHAR_TOUGH) + max(0, (int)tgh));
   CHAR_setInt( petindex, CHAR_DEX,
-    CHAR_getInt( petindex, CHAR_DEX ) + max(0, (int)dex) );
+    CHAR_getInt(petindex, CHAR_DEX) + max(0, (int)dex));
     
-  // CoolFish: ����������������
+  // CoolFish: Pet Increment Fix
   {
     int level = CHAR_getInt(petindex, CHAR_LV);
     int exp1 = 0, exp2 = 0;
     if (level > 30){
-      char  tmpbuf[128];
+      char tmpbuf[128];
 #ifdef _NEW_MANOR_LAW
-      char  tmpbuf1[16];
+      char tmpbuf1[16];
 #endif
       int ownerindex = CHAR_getWorkInt(petindex, CHAR_WORKPLAYERINDEX);
 #ifdef _FMVER21
 #else
-      if (CHAR_getInt(ownerindex, CHAR_FMINDEX) < 0)  return   0;
-      if (CHAR_getInt(ownerindex, CHAR_FMLEADERFLAG) <= 0 )    return  0;
-      if (strcmp(CHAR_getChar(ownerindex, CHAR_FMNAME), "") == 0)  return  0;
+      if (CHAR_getInt(ownerindex, CHAR_FMINDEX) < 0)  return 0;
+      if (CHAR_getInt(ownerindex, CHAR_FMLEADERFLAG) <= 0 ) return 0;
+      if (strcmp(CHAR_getChar(ownerindex, CHAR_FMNAME), "") == 0) return 0;
 #endif           
       if (CHAR_CHECKINDEX(ownerindex)){
         exp1 = CHAR_GetLevelExp( petindex, level);
@@ -1566,7 +1538,6 @@ int CHAR_PetLevelUp( int petindex )
           int feedpoint;
           // CoolFish: 2001/10/03
           int fd = getfdFromCharaIndex(ownerindex);
-
           feedpoint=exp2 / 20000;
 #ifdef _OFFLINE_SYSTEM
           if(CHAR_getWorkInt( ownerindex, CHAR_WORK_OFFLINE ) > 0){
@@ -1594,7 +1565,7 @@ int CHAR_PetLevelUp( int petindex )
 #else
                tmpbuf1,
 #endif
-               // CoolFish: 2001/10/03
+              // CoolFish: 2001/10/03
                CHAR_getWorkInt(ownerindex, CHAR_WORKFMCHARINDEX),
                CONNECT_getFdid(fd));
              // CHAR_getWorkInt(ownerindex, CHAR_WORKFMCHARINDEX), 0);
@@ -1663,8 +1634,8 @@ int CHAR_PetLevelUp( int petindex )
   }
   
 #ifdef _LEVELUP_RECOVERY
-      CHAR_complianceParameter( petindex );
-    CHAR_setInt( petindex , CHAR_HP ,CHAR_getWorkInt( petindex, CHAR_WORKMAXHP ) );
+  CHAR_complianceParameter(petindex);
+  CHAR_setInt(petindex, CHAR_HP, CHAR_getWorkInt(petindex, CHAR_WORKMAXHP));
 #endif
 
   return 0;
@@ -1842,10 +1813,10 @@ int PETFUSION_Evolution( int charaindex, int petindex)
 #endif
 
 #ifdef _PET_TRANS
-int PETTRANS_getPetBase( int petindex, int *work, int *petrank)
+int PETTRANS_getPetBase(int petindex, int *work, int *petrank)
 {
   int i, total=-1;
-  if( !CHAR_CHECKINDEX( petindex) ){
+  if(!CHAR_CHECKINDEX(petindex)){
     total = 0;
     *petrank = 1;
     for( i=0; i<4; i++)  {
@@ -1867,9 +1838,9 @@ int PETTRANS_getPetBase( int petindex, int *work, int *petrank)
 }
 
 #ifdef _PET_2TRANS
-int NPC_PetTransManGetAns( int total1, int total2, int LV, int rank, int tran )
+int NPC_PetTransManGetAns(int total1, int total2, int LV, int rank, int tran)
 #else
-int NPC_PetTransManGetAns( int total1, int total2, int LV, int rank )
+int NPC_PetTransManGetAns(int total1, int total2, int LV, int rank)
 #endif
 {
   int ans=0 , TransLV = 100;
@@ -1899,16 +1870,16 @@ int NPC_PetTransManGetAns( int total1, int total2, int LV, int rank )
   }
 #else
   if( tran == 0 ){
-    if( ans > 150 )  
+    if(ans > 150)  
       ans = 150;
   }
   else{
-    if( ans > 200 )  
+    if(ans > 200)  
       ans = 200;
   }
 #endif
 #else
-  if( ans > 150 )  {
+  if(ans > 150)  {
     ans = 150;
   }
 #endif

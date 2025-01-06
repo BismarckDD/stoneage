@@ -115,11 +115,11 @@ typedef struct tagCharHaveSkill
 
 #ifdef _STREET_VENDOR
 typedef struct STREET_VENDDOR_t{
-  int pile;                     // 数量
-  int price;                    // 价格
-  int index;                    // 索引
-  int kind;                     // 道具或是宠物 0:道具 1:宠物
-  BOOL usage;                   // 是否使用中
+  int pile;        // 数量
+  int price;       // 价格
+  int index;       // 索引
+  int kind;        // 道具或是宠物 0:道具 1:宠物
+  BOOL usage;      // 是否使用中
 }StreetVendor_t;
 
 enum{
@@ -274,8 +274,7 @@ typedef enum
 #ifdef _ALLDOMAN // (不可开) Syu ADD 排行榜NPC
   CHAR_TYPEALLDOMAN,
 #endif
-
-    CHAR_TYPEPETMAKER,              // petmaker
+  CHAR_TYPEPETMAKER,              // petmaker
 
 #ifdef _NPC_WELFARE
   CHAR_TYPEWELFARE,
@@ -290,9 +289,8 @@ typedef enum
 #ifdef _JZ_NEWSCRIPT_LUA
   CHAR_LUANPC,
 #endif
-
-    CHAR_TYPENUM,
-}CHAR_TYPE;
+  CHAR_TYPENUM,
+} CHAR_TYPE;
 
 typedef enum
 {
@@ -306,47 +304,47 @@ typedef enum
   CHAR_EVENT_WARP_NOON,
   CHAR_EVENT_WARP_NIGHT,
   CHAR_EVENTNUM,
-}CHAR_EVENT;
+} CHAR_EVENT;
 
 typedef enum
 {
-    CHAR_PARTY_NONE,
-    CHAR_PARTY_LEADER,
-    CHAR_PARTY_CLIENT,
-}CHAR_PARTY_MODE;
+  CHAR_PARTY_NONE,
+  CHAR_PARTY_LEADER,
+  CHAR_PARTY_CLIENT,
+} CHAR_PARTY_MODE;
 
 typedef enum
 {
-      CHAR_TRADE_FREE,      /* 可交易 */
-      CHAR_TRADE_SENDING,   /* 交易请求中 */
-      CHAR_TRADE_TRADING,   /* 交易中 */
-      CHAR_TRADE_LOCK,      /* 交易锁定中 */
-}CHAR_TRADE_MODE;
+  CHAR_TRADE_FREE,      /* 可交易 */
+  CHAR_TRADE_SENDING,   /* 交易请求中 */
+  CHAR_TRADE_TRADING,   /* 交易中 */
+  CHAR_TRADE_LOCK,      /* 交易锁定中 */
+} CHAR_TRADE_MODE;
                   
 typedef enum
 {
-    CHAR_PETMAIL_NONE,
-    CHAR_PETMAIL_IDLE1,
-    CHAR_PETMAIL_IDLE2,
-    CHAR_PETMAIL_RETURNWAIT,
-    CHAR_PETMAIL_IDLE3,
-    CHAR_PETMAIL_IDLE4,
-    CHAR_PETMAIL_IDLE5,
-}CHAR_PETMAIL_MODE;
+  CHAR_PETMAIL_NONE,
+  CHAR_PETMAIL_IDLE1,
+  CHAR_PETMAIL_IDLE2,
+  CHAR_PETMAIL_RETURNWAIT,
+  CHAR_PETMAIL_IDLE3,
+  CHAR_PETMAIL_IDLE4,
+  CHAR_PETMAIL_IDLE5,
+} CHAR_PETMAIL_MODE;
 
 typedef enum
 {
-    CHAR_PETFOLLOW_NONE,
-    CHAR_PETFOLLOW_NOW,
-}CHAR_PETFOLLOW_MODE;
+  CHAR_PETFOLLOW_NONE,
+  CHAR_PETFOLLOW_NOW,
+} CHAR_PETFOLLOW_MODE;
 
 #ifdef _DROPSTAKENEW
 typedef enum
 {
-  DICE_BIG = 1,    // 骰子_大
-  DICE_SMALL,      // 骰子_小
+  DICE_BIG = 1,   // 骰子_大
+  DICE_SMALL,     // 骰子_小
   DICE_ALLEAT,    // 骰子_通吃
-  PET_RACE1 = 5,    // 竞速场_宠物1
+  PET_RACE1 = 5,  // 竞速场_宠物1
   PET_RACE2,      // 竞速场_宠物2
   PET_RACE3,      // 竞速场_宠物3
   ROULETTE1 = 11,  ROULETTE2, ROULETTE3, ROULETTE4, ROULETTE5,  ROULETTE6, ROULETTE7, 
@@ -465,21 +463,20 @@ typedef enum
 #ifdef _NEWOPEN_MAXEXP
     CHAR_OLDEXP,
 #endif
-    CHAR_EXP,
-
-    CHAR_LASTTALKELDER,
-    CHAR_SKILLUPPOINT,
-    CHAR_LEVELUPPOINT,
-    CHAR_IMAGETYPE,
-    CHAR_NAMECOLOR,
-    CHAR_POPUPNAMECOLOR,
-    CHAR_LASTTIMESETLUCK,
-    CHAR_DUELPOINT,
-    CHAR_ENDEVENT,        /* (0~31)    */
-    CHAR_ENDEVENT2,        /* (32~63)    */
-    CHAR_ENDEVENT3,        /* (64~96)    */
+  CHAR_EXP,
+  CHAR_LASTTALKELDER,
+  CHAR_SKILLUPPOINT,
+  CHAR_LEVELUPPOINT,
+  CHAR_IMAGETYPE,
+  CHAR_NAMECOLOR,
+  CHAR_POPUPNAMECOLOR,
+  CHAR_LASTTIMESETLUCK,
+  CHAR_DUELPOINT,
+  CHAR_ENDEVENT,         /* (0~31)   */
+  CHAR_ENDEVENT2,        /* (32~63)  */
+  CHAR_ENDEVENT3,        /* (64~96)  */
 #ifdef _NEWEVENT
-  CHAR_ENDEVENT4,        /* (96~127) */
+  CHAR_ENDEVENT4,        /* (96~127)  */
   CHAR_ENDEVENT5,        /* (128~159) */
   CHAR_ENDEVENT6,        /* (160~191) */
 #endif
@@ -488,18 +485,18 @@ typedef enum
   CHAR_ENDEVENT8,
 #endif
 #ifdef _ADD_NEWEVENT_1024
-  CHAR_ENDEVENT9,          
+  CHAR_ENDEVENT9,
   CHAR_ENDEVENT10,
-  CHAR_ENDEVENT11,          
+  CHAR_ENDEVENT11, 
   CHAR_ENDEVENT12,
   CHAR_ENDEVENT13,
-  CHAR_ENDEVENT14,          
+  CHAR_ENDEVENT14,
   CHAR_ENDEVENT15,
   CHAR_ENDEVENT16,
-  CHAR_ENDEVENT17,          
+  CHAR_ENDEVENT17,
   CHAR_ENDEVENT18,
   CHAR_ENDEVENT19,
-  CHAR_ENDEVENT20,          
+  CHAR_ENDEVENT20,
   CHAR_ENDEVENT21,
   CHAR_ENDEVENT22,
   CHAR_ENDEVENT23,          
@@ -591,7 +588,7 @@ typedef enum
 #ifdef _NEWSAVE
     CHAR_SAVEINDEXNUMBER,  /*  SaveFile .0.char or .1.char */
 #endif
- 
+
 #ifdef _ATTACK_MAGIC
     CHAR_EARTH_EXP,            // 玩家的地魔法熟练度
     CHAR_WATER_EXP,            // 玩家的水魔法熟练度
@@ -849,22 +846,22 @@ typedef enum
 typedef enum {
   CHAR_MODAI          = CHAR_CHARM,        /*  矢永玄  及及镝擦艘膜恳袄    */
   CHAR_VARIABLEAI     = CHAR_LUCK,      /*  矢永玄及镝擦艘  祭袄  ㄠㄟㄟ  仄凶袄匹  匀化云仁   */
-  CHAR_SLOT         = CHAR_DEFAULTPET,    /* 檗  毛本永玄请  月旦夫永玄醒  矢永玄互银迕  */
-  CHAR_PETGETLV      = CHAR_CHATVOLUME,    /* 必永玄今木凶伊矛伙  矢永玄及心银迕   */
-  CHAR_PUTPETTIME      = CHAR_LOGINCOUNT,    /*  矢永玄互哗  卞  井木凶凛棉 */
+  CHAR_SLOT           = CHAR_DEFAULTPET,    /* 檗  毛本永玄请  月旦夫永玄醒  矢永玄互银迕  */
+  CHAR_PETGETLV       = CHAR_CHATVOLUME,    /* 必永玄今木凶伊矛伙  矢永玄及心银迕   */
+  CHAR_PUTPETTIME     = CHAR_LOGINCOUNT,    /*  矢永玄互哗  卞  井木凶凛棉 */
   CHAR_MAILMODE       = CHAR_RADARSTRENGTH,  /*   矢永玄及心银迕  丢□伙霜耨橇谪 */
-  CHAR_ALLOCPOINT      = CHAR_LEVELUPPOINT,  /* 伊矛伙失永皿凛及喃曰蕊曰禾奶件玄(矢永玄迕) */
+  CHAR_ALLOCPOINT     = CHAR_LEVELUPPOINT,  /* [total] point get when level up. */
   CHAR_PETMAILBUFINDEX  = CHAR_GETPETCOUNT,   /* 矢永玄丢□伙(offmsg)尺及index */
   CHAR_PETMAILIDLETIME  = CHAR_SENDMAILCOUNT,  /* 矢永玄丢□伙及啃及凛棉卅升 */
-  CHAR_PETMAILFROMFLOOR  = CHAR_DUELBATTLECOUNT,  /* 丢□伙毛霜匀凶凛及白夫失 */
-  CHAR_PETMAILFROMX    = CHAR_DUELWINCOUNT,  /* 丢□伙毛霜匀凶凛及  甄   */
-  CHAR_PETMAILFROMY    = CHAR_DUELLOSECOUNT,  /* 丢□伙毛霜匀凶凛及  甄   */
+  CHAR_PETMAILFROMFLOOR = CHAR_DUELBATTLECOUNT,  /* 丢□伙毛霜匀凶凛及白夫失 */
+  CHAR_PETMAILFROMX     = CHAR_DUELWINCOUNT,  /* 丢□伙毛霜匀凶凛及  甄   */
+  CHAR_PETMAILFROMY     = CHAR_DUELLOSECOUNT,  /* 丢□伙毛霜匀凶凛及  甄   */
   CHAR_PETMAILEFFECT    = CHAR_DUELSTWINCOUNT,  /* 矢永玄丢□伙及请蜇及巨白尼弁玄  寞 */
-  CHAR_PETSENDMAILCOUNT  = CHAR_TALKCOUNT,    /* 矢永玄互丢□伙毛扪氏分荚醒 */
+  CHAR_PETSENDMAILCOUNT = CHAR_TALKCOUNT,    /* 矢永玄互丢□伙毛扪氏分荚醒 */
   CHAR_PETRANK      = CHAR_LASTTIMESETLUCK, /* 矢永玄及仿件弁(矢永玄迕  ㄠ  ㄥ［ㄟ反巨仿□迕 */
   CHAR_PETID        = CHAR_DUELMAXSTWINCOUNT,/* 矢永玄及  件皿伊□玄及     */
   CHAR_PETFAMILY    = CHAR_FMLEADERFLAG,    // CoolFish: Family 判断是否为家族守护兽
-  CHAR_PETENEMYID  =   CHAR_GAMBLENUM,
+  CHAR_PETENEMYID   = CHAR_GAMBLENUM,
 #ifdef _PET_VALIDITY
   CHAR_PETVALIDITY  = CHAR_VIPTIME,
 #endif
@@ -1585,7 +1582,6 @@ typedef enum
   CHAR_WORKDENGONMAXID = CHAR_NPCWORKINT1,
 } CHAR_WORKDATAINT;
 
-
 enum {
   WORKFLG_DEBUGMODE = ( 1 << 0 ),
   WORKFLG_MICMODE = ( 2 << 0 ),
@@ -1761,39 +1757,36 @@ typedef struct {
 
 typedef struct tagChar
 {
-    BOOL        use;
-
-    int      data[CHAR_DATAINTNUM];
-    STRING128  string[CHAR_DATACHARNUM];
-    char        flg[(CHAR_FLGNUM%(sizeof(char)*8))
-                   ? (CHAR_FLGNUM/(sizeof(char)*8))+1
-                   : (CHAR_FLGNUM/(sizeof(char)*8))];
-    int      indexOfExistItems[CHAR_MAXITEMHAVE];
-    int      indexOfExistPoolItems[CHAR_MAXPOOLITEMHAVE];
-
+  BOOL      use;
+  int       data[CHAR_DATAINTNUM];
+  STRING128 string[CHAR_DATACHARNUM];
+  char      flg[(CHAR_FLGNUM%(sizeof(char)*8))
+              ? (CHAR_FLGNUM/(sizeof(char)*8))+1
+              : (CHAR_FLGNUM/(sizeof(char)*8))];
+  int       indexOfExistItems[CHAR_MAXITEMHAVE];
+  int       indexOfExistPoolItems[CHAR_MAXPOOLITEMHAVE];
 #ifdef _CHAR_POOLITEM
-  int      *indexOfExistDepotItems;
+  int       *indexOfExistDepotItems;
 #endif
 #ifdef _CHAR_POOLPET
-  int      *indexOfExistDepotPets;
+  int       *indexOfExistDepotPets;
 #endif
-
-    CHAR_HaveSkill    haveSkill[CHAR_SKILLMAXHAVE];
-    int      indexOfHaveTitle[CHAR_TITLEMAXHAVE];
-    ADDRESSBOOK_entry  addressBook[ADDRESSBOOK_MAX];
-    CHAR_UNIONTABLE    unionTable;
-    int      indexOfPoolPet[CHAR_MAXPOOLPETHAVE];
-    STRING32    charfunctable[CHAR_FUNCTABLENUM];
-    int         workint[CHAR_WORKDATAINTNUM];
-    STRING64    workchar[CHAR_WORKDATACHARNUM];
-    int         CharMakeSequenceNumber;
-    void*       functable[CHAR_FUNCTABLENUM];
+  CHAR_HaveSkill    haveSkill[CHAR_SKILLMAXHAVE];
+  int      indexOfHaveTitle[CHAR_TITLEMAXHAVE];
+  ADDRESSBOOK_entry  addressBook[ADDRESSBOOK_MAX];
+  CHAR_UNIONTABLE    unionTable;
+  int      indexOfPoolPet[CHAR_MAXPOOLPETHAVE];
+  STRING32 charfunctable[CHAR_FUNCTABLENUM];
+  int      workint[CHAR_WORKDATAINTNUM];
+  STRING64 workchar[CHAR_WORKDATACHARNUM];
+  int      CharMakeSequenceNumber;
+  void*    functable[CHAR_FUNCTABLENUM];
 #ifdef _STREET_VENDOR
-    StreetVendor_t StreetVendor[MAX_SELL_ITEM];
+  StreetVendor_t StreetVendor[MAX_SELL_ITEM];
 #endif
 #ifdef _ALLBLUES_LUA
-    lua_State *lua[CHAR_FUNCTABLENUM];
-    char *luafunctable[CHAR_FUNCTABLENUM];
+  lua_State *lua[CHAR_FUNCTABLENUM];
+  char *luafunctable[CHAR_FUNCTABLENUM];
 #endif
 #ifdef _JZ_NEWSCRIPT_LUA
   STRING32 lua_charfunctable[CHAR_FUNCTABLENUM];
@@ -1801,8 +1794,7 @@ typedef struct tagChar
   void* sur_functable[CHAR_FUNCTABLENUM];
   STRING32 sur_charfunctable[CHAR_FUNCTABLENUM];
 #endif
-}Char;
-
+} Char;
 
 #define    CHAR_CHECKINDEX( index)  _CHAR_CHECKINDEX( __FILE__, __LINE__, index)
 INLINE BOOL _CHAR_CHECKINDEX( char *file, int line, int index);
@@ -1815,10 +1807,8 @@ INLINE BOOL _CHAR_CHECKPOOLPETINDEX( char *file, int line, int petindex );
 #define    CHAR_CHECKPETSKILLINDEX( havepetskillindex) _CHAR_CHECKPETSKILLINDEX( __FILE__, __LINE__, havepetskillindex)
 INLINE BOOL _CHAR_CHECKPETSKILLINDEX( char *file, int line, int havepetskillindex );
 
-//INLINE int CHAR_getInt( int index , CHAR_DATAINT element);
-
 #define CHAR_getInt( index , element) _CHAR_getInt( __FILE__, __LINE__, index , element)
-INLINE int _CHAR_getInt( char *file, int line, int index ,CHAR_DATAINT element);
+INLINE int _CHAR_getInt(char *file, int line, int index, CHAR_DATAINT element);
 #define CHAR_setInt( index , element, data) _CHAR_setInt( __FILE__, __LINE__, index , element, data)
 INLINE int _CHAR_setInt( char *file, int line, int index ,CHAR_DATAINT element, int data);
 #ifdef _FIX_SETWORKINT
@@ -1859,7 +1849,7 @@ INLINE int CHAR_getPetMaxNum( void );
 INLINE int CHAR_getOthersMaxNum( void );
 INLINE BOOL CHAR_getCharUse( int index );
 INLINE CHAR_HaveSkill* CHAR_getCharHaveSkill( int index,int sindex );
-INLINE int  CHAR_getCharHaveTitle( int index,int tindex );
+INLINE int CHAR_getCharHaveTitle( int index,int tindex );
 INLINE int CHAR_setCharHaveTitle( int charaindex,int tindex, int new );
 INLINE int CHAR_getCharPet( int charaindex,int petindex );
 INLINE int CHAR_setCharPet( int charaindex,int petindex, int new );

@@ -1096,10 +1096,12 @@ BOOL ITEM_readItemConfFile(char *filename) {
   int ret;
   int intdata[ITEM_DATAINTNUM];
 
+  print("NORMAL: %s\n", filename);
 #ifdef _CRYPTO_DATA
   char realopfile[256];
   BOOL crypto = FALSE;
   sprintf(realopfile, "%s.allblues", filename);
+  print("CRYPTO_DATA: %s\n", realopfile);
   f = fopen(realopfile, "r");
   if (f != NULL) {
     crypto = TRUE;
@@ -1109,7 +1111,7 @@ BOOL ITEM_readItemConfFile(char *filename) {
     f = fopen(filename, "r");
   }
   if (f == NULL) {
-    print("���ܴ��ļ�\n");
+    print("read file!!!!(%s) failed.\n", filename);
     return FALSE;
   }
 #ifdef _ITEMSET2_ITEM

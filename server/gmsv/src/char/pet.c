@@ -20,25 +20,17 @@ int PET_DEBUG_initPetOne(int charaindex) {
   if (!CHAR_getDefaultChar(&ch, 31010))
     return -1;
 
-  /*    飓  寞    */
   ch.data[CHAR_BASEBASEIMAGENUMBER] = ch.data[CHAR_BASEIMAGENUMBER] = 30008;
   ch.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
-  /*    猾   */
   ch.workint[CHAR_WORKATTACKPOWER] = 100;
-  /*  潮     */
   ch.workint[CHAR_WORKDEFENCEPOWER] = 50;
-  /*  HP */
   ch.data[CHAR_HP] = 100;
-  /*    蟆 */
   strcpysafe(ch.string[CHAR_NAME].string, 32, "宠物１");
-
-  /* CHAR卞喃曰癫化月 */
   index = PET_initCharOneArray(&ch);
 
   if (index < 0)
     return -1;
 
-  /* 仍潜谛本永玄 */
   CHAR_setWorkInt(index, CHAR_WORKPLAYERINDEX, charaindex);
   CHAR_setWorkInt(index, CHAR_WORKOBJINDEX, -1);
   CHAR_setCharPet(charaindex, havepetindex, index);
@@ -86,7 +78,6 @@ static int _PET_dropPet(int charaindex, int havepetindex, int tofl, int tox,
   {
     char *name = CHAR_getChar(petindex, CHAR_NAME);
     char *owntile = CHAR_getChar(petindex, CHAR_OWNTITLE);
-
     if (name[0] == '*' || owntile[0] == '*') {
       CHAR_talkToCli(charaindex, -1, "绑定宠物无法丢出！", CHAR_COLORYELLOW);
       return FALSE;
@@ -94,11 +85,9 @@ static int _PET_dropPet(int charaindex, int havepetindex, int tofl, int tox,
   }
 #endif
 #ifdef _DROPCHECK2
-
   floor = CHAR_getInt(charaindex, CHAR_FLOOR);
   x = CHAR_getInt(charaindex, CHAR_X);
   y = CHAR_getInt(charaindex, CHAR_Y);
-
   for (i = x - CHAR_DEFAULTSEESIZ / 2; i <= x + CHAR_DEFAULTSEESIZ / 2; i++) {
     for (j = y - CHAR_DEFAULTSEESIZ / 2; j <= y + CHAR_DEFAULTSEESIZ / 2; j++) {
       OBJECT object;
@@ -123,7 +112,6 @@ static int _PET_dropPet(int charaindex, int havepetindex, int tofl, int tox,
       return FALSE;
     }
   }
-
 #endif
   if (tofl == -1) {
     for (i = 0; i < 7; i++) {
@@ -172,7 +160,6 @@ static int _PET_dropPet(int charaindex, int havepetindex, int tofl, int tox,
     lssproto_KS_send(fd, havepetindex, 0);
   }
   CHAR_sendCToArroundCharacter(objindex);
-
   if (CHAR_getInt(charaindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
 #ifdef _PET_ITEM
     CHAR_sendPetItemEmpty(charaindex, havepetindex);
@@ -243,9 +230,6 @@ int PET_dropPetFLXY(int charaindex, int havepetindex, int fl, int x, int y) {
   return _PET_dropPet(charaindex, havepetindex, fl, x, y);
 }
 
-/*------------------------------------------------------------
- * 矢永玄迕及奶矛件玄楮醒毛本永玄仄化支月
- ------------------------------------------------------------*/
 int PET_initCharOneArray(Char *ch) {
   int i;
   char *tmp[CHAR_FUNCTABLENUM] = {
@@ -282,9 +266,6 @@ int PET_initCharOneArray(Char *ch) {
 
 #ifdef _PET_FUSION
   if (ch->data[CHAR_FUSIONBEIT] == 1 && ch->data[CHAR_FUSIONRAISE] > 0) {
-    // andy_log
-    //    print("init CHAR_LOOPFUNCTEMP1:%s \n", "PET_CheckIncubateLoop");
-
     strcpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
                sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]),
                "PET_CheckIncubateLoop");
@@ -292,7 +273,6 @@ int PET_initCharOneArray(Char *ch) {
 
     ch->functable[CHAR_LOOPFUNCTEMP1] =
         getFunctionPointerFromName("PET_CheckIncubateLoop");
-
     //    CHAR_constructFunctable( petindex);
   }
 #endif
@@ -607,13 +587,11 @@ BOOL PET_getBaseAndSkill(int charaindex, int baseindex, int *base, int *skill,
     base[2] = ((levelup >> 8) & 0xFF);
     base[3] = ((levelup >> 0) & 0xFF);
   }
-
   if (skill != NULL) {
     for (i = 0; i < CHAR_MAXPETSKILLHAVE; i++) {
       skill[i] = CHAR_getPetSkill(baseindex, i);
     }
   }
-
   return TRUE;
 }
 

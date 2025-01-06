@@ -6,7 +6,6 @@
 #include <ctype.h>
 #include <math.h>
 #include <strings.h>
-
 #include "char.h"
 #include "enemy.h"
 #include "family.h"
@@ -15,6 +14,7 @@
 #include "log.h"
 #include "magic_base.h"
 #include "saacproto_cli.h"
+#include "utils/file.h"
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
@@ -62,10 +62,10 @@ static struct tagItemRandRangeTable {
 #define ITEM_GEN_RATE 0.7
 
 static struct _tagItemRandRangeTableForItem {
-  int num;    /* �ټ㼰���¼��ͼ���  �� */
-  int minnum; /* �¼���  ��Ի���°���Min */
-  int maxnum; /* �¼���  ��Ի���°���MAX  num +�ݼ��¼��ͼ���*ITEM_GEN_RATE) */
-  double rate; /*      maxnum / num*/
+  int num;    /* */
+  int minnum; /* Min */
+  int maxnum; /* MAX  num + *ITEM_GEN_RATE) */
+  double rate; /* maxnum / num*/
 } ItemRandTableForItem[] = {{10, 0, 0, 0},   {30, 0, 0, 0},   {65, 0, 0, 0},
                             {125, 0, 0, 0},  {205, 0, 0, 0},  {305, 0, 0, 0},
                             {425, 0, 0, 0},  {565, 0, 0, 0},  {725, 0, 0, 0},
@@ -91,12 +91,13 @@ struct item_ingindtable {
   int num;
 };
 
-static int ITEM_getAtomIndexByName(char *nm) // ���ز�����ȡ���ز�index
+// static limit the function effective region.
+static int ITEM_getAtomIndexByName(const char *atom_name)
 {
   int i;
-  unsigned int h = hashpjw(nm);
+  unsigned int h = hashpjw(atom_name);
   for (i = 0; i < item_atoms_size; i++) {
-    if (item_atoms[i].name_hash == h && strcmp(item_atoms[i].name, nm) == 0) {
+    if (item_atoms[i].name_hash == h && strcmp(item_atoms[i].name, atom_name) == 0) {
       return i;
     }
   }
@@ -217,90 +218,41 @@ int ITEM_initItemIngCache(void) {
   return TRUE;
 }
 
-int ITEM_initItemAtom(char *fn) {
-  FILE *fp;
-  int count = 0;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", fn);
-  fp = fopen(realopfile, "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen(fn, "r");
-  }
-  if (fp == NULL) {
-    print("���ļ�ʧ�� %s\n", fn);
+int init_item_atom_callback(int *line_num, const char *line) {
+  char tk[1024];
+  getStringFromIndexWithDelim(line, ",", 1, tk, sizeof(tk));
+  snprintf(item_atoms[*line_num].name, sizeof(item_atoms[*line_num].name), "%s", tk);
+  item_atoms[*line_num].name_hash = hashpjw(tk);
+  getStringFromIndexWithDelim(line, ",", 2, tk, sizeof(tk));
+  item_atoms[*line_num].magicflg = isstring1or0(tk);
+  ++(*line_num);
+}
+
+int ITEM_initItemAtom(const char *filename) {
+
+  const int line_num = get_file_line_num(filename);
+  if (line_num == 0) {
+    print("Empty item atom file. Plz check: %s\n", filename);
     return FALSE;
   }
-
-  fseek(fp, 0, SEEK_SET);
-  while (1) {
-    char line[16384];
-    if (fgets(line, sizeof(line), fp) == NULL)
-      break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
-    if (line[0] != '#' && line[0] != '\n')
-      count++;
-  }
-  print("��ʼ����Ʒ�ɷ�: ���� %d \n", count);
-
-  if (count == 0) {
-    print("��ʼ����Ʒ�ɷ�: �޷���ȷ������Ʒ�ɷ�. "
-          "�쳣�ж�.\n");
-    return FALSE;
-  }
-
-  /* malloc. */
-  item_atoms =
-      (struct item_atom *)allocateMemory(count * sizeof(struct item_atom));
+  const int total_item_atoms_size = line_num * sizeof(struct item_atom);
+  item_atoms = (struct item_atom *)allocateMemory(total_item_atoms_size);
   if (item_atoms == NULL) {
-    print("�����ڴ�ʧ��\n");
+    print("Cannot allocate memory: %d\n", total_item_atoms_size);
     return FALSE;
   }
-  memset(item_atoms, 0, count * sizeof(struct item_atom));
+  memset(item_atoms, 0, total_item_atoms_size);
 
-  fseek(fp, 0, SEEK_SET);
-  count = 0;
-  while (1) {
-    char line[16384], tk[1024];
-    if (fgets(line, sizeof(line), fp) == NULL)
-      break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
-    /* chop */
-    line[strlen(line) - 1] = 0;
-
-    getStringFromIndexWithDelim(line, ",", 1, tk, sizeof(tk));
-    snprintf(item_atoms[count].name, sizeof(item_atoms[count].name), "%s", tk);
-    item_atoms[count].name_hash = hashpjw(tk);
-
-    getStringFromIndexWithDelim(line, ",", 2, tk, sizeof(tk));
-    item_atoms[count].magicflg = isstring1or0(tk);
-
-    count++;
-  }
-  fclose(fp);
-
-  if (count >= MAX_ITEM_ATOMS_SIZE) {
-    print("��ʼ����Ʒ�ɷ�: ��Ʒ�ɷ�̫����\n");
+  int read_line_num = 0;
+  get_file_lines(filename, &read_line_num, init_item_atom_callback);
+  if (read_line_num >= MAX_ITEM_ATOMS_SIZE) {
+    print("Item Atom Count is too big to use. %d\n", read_line_num);
     return FALSE;
+  } else {
+    item_atoms_size = read_line_num;
+    print("Effective Item Atom Count: %d\n", read_line_num);
+    return TRUE;
   }
-
-  item_atoms_size = count;
-  print("��ʼ����Ʒ�ɷ�: ��ȡ %d ��Ʒ�ɷ�...", count);
-
-  return TRUE;
 }
 
 static int ITEM_randRange(int base, int min_rate, int max_rate) {
@@ -386,7 +338,7 @@ static void ITEM_merge_getPetFix(int petid, int *fixuse, int *fixatom,
 
 // shan begin
 #define FamilyLv 11
-  // int             PetLv[FamilyLv];
+  // int PetLv[FamilyLv];
   // for(i=0; i<FamilyLv; i++){
   //     if(i==0) PetLv[i] = 0;
   //     else PetLv[i] = 3*pow(i,2)+10*i+20;
@@ -401,29 +353,11 @@ static void ITEM_merge_getPetFix(int petid, int *fixuse, int *fixatom,
   }
   petarray = ENEMYTEMP_getEnemyTempArrayFromTempNo(petid);
   if (petarray == -1) {
-    print("������д��� [%s][%d]\n", __FILE__, __LINE__);
+    print("Cannot get enemy array. [%s][%d]\n", __FILE__, __LINE__);
     return;
   }
   for (i = 0; i < 5; i++) {
 #ifdef _FMVER21
-// #define PET_ADD_INGRED( nm,vl1,vl2,vl3)  if( strlen( ENEMYTEMP_getChar(
-// petarray, nm)) != 0 ) { fixatom[ingnum] =ITEM_getAtomIndexByName(
-// ENEMYTEMP_getChar( petarray, nm) ); if( fixatom[ingnum] < 0 ){  print(
-// "\nfucking atom:[%s] for pet id %d", ENEMYTEMP_getChar( petarray, nm), petid
-// ); continue;} baseup[ingnum] = ENEMYTEMP_getInt( petarray, vl1);
-// minadd[ingnum] = ENEMYTEMP_getInt( petarray, vl2); maxadd[ingnum] =
-// ENEMYTEMP_getInt( petarray, vl3); if( petindex != -1){ if(
-// CHAR_getInt(petindex, CHAR_PETFAMILY) == 1 ){ int ownerindex =
-// CHAR_getWorkInt(petindex, CHAR_WORKPLAYERINDEX); if
-// (!CHAR_CHECKINDEX(ownerindex)){print("ownerindex err!\n");return;}if(
-// CHAR_getInt( ownerindex, CHAR_FMLEADERFLAG) != FMMEMBER_LEADER){print("\n Pet
-// Ownerindex Error");return;}baseup[ingnum] = PetLv[getFmLv(ownerindex)];}}if(
-// minadd[ingnum] > maxadd[ingnum] ) {  int tmp = minadd[ingnum];minadd[ingnum]
-// = maxadd[ingnum];maxadd[ingnum] = tmp;}if( CHAR_getInt(petid, CHAR_PETFAMILY)
-// == 1 ){if( minadd[ingnum]<0 ) minadd[ingnum] = ITEM_FM_RANDRANGEDOM;if(
-// maxadd[ingnum]<0 ) maxadd[ingnum] = ITEM_FM_RANDRANGEDOM;}else{if(
-// minadd[ingnum]<0 ) minadd[ingnum] = ITEM_RANDRANGEDOM;if( maxadd[ingnum]<0 )
-// maxadd[ingnum] = ITEM_RANDRANGEDOM;}ingnum++;}
 #define PET_ADD_INGRED(nm, vl1, vl2, vl3)                                      \
   if (strlen(ENEMYTEMP_getChar(petarray, nm)) != 0) {                          \
     fixatom[ingnum] =                                                          \
@@ -747,7 +681,6 @@ int ITEM_mergeItem(int charaindex, ITEM_Item *items, int num, int money,
   struct item_ingindtable ingindtable[MAX_ITEM_ATOMS_SIZE];
   int sortedingindtable[MAX_ITEM_ATOMS_SIZE];
   int sortedingtable[MAX_ITEM_ATOMS_SIZE];
-  /* ʸ�����巽��Ĥ���� */
   int pet_fixatom[MAX_ITEM_ATOMS_SIZE];
   int pet_baseup[MAX_ITEM_ATOMS_SIZE];
   int pet_minadd[MAX_ITEM_ATOMS_SIZE];
@@ -757,7 +690,6 @@ int ITEM_mergeItem(int charaindex, ITEM_Item *items, int num, int money,
   int nowtime = time(NULL);
 
   // #ifdef _VERSION_80
-  //  ����ϳɷ�����Ƶ��...
   if (nowtime - CHAR_getWorkInt(charaindex, CHAR_WORKLASTMERGETIME) < 1) {
     CHAR_setWorkInt(charaindex, CHAR_WORKLASTMERGETIME, nowtime);
     CHAR_talkToCli(charaindex, -1, "�ϳ��������Ƶ������Ϣһ�±ȽϺ�Ӵ��",

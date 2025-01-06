@@ -1520,14 +1520,13 @@ INLINE int CHAR_getIntStrict(int index, CHAR_DATAINT element, int *error) {
 }
 
 INLINE int _CHAR_getInt(char *file, int line, int index, CHAR_DATAINT element)
-// INLINE int CHAR_getInt( int index , CHAR_DATAINT element)
 {
   if (!CHAR_CHECKINDEX(index)) {
-    print(" err CHAR_getInt index:%d. !:%s-%d\n", index, file, line);
+    print("err CHAR_getInt index:%d. !:%s-%d\n", index, file, line);
     return -1;
   }
   if (CHAR_DATAPLACENUMBER > element || element >= CHAR_DATAINTNUM) {
-    print(" err CHAR_getInt element:%d.%s :%s-%d\n", element,
+    print("err CHAR_getInt element:%d.%s :%s-%d\n", element,
           CHAR_getChar(index, CHAR_CDKEY), file, line);
     return -1;
   }

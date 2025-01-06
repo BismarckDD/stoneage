@@ -20,28 +20,27 @@ typedef struct ITEM_tag_charDataSetting {
 #endif
 
 typedef enum {
-  ITEM_FIST = 0, // ����
-  ITEM_AXE,      // ����
-  ITEM_CLUB,     // ����
-  ITEM_SPEAR,    // ǹ
-  ITEM_BOW,      // ����
-  ITEM_SHIELD,   // ����
-  ITEM_HELM,     // ͷ��
-  ITEM_ARMOUR,   // ����
-
-  ITEM_BRACELET = 8,
+  ITEM_FIST = 0, // 
+  ITEM_AXE,      // weapon -> hand.
+  ITEM_CLUB,     // weapon -> hand.
+  ITEM_SPEAR,    // weapon -> hand.
+  ITEM_BOW,      // weapon -> hand.
+  ITEM_SHIELD,   // shield -> hand.
+  ITEM_HELM,     // helm   -> head.
+  ITEM_ARMOUR,   // armor  -> body.
+  ITEM_BRACELET = 8, //
   ITEM_MUSIC,
-  ITEM_NECKLACE,
-  ITEM_RING,
-  ITEM_BELT,
-  ITEM_EARRING,
+  ITEM_NECKLACE, // 
+  ITEM_RING,     // 
+  ITEM_BELT,     // ->
+  ITEM_EARRING,  // 
   ITEM_NOSERING,
   ITEM_AMULET,
   /* ****** */
   ITEM_OTHER = 16,
-  ITEM_BOOMERANG,  // ������
-  ITEM_BOUNDTHROW, // Ͷ����ͷ
-  ITEM_BREAKTHROW, // Ͷ��ʯ
+  ITEM_BOOMERANG,  //
+  ITEM_BOUNDTHROW, //
+  ITEM_BREAKTHROW, //
   ITEM_DISH = 20,
 #ifdef _ITEM_INSLAY
   ITEM_METAL,
@@ -50,16 +49,14 @@ typedef enum {
 #ifdef _ITEM_CHECKWARES
   ITEM_WARES, // ����
 #endif
-
 #ifdef _ITEM_EQUITSPACE
-  ITEM_WBELT,   // ����
-  ITEM_WSHIELD, // ��
-  ITEM_WSHOES,  // Ь��
+  ITEM_WBELT,   //
+  ITEM_WSHIELD, //
+  ITEM_WSHOES,  //
 #endif
 #ifdef _EQUIT_NEWGLOVE
   ITEM_WGLOVE, // ����
 #endif
-
 #ifdef _ALCHEMIST
   ITEM_ALCHEMIST = 30,
 #endif
@@ -110,63 +107,53 @@ typedef enum {
 #endif
 
 #ifdef _ITEMSET4_TXT
-  ITEM_USEPILENUMS, // ��Ʒ�ѵ�����
-  ITEM_CANBEPILE,   // �Ƿ�ɶѵ�
-
+  ITEM_USEPILENUMS, //
+  ITEM_CANBEPILE,   //
   ITEM_NEEDSTR,
   ITEM_NEEDDEX,
   ITEM_NEEDTRANS,
   ITEM_NEEDPROFESSION,
 #endif
-
   ITEM_DAMAGECRUSHE,
   ITEM_MAXDAMAGECRUSHE,
-
 #ifdef _ADD_DEAMGEDEFC
   ITEM_OTHERDAMAGE,
   ITEM_OTHERDEFC,
 #endif
-
 #ifdef _SUIT_ITEM
   ITEM_SUITCODE,
 #endif
-
-  ITEM_ATTACKNUM_MIN, /*    �  ������  */
-  ITEM_ATTACKNUM_MAX, /*    ��  ������  */
-  ITEM_MODIFYATTACK,  /*    ��    ����  */
-  ITEM_MODIFYDEFENCE, /*    ��    ����  */
-  ITEM_MODIFYQUICK,   /*  QUICK  ����  */
-
-  ITEM_MODIFYHP,          /*  HP  ����    */
-  ITEM_MODIFYMP,          /*  MP  ����    */
-  ITEM_MODIFYLUCK,        /*  LUCK  ����    */
-  ITEM_MODIFYCHARM,       /*  CHARM  ����    */
-  ITEM_MODIFYAVOID,       /*  ��    Ĥ��    */
-  ITEM_MODIFYATTRIB,      /*  ����Ĥ�� */
-  ITEM_MODIFYATTRIBVALUE, /*  ����Ĥ�Ұ� */
-  ITEM_MAGICID,           /*  ����  į */
-  ITEM_MAGICPROB,         /*  ����       */
-  ITEM_MAGICUSEMP,        /*  ��  MP */
-
+  ITEM_ATTACKNUM_MIN,     /*    �  ������  */
+  ITEM_ATTACKNUM_MAX,     /*    ��  ������  */
+  ITEM_MODIFYATTACK,      /*  + ATTACK */
+  ITEM_MODIFYDEFENCE,     /*  + DEFENCE */
+  ITEM_MODIFYQUICK,       /*  + QUICK */
+  ITEM_MODIFYHP,          /*  + HP  ����    */
+  ITEM_MODIFYMP,          /*  + MP */
+  ITEM_MODIFYLUCK,        /*  + LUCK */
+  ITEM_MODIFYCHARM,       /*  + CHARM */
+  ITEM_MODIFYAVOID,       /*  + AVOID */
+  ITEM_MODIFYATTRIB,      /*  + */
+  ITEM_MODIFYATTRIBVALUE, /* */
+  ITEM_MAGICID,           /*  magic id */
+  ITEM_MAGICPROB,         /*  magic */
+  ITEM_MAGICUSEMP,        /*  magic MP */
 #ifdef _ITEMSET5_TXT
   ITEM_MODIFYARRANGE,
   ITEM_MODIFYSEQUENCE,
-
   ITEM_ATTACHPILE,
-  ITEM_HITRIGHT, // ��������
+  ITEM_HITRIGHT,
 #endif
 #ifdef _ITEMSET6_TXT
   ITEM_NEGLECTGUARD,
 //	ITEM_BEMERGE,
 #endif
-  /*  ��  ������Ĥ�Ұ���*/
-  ITEM_POISON, /*   ������̫��ĸ������          */
-  ITEM_PARALYSIS, /* ��̫ľ��1  ����  ��ƥ��ئ�У� */
-  ITEM_SLEEP,     /* ��Ի�۵�  ƥ��ئ��            */
-  ITEM_STONE,     /* �ޣ۵�  ƥ��ئ��              */
-  ITEM_DRUNK,     /* �쵤��      ��Ʊ����     */
-  ITEM_CONFUSION, /* ���٣�  ��    ë����     */
-
+  ITEM_POISON,    /* sprit of poison */
+  ITEM_PARALYSIS, /* sprit of */
+  ITEM_SLEEP,     /* sprit of */
+  ITEM_STONE,     /* sprit of stone. */
+  ITEM_DRUNK,     /* sprit of drunk. */
+  ITEM_CONFUSION, /* sprit of confustion. */
   ITEM_CRITICAL, /* ����  ū�л�  Ĥ�� */
 
   ITEM_USEACTION, /* �������ݼ�ʧ������� */
@@ -216,15 +203,15 @@ typedef enum {
 } ITEM_DATAINT;
 
 typedef enum {
-  ITEM_NAME,         /*    �     񲼰  �     */
-  ITEM_SECRETNAME,   /*    �    �ʽ�ľ�µ�  ��  Ի    */
-  ITEM_EFFECTSTRING, /*  ���  ٯ    */
-  ITEM_ARGUMENT,     /*  ʧ��  ة��¦��  */
+  ITEM_NAME,         /* */
+  ITEM_SECRETNAME,   /* */
+  ITEM_EFFECTSTRING, /* */
+  ITEM_ARGUMENT,     /* */
 #ifdef _ITEM_INSLAY
   ITEM_TYPECODE,
   ITEM_INLAYCODE,
 #endif
-  ITEM_CDKEY, /*  ʧ��  ة��  �ë  �ٱ�  �������м�           */
+  ITEM_CDKEY, /* */
 #ifdef _ITEM_FORUSERNAMES
   ITEM_FORUSERNAME,
   ITEM_FORUSERCDKEY,
@@ -240,11 +227,7 @@ typedef enum {
   ITEM_INGNAME3,
   ITEM_INGNAME4,
 
-  ITEM_INITFUNC, /* ¦��
-                  * ITEM_Item*
-                  * ߯Ի�� BOOL
-                  * ߯Ի������  �� CHAR_INITFUNC
-                  * ��  Ԫ  */
+  ITEM_INITFUNC, /* */
   ITEM_FIRSTFUNCTION = ITEM_INITFUNC,
   ITEM_PREOVERFUNC,  /* CHAR_PREOVERFUNC ë��� */
   ITEM_POSTOVERFUNC, /* CHAR_POSTOVERFUNC ë���*/
@@ -280,13 +263,10 @@ typedef enum {
                       *  int itemindex ʧ��  ة�̼������͵�
                       */
 #ifdef _Item_ReLifeAct
-  ITEM_DIERELIFEFUNC, /*ANDY_ADD �������	 */
+  ITEM_DIERELIFEFUNC,
 #endif
-
   ITEM_LASTFUNCTION,
-
   ITEM_DATACHARNUM = ITEM_LASTFUNCTION,
-
 #ifdef _ANGEL_SUMMON
   ITEM_ANGELMISSION = ITEM_INGNAME0,
   ITEM_ANGELINFO = ITEM_INGNAME1,

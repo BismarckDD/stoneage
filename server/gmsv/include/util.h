@@ -44,17 +44,12 @@ void deleteCharFromString(char *src, const char *dels);
 void deleteCharFromStringNoEscape(char *src, const char *dels);
 #define deleteWhiteSpace(src) deleteCharFromStringNoEscape(src, " \t")
 char *replaceString(char *src, char oldc, char newc);
-
 char *escapeStrStr(char *src, char *needle);
-BOOL getStringFromIndexWithDelim_body(char *src, char *delim, int index,
-                                      char *buf, int buflen, char *file,
-                                      int line);
-#define getStringFromIndexWithDelim(src, delim, index, buf, buflen)            \
-  getStringFromIndexWithDelim_body(src, delim, index, buf, buflen, __FILE__,   \
-                                   __LINE__)
-
-void getFourIntsFromString(char *src, int *int1, int *int2, int *int3,
-                           int *int4);
+BOOL getStringFromIndexWithDelim_body(const char *src, const char *delim, const int index,
+  char *buf, const int buflen, const char *file, const int line);
+#define getStringFromIndexWithDelim(src, delim, index, buf, buflen) \
+  getStringFromIndexWithDelim_body(src, delim, index, buf, buflen, __FILE__, __LINE__)
+void getFourIntsFromString(char *src, int *int1, int *int2, int *int3, int *int4);
 void deleteSequentChar(char *src, char *dels);
 int hashpjw(const char *s);
 double gettimemillis(void);
