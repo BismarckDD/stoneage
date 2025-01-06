@@ -9,7 +9,7 @@
 #include "npc_eventaction.h"
 #include "battle.h"
 #include "readmap.h"
-#include "configfile.h"
+#include "config_file.h"
 
 #ifdef _JZ_NEWSCRIPT_LUA
 extern int StateTable[];

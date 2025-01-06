@@ -15,7 +15,7 @@
 #include "handletime.h"
 #include "npc_eventaction.h"
 #include "family.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "npc_transmigration.h"
 #include "npc_exchangeman.h"
 #ifdef _ANGEL_SUMMON

@@ -10,7 +10,7 @@
 #include "readmap.h"
 #include "encount.h"
 #include "lssproto_serv.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "anim_tbl.h"
 #include "handletime.h"
 #include "npc_eventaction.h"

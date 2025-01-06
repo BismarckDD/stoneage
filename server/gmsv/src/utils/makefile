@@ -1,15 +1,15 @@
 INCFLAGS=-I../../include -I../lua
 CFLAGS=-w -O3 -Wall -pipe $(INCFLAGS)
 
-TARGET=libnpc.a
+TARGET=libutil.a
 SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
 
 ifeq (0,$(MAKELEVEL))
-CC=gcc -m32
-RM=rm -f
-AR=ar cr
-RANLIB=ranlib
+  CC=gcc -m32
+  RM=rm -f
+  AR=ar cr
+  RANLIB=ranlib
 endif
 
 all: $(TARGET)
@@ -18,7 +18,6 @@ $(TARGET): $(OBJ)
 	$(RM) $(TARGET)
 	$(AR) $(TARGET) $(OBJ)
 	$(RANLIB) $(TARGET)
-	$(RM) $(OBJ)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@

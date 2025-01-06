@@ -13,7 +13,7 @@ CFLAGS=-w -O3 -Wall -pipe $(INCFLAGS)
 
 ifeq ($(shell uname),Linux)
 	SQL=-L/usr/lib/mysql/ -lmysqlclient -lz
-	TARGET=./gmsvjt
+	TARGET=../../../csa/gmsv/gmsvjt
 endif
 
 RPCGEN=~/bin/lsgen.perl
@@ -37,10 +37,10 @@ ANIMDATATXT=include/anim_tbl.h
 ANIMDATAFILE=char/ls2data.h
 
 
-SUBDIR=char npc map item battle magic longzoro mylua lua npc_lua
-LIBS=char/libchar.a npc/libnpc.a map/libmap.a item/libitem.a magic/libmagic.a battle/libbattle.a longzoro/custom.a mylua/libmylua.a npc_lua/libnpc_lua.a lua/libluajit.a
+SUBDIR=char npc net map item battle magic longzoro mylua lua npc_lua utils
+LIBS=char/libchar.a npc/libnpc.a net/libnet.a map/libmap.a item/libitem.a magic/libmagic.a battle/libbattle.a longzoro/custom.a mylua/libmylua.a npc_lua/libnpc_lua.a lua/libluajit.a utils/libutil.a
 
-SRC=main.c init.c configfile.c util.c epollnet.c net.c buf.c msignal.c md5.c shop.c callfromac.c callfromcli.c object.c handletime.c function.c log.c autil.c descrypt.c const.c $(CLIRPCSRC) $(SERVRPCSRC)
+SRC=main.c init.c config_file.c buf.c msignal.c md5.c shop.c callfromac.c callfromcli.c object.c handletime.c function.c log.c autil.c descrypt.c const.c $(CLIRPCSRC) $(SERVRPCSRC)
 
 # SRC=$(wildcard *.c)
 # convert *.c -> *.o, means OBJ is the counter part of SRC.

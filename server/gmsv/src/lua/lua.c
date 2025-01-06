@@ -4,7 +4,6 @@
 ** See Copyright Notice in lua.h
 */
 
-
 #include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,17 +12,12 @@
 #define lua_c
 
 #include "lua.h"
-
 #include "lauxlib.h"
 #include "lualib.h"
-
-
 
 static lua_State *globalL = NULL;
 
 static const char *progname = LUA_PROGNAME;
-
-
 
 static void lstop (lua_State *L, lua_Debug *ar) {
   (void)ar;  /* unused arg. */

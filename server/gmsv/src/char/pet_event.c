@@ -6,7 +6,7 @@
 #include "object.h"
 #include "char_base.h"
 #include "char.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "handletime.h"
 #include "pet_event.h"
 #include "npcutil.h"

@@ -11,7 +11,7 @@
 #include "npc_bus.h"
 #include "npc_airplane.h"       // Arminius 7.10 Airplane
 #include "family.h"             // shan
-#include "configfile.h"
+#include "config_file.h"
 #ifdef _ITEM_QUITPARTY
 #include "init.h"
 #endif

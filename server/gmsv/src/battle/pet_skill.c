@@ -3,7 +3,7 @@
 #include <string.h>
 #include "common.h"
 #include "buf.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "char_base.h"
 #include "char_data.h"
 #include "pet_skill.h"

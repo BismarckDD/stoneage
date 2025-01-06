@@ -16,7 +16,7 @@
 #include "npcutil.h"
 #include "battle.h"
 #include "net.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "npc_npcenemy.h"
 #ifdef _ALLBLUES_LUA
 #include "mylua/function.h"

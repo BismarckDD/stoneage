@@ -19,7 +19,7 @@
 #include "pet_skill.h"
 #endif
 #ifdef _NO_USE_MAGIC_MAP
-#include "configfile.h"
+#include "config_file.h"
 #endif
 //#include "battle_event.h"
 // shan add code

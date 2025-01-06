@@ -11,7 +11,7 @@
 #include "magic.h"
 #include "magic_base.h"
 #include "handletime.h"
-#include "configfile.h"
+#include "config_file.h"
 #ifdef _PROFESSION_SKILL			// WON ADD 人物职业技能
 #include "profession_skill.h"
 #endif

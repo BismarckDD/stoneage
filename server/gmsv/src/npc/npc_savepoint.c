@@ -11,7 +11,7 @@
 #include "readmap.h"
 #include "lssproto_serv.h"
 #include "log.h"
-#include "configfile.h"
+#include "config_file.h"
 #define RANGE 2
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);

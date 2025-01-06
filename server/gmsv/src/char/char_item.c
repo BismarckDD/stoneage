@@ -1,7 +1,7 @@
 #include "version.h"
 #include <stdio.h>
 
-#include "configfile.h"
+#include "config_file.h"
 #include "readmap.h"
 #include "map_deal.h"
 #include "object.h"

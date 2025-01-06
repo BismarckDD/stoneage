@@ -7,7 +7,7 @@
 #include "char.h"
 #include "battle.h"
 #include "descrypt.h"
-#include "configfile.h"
+#include "config_file.h"
 #include <time.h>
 #include <net.h>
 #include "shop.h"

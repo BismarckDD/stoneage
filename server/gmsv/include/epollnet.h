@@ -9,7 +9,7 @@
 #define EPOLLNET_H_
 #ifdef _EPOLL_ET_MODE
 //绑定epoll监听端口
-int epoll_bind(int port);
+int epoll_bind(unsigned short port);
 //将acfd添加到epoll中
 int epoll_add_acfd(int acfd);
 //非阻塞

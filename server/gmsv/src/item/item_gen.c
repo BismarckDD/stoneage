@@ -1,7 +1,7 @@
 #include "version.h"
 #include "autil.h"
 #include "buf.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "util.h"
 #include <ctype.h>
 #include <math.h>
@@ -148,14 +148,14 @@ int icache_num;
 int ITEM_initItemIngCache(void) {
   int i;
   icache_num = ITEM_getItemMaxIdNum();
-  print(" ������:%d ", icache_num);
+  print("icache_num: %d ", icache_num);
   icache = calloc(1, sizeof(struct ingcache) * icache_num);
   if (icache == NULL) {
-    print("��ʼ����Ʒ����: û����Ʒ\n");
+    print("icache is NULL.\n");
     return FALSE;
   }
 
-  print("���� %4.2f MB �ռ�...",
+  print("IngCache %4.2f MB ...\n",
         sizeof(struct ingcache) * icache_num / 1024.0 / 1024.0);
 
   remove("old_icache.txt");
@@ -168,7 +168,7 @@ int ITEM_initItemIngCache(void) {
     icache[i].ingind[k] = ITEM_getAtomIndexByName(                             \
         ITEM_tbl[ITEM_idx[i].index].itm.string[nm].string);                    \
     if (icache[i].ingind[k] < 0) {                                             \
-      print("fuck ing[%s][%d] for %d %s\n",                                    \
+        print("fucking[%s][%d] for %d %s\n",                                   \
             ITEM_tbl[ITEM_idx[i].index].itm.string[nm].string,                 \
             ITEM_tbl[ITEM_idx[i].index].itm.data[vl],                          \
             ITEM_tbl[i].itm.data[ITEM_ID],                                     \

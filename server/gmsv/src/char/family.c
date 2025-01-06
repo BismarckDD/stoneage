@@ -3,7 +3,7 @@
 #include <string.h>
 #include <ctype.h>
 #include <time.h>
-#include "configfile.h"
+#include "config_file.h"
 #include "readmap.h"
 #include "object.h"
 #include "char.h"

@@ -12,7 +12,7 @@
 #include "magic.h"
 #include "function.h"
 #include "npccreate.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "title.h"
 #include "pet.h"
 #include "pet_skill.h"

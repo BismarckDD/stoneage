@@ -4,7 +4,7 @@
 
 #include "longzoro/sasql.h"
 #include "char_base.h"
-#include "configfile.h"
+#include "config_file.h"
 #include <mysql/mysql.h>
 #include <stdio.h>
 #include <string.h>

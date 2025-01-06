@@ -14,7 +14,7 @@
 #include "handletime.h"
 #include "npc_eventaction.h"
 #include "npc_healer.h"
-#include "configfile.h"
+#include "config_file.h"
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif

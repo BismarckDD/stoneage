@@ -1,26 +1,23 @@
 #include "version.h"
-#include "common.h"
 
-#ifndef __UTIL_H_
-#define __UTIL_H_
+#ifndef __AUTIL_H_
+#define __AUTIL_H_
 
-
-#define SLICE_MAX	20
-#define SLICE_SIZE	1024*96
+#define SLICE_MAX  20
+#define SLICE_SIZE  1024*96
 
 extern char *MesgSlice[SLICE_MAX];
-extern int SliceCount;		// count slices in MesgSlice
+extern int SliceCount;    // count slices in MesgSlice
 
 extern char PersonalKey[4096];
 
-#define DEFAULTTABLE	\
-	"0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz{}"
-#define DEFAULTFUNCBEGIN	"&"
-#define DEFAULTFUNCEND		"#"
+#define DEFAULTTABLE  \
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz{}"
+#define DEFAULTFUNCBEGIN  "&"
+#define DEFAULTFUNCEND    "#"
 
 BOOL util_Init(void);
 
-// WON ADD
 //void util_SplitMessage(char *source, char *separator);
 BOOL util_SplitMessage(char *source, char *separator);
 #ifdef _NEW_FUNC_DECRYPT

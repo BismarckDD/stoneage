@@ -5,7 +5,7 @@
 #include "char_event.h"
 #include "battle.h"
 #include "battle_event.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "pet.h"
 #include "log.h"
 #include "lssproto_serv.h"

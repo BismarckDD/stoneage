@@ -9,7 +9,7 @@
 #ifdef _MO_RELOAD_NPC
 #include "char.h"
 #include "battle.h"
-#include "configfile.h"
+#include "config_file.h"
 #endif
 
 BOOL NPC_readNPCSettingFiles(char* topdirectory, int templatesize, int createsize)

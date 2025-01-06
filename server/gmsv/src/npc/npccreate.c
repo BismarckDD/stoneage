@@ -12,7 +12,7 @@
 #include "readmap.h"
 #include "char_data.h"
 #include "handletime.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "autil.h"
 
 INLINE int NPC_CHECKCREATEINDEX(int index)

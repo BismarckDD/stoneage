@@ -15,7 +15,7 @@
 #include "saacproto_cli.h"
 #include "object.h"
 #include "battle.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "npcutil.h"
 #include "pet.h"
 #include "petmail.h"

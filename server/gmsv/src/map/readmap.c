@@ -1,22 +1,13 @@
 #include "version.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <dirent.h>
+#include "linux_platform.h"
 #include <errno.h>
-#include <unistd.h>
-
-#include <netinet/in.h>
-#include <sys/stat.h>
-
-#include "common.h"
 #include "object.h"
 #include "readmap.h"
 #include "buf.h"
 #include "util.h"
 #include "char.h"
 #include "lssproto_serv.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "autil.h"
 #define MAP_MAGIC  "LS2MAP"
 #ifdef _MO_LNS_MAPSUOXU
@@ -703,48 +694,43 @@ BOOL CHECKFLOORID( id)
 }
 #endif
 
-//#define MAX_MAP_FILES 1300 // ��ͼĿ¼��󵵰���
-#define MAX_MAP_FILES 2000 // ��ͼĿ¼��󵵰���
+#define MAX_MAP_FILES 2000 // max support 2000 map files.
 
 BOOL MAP_readMapDir( char*  dirname )
 {
-    int     mapfilenum=0;
-    STRING64    filenames[MAX_MAP_FILES];
-    int     filenum;
-    int     i;
+  int     mapfilenum=0;
+  STRING64    filenames[MAX_MAP_FILES];
+  int     filenum;
+  int     i;
+  memset( MAP_idjumptbl, -1, sizeof(MAP_idjumptbl));
+  filenum = rgetFileName( dirname, filenames, arraysizeof(filenames) );
+  if( filenum == -1 ) {
+    fprint( "dirname is illegal: %s.\n" , dirname );
+    return FALSE;
+  }
+  for( i = 0 ; i < filenum ; i ++ )
+    if( MAP_IsMapFile( filenames[i].string ) )
+      mapfilenum++;
+    else
+      fprint("%s is not a map file.\n", filenames[i].string);
+  print( "reads map file %d, total file: %d.\n" , mapfilenum, filenum);
+  if (mapfilenum == 0) print("dirname: %s.\n", dirname);
+  if( mapfilenum == 0 )return FALSE;
+  if( !MAP_initMapArray( MAX_MAP_FILES ) ){
+      fprint( "init map array failed.\n" );
+      return FALSE;
+  }
 
-    memset( MAP_idjumptbl, -1, sizeof(MAP_idjumptbl));
-    filenum = rgetFileName( dirname, filenames, arraysizeof(filenames) );
-    if( filenum == -1 ){
-        fprint( "�޷���Ŀ¼�»�ȡ�ļ� %s \n" , dirname );
-        return FALSE;
+  for( i = 0 ; i < filenum ; i ++ )
+    if( MAP_IsMapFile( filenames[i].string ) ){
+        MAP_readMapOne( filenames[i].string );
     }
-
-
-    for( i = 0 ; i < filenum ; i ++ )
-        if( MAP_IsMapFile( filenames[i].string ) )
-            mapfilenum++;
-
-    print( "�ҵ� %d ��ͼ\n" , mapfilenum );
-    if( mapfilenum == 0 )return FALSE;
-    if( !MAP_initMapArray( MAX_MAP_FILES ) ){
-        fprint( "������ͼ�������\n" );
-        return FALSE;
-    }
-
-    for( i = 0 ; i < filenum ; i ++ )
-        if( MAP_IsMapFile( filenames[i].string ) ){
-            MAP_readMapOne( filenames[i].string );
-//            print(".");
-        }
-    print( "��ȷ��ͼ�ļ� %d...",MAP_mapnum_index );
-    if( MAP_mapnum_index == 0 ){
-        MAP_endMapArray();
-        return FALSE;
-    }
-
-    return TRUE;
-
+  print( "reads map num index: %d...",MAP_mapnum_index );
+  if( MAP_mapnum_index == 0 ){
+    MAP_endMapArray();
+    return FALSE;
+  }
+  return TRUE;
 }
 
 #define CHECKFLOORID(id)  if( MAP_mapnum<=(id) || (id)<0 )return (-1);
@@ -1053,14 +1039,14 @@ BOOL MAP_setTileAndObjData( int ff ,int fx, int fy, int tile, int obj)
 
 BOOL MAP_initReadMap( char* maptilefile , char* mapdir )
 {
-    print("\n");
-    if( !MAP_readMapConfFile(maptilefile) )
-        return FALSE;
-    if( !MAP_readBattleMapConfFile( getBattleMapfile( ) ) )
-        return FALSE;
-    if( !MAP_readMapDir(mapdir) )
-        return FALSE;
-    return TRUE;
+  if( !MAP_readMapConfFile(maptilefile) )
+      return FALSE;
+  if( !MAP_readBattleMapConfFile( getBattleMapfile( ) ) )
+      return FALSE;
+  if( !MAP_readMapDir(mapdir) )
+      return FALSE;
+  print("read map dir\n");
+  return TRUE;
 }
 
 static int MAP_coKindAndInt[MAP_KINDNUM]=

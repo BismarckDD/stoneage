@@ -12,7 +12,7 @@
 #include "handletime.h"
 #include "item.h"
 #include "anim_tbl.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "autil.h"
 
 /*É¬ÀÃÃ«¿ÃÇ©±åÔÊÔÂĞ×»§±åèúĞÑÀÃñø±¾ÓÀĞşÃ«×ÛÔÂ    */

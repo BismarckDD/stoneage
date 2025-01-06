@@ -8,7 +8,7 @@
 #include "autil.h"
 #include "battle.h"
 #include "char.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "family.h"
 #include "handletime.h"
 #include "log.h"
@@ -50,15 +50,16 @@ void warplog_proc();
 int main(int argc, char **argv, char **env) {
   setNewTime();
   ShopData_Init();
-  EXITWITHEXITCODEIFFALSE(util_Init(), 1);
+  EXIT_WITH_CODE_IF_FALSE(util_Init(), 1);
 
   LoadAnnounce(); // Arminius 7.12 loginannounce
 
   memcpy(&tmOld, localtime((time_t *)&NowTime.tv_sec), sizeof(tmNow));
 
-  EXITWITHEXITCODEIFFALSE(init(argc, argv, env), 1);
+  EXIT_WITH_CODE_IF_FALSE(init(argc, argv, env), 1);
 
   LoadPetTalk(); // Arminius 8.14 pet talk
+  // print("Load Pet Talk end.");
 
 #ifdef _GAMBLE_BANK
   Load_GambleBankItems();
@@ -74,6 +75,7 @@ int main(int argc, char **argv, char **env) {
 
 #ifdef _SASQL
   if (sasql_init() == FALSE) {
+    print("sasql init failed");
     exit(1);
   }
 #endif
@@ -106,16 +108,16 @@ void mainloop(void) {
 #ifdef _ASSESS_SYSEFFICACY
   Assess_InitSysEfficacy();
 #endif
-#ifdef _CHATROOMPROTOCOL // (���ɿ�) Syu ADD ������Ƶ��
+#ifdef _CHATROOMPROTOCOL
   print("��ʼ��������Ƶ...");
   InitChatRoom();
   print("���\n");
 #endif
-#ifdef _CHAR_PROFESSION // WON ADD ����ְҵ
+#ifdef _CHAR_PROFESSION
 #ifdef _CHANNEL_MODIFY
   print("��ʼ��ְҵƵ��...");
   if (!InitOccChannel())
-    return; // ��ʼ��ְҵƵ��
+    return;
   print("���\n");
 #endif
 #endif
@@ -129,12 +131,6 @@ void mainloop(void) {
 #endif
   print("���\n");
 #endif
-
-// #ifdef _ALLDOMAN
-//	print("��ʼ��Ӣ�۱���...");
-//	InitHeroList();
-//	print("���\n");
-// #endif
 #ifdef _JZ_NEWSCRIPT_LUA
   print("��ʼ��LNS����...");
   NPC_Lua_Init(getLuaFile());

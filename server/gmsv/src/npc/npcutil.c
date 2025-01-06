@@ -2,7 +2,7 @@
 #include "npcutil.h"
 #include "autil.h"
 #include "char.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "enemy.h"
 #include "item.h"
 #include "map_deal.h"

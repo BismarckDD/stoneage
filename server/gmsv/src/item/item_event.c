@@ -1,10 +1,10 @@
 #include "version.h"
 #include <ctype.h>  /* isdigit, isalnum */
 #include "common.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "char.h"
 #include "battle_event.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "item.h"
 #include "item_event.h"
 #include "object.h"

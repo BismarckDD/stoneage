@@ -14,7 +14,7 @@
 #include "enemy.h"
 #include "npc_warp.h"
 #include "saacproto_cli.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "chatmagic.h"
 #include "npc_transmigration.h"
 #ifdef _ANGEL_SUMMON

@@ -8,7 +8,7 @@
 #include "pet_skill.h"
 #include "readmap.h"
 #include "battle.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "util.h"
 #include "npc_eventaction.h"
 #include "npc_freepetskillshop.h"

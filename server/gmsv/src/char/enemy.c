@@ -8,7 +8,7 @@
 #include "buf.h"
 #include "char_base.h"
 #include "char.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "encount.h"
 #include "enemy.h"
 #include "pet.h"

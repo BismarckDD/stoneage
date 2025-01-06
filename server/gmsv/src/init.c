@@ -4,7 +4,7 @@
 #include "buf.h"
 #include "char.h"
 #include "char_talk.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "encount.h"
 #include "enemy.h"
 #include "function.h"
@@ -59,22 +59,13 @@
 
 void printUsage(void) {
   usage();
-  /*print( "Usage: %s ["OPTIONSTRING"]\n", progname );*/
   print("          [-d debuglevel]        default value is 0\n");
   print("          [-f configfilename]    default value is setup.cf\n");
 }
 
-/*
- *
- * ¦��
- * ߯Ի��
- *      TRUE(1)     ����ئ��Ѩ������̼�¦�ѷ�������
- *      FALSE(0)    ����ئ��Ѩ������̼�¦�ѷ�������
- */
 BOOL parseCommandLine(int argc, char **argv) {
-  int c;               /* getopt ƥ���� */
-  extern char *optarg; /* getopt ƥ���� */
-
+  int c;
+  extern char *optarg;
   while ((c = getopt(argc, argv, OPTIONSTRING)) != -1) {
     switch (c) {
     case 'd': {
@@ -136,9 +127,6 @@ BOOL parseCommandLine(int argc, char **argv) {
 }
 
 /*
- * ¦��
- *
- * �ἰ��������ئ��
  */
 BOOL parseEnvironment(char **env) {
   if (getDebuglevel() >= 3) {
@@ -152,16 +140,6 @@ BOOL parseEnvironment(char **env) {
 
 extern int backdoor;
 
-#define GOTORETURNFALSEIFFALSE(x)                                              \
-  if (!(x))                                                                    \
-  goto RETURNFALSE
-/*
- * �����������
- * ¦��
- *      argc    argv����
- *      argv    ��Ѩ������̼�¦��
- * ߯Ի��
- */
 BOOL init(int argc, char **argv, char **env) {
 #ifdef _ITEM_QUITPARTY
   FILE *f;
@@ -171,10 +149,9 @@ BOOL init(int argc, char **argv, char **env) {
   srand(getpid());
   print("This Program is compiled at %s %s by gcc %s\n", __DATE__, __TIME__,
         __VERSION__);
-
   defaultConfig(argv[0]);
-  GOTORETURNFALSEIFFALSE(parseCommandLine(argc, argv));
-  GOTORETURNFALSEIFFALSE(parseEnvironment(env));
+  RETURN_FALSE_IF_FALSE(parseCommandLine(argc, argv));
+  RETURN_FALSE_IF_FALSE(parseEnvironment(env));
 
   signalset();
 
@@ -192,27 +169,23 @@ BOOL init(int argc, char **argv, char **env) {
     debug(sizeof(aho.workchar), d);
   }
 
-  print("�����ļ�: %s\n", getConfigfilename());
+  print("Current Config File name: %s.\n", getConfigfilename());
 
-  GOTORETURNFALSEIFFALSE(readconfigfile(getConfigfilename()));
+  RETURN_FALSE_IF_FALSE(readconfigfile(getConfigfilename()));
 
   nice(getrunlevel());
-  // ttom start
   {
     int iWork = setEncodeKey();
     if (iWork == 0) {
-      // �޼������ƽ��ëɬ��
       printf("----------------------------------------\n");
-      printf("-------------[����] �޷����� %s\n",
+      printf("-------------[EncodeKey] EncodeKey %s\n",
              getConfigfilename());
       printf("----------------------------------------\n");
       exit(1);
     } else {
-      // �޼������ƽ��ëɬ��
-      printf("���� = %d\n", iWork);
+      printf("Encode Key = %d.\n", iWork);
     }
   }
-  // AcWBuffëɬ��
   {
     int iWork = setAcWBSize();
     if (iWork == 0) {
@@ -222,7 +195,7 @@ BOOL init(int argc, char **argv, char **env) {
       printf("----------------------------------------\n");
       exit(1);
     } else {
-      printf("AC���� = %d\n", iWork);
+      printf("AC WB Size = %d.\n", iWork);
     }
   }
   // ttom end
@@ -236,18 +209,13 @@ BOOL init(int argc, char **argv, char **env) {
     print("���ջ�������: %d\n", getrecvlowatbuffer());
     print("�ڴ浥Ԫ��С: %d\n", getMemoryunit());
     print("�ڴ浥Ԫ����: %d\n", getMemoryunitnum());
-
     print("�˺ŷ�������ַ: %s\n", getAccountservername());
     print("�˺ŷ������˿�: %d\n", getAccountserverport());
     print("��½����������: %s\n", getGameservername());
     print("��½����������: %s\n", getAccountserverpasswd());
-
-    print("�ȴ����Ӷ˿�: %d\n", getPortnumber());
-
+    print("�ȴ����Ӷ˿�: %d\n", getPortNumber());
     print("��������к�: %d\n", getServernumber());
-
     print("�ظ���ַʹ��: %d\n", getReuseaddr());
-
     print("�����������: %d\n", getFdnum());
     print("������߳���: %d\n", getPetcharnum());
     print("���������Ŀ: %d\n", getOtherscharnum());
@@ -282,7 +250,7 @@ BOOL init(int argc, char **argv, char **env) {
     print("��Ʒ�ɷ��ļ�: %s\n", getItematomfile());
     print("���������ļ�: %s\n", getQuizfile());
 #ifdef _GMRELOAD
-    print("G M �����ļ�: %s\n", getGMSetfile());
+    print("GM�����ļ�: %s\n", getGMSetfile());
 #endif
     print("��־��¼�ļ�: %s\n", getLsgenlogfilename());
     print("��ԭ����Ŀ¼: %s\n", getStoredir());
@@ -432,29 +400,29 @@ BOOL init(int argc, char **argv, char **env) {
   { // andy_add 2003/05/05 check GameServer Name
     char *GameServerName;
     GameServerName = getGameserverID();
-    if (GameServerName == NULL || strlen(GameServerName) <= 0)
+    if (GameServerName == NULL || strlen(GameServerName) <= 0) {
       return FALSE;
-    print("\n��Ϸ������ID: %s\n", GameServerName);
+      print("\n��Ϸ������ID: %s\n", GameServerName);
+    }
   }
-
   print("��ʼ��ʼ��\n");
 
   // #define DEBUG1( arg... ) if( getDebuglevel()>1 ){##arg}
-  print("�����ڴ�ռ�...");
-  GOTORETURNFALSEIFFALSE(configmem(getMemoryunit(), getMemoryunitnum()));
-  GOTORETURNFALSEIFFALSE(memInit());
-  print("���\n");
+  print("start to init memory......");
+  RETURN_FALSE_IF_FALSE(configmem(getMemoryunit(), getMemoryunitnum()));
+  RETURN_FALSE_IF_FALSE(memInit());
+  print("memory inited.\n");
 
-  print("ʼ�ջ����ӿռ�...");
+  print("ʼ�ջ����ӿռ�......");
   if (!initConnect(getFdnum()))
     goto MEMEND;
   print("���\n");
   while (1) {
-    print("���԰󶨱��ض˿� %d... ", getPortnumber());
+    print("start to listen port: %d......", getPortNumber());
 #ifdef _EPOLL_ET_MODE
-    bindedfd = epoll_bind(getPortnumber());
+    bindedfd = epoll_bind(getPortNumber());
 #else
-    bindedfd = bindlocalhost(getPortnumber());
+    bindedfd = bindLocalhost(getPortNumber());
 #endif
     if (bindedfd == -1)
       sleep(10);
@@ -462,12 +430,11 @@ BOOL init(int argc, char **argv, char **env) {
       break;
   }
   print("���\n");
-  print("��������...");
+  print("��������......");
   if (!initObjectArray(getObjnum()))
     goto CLOSEBIND;
   print("���\n");
-
-  print("��������...");
+  print("��������......");
 #ifdef _OFFLINE_SYSTEM
   if (!CHAR_initCharArray(getPlayercharnum(), getPetcharnum(),
                           getOtherscharnum()))
@@ -476,274 +443,238 @@ BOOL init(int argc, char **argv, char **env) {
 #endif
     goto CLOSEBIND;
   print("���\n");
-  print("������Ʒ...");
+  print("������Ʒ......");
   if (!ITEM_readItemConfFile(getItemfile()))
     goto CLOSEBIND;
   if (!ITEM_initExistItemsArray(getItemnum()))
     goto CLOSEBIND;
-  print("���\n");
-
-  print("����ս��...");
+  print("succeed.\n");
+  print("Start to init battle array......");
   if (!BATTLE_initBattleArray(getBattlenum()))
     goto CLOSEBIND;
-  print("���\n");
-
-  print("��������ģ��...");
+  print("succeed\n");
+  print("Start to init function table......");
   if (!initFunctionTable())
     goto CLOSEBIND;
-  print("���\n");
-
-  print("��ʼ���ʼ�...");
+  print("succeed.\n");
+  print("��ʼ���ʼ�......");
   if (!PETMAIL_initOffmsgBuffer(getAddressbookoffmsgnum()))
     goto CLOSEBIND;
   print("���\n");
-
-  print("��ȡ����ս���ļ�...");
+  print("��ȡ����ս���ļ�......");
   if (!CHAR_initInvinciblePlace(getInvfile()))
     goto CLOSEBIND;
   print("���\n");
-
-  print("��ȡ��ʾλ���ļ�...");
+  print("��ȡ��ʾλ���ļ�......");
   if (!CHAR_initAppearPosition(getAppearfile()))
     goto CLOSEBIND;
   print("���\n");
 
-  print("��ȡͷ�������ļ�...");
+  print("��ȡͷ�������ļ�......");
   if (!TITLE_initTitleName(getTitleNamefile()))
     goto CLOSEBIND;
   print("���\n");
 
-  print("��ȡͷ�������ļ�...");
+  print("��ȡͷ�������ļ�......");
   if (!TITLE_initTitleConfig(getTitleConfigfile()))
     goto CLOSEBIND;
   print("���\n");
 
-  print("��ȡ���������ļ�...");
+  print("��ȡ���������ļ�......");
   if (!ENCOUNT_initEncount(getEncountfile()))
     goto CLOSEBIND;
   print("���\n");
 
-  print("��ȡ��������ļ�...");
+  print("Start to read enemy base config file......");
   if (!ENEMYTEMP_initEnemy(getEnemyBasefile()))
     goto CLOSEBIND;
-  print("���\n");
-
-  print("��ȡ���������ļ�...");
+  print("succeed.\n");
+  print("Start to read enemy config file......");
   if (!ENEMY_initEnemy(getEnemyfile()))
     goto CLOSEBIND;
-  print("���\n");
-
-  print("��ȡ������Ⱥ�ļ�...");
+  print("succeed.\n");
+  print("Start to init group......");
   if (!GROUP_initGroup(getGroupfile()))
     goto CLOSEBIND;
-  print("���\n");
-  print("��ȡħ���ļ�...");
+  print("succeed.\n");
+  print("Start to init magic config......");
   if (!MAGIC_initMagic(getMagicfile()))
     goto CLOSEBIND;
-  print("���\n");
-
+  print("succeed.\n");
 #ifdef _ATTACK_MAGIC
-
-  print("��ȡħ�������ļ�...");
-
+  print("��ȡħ�������ļ�......");
   if (!ATTMAGIC_initMagic(getAttMagicfileName()))
-    //		if( !ATTMAGIC_initMagic( getMagicfile() ) )
     goto CLOSEBIND;
-
-  print("ħ�������ļ� -->%s...", getAttMagicfileName());
-  print("���\n");
-
+  print("ħ�������ļ� -->%s......", getAttMagicfileName());
+  print("succeed.\n");
 #endif
-
-  print("��ȡ���＼���ļ�...");
+  print("��ȡ���＼���ļ�......");
   if (!PETSKILL_initPetskill(getPetskillfile()))
     goto CLOSEBIND;
-  print("���\n");
-
+  print("succeed.\n");
 #ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
-  print("��ȡְҵ�����ļ�...");
-  if (!PROFESSION_initSkill(getProfession())) {
+  print("��ȡְҵ�����ļ�......");
+  if (!PROFESSION_initSkill(getProfession()))
     goto CLOSEBIND;
-  }
-  print("���\n");
+  print("succeed.\n");
 #endif
-
-  /* ʧ��  ة����    ë  �� */
-  print("��ȡ��Ʒ�ɷ��ļ�...");
+  print("��ȡ��Ʒ�ɷ��ļ�......");
   if (!ITEM_initItemAtom(getItematomfile()))
     goto CLOSEBIND;
-  print("���\n");
-
-  print("��ʼ�������ϳ���Ʒ...");
+  print("succeed.\n");
+  print("Start to init item ing cache......");
   if (!ITEM_initItemIngCache())
     goto CLOSEBIND;
-  print("���\n");
-
-  print("��ʼ�����ϳ�����趨...");
+  print("succeed.\n");
+  print("Start to init rand table.");
   if (!ITEM_initRandTable())
     goto CLOSEBIND;
-  print("���\n");
-
-  print("��ȡ���������ļ�...");
+  print("succeed.\n");
+  print("Start to init char effect......");
   if (!CHAR_initEffectSetting(getEffectfile()))
     goto CLOSEBIND;
-  print("���\n");
-  print("��ȡ���������ļ�...");
+  print("succeed.\n");
+  print("Start to init quiz......");
   if (!QUIZ_initQuiz(getQuizfile()))
     goto CLOSEBIND;
-  print("���\n");
+  print("succeed.\n");
 #ifdef _GMRELOAD
-  print("��ȡGM�����ļ�...");
+  print("Start to load gm set......");
   if (!LoadGMSet(getGMSetfile()))
     goto CLOSEBIND;
-  print("���\n");
+  print("succeed.\n");
 #endif
 
 #ifdef _USER_EXP_CF
-  print("��ȡ���������ļ�...");
+  print("Start to init user exp cf......");
   if (!LoadEXP(getEXPfile()))
     goto CLOSEBIND;
-  print("��ߵȼ�: %d...", getMaxLevel());
-  print("һ��ȼ�: %d...", getYBLevel());
-  print("���\n");
+  print("User Max Level: %d......", getMaxLevel());
+  print("User YB Level: %d......", getYBLevel());
+  print("succeed.\n");
 #endif
 
 #ifdef _ANGEL_SUMMON
-  print("��ȡ�����ٻ������б��ļ�...");
+  print("Start to init angel summon expansion......");
   if (!LoadMissionList())
     goto CLOSEBIND;
-  print("���\n");
+  print("succeed.\n");
 #endif
 
 #ifdef _JOBDAILY
-  print("��ȡ������־�ļ�...");
+  print("Start to init job daily......");
   if (!LoadJobdailyfile())
-    print("...ʧ��\n");
+    print("......failed.\n");
   else
-    print("���\n");
+    print("succeed.\n");
 #endif
 
 #ifdef _LOOP_ANNOUNCE
-  print("��ȡѭ�������ļ�...");
+  print("Start to load init loop announce......");
   if (!loadLoopAnnounce())
-    print("...ʧ��\n");
+    print("......failed.\n");
   else
-    print("���\n");
+    print("succeed.\n");
 #endif
 #ifdef _RIDE_CF
-  print("��ȡ�Զ�������ļ�...");
+  print("Start to init Ride CF......");
   if (!CHAR_Ride_CF_init())
-    print("...ʧ��\n");
-  print("���\n");
+    print("......failed.\n");
+  else
+    print("succeed.\n");
 #endif
 #ifdef _FM_LEADER_RIDE
-  print("��ȡׯ԰�峤ר������ļ�...");
+  print("Start to init FM Leader Ride......");
   if (!CHAR_FmLeaderRide_init())
-    print("...ʧ��\n");
-  print("���\n");
+    print("......failed.\n");
+  print("succeed.\n");
 #endif
 #ifdef _RE_GM_COMMAND
-  print("�Զ���GM�����������ļ�...");
+  print("......");
   if (!re_gm_command())
-    print("...ʧ��\n");
-  print("���\n");
+    print("......failed.\n");
+  print("succeed.\n");
 #endif
 
 #ifdef _FIND_TREASURES
-  print("��ȡѰ����Ʒ�����ļ�...");
+  print("Start to init find treasure......");
   if (!FindTreasures_init())
-    print("...ʧ��\n");
-  print("���\n");
+    print("......failed.\n");
+  else
+    print("succeed.\n");
 #endif
-  print("������ͼ...");
+  print("Start to init read map......");
   if (!MAP_initReadMap(getMaptilefile(), getMapdir()))
     goto CLOSEBIND;
-  print("���\n");
-  print("��ȡNPC�ļ�...");
+  print("succeed.\n");
+  print("Start to init npc setting......");
   if (!NPC_readNPCSettingFiles(getNpcdir(), getNpctemplatenum(),
                                getNpccreatenum()))
     goto CLOSEBIND;
-  print("���\n");
+  print("succeed.\n");
 
 #ifdef _TALK_MOVE_FLOOR
-  print("��ȡ˵���ƶ���ͼ�ļ�...");
+  print("Start to init move map......");
   if (!MoveMap_init())
-    print("...ʧ��\n");
-  print("���\n");
+    print("......failed.\n");
+  else
+    print("succeed.\n");
 #endif
 
 #ifdef _LUCK_STAR
-  print("��ȡ�������ļ�...");
+  print("Start to init luck star......");
   if (!LuckStar_init())
-    print("...ʧ��\n");
-  print("���\n");
+    print("......failed.\n");
+  else
+    print("succeed.\n");
 #endif
 
 #ifdef _ONLINE_SHOP
-  print("��ȡ�����̳������ļ�...");
+  print("Start to init online shop.....");
   if (!OnlineShop_init())
-    print("...ʧ��\n");
-  print("���\n");
+    print("......failed.\n");
+  else
+    print("succeed.\n");
 #endif
 
 #ifdef _PLAYER_DIY_MAP
-  print("��ʼ�����DIY��ͼ...");
+  print("Start to init player diy map......");
   if (!MAP_intPlayerMap())
-    print("...ʧ��\n");
-  print("���\n");
+    print("......failed.\n");
+  print("succeed.\n");
 #endif
 
 #ifdef _FILTER_TALK
-  print("��ȡ˵�������ļ�...");
+  print("Start to init filter talk......");
   if (!ReadFilterTalk())
-    print("...ʧ��\n");
-  print("���\n");
+    print("......failed.\n");
+  else
+    print("succeed.\n");
 #endif
-
-  print("��ʼ�� NPC ������... ");
+  print("��ʼ�� NPC ������...... ");
   if (lssproto_InitServer(lsrpcClientWriteFunc, LSGENWORKINGBUFFER) < 0)
     goto CLOSEBIND;
-  print("���\n");
-  print("���������˺ŷ�����... ");
+  print("succeed.\n");
+  print("Start to connect host...... ");
   acfd = connectHost(getAccountservername(), getAccountserverport());
   if (acfd == -1)
     goto CLOSEBIND;
-
 #ifdef _EPOLL_ET_MODE
   if (epoll_add_acfd(acfd) == -1)
     goto CLOSEBIND;
 #endif
-
-  /*
-          {
-                  int errorcode;
-                  int errorcodelen;
-                  int qs;
-
-                  errorcodelen = sizeof(errorcode);
-                  qs = getsockopt( acfd, SOL_SOCKET, SO_RCVBUF , &errorcode,
-     &errorcodelen);
-                  //andy_log
-                  print("\n\n GETSOCKOPT SO_RCVBUF: [ %d, %d, %d] \n", qs,
-     errorcode, errorcodelen);
-          }
-  */
-
-  print("���\n");
+  print("succeed.\n");
   initConnectOne(acfd, NULL, 0);
   if (!CONNECT_acfdInitRB(acfd))
     goto CLOSEAC;
   if (!CONNECT_acfdInitWB(acfd))
     goto CLOSEAC;
   CONNECT_setCtype(acfd, AC);
-
-  print("��ʼ�� �˺� �ͻ��� ... ");
+  print("Start to init client of SAAC ...... ");
   if (saacproto_InitClient(lsrpcClientWriteFunc, LSGENWORKINGBUFFER, acfd) < 0)
     goto CLOSEAC;
-  print("���\n");
-
-  print("���˺ŷ��������͵�½����... ");
-  /*  ����̼�ۢ��ë����  */
+  print("succeed.\n");
+  print("GameServerName, AccountServerPassword...... ");
   {
 #if _ATTESTAION_ID == 1
     saacproto_ACServerLogin_send(acfd, _ATTESTAION_ID, getGameservername(),
@@ -753,22 +684,19 @@ BOOL init(int argc, char **argv, char **env) {
                                  getAccountserverpasswd());
 #endif
   }
-  print("���\n");
+  print("succeed.\n");
 #ifdef _OTHER_SAAC_LINK
   OtherSaacConnect();
 #endif
-
   if (isExistFile(getLsgenlogfilename())) {
     lssproto_SetServerLogFiles(getLsgenlogfilename(), getLsgenlogfilename());
     saacproto_SetClientLogFiles(getLsgenlogfilename(), getLsgenlogfilename());
   }
-
-  print("��ʼ�������\n");
-
+  print("succeed to init lss && saac log files.\n");
 #ifdef _LOTTERY_SYSTEM
   saacproto_LotterySystem_send();
 #endif
-  print("��ʼ��Ѱ�µ���־ ... ");
+  print("Start to load log conf file...... ");
   {
     char logconffile[512];
     snprintf(logconffile, sizeof(logconffile), "%s/%s", getLogdir(),
@@ -776,14 +704,12 @@ BOOL init(int argc, char **argv, char **env) {
     if (!initLog(logconffile))
       goto CLOSEAC;
   }
-  print("���\n");
+  print("succeed.\n");
 #ifdef _PET_ITEM
   restoreObjects(getStoredir());
 #endif
 #ifdef _ITEM_QUITPARTY
-  print("��ȡ�����ɢ��Ʒ��ʧ�ļ�...");
-
-  // ��ȡ����
+  print("Start to init item quit party......");
 #ifdef _CRYPTO_DATA
   char realopfile[256];
   BOOL crypto = FALSE;
@@ -811,22 +737,20 @@ BOOL init(int argc, char **argv, char **env) {
       itemquitparty_num++;
     }
     if (fseek(f, 0, SEEK_SET) == -1) {
-      print("��Ʒ¼�Ҵ���\n");
+      print("Item Quit Party file is not open proper.\n");
       fclose(f);
       goto CLOSEAC;
     }
-    // �������
-    Disappear_Item =
-        allocateMemory(sizeof(struct tagDisappearItem) * itemquitparty_num);
+    Disappear_Item = allocateMemory(sizeof(struct tagDisappearItem) * itemquitparty_num);
     if (Disappear_Item == NULL) {
-      print("�޷������ڴ� %d\n",
+      print("Disappear_Item is too big to allocate, %d\n",
             sizeof(struct tagDisappearItem) * itemquitparty_num);
       fclose(f);
       goto CLOSEAC;
     }
 
     i = 0;
-    // �����߱�Ŵ��� Disappear_Item.string
+    // Disappear_Item.string
     while (fgets(line, sizeof(line), f)) {
 #ifdef _CRYPTO_DATA
       if (crypto == TRUE) {
@@ -839,7 +763,7 @@ BOOL init(int argc, char **argv, char **env) {
         continue;
       chomp(line);
       sprintf(Disappear_Item[i].string, "%s", line);
-      print("\n���߱��:%s", Disappear_Item[i].string);
+      print("\nDisapperItem:%s", Disappear_Item[i].string);
       i++;
     }
     fclose(f);
@@ -851,12 +775,15 @@ BOOL init(int argc, char **argv, char **env) {
   return TRUE;
 
 CLOSEAC:
+  print("Close AC.\n");
   close(acfd);
 CLOSEBIND:
+  print("Close Bind.\n");
   close(bindedfd);
+  // print("close binded fd.\n");
   endConnect();
+  // print("End Close Bind.\n");
 MEMEND:
+  print("Mem End.\n");
   memEnd();
-RETURNFALSE:
-  return FALSE;
 }

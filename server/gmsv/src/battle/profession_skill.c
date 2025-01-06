@@ -10,7 +10,7 @@
 #include "char_base.h"
 #include "battle.h"
 #include "magic_base.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "char.h"
 #include "lssproto_serv.h"
 #include "skill.h"

@@ -4,8 +4,8 @@
 #include "std_c.h"
 
 /* MACROS */
-#define RETURNFALSEIFFALSE(x) if(!x)return FALSE;
-#define EXITWITHEXITCODEIFFALSE(x,code) if(!x)exit(code);
+#define RETURN_FALSE_IF_FALSE(x) if(!x)return FALSE;
+#define EXIT_WITH_CODE_IF_FALSE(x,code) if(!x)exit(code);
 #ifdef __GNUC__
 #define print(format,arg...) fprintf(stderr, format, ##arg)
 #define fprint(format,arg...) fprintf(stderr, "%s:%d:", format, __FILE__, __LINE__, ##arg)

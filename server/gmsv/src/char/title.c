@@ -14,7 +14,7 @@
 #include "skill.h"
 #include "buf.h"
 #include "util.h"
-#include "configfile.h"
+#include "config_file.h"
 
 
 /*====================±¹Ä¯  ====================*/

@@ -14,7 +14,7 @@
 #include "battle.h"
 #include "handletime.h"
 #include "family.h"
-#include "configfile.h"
+#include "config_file.h"
 
 #ifdef _FM_POINT_PK
 extern struct  FM_POINTLIST fmpointlist;                   // 家族据点

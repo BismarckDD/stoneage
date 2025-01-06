@@ -1,6 +1,6 @@
 #include "version.h"
 #include "battle.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "char.h"
 #include "item.h"
 #include "mylua/base.h"

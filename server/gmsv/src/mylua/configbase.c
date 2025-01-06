@@ -5,7 +5,7 @@
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
-#include "configfile.h"
+#include "config_file.h"
 
 #ifdef _ALLBLUES_LUA   
 

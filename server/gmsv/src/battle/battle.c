@@ -11,7 +11,7 @@
 #include"battle_event.h"
 #include"battle_command.h"
 #include"battle_ai.h"
-#include"configfile.h"
+#include"config_file.h"
 #include"lssproto_serv.h"
 #include"encount.h"
 #include"enemy.h"

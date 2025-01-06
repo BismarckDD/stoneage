@@ -1,5 +1,5 @@
 #include "version.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "char.h"
 #include "lssproto_serv.h"
 #include "npcutil.h"

@@ -10,7 +10,7 @@
 #include "npc_manorsman.h"
 #include "saacproto_cli.h"
 #include "net.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "log.h"
 
 /*

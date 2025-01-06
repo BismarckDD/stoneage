@@ -11,7 +11,7 @@
 #include "char.h"
 #include "item.h"
 #include "object.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "lssproto_serv.h"
 #include "saacproto_cli.h"
 #include "log.h"

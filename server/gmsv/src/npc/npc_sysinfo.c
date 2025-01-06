@@ -9,7 +9,7 @@
 #include "char_data.h"
 #include "chatmagic.h"
 #include "net.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "npcgen.h"
 
 /*

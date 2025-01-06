@@ -11,7 +11,7 @@
 #include "battle.h"
 #include "readmap.h"
 #include "handletime.h"
-#include "configfile.h"
+#include "config_file.h"
 #ifdef _GAMBLE_BANK
 #include "npc_gamblebank.h"
 

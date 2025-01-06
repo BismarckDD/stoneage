@@ -28,7 +28,7 @@
 #include "magic_base.h"
 #include "magic.h"
 #include "chatmagic.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "log.h"
 #include "anim_tbl.h"
 #include "encount.h"

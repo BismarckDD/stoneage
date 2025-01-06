@@ -12,7 +12,7 @@
 #include <stdio.h>
 #include <string.h>
 #include "autil.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "enemy.h"
 
 #ifdef _JZ_NEWSCRIPT_LUA

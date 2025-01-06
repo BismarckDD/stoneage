@@ -7,7 +7,7 @@
 #include "object.h"
 #include "buf.h"
 #include "util.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "readmap.h"
 #include "map_warppoint.h"
 #include "autil.h"

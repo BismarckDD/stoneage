@@ -4,7 +4,7 @@
 #include "object.h"
 #include "char_base.h"
 #include "npcutil.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "lssproto_serv.h"
 #include "saacproto_cli.h"
 #include "npc_familyman.h"

@@ -16,7 +16,7 @@
 #include "char_data.h"
 #include "handletime.h"
 #include "chatmagic.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "readmap.h"
 #include "map_deal.h"
 #include "lssproto_serv.h"

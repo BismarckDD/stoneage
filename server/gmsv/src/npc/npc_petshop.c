@@ -1,7 +1,7 @@
 #include "version.h"
 #include <string.h>
 #include "char.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "object.h"
 #include "char_base.h"
 #include "npcutil.h"

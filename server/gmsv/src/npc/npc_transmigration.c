@@ -12,7 +12,7 @@
 #include "readmap.h"
 #include "npc_transmigration.h"
 
-#include "configfile.h"
+#include "config_file.h"
 
 #ifdef _PET_TRANS
 #include "npc_pettransman.h"

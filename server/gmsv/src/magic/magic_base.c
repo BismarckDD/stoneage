@@ -4,7 +4,7 @@
 
 #include "common.h"
 #include "buf.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "magic_base.h"
 #include "magic.h"
 #include "autil.h"

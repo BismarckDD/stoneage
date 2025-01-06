@@ -9,7 +9,7 @@
 #include "npc_doorman.h"
 #include "npc_door.h"
 #include "npcutil.h"
-#include "configfile.h"
+#include "config_file.h"
 /*
  *
  *    曰卞玉失互丐月午五卞公及玉失毛窒日井及椭瘀卞方匀化钒仁NPC.

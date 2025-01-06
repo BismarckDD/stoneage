@@ -18,7 +18,7 @@
 #include "enemy.h"
 #ifdef _PERSONAL_FAME	// Arminius: �����������
 #include "char_base.h"
-#include "configfile.h"
+#include "config_file.h"
 #endif
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);

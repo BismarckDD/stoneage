@@ -3,7 +3,7 @@
 #include "battle.h"
 #include "buf.h"
 #include "char.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "function.h"
 #include "magic_base.h"
 #include "item.h"

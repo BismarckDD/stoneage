@@ -1,14 +1,9 @@
 #include "version.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <sys/stat.h>   // shan
 #include <ctype.h>
-#include <time.h>
 #include <sys/time.h>
 #include <errno.h>
 #include "net.h"
-#include "common.h"
 #include "char_base.h"
 #include "char_data.h"
 #include "char.h"
@@ -28,7 +23,7 @@
 #include "magic_base.h"
 #include "magic.h"
 #include "chatmagic.h"
-#include "configfile.h"
+#include "config_file.h"
 #include "log.h"
 #include "anim_tbl.h"
 #include "encount.h"
@@ -8209,23 +8204,12 @@ int                     CHAR_effectnum;
 
 #endif
 
-
-
-/*------------------------------------------------------------
- * ÉÒÇëÉ¬ÀÃ¼°âÙÓå¼ÀÃ«ÔÊÔÂ£Û
- * Â¦ĞÑ
- *  filename        char*       É¬ÀÃ°×ÑëÄÌ»ï
- * ß¯Ô»°À
- *  ÔÀ      TRUE(1)
- *  ÁÃ      FALSE(0)
- *------------------------------------------------------------*/
 BOOL CHAR_initEffectSetting( char* filename )
 {
-    FILE*   f;
-    char    line[256];
-    int     linenum=0;
-
-    int effectreadlen=0;
+  FILE* f;
+  char  line[256];
+  int   linenum=0;
+  int   effectreadlen=0;
 #ifdef _CRYPTO_DATA    
   char realopfile[256];
   BOOL crypto = FALSE;
@@ -8242,10 +8226,7 @@ BOOL CHAR_initEffectSetting( char* filename )
         errorprint;
         return FALSE;
     }
-
     CHAR_effectnum=0;
-
-    /*  ÒıÄÚ  ¶ãØ¦µæ»¥ÖÏµæØ¤ÔÂ¾®Éıµ¤¾®Æ©ÍÍÔÂ    */
     while( fgets( line, sizeof( line ), f ) ){
 #ifdef _CRYPTO_DATA    
         if(crypto==TRUE){
@@ -8409,7 +8390,7 @@ BOOL CHAR_initEffectSetting( char* filename )
 
     CHAR_effectnum = effectreadlen;
 
-    print( "ÓĞĞ§ÉèÖÃ×ÜÊı %d...", CHAR_effectnum );
+    print("char effect num: %d...", CHAR_effectnum );
 #ifdef DEBUG
 
     {
@@ -8430,25 +8411,16 @@ BOOL CHAR_initEffectSetting( char* filename )
     return TRUE;
 }
 
-//-------------------------------------------------------------------------
-//  òØ»şÁİ¶Ô»¥£İÏ¶ÀÃ¼°ÍÖğö±åÑ¨ÓÀÃñØÆ»¯ÖĞÔÂ¾®Ã«Æ©ÍÍÒıÔÊ£Û
-//  ÄşÔÈ»¯ÖĞÄ¾ÈÉTRUEÃ«ß¯ÔÊ£Û
-//-------------------------------------------------------------------------
 static BOOL CHAR_checkEffectTime( int num)
 {
   BOOL returnflg = FALSE;
-  struct  tm  t;
-  
+  struct tm t;
   memcpy( &t, localtime( &NowTime.tv_sec), sizeof( struct tm));
   
   while( 1 ) {
     int  i;
     int ret;
     char token[256];
-    
-    //  "*"·´£İòå»¯Ã«Ï¶ÔÊ£Û
-    
-    // »û»¥ÓòÚÛØÆ»¯ÖĞÔÂ¾®
     if( strcmp( CHAR_effect[num].month, "*" ) != 0 ) {
       BOOL flg = FALSE;
       for( i = 1; ; i ++) {

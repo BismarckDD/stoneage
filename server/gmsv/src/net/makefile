@@ -1,7 +1,7 @@
 INCFLAGS=-I../../include -I../lua
 CFLAGS=-w -O3 -Wall -pipe $(INCFLAGS)
 
-TARGET=libnpc.a
+TARGET=libnet.a
 SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
 
@@ -9,6 +9,7 @@ ifeq (0,$(MAKELEVEL))
 CC=gcc -m32
 RM=rm -f
 AR=ar cr
+MV=mv
 RANLIB=ranlib
 endif
 

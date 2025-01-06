@@ -12,4 +12,6 @@ gmsvjt
 saacjt
 luajit
 **/lua/*
-copyright.h
+**/copyright.h
+csa
+*.exe
