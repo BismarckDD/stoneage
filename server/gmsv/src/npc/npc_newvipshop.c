@@ -14,7 +14,7 @@
 #include "handletime.h"
 #include "npc_eventaction.h"
 
-//ÌØµØ´ÓÌìÌÃ¸ßĞ½ÍÚ½ÇÀ´µÄ"´«ËÍÊ¦"
+//ç‰¹åœ°ä»å¤©å ‚é«˜è–ªæŒ–è§’æ¥çš„"ä¼ é€å¸ˆ"
 #ifdef _NEW_VIP_SHOP
 enum {
 	WINDOW_START=1,
@@ -145,14 +145,14 @@ static void NPC_NewVipShop_selectWindow( int meindex, int toindex, int num,int s
 #ifdef _OTHER_SAAC_LINK
 		if(osfd == -1){
 			OtherSaacConnect();
-			CHAR_talkToCli( toindex, -1, "µã¾í·şÎñÆ÷Î´Õı³£Á¬½Ó!", CHAR_COLORRED );
+			CHAR_talkToCli( toindex, -1, "ç‚¹å·æœåŠ¡å™¨æœªæ­£å¸¸è¿æ¥!", CHAR_COLORRED );
 		}else{
 			saacproto_QueryPoint_send( osfd, getfdFromCharaIndex( toindex ), CHAR_getChar(toindex, CHAR_CDKEY));
 		}
 #else
 		saacproto_QueryPoint_send( acfd, getfdFromCharaIndex( toindex ), CHAR_getChar(toindex, CHAR_CDKEY));
 #endif
-		CHAR_talkToCli(toindex, -1, "»ñÈ¡ÖØ»Ø±ÒÖĞ£¬ÇëÉÔºò...", CHAR_COLORRED);
+		CHAR_talkToCli(toindex, -1, "è·å–é‡å›å¸ä¸­ï¼Œè¯·ç¨å€™...", CHAR_COLORRED);
 		CHAR_setWorkInt( toindex, CHAR_WORKSHOPRELEVANT, WINDOW_START);
 		buttontype = WINDOW_BUTTONTYPE_YESNO;
 		windowno = NPC_TRANSERMAN_SELECT;
@@ -232,7 +232,7 @@ BOOL NewVipShop_GetMenuStr( int meindex, int toindex, char *npcarg, char *token,
 	int talkNo=index*7+1;
 	if( npcarg == NULL ) return FALSE;
 	
-	sprintf( token, "                             %d/%dÒ³\n",index+1, CHAR_getWorkInt( meindex, NPC_WORK_MAXPAGE));
+	sprintf( token, "                             %d/%dé¡µ\n",index+1, CHAR_getWorkInt( meindex, NPC_WORK_MAXPAGE));
 	while( getStringFromIndexWithDelim( npcarg,"}",talkNo, buf1, sizeof( buf1)) != FALSE )	{
 		talkNo++;
 		memset( buf2, 0, sizeof( buf2));
@@ -242,7 +242,7 @@ BOOL NewVipShop_GetMenuStr( int meindex, int toindex, char *npcarg, char *token,
 
 		sprintf( buf3, "    %s", buf2);
 		if(strlen(buf3)<10)
-			strcat( buf3, "¡¡¡¡¡¡\n");
+			strcat( buf3, "ã€€ã€€ã€€\n");
 		else
 			strcat( buf3, "\n");
 		strcat( token, buf3);

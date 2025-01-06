@@ -120,8 +120,8 @@ static int Exit(lua_State *L)
 
 #ifdef _ALLBLUES_LUA_1_4
 static CharBase BattleBaseEvent[] = {
-	{{"结束事件"}, 		BATTLE_FINISH}
-	,{{"逃跑事件"}, 	BATTLE_ESCAPE}
+	{{"缁撴潫浜嬩欢"}, 		BATTLE_FINISH}
+	,{{"閫冭窇浜嬩欢"}, 	BATTLE_ESCAPE}
 }; 
 
 static int CreateRandVsPlayer (lua_State *L) 

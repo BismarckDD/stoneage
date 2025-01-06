@@ -21,132 +21,132 @@
 #include "mylua/mylua.h"
 extern MY_Lua MYLua;
 static CharBase CharBaseWorkInt[] = {
-	{{"¶ÔÏó"}, 						CHAR_WORKOBJINDEX}
+	{{"å¯¹è±¡"}, 						CHAR_WORKOBJINDEX}
 #ifdef _FONT_SIZE
-	,{{"×ÖºÅ"}, 					CHAR_WORKFONTSIZE}
+	,{{"å­—å·"}, 					CHAR_WORKFONTSIZE}
 #endif
-	,{{"Õ½¶·"}, 					CHAR_WORKBATTLEMODE}
-	,{{"×é¶Ó"}, 					CHAR_WORKPARTYMODE}
-	,{{"Õ½¶·Ë÷Òý"}, 			CHAR_WORKBATTLEINDEX}
-	,{{"Õ½¶·½Ó¿Ú1"}, 			CHAR_WORKBATTLECOM1}
-	,{{"Õ½¶·½Ó¿Ú2"}, 			CHAR_WORKBATTLECOM2}
-	,{{"NPCÁÙÊ±1"}, 			CHAR_NPCWORKINT1}
-  ,{{"NPCÁÙÊ±2"}, 			CHAR_NPCWORKINT2}
-  ,{{"NPCÁÙÊ±3"}, 			CHAR_NPCWORKINT3}
-  ,{{"NPCÁÙÊ±4"}, 			CHAR_NPCWORKINT4}
-  ,{{"NPCÁÙÊ±5"}, 			CHAR_NPCWORKINT5}
-  ,{{"NPCÁÙÊ±6"},				CHAR_NPCWORKINT6}
-  ,{{"NPCÁÙÊ±7"},				CHAR_NPCWORKINT7}
-  ,{{"NPCÁÙÊ±8"},				CHAR_NPCWORKINT8}
-  ,{{"NPCÁÙÊ±9"},				CHAR_NPCWORKINT9}
-  ,{{"NPCÁÙÊ±10"},			CHAR_NPCWORKINT10}
-  ,{{"NPCÁÙÊ±11"},			CHAR_NPCWORKINT11}
-	,{{"NPCÁÙÊ±12"},			CHAR_NPCWORKINT12}
-	,{{"NPCÁÙÊ±13"},			CHAR_NPCWORKINT13}
-	,{{"¼ñÆðÄ£Ê½"},				CHAR_WORKPETFOLLOWMODE}
-  ,{{"¶ÓÔ±1"},					CHAR_WORKPARTYINDEX1}
-  ,{{"¶ÓÔ±2"},					CHAR_WORKPARTYINDEX2}
-  ,{{"¶ÓÔ±3"},					CHAR_WORKPARTYINDEX3}
-	,{{"¶ÓÔ±4"},					CHAR_WORKPARTYINDEX4}
-	,{{"¶ÓÔ±5"},					CHAR_WORKPARTYINDEX5}
-	,{{"×î´óHP"},					CHAR_WORKMAXHP}
-	,{{"×î´óMP"},					CHAR_WORKMAXMP}
-	,{{"¹¥»÷Á¦"},					CHAR_WORKATTACKPOWER}
-	,{{"·ÀÓùÁ¦"},					CHAR_WORKDEFENCEPOWER}
-	,{{"Ãô½ÝÁ¦"},					CHAR_WORKQUICK}
-	,{{"ÐÞÕýÌåÁ¦"},				CHAR_WORKFIXVITAL}
-	,{{"ÐÞÕýÍóÁ¦"},				CHAR_WORKFIXSTR}
-	,{{"ÐÞÕýÄÍÁ¦"},				CHAR_WORKFIXTOUGH}
-	,{{"ÐÞÕýËÙ¶È"},				CHAR_WORKFIXDEX}
-	,{{"¼Ò×åµØÍ¼"},				CHAR_WORKFMFLOOR}
-	,{{"¹¥»÷"},						CHAR_WORKATTACKPOWER}
-	,{{"·ÀÓù"},						CHAR_WORKDEFENCEPOWER}
-	,{{"Ãô½Ý"},						CHAR_WORKQUICK}
-	,{{"ÌÓÅÜ"},						CHAR_WORKDBATTLEESCAPE}
-	,{{"¾­ÑéÊ±¼ä"},				CHAR_WORKITEM_ADDEXPTIME}
-	,{{"¾­Ñé¼Ó³É"},				CHAR_WORKITEM_ADDEXP}
+	,{{"æˆ˜æ–—"}, 					CHAR_WORKBATTLEMODE}
+	,{{"ç»„é˜Ÿ"}, 					CHAR_WORKPARTYMODE}
+	,{{"æˆ˜æ–—ç´¢å¼•"}, 			CHAR_WORKBATTLEINDEX}
+	,{{"æˆ˜æ–—æŽ¥å£1"}, 			CHAR_WORKBATTLECOM1}
+	,{{"æˆ˜æ–—æŽ¥å£2"}, 			CHAR_WORKBATTLECOM2}
+	,{{"NPCä¸´æ—¶1"}, 			CHAR_NPCWORKINT1}
+  ,{{"NPCä¸´æ—¶2"}, 			CHAR_NPCWORKINT2}
+  ,{{"NPCä¸´æ—¶3"}, 			CHAR_NPCWORKINT3}
+  ,{{"NPCä¸´æ—¶4"}, 			CHAR_NPCWORKINT4}
+  ,{{"NPCä¸´æ—¶5"}, 			CHAR_NPCWORKINT5}
+  ,{{"NPCä¸´æ—¶6"},				CHAR_NPCWORKINT6}
+  ,{{"NPCä¸´æ—¶7"},				CHAR_NPCWORKINT7}
+  ,{{"NPCä¸´æ—¶8"},				CHAR_NPCWORKINT8}
+  ,{{"NPCä¸´æ—¶9"},				CHAR_NPCWORKINT9}
+  ,{{"NPCä¸´æ—¶10"},			CHAR_NPCWORKINT10}
+  ,{{"NPCä¸´æ—¶11"},			CHAR_NPCWORKINT11}
+	,{{"NPCä¸´æ—¶12"},			CHAR_NPCWORKINT12}
+	,{{"NPCä¸´æ—¶13"},			CHAR_NPCWORKINT13}
+	,{{"æ¡èµ·æ¨¡å¼"},				CHAR_WORKPETFOLLOWMODE}
+  ,{{"é˜Ÿå‘˜1"},					CHAR_WORKPARTYINDEX1}
+  ,{{"é˜Ÿå‘˜2"},					CHAR_WORKPARTYINDEX2}
+  ,{{"é˜Ÿå‘˜3"},					CHAR_WORKPARTYINDEX3}
+	,{{"é˜Ÿå‘˜4"},					CHAR_WORKPARTYINDEX4}
+	,{{"é˜Ÿå‘˜5"},					CHAR_WORKPARTYINDEX5}
+	,{{"æœ€å¤§HP"},					CHAR_WORKMAXHP}
+	,{{"æœ€å¤§MP"},					CHAR_WORKMAXMP}
+	,{{"æ”»å‡»åŠ›"},					CHAR_WORKATTACKPOWER}
+	,{{"é˜²å¾¡åŠ›"},					CHAR_WORKDEFENCEPOWER}
+	,{{"æ•æ·åŠ›"},					CHAR_WORKQUICK}
+	,{{"ä¿®æ­£ä½“åŠ›"},				CHAR_WORKFIXVITAL}
+	,{{"ä¿®æ­£è…•åŠ›"},				CHAR_WORKFIXSTR}
+	,{{"ä¿®æ­£è€åŠ›"},				CHAR_WORKFIXTOUGH}
+	,{{"ä¿®æ­£é€Ÿåº¦"},				CHAR_WORKFIXDEX}
+	,{{"å®¶æ—åœ°å›¾"},				CHAR_WORKFMFLOOR}
+	,{{"æ”»å‡»"},						CHAR_WORKATTACKPOWER}
+	,{{"é˜²å¾¡"},						CHAR_WORKDEFENCEPOWER}
+	,{{"æ•æ·"},						CHAR_WORKQUICK}
+	,{{"é€ƒè·‘"},						CHAR_WORKDBATTLEESCAPE}
+	,{{"ç»éªŒæ—¶é—´"},				CHAR_WORKITEM_ADDEXPTIME}
+	,{{"ç»éªŒåŠ æˆ"},				CHAR_WORKITEM_ADDEXP}
 #ifdef _OFFLINE_SYSTEM
-	,{{"ÀëÏß"}, 					CHAR_WORK_OFFLINE}
+	,{{"ç¦»çº¿"}, 					CHAR_WORK_OFFLINE}
 #endif
-	,{{"»ñµÃ¾­Ñé"},				CHAR_WORKGETEXP}
+	,{{"èŽ·å¾—ç»éªŒ"},				CHAR_WORKGETEXP}
 #ifdef _AUTO_PK
-	,{{"×Ô¶¯PKµã"},				CHAR_WORK_AUTOPK}
-	,{{"×Ô¶¯PKËÀÍö"},			CHAR_WORK_AUTOPK_DEAD}
+	,{{"è‡ªåŠ¨PKç‚¹"},				CHAR_WORK_AUTOPK}
+	,{{"è‡ªåŠ¨PKæ­»äº¡"},			CHAR_WORK_AUTOPK_DEAD}
 #endif
 #ifdef _SPECIAL_COUNTER
-	,{{"¼ÆÊýÆ÷"}, 				CHAR_WORK_COUNTER}
+	,{{"è®¡æ•°å™¨"}, 				CHAR_WORK_COUNTER}
 #endif
 #ifdef _SPECIAL_TIMER
-	,{{"¼ÆÊ±Æ÷"}, 				CHAR_WORK_TIMER}
+	,{{"è®¡æ—¶å™¨"}, 				CHAR_WORK_TIMER}
 #endif
 #ifdef _STREET_VENDOR	
-	,{{"°ÚÌ¯"}, 					CHAR_WORKSTREETVENDOR}
+	,{{"æ‘†æ‘Š"}, 					CHAR_WORKSTREETVENDOR}
 #endif
 #ifdef _RECORD_IP	
 	,{{"IP"}, 						CHAR_WORK_RECORD_IP}
 #endif
 #ifdef _ONLINE_TIME
-	,{{"µÇÂ½Ê±¼ä"}, 			CHAR_WORK_LOGIN_TIME}
+	,{{"ç™»é™†æ—¶é—´"}, 			CHAR_WORK_LOGIN_TIME}
 #endif
 #ifdef _NEWCLISETSERVID
-	,{{"·þÎñÆ÷ID"}, 			CHAR_WORK_SERVID}
+	,{{"æœåŠ¡å™¨ID"}, 			CHAR_WORK_SERVID}
 #endif
-	//,{{"PKÊ±¼ä"}, 			CHAR_WORKDBATTLETIME}
+	//,{{"PKæ—¶é—´"}, 			CHAR_WORKDBATTLETIME}
 #ifdef _MIND_ICON
-	,{{"ÐÄË¼"},					CHAR_MIND_NUM}
+	,{{"å¿ƒæ€"},					CHAR_MIND_NUM}
 #endif
 #ifdef _PLAYER_EFFECT
-	,{{"ÈËÎïÐ§¹û"},			CHAR_PLAYER_EFFECT}
+	,{{"äººç‰©æ•ˆæžœ"},			CHAR_PLAYER_EFFECT}
 #endif
 #ifdef _MO_PLAYER_EFFECT
-	,{{"ÓÅÏÈÐ§¹û"},			CHAR_PLAYER_EFFECT_PRIORITY}
-	,{{"Õ½³èÌØÐ§"},			CHAR_PLAYER_EFFECT_PET}
-	,{{"×°±¸ÌØÐ§"},			CHAR_PLAYER_EFFECT_ITEM}
+	,{{"ä¼˜å…ˆæ•ˆæžœ"},			CHAR_PLAYER_EFFECT_PRIORITY}
+	,{{"æˆ˜å® ç‰¹æ•ˆ"},			CHAR_PLAYER_EFFECT_PET}
+	,{{"è£…å¤‡ç‰¹æ•ˆ"},			CHAR_PLAYER_EFFECT_ITEM}
 #endif
 #ifdef FAMILY_MANOR_
-	,{{"×¯Ô°ÌØÐ§"},			CHAR_PLAYER_EFFECT_MANOR}
+	,{{"åº„å›­ç‰¹æ•ˆ"},			CHAR_PLAYER_EFFECT_MANOR}
 #endif
 #ifdef _SINGLE_ONLINE
-	,{{"µ¥ºÅÔÚÏß"},			CHAR_WORK_SINGLE_ONLINE}
+	,{{"å•å·åœ¨çº¿"},			CHAR_WORK_SINGLE_ONLINE}
 #endif
-	,{{"Ö÷ÈËË÷Òý"},			CHAR_WORKPLAYERINDEX}
+	,{{"ä¸»äººç´¢å¼•"},			CHAR_WORKPLAYERINDEX}
 #ifdef _NPC_EVENT_NOTICE
 	,{{"NOTICE"}, 				CHAR_WORK_NOTICE}
 #endif
 #ifdef _MO_LUA_RESIST
-	,{{"¶¾¿¹ÐÔ"},			CHAR_WORKMODPOISON}
-	,{{"Âé¿¹ÐÔ"},			CHAR_WORKMODPARALYSIS}
-	,{{"Ë¯¿¹ÐÔ"},			CHAR_WORKMODSLEEP}
-	,{{"Ê¯¿¹ÐÔ"},			CHAR_WORKMODSTONE}
-	,{{"¾Æ¿¹ÐÔ"},			CHAR_WORKMODDRUNK}
-	,{{"»ì¿¹ÐÔ"},			CHAR_WORKMODCONFUSION}
-	,{{"Ðé¿¹ÐÔ"},			CHAR_WORKMODWEAKEN}
-	,{{"¾ç¿¹ÐÔ"},			CHAR_WORKMODDEEPPOISON}
-	,{{"ÕÏ¿¹ÐÔ"},			CHAR_WORKMODBARRIER}
-	,{{"Ä¬¿¹ÐÔ"},			CHAR_WORKMODNOCAST}
+	,{{"æ¯’æŠ—æ€§"},			CHAR_WORKMODPOISON}
+	,{{"éº»æŠ—æ€§"},			CHAR_WORKMODPARALYSIS}
+	,{{"ç¡æŠ—æ€§"},			CHAR_WORKMODSLEEP}
+	,{{"çŸ³æŠ—æ€§"},			CHAR_WORKMODSTONE}
+	,{{"é…’æŠ—æ€§"},			CHAR_WORKMODDRUNK}
+	,{{"æ··æŠ—æ€§"},			CHAR_WORKMODCONFUSION}
+	,{{"è™šæŠ—æ€§"},			CHAR_WORKMODWEAKEN}
+	,{{"å‰§æŠ—æ€§"},			CHAR_WORKMODDEEPPOISON}
+	,{{"éšœæŠ—æ€§"},			CHAR_WORKMODBARRIER}
+	,{{"é»˜æŠ—æ€§"},			CHAR_WORKMODNOCAST}
 
-	,{{"¶¾¿¹¸½¼Ó"},			CHAR_WORK_RESIST_POISON}
-	,{{"Âé¿¹¸½¼Ó"},			CHAR_WORK_RESIST_PARALYSIS}
-	,{{"Ë¯¿¹¸½¼Ó"},			CHAR_WORK_RESIST_SLEEP}
-	,{{"Ê¯¿¹¸½¼Ó"},			CHAR_WORK_RESIST_STONE}
-	,{{"¾Æ¿¹¸½¼Ó"},			CHAR_WORK_RESIST_DRUNK}
-	,{{"»ì¿¹¸½¼Ó"},			CHAR_WORK_RESIST_CONFUSION}
-	,{{"Ðé¿¹¸½¼Ó"},			CHAR_WORK_RESIST_WEAKEN}
-	,{{"¾ç¿¹¸½¼Ó"},			CHAR_WORK_RESIST_DEEPPOISON}
-	,{{"ÕÏ¿¹¸½¼Ó"},			CHAR_WORK_RESIST_BARRIER}
-	,{{"Ä¬¿¹¸½¼Ó"},			CHAR_WORK_RESIST_NOCAST}
+	,{{"æ¯’æŠ—é™„åŠ "},			CHAR_WORK_RESIST_POISON}
+	,{{"éº»æŠ—é™„åŠ "},			CHAR_WORK_RESIST_PARALYSIS}
+	,{{"ç¡æŠ—é™„åŠ "},			CHAR_WORK_RESIST_SLEEP}
+	,{{"çŸ³æŠ—é™„åŠ "},			CHAR_WORK_RESIST_STONE}
+	,{{"é…’æŠ—é™„åŠ "},			CHAR_WORK_RESIST_DRUNK}
+	,{{"æ··æŠ—é™„åŠ "},			CHAR_WORK_RESIST_CONFUSION}
+	,{{"è™šæŠ—é™„åŠ "},			CHAR_WORK_RESIST_WEAKEN}
+	,{{"å‰§æŠ—é™„åŠ "},			CHAR_WORK_RESIST_DEEPPOISON}
+	,{{"éšœæŠ—é™„åŠ "},			CHAR_WORK_RESIST_BARRIER}
+	,{{"é»˜æŠ—é™„åŠ "},			CHAR_WORK_RESIST_NOCAST}
 #endif
 };
 
 static CharBase CharBaseWorkChar[] = {
-	{{"NPCÁÙÊ±1"}, 				CHAR_NPCWORKCHAR1}
-  ,{{"NPCÁÙÊ±2"}, 			CHAR_NPCWORKCHAR2}
-  ,{{"NPCÁÙÊ±3"}, 			CHAR_NPCWORKCHAR3}
-  ,{{"NPCÁÙÊ±4"}, 			CHAR_NPCWORKCHAR4}
-  ,{{"NPCÁÙÊ±5"}, 			CHAR_NPCWORKCHAR5}
-  ,{{"NPCÁÙÊ±6"},				CHAR_NPCWORKCHAR6}
+	{{"NPCä¸´æ—¶1"}, 				CHAR_NPCWORKCHAR1}
+  ,{{"NPCä¸´æ—¶2"}, 			CHAR_NPCWORKCHAR2}
+  ,{{"NPCä¸´æ—¶3"}, 			CHAR_NPCWORKCHAR3}
+  ,{{"NPCä¸´æ—¶4"}, 			CHAR_NPCWORKCHAR4}
+  ,{{"NPCä¸´æ—¶5"}, 			CHAR_NPCWORKCHAR5}
+  ,{{"NPCä¸´æ—¶6"},				CHAR_NPCWORKCHAR6}
 #ifdef _STREET_VENDOR	
-	,{{"°ÚÌ¯"}, 						CHAR_STREETVENDOR_NAME}
+	,{{"æ‘†æ‘Š"}, 						CHAR_STREETVENDOR_NAME}
 #endif
 #ifdef _NEWCLISETMAC	
 	,{{"MAC"}, 						CHAR_WORK_MAC}
@@ -154,365 +154,365 @@ static CharBase CharBaseWorkChar[] = {
 };
 
 static CharBase CharBaseValue[] = {
-	{{"±±"}, 					0}
-	,{{"¶«±±"}, 			1}
-	,{{"¶«"}, 				2}
-	,{{"¶«ÄÏ"}, 			3}
-	,{{"ÄÏ"}, 				4}
-	,{{"Î÷ÄÏ"}, 			5}
-	,{{"Î÷"}, 				6}
-	,{{"Î÷±±"}, 			7}
-	,{{"ÎÞÀàÐÍ"}, 		CHAR_TYPENONE}
-	,{{"Íæ¼Ò"}, 			CHAR_TYPEPLAYER}
-	,{{"µÐÈË"}, 			CHAR_TYPEENEMY}
-	,{{"³èÎï"}, 			CHAR_TYPEPET}
+	{{"åŒ—"}, 					0}
+	,{{"ä¸œåŒ—"}, 			1}
+	,{{"ä¸œ"}, 				2}
+	,{{"ä¸œå—"}, 			3}
+	,{{"å—"}, 				4}
+	,{{"è¥¿å—"}, 			5}
+	,{{"è¥¿"}, 				6}
+	,{{"è¥¿åŒ—"}, 			7}
+	,{{"æ— ç±»åž‹"}, 		CHAR_TYPENONE}
+	,{{"çŽ©å®¶"}, 			CHAR_TYPEPLAYER}
+	,{{"æ•Œäºº"}, 			CHAR_TYPEENEMY}
+	,{{"å® ç‰©"}, 			CHAR_TYPEPET}
 #ifdef _ALLBLUES_LUA 
 	,{{"LUA"}, 			CHAR_TYPELUANPC}
 #endif
 #ifdef _PLAYER_NPC 
-	,{{"°ïÍÐ"}, 			CHAR_TYPEPLAYERNPC}
-	,{{"°ï³è"}, 			CHAR_TYPEPLAYERPETNPC}
+	,{{"å¸®æ‰˜"}, 			CHAR_TYPEPLAYERNPC}
+	,{{"å¸®å® "}, 			CHAR_TYPEPLAYERPETNPC}
 #endif
 };
 
 static CharBase CharBaseWorkValue[] = {
-	{{"ÎÞ"}, 									CHAR_PARTY_NONE}
-	,{{"¶Ó³¤"}, 							CHAR_PARTY_LEADER}
-	,{{"¶ÓÔ±"}, 							CHAR_PARTY_CLIENT}
-	,{{"ÎÞÕ½¶·"}, 						BATTLE_CHARMODE_NONE}
-	,{{"Õ½¶·³õÊ¼»¯"}, 				BATTLE_CHARMODE_INIT}
-	,{{"µÈ´ýÕ½¶·"}, 					BATTLE_CHARMODE_C_WAIT}
-	,{{"È·ÈÏÕ½¶·"}, 					BATTLE_CHARMODE_C_OK}
-	,{{"°ïÖúÕ½¶·"}, 					BATTLE_CHARMODE_RESCUE}
-	,{{"½áÊøÕ½¶·"}, 					BATTLE_CHARMODE_FINAL}
-	,{{"¹ÛÕ½³õÊ¼»¯"}, 				BATTLE_CHARMODE_WATCHINIT}
-	,{{"Ã»ÓÐ¼Ò×å"}, 					FMMEMBER_NONE}
-  ,{{"ÉêÇëÈë×å"}, 					FMMEMBER_APPLY}
-  ,{{"×å³¤"}, 							FMMEMBER_LEADER}
-  ,{{"³ÉÔ±"}, 							FMMEMBER_MEMBER}
-  ,{{"³¤ÀÏ"}, 							FMMEMBER_ELDER}
+	{{"æ— "}, 									CHAR_PARTY_NONE}
+	,{{"é˜Ÿé•¿"}, 							CHAR_PARTY_LEADER}
+	,{{"é˜Ÿå‘˜"}, 							CHAR_PARTY_CLIENT}
+	,{{"æ— æˆ˜æ–—"}, 						BATTLE_CHARMODE_NONE}
+	,{{"æˆ˜æ–—åˆå§‹åŒ–"}, 				BATTLE_CHARMODE_INIT}
+	,{{"ç­‰å¾…æˆ˜æ–—"}, 					BATTLE_CHARMODE_C_WAIT}
+	,{{"ç¡®è®¤æˆ˜æ–—"}, 					BATTLE_CHARMODE_C_OK}
+	,{{"å¸®åŠ©æˆ˜æ–—"}, 					BATTLE_CHARMODE_RESCUE}
+	,{{"ç»“æŸæˆ˜æ–—"}, 					BATTLE_CHARMODE_FINAL}
+	,{{"è§‚æˆ˜åˆå§‹åŒ–"}, 				BATTLE_CHARMODE_WATCHINIT}
+	,{{"æ²¡æœ‰å®¶æ—"}, 					FMMEMBER_NONE}
+  ,{{"ç”³è¯·å…¥æ—"}, 					FMMEMBER_APPLY}
+  ,{{"æ—é•¿"}, 							FMMEMBER_LEADER}
+  ,{{"æˆå‘˜"}, 							FMMEMBER_MEMBER}
+  ,{{"é•¿è€"}, 							FMMEMBER_ELDER}
 };
 
 static CharBase CharBaseInt[] = {
-	{{"Í¼ÏñºÅ"}, 			CHAR_BASEIMAGENUMBER}
-	,{{"Ô­Í¼ÏñºÅ"}, 	CHAR_BASEBASEIMAGENUMBER}
-	,{{"Í·ÏñºÅ"},			CHAR_FACEIMAGENUMBER}
-	,{{"´æµµ"},				CHAR_SAVEINDEXNUMBER}
-	,{{"µØÍ¼ºÅ"},			CHAR_FLOOR}
-	,{{"×ø±êX"}, 			CHAR_X}
-	,{{"×ø±êY"}, 			CHAR_Y}
-	,{{"·½Ïò"}, 			CHAR_DIR}
-	,{{"µÈ¼¶"}, 			CHAR_LV}
-	,{{"Ê¯±Ò"}, 			CHAR_GOLD}
+	{{"å›¾åƒå·"}, 			CHAR_BASEIMAGENUMBER}
+	,{{"åŽŸå›¾åƒå·"}, 	CHAR_BASEBASEIMAGENUMBER}
+	,{{"å¤´åƒå·"},			CHAR_FACEIMAGENUMBER}
+	,{{"å­˜æ¡£"},				CHAR_SAVEINDEXNUMBER}
+	,{{"åœ°å›¾å·"},			CHAR_FLOOR}
+	,{{"åæ ‡X"}, 			CHAR_X}
+	,{{"åæ ‡Y"}, 			CHAR_Y}
+	,{{"æ–¹å‘"}, 			CHAR_DIR}
+	,{{"ç­‰çº§"}, 			CHAR_LV}
+	,{{"çŸ³å¸"}, 			CHAR_GOLD}
 	,{{"HP"}, 				CHAR_HP}
 	,{{"MP"}, 				CHAR_MP}
-	,{{"×î´óMP"}, 		CHAR_MAXMP}
-	,{{"ÌåÁ¦"}, 			CHAR_VITAL}
-	,{{"ÍóÁ¦"}, 			CHAR_STR}
-	,{{"ÄÍÁ¦"},				CHAR_TOUGH}
-	,{{"ËÙ¶È"},				CHAR_DEX}
-	,{{"µØ"},					CHAR_EARTHAT}
-	,{{"Ë®"},					CHAR_WATERAT}
-	,{{"»ð"}, 				CHAR_FIREAT}
-	,{{"·ç"}, 				CHAR_WINDAT}
-	,{{"Õ½³è"}, 			CHAR_DEFAULTPET}
-	,{{"÷ÈÁ¦"}, 			CHAR_CHARM}
-	,{{"ÔËÆø"}, 			CHAR_LUCK}
-	,{{"ËÀÍö´ÎÊý"}, 	CHAR_DEADCOUNT}
-	,{{"×ßÂ·²½Êý"}, 	CHAR_WALKCOUNT}
-	,{{"Ëµ»°´ÎÊý"}, 	CHAR_TALKCOUNT}
-	,{{"Ëð»µ´ÎÊý"}, 	CHAR_DAMAGECOUNT}
-	,{{"¸ø³è´ÎÊý"}, 	CHAR_GETPETCOUNT}
-	,{{"É±³è´ÎÊý"}, 	CHAR_KILLPETCOUNT}
-	,{{"ËÀ³è´ÎÊý"}, 	CHAR_DEADPETCOUNT}
-	,{{"·¢ÓÊ¼þÊý"}, 	CHAR_SENDMAILCOUNT}
-	,{{"ºÏ³É´ÎÊý"}, 	CHAR_MERGEITEMCOUNT}
-	,{{"PK´ÎÊý"}, 		CHAR_DUELBATTLECOUNT}
-	,{{"PKÓ®Êý"},			CHAR_DUELWINCOUNT}
-	,{{"PK°ÜÊý"}, 		CHAR_DUELLOSECOUNT}
-	,{{"PKÁ¬Ê¤"}, 		CHAR_DUELSTWINCOUNT}
-	,{{"PKÁ¬°Ü"}, 		CHAR_DUELSTLOSECOUNT}
-	,{{"PK×î¸ßÁ¬Ê¤"},	CHAR_DUELMAXSTWINCOUNT}
-	,{{"ÀàÐÍ"}, 			CHAR_WHICHTYPE}
-	,{{"Ñ­»·ÊÂ¼þÊ±¼ä"},   CHAR_LOOPINTERVALAB}
+	,{{"æœ€å¤§MP"}, 		CHAR_MAXMP}
+	,{{"ä½“åŠ›"}, 			CHAR_VITAL}
+	,{{"è…•åŠ›"}, 			CHAR_STR}
+	,{{"è€åŠ›"},				CHAR_TOUGH}
+	,{{"é€Ÿåº¦"},				CHAR_DEX}
+	,{{"åœ°"},					CHAR_EARTHAT}
+	,{{"æ°´"},					CHAR_WATERAT}
+	,{{"ç«"}, 				CHAR_FIREAT}
+	,{{"é£Ž"}, 				CHAR_WINDAT}
+	,{{"æˆ˜å® "}, 			CHAR_DEFAULTPET}
+	,{{"é­…åŠ›"}, 			CHAR_CHARM}
+	,{{"è¿æ°”"}, 			CHAR_LUCK}
+	,{{"æ­»äº¡æ¬¡æ•°"}, 	CHAR_DEADCOUNT}
+	,{{"èµ°è·¯æ­¥æ•°"}, 	CHAR_WALKCOUNT}
+	,{{"è¯´è¯æ¬¡æ•°"}, 	CHAR_TALKCOUNT}
+	,{{"æŸåæ¬¡æ•°"}, 	CHAR_DAMAGECOUNT}
+	,{{"ç»™å® æ¬¡æ•°"}, 	CHAR_GETPETCOUNT}
+	,{{"æ€å® æ¬¡æ•°"}, 	CHAR_KILLPETCOUNT}
+	,{{"æ­»å® æ¬¡æ•°"}, 	CHAR_DEADPETCOUNT}
+	,{{"å‘é‚®ä»¶æ•°"}, 	CHAR_SENDMAILCOUNT}
+	,{{"åˆæˆæ¬¡æ•°"}, 	CHAR_MERGEITEMCOUNT}
+	,{{"PKæ¬¡æ•°"}, 		CHAR_DUELBATTLECOUNT}
+	,{{"PKèµ¢æ•°"},			CHAR_DUELWINCOUNT}
+	,{{"PKè´¥æ•°"}, 		CHAR_DUELLOSECOUNT}
+	,{{"PKè¿žèƒœ"}, 		CHAR_DUELSTWINCOUNT}
+	,{{"PKè¿žè´¥"}, 		CHAR_DUELSTLOSECOUNT}
+	,{{"PKæœ€é«˜è¿žèƒœ"},	CHAR_DUELMAXSTWINCOUNT}
+	,{{"ç±»åž‹"}, 			CHAR_WHICHTYPE}
+	,{{"å¾ªçŽ¯äº‹ä»¶æ—¶é—´"},   CHAR_LOOPINTERVALAB}
 #ifdef _NEWOPEN_MAXEXP
-	,{{"×Ü¾­Ñé"}, 		CHAR_OLDEXP}
+	,{{"æ€»ç»éªŒ"}, 		CHAR_OLDEXP}
 #endif
-	,{{"µ±Ç°¾­Ñé"}, 	CHAR_EXP}
-	,{{"¼¼ÄÜµã"}, 		CHAR_SKILLUPPOINT}
-	,{{"Éý¼¶µã"}, 		CHAR_LEVELUPPOINT}
+	,{{"å½“å‰ç»éªŒ"}, 	CHAR_EXP}
+	,{{"æŠ€èƒ½ç‚¹"}, 		CHAR_SKILLUPPOINT}
+	,{{"å‡çº§ç‚¹"}, 		CHAR_LEVELUPPOINT}
 	,{{"DP"}, 				CHAR_DUELPOINT}
-	,{{"¾­Ñé"}, 			CHAR_EXP}
-	,{{"³öÉúµØ"}, 		CHAR_LASTTALKELDER}
-	,{{"×ªÊý"}, 			CHAR_TRANSMIGRATION}
-	,{{"½ûÑÔ"}, 			CHAR_SILENT}
-	,{{"¼Ò×åË÷Òý"}, 	CHAR_FMINDEX}
-	,{{"¼Ò×åµØÎ»"}, 	CHAR_FMLEADERFLAG}
-	,{{"¼Ò×åÀàÐÍ"}, 	CHAR_FMSPRITE}
+	,{{"ç»éªŒ"}, 			CHAR_EXP}
+	,{{"å‡ºç”Ÿåœ°"}, 		CHAR_LASTTALKELDER}
+	,{{"è½¬æ•°"}, 			CHAR_TRANSMIGRATION}
+	,{{"ç¦è¨€"}, 			CHAR_SILENT}
+	,{{"å®¶æ—ç´¢å¼•"}, 	CHAR_FMINDEX}
+	,{{"å®¶æ—åœ°ä½"}, 	CHAR_FMLEADERFLAG}
+	,{{"å®¶æ—ç±»åž‹"}, 	CHAR_FMSPRITE}
 #ifdef _NEW_RIDEPETS
-	,{{"Ö¤ÊéÆï³è"}, 	CHAR_LOWRIDEPETS}
+	,{{"è¯ä¹¦éª‘å® "}, 	CHAR_LOWRIDEPETS}
 #endif
 #ifdef _RIDE_CF
-	,{{"Ö¤ÊéÆï³è1"}, 	CHAR_LOWRIDEPETS1}
+	,{{"è¯ä¹¦éª‘å® 1"}, 	CHAR_LOWRIDEPETS1}
 #ifdef _ADD_RIDE_CF		
-	,{{"Ö¤ÊéÆï³è2"}, 	CHAR_LOWRIDEPETS2}
+	,{{"è¯ä¹¦éª‘å® 2"}, 	CHAR_LOWRIDEPETS2}
 #endif
 #endif
-	,{{"¸öÈËÒøÐÐ"}, 	CHAR_BANKGOLD}
-	,{{"Æï³è"}, 			CHAR_RIDEPET}
-	,{{"±©»÷"}, 			CHAR_CRITIAL}
-	,{{"·´»÷"}, 			CHAR_COUNTER}
-	,{{"ÏÂÏßÊ±¼ä"}, 	CHAR_LASTLEAVETIME}
+	,{{"ä¸ªäººé“¶è¡Œ"}, 	CHAR_BANKGOLD}
+	,{{"éª‘å® "}, 			CHAR_RIDEPET}
+	,{{"æš´å‡»"}, 			CHAR_CRITIAL}
+	,{{"åå‡»"}, 			CHAR_COUNTER}
+	,{{"ä¸‹çº¿æ—¶é—´"}, 	CHAR_LASTLEAVETIME}
 #ifdef _GAMBLE_BANK
-//	,{{"¶Ä³¡ÒøÐÐ"}, 	CHAR_RIDEPET}
+//	,{{"èµŒåœºé“¶è¡Œ"}, 	CHAR_RIDEPET}
 #endif
 #ifdef _DROPSTAKENEW
-	,{{"¶Ä³¡»ý·Ö"}, 	CHAR_GAMBLENUM}
+	,{{"èµŒåœºç§¯åˆ†"}, 	CHAR_GAMBLENUM}
 #endif
 #ifdef _TRUMP_EQUIPMENT
-	,{{"·¨±¦ÈËÎïÌØÐ§"},			CHAR_TRUMP_EFFECT}
+	,{{"æ³•å®äººç‰©ç‰¹æ•ˆ"},			CHAR_TRUMP_EFFECT}
 #endif
-#ifdef _PERSONAL_FAME	// Arminius 8.30: ¼Ò×å¸öÈËÉùÍû
-	,{{"ÉùÍû"}, 			CHAR_FAME}
+#ifdef _PERSONAL_FAME	// Arminius 8.30: å®¶æ—ä¸ªäººå£°æœ›
+	,{{"å£°æœ›"}, 			CHAR_FAME}
 #endif
 #ifdef _ATTACK_EFFECT
-	,{{"¹¥»÷ÌØÐ§"},			CHAR_ATTACK_EFFECT}
+	,{{"æ”»å‡»ç‰¹æ•ˆ"},			CHAR_ATTACK_EFFECT}
 #endif
 #ifdef _ATTACK_MAGIC
-	,{{"µØÄ§·¨ÊìÁ·¶È"}, 			CHAR_EARTH_EXP}
-	,{{"Ë®Ä§·¨ÊìÁ·¶È"}, 			CHAR_WATER_EXP}
-	,{{"»ðÄ§·¨ÊìÁ·¶È"}, 			CHAR_FIRE_EXP}
-	,{{"·çÄ§·¨ÊìÁ·¶È"}, 			CHAR_WIND_EXP}
-	,{{"µØÄ§·¨¿¹ÐÔ"}, 				CHAR_EARTH_RESIST}
-	,{{"Ë®Ä§·¨¿¹ÐÔ"}, 				CHAR_WATER_RESIST}
-	,{{"»ðÄ§·¨¿¹ÐÔ"}, 				CHAR_FIRE_RESIST}
-	,{{"·çÄ§·¨¿¹ÐÔ"}, 				CHAR_WIND_RESIST}
-	,{{"µØÄ§·¨ÊìÁ·¶È¾­Ñé"}, 	CHAR_EARTH_ATTMAGIC_EXP}
-	,{{"Ë®Ä§·¨ÊìÁ·¶È¾­Ñé"}, 	CHAR_WATER_ATTMAGIC_EXP}
-	,{{"»ðÄ§·¨ÊìÁ·¶È¾­Ñé"}, 	CHAR_FIRE_ATTMAGIC_EXP}
-	,{{"·çÄ§·¨ÊìÁ·¶È¾­Ñé"}, 	CHAR_WIND_ATTMAGIC_EXP}
-	,{{"µØÄ§·¨¿¹ÐÔ¾­ÑéÖµ"}, 	CHAR_EARTH_DEFMAGIC_EXP}
-	,{{"Ë®Ä§·¨¿¹ÐÔ¾­ÑéÖµ"}, 	CHAR_WATER_DEFMAGIC_EXP}
-	,{{"»ðÄ§·¨¿¹ÐÔ¾­ÑéÖµ"}, 	CHAR_FIRE_DEFMAGIC_EXP}
-	,{{"·çÄ§·¨¿¹ÐÔ¾­ÑéÖµ"}, 	CHAR_WIND_DEFMAGIC_EXP}
+	,{{"åœ°é­”æ³•ç†Ÿç»ƒåº¦"}, 			CHAR_EARTH_EXP}
+	,{{"æ°´é­”æ³•ç†Ÿç»ƒåº¦"}, 			CHAR_WATER_EXP}
+	,{{"ç«é­”æ³•ç†Ÿç»ƒåº¦"}, 			CHAR_FIRE_EXP}
+	,{{"é£Žé­”æ³•ç†Ÿç»ƒåº¦"}, 			CHAR_WIND_EXP}
+	,{{"åœ°é­”æ³•æŠ—æ€§"}, 				CHAR_EARTH_RESIST}
+	,{{"æ°´é­”æ³•æŠ—æ€§"}, 				CHAR_WATER_RESIST}
+	,{{"ç«é­”æ³•æŠ—æ€§"}, 				CHAR_FIRE_RESIST}
+	,{{"é£Žé­”æ³•æŠ—æ€§"}, 				CHAR_WIND_RESIST}
+	,{{"åœ°é­”æ³•ç†Ÿç»ƒåº¦ç»éªŒ"}, 	CHAR_EARTH_ATTMAGIC_EXP}
+	,{{"æ°´é­”æ³•ç†Ÿç»ƒåº¦ç»éªŒ"}, 	CHAR_WATER_ATTMAGIC_EXP}
+	,{{"ç«é­”æ³•ç†Ÿç»ƒåº¦ç»éªŒ"}, 	CHAR_FIRE_ATTMAGIC_EXP}
+	,{{"é£Žé­”æ³•ç†Ÿç»ƒåº¦ç»éªŒ"}, 	CHAR_WIND_ATTMAGIC_EXP}
+	,{{"åœ°é­”æ³•æŠ—æ€§ç»éªŒå€¼"}, 	CHAR_EARTH_DEFMAGIC_EXP}
+	,{{"æ°´é­”æ³•æŠ—æ€§ç»éªŒå€¼"}, 	CHAR_WATER_DEFMAGIC_EXP}
+	,{{"ç«é­”æ³•æŠ—æ€§ç»éªŒå€¼"}, 	CHAR_FIRE_DEFMAGIC_EXP}
+	,{{"é£Žé­”æ³•æŠ—æ€§ç»éªŒå€¼"}, 	CHAR_WIND_DEFMAGIC_EXP}
 #endif
-#ifdef _CHAR_PROFESSION			// WON ADD ÈËÎïÖ°Òµ
-	,{{"Ö°Òµ±ð"}, 	PROFESSION_CLASS}
-	,{{"Ö°ÒµµÈ¼¶"}, 	PROFESSION_LEVEL}
-	,{{"¼¼ÄÜµãÊý"}, 	PROFESSION_SKILL_POINT}
-	,{{"Ôö¼Ó¶Ñµþ"}, 	ATTACHPILE}
-	,{{"»ðÊìÁ·¶È"}, 	PROFESSION_FIRE_P}
-	,{{"±ùÊìÁ·¶È"}, 	PROFESSION_ICE_P}
-	,{{"À×ÊìÁ·¶È"}, 	PROFESSION_THUNDER_P}
-	,{{"»ð¿¹ÐÔ"}, 	PROFESSION_FIRE_R}
-	,{{"±ù¿¹ÐÔ"}, 	PROFESSION_ICE_R}
-	,{{"À×¿¹ÐÔ"}, 	PROFESSION_THUNDER_R}
+#ifdef _CHAR_PROFESSION			// WON ADD äººç‰©èŒä¸š
+	,{{"èŒä¸šåˆ«"}, 	PROFESSION_CLASS}
+	,{{"èŒä¸šç­‰çº§"}, 	PROFESSION_LEVEL}
+	,{{"æŠ€èƒ½ç‚¹æ•°"}, 	PROFESSION_SKILL_POINT}
+	,{{"å¢žåŠ å †å "}, 	ATTACHPILE}
+	,{{"ç«ç†Ÿç»ƒåº¦"}, 	PROFESSION_FIRE_P}
+	,{{"å†°ç†Ÿç»ƒåº¦"}, 	PROFESSION_ICE_P}
+	,{{"é›·ç†Ÿç»ƒåº¦"}, 	PROFESSION_THUNDER_P}
+	,{{"ç«æŠ—æ€§"}, 	PROFESSION_FIRE_R}
+	,{{"å†°æŠ—æ€§"}, 	PROFESSION_ICE_R}
+	,{{"é›·æŠ—æ€§"}, 	PROFESSION_THUNDER_R}
 #endif
 #ifdef _NEW_MANOR_LAW
-	,{{"ÆøÊÆ"}, 		CHAR_MOMENTUM}
+	,{{"æ°”åŠ¿"}, 		CHAR_MOMENTUM}
 #endif
 #ifdef _VIP_SERVER
-	,{{"»ý·Ö"}, 		CHAR_AMPOINT}
+	,{{"ç§¯åˆ†"}, 		CHAR_AMPOINT}
 #endif
 #ifdef _VIP_RIDE
-	,{{"»áÔ±"}, 			CHAR_VIPRIDE}
-	,{{"»áÔ±ÓÐÐ§ÆÚ"}, CHAR_VIPTIME}
+	,{{"ä¼šå‘˜"}, 			CHAR_VIPRIDE}
+	,{{"ä¼šå‘˜æœ‰æ•ˆæœŸ"}, CHAR_VIPTIME}
 #endif
 #ifdef _ITEM_PET_LOCKED
-	,{{"°²È«Ëø"}, 		CHAR_LOCKED}
+	,{{"å®‰å…¨é”"}, 		CHAR_LOCKED}
 #endif
 #ifdef _ONLINE_SHOP
-	,{{"±´±Ò"}, 			CHAR_BJ}
+	,{{"è´å¸"}, 			CHAR_BJ}
 #endif
-	,{{"Ä£Ê½AI"}, 	CHAR_MODAI}
-	,{{"¿É±äAI"}, 	CHAR_VARIABLEAI}
-	,{{"³è¼¼Î»"}, 	CHAR_SLOT}
-	,{{"³èID"}, 		CHAR_PETID}
-	,{{"¹ÖID"}, 		CHAR_PETENEMYID}
-	,{{"ÊØ»¤ÊÞ"}, 	CHAR_PETFAMILY}
-	,{{"ÄÜÁ¦Öµ"}, 	CHAR_ALLOCPOINT}
-	,{{"³É³¤Çø¼ä"}, CHAR_PETRANK}
-	,{{"ÏÞÖÆµÈ¼¶"}, CHAR_LIMITLEVEL}
+	,{{"æ¨¡å¼AI"}, 	CHAR_MODAI}
+	,{{"å¯å˜AI"}, 	CHAR_VARIABLEAI}
+	,{{"å® æŠ€ä½"}, 	CHAR_SLOT}
+	,{{"å® ID"}, 		CHAR_PETID}
+	,{{"æ€ªID"}, 		CHAR_PETENEMYID}
+	,{{"å®ˆæŠ¤å…½"}, 	CHAR_PETFAMILY}
+	,{{"èƒ½åŠ›å€¼"}, 	CHAR_ALLOCPOINT}
+	,{{"æˆé•¿åŒºé—´"}, CHAR_PETRANK}
+	,{{"é™åˆ¶ç­‰çº§"}, CHAR_LIMITLEVEL}
 #ifdef _PET_BEATITUDE
-	,{{"ÌáÉýÖµ"}, 	CHAR_BEATITUDE}
+	,{{"æå‡å€¼"}, 	CHAR_BEATITUDE}
 #endif
 #ifdef _CAMEO_MONEY
-	,{{"±´¿Ç"}, 		CHAR_CAMEO}
+	,{{"è´å£³"}, 		CHAR_CAMEO}
 #endif
 #ifdef _MISSION_TRAIN
-	,{{"ÈÎÎñÁ´"}, 	CHAR_MISSIONTRAIN_NUM}
-	,{{"ÈÎÎñÁ´Ê±¼ä"}, 	CHAR_MISSIONTRAIN_TIME}
+	,{{"ä»»åŠ¡é“¾"}, 	CHAR_MISSIONTRAIN_NUM}
+	,{{"ä»»åŠ¡é“¾æ—¶é—´"}, 	CHAR_MISSIONTRAIN_TIME}
 #endif
 #ifdef _PET_EVOLVE
-	,{{"½ø»¯"}, 		CHAR_EVOLVE}
+	,{{"è¿›åŒ–"}, 		CHAR_EVOLVE}
 #endif
 #ifdef _ONLINE_TIME
-	,{{"ÔÚÏßÊ±¼ä"}, 		CHAR_ONLINE_TIME}
+	,{{"åœ¨çº¿æ—¶é—´"}, 		CHAR_ONLINE_TIME}
 #endif
 
 #ifdef _FLOOR_DIFI_FIELD
-	,{{"Â¥²ãÊ±¼ä"}, 		CHAR_FLOORDIFI_TIME}
+	,{{"æ¥¼å±‚æ—¶é—´"}, 		CHAR_FLOORDIFI_TIME}
 #endif
 #ifdef _ACTIVE_GAME
-	,{{"»îÁ¦"}, 		CHAR_ACTIVE}
+	,{{"æ´»åŠ›"}, 		CHAR_ACTIVE}
 #endif
 #ifdef _SUPER
-	,{{"¼«Æ·"}, 		CHAR_SUPER}
+	,{{"æžå“"}, 		CHAR_SUPER}
 #endif
 #ifdef _ALLDOMAN
-	,{{"Ó¢ÐÛ³ÆºÅ"}, 		CHAR_HEROFLOOR}
+	,{{"è‹±é›„ç§°å·"}, 		CHAR_HEROFLOOR}
 #endif
 
 #ifdef _PLAYER_TITLE
-	,{{"³ÆºÅµÈ¼¶"}, 		CHAR_TITLE_LV}
-	,{{"³ÆºÅÊ±¼ä"}, 		CHAR_TITLE_TIME}
+	,{{"ç§°å·ç­‰çº§"}, 		CHAR_TITLE_LV}
+	,{{"ç§°å·æ—¶é—´"}, 		CHAR_TITLE_TIME}
 #endif
 #ifdef _MISSION_TIME
-	,{{"ÈÎÎñ¼ÆÊ±"}, 		CHAR_MISSION_TIME}
+	,{{"ä»»åŠ¡è®¡æ—¶"}, 		CHAR_MISSION_TIME}
 #endif
 #ifdef _PETCOM_
-	,{{"³õÌåÁ¦"}, 		CHAR_YHP}
-	,{{"³õ¹¥»÷"}, 		CHAR_YATK}
-	,{{"³õ·ÀÓù"}, 		CHAR_YDEF}
-	,{{"³õËÙ¶È"}, 		CHAR_YQUICK}
-	,{{"³õµÈ¼¶"}, 		CHAR_YLV}
+	,{{"åˆä½“åŠ›"}, 		CHAR_YHP}
+	,{{"åˆæ”»å‡»"}, 		CHAR_YATK}
+	,{{"åˆé˜²å¾¡"}, 		CHAR_YDEF}
+	,{{"åˆé€Ÿåº¦"}, 		CHAR_YQUICK}
+	,{{"åˆç­‰çº§"}, 		CHAR_YLV}
 #endif
 #ifdef _PET_FUSION
-	,{{"ÈÚºÏ³è"}, 		CHAR_FUSIONBEIT}
-	,{{"ÈÚºÏµ°"}, 		CHAR_FUSIONRAISE}
+	,{{"èžåˆå® "}, 		CHAR_FUSIONBEIT}
+	,{{"èžåˆè›‹"}, 		CHAR_FUSIONRAISE}
 #endif
 #ifdef _REGISTRATION_TIME
-	,{{"Ç©µ½Ê±¼ä"}, 		CHAR_REGISTRATION_TIME}
-	,{{"Ç©µ½´ÎÊý"}, 		CHAR_REGISTRATION_COUNT}
-	,{{"Ç©µ½ÔÚÏßÊ±¼ä"}, CHAR_REGISTRATION_ONLINE_TIME}
+	,{{"ç­¾åˆ°æ—¶é—´"}, 		CHAR_REGISTRATION_TIME}
+	,{{"ç­¾åˆ°æ¬¡æ•°"}, 		CHAR_REGISTRATION_COUNT}
+	,{{"ç­¾åˆ°åœ¨çº¿æ—¶é—´"}, CHAR_REGISTRATION_ONLINE_TIME}
 #endif
 #ifdef _SPECIAL_COUNTER 
-	,{{"¼ÆÊýÆ÷"}, 		CHAR_SPCOUNTER}
+	,{{"è®¡æ•°å™¨"}, 		CHAR_SPCOUNTER}
 #endif
 #ifdef _SPECIAL_TIMER 
-	,{{"¼ÆÊ±Æ÷"}, 		CHAR_SPTIMER}
+	,{{"è®¡æ—¶å™¨"}, 		CHAR_SPTIMER}
 #endif
 #ifdef _OFFLINE_TIME 
-	,{{"ÀëÏßÊ±¼ä"}, 	CHAR_OFFLINE_TIME}
+	,{{"ç¦»çº¿æ—¶é—´"}, 	CHAR_OFFLINE_TIME}
 #endif
 #ifdef _FAME_REG_TIME
-	,{{"¼Ò×åÇ©µ½Ê±¼ä"}, 	CHAR_FAME_REG_TIME}
+	,{{"å®¶æ—ç­¾åˆ°æ—¶é—´"}, 	CHAR_FAME_REG_TIME}
 #endif
 #ifdef _PET_VALIDITY
-	,{{"³èÎïÓÐÐ§ÆÚ"},		CHAR_PETVALIDITY}
+	,{{"å® ç‰©æœ‰æ•ˆæœŸ"},		CHAR_PETVALIDITY}
 #endif
 #ifdef _TENSE_FIELD
-	,{{"ÏÞÊ±×Ö¶Î"},		CHAR_TENSE_FIELD}
+	,{{"é™æ—¶å­—æ®µ"},		CHAR_TENSE_FIELD}
 #endif
 #ifdef _FM_JOINLIMIT
-	,{{"ÍË×åÊ±¼ä"},		CHAR_FMTIMELIMIT}
+	,{{"é€€æ—æ—¶é—´"},		CHAR_FMTIMELIMIT}
 #endif
 #ifdef _NEW_ITEM_
-	,{{"µÀ¾ßÀ¸×´Ì¬"},		CHAR_NEWITEMFLG}
+	,{{"é“å…·æ çŠ¶æ€"},		CHAR_NEWITEMFLG}
 #endif
 #ifdef _MO_PLAYER_EFFECT
-	,{{"Ä¬ÈÏÌØÐ§"},		CHAR_PLAYER_EFFECT_DEFAULT}
+	,{{"é»˜è®¤ç‰¹æ•ˆ"},		CHAR_PLAYER_EFFECT_DEFAULT}
 #endif
 #ifdef _PETCOM_
-	,{{"Ô¤²âÑªÁ¿"},		CHAR_YHP}
-	,{{"Ô¤²â¹¥»÷"},		CHAR_YATK}
-	,{{"Ô¤²â·ÀÓù"},		CHAR_YDEF}
-	,{{"Ô¤²âÃô½Ý"},		CHAR_YQUICK}
-	,{{"Ô¤²âµÈ¼¶"},		CHAR_YLV}
+	,{{"é¢„æµ‹è¡€é‡"},		CHAR_YHP}
+	,{{"é¢„æµ‹æ”»å‡»"},		CHAR_YATK}
+	,{{"é¢„æµ‹é˜²å¾¡"},		CHAR_YDEF}
+	,{{"é¢„æµ‹æ•æ·"},		CHAR_YQUICK}
+	,{{"é¢„æµ‹ç­‰çº§"},		CHAR_YLV}
 #endif
 #ifdef _MO_NO_WALK
-	,{{"½û×ã"},		CHAR_NO_WALK}
+	,{{"ç¦è¶³"},		CHAR_NO_WALK}
 #endif
 #ifdef _NEW_TITLE
-	,{{"Ä¬ÈÏ³ÆºÅ"},		CHAR_TITLE_DEFAULT}
-	,{{"³ÆºÅ×´Ì¬1"},		CHAR_TITLE1}
-	,{{"³ÆºÅ×´Ì¬2"},		CHAR_TITLE2}
-	,{{"³ÆºÅ×´Ì¬3"},		CHAR_TITLE3}
+	,{{"é»˜è®¤ç§°å·"},		CHAR_TITLE_DEFAULT}
+	,{{"ç§°å·çŠ¶æ€1"},		CHAR_TITLE1}
+	,{{"ç§°å·çŠ¶æ€2"},		CHAR_TITLE2}
+	,{{"ç§°å·çŠ¶æ€3"},		CHAR_TITLE3}
 #endif
 #ifdef _TRUMP_EQUIPMENT
-	,{{"·¨±¦×´Ì¬"},		CHAR_TRUMPFLG}
+	,{{"æ³•å®çŠ¶æ€"},		CHAR_TRUMPFLG}
 #endif
 #ifdef _CHAR_TITLE_STR_
-	,{{"ÎÄ×Ö³ÆºÅ"},		CHAR_TITLE_}
+	,{{"æ–‡å­—ç§°å·"},		CHAR_TITLE_}
 #endif
 };
 
 static CharBase CharBaseChar[] = {
-	{{"Ãû×Ö"}, 				CHAR_NAME}
-	,{{"êÇ³Æ"}, 			CHAR_OWNTITLE}
-	,{{"Ö÷ÈË"},				CHAR_USERPETNAME}
-	,{{"ÕËºÅ"}, 			CHAR_CDKEY}
-	,{{"¼Ò×å"}, 			CHAR_FMNAME}
+	{{"åå­—"}, 				CHAR_NAME}
+	,{{"æ˜µç§°"}, 			CHAR_OWNTITLE}
+	,{{"ä¸»äºº"},				CHAR_USERPETNAME}
+	,{{"è´¦å·"}, 			CHAR_CDKEY}
+	,{{"å®¶æ—"}, 			CHAR_FMNAME}
 #ifdef _TEACHER_SYSTEM
-	,{{"µ¼Ê¦ÕÊºÅ"}, 	CHAR_TEACHER_ID}
-	,{{"µ¼Ê¦Ãû×Ö"}, 	CHAR_TEACHER_NAME}
+	,{{"å¯¼å¸ˆå¸å·"}, 	CHAR_TEACHER_ID}
+	,{{"å¯¼å¸ˆåå­—"}, 	CHAR_TEACHER_NAME}
 #endif
 #ifdef _ITEM_SETLOVER
-	,{{"°®ÈËÕËºÅ"}, 	CHAR_LOVERID}
-	,{{"°®ÈËÃû×Ö"},		CHAR_LOVERNAME}
+	,{{"çˆ±äººè´¦å·"}, 	CHAR_LOVERID}
+	,{{"çˆ±äººåå­—"},		CHAR_LOVERNAME}
 #endif
 #ifdef _NEW_NAME
-	,{{"³ÆºÅ"},				CHAR_NEWNAME}
+	,{{"ç§°å·"},				CHAR_NEWNAME}
 #endif
 #ifdef _LOTTERY_SYSTEM
-	,{{"²ÊÆ±"},				CHAR_LOTTERY_VALUE}
+	,{{"å½©ç¥¨"},				CHAR_LOTTERY_VALUE}
 #endif
-	,{{"Ö÷ÈËÕËºÅ"},		CHAR_OWNERCDKEY}
-	,{{"Ö÷ÈËÃû×Ö"},		CHAR_OWNERCHARANAME}
+	,{{"ä¸»äººè´¦å·"},		CHAR_OWNERCDKEY}
+	,{{"ä¸»äººåå­—"},		CHAR_OWNERCHARANAME}
 
 #ifdef _POWER_UP
-	,{{"ÄÜÁ¦ÌáÉý"},		CHAR_POWER_UP}
+	,{{"èƒ½åŠ›æå‡"},		CHAR_POWER_UP}
 #endif
 #ifdef _VISUAL_BEATITUDE
-	,{{"×£¸£×´Ì¬"},		CHAR_VB}
+	,{{"ç¥ç¦çŠ¶æ€"},		CHAR_VB}
 #endif
 	,{{"Unicode"},		CHAR_UNIQUECODE}
 };
 		
 
 static CharBase CharBaseEvent[] = {
-	{{"³õÊ¼»¯ÊÂ¼þ"}, 		CHAR_INITFUNC}
-	//,{{"ÐÐ×ßÊÂ¼þ"}, 		CHAR_WALKPREFUNC}
-	//,{{"ÐÐ×ßºóÊÂ¼þ"},		CHAR_WALKPOSTFUNC}
-	//,{{"Î´ÖªÊÂ¼þ"}, 		CHAR_PREOVERFUNC}
-	//,{{"Î´ÖªÊÂ¼þ"}, 		CHAR_POSTOVERFUNC}
-	//,{{"¹Û¿´ÊÂ¼þ"}, 		CHAR_WATCHFUNC}
-	,{{"Ñ­»·ÊÂ¼þ"}, 		CHAR_LOOPFUNC}
-	//,{{"ËÀÍöÊÂ¼þ"}, 		CHAR_DYINGFUNC}
-	,{{"¶Ô»°ÊÂ¼þ"},			CHAR_TALKEDFUNC}
-	//,{{"¹¥»÷ÊÂ¼þ"},			CHAR_PREATTACKEDFUNC}
-	//,{{"¹¥»÷ºóÊÂ¼þ"}, 	CHAR_POSTATTACKEDFUNC}
-	//,{{"Àë¿ªÊÂ¼þ"}, 		CHAR_OFFFUNC}
-	//,{{"¿´ÊÂ¼þ"}, 			CHAR_LOOKEDFUNC}
-	//,{{"¶ªÆúÊÂ¼þ"},			CHAR_ITEMPUTFUNC}
-	//,{{"ÌØÊâ¶Ô»°ÊÂ¼þ"}, CHAR_SPECIALTALKEDFUNC}
-	,{{"´°¿ÚÊÂ¼þ"}, 		CHAR_WINDOWTALKEDFUNC}
+	{{"åˆå§‹åŒ–äº‹ä»¶"}, 		CHAR_INITFUNC}
+	//,{{"è¡Œèµ°äº‹ä»¶"}, 		CHAR_WALKPREFUNC}
+	//,{{"è¡Œèµ°åŽäº‹ä»¶"},		CHAR_WALKPOSTFUNC}
+	//,{{"æœªçŸ¥äº‹ä»¶"}, 		CHAR_PREOVERFUNC}
+	//,{{"æœªçŸ¥äº‹ä»¶"}, 		CHAR_POSTOVERFUNC}
+	//,{{"è§‚çœ‹äº‹ä»¶"}, 		CHAR_WATCHFUNC}
+	,{{"å¾ªçŽ¯äº‹ä»¶"}, 		CHAR_LOOPFUNC}
+	//,{{"æ­»äº¡äº‹ä»¶"}, 		CHAR_DYINGFUNC}
+	,{{"å¯¹è¯äº‹ä»¶"},			CHAR_TALKEDFUNC}
+	//,{{"æ”»å‡»äº‹ä»¶"},			CHAR_PREATTACKEDFUNC}
+	//,{{"æ”»å‡»åŽäº‹ä»¶"}, 	CHAR_POSTATTACKEDFUNC}
+	//,{{"ç¦»å¼€äº‹ä»¶"}, 		CHAR_OFFFUNC}
+	//,{{"çœ‹äº‹ä»¶"}, 			CHAR_LOOKEDFUNC}
+	//,{{"ä¸¢å¼ƒäº‹ä»¶"},			CHAR_ITEMPUTFUNC}
+	//,{{"ç‰¹æ®Šå¯¹è¯äº‹ä»¶"}, CHAR_SPECIALTALKEDFUNC}
+	,{{"çª—å£äº‹ä»¶"}, 		CHAR_WINDOWTALKEDFUNC}
 #ifdef _USER_CHARLOOPS
-	//,{{"Ñ­»·ÊÂ¼þ1"}, 		CHAR_LOOPFUNCTEMP1}
-	//,{{"Ñ­»·ÊÂ¼þ2"}, 		CHAR_LOOPFUNCTEMP2}
-	//,{{"Î´ÖªÊÂ¼þ"}, 		CHAR_BATTLEPROPERTY}
+	//,{{"å¾ªçŽ¯äº‹ä»¶1"}, 		CHAR_LOOPFUNCTEMP1}
+	//,{{"å¾ªçŽ¯äº‹ä»¶2"}, 		CHAR_LOOPFUNCTEMP2}
+	//,{{"æœªçŸ¥äº‹ä»¶"}, 		CHAR_BATTLEPROPERTY}
 #endif
-	,{{"ÖØµþÊÂ¼þ"}, 		CHAR_OVERLAPEDFUNC}
-	,{{"Õ½ºóÊÂ¼þ"}, 		CHAR_BATTLEOVERDFUNC}
+	,{{"é‡å äº‹ä»¶"}, 		CHAR_OVERLAPEDFUNC}
+	,{{"æˆ˜åŽäº‹ä»¶"}, 		CHAR_BATTLEOVERDFUNC}
 #ifdef _ALLBLUES_LUA_1_4
-	,{{"µÇ³öÊÂ¼þ"}, 		CHAR_LOGINOUTFUNC}
+	,{{"ç™»å‡ºäº‹ä»¶"}, 		CHAR_LOGINOUTFUNC}
 #endif
 #ifdef _ALLBLUES_LUA_1_9
-	,{{"Õ½¶·ÉèÖÃÊÂ¼þ"}, CHAR_BATTLESETFUNC}
+	,{{"æˆ˜æ–—è®¾ç½®äº‹ä»¶"}, CHAR_BATTLESETFUNC}
 #endif
 }; 
 	
 static CharBase CharBaseColor[] = {
-	{{"°×É«"}, 			CHAR_COLORWHITE}
-	,{{"ÇàÉ«"}, 		CHAR_COLORCYAN}
-	,{{"×ÏÉ«"},			CHAR_COLORPURPLE}
-	,{{"À¶É«"}, 		CHAR_COLORBLUE}
-	,{{"»ÆÉ«"}, 		CHAR_COLORYELLOW}
-	,{{"ÂÌÉ«"}, 		CHAR_COLORGREEN}
-	,{{"ºìÉ«"}, 		CHAR_COLORRED}
-	,{{"»Ò°×É«"}, 	CHAR_COLORGRAY}
-	,{{"»ÒÀ¶É«"}, 	CHAR_COLORBLUE2}
-	,{{"»ÒÂÌÉ«"}, 	CHAR_COLORGREEN2}
+	{{"ç™½è‰²"}, 			CHAR_COLORWHITE}
+	,{{"é’è‰²"}, 		CHAR_COLORCYAN}
+	,{{"ç´«è‰²"},			CHAR_COLORPURPLE}
+	,{{"è“è‰²"}, 		CHAR_COLORBLUE}
+	,{{"é»„è‰²"}, 		CHAR_COLORYELLOW}
+	,{{"ç»¿è‰²"}, 		CHAR_COLORGREEN}
+	,{{"çº¢è‰²"}, 		CHAR_COLORRED}
+	,{{"ç°ç™½è‰²"}, 	CHAR_COLORGRAY}
+	,{{"ç°è“è‰²"}, 	CHAR_COLORBLUE2}
+	,{{"ç°ç»¿è‰²"}, 	CHAR_COLORGREEN2}
 }; 
 
 static CharBase CharBaseUpdata[] = {
@@ -520,99 +520,99 @@ static CharBase CharBaseUpdata[] = {
 	,{{"MAXHP"},				CHAR_P_STRING_MAXHP}
 	,{{"MP"},						CHAR_P_STRING_MP}
 	,{{"MAXMP"},				CHAR_P_STRING_MAXMP}
-	,{{"ÌåÁ¦"},					CHAR_P_STRING_VITAL}
-	,{{"ÍóÁ¦"},					CHAR_P_STRING_STR}
-	,{{"ÄÍÁ¦"},					CHAR_P_STRING_TOUGH}
-	,{{"ËÙ¶È"},					CHAR_P_STRING_DEX}
-	,{{"¾­Ñé"},					CHAR_P_STRING_EXP}
-	,{{"ÏÂÒ»¼¶¾­Ñé"},		CHAR_P_STRING_NEXTEXP}
-	,{{"µÈ¼¶"},					CHAR_P_STRING_LV}
-	,{{"¹¥»÷Á¦"},				CHAR_P_STRING_ATK}
-	,{{"·ÀÓùÁ¦"},				CHAR_P_STRING_DEF}
-	,{{"Ãô½ÝÁ¦"},				CHAR_P_STRING_QUICK}
-	,{{"÷ÈÁ¦"},					CHAR_P_STRING_CHARM}
-	,{{"ÔËÆø"},					CHAR_P_STRING_LUCK}
-	,{{"µØ"},						CHAR_P_STRING_EARTH}
-	,{{"Ë®"},						CHAR_P_STRING_WATER}
-	,{{"»ð"},						CHAR_P_STRING_FIRE}
-	,{{"·ç"},						CHAR_P_STRING_WIND}
-	,{{"Ê¯±Ò"},					CHAR_P_STRING_GOLD}
-	,{{"±êÌâ"},					CHAR_P_STRING_TITLE}
+	,{{"ä½“åŠ›"},					CHAR_P_STRING_VITAL}
+	,{{"è…•åŠ›"},					CHAR_P_STRING_STR}
+	,{{"è€åŠ›"},					CHAR_P_STRING_TOUGH}
+	,{{"é€Ÿåº¦"},					CHAR_P_STRING_DEX}
+	,{{"ç»éªŒ"},					CHAR_P_STRING_EXP}
+	,{{"ä¸‹ä¸€çº§ç»éªŒ"},		CHAR_P_STRING_NEXTEXP}
+	,{{"ç­‰çº§"},					CHAR_P_STRING_LV}
+	,{{"æ”»å‡»åŠ›"},				CHAR_P_STRING_ATK}
+	,{{"é˜²å¾¡åŠ›"},				CHAR_P_STRING_DEF}
+	,{{"æ•æ·åŠ›"},				CHAR_P_STRING_QUICK}
+	,{{"é­…åŠ›"},					CHAR_P_STRING_CHARM}
+	,{{"è¿æ°”"},					CHAR_P_STRING_LUCK}
+	,{{"åœ°"},						CHAR_P_STRING_EARTH}
+	,{{"æ°´"},						CHAR_P_STRING_WATER}
+	,{{"ç«"},						CHAR_P_STRING_FIRE}
+	,{{"é£Ž"},						CHAR_P_STRING_WIND}
+	,{{"çŸ³å¸"},					CHAR_P_STRING_GOLD}
+	,{{"æ ‡é¢˜"},					CHAR_P_STRING_TITLE}
 	,{{"DP"},						CHAR_P_STRING_DUELPOINT}
-	,{{"×ªÊý"},					CHAR_P_STRING_TRANSMIGRATION}
-	,{{"Ãû×Ö"},					CHAR_P_STRING_NAME}
-	,{{"êÇ³Æ"},					CHAR_P_STRING_OWNTITLE}
-	,{{"Æï³è"},					CHAR_P_STRING_RIDEPET}
-	,{{"Ñ§Æï"},					CHAR_P_STRING_LEARNRIDE}
-	,{{"Í¼Ïñ"},					CHAR_P_STRING_BASEBASEIMAGENUMBER}
-	,{{"ÌìÐÐÕß"},				CHAR_P_STRING_SKYWALKER}
-	,{{"µ÷ÊÔÄ£Ê½"},			CHAR_P_STRING_DEBUGMODE}
+	,{{"è½¬æ•°"},					CHAR_P_STRING_TRANSMIGRATION}
+	,{{"åå­—"},					CHAR_P_STRING_NAME}
+	,{{"æ˜µç§°"},					CHAR_P_STRING_OWNTITLE}
+	,{{"éª‘å® "},					CHAR_P_STRING_RIDEPET}
+	,{{"å­¦éª‘"},					CHAR_P_STRING_LEARNRIDE}
+	,{{"å›¾åƒ"},					CHAR_P_STRING_BASEBASEIMAGENUMBER}
+	,{{"å¤©è¡Œè€…"},				CHAR_P_STRING_SKYWALKER}
+	,{{"è°ƒè¯•æ¨¡å¼"},			CHAR_P_STRING_DEBUGMODE}
 }; 
 
 static CharBase CharBaseFlg[] = {
-	{{"¿É¼û"}, 						CHAR_ISVISIBLE}
-	,{{"Í¸Ã÷"},       		CHAR_ISTRANSPARENT}
-  ,{{"·ÉÐÐ"},       		CHAR_ISFLYING}
-  ,{{"ËÀÍö"},       		CHAR_ISDIE}
-  ,{{"×é¶Ó"},       		CHAR_ISPARTY}
-  ,{{"¾ö¶·"},       		CHAR_ISDUEL}
-  ,{{"ÃûÆ¬"},       		CHAR_ISTRADECARD}
-  ,{{"½»Ò×"},       		CHAR_ISTRADE}
+	{{"å¯è§"}, 						CHAR_ISVISIBLE}
+	,{{"é€æ˜Ž"},       		CHAR_ISTRANSPARENT}
+  ,{{"é£žè¡Œ"},       		CHAR_ISFLYING}
+  ,{{"æ­»äº¡"},       		CHAR_ISDIE}
+  ,{{"ç»„é˜Ÿ"},       		CHAR_ISPARTY}
+  ,{{"å†³æ–—"},       		CHAR_ISDUEL}
+  ,{{"åç‰‡"},       		CHAR_ISTRADECARD}
+  ,{{"äº¤æ˜“"},       		CHAR_ISTRADE}
 #ifdef _CHANNEL_MODIFY
-  ,{{"ÃÜÓïÆµµÀ"},       CHAR_ISTELL}
-  ,{{"¼Ò×åÆµµÀ"},       CHAR_ISFM}
-  ,{{"Ö°ÒµÆµµÀ"},       CHAR_ISOCC}
-  ,{{"¶Ô»°´¢´æ"},       CHAR_ISSAVE}
-  ,{{"ÁÄÌìÊÒ"},       	CHAR_ISCHAT}
+  ,{{"å¯†è¯­é¢‘é“"},       CHAR_ISTELL}
+  ,{{"å®¶æ—é¢‘é“"},       CHAR_ISFM}
+  ,{{"èŒä¸šé¢‘é“"},       CHAR_ISOCC}
+  ,{{"å¯¹è¯å‚¨å­˜"},       CHAR_ISSAVE}
+  ,{{"èŠå¤©å®¤"},       	CHAR_ISCHAT}
 #ifdef _CHATROOMPROTOCOL
 #ifdef _THE_WORLD_SEND
-  ,{{"ÊÀ½çÆµµÀ"},       CHAR_ISWORLD}
+  ,{{"ä¸–ç•Œé¢‘é“"},       CHAR_ISWORLD}
 #endif
 #ifdef _ONLINE_TALK_IP
-  ,{{"¾Ù±¨ÆµµÀ"},       CHAR_ISTALKIP}
+  ,{{"ä¸¾æŠ¥é¢‘é“"},       CHAR_ISTALKIP}
 #endif
 #endif
 #endif
-	 ,{{"AIÄ£Ê½"},       CHAR_AI_MOD}
+	 ,{{"AIæ¨¡å¼"},       CHAR_AI_MOD}
 };
 
 static CharBase CharBaseAction[] = {
-	{{"Õ¾Á¢"},					CHAR_ACTSTAND}
-	,{{"×ß¶¯"},					CHAR_ACTWALK}
-	,{{"¹¥»÷"},					CHAR_ACTATTACK}
-	,{{"Í¶ÖÀ"},					CHAR_ACTTHROW}
-	,{{"ÊÜÉË"},					CHAR_ACTDAMAGE}
-	,{{"ËÀÍö"},					CHAR_ACTDEAD}
-	,{{"Ä§·¨"},					CHAR_ACTMAGIC}
-	,{{"µÀ¾ß"},					CHAR_ACTITEM}
-	,{{"Ð§¹û"},					CHAR_ACTEFFECT}
-	,{{"ÏÂ"},						CHAR_ACTDOWN}
-	,{{"×ø"},						CHAR_ACTSIT}
-	,{{"»ÓÊÖ"},					CHAR_ACTHAND}
-	,{{"¸ßÐË"},					CHAR_ACTPLEASURE}
-	,{{"·¢Å­"},					CHAR_ACTANGRY}
-	,{{"±¯°§"},					CHAR_ACTSAD}
-	,{{"·ÀÊØ"},					CHAR_ACTGUARD}
-	,{{"×ßÂ·"},					CHAR_ACTACTIONWALK}
-	,{{"µãÍ·"},					CHAR_ACTNOD}
-	,{{"Õ¾Á¢"},					CHAR_ACTACTIONSTAND}
-	,{{"Õ½¶·"},					CHAR_ACTBATTLE}
-	,{{"´ø¶Ó"},					CHAR_ACTLEADER}
-	,{{"¹ÛÕ½"},					CHAR_ACTBATTLEWATCH}
-	,{{"Î´Öª"},					CHAR_ACTPOPUPNAME}
-	,{{"Ðý×ª"},					CHAR_ACTTURN}
-	,{{"±äÐÎ"},					CHAR_ACTWARP}
-	,{{"½»Ò×"},					CHAR_ACTTRADE}
+	{{"ç«™ç«‹"},					CHAR_ACTSTAND}
+	,{{"èµ°åŠ¨"},					CHAR_ACTWALK}
+	,{{"æ”»å‡»"},					CHAR_ACTATTACK}
+	,{{"æŠ•æŽ·"},					CHAR_ACTTHROW}
+	,{{"å—ä¼¤"},					CHAR_ACTDAMAGE}
+	,{{"æ­»äº¡"},					CHAR_ACTDEAD}
+	,{{"é­”æ³•"},					CHAR_ACTMAGIC}
+	,{{"é“å…·"},					CHAR_ACTITEM}
+	,{{"æ•ˆæžœ"},					CHAR_ACTEFFECT}
+	,{{"ä¸‹"},						CHAR_ACTDOWN}
+	,{{"å"},						CHAR_ACTSIT}
+	,{{"æŒ¥æ‰‹"},					CHAR_ACTHAND}
+	,{{"é«˜å…´"},					CHAR_ACTPLEASURE}
+	,{{"å‘æ€’"},					CHAR_ACTANGRY}
+	,{{"æ‚²å“€"},					CHAR_ACTSAD}
+	,{{"é˜²å®ˆ"},					CHAR_ACTGUARD}
+	,{{"èµ°è·¯"},					CHAR_ACTACTIONWALK}
+	,{{"ç‚¹å¤´"},					CHAR_ACTNOD}
+	,{{"ç«™ç«‹"},					CHAR_ACTACTIONSTAND}
+	,{{"æˆ˜æ–—"},					CHAR_ACTBATTLE}
+	,{{"å¸¦é˜Ÿ"},					CHAR_ACTLEADER}
+	,{{"è§‚æˆ˜"},					CHAR_ACTBATTLEWATCH}
+	,{{"æœªçŸ¥"},					CHAR_ACTPOPUPNAME}
+	,{{"æ—‹è½¬"},					CHAR_ACTTURN}
+	,{{"å˜å½¢"},					CHAR_ACTWARP}
+	,{{"äº¤æ˜“"},					CHAR_ACTTRADE}
 #ifdef _ANGEL_SUMMON
-	,{{"ÌìÊ¹"},					CHAR_ACTANGEL}
+	,{{"å¤©ä½¿"},					CHAR_ACTANGEL}
 #endif
 
 #ifdef _MIND_ICON
-	,{{"ÐÄË¼"},					CHAR_MIND}
+	,{{"å¿ƒæ€"},					CHAR_MIND}
 #endif
 #ifdef _STREET_VENDOR
-	,{{"´ò¿ªÌ¯Ì²"},			CHAR_STREETVENDOR_OPEN}
-	,{{"¹Ø±ÕÌ¯Ì²"},			CHAR_STREETVENDOR_CLOSE}
+	,{{"æ‰“å¼€æ‘Šæ»©"},			CHAR_STREETVENDOR_OPEN}
+	,{{"å…³é—­æ‘Šæ»©"},			CHAR_STREETVENDOR_CLOSE}
 #endif
 };
 
@@ -1244,12 +1244,12 @@ static int Additem(lua_State *L)
 			LogItem(
 				CHAR_getChar( charaindex, CHAR_NAME ),
 				CHAR_getChar( charaindex, CHAR_CDKEY ),
-#ifdef _add_item_log_name  // WON ADD ÔÚitemµÄlogÖÐÔö¼ÓitemÃû³Æ
+#ifdef _add_item_log_name  // WON ADD åœ¨itemçš„logä¸­å¢žåŠ itemåç§°
 				itemindex,
 #else
 				atoi( message),
 #endif
-				"AddItem(ÖÆ×÷µÀ¾ßLUA)",
+				"AddItem(åˆ¶ä½œé“å…·LUA)",
 		      CHAR_getInt( charaindex,CHAR_FLOOR),
 					CHAR_getInt( charaindex,CHAR_X ),
 		      CHAR_getInt( charaindex,CHAR_Y ),
@@ -1263,7 +1263,7 @@ static int Additem(lua_State *L)
 	lua_pushinteger(L, itemindex);
 	return 1;
 }
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
 static int Finditem(lua_State *L) 
@@ -1345,7 +1345,7 @@ static int AddPet(lua_State *L)
 			CHAR_getChar( index, CHAR_CDKEY ),
 			CHAR_getChar( petindex, CHAR_NAME),
 			CHAR_getInt( petindex, CHAR_LV),
-			"À´ÖÁLUAµÄchar.AddPet",
+			"æ¥è‡³LUAçš„char.AddPet",
 			CHAR_getInt( index,CHAR_FLOOR),
 			CHAR_getInt( index,CHAR_X ),
 			CHAR_getInt( index,CHAR_Y ),
@@ -1427,7 +1427,7 @@ static int AddPetCf(lua_State *L)
 			CHAR_getChar( index, CHAR_CDKEY ),
 			CHAR_getChar( petindex, CHAR_NAME),
 			CHAR_getInt( petindex, CHAR_LV),
-			"À´ÖÁLUAµÄchar.AddPetCf",
+			"æ¥è‡³LUAçš„char.AddPetCf",
 			CHAR_getInt( index,CHAR_FLOOR),
 			CHAR_getInt( index,CHAR_X ),
 			CHAR_getInt( index,CHAR_Y ),
@@ -1708,7 +1708,7 @@ static int AllWarpToSpecificPoint(lua_State *L)
 			ITEM_WarpDelErrorItem( subindex );
 		}
 	}else if( CHAR_getWorkInt( charaindex, CHAR_WORKPARTYMODE ) == CHAR_PARTY_CLIENT ){
-		CHAR_talkToCli(charaindex, -1, "¶ÓÔ±ÎÞ·¨Ê¹ÓÃ¡£", CHAR_COLORYELLOW);
+		CHAR_talkToCli(charaindex, -1, "é˜Ÿå‘˜æ— æ³•ä½¿ç”¨ã€‚", CHAR_COLORYELLOW);
 		return FALSE;
 	}else if( CHAR_getWorkInt( charaindex, CHAR_WORKPARTYMODE ) == CHAR_PARTY_NONE ){
 		ITEM_WarpDelErrorItem( charaindex );
@@ -1832,11 +1832,11 @@ static int DelPet(lua_State *L)
 				CHAR_complianceParameter( charaindex );
 				CHAR_sendCToArroundCharacter( CHAR_getWorkInt( charaindex , CHAR_WORKOBJINDEX ));
 			}
-	    LogPet( CHAR_getChar( charaindex, CHAR_NAME ), // Æ½ÅÒ·Â
+	    LogPet( CHAR_getChar( charaindex, CHAR_NAME ), // å¹³ä¹“ä»¿
 		                CHAR_getChar( charaindex, CHAR_CDKEY ),
 		                CHAR_getChar( petindex, CHAR_NAME),
 		                CHAR_getInt( petindex, CHAR_LV),
-		                "EvnetDell(LUAÈÎÎñÉ¾³ý)",
+		                "EvnetDell(LUAä»»åŠ¡åˆ é™¤)",
 		                CHAR_getInt( charaindex,CHAR_FLOOR),
 		                CHAR_getInt( charaindex,CHAR_X ),
 		                CHAR_getInt( charaindex,CHAR_Y ),
@@ -1900,11 +1900,11 @@ static int dropPetFollow(lua_State *L)
     if( CHAR_CHECKINDEX( petindex) == FALSE ) return FALSE;
 
 	if (CHAR_getInt(petindex, CHAR_PETFAMILY) == 1){
-     	CHAR_talkToCli(charaindex, -1, "¼Ò×åÊØ»¤ÊÞÎÞ·¨¶ª³ö£¡", CHAR_COLORYELLOW);
+     	CHAR_talkToCli(charaindex, -1, "å®¶æ—å®ˆæŠ¤å…½æ— æ³•ä¸¢å‡ºï¼", CHAR_COLORYELLOW);
     	return	FALSE;  
   }
   if (CHAR_getInt(charaindex, CHAR_RIDEPET) == havepetindex){
-  	CHAR_talkToCli(charaindex, -1, "Æï³ËÖÐµÄ³èÎïÎÞ·¨¸úËæ£¡", CHAR_COLORYELLOW);
+  	CHAR_talkToCli(charaindex, -1, "éª‘ä¹˜ä¸­çš„å® ç‰©æ— æ³•è·Ÿéšï¼", CHAR_COLORYELLOW);
   	return	FALSE;
   }
 
@@ -1965,7 +1965,7 @@ static int dropPetFollow(lua_State *L)
 		CHAR_getChar( charaindex, CHAR_CDKEY ),
 		CHAR_getChar( petindex, CHAR_NAME),
 		CHAR_getInt( petindex, CHAR_LV),
-		"Follow(luaÁï³è)",
+		"Follow(luaæºœå® )",
 		CHAR_getInt( charaindex,CHAR_FLOOR),
 		CHAR_getInt( charaindex,CHAR_X ),
 		CHAR_getInt( charaindex,CHAR_Y ),
@@ -2102,7 +2102,7 @@ static int Encounter(lua_State *L)
 		ch  = CHAR_getCharPointer( charaindex);
 		if( ch == NULL ) return 0;
 		strcpysafe( ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
-			sizeof( ch->charfunctable[CHAR_LOOPFUNCTEMP1]), "CHAR_BattleStayLoop");//Õ½¶·
+			sizeof( ch->charfunctable[CHAR_LOOPFUNCTEMP1]), "CHAR_BattleStayLoop");//æˆ˜æ–—
 		CHAR_setInt( charaindex, CHAR_LOOPINTERVAL, 2500);
 		CHAR_constructFunctable( charaindex);
 	}
@@ -2147,20 +2147,20 @@ static int sendAction(lua_State *L)
 	CHAR_sendAction( charaindex, actionno, flg);
 	return 1;
 }
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
-#endif
-
-static int GetEmptyItemBoxNum(lua_State *_NLL) 
-{
-	const int TM_CharIndex = luaL_checkint(_NLL, 1);
-
-	if(!CHAR_CHECKINDEX(TM_CharIndex))
-	{
-		lua_pushinteger(_NLL, -1);
-		return 0;
-	}
-
+#endif
+
+static int GetEmptyItemBoxNum(lua_State *_NLL) 
+{
+	const int TM_CharIndex = luaL_checkint(_NLL, 1);
+
+	if(!CHAR_CHECKINDEX(TM_CharIndex))
+	{
+		lua_pushinteger(_NLL, -1);
+		return 0;
+	}
+
 	int i = CHAR_EQUIPPLACENUM ;
 	int EmptyNum = 0;
 #ifdef _NEW_ITEM_
@@ -2170,9 +2170,9 @@ static int GetEmptyItemBoxNum(lua_State *_NLL)
 		for( ; i <CHAR_MAXITEMHAVE; i++){
 #endif
 		if( CHAR_getItemIndex( TM_CharIndex,i) == -1 ) EmptyNum++;
-	}
-	lua_pushinteger(_NLL, EmptyNum);
-}
+	}
+	lua_pushinteger(_NLL, EmptyNum);
+}
 
 
 static int GetOldLevelExp(lua_State *L) 
@@ -2182,7 +2182,7 @@ static int GetOldLevelExp(lua_State *L)
 	return 1;
 }
 
-#ifdef _PROFESSION_SKILL			// WON ADD ÈËÎïÖ°Òµ¼¼ÄÜ
+#ifdef _PROFESSION_SKILL			// WON ADD äººç‰©èŒä¸šæŠ€èƒ½
 static int getCharSkill (lua_State *L) 
 {
   const int index = luaL_checkint(L, 1);
@@ -2410,7 +2410,7 @@ static const luaL_Reg charlib[] = {
 	{"getDY", 								getDY},
 	{"sendAction", 						sendAction},
 	{"GetOldLevelExp", 				GetOldLevelExp},
-#ifdef _PROFESSION_SKILL			// WON ADD ÈËÎïÖ°Òµ¼¼ÄÜ
+#ifdef _PROFESSION_SKILL			// WON ADD äººç‰©èŒä¸šæŠ€èƒ½
 	{"getCharSkill", 					getCharSkill},
 	{"setCharSkill", 					setCharSkill},
 	{"DelSProfeesionSkill", 		DelSProfeesionSkill},

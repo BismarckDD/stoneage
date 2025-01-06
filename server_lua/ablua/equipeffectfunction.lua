@@ -5,21 +5,21 @@ function EquipEffectFunction( charaindex, id )
 		if itemindex > -1 then
 			local itemlv = GetItemShowIndex(itemindex)
 			if itemlv>0 then
-				char.setWorkInt(charaindex,"庄园特效",itemshow[itemlv][2])
+				char.setWorkInt(charaindex,"搴勫洯鐗规晥",itemshow[itemlv][2])
 				return 1
 			end
 		else
-			char.setWorkInt(charaindex,"庄园特效",0)
+			char.setWorkInt(charaindex,"搴勫洯鐗规晥",0)
 		end
 	end
 	if id == 6 then
 		itemindex = char.getItemIndex(charaindex,id)
 		if itemindex > -1 then
-			local data = item.getChar(itemindex, "字段")
+			local data = item.getChar(itemindex, "瀛楁")
 			local effectid = other.atoi(other.getString(data, "|", 4))
-			char.setInt(charaindex,"法宝人物特效",effectid)
+			char.setInt(charaindex,"娉曞疂浜虹墿鐗规晥",effectid)
 		else
-			char.setInt(charaindex,"法宝人物特效",0)
+			char.setInt(charaindex,"娉曞疂浜虹墿鐗规晥",0)
 		end
 	end
 	return 1
@@ -27,7 +27,7 @@ function EquipEffectFunction( charaindex, id )
 end
 
 function GetItemShowIndex(itemindex)
-	local name = item.getChar(itemindex,"名称")
+	local name = item.getChar(itemindex,"鍚嶇О")
 	for i = 1,table.getn(itemshow) do
 		local tagindex = string.find(name,itemshow[i][1])
 		if tagindex ~= nil then
@@ -40,7 +40,7 @@ end
 
 function data()
 	itemshow = {
-				 {"免气", 102201}
+				 {"鍏嶆皵", 102201}
 				,{" 14", 102203}
 				,{" 15", 102220}
 				,{" 16", 102223}

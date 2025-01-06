@@ -4,17 +4,17 @@ function addvip(charaindex, data)
 	if cdkey == "" then
 		local oldvalue = sasql.getVipPoint(charaindex)
 		sasql.setVipPoint(charaindex, sasql.getVipPoint(charaindex) + value)
-		char.TalkToCli(charaindex, -1, "³É¹¦½«ÕËºÅ[" .. char.getChar(charaindex, "ÕËºÅ") .. "]Ãû×Ö[" .. char.getChar(charaindex, "Ãû×Ö") .. "]¸öÈË»áÔ±µãÔ­" .. oldvalue .. "Ôöµ½Îª" .. sasql.getVipPoint(charaindex), "ÇàÉ«")
+		char.TalkToCli(charaindex, -1, "æˆåŠŸå°†è´¦å·[" .. char.getChar(charaindex, "è´¦å·") .. "]åå­—[" .. char.getChar(charaindex, "åå­—") .. "]ä¸ªäººä¼šå‘˜ç‚¹åŸ" .. oldvalue .. "å¢åˆ°ä¸º" .. sasql.getVipPoint(charaindex), "é’è‰²")
 	else
 		local maxplayer = char.getPlayerMaxNum()
 		local cimelia = other.atoi(data)
 		for i = 0, maxplayer - 1 do
 			if char.check(i) == 1 then
-				if char.getChar(i, "ÕËºÅ") ==  cdkey then
+				if char.getChar(i, "è´¦å·") ==  cdkey then
 					local oldvalue = sasql.getVipPoint(i)
 					sasql.setVipPoint(i, sasql.getVipPoint(i) + value)
-					char.TalkToCli(charaindex, -1, "³É¹¦½«ÕËºÅ[" .. char.getChar(i, "ÕËºÅ") .. "]Ãû×Ö[" .. char.getChar(i, "Ãû×Ö") .. "]¸öÈË»áÔ±µãÔ­" .. oldvalue .. "Ôöµ½Îª" .. sasql.getVipPoint(i), "ÇàÉ«")
-					char.TalkToCli(i, -1, "GM[" .. char.getChar(charaindex, "Ãû×Ö") .. "]½«ÄãµÄ¸öÈË»áÔ±µãÔ­" .. oldvalue .. "Ôöµ½Îª" .. sasql.getVipPoint(i), "ÇàÉ«")
+					char.TalkToCli(charaindex, -1, "æˆåŠŸå°†è´¦å·[" .. char.getChar(i, "è´¦å·") .. "]åå­—[" .. char.getChar(i, "åå­—") .. "]ä¸ªäººä¼šå‘˜ç‚¹åŸ" .. oldvalue .. "å¢åˆ°ä¸º" .. sasql.getVipPoint(i), "é’è‰²")
+					char.TalkToCli(i, -1, "GM[" .. char.getChar(charaindex, "åå­—") .. "]å°†ä½ çš„ä¸ªäººä¼šå‘˜ç‚¹åŸ" .. oldvalue .. "å¢åˆ°ä¸º" .. sasql.getVipPoint(i), "é’è‰²")
 					return
 				end
 			end
@@ -24,6 +24,6 @@ end
 
 function main()
 	minute = 0
-	magic.addLUAListFunction("»áÔ±µã", "addvip", "", 1, "[]")
+	magic.addLUAListFunction("ä¼šå‘˜ç‚¹", "addvip", "", 1, "[]")
 end
 

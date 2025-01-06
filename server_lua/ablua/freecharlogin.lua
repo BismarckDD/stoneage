@@ -1,78 +1,78 @@
 function FreeCharLogin( charindex )
-	if char.getWorkInt(charindex, "·şÎñÆ÷ID") == 48 then
-		char.TalkToCli(charindex, -1, "°æ±¾¹ıÆÚ£¬Çë¸üĞÂ×îĞÂµÄÍÑ»úÍâ¹ÒºóµÇÂ½ÓÎÏ·¡£", "»ÆÉ«")
+	if char.getWorkInt(charindex, "æœåŠ¡å™¨ID") == 48 then
+		char.TalkToCli(charindex, -1, "ç‰ˆæœ¬è¿‡æœŸï¼Œè¯·æ›´æ–°æœ€æ–°çš„è„±æœºå¤–æŒ‚åç™»é™†æ¸¸æˆã€‚", "é»„è‰²")
 		char.logou(charindex)
 		return 0;
 	end
-	if char.getWorkInt(charindex, "·şÎñÆ÷ID") == 4096 and config.getGameservername() == "Ê¯Æ÷ÖØÖÆ°æµ¥ºÅÏß" then
-		char.TalkToCli(charindex, -1, "½øµ¥ºÅÏßÌáÊ¾¡¾ÎªÁËÓÎÏ·µÄÆ½ºâ£¬µ¥ºÅÏßÂ·Ö»ÄÜÓÃÍâ¹ÒµÇÂ½¡¿", "»ÆÉ«")
+	if char.getWorkInt(charindex, "æœåŠ¡å™¨ID") == 4096 and config.getGameservername() == "çŸ³å™¨é‡åˆ¶ç‰ˆå•å·çº¿" then
+		char.TalkToCli(charindex, -1, "è¿›å•å·çº¿æç¤ºã€ä¸ºäº†æ¸¸æˆçš„å¹³è¡¡ï¼Œå•å·çº¿è·¯åªèƒ½ç”¨å¤–æŒ‚ç™»é™†ã€‘", "é»„è‰²")
 		char.logou(charindex)
 		return 0;
 	end
 	for i = 1, table.getn(unlawthislogut) do
-		if char.getInt(charindex, "¼ÆÊ±Æ÷") <= other.time() then
-			if char.getInt(charindex, "µØÍ¼ºÅ") == unlawthislogut[i][1] then
-				char.setInt(charindex, "µØÍ¼ºÅ", unlawthislogut[i][2][1] )
-				char.setInt(charindex, "×ø±êX", unlawthislogut[i][2][2] )
-				char.setInt(charindex, "×ø±êY", unlawthislogut[i][2][3] )
+		if char.getInt(charindex, "è®¡æ—¶å™¨") <= other.time() then
+			if char.getInt(charindex, "åœ°å›¾å·") == unlawthislogut[i][1] then
+				char.setInt(charindex, "åœ°å›¾å·", unlawthislogut[i][2][1] )
+				char.setInt(charindex, "åæ ‡X", unlawthislogut[i][2][2] )
+				char.setInt(charindex, "åæ ‡Y", unlawthislogut[i][2][3] )
 			end
 		end
 	end
-	if char.getInt(charindex, "µØÍ¼ºÅ") >=800 and char.getInt(charindex, "µØÍ¼ºÅ") <=851 then
+	if char.getInt(charindex, "åœ°å›¾å·") >=800 and char.getInt(charindex, "åœ°å›¾å·") <=851 then
 		char.WarpToSpecificPoint(charindex, 1000, 71, 49)
 	end
 
-	if char.getInt(charindex, "µØÍ¼ºÅ") == 500 then
-		if char.getInt(charindex, "µÈ¼¶")< 80 then
+	if char.getInt(charindex, "åœ°å›¾å·") == 500 then
+		if char.getInt(charindex, "ç­‰çº§")< 80 then
 			char.WarpToSpecificPoint(charindex, 1000, 71, 49)
 		end
 	end
-	if char.getInt(charindex,"¼Ò×åµØÎ»")>0 and char.getInt(charindex,"¼Ò×åµØÎ»")~=2  then
-		if char.getChar(charindex, "¼Ò×å") == other.getString(family.ShowPointListArray(0), "|", 6) then
-			char.setWorkInt(charindex,"×¯Ô°ÌØĞ§",103213)
-		elseif char.getChar(charindex, "¼Ò×å") == other.getString(family.ShowPointListArray(1), "|", 6) then
-			char.setWorkInt(charindex,"×¯Ô°ÌØĞ§",103214)
+	if char.getInt(charindex,"å®¶æ—åœ°ä½")>0 and char.getInt(charindex,"å®¶æ—åœ°ä½")~=2  then
+		if char.getChar(charindex, "å®¶æ—") == other.getString(family.ShowPointListArray(0), "|", 6) then
+			char.setWorkInt(charindex,"åº„å›­ç‰¹æ•ˆ",103213)
+		elseif char.getChar(charindex, "å®¶æ—") == other.getString(family.ShowPointListArray(1), "|", 6) then
+			char.setWorkInt(charindex,"åº„å›­ç‰¹æ•ˆ",103214)
 		end
 	end
-	if char.getInt(charindex, "ÀëÏßÊ±¼ä") < 0 then
-		char.setInt(charindex, "ÀëÏßÊ±¼ä", 0)
+	if char.getInt(charindex, "ç¦»çº¿æ—¶é—´") < 0 then
+		char.setInt(charindex, "ç¦»çº¿æ—¶é—´", 0)
 	end
 
-	if char.getInt(charindex, "¼«Æ·") ~=1 then
-		local vital = char.getInt(charindex, "ÌåÁ¦")
-		local str = char.getInt(charindex, "ÍóÁ¦")
-		local tgh = char.getInt(charindex, "ÄÍÁ¦")
-		local dex = char.getInt(charindex, "ËÙ¶È")
-		local skillpoint = char.getInt(charindex, "¼¼ÄÜµã")
+	if char.getInt(charindex, "æå“") ~=1 then
+		local vital = char.getInt(charindex, "ä½“åŠ›")
+		local str = char.getInt(charindex, "è…•åŠ›")
+		local tgh = char.getInt(charindex, "è€åŠ›")
+		local dex = char.getInt(charindex, "é€Ÿåº¦")
+		local skillpoint = char.getInt(charindex, "æŠ€èƒ½ç‚¹")
 		local sum = vital + str + tgh + dex + skillpoint * 100
 		if sum > 63700 then
-			char.setInt(charindex, "ÌåÁ¦", 1000)
-			char.setInt(charindex, "ÍóÁ¦", 0)
-			char.setInt(charindex, "ÄÍÁ¦", 0)
-			char.setInt(charindex, "ËÙ¶È", 0)
-			char.setInt(charindex, "¼¼ÄÜµã", 627)
+			char.setInt(charindex, "ä½“åŠ›", 1000)
+			char.setInt(charindex, "è…•åŠ›", 0)
+			char.setInt(charindex, "è€åŠ›", 0)
+			char.setInt(charindex, "é€Ÿåº¦", 0)
+			char.setInt(charindex, "æŠ€èƒ½ç‚¹", 627)
 		end
 	else
-		local vital = char.getInt(charindex, "ÌåÁ¦")
-		local str = char.getInt(charindex, "ÍóÁ¦")
-		local tgh = char.getInt(charindex, "ÄÍÁ¦")
-		local dex = char.getInt(charindex, "ËÙ¶È")
-		local skillpoint = char.getInt(charindex, "¼¼ÄÜµã")
+		local vital = char.getInt(charindex, "ä½“åŠ›")
+		local str = char.getInt(charindex, "è…•åŠ›")
+		local tgh = char.getInt(charindex, "è€åŠ›")
+		local dex = char.getInt(charindex, "é€Ÿåº¦")
+		local skillpoint = char.getInt(charindex, "æŠ€èƒ½ç‚¹")
 		local sum = vital + str + tgh + dex + skillpoint * 100
 		if sum > 61000 then
-			char.setInt(charindex, "ÌåÁ¦", 1000)
-			char.setInt(charindex, "ÍóÁ¦", 0)
-			char.setInt(charindex, "ÄÍÁ¦", 0)
-			char.setInt(charindex, "ËÙ¶È", 0)
-			char.setInt(charindex, "¼¼ÄÜµã", 600)
+			char.setInt(charindex, "ä½“åŠ›", 1000)
+			char.setInt(charindex, "è…•åŠ›", 0)
+			char.setInt(charindex, "è€åŠ›", 0)
+			char.setInt(charindex, "é€Ÿåº¦", 0)
+			char.setInt(charindex, "æŠ€èƒ½ç‚¹", 600)
 		end
 	end
 
-	token = "UPDATE CSAlogin set Offline = 0 , MAC = '" .. char.getWorkChar(charindex, "MAC") .. "', ServerName = '" .. config.getGameservername() .. "', ServerId = " .. char.getWorkInt(charindex, "·şÎñÆ÷ID") + 1 .. " WHERE Name=BINARY'" .. char.getChar(charindex, "ÕËºÅ") .. "'"
+	token = "UPDATE CSAlogin set Offline = 0 , MAC = '" .. char.getWorkChar(charindex, "MAC") .. "', ServerName = '" .. config.getGameservername() .. "', ServerId = " .. char.getWorkInt(charindex, "æœåŠ¡å™¨ID") + 1 .. " WHERE Name=BINARY'" .. char.getChar(charindex, "è´¦å·") .. "'"
 
 	ret = sasql.query(token)
 	token = "SELECT `newsafe`, `flg` FROM `safedata` "
-				.. " WHERE `cdkey` = '" .. char.getChar(charindex, "ÕËºÅ") .. "'"
+				.. " WHERE `cdkey` = '" .. char.getChar(charindex, "è´¦å·") .. "'"
 	ret = sasql.query(token)
 	if ret == 1 then
 		sasql.free_result()
@@ -82,13 +82,13 @@ function FreeCharLogin( charindex )
 			sasql.fetch_row(0)
 			if sasql.data(1) ~= char.getWorkChar(charindex, "MAC2") then
 				if sasql.data(2) == "0" then
-					char.setInt(charindex, "°²È«Ëø", 2)
+					char.setInt(charindex, "å®‰å…¨é”", 2)
 				end
 				token = "UPDATE `safedata` SET "
 							.. "`newsafe` = '" .. char.getWorkChar(charindex, "MAC2") .. "',"
 							.. "`oldsafe` = '" .. sasql.data(1) .. "',"
 							.. "`FixTime` = NOW()"
-							.. " WHERE `cdkey` = '" .. char.getChar(charindex, "ÕËºÅ") .. "'"
+							.. " WHERE `cdkey` = '" .. char.getChar(charindex, "è´¦å·") .. "'"
 				ret = sasql.query(token)
 			end
 		else
@@ -100,7 +100,7 @@ function FreeCharLogin( charindex )
 							.. "`FixTime`"
 							.. ")"
 							.. " VALUES ("
-							.. "'" .. char.getChar(charindex, "ÕËºÅ")
+							.. "'" .. char.getChar(charindex, "è´¦å·")
 							.. "', '" .. char.getWorkChar(charindex, "MAC2")
 							.. "', '" .. char.getWorkChar(charindex, "MAC2")
 							.. "', 0, NOW()"

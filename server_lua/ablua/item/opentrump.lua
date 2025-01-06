@@ -1,13 +1,13 @@
 function opentrump(itemindex, charaindex, toindex, haveitemindex)
 
-	if char.getInt(charaindex,"·¨±¦×´Ì¬")>0 then
-		char.TalkToCli(charaindex, -1,"ÄúÒÑ¾­¿ªÆôÁË·¨±¦×°±¸À¸!", "»ÆÉ«")
+	if char.getInt(charaindex,"æ³•å®çŠ¶æ€")>0 then
+		char.TalkToCli(charaindex, -1,"æ‚¨å·²ç»å¼€å¯äº†æ³•å®è£…å¤‡æ !", "é»„è‰²")
 		return
 	end
 	char.DelItem(charaindex, haveitemindex)
-	char.setInt(charaindex,"·¨±¦×´Ì¬",1);
+	char.setInt(charaindex,"æ³•å®çŠ¶æ€",1);
 	char.UpCahrData(charaindex,"p");
-	char.TalkToCli(charaindex, -1,"ÄúµÄ·¨±¦×°±¸À¸ÒÑ³É¹¦¿ªÆô!", "»ÆÉ«")
+	char.TalkToCli(charaindex, -1,"æ‚¨çš„æ³•å®è£…å¤‡æ å·²æˆåŠŸå¼€å¯!", "é»„è‰²")
 end
 
 function main()

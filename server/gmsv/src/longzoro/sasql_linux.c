@@ -1,6 +1,6 @@
 #include "longzoro/version.h"
 
-#ifdef _SASQL//ÐÂÌí¼Ó
+#ifdef _SASQL//æ–°æ·»åŠ 
 
 #include "longzoro/sasql.h"
 #include "char_base.h"
@@ -60,35 +60,35 @@ static int readSqlConfig( char *path )
         if( strcmp( command , "sql_IP" ) == 0 ){
             strcmp( sqlconfig.sql_IP , param ) ;
             snprintf( sqlconfig.sql_IP , sizeof( sqlconfig.sql_IP) , param );
-            printf("Êý¾Ý¿âµØÖ·£º  %s\n",sqlconfig.sql_IP);
+            printf("æ•°æ®åº“åœ°å€ï¼š  %s\n",sqlconfig.sql_IP);
         } else if( strcmp( command , "sql_Port" ) == 0 ){
         		sqlconfig.sql_Port = atoi( param );
             snprintf( sqlconfig.sql_Port1 , sizeof( sqlconfig.sql_Port1) , param );
-				  	printf("Êý¾Ý¿â¶Ë¿Ú£º  %d\n",sqlconfig.sql_Port);
+				  	printf("æ•°æ®åº“ç«¯å£ï¼š  %d\n",sqlconfig.sql_Port);
         } else if( strcmp( command , "sql_ID" ) == 0 ){
         		strcmp( sqlconfig.sql_ID , param ) ;
             snprintf( sqlconfig.sql_ID , sizeof( sqlconfig.sql_ID) , param );
-						printf("Êý¾Ý¿âÓÃ»§£º  %s\n",sqlconfig.sql_ID);
+						printf("æ•°æ®åº“ç”¨æˆ·ï¼š  %s\n",sqlconfig.sql_ID);
         } else if( strcmp( command , "sql_PS" ) == 0 ){
         		strcmp( sqlconfig.sql_PS , param ) ;
             snprintf( sqlconfig.sql_PS , sizeof( sqlconfig.sql_PS) , param );
-						printf("Êý¾Ý¿âÃÜÂë£º  %s\n",sqlconfig.sql_PS);
+						printf("æ•°æ®åº“å¯†ç ï¼š  %s\n",sqlconfig.sql_PS);
         } else if( strcmp( command , "sql_DataBase" ) == 0 ){
         		strcmp( sqlconfig.sql_DataBase , param ) ;
             snprintf( sqlconfig.sql_DataBase , sizeof( sqlconfig.sql_DataBase) , param );
-						printf("µÇÂ½Êý¾Ý¿âÃû£º%s\n",sqlconfig.sql_DataBase);
+						printf("ç™»é™†æ•°æ®åº“åï¼š%s\n",sqlconfig.sql_DataBase);
         } else if( strcmp( command , "sql_Table" ) == 0 ){
         		strcmp( sqlconfig.sql_Table , param ) ;
             snprintf( sqlconfig.sql_Table , sizeof( sqlconfig.sql_Table) , param );
-				  	printf("ÓÃ»§ÐÅÏ¢±íÃû£º  %s\n",sqlconfig.sql_Table);
+				  	printf("ç”¨æˆ·ä¿¡æ¯è¡¨åï¼š  %s\n",sqlconfig.sql_Table);
 				} else if( strcmp( command , "sql_NAME" ) == 0 ){
         		strcmp( sqlconfig.sql_NAME , param ) ;
             snprintf( sqlconfig.sql_NAME , sizeof( sqlconfig.sql_NAME) , param );
-				  	printf("ÕËºÅ×Ö¶ÎÃû³Æ£º  %s\n",sqlconfig.sql_NAME);
+				  	printf("è´¦å·å­—æ®µåç§°ï¼š  %s\n",sqlconfig.sql_NAME);
 				} else if( strcmp( command , "sql_PASS" ) == 0 ){
         		strcmp( sqlconfig.sql_PASS , param ) ;
             snprintf( sqlconfig.sql_PASS , sizeof( sqlconfig.sql_PASS) , param );
-				  	printf("ÃÜÂë×Ö¶ÎÃû³Æ£º  %s\n",sqlconfig.sql_PASS);
+				  	printf("å¯†ç å­—æ®µåç§°ï¼š  %s\n",sqlconfig.sql_PASS);
 				}
 		}
     fclose(fp);
@@ -99,26 +99,26 @@ BOOL sasql_init( void )
 {
 		if((mysql_init(&mysql) == NULL) & readSqlConfig("sql.cf"))
 		{
-			  printf("\nÊý¾Ý¿â³õÊ¼»¯Ê§°Ü£¡\n");
+			  printf("\næ•°æ®åº“åˆå§‹åŒ–å¤±è´¥ï¼\n");
 			  exit(1);
 		    return FALSE;
 		}
 	
 	  if( !mysql_real_connect( &mysql,
 	          sqlconfig.sql_IP,
-	          sqlconfig.sql_ID,//ÕÊºÅ
-	          sqlconfig.sql_PS,//ÃÜÂë
-	          sqlconfig.sql_DataBase,//Ñ¡ÔñµÄ×ÊÁÏ¿â
+	          sqlconfig.sql_ID,//å¸å·
+	          sqlconfig.sql_PS,//å¯†ç 
+	          sqlconfig.sql_DataBase,//é€‰æ‹©çš„èµ„æ–™åº“
 	          sqlconfig.sql_Port,
 	          NULL,
 	          0 ) )
 		{
-			printf("\nÊý¾Ý¿âÁ¬½ÓÊ§°Ü£¡\n");
+			printf("\næ•°æ®åº“è¿žæŽ¥å¤±è´¥ï¼\n");
 			return FALSE;
 		}
 
 		mysql_query(&mysql,"set names 'gbk'");
-  	printf("\nÊý¾Ý¿âÁ¬½Ó³É¹¦£¡\n");
+  	printf("\næ•°æ®åº“è¿žæŽ¥æˆåŠŸï¼\n");
   	return TRUE;
 }
 
@@ -164,11 +164,11 @@ int sasql_getVipPoint( int charaindex )
 	  		}
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“...");
 	sasql_close();
 	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 
@@ -179,7 +179,7 @@ int sasql_setVipPoint( int charaindex, int point )
 	sprintf(sqlstr,"update %s set VipPoint=%d where %s=BINARY'%s'", sqlconfig.sql_Table, point, sqlconfig.sql_NAME, id);	
 	
 	if(!sasql_mysql_query(sqlstr)){
-		//printf("ÓÃ»§%sµ±Ç°ÖØ»Ø±Ò%d£¡\n",id,point);
+		//printf("ç”¨æˆ·%så½“å‰é‡å›žå¸%dï¼\n",id,point);
 		return point;
 	}
 	return -1;
@@ -188,7 +188,7 @@ int sasql_setVipPoint( int charaindex, int point )
 int sasql_getVipPointForCdkey( char *id )
 {
 	if(sasql_ckeckStrint(id) == FALSE){
-		printf("Òì³£×Ö·ûµÄÓÃ»§Ãû%s\n",id);
+		printf("å¼‚å¸¸å­—ç¬¦çš„ç”¨æˆ·å%s\n",id);
 	  return -1;
 	}
 	
@@ -210,18 +210,18 @@ int sasql_getVipPointForCdkey( char *id )
   			}
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“...");
 	sasql_close();
 	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 
 int sasql_setVipPointForCdkey( char *id, int point )
 {
 	if(sasql_ckeckStrint(id) == FALSE){
-		printf("Òì³£×Ö·ûµÄÓÃ»§Ãû%s\n",id);
+		printf("å¼‚å¸¸å­—ç¬¦çš„ç”¨æˆ·å%s\n",id);
 	  return -1;
 	}
 	
@@ -229,7 +229,7 @@ int sasql_setVipPointForCdkey( char *id, int point )
 	sprintf(sqlstr,"update %s set VipPoint=%d where %s=BINARY'%s'", sqlconfig.sql_Table, point, sqlconfig.sql_NAME, id);	
 	
 	if(!sasql_mysql_query(sqlstr)){
-		//printf("ÓÃ»§%sµ±Ç°ÖØ»Ø±Ò%d£¡\n",id,point);
+		//printf("ç”¨æˆ·%så½“å‰é‡å›žå¸%dï¼\n",id,point);
 		return point;
 	}
 	return -1;
@@ -257,11 +257,11 @@ int sasql_getPayPoint( int charaindex )
   			}
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“...");
 	sasql_close();
 	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 
@@ -272,7 +272,7 @@ int sasql_setPayPoint( int charaindex, int point )
 	sprintf(sqlstr,"update %s set PayPoint=%d where %s=BINARY'%s'", sqlconfig.sql_Table, point, sqlconfig.sql_NAME, id);
 
 	if(!sasql_mysql_query(sqlstr)){
-		//printf("ÓÃ»§%sµ±Ç°ÖØ»Ø±Ò%d£¡\n",id,point);
+		//printf("ç”¨æˆ·%så½“å‰é‡å›žå¸%dï¼\n",id,point);
 		return point;
 	}
 	return -1;
@@ -300,11 +300,11 @@ int sasql_getGamblePoint( int charaindex )
   			}
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“...");
 	sasql_close();
 	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 
@@ -344,11 +344,11 @@ int sasql_getTrialPoint( int charaindex )
   			}
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“...");
 	sasql_close();
 	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 
@@ -388,11 +388,11 @@ int sasql_getGloryPoint( int charaindex )
   			}
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“...");
 	sasql_close();
 	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 
@@ -412,7 +412,7 @@ int sasql_setGloryPoint( int charaindex, int point )
 int sasql_getPayPointForCdkey( char *id )
 {
 	if(sasql_ckeckStrint(id) == FALSE){
-		printf("Òì³£×Ö·ûµÄÓÃ»§Ãû%s\n",id);
+		printf("å¼‚å¸¸å­—ç¬¦çš„ç”¨æˆ·å%s\n",id);
 	  return -1;
 	}
 	
@@ -434,18 +434,18 @@ int sasql_getPayPointForCdkey( char *id )
   			}
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“...");
 	sasql_close();
 	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 
 int sasql_setPayPointForCdkey( char *id, int point )
 {
 	if(sasql_ckeckStrint(id) == FALSE){
-		printf("Òì³£×Ö·ûµÄÓÃ»§Ãû%s\n",id);
+		printf("å¼‚å¸¸å­—ç¬¦çš„ç”¨æˆ·å%s\n",id);
 	  return -1;
 	}
 	
@@ -453,7 +453,7 @@ int sasql_setPayPointForCdkey( char *id, int point )
 	sprintf(sqlstr,"update %s set PayPoint=%d where %s=BINARY'%s'", sqlconfig.sql_Table, point, sqlconfig.sql_NAME, id);	
 	
 	if(!sasql_mysql_query(sqlstr)){
-		//printf("ÓÃ»§%sµ±Ç°ÖØ»Ø±Ò%d£¡\n",id,point);
+		//printf("ç”¨æˆ·%så½“å‰é‡å›žå¸%dï¼\n",id,point);
 		return point;
 	}
 	return -1;
@@ -468,7 +468,7 @@ BOOL sasql_addPauctionInfo( char *cdkey, char *name, char *effect, int cost, int
 																								cdkey, name, effect, cost, type, info, string );
 	
 	if(!sasql_mysql_query(sqlstr)){
-		printf("³É¹¦Ìí¼ÓÒ»ÌõÅÄÂôÐÅÏ¢£¡\n");
+		printf("æˆåŠŸæ·»åŠ ä¸€æ¡æ‹å–ä¿¡æ¯ï¼\n");
 		return TRUE;
 	}
 	return FALSE;
@@ -656,7 +656,7 @@ int sasql_vippoint( char *ID, int point, int flag )
 			//mysql_free_result(mysql_result);
 		}
 	}
-	printf("¸üÐÂ½ð±ÒÊýÊ§°Ü£¡-- %s\n",sqlstr);
+	printf("æ›´æ–°é‡‘å¸æ•°å¤±è´¥ï¼-- %s\n",sqlstr);
 	return -1;
 }
 
@@ -685,7 +685,7 @@ int sasql_ampoint( char *ID, int point, int flag )
 //		mysql_free_result(mysql_result);
 		}
 	}
-	print("¸üÐÂ%s»ý·ÖÊ§°Ü£¡\n",ID);
+	print("æ›´æ–°%sç§¯åˆ†å¤±è´¥ï¼\n",ID);
 	return -1;
 }
 
@@ -714,7 +714,7 @@ int sasql_rmbpoint( char *ID, int point, int flag )
 	//	mysql_free_result(mysql_result);
 		}
 	}
-	print("¸üÐÂ%sRMBÊ§°Ü£¡\n",ID);
+	print("æ›´æ–°%sRMBå¤±è´¥ï¼\n",ID);
 	return -1;
 }
 
@@ -743,14 +743,14 @@ char* sasql_LuaAdv_QueryR(char *sqlstr,int flg)
 	static char buff[1024] = "";
 	snprintf(buff,1024, "");
 	buff[1023]='\0';
-	/*³õÊ¼»¯ÐÅÏ¢±í*/
-	retlua.result = 0;//½á¹û¼¯ERROR
-	retlua.flg = flg;//·ÖÀà
-	retlua.errnono = 0;//MYSQL´íÎó±àºÅ
-	retlua.errstr = "";//MYSQL´íÎóÐÅÏ¢
-	retlua.fieldCount = 0;//²éÑ¯µÄÏîÄ¿Êý
-	retlua.rowCount = 0;//²éÑ¯½á¹û¼¯ÐÐÊý
-	retlua.rowAt = 0;//µ±Ç°¼ÇÂ¼ÐÐÊý
+	/*åˆå§‹åŒ–ä¿¡æ¯è¡¨*/
+	retlua.result = 0;//ç»“æžœé›†ERROR
+	retlua.flg = flg;//åˆ†ç±»
+	retlua.errnono = 0;//MYSQLé”™è¯¯ç¼–å·
+	retlua.errstr = "";//MYSQLé”™è¯¯ä¿¡æ¯
+	retlua.fieldCount = 0;//æŸ¥è¯¢çš„é¡¹ç›®æ•°
+	retlua.rowCount = 0;//æŸ¥è¯¢ç»“æžœé›†è¡Œæ•°
+	retlua.rowAt = 0;//å½“å‰è®°å½•è¡Œæ•°
 
 
 	if (flg == 1 || flg == 2){
@@ -758,7 +758,7 @@ char* sasql_LuaAdv_QueryR(char *sqlstr,int flg)
 		if(!mysql_query(&mysql,sqlstr)){
 			int num_row=0;
 			mysql_result=mysql_store_result(&mysql);
-			num_row=mysql_num_rows(mysql_result);//½á¹û¼¯ÐÐÊý
+			num_row=mysql_num_rows(mysql_result);//ç»“æžœé›†è¡Œæ•°
 			if (mysql_result  == NULL)
 			{
 				retlua.result = -2;
@@ -769,17 +769,17 @@ char* sasql_LuaAdv_QueryR(char *sqlstr,int flg)
 
 			if(num_row>0){
 
-				mysql_row = mysql_fetch_row(mysql_result);//´Ó²éÑ¯½á¹ûÖÐÈ¡Ò»Ìõ
+				mysql_row = mysql_fetch_row(mysql_result);//ä»ŽæŸ¥è¯¢ç»“æžœä¸­å–ä¸€æ¡
 
-				retlua.errnono = mysql_errno(&mysql);//´íÎó±àºÅ
-				retlua.errstr = mysql_error(&mysql);//´íÎóÐÅÏ¢
-				retlua.fieldCount = mysql_field_count(&mysql);//ÁÐÊý
+				retlua.errnono = mysql_errno(&mysql);//é”™è¯¯ç¼–å·
+				retlua.errstr = mysql_error(&mysql);//é”™è¯¯ä¿¡æ¯
+				retlua.fieldCount = mysql_field_count(&mysql);//åˆ—æ•°
 
-				retlua.rowCount = num_row;//½á¹ûÐÐÊýÁ¿
+				retlua.rowCount = num_row;//ç»“æžœè¡Œæ•°é‡
 				rowAtt++;
-				retlua.rowAt = rowAtt;//µ±Ç°ÐÐÊý
+				retlua.rowAt = rowAtt;//å½“å‰è¡Œæ•°
 				if (flg == 1){
-					mysql_free_result(mysql_result);//ÊÍ·Å½á¹û¼¯
+					mysql_free_result(mysql_result);//é‡Šæ”¾ç»“æžœé›†
 					mysql_result = NULL;
 					rowAtt = 0;
 				}
@@ -802,28 +802,28 @@ char* sasql_LuaAdv_QueryR(char *sqlstr,int flg)
 		int num_row=0;
 		if (mysql_result == NULL) {
 			retlua.result = -2;
-			return "½á¹û¼¯ÒÑ¾­ÊÍ·Å¡£";
+			return "ç»“æžœé›†å·²ç»é‡Šæ”¾ã€‚";
 		}
-		num_row=mysql_num_rows(mysql_result);//½á¹û¼¯ÐÐÊý
+		num_row=mysql_num_rows(mysql_result);//ç»“æžœé›†è¡Œæ•°
 		if (mysql_eof(mysql_result))
 		{
-			retlua.result = -3;//ÒÑ´ïµ½Î²¶Ë£¬ÏÈ¸øÄãÌá¸öÐÑ£¬Èç¹û»¹¼ÌÐø²éÑ¯£¬ÏÂÃæ½«»á×Ô¶¯ÊÍ·Å¡£
+			retlua.result = -3;//å·²è¾¾åˆ°å°¾ç«¯ï¼Œå…ˆç»™ä½ æä¸ªé†’ï¼Œå¦‚æžœè¿˜ç»§ç»­æŸ¥è¯¢ï¼Œä¸‹é¢å°†ä¼šè‡ªåŠ¨é‡Šæ”¾ã€‚
 		}
 		if (num_row == rowAtt) {
-			mysql_free_result(mysql_result);//ÊÍ·Å½á¹û¼¯
+			mysql_free_result(mysql_result);//é‡Šæ”¾ç»“æžœé›†
 			mysql_result = NULL;
 			rowAtt = 0;
 			retlua.result = -3;
-			return "ÒÑµ½´ïÎ²ÐÐ£¬×Ô¶¯ÊÍ·Å½á¹û¼¯¡£";
+			return "å·²åˆ°è¾¾å°¾è¡Œï¼Œè‡ªåŠ¨é‡Šæ”¾ç»“æžœé›†ã€‚";
 		}
 		if(num_row>0){
-			mysql_row = mysql_fetch_row(mysql_result);//´Ó²éÑ¯½á¹ûÖÐÈ¡Ò»Ìõ
-			retlua.errnono = mysql_errno(&mysql);//´íÎó±àºÅ
-			retlua.errstr = mysql_error(&mysql);//´íÎóÐÅÏ¢
+			mysql_row = mysql_fetch_row(mysql_result);//ä»ŽæŸ¥è¯¢ç»“æžœä¸­å–ä¸€æ¡
+			retlua.errnono = mysql_errno(&mysql);//é”™è¯¯ç¼–å·
+			retlua.errstr = mysql_error(&mysql);//é”™è¯¯ä¿¡æ¯
 			rowAtt++;
-			retlua.rowAt = rowAtt;//µ±Ç°ÐÐÊý
-			retlua.fieldCount = mysql_field_count(&mysql);//ÁÐÊý
-			retlua.rowCount = num_row;//½á¹ûÐÐÊýÁ¿
+			retlua.rowAt = rowAtt;//å½“å‰è¡Œæ•°
+			retlua.fieldCount = mysql_field_count(&mysql);//åˆ—æ•°
+			retlua.rowCount = num_row;//ç»“æžœè¡Œæ•°é‡
 			if (num_row > 15) retlua.result = -1;
 			int i;
 			for (i=0;i<retlua.fieldCount;i++)
@@ -839,12 +839,12 @@ char* sasql_LuaAdv_QueryR(char *sqlstr,int flg)
 	}else if (flg == 4){
 		if (mysql_result == NULL) {
 			retlua.result = -2;
-			return "½á¹û¼¯ÒÑ¾­ÊÍ·Å¡£";
+			return "ç»“æžœé›†å·²ç»é‡Šæ”¾ã€‚";
 		}
-		mysql_free_result(mysql_result);//ÊÍ·Å½á¹û¼¯
+		mysql_free_result(mysql_result);//é‡Šæ”¾ç»“æžœé›†
 		mysql_result = NULL;
 		rowAtt = 0;
-		retlua.rowAt = rowAtt;//µ±Ç°ÐÐÊý
+		retlua.rowAt = rowAtt;//å½“å‰è¡Œæ•°
 		retlua.errnono = mysql_errno(&mysql);
 		retlua.errstr = mysql_error(&mysql);
 		return "";
@@ -935,7 +935,7 @@ int sasql_query(char *nm, char *pas){
 	  		if((strcmp(pas,mysql_row[1]) == 0) && (atoi(mysql_row[3])==0 || atoi(mysql_row[3])==getLockType())){
 	  		return 1;
 		  	}else{
-		  		//printf("ÓÃ»§%sÃÜÂë´íÎó£¡\n",nm);
+		  		//printf("ç”¨æˆ·%så¯†ç é”™è¯¯ï¼\n",nm);
 		  		return 2;
 				}
 		  }else
@@ -943,16 +943,16 @@ int sasql_query(char *nm, char *pas){
 		  		if(strcmp(pas,mysql_row[1]) == 0 && atoi(mysql_row[3])==0){
 	  			return 1;
 		  		}else{
-		  			//printf("ÓÃ»§%sÃÜÂë´íÎó£¡\n",nm);
+		  			//printf("ç”¨æˆ·%så¯†ç é”™è¯¯ï¼\n",nm);
 		  			return 2;
 					}
 		  	}
 	  }else{
-	  	//printf("ÓÃ»§%sÎ´×¢²á£¡\n",nm);
+	  	//printf("ç”¨æˆ·%sæœªæ³¨å†Œï¼\n",nm);
 	  	return 3;
 	  }
 	}else{
-		//printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü£¡\n");
+		//printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥ï¼\n");
 		return 0;
 	}
 }
@@ -960,10 +960,10 @@ int sasql_query(char *nm, char *pas){
 BOOL sasql_CheckPasswd( char *id, char *passwd )
 {
 	if(sasql_ckeckStrint(id) == FALSE){
-		printf("Òì³£×Ö·û%s\n",id);
+		printf("å¼‚å¸¸å­—ç¬¦%s\n",id);
 		return FALSE;	}
 	if(sasql_ckeckStrint(passwd) == FALSE){
-		printf("Òì³£×Ö·û%s\n",passwd);
+		printf("å¼‚å¸¸å­—ç¬¦%s\n",passwd);
 		return FALSE;
 	}
 	char sqlstr[256];
@@ -1022,11 +1022,11 @@ int sasql_getSQLPoint( int charaindex )
 	  	return atoi(mysql_row[0]);
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü[20]£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â[3]...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥[20]ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“[3]...");
 //	sasql_close();
 //	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 
@@ -1060,11 +1060,11 @@ int sasql_getGoldPoint( int charaindex )
 	  	return atoi(mysql_row[0]);
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü[21]£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â[3]...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥[21]ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“[3]...");
 //	sasql_close();
 //	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 int sasql_setSQLPointByCdkey( char* cdkey, int point )
@@ -1095,11 +1095,11 @@ int sasql_getSQLPointByCdkey( char* cdkey )
 	  	return atoi(mysql_row[0]);
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü[22]£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â[3]...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥[22]ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“[3]...");
 //	sasql_close();
 //	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 
@@ -1131,11 +1131,11 @@ int sasql_getGoldPointByCdkey( char* cdkey )
 	  	return atoi(mysql_row[0]);
 		}
 	}
-	printf("\nÊý¾Ý¿â²éÕÒÊ§°Ü[23]£¡\n");
-	printf("ÖØÐÂÁ¬½ÓÊý¾Ý¿â[3]...");
+	printf("\næ•°æ®åº“æŸ¥æ‰¾å¤±è´¥[23]ï¼\n");
+	printf("é‡æ–°è¿žæŽ¥æ•°æ®åº“[3]...");
 //	sasql_close();
 //	sasql_init();
-	printf("Íê³É\n");
+	printf("å®Œæˆ\n");
 	return -1;
 }
 

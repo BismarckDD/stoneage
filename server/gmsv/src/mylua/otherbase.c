@@ -87,13 +87,13 @@ static int CallFunction(lua_State *L)
 		lua_pushnumber(lua, getArrayInt(L, i)); 
 	}
 	int TM_Ret = lua_pcall(lua, n, 1, 0);
-	if(TM_Ret != 0)
-	{
-		//Ê§°Ü-Êä³ö´íÎóĞÅÏ¢
-		print("CallFunction Lua Err :%d(%s)\n", TM_Ret, lua_tostring(lua, -1));
-		//³öÕ»
-		lua_pop(lua, 1);
-		return FALSE;
+	if(TM_Ret != 0)
+	{
+		//å¤±è´¥-è¾“å‡ºé”™è¯¯ä¿¡æ¯
+		print("CallFunction Lua Err :%d(%s)\n", TM_Ret, lua_tostring(lua, -1));
+		//å‡ºæ ˆ
+		lua_pop(lua, 1);
+		return FALSE;
 	}
 	lua_isnumber(lua, -1);
 

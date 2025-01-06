@@ -14,20 +14,20 @@ extern MY_Lua MYLua;
 
 static CharBase MagicBaseInt[] = {
 	{{"ID"}, 					MAGIC_ID}
-	,{{"×Ö¶Î"}, 			MAGIC_FIELD}
-	,{{"Ä¿±ê"}, 			MAGIC_TARGET}
-	,{{"ËÀÍöÄ¿±ê"}, 	MAGIC_TARGET_DEADFLG}
+	,{{"å­—æ®µ"}, 			MAGIC_FIELD}
+	,{{"ç›®æ ‡"}, 			MAGIC_TARGET}
+	,{{"æ­»äº¡ç›®æ ‡"}, 	MAGIC_TARGET_DEADFLG}
 #ifdef _ATTACK_MAGIC 
-	,{{"¹¥»÷¾«Áé"}, 	MAGIC_IDX}
+	,{{"æ”»å‡»ç²¾çµ"}, 	MAGIC_IDX}
 #endif
 };
 
 
 static CharBase MagicBaseChar[] = {
-	{{"Ãû×Ö"}, 		MAGIC_NAME}
-	,{{"×¢ÊÍ"}, 	MAGIC_COMMENT}
-	,{{"º¯ÊýÃû"}, MAGIC_FUNCNAME}
-	,{{"Ñ¡Ïî"}, 	MAGIC_OPTION}
+	{{"åå­—"}, 		MAGIC_NAME}
+	,{{"æ³¨é‡Š"}, 	MAGIC_COMMENT}
+	,{{"å‡½æ•°å"}, MAGIC_FUNCNAME}
+	,{{"é€‰é¡¹"}, 	MAGIC_OPTION}
 };
 
 

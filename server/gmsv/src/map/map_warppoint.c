@@ -86,15 +86,15 @@ int MAPPOINT_creatMapWarpObj( int pointindex, char *buf, int objtype)
 	obj.index= pointindex;
 	memset( obj.objname, 0, sizeof( obj.objname));
 	if( getStringFromIndexWithDelim( buf, ",", 1, buf1, sizeof(buf1)) ==FALSE ){
-		return -1;//Ô­µã
+		return -1;//åŸç‚¹
 	}
 	obj.floor   = atoi( buf1);
 	if( getStringFromIndexWithDelim( buf, ",", 2, buf1, sizeof(buf1)) ==FALSE ){
-		return -1;//Ô­µã
+		return -1;//åŸç‚¹
 	}
 	obj.x = atoi( buf1);
 	if( getStringFromIndexWithDelim( buf, ",", 3, buf1, sizeof(buf1)) ==FALSE ){
-		return -1;//Ô­µã
+		return -1;//åŸç‚¹
 	}
 	obj.y = atoi( buf1);
 	obj.type = OBJTYPE_WARPPOINT;
@@ -129,16 +129,16 @@ int  MAPPOINT_setMapWarpFrom( int ps, char *buf)
 	char buf1[256];
 
 	if( MAPPOINT_CHECKINDEX( ps) ){
-		print(" ·ÅÖÃ´«ËÍµã´Ó %s »ñµÃ!!\n", buf);
+		print(" æ”¾ç½®ä¼ é€ç‚¹ä» %s è·å¾—!!\n", buf);
 		return -1;
 	}
 
 	memset( buf1, 0, sizeof( buf1));
-	if( getStringFromIndexWithDelim( buf, ",", 1, buf1, sizeof(buf1)) ==FALSE ) return -1;//Ô­µã
+	if( getStringFromIndexWithDelim( buf, ",", 1, buf1, sizeof(buf1)) ==FALSE ) return -1;//åŸç‚¹
 	MapWarppoint[ps].ofloor = atoi( buf1);
-	if( getStringFromIndexWithDelim( buf, ",", 2, buf1, sizeof(buf1)) ==FALSE ) return -1;//Ô­µã
+	if( getStringFromIndexWithDelim( buf, ",", 2, buf1, sizeof(buf1)) ==FALSE ) return -1;//åŸç‚¹
 	MapWarppoint[ps].ox = atoi( buf1);
-	if( getStringFromIndexWithDelim( buf, ",", 3, buf1, sizeof(buf1)) ==FALSE ) return -1;//Ô­µã
+	if( getStringFromIndexWithDelim( buf, ",", 3, buf1, sizeof(buf1)) ==FALSE ) return -1;//åŸç‚¹
 	MapWarppoint[ps].oy = atoi( buf1);
 	return 1;
 }
@@ -147,16 +147,16 @@ int  MAPPOINT_setMapWarpGoal( int ps, char *buf)
 {
 	char buf1[256];
 	if( MAPPOINT_CHECKINDEX( ps) ){
-		print(" ·ÅÖÃ´«ËÍµã»ñµÃ :%s!!\n", buf);
+		print(" æ”¾ç½®ä¼ é€ç‚¹è·å¾— :%s!!\n", buf);
 		return -1;
 	}
 
 	memset( buf1, 0, sizeof( buf1));
-	if( getStringFromIndexWithDelim( buf, ",", 1, buf1, sizeof(buf1)) ==FALSE ) return -1;//Ô­µã
+	if( getStringFromIndexWithDelim( buf, ",", 1, buf1, sizeof(buf1)) ==FALSE ) return -1;//åŸç‚¹
 	MapWarppoint[ps].floor = atoi( buf1);
-	if( getStringFromIndexWithDelim( buf, ",", 2, buf1, sizeof(buf1)) ==FALSE ) return -1;//Ô­µã
+	if( getStringFromIndexWithDelim( buf, ",", 2, buf1, sizeof(buf1)) ==FALSE ) return -1;//åŸç‚¹
 	MapWarppoint[ps].x = atoi( buf1);
-	if( getStringFromIndexWithDelim( buf, ",", 3, buf1, sizeof(buf1)) ==FALSE ) return -1;//Ô­µã
+	if( getStringFromIndexWithDelim( buf, ",", 3, buf1, sizeof(buf1)) ==FALSE ) return -1;//åŸç‚¹
 	MapWarppoint[ps].y = atoi( buf1);
 	return 1;
 }
@@ -164,18 +164,18 @@ int  MAPPOINT_setMapWarpGoal( int ps, char *buf)
 int MAPPOINT_getMapWarpGoal( int ps, int ofl, int ox, int oy, int *fl, int *x, int *y)
 {
 	if( !MAPPOINT_CHECKINDEX( ps) ){
-		print("»ñÈ¡´«ËÍµãPS:%d ´íÎó!!\n", ps);
+		print("è·å–ä¼ é€ç‚¹PS:%d é”™è¯¯!!\n", ps);
 		return -1;
 	}
 
 	if( MapWarppoint[ps].ofloor != ofl ||
 		MapWarppoint[ps].ox != ox || MapWarppoint[ps].oy != oy ){
-		print( "²»Õı³£´«ËÍµã: ¾ÉµÄÓĞÎÊÌâ´«ËÍµã %d %d %d !!\n" , ofl,ox,oy );
+		print( "ä¸æ­£å¸¸ä¼ é€ç‚¹: æ—§çš„æœ‰é—®é¢˜ä¼ é€ç‚¹ %d %d %d !!\n" , ofl,ox,oy );
 		return -1;
 	}
-	//¿É¼ÓÅĞ¶ÏÌõ¼ş
+	//å¯åŠ åˆ¤æ–­æ¡ä»¶
 	if( MAP_IsValidCoordinate( MapWarppoint[ps].floor, MapWarppoint[ps].x, MapWarppoint[ps].y)== FALSE ){
-		print( "²»Õı³£´«ËÍµã:ÓĞÎÊÌâ %d %d %d !!\n" ,
+		print( "ä¸æ­£å¸¸ä¼ é€ç‚¹:æœ‰é—®é¢˜ %d %d %d !!\n" ,
 			MapWarppoint[ps].floor,MapWarppoint[ps].x, MapWarppoint[ps].y );
 		return -1;
 	}
@@ -220,7 +220,7 @@ int MAPPOINT_loadMapWarpPoint( )
 			if( !strcmp( buf1, PointType[i]) )break;
 		}
 		if( i >= arraysizeof( PointType) ){
-			print(" 1.map ´«ËÍµã´íÎó %s \n", buf);
+			print(" 1.map ä¼ é€ç‚¹é”™è¯¯ %s \n", buf);
 			continue;
 		}
 		MapWarppoint[ps].type = i;
@@ -238,25 +238,25 @@ int MAPPOINT_loadMapWarpPoint( )
 		if( getStringFromIndexWithDelim( buf, ":", 3, buf1, sizeof(buf1)) ==FALSE )continue;
 
 		if( MAPPOINT_setMapWarpFrom( ps, buf1) == -1){
-			print(" 2-1.map ´«ËÍµã´íÎó %s [%s] \n", buf, buf1);
+			print(" 2-1.map ä¼ é€ç‚¹é”™è¯¯ %s [%s] \n", buf, buf1);
 			continue;
 		}
 		if( MAPPOINT_creatMapWarpObj( ps, buf1, objtype) == -1 ){
-			print(" 2.map ´«ËÍµã´íÎó %s [%s] \n", buf, buf1);
+			print(" 2.map ä¼ é€ç‚¹é”™è¯¯ %s [%s] \n", buf, buf1);
 			continue;
 		}
 		memset( buf1, 0, sizeof(buf1));
 		if( getStringFromIndexWithDelim( buf, ":", 4, buf1, sizeof(buf1)) ==FALSE ){
-			print(" 3.map ´«ËÍµã´íÎó %s [%s] \n", buf, buf1);
+			print(" 3.map ä¼ é€ç‚¹é”™è¯¯ %s [%s] \n", buf, buf1);
 			continue;
 		}
 		if( MAPPOINT_setMapWarpGoal( ps, buf1) == -1 ){
-			print(" 4.map ´«ËÍµã´íÎó %s \n", buf);
+			print(" 4.map ä¼ é€ç‚¹é”™è¯¯ %s \n", buf);
 			continue;
 		}
 		memset( buf1, 0, sizeof(buf1));
 		if( getStringFromIndexWithDelim( buf, ":", 5, buf1, sizeof(buf1)) ==FALSE ){
-			print(" 5.map ´«ËÍµã´íÎó %s [%s] \n", buf, buf1);
+			print(" 5.map ä¼ é€ç‚¹é”™è¯¯ %s [%s] \n", buf, buf1);
 			continue;
 		}
 		MapWarppoint[ps].use = 1;
@@ -267,9 +267,9 @@ int MAPPOINT_loadMapWarpPoint( )
 		}
 	}
 	//andy_log
-	print("³õÊ¼»¯ %d µØÍ¼´«ËÍµã...", MapWarpPoints);
+	print("åˆå§‹åŒ– %d åœ°å›¾ä¼ é€ç‚¹...", MapWarpPoints);
 	fclose( fp);
-	print("Íê³É\n");
+	print("å®Œæˆ\n");
 	return 1;
 }
 
@@ -278,7 +278,7 @@ void MAPPOINT_MapWarpHandle( int charaindex, int ps, int ofl, int ox, int oy )
 	int floor, x, y;
 	if( MAPPOINT_getMapWarpGoal( ps, ofl, ox, oy, &floor, &x, &y) == -1 ){
 		//andy_log
-		print( "»ñÈ¡´«ËÍµã( %d, %d,%d,%d)´íÎó!!\n", ps, ofl, ox, oy);
+		print( "è·å–ä¼ é€ç‚¹( %d, %d,%d,%d)é”™è¯¯!!\n", ps, ofl, ox, oy);
 		return;
 	}
 	if( floor == 777 ) return;
@@ -295,100 +295,100 @@ void MAPPOINT_MapWarpHandle( int charaindex, int ps, int ofl, int ox, int oy )
 }
 
 #ifdef _MO_LNS_MAPSUOXU
-int DelMapPoint( int ps)//Ğ¶ÔØµØÍ¼´«ËÍµã
+int DelMapPoint( int ps)//å¸è½½åœ°å›¾ä¼ é€ç‚¹
 {
 	if (MapWarppoint[ps].use != 1) return FALSE;
-	MapWarppoint[ps].type = 0;//ÉèÖÃµØÍ¼µÄ´«ËÍµãÀàĞÍ
-	endObjectOne(get_mappointindex(MapWarppoint[ps].ofloor,MapWarppoint[ps].ox,MapWarppoint[ps].oy));//Çåµôobj
-	MapWarppoint[ps].ofloor = -1;//ÉèÖÃµØÍ¼µÄ´«ËÍµãÀàĞÍ
-	MapWarppoint[ps].ox = -1;//ÉèÖÃµØÍ¼µÄ´«ËÍµãÀàĞÍ
-	MapWarppoint[ps].oy = -1;//ÉèÖÃµØÍ¼µÄ´«ËÍµãÀàĞÍ
-	MapWarppoint[ps].floor = -1;//ÉèÖÃµØÍ¼µÄ´«ËÍµãÀàĞÍ
-	MapWarppoint[ps].x = -1;//ÉèÖÃµØÍ¼µÄ´«ËÍµãÀàĞÍ
-	MapWarppoint[ps].y = -1;//ÉèÖÃµØÍ¼µÄ´«ËÍµãÀàĞÍ
+	MapWarppoint[ps].type = 0;//è®¾ç½®åœ°å›¾çš„ä¼ é€ç‚¹ç±»å‹
+	endObjectOne(get_mappointindex(MapWarppoint[ps].ofloor,MapWarppoint[ps].ox,MapWarppoint[ps].oy));//æ¸…æ‰obj
+	MapWarppoint[ps].ofloor = -1;//è®¾ç½®åœ°å›¾çš„ä¼ é€ç‚¹ç±»å‹
+	MapWarppoint[ps].ox = -1;//è®¾ç½®åœ°å›¾çš„ä¼ é€ç‚¹ç±»å‹
+	MapWarppoint[ps].oy = -1;//è®¾ç½®åœ°å›¾çš„ä¼ é€ç‚¹ç±»å‹
+	MapWarppoint[ps].floor = -1;//è®¾ç½®åœ°å›¾çš„ä¼ é€ç‚¹ç±»å‹
+	MapWarppoint[ps].x = -1;//è®¾ç½®åœ°å›¾çš„ä¼ é€ç‚¹ç±»å‹
+	MapWarppoint[ps].y = -1;//è®¾ç½®åœ°å›¾çš„ä¼ é€ç‚¹ç±»å‹
 	MapWarppoint[ps].use = 0;
 	MapWarppoint[ps].type = 0;
-	return TRUE;//×¢ÒâÉèÖÃ´«ËÍµãÊ±ÏÈ¼ì²éÊÇ·ñÔ­À´ÓĞ´«ËÍµã
+	return TRUE;//æ³¨æ„è®¾ç½®ä¼ é€ç‚¹æ—¶å…ˆæ£€æŸ¥æ˜¯å¦åŸæ¥æœ‰ä¼ é€ç‚¹
 }
 
-int SetMapPoint( char* buf)//¼ÓÔØµØÍ¼´«ËÍµã
-{  // "´«ËÍµãÀàĞÍ:NULL:2000,50,50:2006,20,20:£¿"
+int SetMapPoint( char* buf)//åŠ è½½åœ°å›¾ä¼ é€ç‚¹
+{  // "ä¼ é€ç‚¹ç±»å‹:NULL:2000,50,50:2006,20,20:ï¼Ÿ"
 	if( MapWarpPoints >= MAP_MAXWARPPOINT ){
-		print(" ´«ËÍµãÒÑ´ïÉÏÏŞ£¡\n");
+		print(" ä¼ é€ç‚¹å·²è¾¾ä¸Šé™ï¼\n");
 		return -1;
 	}
 	char buf1[256];
 	char buf2[256];
 	int objtype,i;
-	if( getStringFromIndexWithDelim( buf, ":", 1, buf1, sizeof(buf1)) ==FALSE )//ÕÒ³ö´«ËÍµãÀàĞÍ
+	if( getStringFromIndexWithDelim( buf, ":", 1, buf1, sizeof(buf1)) ==FALSE )//æ‰¾å‡ºä¼ é€ç‚¹ç±»å‹
 	{
 		return -2;
 	}
 	for( i=0; i<arraysizeof( PointType); i++)	{
 		if( !strcmp( buf1, PointType[i]) )break;
 	}
-	if( i >= arraysizeof( PointType) ){//´«ËÍµãÀàĞÍ´íÎó
+	if( i >= arraysizeof( PointType) ){//ä¼ é€ç‚¹ç±»å‹é”™è¯¯
 		return -3 ;
 	}
-	MapWarppoint[MapWarpPoints].type = i;//ÉèÖÃµØÍ¼µÄ´«ËÍµãÀàĞÍ
-	if( getStringFromIndexWithDelim( buf, ":", 2, buf1, sizeof(buf1)) ==FALSE ) //ÕÒ³ö´«ËÍµãÓĞĞ§Ê±¼ä
+	MapWarppoint[MapWarpPoints].type = i;//è®¾ç½®åœ°å›¾çš„ä¼ é€ç‚¹ç±»å‹
+	if( getStringFromIndexWithDelim( buf, ":", 2, buf1, sizeof(buf1)) ==FALSE ) //æ‰¾å‡ºä¼ é€ç‚¹æœ‰æ•ˆæ—¶é—´
 	{
 		return -4 ;
 	}
-	objtype = CHAR_EVENT_WARP;//ÉèÖÃ¶ÔÏóÎª´«ËÍµã
+	objtype = CHAR_EVENT_WARP;//è®¾ç½®å¯¹è±¡ä¸ºä¼ é€ç‚¹
 	if( !strcmp( buf1, "NULL")){
 	}else if( !strcmp( buf1, "M")){
-		objtype = CHAR_EVENT_WARP_MORNING;//ÉèÖÃ¶ÔÏóÎªÔç³¿´«ËÍµã
+		objtype = CHAR_EVENT_WARP_MORNING;//è®¾ç½®å¯¹è±¡ä¸ºæ—©æ™¨ä¼ é€ç‚¹
 	}else if( !strcmp( buf1, "N")){
-		objtype = CHAR_EVENT_WARP_NIGHT;//ÉèÖÃ¶ÔÏóÎªÍíÉÏ´«ËÍµã
+		objtype = CHAR_EVENT_WARP_NIGHT;//è®¾ç½®å¯¹è±¡ä¸ºæ™šä¸Šä¼ é€ç‚¹
 	}else if( !strcmp( buf1, "A")){
-		objtype = CHAR_EVENT_WARP_NOON;//ÉèÖÃ¶ÔÏóÎªÖĞÎç´«ËÍµã
+		objtype = CHAR_EVENT_WARP_NOON;//è®¾ç½®å¯¹è±¡ä¸ºä¸­åˆä¼ é€ç‚¹
 	}
 	memset( buf1, 0, sizeof(buf1));
-	if( getStringFromIndexWithDelim( buf, ":", 3, buf1, sizeof(buf1)) ==FALSE )//ÕÒ³öÔ­µã
+	if( getStringFromIndexWithDelim( buf, ":", 3, buf1, sizeof(buf1)) ==FALSE )//æ‰¾å‡ºåŸç‚¹
 	{
 		return -5 ;
 	}
 	int fl = -1,x = -1,y = -1;
-	if( getStringFromIndexWithDelim( buf1, ",", 1, buf2, sizeof(buf1)) !=FALSE )//ÕÒ³öÔ­µã
+	if( getStringFromIndexWithDelim( buf1, ",", 1, buf2, sizeof(buf1)) !=FALSE )//æ‰¾å‡ºåŸç‚¹
 	{
 		fl = atoi(buf2);
 	}
-	if( getStringFromIndexWithDelim( buf1, ",", 2, buf2, sizeof(buf1)) !=FALSE )//ÕÒ³öÔ­µã
+	if( getStringFromIndexWithDelim( buf1, ",", 2, buf2, sizeof(buf1)) !=FALSE )//æ‰¾å‡ºåŸç‚¹
 	{
 		x = atoi(buf2);
 	}
-	if( getStringFromIndexWithDelim( buf1, ",", 3, buf2, sizeof(buf1)) !=FALSE )//ÕÒ³öÔ­µã
+	if( getStringFromIndexWithDelim( buf1, ",", 3, buf2, sizeof(buf1)) !=FALSE )//æ‰¾å‡ºåŸç‚¹
 	{
 		y = atoi(buf2);
 	}
 	if (fl == -1 || x == -1 || y == -1) return -5;
-	if (get_mappointindex( fl,x, y) != -1) return -5;//ÉèÖÃ¹ı´«ËÍµã£¡
-	for (i=0;i<MapWarpPoints;i++)//ÕÒ³öÒ»¸ö¿ÕÏĞµÄ´«ËÍµã
+	if (get_mappointindex( fl,x, y) != -1) return -5;//è®¾ç½®è¿‡ä¼ é€ç‚¹ï¼
+	for (i=0;i<MapWarpPoints;i++)//æ‰¾å‡ºä¸€ä¸ªç©ºé—²çš„ä¼ é€ç‚¹
 	{
-		if (MapWarppoint[i].use != 1) break;//ÕÒµ½¿ÕÏĞ´«ËÍµã
+		if (MapWarppoint[i].use != 1) break;//æ‰¾åˆ°ç©ºé—²ä¼ é€ç‚¹
 	}
 
-	if( MAPPOINT_setMapWarpFrom( i, buf1) == -1){//·ÅÖÃÔ­µã
+	if( MAPPOINT_setMapWarpFrom( i, buf1) == -1){//æ”¾ç½®åŸç‚¹
 		return -6 ;
 	}
-	if( MAPPOINT_creatMapWarpObj( i, buf1, objtype) == -1 ){//·ÅÖÃÔ­µã¶ÔÏó
+	if( MAPPOINT_creatMapWarpObj( i, buf1, objtype) == -1 ){//æ”¾ç½®åŸç‚¹å¯¹è±¡
 		return -7 ;
 	}
 	memset( buf1, 0, sizeof(buf1));
-	if( getStringFromIndexWithDelim( buf, ":", 4, buf1, sizeof(buf1)) ==FALSE ){//ÕÒ³ö´«ËÍµã
+	if( getStringFromIndexWithDelim( buf, ":", 4, buf1, sizeof(buf1)) ==FALSE ){//æ‰¾å‡ºä¼ é€ç‚¹
 		return -8 ;
 	}
-	if( MAPPOINT_setMapWarpGoal( i, buf1) == -1 ){//ÉèÖÃ´«ËÍµã
+	if( MAPPOINT_setMapWarpGoal( i, buf1) == -1 ){//è®¾ç½®ä¼ é€ç‚¹
 		return -9 ;
 	}
 	memset( buf1, 0, sizeof(buf1));
 	if( getStringFromIndexWithDelim( buf, ":", 5, buf1, sizeof(buf1)) ==FALSE ){
-		//print(" È±ÉÙ´«ËÍµãÀàĞÍ \n", buf, buf1);
+		//print(" ç¼ºå°‘ä¼ é€ç‚¹ç±»å‹ \n", buf, buf1);
 		return -10 ;
 	}
 	MapWarppoint[i].use = 1;
-	if (i >= MapWarpPoints) MapWarpPoints++;//Èç¹ûµ±Ç°´«ËÍµãÒÑ¾­µ½´ï×îºó£¬Ô¤ÉèÏÂÒ»¸ö´«ËÍµã¡£
+	if (i >= MapWarpPoints) MapWarpPoints++;//å¦‚æœå½“å‰ä¼ é€ç‚¹å·²ç»åˆ°è¾¾æœ€åï¼Œé¢„è®¾ä¸‹ä¸€ä¸ªä¼ é€ç‚¹ã€‚
 	return i;
 }
 #endif

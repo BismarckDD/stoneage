@@ -14,20 +14,20 @@
 #include "anim_tbl.h"
 #include "handletime.h"
 #include "npc_eventaction.h"
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
 enum {
-	CHAR_WORK_ENCOUNTTYPE	= CHAR_NPCWORKINT1,	/* ¾Ş¼şÊĞËü¼şĞş¼°¿á   */
-	CHAR_WORK_DIEACT		= CHAR_NPCWORKINT2,	/* ÉØÊÏ·ÖÁİÉıµ¤ÔÊÔÂ¾® */
-	CHAR_WORK_WARP_FLOOR	= CHAR_NPCWORKINT3,	/* ·¥¡õÃóÔÊÔÂ°×·òÊ§*/
-	CHAR_WORK_WARP_X		= CHAR_NPCWORKINT4,	/* ·¥¡õÃóÔÊÔÂX */
-	CHAR_WORK_WARP_Y		= CHAR_NPCWORKINT5,	/* ·¥¡õÃóÔÊÔÂY */
-	CHAR_WORK_ONEBATTLE 	= CHAR_NPCWORKINT6,	/* Óò¹´ØÆ¾®¾ô  ØÆØ¦ÖĞ */
+	CHAR_WORK_ENCOUNTTYPE	= CHAR_NPCWORKINT1,	/* å·¨ä»¶å¸‚å®ƒä»¶ç„åŠé…·   */
+	CHAR_WORK_DIEACT		= CHAR_NPCWORKINT2,	/* éŸ¶æ°åˆ†å‡›å‡ä¸¹å…æœˆäº• */
+	CHAR_WORK_WARP_FLOOR	= CHAR_NPCWORKINT3,	/* ä¼â–¡çš¿å…æœˆç™½å¤«å¤±*/
+	CHAR_WORK_WARP_X		= CHAR_NPCWORKINT4,	/* ä¼â–¡çš¿å…æœˆX */
+	CHAR_WORK_WARP_Y		= CHAR_NPCWORKINT5,	/* ä¼â–¡çš¿å…æœˆY */
+	CHAR_WORK_ONEBATTLE 	= CHAR_NPCWORKINT6,	/* åŸŸå‹¾ä»„äº•çˆµ  ä»„å…ä¸­ */
 	NPC_TIME_MODE			= CHAR_NPCWORKINT7, 
-	CHAR_WORK_BASEIMGBAK	= CHAR_NPCWORKINT8, /* ÊÖÎç¼°  ì«  Ä¯ */
-	CHAR_WORK_DIETIME		= CHAR_NPCWORKINT9, /* ÉØÊÏ·ÖÁİÃŞ */
-	CHAR_WORK_REVIVALTIME	= CHAR_NPCWORKINT10, /* Ï·Îåß¯ÔÂÁİÃŞ */
+	CHAR_WORK_BASEIMGBAK	= CHAR_NPCWORKINT8, /* æ‰‹åˆåŠ  é£“  å¯ */
+	CHAR_WORK_DIETIME		= CHAR_NPCWORKINT9, /* éŸ¶æ°åˆ†å‡›æ£‰ */
+	CHAR_WORK_REVIVALTIME	= CHAR_NPCWORKINT10, /* æˆäº”å¿’æœˆå‡›æ£‰ */
 	CHAR_WORK_BATTLETYPE	= CHAR_NPCWORKINT11,
 };
 
@@ -108,7 +108,7 @@ BOOL NPC_NPCEnemyInit( int meindex )
 	
 	if( NPC_Util_GetStrFromStrWithDelim( argstr, "steal", buf, sizeof( buf)) != NULL ) {
 		if( NPC_Util_GetStrFromStrWithDelim( argstr, "item", buf, sizeof( buf)) == NULL ) {
-			print( "NPCEnemy:ÓĞÖ¸¶¨steal¶øÃ»ÓĞÖ¸¶¨item£¬ºÜÆæ¹Ö\n");
+			print( "NPCEnemy:æœ‰æŒ‡å®šstealè€Œæ²¡æœ‰æŒ‡å®šitemï¼Œå¾ˆå¥‡æ€ª\n");
 			return FALSE;
 		}
 	}
@@ -302,8 +302,8 @@ int NPC_NPCEnemy_Encount( int meindex, int charaindex, int mode)
 				found = TRUE;
 				itemid = atoi(data);
 
-#ifdef _NEW_ITEM_
-				for(j=0;j<itemMax;j++){
+#ifdef _NEW_ITEM_
+				for(j=0;j<itemMax;j++){
 #else
 				for( j=0 ; j<CHAR_MAXITEMHAVE ; j++ ){
 #endif
@@ -375,11 +375,11 @@ int NPC_NPCEnemy_Encount( int meindex, int charaindex, int mode)
 	}
 
 	if( flg ) {
-		/* ºÒ¼°Áİ·´  ÷»ÔÊÔÂ */
+		/* é˜‚åŠå‡›å  éª°å…æœˆ */
 		if( CHAR_getWorkInt( charaindex, CHAR_WORKPARTYMODE) != CHAR_PARTY_CLIENT) {
 			char	config[32];
 			snprintf( config, sizeof( config), "askbattlemsg1");
-			/* ¾ô  »¥ï§ÒıÔÂó¡±åß¤  ¶ªÓÀ±¾¡õ³â */
+			/* çˆµ  äº’é“µå¼•æœˆèŸ†åæ’™  ä¸¢æ°¸æœ¬â–¡æ–¥ */
 			
 			
 			if( NPC_Util_GetStrFromStrWithDelim( argstr, config,  buf, sizeof( buf))!= NULL )
@@ -420,10 +420,10 @@ int NPC_NPCEnemy_Encount( int meindex, int charaindex, int mode)
 									CHAR_getWorkInt( meindex, CHAR_WORKOBJINDEX),
 									makeEscapeString( buf, escapebuf,sizeof(escapebuf)));
 				}
-				/* ³ğ³ğ·ÖØê    ±åØøÕı¡õ¼ş */
+				/* ä»‡ä»‡åˆ†ä»ƒ    åä¼‰æ­£â–¡ä»¶ */
 				return FALSE;
 			}else {
-				/* ¾ô  ±å  ÈÕÁùÔÂ */
+				/* çˆµ  å  æ—¥å…­æœˆ */
 				flg = NPC_NPCEnemy_BattleIn( meindex, charaindex);
 			}
 		}
@@ -453,10 +453,10 @@ int NPC_NPCEnemy_Dying( int battleindex, int meindex )
 	if( strstr( argstr, "NEWNPCENEMY") )    {
 	}else	{
 #endif
-	/* Ó¬    ¼°ÚïÌ« */
+	/* è‡    åŠé™²å¤ª */
 	if( NPC_Util_GetStrFromStrWithDelim( argstr, "endmsg", buf, sizeof( buf)) != NULL ) {
 		for( i = 0; i < 5; i ++ ) {
-			/* ¾ô  ±å¸¨µÑØÆ»¯ÖĞÔÂòå¹»±å¶ªÓÀ±¾¡õ³â */
+			/* çˆµ  åè¾…ç¬›ä»„åŒ–ä¸­æœˆèˆå¤Ÿåä¸¢æ°¸æœ¬â–¡æ–¥ */
 			int toindex = BattleArray[battleindex].Side[0].Entry[i].charaindex;
 			if( CHAR_CHECKINDEX( toindex) )	{
 				CHAR_talkToCli( toindex, meindex ,buf , CHAR_COLORYELLOW );
@@ -475,7 +475,7 @@ int NPC_NPCEnemy_Dying( int battleindex, int meindex )
 		}
 		
 	}
-#ifdef _ALLDOMAN // (²»¿É¿ª) Syu ADD ÅÅĞĞ°ñNPC
+#ifdef _ALLDOMAN // (ä¸å¯å¼€) Syu ADD æ’è¡Œæ¦œNPC
 	if( NPC_Util_GetStrFromStrWithDelim( argstr, "herobattlefield", buf, sizeof( buf)) != NULL ) {
 			int charaindex = BattleArray[battleindex].Side[0].Entry[0].charaindex;
 			CHAR_setWorkInt ( charaindex , CHAR_WORKHEROFLOOR , atoi ( buf ) ) ;
@@ -488,7 +488,7 @@ int NPC_NPCEnemy_Dying( int battleindex, int meindex )
 
 	if( NPC_Util_GetStrFromStrWithDelim( argstr, "additem", buf, sizeof( buf) ) != NULL) {
 		for( i = 0; i < 5; i ++ ) {
-			/* ¾ô  ±å¸¨µÑØÆ»¯ÖĞÔÂòå¹»±å¶ªÓÀ±¾¡õ³â */
+			/* çˆµ  åè¾…ç¬›ä»„åŒ–ä¸­æœˆèˆå¤Ÿåä¸¢æ°¸æœ¬â–¡æ–¥ */
 			int toindex = BattleArray[battleindex].Side[0].Entry[i].charaindex;
 			if( CHAR_CHECKINDEX( toindex) )	{
 				int itemid = atoi(buf);
@@ -506,12 +506,12 @@ int NPC_NPCEnemy_Dying( int battleindex, int meindex )
 						LogItem(
 							CHAR_getChar( toindex, CHAR_NAME ),
 							CHAR_getChar( toindex, CHAR_CDKEY ),
-			#ifdef _add_item_log_name  // WON ADD ÔÚitemµÄlogÖĞÔö¼ÓitemÃû³Æ
+			#ifdef _add_item_log_name  // WON ADD åœ¨itemçš„logä¸­å¢åŠ itemåç§°
 							itemindex,
 			#else
 							atoi( message),
 			#endif
-							"AddItem(ÈÎÎñ»ñµÃ)",
+							"AddItem(ä»»åŠ¡è·å¾—)",
 					      CHAR_getInt( toindex,CHAR_FLOOR),
 								CHAR_getInt( toindex,CHAR_X ),
 					      CHAR_getInt( toindex,CHAR_Y ),
@@ -521,7 +521,7 @@ int NPC_NPCEnemy_Dying( int battleindex, int meindex )
 					
 						);
 						char token[256];
-						sprintf(token, "»ñµÃ%s", ITEM_getChar( itemindex, ITEM_NAME));
+						sprintf(token, "è·å¾—%s", ITEM_getChar( itemindex, ITEM_NAME));
 						CHAR_talkToCli( toindex, -1, token , CHAR_COLORYELLOW );
 					}
 				}
@@ -574,7 +574,7 @@ int NPC_NPCEnemy_Dying( int battleindex, int meindex )
 						continue;
 					}
 				}
-				CHAR_DischargeParty( toindex, 0); // ²ğ¶Ó
+				CHAR_DischargeParty( toindex, 0); // æ‹†é˜Ÿ
 				CHAR_warpToSpecificPoint( toindex,
 					CHAR_getWorkInt( meindex, CHAR_WORK_WARP_FLOOR),
 					CHAR_getWorkInt( meindex, CHAR_WORK_WARP_X),
@@ -646,7 +646,7 @@ BOOL NPC_NPCEnemy_BattleIn(  int meindex, int charaindex)
 		if(CHAR_getWorkInt(meindex, CHAR_WORK_TALKCHECK) != CHAR_getWorkInt(charaindex, CHAR_WORK_TALKCHECK)){
 			char buf[256];
 			CHAR_setWorkInt(meindex, CHAR_WORK_TALKCHECK, getTalkCheck());
-			sprintf(buf, "ÇëÊäÈëÑéÖ¤Êı×Ö:%d", CHAR_getWorkInt(meindex, CHAR_WORK_TALKCHECK));
+			sprintf(buf, "è¯·è¾“å…¥éªŒè¯æ•°å­—:%d", CHAR_getWorkInt(meindex, CHAR_WORK_TALKCHECK));
 			CHAR_talkToCli( charaindex, meindex, buf, CHAR_COLORYELLOW);
 			return FALSE;
 		}else{
@@ -705,9 +705,9 @@ static int NPC_NPCEnemy_StealItem( char *argstr, int meindex, int charaindex)
 		int		delitemgroup[CHAR_MAXITEMHAVE];
 		int		found = 0;
 		int		i;
-#ifdef _NEW_ITEM_
-		int itemMax = CheckCharMaxItem(charaindex);
-		for( i = 0; i < itemMax; i ++ ) {
+#ifdef _NEW_ITEM_
+		int itemMax = CheckCharMaxItem(charaindex);
+		for( i = 0; i < itemMax; i ++ ) {
 #else
 		for( i = 0; i < CHAR_MAXITEMHAVE; i ++ ) {
 #endif
@@ -739,7 +739,7 @@ static int NPC_NPCEnemy_StealItem( char *argstr, int meindex, int charaindex)
 		CHAR_sendItemData( charaindex, delitemgroup, found);
 	}
 	else {
-		print( "NPCENEMY:Ææ¹Ö\n");
+		print( "NPCENEMY:å¥‡æ€ª\n");
 		return FALSE;
 	}
 	return TRUE;
@@ -791,7 +791,7 @@ static BOOL NPC_NPCEnemy_CheckFree( int  meindex, int toindex, BOOL *Party)
 	  if( NPC_Util_GetStrFromStrWithDelim( buf1, "endmsg", token, sizeof( token)) != NULL ) {
 		CHAR_talkToCli( toindex, meindex ,token , CHAR_COLORYELLOW );
 	  }
-#ifdef _ALLDOMAN // (²»¿É¿ª) Syu ADD ÅÅĞĞ°ñNPC
+#ifdef _ALLDOMAN // (ä¸å¯å¼€) Syu ADD æ’è¡Œæ¦œNPC
 	  if( NPC_Util_GetStrFromStrWithDelim( buf1, "herobattlefield", token, sizeof( token)) != NULL ) {
 		  CHAR_setWorkInt ( toindex , CHAR_WORKHEROFLOOR , atoi ( token ) ) ;
 		  if ( atoi ( token ) > CHAR_getInt ( toindex , CHAR_HEROFLOOR ) )
@@ -878,7 +878,7 @@ BOOL NPCEnemy_BSCheck(int meindex,int talker,char* buf)
 	int kosuu,temp=-1,flg=0;
 	char buff1[128],buff3[128];
 	if(strstr( buf, "-") != NULL)	{
-		//buff3Îª×¥³èÎïID
+		//buff3ä¸ºæŠ“å® ç‰©ID
 		getStringFromIndexWithDelim( buf, "-", 2, buff3, sizeof(buff3));
 		temp = atoi( buff3);
 		getStringFromIndexWithDelim( buf, "-", 1, buff1, sizeof(buff1));
@@ -994,9 +994,9 @@ BOOL NPCEnemy_WarpManReduce(int meindex,int talker,char *buf)
 	getStringFromIndexWithDelim(buf2,"*",2,buf3,sizeof(buf3));
 	kosuu = atoi(buf3);
 	
-#ifdef _NEW_ITEM_
-		int itemMax = CheckCharMaxItem(talker);
-		for( i=0;i<itemMax;i++ ){
+#ifdef _NEW_ITEM_
+		int itemMax = CheckCharMaxItem(talker);
+		for( i=0;i<itemMax;i++ ){
 #else
 		for( i=0;i<CHAR_MAXITEMHAVE;i++ ){
 #endif
@@ -1071,7 +1071,7 @@ BOOL NPCEnemy_CheckMyPet( int meindex, int talker, int petLv, int flg, int petid
 	}
 	if( petsel  == CHAR_MAXPETHAVE )	{
 		return FALSE;
-	}else	{	//ÕÒµ½Ìõ¼ş³è
+	}else	{	//æ‰¾åˆ°æ¡ä»¶å® 
 		switch( flg)	{
 		case 0:
 			if( CHAR_getInt( petindex, CHAR_LV) != petLv )
@@ -1100,9 +1100,9 @@ BOOL NPCEnemy_ItemCheck(int meindex,int talker,int itemNo,int flg)
 	int i;
 	int itemindex=-1;
 	int id;
-#ifdef _NEW_ITEM_
-		int itemMax = CheckCharMaxItem(talker);
-		for( i=0;i<itemMax;i++ ){
+#ifdef _NEW_ITEM_
+		int itemMax = CheckCharMaxItem(talker);
+		for( i=0;i<itemMax;i++ ){
 #else
 		for( i=0;i<CHAR_MAXITEMHAVE;i++ ){
 #endif

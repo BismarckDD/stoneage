@@ -1,20 +1,20 @@
 #ifndef __CORRECT_BUG_H__
 #define __CORRECT_BUG_H__
 
-/* ----------------------- (¿ª·ÅÇø) ---------------------------*/ 
-#define _add_item_log_name   // WON ADD ÔÚitemµÄlogÖĞÔö¼ÓitemÃû³Æ
-#define _PETSKILLBUG         // Syu ADD ĞŞÕı³èÎïÎÊÌâ
-#define _FIXWOLF             // Syu ADD ĞŞÕıÀÇÈË±äÉíBug
-#define _FIXMAGICBUG         // Syu ADD ĞŞÕıÄ§·¨ÊìÁ·¡¢¿¹ĞÔ±©µôÎÊÌâ
-#define _FIXPETFALL          // Syu ADD ĞŞÕıÂäÂíÊõ
-#define _FIX_ITEMRELIFE      // WON ADD ĞŞÕıÌæÉíÍŞÍŞÎÊÌâ
-#define _FIX_SPEED_UPLEVEL   // WON ADD ĞŞÕı¼ÓËÙ
-#define _FIX_PETMAIL         // WON ADD ĞŞÕı³èÓÊ
-#define _FIX_EQUIP_ITEM      // WON ADD ĞŞÕıµÀ¾ßĞèÖØĞÂ×°±¸
-#define _ADD_PETMAIL_NUM     // WON ADD ³èÓÊÊıÁ¿GMÖ¸Áî
-#define _FIX_equipNoenemy    // WON ADD ĞŞÕıÌ«ÑôÉñÊ×ÊÎ
-#define _FIX_PETMAIL2        // WON ADD ĞŞÕı³èÓÊ2
-#define _FIXITEMANISHOW      // Syu ADD ĞŞÕı»ØºÏĞÔ²¹Ñª×°±¸µÀ¾ßÆï³èÊ±³èÎï²»ÏÔÊ¾¶¯»­ÎÊÌâ
-#define _kr_ip               // WON ADD ²»ËøgmÖ¸Áîip
+/* ----------------------- (å¼€æ”¾åŒº) ---------------------------*/ 
+#define _add_item_log_name   // WON ADD åœ¨itemçš„logä¸­å¢åŠ itemåç§°
+#define _PETSKILLBUG         // Syu ADD ä¿®æ­£å® ç‰©é—®é¢˜
+#define _FIXWOLF             // Syu ADD ä¿®æ­£ç‹¼äººå˜èº«Bug
+#define _FIXMAGICBUG         // Syu ADD ä¿®æ­£é­”æ³•ç†Ÿç»ƒã€æŠ—æ€§æš´æ‰é—®é¢˜
+#define _FIXPETFALL          // Syu ADD ä¿®æ­£è½é©¬æœ¯
+#define _FIX_ITEMRELIFE      // WON ADD ä¿®æ­£æ›¿èº«å¨ƒå¨ƒé—®é¢˜
+#define _FIX_SPEED_UPLEVEL   // WON ADD ä¿®æ­£åŠ é€Ÿ
+#define _FIX_PETMAIL         // WON ADD ä¿®æ­£å® é‚®
+#define _FIX_EQUIP_ITEM      // WON ADD ä¿®æ­£é“å…·éœ€é‡æ–°è£…å¤‡
+#define _ADD_PETMAIL_NUM     // WON ADD å® é‚®æ•°é‡GMæŒ‡ä»¤
+#define _FIX_equipNoenemy    // WON ADD ä¿®æ­£å¤ªé˜³ç¥é¦–é¥°
+#define _FIX_PETMAIL2        // WON ADD ä¿®æ­£å® é‚®2
+#define _FIXITEMANISHOW      // Syu ADD ä¿®æ­£å›åˆæ€§è¡¥è¡€è£…å¤‡é“å…·éª‘å® æ—¶å® ç‰©ä¸æ˜¾ç¤ºåŠ¨ç”»é—®é¢˜
+#define _kr_ip               // WON ADD ä¸é”gmæŒ‡ä»¤ip
 
 #endif

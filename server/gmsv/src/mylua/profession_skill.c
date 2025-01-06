@@ -10,38 +10,38 @@
 #include "lualib.h"
 #include "lssproto_serv.h"
 
-#ifdef _PROFESSION_SKILL			// WON ADD ÈËÎïÖ°Òµ¼¼ÄÜ
+#ifdef _PROFESSION_SKILL			// WON ADD äººç‰©èŒä¸šæŠ€èƒ½
 #ifdef _ALLBLUES_LUA_1_8 
 #include "mylua/mylua.h"
 extern MY_Lua MYLua;
 
 static CharBase ProfessionSkillBaseInt[] = {
-	{{"±àºÅ"},							PROFESSION_SKILL_ID}
-	,{{"Ö°Òµ"},							PROFESSION_SKILL_PROFESSION_CLASS}
-	,{{"Ä¿±ê"},							PROFESSION_SKILL_TARGET}
-	,{{"ºÄ·ÑMP"},						PROFESSION_SKILL_COST_MP}
-	,{{"Æì±ê"},							PROFESSION_SKILL_USE_FLAG}
-	,{{"ÖÖÀà"},							PROFESSION_SKILL_KIND}
-	,{{"Í¼ºÅ"},							PROFESSION_SKILL_ICON}
-	,{{"¹¥»÷Ç°Í¼ºÅ"},				PROFESSION_SKILL_IMG_1}
-	,{{"¹¥»÷Í¼ºÅ"},					PROFESSION_SKILL_IMG_2}
-	,{{"½ð¶î"},							PROFESSION_SKILL_COST}
-	,{{"Éý¼¶ÊýÖµ"},					PROFESSION_SKILL_FIX_VALUE}
-	,{{"±ØÐÞ1"},						PROFESSION_SKILL_LIMIT1}
-	,{{"±ØÐÞÊìÁ·¶È1"},			PROFESSION_SKILL_PERCENT1}
-	,{{"±ØÐÞ2"},						PROFESSION_SKILL_LIMIT2}
-	,{{"±ØÐÞÊìÁ·¶È2"},			PROFESSION_SKILL_PERCENT2}
-	,{{"±ØÐÞ3"},						PROFESSION_SKILL_LIMIT3}
-	,{{"±ØÐÞÊìÁ·¶È3"},			PROFESSION_SKILL_PERCENT3}
-	,{{"±ØÐÞ4"},						PROFESSION_SKILL_LIMIT4}
-	,{{"±ØÐÞÊìÁ·¶È4"},			PROFESSION_SKILL_PERCENT4}
+	{{"ç¼–å·"},							PROFESSION_SKILL_ID}
+	,{{"èŒä¸š"},							PROFESSION_SKILL_PROFESSION_CLASS}
+	,{{"ç›®æ ‡"},							PROFESSION_SKILL_TARGET}
+	,{{"è€—è´¹MP"},						PROFESSION_SKILL_COST_MP}
+	,{{"æ——æ ‡"},							PROFESSION_SKILL_USE_FLAG}
+	,{{"ç§ç±»"},							PROFESSION_SKILL_KIND}
+	,{{"å›¾å·"},							PROFESSION_SKILL_ICON}
+	,{{"æ”»å‡»å‰å›¾å·"},				PROFESSION_SKILL_IMG_1}
+	,{{"æ”»å‡»å›¾å·"},					PROFESSION_SKILL_IMG_2}
+	,{{"é‡‘é¢"},							PROFESSION_SKILL_COST}
+	,{{"å‡çº§æ•°å€¼"},					PROFESSION_SKILL_FIX_VALUE}
+	,{{"å¿…ä¿®1"},						PROFESSION_SKILL_LIMIT1}
+	,{{"å¿…ä¿®ç†Ÿç»ƒåº¦1"},			PROFESSION_SKILL_PERCENT1}
+	,{{"å¿…ä¿®2"},						PROFESSION_SKILL_LIMIT2}
+	,{{"å¿…ä¿®ç†Ÿç»ƒåº¦2"},			PROFESSION_SKILL_PERCENT2}
+	,{{"å¿…ä¿®3"},						PROFESSION_SKILL_LIMIT3}
+	,{{"å¿…ä¿®ç†Ÿç»ƒåº¦3"},			PROFESSION_SKILL_PERCENT3}
+	,{{"å¿…ä¿®4"},						PROFESSION_SKILL_LIMIT4}
+	,{{"å¿…ä¿®ç†Ÿç»ƒåº¦4"},			PROFESSION_SKILL_PERCENT4}
 }; 
 
 static CharBase ProfessionSkillBaseChar[] = {
-	{{"Ãû³Æ"},					PROFESSION_SKILL_NAME}
-	,{{"×¢ÊÍ"},					PROFESSION_SKILL_TXT}
-	,{{"º¯Êý"},					PROFESSION_SKILL_FUNCNAME}
-	,{{"Ñ¡Ïî"},					PROFESSION_SKILL_OPTION}
+	{{"åç§°"},					PROFESSION_SKILL_NAME}
+	,{{"æ³¨é‡Š"},					PROFESSION_SKILL_TXT}
+	,{{"å‡½æ•°"},					PROFESSION_SKILL_FUNCNAME}
+	,{{"é€‰é¡¹"},					PROFESSION_SKILL_OPTION}
 }; 
 
 static int getInt(lua_State *L) 

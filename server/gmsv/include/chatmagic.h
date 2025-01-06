@@ -80,7 +80,7 @@ void CHAR_CHAT_Fukuwa( int charaindex, char* message );
 #ifdef _GMRELOAD
 void CHAR_CHAT_DEBUG_gmreload(int charaindex, char *message);
 #endif
-#ifdef _CHAR_PROFESSION			// WON ADD 人物职业
+#ifdef _CHAR_PROFESSION			// WON ADD 浜虹墿鑱屼笟
 void CHAR_CHAT_DEBUG_addsk( int charaindex, char *message );
 void CHAR_CHAT_DEBUG_delsk( int charaindex, char *message );
 #endif
@@ -92,10 +92,10 @@ void CHAR_CHAT_DEBUG_setgamblenum( int charaindex, char *message );
 #ifdef _WAEI_KICK
 void CHAR_CHAT_DEBUG_gmkick( int charindex, char* message);
 #endif
-// WON ADD 修正族长问题
+// WON ADD 淇鏃忛暱闂
 void CHAR_CHAT_DEBUG_fixfmleader(int charaindex, char *message);
 
-// WON ADD 当机指令
+// WON ADD 褰撴満鎸囦护
 void CHAR_CHAT_DEBUG_crash(int charaindex, char *message);
 
 #ifdef _PETSKILL_SETDUCK
@@ -105,7 +105,7 @@ void CHAR_CHAT_DEBUG_SetDuck( int charaindex, char *message);
 void CHAR_CHAT_DEBUG_Toxication( int charaindex, char *message);
 #endif
 
-#ifdef _SEND_EFFECT	   	        // WON ADD AC送下雪、下雨等特效
+#ifdef _SEND_EFFECT	   	        // WON ADD AC閫佷笅闆�佷笅闆ㄧ瓑鐗规晥
 void CHAR_CHAT_DEBUG_sendeffect(int charaindex, char *message);
 #endif
 #ifdef _TEST_DROPITEMS
@@ -113,7 +113,7 @@ void CHAR_CHAT_DEBUG_dropmypet( int charindex, char *message );
 void CHAR_CHAT_DEBUG_dropmyitem( int charindex , char *message );
 #endif
 
-#ifdef _CHAR_PROFESSION			// WON ADD 人物职业
+#ifdef _CHAR_PROFESSION			// WON ADD 浜虹墿鑱屼笟
 void CHAR_CHAT_DEBUG_show_profession( int charaindex, char*message );
 void CHAR_CHAT_DEBUG_set_regist( int charaindex, char*message );
 #endif

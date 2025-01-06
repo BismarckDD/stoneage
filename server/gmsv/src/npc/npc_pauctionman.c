@@ -16,7 +16,7 @@
 #include "npc_eventaction.h"
 #include "longzoro/sasql.h"
 #include "pet.h"
-//ÌØµØ´ÓÌìÌÃ¸ßĞ½ÍÚ½ÇÀ´µÄ"´«ËÍÊ¦"
+//ç‰¹åœ°ä»å¤©å ‚é«˜è–ªæŒ–è§’æ¥çš„"ä¼ é€å¸ˆ"
 #ifdef _PAUCTION_MAN
 enum {
 	WINDOW_PAUCTION_START=1,
@@ -131,13 +131,13 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 	memset( token, 0, sizeof( token));
 	switch( seqno)	{
 	case WINDOW_PAUCTION_START:
-		sprintf(token, "3\n              ¡ïÎ¯ÍĞÅÄÂô½»Ò×´óÍõ¡ï\n\n"
-											"ÓĞÊ²Ã´ĞèÒªÎÒÎªÄã·şÎñÄØ£¿\n"
-											"                ¡¶ÎÒÒªÎ¯ÍĞÒ»Ïî½»Ò×¡·\n"
-											"                ¡¶²é¿´ËùÓĞÎ¯ÍĞÁĞ±í¡·\n"
-											"                ¡¶²é¿´³èÎïÎ¯ÍĞÁĞ±í¡·\n"
-											"                ¡¶²é¿´ÎïÆ·Î¯ÍĞÁĞ±í¡·\n"
-											"                ¡¶²é¿´¸öÈËÎ¯ÍĞÁĞ±í¡·\n"
+		sprintf(token, "3\n              â˜…å§”æ‰˜æ‹å–äº¤æ˜“å¤§ç‹â˜…\n\n"
+											"æœ‰ä»€ä¹ˆéœ€è¦æˆ‘ä¸ºä½ æœåŠ¡å‘¢ï¼Ÿ\n"
+											"                ã€Šæˆ‘è¦å§”æ‰˜ä¸€é¡¹äº¤æ˜“ã€‹\n"
+											"                ã€ŠæŸ¥çœ‹æ‰€æœ‰å§”æ‰˜åˆ—è¡¨ã€‹\n"
+											"                ã€ŠæŸ¥çœ‹å® ç‰©å§”æ‰˜åˆ—è¡¨ã€‹\n"
+											"                ã€ŠæŸ¥çœ‹ç‰©å“å§”æ‰˜åˆ—è¡¨ã€‹\n"
+											"                ã€ŠæŸ¥çœ‹ä¸ªäººå§”æ‰˜åˆ—è¡¨ã€‹\n"
 											);
 
 		windowtype = WINDOW_MESSAGETYPE_SELECT;
@@ -190,20 +190,20 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 			int id = atoi(tmp);
 			getStringFromIndexWithDelim( data, "|", 3, effect, sizeof( effect));
 			if(strlen(effect)==0){
-				sprintf(token, "Î¯ÍĞÊ§°Ü,ÇëÌîĞ´Î¯ÍĞĞğÊö~");
+				sprintf(token, "å§”æ‰˜å¤±è´¥,è¯·å¡«å†™å§”æ‰˜å™è¿°~");
 				break;
 			}
 			
 			getStringFromIndexWithDelim( data, "|", 4, tmp, sizeof( tmp));
 			int cost = atoi(tmp);
 			if(cost<=0){
-				sprintf(token, "Î¯ÍĞ¼Û¸ñ²»ÄÜÎª0~");
+				sprintf(token, "å§”æ‰˜ä»·æ ¼ä¸èƒ½ä¸º0~");
 				break;
 			}
 			if(type == 1){
 				int petindex = CHAR_getCharPet( toindex, id);
 			  if( !CHAR_CHECKINDEX(petindex)){
-			  	sprintf(token, "Äã²¢Ã»ÓĞÄãÒªÎ¯ÍĞµÄ³èÎï~");
+			  	sprintf(token, "ä½ å¹¶æ²¡æœ‰ä½ è¦å§”æ‰˜çš„å® ç‰©~");
 					break;
 			  }
 #ifdef _PET_ITEM
@@ -214,7 +214,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 			  	}
 			  }
 			  if(i<CHAR_PETITEMNUM){
-			  	sprintf(token, "Çë×°³èÎïÉíÉÏµÄ×°±¸È¡ÏÂ~");
+			  	sprintf(token, "è¯·è£…å® ç‰©èº«ä¸Šçš„è£…å¤‡å–ä¸‹~");
 					break;
 			  }
 #endif
@@ -229,7 +229,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 
 				string = CHAR_makePetStringFromPetIndex( petindex);
 				if( string == "\0" ){
-					sprintf(token, "Î¯ÍĞ³èÎïÊ§°Ü,ÇëÓë¹ÜÀíÔ±ÁªÏµ~");
+					sprintf(token, "å§”æ‰˜å® ç‰©å¤±è´¥,è¯·ä¸ç®¡ç†å‘˜è”ç³»~");
 			  	break;
 			  }
 				char category[12];
@@ -243,12 +243,12 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
         int itemindex = CHAR_getItemIndex(toindex, id);
         
         if( !ITEM_CHECKINDEX(itemindex)){
-			  	sprintf(token, "Äã²¢Ã»ÓĞÄãÒªÎ¯ÍĞµÄÎïÆ·~");
+			  	sprintf(token, "ä½ å¹¶æ²¡æœ‰ä½ è¦å§”æ‰˜çš„ç‰©å“~");
 					break;
 			  }
 			  
 			  if(ITEM_getInt( itemindex, ITEM_USEPILENUMS)>1){
-			  	sprintf(token, "µş¼ÓÎïÆ·ÎŞ·¨ÅÄÂô~");
+			  	sprintf(token, "å åŠ ç‰©å“æ— æ³•æ‹å–~");
 					break;
 			  }
 			  
@@ -263,7 +263,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
         
         string = ITEM_makeStringFromItemIndex(itemindex, 0);
         if( string == "\0" ){
-			  	sprintf(token, "Î¯ÍĞÎïÆ·Ê§°Ü,ÇëÓë¹ÜÀíÔ±ÁªÏµ~");
+			  	sprintf(token, "å§”æ‰˜ç‰©å“å¤±è´¥,è¯·ä¸ç®¡ç†å‘˜è”ç³»~");
 			  	break;
 			  }
 			  CHAR_DelItem( toindex, id);
@@ -271,7 +271,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 			char *cdkey = CHAR_getChar(toindex, CHAR_CDKEY);
 			char *name = CHAR_getChar(toindex, CHAR_NAME);
 			sasql_addPauctionInfo(cdkey, name, effect, cost, type, info, string);
-			sprintf(token, "³É¹¦ÎªÄúµÇ¼ÇÁËÒ»ÌõÎ¯ÍĞ½»Ò×ĞÅÏ¢,ÎÒÃÇ»á¾¡ĞÄ¾¡Á¦ÎªÄú·şÎñ,ÈçÓĞÒ»ÇĞ¶¯Ì¬,ÎÒÃÇ»áµÚÒ»Ê±¼äÍ¨ÖªÄú!");
+			sprintf(token, "æˆåŠŸä¸ºæ‚¨ç™»è®°äº†ä¸€æ¡å§”æ‰˜äº¤æ˜“ä¿¡æ¯,æˆ‘ä»¬ä¼šå°½å¿ƒå°½åŠ›ä¸ºæ‚¨æœåŠ¡,å¦‚æœ‰ä¸€åˆ‡åŠ¨æ€,æˆ‘ä»¬ä¼šç¬¬ä¸€æ—¶é—´é€šçŸ¥æ‚¨!");
 		}
 		break;
 	case WINDOW_PAUCTION_LIST_BUY_ALL:
@@ -319,7 +319,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 				if(type == 1){
 					int havepetelement = CHAR_getCharPetElement( toindex);
     			if( havepetelement < 0 ) {
-    				sprintf(token, "ºÜ±§Ç¸,ÄãÉíÉÏ³èÎïÒÑÂú,Çë¿Õ³öÒ»¸ö³èÎïÀ¸Î»!");
+    				sprintf(token, "å¾ˆæŠ±æ­‰,ä½ èº«ä¸Šå® ç‰©å·²æ»¡,è¯·ç©ºå‡ºä¸€ä¸ªå® ç‰©æ ä½!");
     				break;
     			}
     			Char petone;
@@ -329,7 +329,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
             int existpetindex;
             existpetindex = PET_initCharOneArray( &petone );
             if( existpetindex < 0 ){
-            	sprintf(token, "È¡»Ø³èÎïÊ§°Ü!");
+            	sprintf(token, "å–å›å® ç‰©å¤±è´¥!");
     					break;
             }
 						CHAR_setWorkInt( existpetindex, CHAR_WORKPLAYERINDEX, toindex);
@@ -341,12 +341,12 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 						CHAR_sendStatusString( toindex, buff );
 						sasql_delPauctionBuy(atoi(data), CHAR_getChar(toindex, CHAR_CDKEY));
           }
-					sprintf(token, "³É¹¦È¡»ØÄãµÄ³èÎï!");
+					sprintf(token, "æˆåŠŸå–å›ä½ çš„å® ç‰©!");
 					break;
 				}else if(type == 2){
 		    	int emptyitemindexinchara = CHAR_findEmptyItemBox( toindex );
 					if( emptyitemindexinchara < 0 ){
-						sprintf(token, "ºÜ±§Ç¸,ÄãÉíÉÏÎïÆ·ÒÑÂú,Çë¿Õ³öÒ»¸öÎïÆ·À¸Î»!");
+						sprintf(token, "å¾ˆæŠ±æ­‰,ä½ èº«ä¸Šç‰©å“å·²æ»¡,è¯·ç©ºå‡ºä¸€ä¸ªç‰©å“æ ä½!");
 						break;
 					}
 					ITEM_Item   itmone;
@@ -355,7 +355,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
           if( ret == TRUE ){
               int itemindex = ITEM_initExistItemsOne( &itmone );
               if( itemindex == -1 ){
-              	sprintf(token, "È¡»ØÎïÆ·Ê§°Ü!");
+              	sprintf(token, "å–å›ç‰©å“å¤±è´¥!");
     						break;
               }else{
 					    	CHAR_setItemIndex( toindex, emptyitemindexinchara, itemindex );
@@ -365,7 +365,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 					    	sasql_delPauctionBuy(atoi(data), CHAR_getChar(toindex, CHAR_CDKEY));
 					    }
           }
-					sprintf(token, "³É¹¦È¡»ØÄãµÄÎïÆ·!");
+					sprintf(token, "æˆåŠŸå–å›ä½ çš„ç‰©å“!");
 					break;
 				}else{
 					sprintf(token, "??????????");
@@ -386,7 +386,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 			if(type == 1){
 				int havepetelement = CHAR_getCharPetElement( toindex);
     		if( havepetelement < 0 ) {
-    			sprintf(token, "ºÜ±§Ç¸,ÄãÉíÉÏ³èÎïÒÑÂú,Çë¿Õ³öÒ»¸ö³èÎïÀ¸Î»!");
+    			sprintf(token, "å¾ˆæŠ±æ­‰,ä½ èº«ä¸Šå® ç‰©å·²æ»¡,è¯·ç©ºå‡ºä¸€ä¸ªå® ç‰©æ ä½!");
     			break;
     		}
     		int flg = sasql_PauctionOK(atoi(data), CHAR_getChar(toindex, CHAR_CDKEY));
@@ -398,7 +398,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
             int existpetindex;
             existpetindex = PET_initCharOneArray( &petone );
             if( existpetindex < 0 ){
-            	sprintf(token, "È¡»Ø³èÎïÊ§°Ü!");
+            	sprintf(token, "å–å›å® ç‰©å¤±è´¥!");
     					break;
             }
 						CHAR_setWorkInt( existpetindex, CHAR_WORKPLAYERINDEX, toindex);
@@ -410,18 +410,18 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 						CHAR_sendStatusString( toindex, buff );
 						sasql_delPauctionBuy(atoi(data), "");
           }
-					sprintf(token, "³É¹¦¹ºÂòÎ¯ÍĞ³èÎï!");
+					sprintf(token, "æˆåŠŸè´­ä¹°å§”æ‰˜å® ç‰©!");
 				}else if(flg == -1){
-					sprintf(token, "ÄãËùÒª¹ºÂòµÄÎ¯ÍĞ³èÎï²»´æÔÚ»òÒÑ±»ËûÈË¹ºÂòÁË!");
+					sprintf(token, "ä½ æ‰€è¦è´­ä¹°çš„å§”æ‰˜å® ç‰©ä¸å­˜åœ¨æˆ–å·²è¢«ä»–äººè´­ä¹°äº†!");
 				}else if(flg == -2){
-					sprintf(token, "ºÜ±§Ç¸,ÄãÉíÉÏµÄÖØ»Ø±ÒÊı²»¹»¹ºÂò!");
+					sprintf(token, "å¾ˆæŠ±æ­‰,ä½ èº«ä¸Šçš„é‡å›å¸æ•°ä¸å¤Ÿè´­ä¹°!");
 				}else{
-					sprintf(token, "Êı¾İ¿â²Ù×÷´íÎó,ÇëÓë¹ÜÀíÔ±ÁªÏµ!");
+					sprintf(token, "æ•°æ®åº“æ“ä½œé”™è¯¯,è¯·ä¸ç®¡ç†å‘˜è”ç³»!");
 				}
     	}else if(type == 2){
 		    int emptyitemindexinchara = CHAR_findEmptyItemBox( toindex );
 				if( emptyitemindexinchara < 0 ){
-					sprintf(token, "ºÜ±§Ç¸,ÄãÉíÉÏÎïÆ·ÒÑÂú,Çë¿Õ³öÒ»¸öÎïÆ·À¸Î»!");
+					sprintf(token, "å¾ˆæŠ±æ­‰,ä½ èº«ä¸Šç‰©å“å·²æ»¡,è¯·ç©ºå‡ºä¸€ä¸ªç‰©å“æ ä½!");
 					break;
 				}
 				int flg = sasql_PauctionOK(atoi(data), CHAR_getChar(toindex, CHAR_CDKEY));
@@ -432,7 +432,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
           if( ret == TRUE ){
               int itemindex = ITEM_initExistItemsOne( &itmone );
               if( itemindex == -1 ){
-              	sprintf(token, "È¡»ØÎïÆ·Ê§°Ü!");
+              	sprintf(token, "å–å›ç‰©å“å¤±è´¥!");
     						break;
               }else{
 					    	CHAR_setItemIndex( toindex, emptyitemindexinchara, itemindex );
@@ -442,13 +442,13 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 					    	sasql_delPauctionBuy(atoi(data), "");
 					    }
           }
-					sprintf(token, "³É¹¦¹ºÂòÎ¯ÍĞÎïÆ·!");
+					sprintf(token, "æˆåŠŸè´­ä¹°å§”æ‰˜ç‰©å“!");
 				}else if(flg == -1){
-					sprintf(token, "ÄãËùÒª¹ºÂòµÄÎ¯ÍĞÎïÆ·²»´æÔÚ»òÒÑ±»ËûÈË¹ºÂòÁË!");
+					sprintf(token, "ä½ æ‰€è¦è´­ä¹°çš„å§”æ‰˜ç‰©å“ä¸å­˜åœ¨æˆ–å·²è¢«ä»–äººè´­ä¹°äº†!");
 				}else if(flg == -2){
-					sprintf(token, "ºÜ±§Ç¸,ÄãÉíÉÏµÄÖØ»Ø±ÒÊı²»¹»¹ºÂò!");
+					sprintf(token, "å¾ˆæŠ±æ­‰,ä½ èº«ä¸Šçš„é‡å›å¸æ•°ä¸å¤Ÿè´­ä¹°!");
 				}else{
-					sprintf(token, "Êı¾İ¿â²Ù×÷´íÎó,ÇëÓë¹ÜÀíÔ±ÁªÏµ!");
+					sprintf(token, "æ•°æ®åº“æ“ä½œé”™è¯¯,è¯·ä¸ç®¡ç†å‘˜è”ç³»!");
 				}
     	}else{
 				sprintf(token, "??????????");

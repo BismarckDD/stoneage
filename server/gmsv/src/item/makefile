@@ -9,9 +9,7 @@ ifeq (0,$(MAKELEVEL))
 CC=gcc -m32
 RM=rm -f
 AR=ar cr
-MV=mv
 RANLIB=ranlib
-SED=sed
 endif
 
 all: $(TARGET)
@@ -20,6 +18,7 @@ $(TARGET): $(OBJ)
 	$(RM) $(TARGET)
 	$(AR) $(TARGET) $(OBJ)
 	$(RANLIB) $(TARGET)
+	$(RM) $(OBJ)
 
 *.o: *.c
 	$(CC) $(CFLAGS) -c $< -o $@

@@ -29,7 +29,7 @@ BOOL OnlineShop_init()
 }
 	if (fp == NULL)
 	{
-		print("ÎŞ·¨´ò¿ªÎÄ¼ş\n");
+		print("æ— æ³•æ‰“å¼€æ–‡ä»¶\n");
 		return FALSE;
 	}
 	memset( &onlineshop, 0, sizeof( onlineshop ) );
@@ -175,13 +175,13 @@ void OnlineShop_Buy(int fd, int charaindex, int type, int page, int id, int num)
 							}
 						}
 						if( i == enemynum ){
-							CHAR_talkToCli( charaindex, -1, "¸Ã³èÎï²»´æÔÚ¡£", CHAR_COLORYELLOW);
+							CHAR_talkToCli( charaindex, -1, "è¯¥å® ç‰©ä¸å­˜åœ¨ã€‚", CHAR_COLORYELLOW);
 						break;
 						}
 					
 						int ret = ENEMY_createPetFromEnemyIndex(charaindex, i);
 						if( !CHAR_CHECKINDEX( ret)){
-							CHAR_talkToCli( charaindex, -1, "³èÎïÀ¸Î»²»×ã¡£", CHAR_COLORYELLOW);
+							CHAR_talkToCli( charaindex, -1, "å® ç‰©æ ä½ä¸è¶³ã€‚", CHAR_COLORYELLOW);
 						break;
 						}else{
 							for( i = 0; i < CHAR_MAXPETHAVE; i ++ ){
@@ -203,12 +203,12 @@ void OnlineShop_Buy(int fd, int charaindex, int type, int page, int id, int num)
 							CHAR_setInt(charaindex, CHAR_BJ, CHAR_getInt(charaindex, CHAR_BJ) - price);
 #endif
 							char token[256];
-							sprintf(token, "³É¹¦¹ºÂò %s ³èÎï", CHAR_getChar(ret, CHAR_NAME));
+							sprintf(token, "æˆåŠŸè´­ä¹° %s å® ç‰©", CHAR_getChar(ret, CHAR_NAME));
 							CHAR_talkToCli( charaindex, -1, token, CHAR_COLORYELLOW);
 						}
 					}
 				}else{
-					CHAR_talkToCli( charaindex, -1, "ÄãµÄµãÊı²»×ã!", CHAR_COLORYELLOW);
+					CHAR_talkToCli( charaindex, -1, "ä½ çš„ç‚¹æ•°ä¸è¶³!", CHAR_COLORYELLOW);
 				}
 			}
 			break;
@@ -229,15 +229,15 @@ void OnlineShop_Buy(int fd, int charaindex, int type, int page, int id, int num)
 						int emptyitemindexinchara = CHAR_findEmptyItemBox( charaindex );
 						
 						if( emptyitemindexinchara < 0 ){
-							CHAR_talkToCli( charaindex, -1, "ÎïÆ·À¸Î»²»×ã¡£", CHAR_COLORYELLOW);
+							CHAR_talkToCli( charaindex, -1, "ç‰©å“æ ä½ä¸è¶³ã€‚", CHAR_COLORYELLOW);
 							break;
 						}
 						
 						int itemindex = ITEM_makeItemAndRegist( onlineshop[type-1][id].id );
 						
 						if( itemindex != -1 ){
-#ifdef _MO_LUA_ADDITEM_CALLBACK
-							NpcAdditemFunction(charaindex, onlineshop[type-1][id].id);
+#ifdef _MO_LUA_ADDITEM_CALLBACK
+							NpcAdditemFunction(charaindex, onlineshop[type-1][id].id);
 #endif
 							 CHAR_setItemIndex( charaindex, emptyitemindexinchara, itemindex );
 							 ITEM_setWorkInt(itemindex, ITEM_WORKOBJINDEX,-1);
@@ -249,15 +249,15 @@ void OnlineShop_Buy(int fd, int charaindex, int type, int page, int id, int num)
 							 CHAR_setInt(charaindex, CHAR_BJ, CHAR_getInt(charaindex, CHAR_BJ) - price);
 #endif
 							char token[256];
-							sprintf(token, "³É¹¦¹ºÂò %s µÀ¾ß", ITEM_getChar(itemindex, ITEM_NAME));
+							sprintf(token, "æˆåŠŸè´­ä¹° %s é“å…·", ITEM_getChar(itemindex, ITEM_NAME));
 							CHAR_talkToCli( charaindex, -1, token, CHAR_COLORYELLOW);
 						}else{
-							CHAR_talkToCli( charaindex, -1, "¸ÃÎïÆ·²»´æÔÚ!", CHAR_COLORYELLOW);       
+							CHAR_talkToCli( charaindex, -1, "è¯¥ç‰©å“ä¸å­˜åœ¨!", CHAR_COLORYELLOW);       
 							break;
 						}
 					}
 				}else{
-					CHAR_talkToCli( charaindex, -1, "ÄãµÄµãÊı²»×ã!", CHAR_COLORYELLOW);
+					CHAR_talkToCli( charaindex, -1, "ä½ çš„ç‚¹æ•°ä¸è¶³!", CHAR_COLORYELLOW);
 				}
 			}
 			break;

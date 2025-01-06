@@ -1,22 +1,22 @@
 function useitemmax(itemindex, charaindex, toindex, haveitemindex)
 
-	local data = other.atoi(item.getChar(itemindex, "×Ö¶Î"))
-	if (char.getInt(charaindex,"µÀ¾ßÀ¸×´Ì¬")~=2 and data == 3)
-		or (char.getInt(charaindex,"µÀ¾ßÀ¸×´Ì¬")~=0 and data == 2) then
-		char.TalkToCli(charaindex, -1,"ÇëÓÃÏà¶ÔÓ¦µÄÀ©Õ¹µÀ¾ßÀ´À©Õ¹°ü¹ü£¡", "ºìÉ«")
+	local data = other.atoi(item.getChar(itemindex, "å­—æ®µ"))
+	if (char.getInt(charaindex,"é“å…·æ çŠ¶æ€")~=2 and data == 3)
+		or (char.getInt(charaindex,"é“å…·æ çŠ¶æ€")~=0 and data == 2) then
+		char.TalkToCli(charaindex, -1,"è¯·ç”¨ç›¸å¯¹åº”çš„æ‰©å±•é“å…·æ¥æ‰©å±•åŒ…è£¹ï¼", "çº¢è‰²")
 		return
 	end
-	if char.getInt(charaindex,"µÀ¾ßÀ¸×´Ì¬") == 2 then
-		char.setInt(charaindex,"µÀ¾ßÀ¸×´Ì¬",6);
+	if char.getInt(charaindex,"é“å…·æ çŠ¶æ€") == 2 then
+		char.setInt(charaindex,"é“å…·æ çŠ¶æ€",6);
 		char.DelItem(charaindex, haveitemindex)
-		char.TalkToCli(charaindex, -1,"¹§Ï²Äú¿ªÆôµÚÈıÀ¸µÀ¾ßÀ¸!", "»ÆÉ«")
+		char.TalkToCli(charaindex, -1,"æ­å–œæ‚¨å¼€å¯ç¬¬ä¸‰æ é“å…·æ !", "é»„è‰²")
 		char.UpCahrData(charaindex,"p");
-	elseif char.getInt(charaindex,"µÀ¾ßÀ¸×´Ì¬") == 6 then
-		char.TalkToCli(charaindex, -1,"ÄúÒÑ¾­È«²¿¿ª·ÅÁË!", "»ÆÉ«")
+	elseif char.getInt(charaindex,"é“å…·æ çŠ¶æ€") == 6 then
+		char.TalkToCli(charaindex, -1,"æ‚¨å·²ç»å…¨éƒ¨å¼€æ”¾äº†!", "é»„è‰²")
 	else
 		char.DelItem(charaindex, haveitemindex)
-		char.setInt(charaindex,"µÀ¾ßÀ¸×´Ì¬",2);
-		char.TalkToCli(charaindex, -1,"¹§Ï²Äú¿ªÆôµÚ¶şÀ¸µÀ¾ßÀ¸!", "»ÆÉ«")
+		char.setInt(charaindex,"é“å…·æ çŠ¶æ€",2);
+		char.TalkToCli(charaindex, -1,"æ­å–œæ‚¨å¼€å¯ç¬¬äºŒæ é“å…·æ !", "é»„è‰²")
 		char.UpCahrData(charaindex,"p");
 	end
 end

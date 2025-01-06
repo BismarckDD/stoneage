@@ -15,45 +15,45 @@
 #ifdef _ALLBLUES_LUA_1_4
 
 static CharBase EnemytempBaseInt[] = {
-	{{"±àºÅ"},				E_T_TEMPNO}
-	,{{"³õÊ¼Öµ"},			E_T_INITNUM}
-	,{{"³É³¤ÂÊ"},			E_T_LVUPPOINT}
-	,{{"ÌåÁ¦"},				E_T_BASEVITAL}
-	,{{"ÍóÁ¦"},				E_T_BASESTR}
-	,{{"ÄÍÁ¦"},				E_T_BASETGH}
-	,{{"ËÙ¶È"},				E_T_BASEDEX}
-	,{{"ÖÇÄÜ"},				E_T_MODAI}
-	,{{"¸ø"},					E_T_GET}
-	,{{"µØ"},					E_T_EARTHAT}
-	,{{"Ë®"},					E_T_WATERAT}
-	,{{"»ð"},					E_T_FIREAT}
-	,{{"·ç"},					E_T_WINDAT}
-	,{{"¶¾¿¹"},				E_T_POISON}
-	,{{"Âé¿¹"},				E_T_PARALYSIS}
-	,{{"Ë¯¿¹"},				E_T_SLEEP}
-	,{{"Ê¯¿¹"},				E_T_STONE}
-	,{{"¾Æ¿¹"},				E_T_DRUNK}
-	,{{"»ì¿¹"},				E_T_CONFUSION}
-	,{{"¼¼ÄÜ1"},			E_T_PETSKILL1}
-	,{{"¼¼ÄÜ2"},			E_T_PETSKILL2}
-	,{{"¼¼ÄÜ3"},			E_T_PETSKILL3}
-	,{{"¼¼ÄÜ4"},			E_T_PETSKILL4}
-	,{{"¼¼ÄÜ5"},			E_T_PETSKILL5}
-	,{{"¼¼ÄÜ6"},			E_T_PETSKILL6}
-	,{{"¼¼ÄÜ7"},			E_T_PETSKILL7}
-	,{{"º±¼û"},				E_T_RARE}
-	,{{"±©»÷ÂÊ"},			E_T_CRITICAL}
-	,{{"·´»÷ÂÊ"},			E_T_COUNTER}
-	,{{"¼¼ÄÜÊý"},			E_T_SLOT}
-	,{{"ÐÎÏó"},				E_T_IMGNUMBER}
-	,{{"µÈ¼¶ÏÞÖÆ"},		E_T_LIMITLEVEL}
+	{{"ç¼–å·"},				E_T_TEMPNO}
+	,{{"åˆå§‹å€¼"},			E_T_INITNUM}
+	,{{"æˆé•¿çŽ‡"},			E_T_LVUPPOINT}
+	,{{"ä½“åŠ›"},				E_T_BASEVITAL}
+	,{{"è…•åŠ›"},				E_T_BASESTR}
+	,{{"è€åŠ›"},				E_T_BASETGH}
+	,{{"é€Ÿåº¦"},				E_T_BASEDEX}
+	,{{"æ™ºèƒ½"},				E_T_MODAI}
+	,{{"ç»™"},					E_T_GET}
+	,{{"åœ°"},					E_T_EARTHAT}
+	,{{"æ°´"},					E_T_WATERAT}
+	,{{"ç«"},					E_T_FIREAT}
+	,{{"é£Ž"},					E_T_WINDAT}
+	,{{"æ¯’æŠ—"},				E_T_POISON}
+	,{{"éº»æŠ—"},				E_T_PARALYSIS}
+	,{{"ç¡æŠ—"},				E_T_SLEEP}
+	,{{"çŸ³æŠ—"},				E_T_STONE}
+	,{{"é…’æŠ—"},				E_T_DRUNK}
+	,{{"æ··æŠ—"},				E_T_CONFUSION}
+	,{{"æŠ€èƒ½1"},			E_T_PETSKILL1}
+	,{{"æŠ€èƒ½2"},			E_T_PETSKILL2}
+	,{{"æŠ€èƒ½3"},			E_T_PETSKILL3}
+	,{{"æŠ€èƒ½4"},			E_T_PETSKILL4}
+	,{{"æŠ€èƒ½5"},			E_T_PETSKILL5}
+	,{{"æŠ€èƒ½6"},			E_T_PETSKILL6}
+	,{{"æŠ€èƒ½7"},			E_T_PETSKILL7}
+	,{{"ç½•è§"},				E_T_RARE}
+	,{{"æš´å‡»çŽ‡"},			E_T_CRITICAL}
+	,{{"åå‡»çŽ‡"},			E_T_COUNTER}
+	,{{"æŠ€èƒ½æ•°"},			E_T_SLOT}
+	,{{"å½¢è±¡"},				E_T_IMGNUMBER}
+	,{{"ç­‰çº§é™åˆ¶"},		E_T_LIMITLEVEL}
 #ifdef _PET_FUSION
-	,{{"ÈÚºÏ³è±àÂë"},		E_T_FUSIONCODE}
+	,{{"èžåˆå® ç¼–ç "},		E_T_FUSIONCODE}
 #endif
 };
 
 static CharBase EnemytempBaseChar[] = {
-	{{"Ãû×Ö"},				E_T_NAME}
+	{{"åå­—"},				E_T_NAME}
 };
 
 static int getInt (lua_State *L) 

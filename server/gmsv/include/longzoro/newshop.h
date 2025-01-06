@@ -5,7 +5,7 @@
 #define SHOPLISTMAX 100
 #define SHOPPAGEMAX 8
 
-//±àÕß#Í¼Ïñ#Ãû³Æ#ÑÕÉ«#ÕÛ¿Û#½ğ¶î#ËµÃ÷
+//ç¼–è€…#å›¾åƒ#åç§°#é¢œè‰²#æŠ˜æ‰£#é‡‘é¢#è¯´æ˜
 typedef struct ONLINE_SHOP_t{
 	BOOL use;	
 	int id;	

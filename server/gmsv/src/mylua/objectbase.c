@@ -10,10 +10,10 @@
 #ifdef _ALLBLUES_LUA   
 
 static CharBase CharBaseObj[] = {
-	{{"角色"}, 			OBJTYPE_CHARA}
-	,{{"道具"}, 		OBJTYPE_ITEM}
-	,{{"宠物"}, 		OBJTYPE_GOLD}
-	,{{"跳点"}, 		OBJTYPE_WARPPOINT}
+	{{"瑙掕壊"}, 			OBJTYPE_CHARA}
+	,{{"閬撳叿"}, 		OBJTYPE_ITEM}
+	,{{"瀹犵墿"}, 		OBJTYPE_GOLD}
+	,{{"璺崇偣"}, 		OBJTYPE_WARPPOINT}
 }; 
 
 static int check (lua_State *L) {

@@ -1,4 +1,4 @@
---´ËLUAÊÇÀëÏßÅĞ¶ÏÊ±¼äºÍ¿Û³ıÊ±¼ä»¹ÓĞÏÂÏßºó¼ÇÂ¼ÉÏÒ»´ÎÔÚÏßÆÚ¼ä²úÉúµÄ¸öÈËĞÅÏ¢!
+--æ­¤LUAæ˜¯ç¦»çº¿åˆ¤æ–­æ—¶é—´å’Œæ‰£é™¤æ—¶é—´è¿˜æœ‰ä¸‹çº¿åè®°å½•ä¸Šä¸€æ¬¡åœ¨çº¿æœŸé—´äº§ç”Ÿçš„ä¸ªäººä¿¡æ¯!
 function getIntPart(x)
     if x <= 0 then
        return math.ceil(x);
@@ -13,35 +13,35 @@ function getIntPart(x)
 end
 
 function FreeCharLogout( charindex )
-	if char.getWorkInt(charindex, "ÀëÏß") == 1 then
-		--if char.getWorkInt(charindex, "°ÚÌ¯") == -1 then
-		--	if config.getGameservername() ~= "Áã¾ÅÊ¯Æ÷¶şÏß" and config.getGameservername() ~= "Áã¾ÅÊ¯Æ÷ÈıÏß" then
-		--		local offtime = other.time() - char.getWorkInt(charindex, "µÇÂ½Ê±¼ä")
-		--		char.setInt(charindex, "ÀëÏßÊ±¼ä", math.max(char.getInt(charindex, "ÀëÏßÊ±¼ä") - offtime / 60), 0)
+	if char.getWorkInt(charindex, "ç¦»çº¿") == 1 then
+		--if char.getWorkInt(charindex, "æ‘†æ‘Š") == -1 then
+		--	if config.getGameservername() ~= "é›¶ä¹çŸ³å™¨äºŒçº¿" and config.getGameservername() ~= "é›¶ä¹çŸ³å™¨ä¸‰çº¿" then
+		--		local offtime = other.time() - char.getWorkInt(charindex, "ç™»é™†æ—¶é—´")
+		--		char.setInt(charindex, "ç¦»çº¿æ—¶é—´", math.max(char.getInt(charindex, "ç¦»çº¿æ—¶é—´") - offtime / 60), 0)
 		--	end
 		--end
 		other.setLuaPLayerNum(other.getLuaPLayerNum()-1)
 	else
-		local offtime = other.time() - char.getWorkInt(charindex, "µÇÂ½Ê±¼ä")
-		if char.getInt(charindex, "µÈ¼¶") == 140 then
-			local onlinetime = char.getInt(charindex, "ÏÂÏßÊ±¼ä") - char.getWorkInt(charindex, "µÇÂ½Ê±¼ä")
-			if char.getInt(charindex, "×ªÊı") == 5 then
-				char.setInt(charindex, "ÔÚÏßÊ±¼ä", char.getInt(charindex, "ÔÚÏßÊ±¼ä") + getIntPart(onlinetime / 2) )
-			elseif char.getInt(charindex, "×ªÊı") == 6 then
-				char.setInt(charindex, "ÔÚÏßÊ±¼ä", char.getInt(charindex, "ÔÚÏßÊ±¼ä") + onlinetime)
+		local offtime = other.time() - char.getWorkInt(charindex, "ç™»é™†æ—¶é—´")
+		if char.getInt(charindex, "ç­‰çº§") == 140 then
+			local onlinetime = char.getInt(charindex, "ä¸‹çº¿æ—¶é—´") - char.getWorkInt(charindex, "ç™»é™†æ—¶é—´")
+			if char.getInt(charindex, "è½¬æ•°") == 5 then
+				char.setInt(charindex, "åœ¨çº¿æ—¶é—´", char.getInt(charindex, "åœ¨çº¿æ—¶é—´") + getIntPart(onlinetime / 2) )
+			elseif char.getInt(charindex, "è½¬æ•°") == 6 then
+				char.setInt(charindex, "åœ¨çº¿æ—¶é—´", char.getInt(charindex, "åœ¨çº¿æ—¶é—´") + onlinetime)
 			end
 		end
 	end
 	
-	--if config.getGameservername() == "Áã¾ÅÊ¯Æ÷µ¥Ïß" then
+	--if config.getGameservername() == "é›¶ä¹çŸ³å™¨å•çº¿" then
 	--	token = "DELETE FROM `OnlinePlayer` "
-	--										.. " WHERE `cdkey` = '" .. char.getChar(charindex, "ÕËºÅ") .. "'"
+	--										.. " WHERE `cdkey` = '" .. char.getChar(charindex, "è´¦å·") .. "'"
 	--	ret = sasql.query(token)
 	--end
 	
 	token = "SELECT * FROM `CSAinfo` "
-										.. " WHERE `cdkey` = '" .. char.getChar(charindex, "ÕËºÅ") .. "'"
-										.. " AND `saveindex` = '" .. char.getInt(charindex, "´æµµ") .. "'"
+										.. " WHERE `cdkey` = '" .. char.getChar(charindex, "è´¦å·") .. "'"
+										.. " AND `saveindex` = '" .. char.getInt(charindex, "å­˜æ¡£") .. "'"
 	ret = sasql.query(token)
 	if ret == 1 then
 		sasql.free_result()
@@ -49,23 +49,23 @@ function FreeCharLogout( charindex )
 		num = sasql.num_rows()
 		if num > 0 then
 			token = "UPDATE `CSAinfo` SET "
-						.. "`name` = '" .. char.getChar(charindex, "Ãû×Ö") .. "',"
-						.. "`famename` = '"  .. char.getChar(charindex, "¼Ò×å") .. "', "
-						.. "`level` = '"  .. char.getInt(charindex, "µÈ¼¶") .. "',"
-						.. "`trans` = '"  .. char.getInt(charindex, "×ªÊı") .. "',"
-						.. "`alive` = '"  .. char.getInt(charindex, "»îÁ¦") .. "',"
-						.. "`fame` = '"  .. char.getInt(charindex, "ÉùÍû") .. "',"
+						.. "`name` = '" .. char.getChar(charindex, "åå­—") .. "',"
+						.. "`famename` = '"  .. char.getChar(charindex, "å®¶æ—") .. "', "
+						.. "`level` = '"  .. char.getInt(charindex, "ç­‰çº§") .. "',"
+						.. "`trans` = '"  .. char.getInt(charindex, "è½¬æ•°") .. "',"
+						.. "`alive` = '"  .. char.getInt(charindex, "æ´»åŠ›") .. "',"
+						.. "`fame` = '"  .. char.getInt(charindex, "å£°æœ›") .. "',"
 						.. "`TITLE_LV` = '"  .. 0 .. "',"
-						.. "`DUELBATTLECOUNT` = '" .. char.getInt(charindex, "PK´ÎÊı") .. "',"
-						.. "`DUELWINCOUNT` = '" .. char.getInt(charindex, "PKÓ®Êı") .. "',"
-						.. "`DUELLOSECOUNT` = '" .. char.getInt(charindex, "PK°ÜÊı") .. "',"
-						.. "`DUELSTWINCOUNT` = '" .. char.getInt(charindex, "PKÁ¬Ê¤") .. "',"
-						.. "`DUELSTLOSECOUNT` = '" .. char.getInt(charindex, "PKÁ¬°Ü") .. "',"
-						.. "`DUELMAXSTWINCOUNT` = '" .. char.getInt(charindex, "PK×î¸ßÁ¬Ê¤") .. "',"
-						.. "`vip` = '"  .. char.getInt(charindex, "»áÔ±") .. "',"
+						.. "`DUELBATTLECOUNT` = '" .. char.getInt(charindex, "PKæ¬¡æ•°") .. "',"
+						.. "`DUELWINCOUNT` = '" .. char.getInt(charindex, "PKèµ¢æ•°") .. "',"
+						.. "`DUELLOSECOUNT` = '" .. char.getInt(charindex, "PKè´¥æ•°") .. "',"
+						.. "`DUELSTWINCOUNT` = '" .. char.getInt(charindex, "PKè¿èƒœ") .. "',"
+						.. "`DUELSTLOSECOUNT` = '" .. char.getInt(charindex, "PKè¿è´¥") .. "',"
+						.. "`DUELMAXSTWINCOUNT` = '" .. char.getInt(charindex, "PKæœ€é«˜è¿èƒœ") .. "',"
+						.. "`vip` = '"  .. char.getInt(charindex, "ä¼šå‘˜") .. "',"
 						.. "`time` = NOW()"
-						.. " WHERE `cdkey` = '" .. char.getChar(charindex, "ÕËºÅ") .. "'"
-						.. " AND `saveindex` = '" .. char.getInt(charindex, "´æµµ") .. "'"
+						.. " WHERE `cdkey` = '" .. char.getChar(charindex, "è´¦å·") .. "'"
+						.. " AND `saveindex` = '" .. char.getInt(charindex, "å­˜æ¡£") .. "'"
 			ret = sasql.query(token)
 		else
 			token = "INSERT INTO `CSAinfo` ( "
@@ -88,29 +88,29 @@ function FreeCharLogout( charindex )
 							.. "`time`"
 							.. ")"
 							.. "VALUES ("
-							.. "'" .. char.getChar(charindex, "ÕËºÅ")
-							.. "', '" .. char.getInt(charindex, "´æµµ")
-							.. "', '" .. char.getChar(charindex, "Ãû×Ö")
-							.. "', '"  .. char.getChar(charindex, "¼Ò×å")
-							.. "', '"  .. char.getInt(charindex, "µÈ¼¶")
-							.. "', '"  .. char.getInt(charindex, "×ªÊı")
-							.. "', '"  .. char.getInt(charindex, "»îÁ¦")
-							.. "', '"  .. char.getInt(charindex, "ÉùÍû")
-							.. "', '"  .. char.getInt(charindex, "Ó¢ĞÛ³ÆºÅ")
-							.. "', '"  .. char.getInt(charindex, "PK´ÎÊı")
-							.. "', '"  .. char.getInt(charindex, "PKÓ®Êı")
-							.. "', '"  .. char.getInt(charindex, "PK°ÜÊı")
-							.. "', '"  .. char.getInt(charindex, "PKÁ¬Ê¤")
-							.. "', '"  .. char.getInt(charindex, "PKÁ¬°Ü")
-							.. "', '"  .. char.getInt(charindex, "PK×î¸ßÁ¬Ê¤")
-							.. "', '"  .. char.getInt(charindex, "»áÔ±")
+							.. "'" .. char.getChar(charindex, "è´¦å·")
+							.. "', '" .. char.getInt(charindex, "å­˜æ¡£")
+							.. "', '" .. char.getChar(charindex, "åå­—")
+							.. "', '"  .. char.getChar(charindex, "å®¶æ—")
+							.. "', '"  .. char.getInt(charindex, "ç­‰çº§")
+							.. "', '"  .. char.getInt(charindex, "è½¬æ•°")
+							.. "', '"  .. char.getInt(charindex, "æ´»åŠ›")
+							.. "', '"  .. char.getInt(charindex, "å£°æœ›")
+							.. "', '"  .. char.getInt(charindex, "è‹±é›„ç§°å·")
+							.. "', '"  .. char.getInt(charindex, "PKæ¬¡æ•°")
+							.. "', '"  .. char.getInt(charindex, "PKèµ¢æ•°")
+							.. "', '"  .. char.getInt(charindex, "PKè´¥æ•°")
+							.. "', '"  .. char.getInt(charindex, "PKè¿èƒœ")
+							.. "', '"  .. char.getInt(charindex, "PKè¿è´¥")
+							.. "', '"  .. char.getInt(charindex, "PKæœ€é«˜è¿èƒœ")
+							.. "', '"  .. char.getInt(charindex, "ä¼šå‘˜")
 							.. "', NOW()"
 							.. ");"
 
 			ret = sasql.query(token)
 		end
 	end
-	token = "update `CSAlogin` set `Offline`=0 where `Name`='" .. char.getChar(charindex,"ÕËºÅ") .. "'"
+	token = "update `CSAlogin` set `Offline`=0 where `Name`='" .. char.getChar(charindex,"è´¦å·") .. "'"
 	sasql.query(token)
 	
 end

@@ -148,8 +148,8 @@ static int getCharaNearBy(lua_State *L) {
 	const int type = luaL_checkint(L, 3);
 
 
-	lua_newtable(L); //ĞÂ½¨Ò»¸ö±í£¬²¢Ñ¹ÈëÕ»¶¥
-	lua_pushnumber(L,-1); //ÕâĞĞºÍÏÂÃæÒ»ĞĞ£¬Ã»¸ã¶®ÎªÊ²Ã´ĞèÒªÕâÑù£¬µ«Èç¹û²»Ö´ĞĞ£¬luaÖĞ»ñÈ¡µÄÊı¾İ¾Í»á³ö´í
+	lua_newtable(L); //æ–°å»ºä¸€ä¸ªè¡¨ï¼Œå¹¶å‹å…¥æ ˆé¡¶
+	lua_pushnumber(L,-1); //è¿™è¡Œå’Œä¸‹é¢ä¸€è¡Œï¼Œæ²¡ææ‡‚ä¸ºä»€ä¹ˆéœ€è¦è¿™æ ·ï¼Œä½†å¦‚æœä¸æ‰§è¡Œï¼Œluaä¸­è·å–çš„æ•°æ®å°±ä¼šå‡ºé”™
 	lua_rawseti(L,-2,0);
 
 	int o, chara_index;
@@ -173,7 +173,7 @@ static int getCharaNearBy(lua_State *L) {
 							!= type)
 						continue;
 					if (chara_index == charaindex)
-						continue;  //ÕÒµ½×Ô¼ºÁË
+						continue;  //æ‰¾åˆ°è‡ªå·±äº†
 
 					lua_pushinteger(L,chara_index);
 					getnum++;
@@ -192,8 +192,8 @@ static int getCharaAhead(lua_State *L) {
 	const int type = luaL_checkint(L, 4);
 
 
-	lua_newtable(L); //ĞÂ½¨Ò»¸ö±í£¬²¢Ñ¹ÈëÕ»¶¥
-	lua_pushnumber(L,-1); //ÕâĞĞºÍÏÂÃæÒ»ĞĞ£¬Ã»¸ã¶®ÎªÊ²Ã´ĞèÒªÕâÑù£¬µ«Èç¹û²»Ö´ĞĞ£¬luaÖĞ»ñÈ¡µÄÊı¾İ¾Í»á³ö´í
+	lua_newtable(L); //æ–°å»ºä¸€ä¸ªè¡¨ï¼Œå¹¶å‹å…¥æ ˆé¡¶
+	lua_pushnumber(L,-1); //è¿™è¡Œå’Œä¸‹é¢ä¸€è¡Œï¼Œæ²¡ææ‡‚ä¸ºä»€ä¹ˆéœ€è¦è¿™æ ·ï¼Œä½†å¦‚æœä¸æ‰§è¡Œï¼Œluaä¸­è·å–çš„æ•°æ®å°±ä¼šå‡ºé”™
 	lua_rawseti(L,-2,0);
 
 	int o, chara_index;
@@ -222,7 +222,7 @@ static int getCharaAhead(lua_State *L) {
 							!= type)
 						continue;
 					if (chara_index == charaindex)
-						continue;  //ÕÒµ½×Ô¼ºÁË
+						continue;  //æ‰¾åˆ°è‡ªå·±äº†
 
 					lua_pushinteger(L,chara_index);
 					getnum++;
@@ -242,8 +242,8 @@ static int getCharaByCoord(lua_State *L) {
 	const int area = luaL_checkint(L, 5);
 	const int type = luaL_checkint(L, 6);
 
-	lua_newtable(L); //ĞÂ½¨Ò»¸ö±í£¬²¢Ñ¹ÈëÕ»¶¥
-	lua_pushnumber(L,-1); //ÕâĞĞºÍÏÂÃæÒ»ĞĞ£¬Ã»¸ã¶®ÎªÊ²Ã´ĞèÒªÕâÑù£¬µ«Èç¹û²»Ö´ĞĞ£¬luaÖĞ»ñÈ¡µÄÊı¾İ¾Í»á³ö´í
+	lua_newtable(L); //æ–°å»ºä¸€ä¸ªè¡¨ï¼Œå¹¶å‹å…¥æ ˆé¡¶
+	lua_pushnumber(L,-1); //è¿™è¡Œå’Œä¸‹é¢ä¸€è¡Œï¼Œæ²¡ææ‡‚ä¸ºä»€ä¹ˆéœ€è¦è¿™æ ·ï¼Œä½†å¦‚æœä¸æ‰§è¡Œï¼Œluaä¸­è·å–çš„æ•°æ®å°±ä¼šå‡ºé”™
 	lua_rawseti(L,-2,0);
 
 	int o, chara_index;
@@ -263,7 +263,7 @@ static int getCharaByCoord(lua_State *L) {
 							!= type)
 						continue;
 					if (chara_index == charaindex)
-						continue;  //ÕÒµ½×Ô¼ºÁË
+						continue;  //æ‰¾åˆ°è‡ªå·±äº†
 
 					lua_pushinteger(L,chara_index);
 					getnum++;

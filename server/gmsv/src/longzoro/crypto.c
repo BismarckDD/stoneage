@@ -83,7 +83,7 @@ void List(char *path)
 			sprintf(filename, "allblues/%s/%s", path, ent->d_name);
 			if(opendir(filename)==NULL){
 				if(mkdir(filename, 0x777) == 0){
-					printf("½¨Á¢¼ÓÃÜÎÄ¼þ¼Ð %s\n", filename);
+					printf("å»ºç«‹åŠ å¯†æ–‡ä»¶å¤¹ %s\n", filename);
 				}
 			}
 			sprintf(filename, "%s/%s", path, ent->d_name);

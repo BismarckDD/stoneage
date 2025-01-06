@@ -1,19 +1,19 @@
 function FreeSaMenu(meindex, index)
---	char.TalkToCli(meindex, -1, char.getWorkInt(meindex,"NPCÁÙÊ±3"), "ÂÌÉ«")
-	local Õ½Ä£ = char.getWorkInt(meindex,"Õ½¶·");
+--	char.TalkToCli(meindex, -1, char.getWorkInt(meindex,"NPCä¸´æ—¶3"), "ç»¿è‰²")
+	local æˆ˜æ¨¡ = char.getWorkInt(meindex,"æˆ˜æ–—");
 	parameter = {meindex}
 	if index == 11 then
-		if Õ½Ä£ ==0 then
+		if æˆ˜æ¨¡ ==0 then
 			char.Encounter(meindex)
-			char.TalkToCli(meindex, -1, "¿ªÆôÔ­µØÓöµĞ£¡", "ºìÉ«")
+			char.TalkToCli(meindex, -1, "å¼€å¯åŸåœ°é‡æ•Œï¼", "çº¢è‰²")
 		else
-			char.TalkToCli(meindex, -1, "ÄúÒÑ¾­Õ½¶·ÖĞ£¡", "ºìÉ«")
+			char.TalkToCli(meindex, -1, "æ‚¨å·²ç»æˆ˜æ–—ä¸­ï¼", "çº¢è‰²")
 		end
 	elseif index == 12 then
 		char.ClearEncounter(meindex);
-		char.TalkToCli(meindex, -1, "¹Ø±ÕÔ­µØÓöµĞ£¡", "ºìÉ«")
+		char.TalkToCli(meindex, -1, "å…³é—­åŸåœ°é‡æ•Œï¼", "çº¢è‰²")
 	elseif index == 13 then
-		if Õ½Ä£ == 0 then
+		if æˆ˜æ¨¡ == 0 then
 			other.CallFunction("CheckTalked", "data/ablua/npc/check/check.lua", parameter)
 		end
 	--	other.CallFunction("ShowHead", "data/ablua/npc/vipshop/vipshop.lua", parameter)
@@ -28,71 +28,71 @@ function FreeSaMenu(meindex, index)
 	elseif index == 19 then
 		lssproto.SaMenu(meindex, index, "http://www.stoneage.es/pay.php")
 	elseif index == 20 then
-		char.setWorkInt(meindex,"NPCÁÙÊ±3",1)
+		char.setWorkInt(meindex,"NPCä¸´æ—¶3",1)
 		other.CallFunction("OnlineService", "data/ablua/npc/onlineservice/onlineservice.lua", parameter)
 	elseif index == 21 then
 		lssproto.SaMenu(meindex, index, "http://www.stoneage.es/forum.php?mod=viewthread&tid=54&extra=page%3D1")
 	elseif index == 22 then
 		lssproto.SaMenu(meindex, index, "http://www.stoneage.es/bbs/forum.php?mod=viewthread&tid=226")
-	elseif index == 30 then--ÇĞ»»¶Ó³¤
-		if char.getWorkInt(meindex, "×é¶Ó") == 1 then
-			×ªÒÆ¶¯Îé[meindex]={};
-			local ¶ÓÔ±Ãû = "";
-			local ¼ÆÊı=0;
+	elseif index == 30 then--åˆ‡æ¢é˜Ÿé•¿
+		if char.getWorkInt(meindex, "ç»„é˜Ÿ") == 1 then
+			è½¬ç§»åŠ¨ä¼[meindex]={};
+			local é˜Ÿå‘˜å = "";
+			local è®¡æ•°=0;
 			for i=1,4 do
-				local ¶ÓÔ±Ë÷Òı = char.getWorkInt(meindex, "¶ÓÔ±" .. i+1)
-				if char.check(¶ÓÔ±Ë÷Òı) == 1 then
-					¼ÆÊı = ¼ÆÊı + 1;
-					×ªÒÆ¶¯Îé[meindex][¼ÆÊı] = ¶ÓÔ±Ë÷Òı;
-					¶ÓÔ±Ãû = string.format("%s        %s\n",¶ÓÔ±Ãû,char.getChar(×ªÒÆ¶¯Îé[meindex][¼ÆÊı],"Ãû×Ö"));
+				local é˜Ÿå‘˜ç´¢å¼• = char.getWorkInt(meindex, "é˜Ÿå‘˜" .. i+1)
+				if char.check(é˜Ÿå‘˜ç´¢å¼•) == 1 then
+					è®¡æ•° = è®¡æ•° + 1;
+					è½¬ç§»åŠ¨ä¼[meindex][è®¡æ•°] = é˜Ÿå‘˜ç´¢å¼•;
+					é˜Ÿå‘˜å = string.format("%s        %s\n",é˜Ÿå‘˜å,char.getChar(è½¬ç§»åŠ¨ä¼[meindex][è®¡æ•°],"åå­—"));
 				end
 			end
-			local ÄÚÈİ = "1 						ÇëÑ¡ÔñĞÂµÄ¶Ó³¤\n"..¶ÓÔ±Ãû;
-			lssproto.windows(meindex, 2, 8, 0, char.getWorkInt( npcindex, "¶ÔÏó"), ÄÚÈİ)
+			local å†…å®¹ = "1 						è¯·é€‰æ‹©æ–°çš„é˜Ÿé•¿\n"..é˜Ÿå‘˜å;
+			lssproto.windows(meindex, 2, 8, 0, char.getWorkInt( npcindex, "å¯¹è±¡"), å†…å®¹)
 		else
-			char.TalkToCli(meindex, -1, "¸Ã¹¦ÄÜĞèÒª¶Ó³¤È¨ÏŞ", "ºìÉ«")
+			char.TalkToCli(meindex, -1, "è¯¥åŠŸèƒ½éœ€è¦é˜Ÿé•¿æƒé™", "çº¢è‰²")
 		end
 	else
-		char.TalkToCli(meindex, -1, "ÔİÎ´¿ª·Å", "ºìÉ«")
+		char.TalkToCli(meindex, -1, "æš‚æœªå¼€æ”¾", "çº¢è‰²")
 	end
 end
 
 
-function WindowTalked( NPCË÷Òı, Íæ¼ÒË÷Òı, ĞòºÅ, °´Å¥, Êı¾İ)
-	if ĞòºÅ == 0 then
-		local Ñ¡Ïî = tonumber(Êı¾İ);
-		if Ñ¡Ïî > 0 and Ñ¡Ïî < 5 then
-			char.DischargeParty(Íæ¼ÒË÷Òı,0);
-			char.JoinParty(×ªÒÆ¶¯Îé[Íæ¼ÒË÷Òı][Ñ¡Ïî],Íæ¼ÒË÷Òı,0);
-			char.TalkToCli(×ªÒÆ¶¯Îé[Íæ¼ÒË÷Òı][Ñ¡Ïî], -1, "ÄúµÄ¶ÓÓÑ¡¾"..char.getChar(Íæ¼ÒË÷Òı,"Ãû×Ö").."¡¿°Ñ¶Ó³¤È¨Á¦½»¸øÄú£¡", "»ÆÉ«")
-			char.TalkToCli(Íæ¼ÒË÷Òı, -1, "Äú³É¹¦°Ñ¶Ó³¤È¨Á¦½»¸ø¶ÓÓÑ¡¾"..char.getChar(×ªÒÆ¶¯Îé[Íæ¼ÒË÷Òı][Ñ¡Ïî],"Ãû×Ö").."¡¿", "»ÆÉ«");
-			for i =1,table.getn(×ªÒÆ¶¯Îé[Íæ¼ÒË÷Òı]) do
-				if i ~= Ñ¡Ïî then
-					char.JoinParty(×ªÒÆ¶¯Îé[Íæ¼ÒË÷Òı][Ñ¡Ïî],×ªÒÆ¶¯Îé[Íæ¼ÒË÷Òı][i],0);
+function WindowTalked( NPCç´¢å¼•, ç©å®¶ç´¢å¼•, åºå·, æŒ‰é’®, æ•°æ®)
+	if åºå· == 0 then
+		local é€‰é¡¹ = tonumber(æ•°æ®);
+		if é€‰é¡¹ > 0 and é€‰é¡¹ < 5 then
+			char.DischargeParty(ç©å®¶ç´¢å¼•,0);
+			char.JoinParty(è½¬ç§»åŠ¨ä¼[ç©å®¶ç´¢å¼•][é€‰é¡¹],ç©å®¶ç´¢å¼•,0);
+			char.TalkToCli(è½¬ç§»åŠ¨ä¼[ç©å®¶ç´¢å¼•][é€‰é¡¹], -1, "æ‚¨çš„é˜Ÿå‹ã€"..char.getChar(ç©å®¶ç´¢å¼•,"åå­—").."ã€‘æŠŠé˜Ÿé•¿æƒåŠ›äº¤ç»™æ‚¨ï¼", "é»„è‰²")
+			char.TalkToCli(ç©å®¶ç´¢å¼•, -1, "æ‚¨æˆåŠŸæŠŠé˜Ÿé•¿æƒåŠ›äº¤ç»™é˜Ÿå‹ã€"..char.getChar(è½¬ç§»åŠ¨ä¼[ç©å®¶ç´¢å¼•][é€‰é¡¹],"åå­—").."ã€‘", "é»„è‰²");
+			for i =1,table.getn(è½¬ç§»åŠ¨ä¼[ç©å®¶ç´¢å¼•]) do
+				if i ~= é€‰é¡¹ then
+					char.JoinParty(è½¬ç§»åŠ¨ä¼[ç©å®¶ç´¢å¼•][é€‰é¡¹],è½¬ç§»åŠ¨ä¼[ç©å®¶ç´¢å¼•][i],0);
 				end
 			end
-			char.Encounter(×ªÒÆ¶¯Îé[Íæ¼ÒË÷Òı][Ñ¡Ïî])
+			char.Encounter(è½¬ç§»åŠ¨ä¼[ç©å®¶ç´¢å¼•][é€‰é¡¹])
 		end
 	end
 end
 
 function Create(name, metamo, floor, x, y, dir)
 	npcindex = npc.CreateNpc(name, metamo, floor, x, y, dir)
-	char.setFunctionPointer(npcindex, "´°¿ÚÊÂ¼ş", "WindowTalked", "")
+	char.setFunctionPointer(npcindex, "çª—å£äº‹ä»¶", "WindowTalked", "")
 end
 
 function data()
- ×ªÒÆ¶¯Îé={};
+ è½¬ç§»åŠ¨ä¼={};
 --[[
 
-11 Ô­µØÓöµĞ
-12 È¡ÏûÔ­µØ
-13 Ö§Æ±ÖÆ×÷
-14 ÈÎÎñ²éÑ¯
-16 ¸öÈËĞÅÏ¢
-20 ¿¨ÃÜÊ¹ÓÃ
-21 ÈÎÎñ¹¥ÂÔ
-22 ĞÂÊÖ°ïÖú
+11 åŸåœ°é‡æ•Œ
+12 å–æ¶ˆåŸåœ°
+13 æ”¯ç¥¨åˆ¶ä½œ
+14 ä»»åŠ¡æŸ¥è¯¢
+16 ä¸ªäººä¿¡æ¯
+20 å¡å¯†ä½¿ç”¨
+21 ä»»åŠ¡æ”»ç•¥
+22 æ–°æ‰‹å¸®åŠ©
 
 
 ]]
@@ -102,6 +102,6 @@ end
 
 function main()
 	data()
-	Create("²éÑ¯³èÎïNPCÁÙÊ±", 100000, 777, 20, 21, 4);
+	Create("æŸ¥è¯¢å® ç‰©NPCä¸´æ—¶", 100000, 777, 20, 21, 4);
 end
 

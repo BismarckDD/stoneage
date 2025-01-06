@@ -28,7 +28,7 @@ BOOL LuckStar_init()
 }
 	if (fp == NULL)
 	{
-		print("ÎŞ·¨´ò¿ªÎÄ¼ş\n");
+		print("æ— æ³•æ‰“å¼€æ–‡ä»¶\n");
 		return FALSE;
 	}
 	memset( &luckstar, 0, sizeof( luckstar ) );
@@ -108,7 +108,7 @@ void LuckStar()
 					if( i != enemynum ){
 						ret = ENEMY_createPetFromEnemyIndex(charaindex, i);
 						if( CHAR_CHECKINDEX( ret)){
-							snprintf( token,sizeof( token), "¹§Ï²Äã£¬»ñµÃ±¾´ÎĞÒÔËÔùËÍ³èÎï %s £¡",ENEMY_getChar( i, ENEMY_NAME));
+							snprintf( token,sizeof( token), "æ­å–œä½ ï¼Œè·å¾—æœ¬æ¬¡å¹¸è¿èµ é€å® ç‰© %s ï¼",ENEMY_getChar( i, ENEMY_NAME));
 							CHAR_talkToCli( charaindex, -1, token,  CHAR_COLORGREEN);
 							int j;
 							for( j = 0; j < CHAR_MAXPETHAVE; j ++ ){
@@ -128,11 +128,11 @@ void LuckStar()
 								CHAR_sendStatusString( charaindex, token );
 							}
 						}else{
-							CHAR_talkToCli( charaindex, -1, "ºÜ±§Ç¸£¬ÓÉÓÚÄãÉíÉÏ³èÎïÒÑÂú£¬ÒÑ´í¹ıÕâ´ÎĞÒÔËÔùËÍ³èÎï£¡",  CHAR_COLORYELLOW);
+							CHAR_talkToCli( charaindex, -1, "å¾ˆæŠ±æ­‰ï¼Œç”±äºä½ èº«ä¸Šå® ç‰©å·²æ»¡ï¼Œå·²é”™è¿‡è¿™æ¬¡å¹¸è¿èµ é€å® ç‰©ï¼",  CHAR_COLORYELLOW);
 						}
-						snprintf( strPet,sizeof( strPet), "³èÎï£º%s", ENEMY_getChar( i, ENEMY_NAME));
+						snprintf( strPet,sizeof( strPet), "å® ç‰©ï¼š%s", ENEMY_getChar( i, ENEMY_NAME));
 					}else{
-						snprintf( strPet,sizeof( strPet), "³èÎï£º±àºÅ %d ²»´æÔÚ", luckstar[luckid].pet);
+						snprintf( strPet,sizeof( strPet), "å® ç‰©ï¼šç¼–å· %d ä¸å­˜åœ¨", luckstar[luckid].pet);
 					}
 				}
 				if(luckstar[luckid].item > 0){
@@ -146,15 +146,15 @@ void LuckStar()
 							  ITEM_setWorkInt(itemindex, ITEM_WORKCHARAINDEX,charaindex);
 							  CHAR_sendItemDataOne( charaindex, emptyitemindexinchara);
 	
-								snprintf( token, sizeof( token), "¹§Ï²Äã£¬»ñµÃ±¾´ÎĞÒÔËÔùËÍÎïÆ· %s", ITEM_getChar( itemindex, ITEM_NAME));
+								snprintf( token, sizeof( token), "æ­å–œä½ ï¼Œè·å¾—æœ¬æ¬¡å¹¸è¿èµ é€ç‰©å“ %s", ITEM_getChar( itemindex, ITEM_NAME));
 								CHAR_talkToCli( charaindex, -1,token, CHAR_COLORGREEN);
 							}
 						}else{
-							CHAR_talkToCli( charaindex, -1, "ºÜ±§Ç¸£¬ÓÉÓÚÄãÉíÉÏÎïÆ·ÒÑÂú£¬ÒÑ´í¹ıÕâ´ÎĞÒÔËÔùËÍÎïÆ·£¡",  CHAR_COLORYELLOW);
+							CHAR_talkToCli( charaindex, -1, "å¾ˆæŠ±æ­‰ï¼Œç”±äºä½ èº«ä¸Šç‰©å“å·²æ»¡ï¼Œå·²é”™è¿‡è¿™æ¬¡å¹¸è¿èµ é€ç‰©å“ï¼",  CHAR_COLORYELLOW);
 						}
-						snprintf( strItem,sizeof( strItem), "ÎïÆ·£º%s", ITEM_getChar( itemindex, ITEM_NAME));
+						snprintf( strItem,sizeof( strItem), "ç‰©å“ï¼š%s", ITEM_getChar( itemindex, ITEM_NAME));
 					}else{
-						snprintf( strPet,sizeof( strPet), "ÎïÆ·£º±àºÅ %d ²»´æÔÚ", luckstar[luckid].item);
+						snprintf( strPet,sizeof( strPet), "ç‰©å“ï¼šç¼–å· %d ä¸å­˜åœ¨", luckstar[luckid].item);
 					}
 				}
 /*
@@ -162,14 +162,14 @@ void LuckStar()
 					CHAR_setInt( charaindex , CHAR_GOLD , CHAR_getInt( charaindex , CHAR_GOLD ) + luckstar[luckid].gold);
 					CHAR_complianceParameter( charaindex );
 					CHAR_send_P_StatusString( charaindex , CHAR_P_STRING_GOLD);
-					snprintf( strGold,sizeof( strGold), "Ê¯±Ò£º%d", luckstar[luckid].gold);
-					sprintf( token, "¹§Ï²Äã£¬»ñµÃ±¾´ÎĞÒÔËÔùËÍ %d Ê¯±Ò£¡", luckstar[luckid].gold);
+					snprintf( strGold,sizeof( strGold), "çŸ³å¸ï¼š%d", luckstar[luckid].gold);
+					sprintf( token, "æ­å–œä½ ï¼Œè·å¾—æœ¬æ¬¡å¹¸è¿èµ é€ %d çŸ³å¸ï¼", luckstar[luckid].gold);
 					CHAR_talkToCli( charaindex, -1,token, CHAR_COLORPURPLE );
 				}
 				if(luckstar[luckid].vippoint > 0){
 					CHAR_setInt( charaindex , CHAR_AMPOINT , CHAR_getInt( charaindex , CHAR_AMPOINT ) + luckstar[luckid].vippoint);
-					snprintf( strVippoint,sizeof( strVippoint), "»ı·Öµã£º%d", luckstar[luckid].vippoint);
-					sprintf( token, "¹§Ï²Äã£¬»ñµÃ±¾´ÎĞÒÔËÔùËÍ %d »ı·Öµã£¡", luckstar[luckid].vippoint);
+					snprintf( strVippoint,sizeof( strVippoint), "ç§¯åˆ†ç‚¹ï¼š%d", luckstar[luckid].vippoint);
+					sprintf( token, "æ­å–œä½ ï¼Œè·å¾—æœ¬æ¬¡å¹¸è¿èµ é€ %d ç§¯åˆ†ç‚¹ï¼", luckstar[luckid].vippoint);
 					CHAR_talkToCli( charaindex, -1,token, CHAR_COLORPURPLE );
 				}
 */
@@ -180,9 +180,9 @@ void LuckStar()
 		int playernum = CHAR_getPlayerMaxNum();
 
 		if(k < 3){
-			sprintf(token, "ÈÃÎÒÃÇÒ»Æğ×£ºØ %s ³ÉÎª±¾´ÎĞÒÔËĞÇÍæ¼Ò~»ñµÃÒÔÏÂ½±Æ·£º", CHAR_getChar( charaindex, CHAR_NAME));
+			sprintf(token, "è®©æˆ‘ä»¬ä¸€èµ·ç¥è´º %s æˆä¸ºæœ¬æ¬¡å¹¸è¿æ˜Ÿç©å®¶~è·å¾—ä»¥ä¸‹å¥–å“ï¼š", CHAR_getChar( charaindex, CHAR_NAME));
 		}else{
-			sprintf(token, "ºÜÒÅº¶£¬±¾´ÎĞÒÔËĞÇÎ´²úÉú~×£Ô¸Äú³ÉÎªÏÂÒ»´ÎĞÒÔËĞÇ»ñµÃÕß£¡");
+			sprintf(token, "å¾ˆé—æ†¾ï¼Œæœ¬æ¬¡å¹¸è¿æ˜Ÿæœªäº§ç”Ÿ~ç¥æ„¿æ‚¨æˆä¸ºä¸‹ä¸€æ¬¡å¹¸è¿æ˜Ÿè·å¾—è€…ï¼");
 		}
 
 		for(k=0;k<playernum;k++){

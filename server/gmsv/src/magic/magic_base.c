@@ -25,7 +25,7 @@ typedef struct tagMagic_MagicFunctionTable
   int             hash;
 }MAGIC_MagicFunctionTable;
 
-/* ÈÈÖîÃ«  Ö§ØÆĞ×ÈÕ³ğ³ğ±åè¶  ÔÊÔÂÒÇ */
+/* çƒ­è¯¸æ¯›  æ”¯ä»„å‡¶æ—¥ä»‡ä»‡åç“’  å…æœˆä»ª */
 static MAGIC_MagicFunctionTable MAGIC_functbl[] = {
 #ifdef _MAGIC_FEATHERS
   { "MAGIC_Feathers",      MAGIC_Feathers,      0},
@@ -52,19 +52,19 @@ static MAGIC_MagicFunctionTable MAGIC_functbl[] = {
 #ifdef _ITEM_ATTSKILLMAGIC
   { "MAGIC_AttSkill",     MAGIC_AttSkill,  0},
 #endif
-#ifdef _MAGIC_WEAKEN // vincent  ¾«Áé:ĞéÈõ
+#ifdef _MAGIC_WEAKEN // vincent  ç²¾çµ:è™šå¼±
   { "MAGIC_Weaken",       MAGIC_Weaken,        0},
 #endif
-#ifdef _MAGIC_DEEPPOISON  // vincent  ¾«Áé:¾ç¶¾
+#ifdef _MAGIC_DEEPPOISON  // vincent  ç²¾çµ:å‰§æ¯’
   { "MAGIC_StatusChange2",  MAGIC_StatusChange2,0},
 #endif
-#ifdef _MAGIC_BARRIER // vincent  ¾«Áé:Ä§ÕÏ
+#ifdef _MAGIC_BARRIER // vincent  ç²¾çµ:é­”éšœ
   { "MAGIC_Barrier",       MAGIC_Barrier,    0},
 #endif
-#ifdef _MAGIC_NOCAST       // vincent  ¾«Áé:³ÁÄ¬
+#ifdef _MAGIC_NOCAST       // vincent  ç²¾çµ:æ²‰é»˜
   { "MAGIC_Nocast",       MAGIC_Nocast,        0},
 #endif
-#ifdef _MAGIC_TOCALL  // ±¼ÁúÕó
+#ifdef _MAGIC_TOCALL  // å¥”é¾™é˜µ
   { "MAGIC_ToCallDragon",  MAGIC_ToCallDragon,    0},
 #endif
 };
@@ -119,7 +119,7 @@ INLINE BOOL MAGIC_setChar( int index ,MAGIC_DATACHAR element, char* new )
     return TRUE;
 }
 /*----------------------------------------------------------------------
- *   Ü·¼°ĞÑÃ«ôÅÔÂ£Û
+ *   èŠŠåŠé†’æ¯›è¥æœˆï¼»
  *---------------------------------------------------------------------*/
 int MAGIC_getMagicNum( void)
 {
@@ -127,7 +127,7 @@ int MAGIC_getMagicNum( void)
 }
 
 /*----------------------------------------------------------------------
- *   Ü·¼°É¬ÀÃ°×ÑëÄÌ»ïÃ«  ¸ê
+ *   èŠŠåŠæ¶©çƒ‚ç™½å¤®å¥¶ä¼™æ¯›  æˆˆ
  *---------------------------------------------------------------------*/
 BOOL MAGIC_initMagic( char *filename)
 {
@@ -152,13 +152,13 @@ BOOL MAGIC_initMagic( char *filename)
     f = fopen(filename,"r");
 }
     if( f == NULL ){
-        print( "ÎÄ¼ş´ò¿ªÊ§°Ü\n");
+        print( "æ–‡ä»¶æ‰“å¼€å¤±è´¥\n");
         return FALSE;
     }
 
     MAGIC_magicnum=0;
 
-    /*  ÒıÄÚ  ¶ãØ¦µæ»¥ÖÏµæØ¤ÔÂ¾®Éıµ¤¾®Æ©ÍÍÔÂ    */
+    /*  å¼•å†…  èº²å…å«äº’çª’å«ä¸æœˆäº•å‡ä¸¹äº•è­¬å±¯æœˆ    */
     while( fgets( line, sizeof( line ), f ) ){
 #ifdef _CRYPTO_DATA    
         if(crypto==TRUE){
@@ -170,7 +170,7 @@ BOOL MAGIC_initMagic( char *filename)
         if( line[0] == '\n' )continue;       /* none    */
         chomp( line );
 
-#ifdef _MAGIC_OPTIMUM // Robin È¡³ö×î´óMAGIC ID
+#ifdef _MAGIC_OPTIMUM // Robin å–å‡ºæœ€å¤§MAGIC ID
     if( getStringFromIndexWithDelim( line, ",", MAGIC_DATACHARNUM+MAGIC_ID+1,
         token, sizeof(token)) == FALSE )
       continue;
@@ -181,12 +181,12 @@ BOOL MAGIC_initMagic( char *filename)
     }
 
 #ifdef _MAGIC_OPTIMUM
-  print("ÓĞĞ§Ä§·¨:%d ×î´óÄ§·¨:%d ...", MAGIC_magicnum, max_magicid);
+  print("æœ‰æ•ˆé­”æ³•:%d æœ€å¤§é­”æ³•:%d ...", MAGIC_magicnum, max_magicid);
   MAGIC_magicnum = max_magicid +1;
 #endif
 
     if( fseek( f, 0, SEEK_SET ) == -1 ){
-        fprint( "ËÑË÷´íÎó\n" );
+        fprint( "æœç´¢é”™è¯¯\n" );
         fclose(f);
         return FALSE;
     }
@@ -194,13 +194,13 @@ BOOL MAGIC_initMagic( char *filename)
     MAGIC_magic = allocateMemory( sizeof(struct tagMagic)
                                    * MAGIC_magicnum );
     if( MAGIC_magic == NULL ){
-        fprint( "ÎŞ·¨·ÖÅäÄÚ´æ %d\n" ,
+        fprint( "æ— æ³•åˆ†é…å†…å­˜ %d\n" ,
                 sizeof(struct tagMagic)*MAGIC_magicnum);
         fclose( f );
         return FALSE;
     }
 
-  /* âÙÓå¼À */
+  /* èµ“æ¸ç¥­ */
     for( i = 0; i < MAGIC_magicnum; i ++ ) {
       for( j = 0; j < MAGIC_DATAINTNUM; j ++ ) {
         MAGIC_setInt( i,j,-1);
@@ -210,7 +210,7 @@ BOOL MAGIC_initMagic( char *filename)
       }
     }
 
-    /*  ÒıĞ×  ĞÄ  ÔÊ    */
+    /*  å¼•å‡¶  å¿ƒ  å…    */
     linenum = 0;
     while( fgets( line, sizeof( line ), f ) ){
 #ifdef _CRYPTO_DATA    
@@ -223,10 +223,10 @@ BOOL MAGIC_initMagic( char *filename)
         if( line[0] == '\n' )continue;       /* none    */
         chomp( line );
 
-        /*  µæÃ«°ïäßÔÊÔÂ    */
-        /*  ÒıÄÚ tab Ã« " " ±å  Îå¾§ÒüÔÂ    */
+        /*  å«æ¯›å¸®æº¥å…æœˆ    */
+        /*  å¼•å†… tab æ¯› " " å  äº”æ™¶å°¹æœˆ    */
         replaceString( line, '\t' , ' ' );
-        /* ÛÆ  ¼°µ©Ê¸¡õµ©Ã«äúÔÂ£Û*/
+        /* ç‡®  åŠæ—¦çŸ¢â–¡æ—¦æ¯›æ½¸æœˆï¼»*/
 {
         char    buf[256];
         for( i = 0; i < strlen( line); i ++) {
@@ -252,17 +252,17 @@ BOOL MAGIC_initMagic( char *filename)
 
     for( i = 0; i < MAGIC_DATACHARNUM; i ++ ) {
 
-          /*    Ù¯  åÃĞş¡õÛÍ¼şÃ«Î­ÔÂ    */
+          /*    ä¾¬  è¿•ç„â–¡å¼ä»¶æ¯›è‹‡æœˆ    */
           ret = getStringFromIndexWithDelim( line,",",
                             i + 1,
                             token,sizeof(token));
           if( ret==FALSE ){
-              fprint("ÎÄ¼şÓï·¨´íÎó:%s µÚ%dĞĞ\n",filename,linenum);
+              fprint("æ–‡ä»¶è¯­æ³•é”™è¯¯:%s ç¬¬%dè¡Œ\n",filename,linenum);
               break;
           }
           MAGIC_setChar( magic_readlen, i, token);
     }
-        /* 4¹´  ¶¯æÏ·´ĞÑ°À·¸¡õÕı */
+        /* 4å‹¾  åŠ¨å«¦åé†’è¢„çŠ¯â–¡æ­£ */
 #define  MAGIC_STARTINTNUM    5
         for( i = MAGIC_STARTINTNUM; i < MAGIC_DATAINTNUM+MAGIC_STARTINTNUM; i ++ ) {
             ret = getStringFromIndexWithDelim( line,",",i,token,
@@ -282,7 +282,7 @@ BOOL MAGIC_initMagic( char *filename)
 #else
                                                
             if( ret==FALSE ){
-                fprint("ÎÄ¼şÓï·¨´íÎó:%s µÚ%dĞĞ\n",filename,linenum);
+                fprint("æ–‡ä»¶è¯­æ³•é”™è¯¯:%s ç¬¬%dè¡Œ\n",filename,linenum);
                 break;
             }
             if( strlen( token) != 0 ) {
@@ -303,7 +303,7 @@ BOOL MAGIC_initMagic( char *filename)
            continue;
            
 #endif
-    /* ÇĞ½ïÔÈÎçæØ³Æ¶¦·ÖØêÉı³ğµ¤ÔÊÔÂ£Û */
+    /* åˆ‡æ–¤åŒ€åˆå°•ç§°é¼åˆ†ä»ƒå‡ä»‡ä¸¹å…æœˆï¼» */
     if( MAGIC_getInt( magic_readlen, MAGIC_TARGET_DEADFLG) == 1 ) {
       MAGIC_setInt( magic_readlen, MAGIC_TARGET,
             MAGIC_getInt( magic_readlen, MAGIC_TARGET)+100);
@@ -317,16 +317,16 @@ BOOL MAGIC_initMagic( char *filename)
     MAGIC_magicnum = magic_readlen;
 
 
-    print( "ÓĞĞ§Ä§·¨ÊıÊÇ %d...", MAGIC_magicnum );
+    print( "æœ‰æ•ˆé­”æ³•æ•°æ˜¯ %d...", MAGIC_magicnum );
 
-  /* hash ¼°è¶   */
+  /* hash åŠç“’   */
   for( i = 0; i < arraysizeof( MAGIC_functbl); i ++ ) {
     MAGIC_functbl[i].hash = hashpjw( MAGIC_functbl[i].functionname);
   }
     return TRUE;
 }
 /*------------------------------------------------------------------------
- * Magic¼°É¬ÀÃ°×ÑëÄÌ»ï  ĞÄ  ØÆ
+ * MagicåŠæ¶©çƒ‚ç™½å¤®å¥¶ä¼™  å¿ƒ  ä»„
  *-----------------------------------------------------------------------*/
 BOOL MAGIC_reinitMagic( void )
 {
@@ -338,7 +338,7 @@ BOOL MAGIC_reinitMagic( void )
 #ifdef _ATTACK_MAGIC
 
 /*------------------------------------------------------------------------
- * AttMagicµÄ³õÊ¼»¯
+ * AttMagicçš„åˆå§‹åŒ–
  *-----------------------------------------------------------------------*/
 BOOL ATTMAGIC_initMagic( char *filename )
 {
@@ -359,7 +359,7 @@ BOOL ATTMAGIC_initMagic( char *filename )
   ATTMAGIC_magicnum = ftell( file ) / sizeof( struct tagAttMagic );
   if( ATTMAGIC_magicnum % 2 )
   {
-    fprint( "´ò¿ªÎÄ¼şÊ§°Ü\n" );
+    fprint( "æ‰“å¼€æ–‡ä»¶å¤±è´¥\n" );
     fclose( file );
 
     return FALSE;
@@ -371,7 +371,7 @@ BOOL ATTMAGIC_initMagic( char *filename )
     ATTMAGIC_magic = allocateMemory( sizeof( struct tagAttMagic ) * ATTMAGIC_magicnum );
   if( NULL == ATTMAGIC_magic )
   {
-    fprint( "ÎŞ·¨·ÖÅäÄÚ´æ %d\n" , sizeof( struct tagAttMagic ) * ATTMAGIC_magicnum );
+    fprint( "æ— æ³•åˆ†é…å†…å­˜ %d\n" , sizeof( struct tagAttMagic ) * ATTMAGIC_magicnum );
     fclose( file );
 
     return FALSE;
@@ -385,7 +385,7 @@ BOOL ATTMAGIC_initMagic( char *filename )
 
   ATTMAGIC_magicnum = ATTMAGIC_magicnum / 2;
 
-    print( "ÓĞĞ§µÄ¹¥»÷Ä§·¨Êı %d\n" , ATTMAGIC_magicnum );
+    print( "æœ‰æ•ˆçš„æ”»å‡»é­”æ³•æ•° %d\n" , ATTMAGIC_magicnum );
 
   return TRUE;
 }
@@ -393,7 +393,7 @@ BOOL ATTMAGIC_initMagic( char *filename )
 
 
 /*------------------------------------------------------------------------
- * AttMagicµÄÔÙ¶È³õÊ¼»¯
+ * AttMagicçš„å†åº¦åˆå§‹åŒ–
  *-----------------------------------------------------------------------*/
 BOOL ATTMAGIC_reinitMagic( void )
 {
@@ -407,10 +407,10 @@ BOOL ATTMAGIC_reinitMagic( void )
 #endif
 
 /*------------------------------------------------------------------------
- * MAGIC_ID¾®ÈÕ½¾Ù¯Ã«ôÅÔÂèúĞÑ
- * ß¯Ô»°À
- * ÔÀ  : ½¾Ù¯
- * ÁÃ  : -1
+ * MAGIC_IDäº•æ—¥éª„ä¾¬æ¯›è¥æœˆæ¥®é†’
+ * å¿’æ›°è¢„
+ * å²³  : éª„ä¾¬
+ * æ’©  : -1
  *-----------------------------------------------------------------------*/
 int MAGIC_getMagicArray( int magicid)
 {
@@ -428,11 +428,11 @@ int MAGIC_getMagicArray( int magicid)
   return -1;
 }
 /*------------------------------------------------------------
- * ÈÈÖî¼°èúĞÑ  ¾®ÈÕºÌÄÌ¼şÕı¡õÃ«ß¯ÔÊ
- * Â¦ĞÑ
- *  name        char*       ÈÈÖî¼°  ó¡
- * ß¯Ô»°À
- *  èúĞÑ³ß¼°ºÌÄÌ¼şÕı£ÛØ¦ÖĞèëÄş±å·´NULL
+ * çƒ­è¯¸åŠæ¥®é†’  äº•æ—¥ç¦¾å¥¶ä»¶æ­£â–¡æ¯›å¿’å…
+ * å¨„é†’
+ *  name        char*       çƒ­è¯¸åŠ  èŸ†
+ * å¿’æ›°è¢„
+ *  æ¥®é†’å°ºåŠç¦¾å¥¶ä»¶æ­£ï¼»å…ä¸­æ¡¦å®ååNULL
  ------------------------------------------------------------*/
 MAGIC_CALLFUNC MAGIC_getMagicFuncPointer(char* name)
 {
@@ -456,8 +456,8 @@ MAGIC_CALLFUNC MAGIC_getMagicFuncPointer(char* name)
 
 // Nuke start (08/23)
 /*
-  ½´   Nuke ½ñÊÏ¼°ÃñÄáÓÀÛÍ£Û
-    Ü·¼°¶ã°í  ÇøÃ«ÃñÄáÓÀÛÍÔÊÔÂ£Û
+  é…±   Nuke ä»Šæ°åŠæ°‘å°¼æ°¸å¼ï¼»
+    èŠŠåŠèº²ç»Š  åŒºæ¯›æ°‘å°¼æ°¸å¼å…æœˆï¼»
 
   Check the validity of the target of a magic.
   Return value:

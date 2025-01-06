@@ -4,7 +4,7 @@
 #include "version.h"
 #include "common.h"
 
-/////////////////////////////////////////Íâ²¿½Ó¿Ú/////////////////////////////////////////////////////////////////
+/////////////////////////////////////////å¤–éƒ¨æ¥å£/////////////////////////////////////////////////////////////////
 #define FUNCNAME_INITCALLBACK						"NPC_Lua_InitCallBack" 							//CHAR_INITFUNC
 #define FUNCNAME_WALKPRECALLBACK				"NPC_Lua_WalkPreCallBack" 					//CHAR_WALKPREFUNC
 #define FUNCNAME_WALKPOSTCALLBACK				"NPC_Lua_WalkPostCallBack"					//CHAR_WALKPOSTFUNC
@@ -18,7 +18,7 @@
 #define FUNCNAME_ITEMPUTCALLBACK				"NPC_Lua_ItemPutCallBack"						//CHAR_ITEMPUTFUNC
 #define FUNCNAME_WINDOWTALKEDCALLBACK		"NPC_Lua_WindowTalkedCallBack"			//CHAR_WINDOWTALKEDFUNC
 #ifdef _USER_CHARLOOPS
-#define FUNCNAME_CHARLOOPSCALLBACK			"NPC_Lua_CharLoopsCallBack"					//CHAR_LOOPFUNCTEMP1	³èÎïµ°Î¹Ò©ºÍÔ­µØÓöµĞµÄLOOP
+#define FUNCNAME_CHARLOOPSCALLBACK			"NPC_Lua_CharLoopsCallBack"					//CHAR_LOOPFUNCTEMP1	å® ç‰©è›‹å–‚è¯å’ŒåŸåœ°é‡æ•Œçš„LOOP
 #define FUNCNAME_BATTLEPROPERTYCALLBACK	"NPC_Lua_BattleProPertyCallBack"		//CHAR_BATTLEPROPERTY
 #endif
 /*
@@ -49,32 +49,32 @@
 
 #define FUNCNAME_BATTLEWINCALLBACK "NPC_Lua_BattleWinCallBack" //BATTLE WinFunc
 #define FUNCNAME_BATTLEENDCALLBACK "NPC_Lua_BattleEndCallBack" //BATTLE WinFunc
-//³õÊ¼»¯LUAÒıÇæ
+//åˆå§‹åŒ–LUAå¼•æ“
 int NPC_Lua_Init(const char *_DoFile);
 
-//¹Ø±ÕLUAÒıÇæ
+//å…³é—­LUAå¼•æ“
 int NPC_Lua_Close(void);
 
-//¶¯Ì¬¼ÓÔØ½Å±¾ÎÄ¼ş
+//åŠ¨æ€åŠ è½½è„šæœ¬æ–‡ä»¶
 int NPC_Lua_DoFile(const char *_DoFile);
 
-//´ÓLUA½Å±¾ÒıÇæ³öÕ»Ò»¸ö²ÎÊı
+//ä»LUAè„šæœ¬å¼•æ“å‡ºæ ˆä¸€ä¸ªå‚æ•°
 const char *NPC_Lua_popstring(int _ArgNum);
 
-//µ÷ÓÃÖ¸¶¨µÄ½Å±¾º¯Êı
+//è°ƒç”¨æŒ‡å®šçš„è„šæœ¬å‡½æ•°
 const char *NPC_Lua_CallFunc(const char *_FuncName, char *_RetBuff, size_t _n, int index);
 
-//Õ½¶·³¡¾°Ëæ»ú
+//æˆ˜æ–—åœºæ™¯éšæœº
 int NPC_Lua_getBattleFieldNo(int _Floor, int _X, int _Y);
 
-//»ñÈ¡³èÎï
+//è·å–å® ç‰©
 int NPC_GivePet(int charaindex, int lv, int enemyid);
-//»ñÈ¡µÀ¾ß
+//è·å–é“å…·
 int NPC_GiveItem(int charaindex, int itemid);
-//É¾³ı³èÎï
+//åˆ é™¤å® ç‰©
 int NPC_DelPet(int charaindex, int petsel);
 
-//»Øµ÷º¯Êı
+//å›è°ƒå‡½æ•°
 BOOL NPC_Lua_InitCallBack(int _meindex);
 BOOL NPC_Lua_WalkPreCallBack(int _meindex, int *_dir, int *_mode);
 void NPC_Lua_WalkPostCallBack(int _meindex);
@@ -92,7 +92,7 @@ int NPC_Lua_CharLoopsCallBack( int _meindex);
 int NPC_Lua_BattleProPertyCallBack(int _attackindex, int _defindex, int *_damage, int *_powarray, int _arraynum);
 #endif
 
-/* ÔİÊ±Î´Ê¹ÓÃµÄÊÂ¼ş
+/* æš‚æ—¶æœªä½¿ç”¨çš„äº‹ä»¶
 int NPC_Lua_DyingCallBack(int meindex);
 NPC_Lua_PreAttackedCallBack
 NPC_Lua_PostAttackedCallBack
@@ -120,7 +120,7 @@ void NPC_Lua_SQLPushAdvCallBack(int luaresult,int luaflg,int luaerrnono,char* lu
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif //#ifndef __NPC_LUA_INTERFACE__
 void NPC_Lua_NEWSHOP_Recv(char* function, int charaindex);
-#ifdef _CHARSIGNDAY_
+#ifdef _CHARSIGNDAY_
 void NPC_Lua_CharSignDay_Recv(char* function,int charaindex);
 #endif
 

@@ -7,42 +7,42 @@
 #include "net.h"
 #include "time.h"
 
-#define FAMILY_MAXNUM			1000	// ¼Ò×åÊıÁ¿
+#define FAMILY_MAXNUM			1000	// å®¶æ—æ•°é‡
 #ifdef _FMVER21
-#define FAMILY_MAXMEMBER		FAMILY_MAX_MEMBER	// ¼Ò×åÈËÊı
-#define FAMILY_MAXCHANNELMEMBER		50	// ÆµµÀÈËÊı
+#define FAMILY_MAXMEMBER		FAMILY_MAX_MEMBER	// å®¶æ—äººæ•°
+#define FAMILY_MAXCHANNELMEMBER		50	// é¢‘é“äººæ•°
 #else
-#define FAMILY_MAXMEMBER		50	// ¼Ò×åÈËÊı
-#define FAMILY_MAXCHANNELMEMBER		10	// ÆµµÀÈËÊı
+#define FAMILY_MAXMEMBER		50	// å®¶æ—äººæ•°
+#define FAMILY_MAXCHANNELMEMBER		10	// é¢‘é“äººæ•°
 #endif
-#define FAMILY_MAXCHANNEL 		5	// ¼Ò×åÆµµÀ
+#define FAMILY_MAXCHANNEL 		5	// å®¶æ—é¢‘é“
 
 #define CHAR_MAXNAME			32
 #define CHAR_MAXID			20
-#define MINFMLEVLEFORPOINT      	3       // 3 ÉêÇë×¯Ô°×îµÍµÈ¼¶
-#define FMLEADERLV			30	// ×å³¤µÈ¼¶
+#define MINFMLEVLEFORPOINT      	3       // 3 ç”³è¯·åº„å›­æœ€ä½ç­‰çº§
+#define FMLEADERLV			30	// æ—é•¿ç­‰çº§
 
 #ifdef _FAMILY_MANORNUM_CHANGE
-#define FAMILY_FMPKFLOOR		15	// ¼Ò×å£Ğ£ËÍ¼²ã
+#define FAMILY_FMPKFLOOR		15	// å®¶æ—ï¼°ï¼«å›¾å±‚
 #else
-#define FAMILY_FMPKFLOOR		9	// ¼Ò×å£Ğ£ËÍ¼²ã
-#define FMPOINTNUM			4       // ÓĞ¾İµã¼Ò×åµÄ×î´óÊıÁ¿
+#define FAMILY_FMPKFLOOR		9	// å®¶æ—ï¼°ï¼«å›¾å±‚
+#define FMPOINTNUM			4       // æœ‰æ®ç‚¹å®¶æ—çš„æœ€å¤§æ•°é‡
 #define MANORNUM                	4
-#define FAMILY_MAXHOME			4	// ¼Ò×å¾İµã
+#define FAMILY_MAXHOME			4	// å®¶æ—æ®ç‚¹
 #endif
 
 enum
 {
-    FM_TOP_INTEGRATE = 1,    // DPTOP ×ÛºÏ
-    FM_TOP_ADV,              // DPTOP Ã°ÏÕ
-    FM_TOP_FEED,             // DPTOP ËÇÓı
-    FM_TOP_SYNTHESIZE,       // DPTOP ºÏ³É
-    FM_TOP_DEALFOOD,         // DPTOP ÁÏÀí
-    FM_TOP_PK,               // DPTOP £Ğ£Ë
+    FM_TOP_INTEGRATE = 1,    // DPTOP ç»¼åˆ
+    FM_TOP_ADV,              // DPTOP å†’é™©
+    FM_TOP_FEED,             // DPTOP é¥²è‚²
+    FM_TOP_SYNTHESIZE,       // DPTOP åˆæˆ
+    FM_TOP_DEALFOOD,         // DPTOP æ–™ç†
+    FM_TOP_PK,               // DPTOP ï¼°ï¼«
 #ifdef _NEW_MANOR_LAW
-		FM_TOP_MOMENTUM = 8,		 // DPTOP ÆøÊÆ
+		FM_TOP_MOMENTUM = 8,		 // DPTOP æ°”åŠ¿
 #endif
-    FM_TOP_NUM,              // DPTOP ÊıÁ¿
+    FM_TOP_NUM,              // DPTOP æ•°é‡
 };
 
 enum
@@ -68,9 +68,9 @@ enum
 };
 
 /*
- * ÈÓ¡õÌï    ¼°Ö°¼°èëô÷Îç¼° cdkey charname ¼°Ó®½ñÃ«ÄşÁùÔÂĞ×»§±å
+ * æ‰”â–¡ç”°    åŠèŒåŠæ¡¦èµ­åˆåŠ cdkey charname åŠèµ¢ä»Šæ¯›å®å…­æœˆå‡¶æˆ·å
  * CHEKEYLEN, CHARNAMELEN
- * Ã«Òøµ¤·½µ¤±å  µÊ£Û
+ * æ¯›é“¶ä¸¹æ–¹ä¸¹å  å‡³ï¼»
  */
     
 void CHAR_Family(int fd, int index, char* message);
@@ -92,7 +92,7 @@ void ACShowDpTop(int result,int num, char *data, int kindflag);
 void ACShowPointList(int result, char *data);
 void ACShowFMMemo(int result, int index, int num, int dataindex, char *data);
 
-#ifdef _PERSONAL_FAME   // Arminius: ¼Ò×å¸öÈËÉùÍû
+#ifdef _PERSONAL_FAME   // Arminius: å®¶æ—ä¸ªäººå£°æœ›
 void ACFMCharLogin(int fd, int ret, int index, int floor, int fmdp,
 	int joinflag, int fmsetupflag, int flag, int charindex, int charfame
 	#ifdef _NEW_MANOR_LAW
@@ -144,59 +144,59 @@ struct FMMEMBER_LIST
 //  int  fmindex;
     int  fmnum; 
     int  fmjoinnum;
-//  BOOL use;                                       // 0->Ã»Ê¹ÓÃ   1->Ê¹ÓÃ
+//  BOOL use;                                       // 0->æ²¡ä½¿ç”¨   1->ä½¿ç”¨
     int  memberindex[FAMILY_MAXMEMBER];             
     char numberlistarray[FAMILY_MAXMEMBER][64];
     char memo[35][220];                             // family dengon
-    int  accept;                                    // ÕÙÄ¼³ÉÔ±Óë·ñ
+    int  accept;                                    // å¬å‹Ÿæˆå‘˜ä¸å¦
     int  memonum;
     int  memoindex;
 #ifdef _FAMILYBADGE_
 	int badge;
 #endif
 };
-// ¼Ò×åÖ®¼äµÄÁôÑÔ°å
+// å®¶æ—ä¹‹é—´çš„ç•™è¨€æ¿
 struct FMS_MEMO
 {
     char memo[140][220];
     int  memonum;
     int  memoindex;
 };
-// ¼Ò×åÇ¿Õß±í
+// å®¶æ—å¼ºè€…è¡¨
 struct FMS_DPTOP
 {
-    int  num;															// ¼ÇÂ¼ÓĞ¶àÉÙ¸ö¼Ò×å(×ÛºÏ)
+    int  num;															// è®°å½•æœ‰å¤šå°‘ä¸ªå®¶æ—(ç»¼åˆ)
     char topmemo[FAMILY_MAXNUM][128];
-    int  fmtopid[FAMILY_MAXNUM];          // ¼Ò×åË÷Òı
+    int  fmtopid[FAMILY_MAXNUM];          // å®¶æ—ç´¢å¼•
 #ifdef _FMVER21    
-    int  fmtopdp[FAMILY_MAXNUM];          // ¼Ò×å×ÛºÏÉùÍû
+    int  fmtopdp[FAMILY_MAXNUM];          // å®¶æ—ç»¼åˆå£°æœ›
 #endif    
 #ifdef _NEW_MANOR_LAW
-		int	fmMomentum[FAMILY_MAXNUM];		// ¼Ò×åÆøÊÆ
-		char	momentum_topmemo[FAMILY_MAXNUM][96];			// ¼Ò×åÆøÊÆ top
-		int	momentum_topid[FAMILY_MAXNUM];	// ¼Ò×åÆøÊÆ top id Ë÷Òı
+		int	fmMomentum[FAMILY_MAXNUM];		// å®¶æ—æ°”åŠ¿
+		char	momentum_topmemo[FAMILY_MAXNUM][96];			// å®¶æ—æ°”åŠ¿ top
+		int	momentum_topid[FAMILY_MAXNUM];	// å®¶æ—æ°”åŠ¿ top id ç´¢å¼•
 #endif
-    int  adv_num;                // Ã°ÏÕ
+    int  adv_num;                // å†’é™©
     char adv_topmemo[30][96];    
-    int  feed_num;               // ËÅÓı
+    int  feed_num;               // ä¼ºè‚²
     char feed_topmemo[30][96];        
-    int  syn_num;                // ºÏ³É
+    int  syn_num;                // åˆæˆ
     char syn_topmemo[30][96];        
-    int  food_num;               // ÁÏÀí
+    int  food_num;               // æ–™ç†
     char food_topmemo[30][96];        
-    int  pk_num;                 // £Ğ£Ë
+    int  pk_num;                 // ï¼°ï¼«
     char pk_topmemo[30][96];        
 };
-// ¼Ò×å¾İµã
+// å®¶æ—æ®ç‚¹
 struct FM_POINTLIST
 {
   char pointlistarray[FAMILY_MAXHOME][1024];	// Arminius: 32->1024
 #ifdef _NEW_MANOR_LAW
-	int fm_momentum[FAMILY_MAXHOME];	// ¼ÇÂ¼ÌôÕ½Ê±ÆÚ¿ªÊ¼Ê±µÄÊØ×¯¼Ò×åÆøÊÆÖµ
-	BOOL fm_inwar[FAMILY_MAXHOME];		// ´Ë×¯Ô°ÊÇ·ñ½øĞĞ×¯Ô°ÅÅ³ÌÖĞ
+	int fm_momentum[FAMILY_MAXHOME];	// è®°å½•æŒ‘æˆ˜æ—¶æœŸå¼€å§‹æ—¶çš„å®ˆåº„å®¶æ—æ°”åŠ¿å€¼
+	BOOL fm_inwar[FAMILY_MAXHOME];		// æ­¤åº„å›­æ˜¯å¦è¿›è¡Œåº„å›­æ’ç¨‹ä¸­
 #endif
 };
-// ¼Ò×åPKÍ¼²ã
+// å®¶æ—PKå›¾å±‚
 struct FM_PKFLOOR
 {
     int fl;
@@ -205,12 +205,12 @@ struct FM_PKFLOOR
 
 #ifdef _NEW_MANOR_LAW
 typedef struct _ManorSchedule_t{
-	int iFmIndex[10];						// ÅÅÈëÌôÕ½ÅÅ³ÌµÄ¼Ò×åË÷Òı
-	int iFmMomentum[10];				// ¼Ò×åÆøÊÆ
-	int iSort[10];							// ÅÅÃûÓÃ
-	char szMemo[10][256];				// ¼ÇÂ¼: ¼Ò×åÃû³Æ|Ô¼Õ½Ê±¼ä|¼Ò×åÆøÊÆ
-	char szFmName[10][32];			// ¼Ò×åÃû³Æ
-	struct tm tm1[10];							// ¼ÇÂ¼ÌôÕ½Ê±¼ä
+	int iFmIndex[10];						// æ’å…¥æŒ‘æˆ˜æ’ç¨‹çš„å®¶æ—ç´¢å¼•
+	int iFmMomentum[10];				// å®¶æ—æ°”åŠ¿
+	int iSort[10];							// æ’åç”¨
+	char szMemo[10][256];				// è®°å½•: å®¶æ—åç§°|çº¦æˆ˜æ—¶é—´|å®¶æ—æ°”åŠ¿
+	char szFmName[10][32];			// å®¶æ—åç§°
+	struct tm tm1[10];							// è®°å½•æŒ‘æˆ˜æ—¶é—´
 }ManorSchedule_t;
 
 extern ManorSchedule_t ManorSchedule[MANORNUM];

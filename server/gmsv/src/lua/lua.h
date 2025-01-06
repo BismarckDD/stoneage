@@ -355,7 +355,7 @@ typedef struct __lua_const
   int vl;
 }lua_const;
 
-LUA_API int lua_setconstlist(lua_State *L, lua_const *constlist);	//ÓÃÓÚ¶ÁÈ¡³£Á¿±í
+LUA_API int lua_setconstlist(lua_State *L, lua_const *constlist);	//ç”¨äºè¯»å–å¸¸é‡è¡¨
 
 
 

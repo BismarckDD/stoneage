@@ -5,7 +5,7 @@ make clean
 echo "#ifndef __LONGZORO_H__
 #define __LONGZORO_H__
 
-//特殊功能控制----------------------------------------
+//鐗规畩鍔熻兘鎺у埗----------------------------------------
 #define _ATTESTAION_ID 18
 
 #endif" > $OUT

@@ -1,39 +1,39 @@
-¼ÇÂ¼µÀ¾ß¼ÇÂ¼={};
+è®°å½•é“å…·è®°å½•={};
 
 
 function WindowTalked ( meindex, charaindex, seqno, select, data)
 	if seqno == 1 then
-		local ³èÎïÎ»ÖÃ = other.atoi(data);
-		if ³èÎïÎ»ÖÃ >=1 and ³èÎïÎ»ÖÃ<=4 then
-			local ³èÎïË÷Òı = char.getCharPet(charaindex, ³èÎïÎ»ÖÃ-1);
-			if char.check(³èÎïË÷Òı) == 1 then
-				¼ÇÂ¼µÀ¾ß¼ÇÂ¼[charaindex][3] = ³èÎïË÷Òı;
-				local ¶Ô»°ÄÚÈİ = "ÊÇ·ñÈÃ "..char.getChar(³èÎïË÷Òı,"Ãû×Ö") .." Ñ§Ï°¸ÃÌØĞ§£¡"
-				lssproto.windows(charaindex, "¶Ô»°¿ò", "È·¶¨|È¡Ïû", 2,  char.getWorkInt( npcindex, "¶ÔÏó"),¶Ô»°ÄÚÈİ )
+		local å® ç‰©ä½ç½® = other.atoi(data);
+		if å® ç‰©ä½ç½® >=1 and å® ç‰©ä½ç½®<=4 then
+			local å® ç‰©ç´¢å¼• = char.getCharPet(charaindex, å® ç‰©ä½ç½®-1);
+			if char.check(å® ç‰©ç´¢å¼•) == 1 then
+				è®°å½•é“å…·è®°å½•[charaindex][3] = å® ç‰©ç´¢å¼•;
+				local å¯¹è¯å†…å®¹ = "æ˜¯å¦è®© "..char.getChar(å® ç‰©ç´¢å¼•,"åå­—") .." å­¦ä¹ è¯¥ç‰¹æ•ˆï¼"
+				lssproto.windows(charaindex, "å¯¹è¯æ¡†", "ç¡®å®š|å–æ¶ˆ", 2,  char.getWorkInt( npcindex, "å¯¹è±¡"),å¯¹è¯å†…å®¹ )
 			end
 		end
 	elseif seqno == 2 then
 		if select == 1 then
-			local ¹¥»÷ÌØĞ§ID = other.atoi(item.getChar(¼ÇÂ¼µÀ¾ß¼ÇÂ¼[charaindex][1], "×Ö¶Î"))
-			char.setInt(¼ÇÂ¼µÀ¾ß¼ÇÂ¼[charaindex][3],"¹¥»÷ÌØĞ§",¹¥»÷ÌØĞ§ID);
-			char.DelItem(charaindex, ¼ÇÂ¼µÀ¾ß¼ÇÂ¼[charaindex][2]);
-			char.TalkToCli(charaindex, -1, "ÄúµÄ³èÎï"..char.getChar(¼ÇÂ¼µÀ¾ß¼ÇÂ¼[charaindex][3],"Ãû×Ö").."Ï°µÃ¹¥»÷ÌØĞ§,¿ìÈ¥ÌåÑé°É£¡", "ºìÉ«")
-			¼ÇÂ¼µÀ¾ß¼ÇÂ¼[charaindex]=nil;
+			local æ”»å‡»ç‰¹æ•ˆID = other.atoi(item.getChar(è®°å½•é“å…·è®°å½•[charaindex][1], "å­—æ®µ"))
+			char.setInt(è®°å½•é“å…·è®°å½•[charaindex][3],"æ”»å‡»ç‰¹æ•ˆ",æ”»å‡»ç‰¹æ•ˆID);
+			char.DelItem(charaindex, è®°å½•é“å…·è®°å½•[charaindex][2]);
+			char.TalkToCli(charaindex, -1, "æ‚¨çš„å® ç‰©"..char.getChar(è®°å½•é“å…·è®°å½•[charaindex][3],"åå­—").."ä¹ å¾—æ”»å‡»ç‰¹æ•ˆ,å¿«å»ä½“éªŒå§ï¼", "çº¢è‰²")
+			è®°å½•é“å…·è®°å½•[charaindex]=nil;
 		end
 	end
 end
 
 function attackeffect(itemindex, charaindex, toindex, haveitemindex)
-	¼ÇÂ¼µÀ¾ß¼ÇÂ¼[charaindex]={};
-	¼ÇÂ¼µÀ¾ß¼ÇÂ¼[charaindex][1]=itemindex;
-	¼ÇÂ¼µÀ¾ß¼ÇÂ¼[charaindex][2]=haveitemindex;
-	lssproto.windows(charaindex, "³èÎï¿ò", "È·¶¨", 1,  char.getWorkInt( npcindex, "¶ÔÏó"), "")
+	è®°å½•é“å…·è®°å½•[charaindex]={};
+	è®°å½•é“å…·è®°å½•[charaindex][1]=itemindex;
+	è®°å½•é“å…·è®°å½•[charaindex][2]=haveitemindex;
+	lssproto.windows(charaindex, "å® ç‰©æ¡†", "ç¡®å®š", 1,  char.getWorkInt( npcindex, "å¯¹è±¡"), "")
 end
 
 function Create(name, metamo, floor, x, y, dir)
-	--´´½¨NPC(NPCÃû×Ö£¬Í¼ÏñºÅ£¬µØÍ¼ºÅ£¬×ø±êX£¬×ø±êY£¬·½ÏòºÅ)½«·µ»ØÒ»¸öNPCË÷Òı
+	--åˆ›å»ºNPC(NPCåå­—ï¼Œå›¾åƒå·ï¼Œåœ°å›¾å·ï¼Œåæ ‡Xï¼Œåæ ‡Yï¼Œæ–¹å‘å·)å°†è¿”å›ä¸€ä¸ªNPCç´¢å¼•
 	npcindex = npc.CreateNpc(name, metamo, floor, x, y, dir)
-	char.setFunctionPointer(npcindex, "´°¿ÚÊÂ¼ş", "WindowTalked", "")
+	char.setFunctionPointer(npcindex, "çª—å£äº‹ä»¶", "WindowTalked", "")
 end
 
 
@@ -41,7 +41,7 @@ function data()
 end
 
 function main()
-	Create("¹¥»÷ÌØĞ§NPC",100000,777,20,20,3);
+	Create("æ”»å‡»ç‰¹æ•ˆNPC",100000,777,20,20,3);
 
 	item.addLUAListFunction( "ITEM_ATTACKEFFECT", "attackeffect", "")
 end

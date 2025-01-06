@@ -11,41 +11,41 @@
 #include "family.h"
 #include "npc_scheduleman.h"
 
-#define DENGONFILELINENUM      35     // Õû¸ö¹«²¼À¸µÄ×ÊÁÏ±ÊÊı
-#define FMSDENGONFILELINENUM   140    // ¼Ò×å¼äµÄÁôÑÔ°å×ÊÁÏ±ÊÊı
-#define DENGONFILEENTRYSIZE    128    // ±¾ÎÄ´óĞ¡
+#define DENGONFILELINENUM      35     // æ•´ä¸ªå…¬å¸ƒæ çš„èµ„æ–™ç¬”æ•°
+#define FMSDENGONFILELINENUM   140    // å®¶æ—é—´çš„ç•™è¨€æ¿èµ„æ–™ç¬”æ•°
+#define DENGONFILEENTRYSIZE    128    // æœ¬æ–‡å¤§å°
 #ifdef _NEW_MANOR_LAW
-#define MESSAGEINONEWINDOW     10     // Ã¿Ò³ËùÏÔÊ¾µÄ±ÊÊı
+#define MESSAGEINONEWINDOW     10     // æ¯é¡µæ‰€æ˜¾ç¤ºçš„ç¬”æ•°
 #else
-#define MESSAGEINONEWINDOW     7      // Ã¿Ò³ËùÏÔÊ¾µÄ±ÊÊı
+#define MESSAGEINONEWINDOW     7      // æ¯é¡µæ‰€æ˜¾ç¤ºçš„ç¬”æ•°
 #endif
-#define FMMAXNUM               1000   // ¼Ò×åÊıÁ¿µÄ×î´óÖµ
-#define FM_MEMBERLIST          1      // ¼Ò×å³ÉÔ±ÁĞ±í    (Ö÷¹¦ÄÜ±íµÄ°´¼ü)
-#define FM_MEMBERMEMO          2      // ¼Ò×åÁôÑÔ        (Ö÷¹¦ÄÜ±íµÄ°´¼ü)
-#define FM_FMMEMO              3      // ¼Ò×åÖ®¼äÁôÑÔ°å  (Ö÷¹¦ÄÜ±íµÄ°´¼ü)
-#define FM_FMPOINT             4      // ÉêÇë¼Ò×å¾İµã    (Ö÷¹¦ÄÜ±íµÄ°´¼ü)
-#define FM_FMDPTOP             5      // ¼Ò×å¼äÇ¿Õß±í    (Ö÷¹¦ÄÜ±íµÄ°´¼ü)
+#define FMMAXNUM               1000   // å®¶æ—æ•°é‡çš„æœ€å¤§å€¼
+#define FM_MEMBERLIST          1      // å®¶æ—æˆå‘˜åˆ—è¡¨    (ä¸»åŠŸèƒ½è¡¨çš„æŒ‰é”®)
+#define FM_MEMBERMEMO          2      // å®¶æ—ç•™è¨€        (ä¸»åŠŸèƒ½è¡¨çš„æŒ‰é”®)
+#define FM_FMMEMO              3      // å®¶æ—ä¹‹é—´ç•™è¨€æ¿  (ä¸»åŠŸèƒ½è¡¨çš„æŒ‰é”®)
+#define FM_FMPOINT             4      // ç”³è¯·å®¶æ—æ®ç‚¹    (ä¸»åŠŸèƒ½è¡¨çš„æŒ‰é”®)
+#define FM_FMDPTOP             5      // å®¶æ—é—´å¼ºè€…è¡¨    (ä¸»åŠŸèƒ½è¡¨çš„æŒ‰é”®)
 #ifdef _FM_FMPOINTPK_LIST
-#define FM_FMPOINTPK           6      // ×¯Ô°×åÕ½Ê±¼ä±í  (Ö÷¹¦ÄÜ±íµÄ°´¼ü)
+#define FM_FMPOINTPK           6      // åº„å›­æ—æˆ˜æ—¶é—´è¡¨  (ä¸»åŠŸèƒ½è¡¨çš„æŒ‰é”®)
 #endif
-#define FM_FMPOINTTIME         7      // ×¯Ô°Õ¼¾İÊ±¼ä±í  (Ö÷¹¦ÄÜ±íµÄ°´¼ü)
+#define FM_FMPOINTTIME         7      // åº„å›­å æ®æ—¶é—´è¡¨  (ä¸»åŠŸèƒ½è¡¨çš„æŒ‰é”®)
 #define FM_WAITTIME            (3*60)
-#define FMSDENGON_SN           10000  // ¼Ò×åÖ®¼äµÄÁôÑÔ°åµÄÊ¶±ğÂë
+#define FMSDENGON_SN           10000  // å®¶æ—ä¹‹é—´çš„ç•™è¨€æ¿çš„è¯†åˆ«ç 
 
-extern struct  FMMEMBER_LIST memberlist[FMMAXNUM];         // ½ÓÊÕ AC ³ÉÔ±ÁĞ±í×ÊÁÏµÄ ARRAY
-extern struct  FMS_MEMO fmsmemo;                           // ¼Ò×åÖ®¼äµÄÁôÑÔ°å
-extern struct  FM_POINTLIST fmpointlist;                   // ¼Ò×å¾İµã
-extern struct  FMS_DPTOP fmdptop;                          // ¼Ò×åÇ¿Õß±í
-extern int leaderdengonindex;                              // 777 ¼Ò×å¹«²¼À¸ index
-char NPC_sendbuf[DENGONFILEENTRYSIZE*MESSAGEINONEWINDOW];  // Ò»ÕûÒ³µÄ´óĞ¡
-char enlistbuf[4096];                                        // ¼Ò×å³ÉÔ±ÕÙÄ¼ BUF(ÏÔÊ¾ÓÃµÄ)
+extern struct  FMMEMBER_LIST memberlist[FMMAXNUM];         // æ¥æ”¶ AC æˆå‘˜åˆ—è¡¨èµ„æ–™çš„ ARRAY
+extern struct  FMS_MEMO fmsmemo;                           // å®¶æ—ä¹‹é—´çš„ç•™è¨€æ¿
+extern struct  FM_POINTLIST fmpointlist;                   // å®¶æ—æ®ç‚¹
+extern struct  FMS_DPTOP fmdptop;                          // å®¶æ—å¼ºè€…è¡¨
+extern int leaderdengonindex;                              // 777 å®¶æ—å…¬å¸ƒæ  index
+char NPC_sendbuf[DENGONFILEENTRYSIZE*MESSAGEINONEWINDOW];  // ä¸€æ•´é¡µçš„å¤§å°
+char enlistbuf[4096];                                        // å®¶æ—æˆå‘˜å¬å‹Ÿ BUF(æ˜¾ç¤ºç”¨çš„)
 
 unsigned long READTIME1 = 0,
               READTIME2 = 0,
               READTIME3 = 0,
               READTIME4 = 0;
 
-// ¹«²¼À¸µÄ³õÊ¼»¯(when gmsv start)
+// å…¬å¸ƒæ çš„åˆå§‹åŒ–(when gmsv start)
 BOOL NPC_FmDengonInit( int meindex)
 {
     int i;
@@ -62,12 +62,12 @@ BOOL NPC_FmDengonInit( int meindex)
         READTIME3 = NowTime.tv_sec+FM_WAITTIME,
         READTIME4 = NowTime.tv_sec+FM_WAITTIME;
        
-        // È¡µÃ¼Ò×åµÄ³ÉÔ±ÁĞ±í(memberlist struct)£¬ÒÔ¼°¼Ò×åµÄÁôÑÔ°å
+        // å–å¾—å®¶æ—çš„æˆå‘˜åˆ—è¡¨(memberlist struct)ï¼Œä»¥åŠå®¶æ—çš„ç•™è¨€æ¿
         for( i=0; i<FMMAXNUM; i++){
             saacproto_ACShowMemberList_send( acfd, i);
             saacproto_ACFMReadMemo_send( acfd, i);
         }
-        // ¼Ò×åÖ®¼äµÄÁôÑÔ°åËù´«µÄÖµÔ¤ÉèÎª FMSDENGON_SN
+        // å®¶æ—ä¹‹é—´çš„ç•™è¨€æ¿æ‰€ä¼ çš„å€¼é¢„è®¾ä¸º FMSDENGON_SN
         saacproto_ACFMReadMemo_send( acfd, FMSDENGON_SN);
         saacproto_ACFMPointList_send(acfd);
         saacproto_ACShowTopFMList_send(acfd, FM_TOP_INTEGRATE);
@@ -100,13 +100,13 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
     
     CONNECT_setLastrecvtime_D( getfdFromCharaIndex( talker), &NowTime);
 #ifndef _FM_MODIFY
-    // ¾àÀë³¬³ö DENGONDISTANCE µÄ  Î§ÄÚÊ±£¬¼´È¡Ïû¶¯×÷
+    // è·ç¦»è¶…å‡º DENGONDISTANCE çš„  å›´å†…æ—¶ï¼Œå³å–æ¶ˆåŠ¨ä½œ
 #define DENGONDISTANCE 3	
     if( CHAR_getInt(index, CHAR_FLOOR) != 777 )
         if(NPC_Util_CharDistance( index, talker) > DENGONDISTANCE) return;
 #endif
     
-    // ¼Ò×åÁôÑÔ°å
+    // å®¶æ—ç•™è¨€æ¿
     if( seqno == CHAR_WINDOWTYPE_FM_DENGON)
     {
 			int dengonindex;
@@ -265,7 +265,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
       }  // Switch End
     }  // If End
         
-    // ¼Ò×åÖ®¼äÁôÑÔ°å
+    // å®¶æ—ä¹‹é—´ç•™è¨€æ¿
     else if(seqno == CHAR_WINDOWTYPE_FM_FMSDENGON)
     {
 			int dengonindex;
@@ -360,7 +360,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 #else
 					if( CHAR_getInt( talker, CHAR_FMLEADERFLAG) != FMMEMBER_MEMBER){              
 #endif              
-							sprintf( NPC_sendbuf, "              ¡º¾¯       ¸æ¡»\n ±§Ç¸£¡Äã²»ÊÇ×å³¤£¬ËùÒÔ½öÄÜ²é¿´¡£");
+							sprintf( NPC_sendbuf, "              ã€è­¦       å‘Šã€\n æŠ±æ­‰ï¼ä½ ä¸æ˜¯æ—é•¿ï¼Œæ‰€ä»¥ä»…èƒ½æŸ¥çœ‹ã€‚");
 							lssproto_WN_send( fd, WINDOW_MESSAGETYPE_MESSAGE,
 								WINDOW_BUTTONTYPE_OK,
 								-1,
@@ -437,7 +437,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
       }  // Switch End
     }  // If End
         
-    // ËµÃ÷ÊÓ´°(¼Ò×å¾İµã)
+    // è¯´æ˜è§†çª—(å®¶æ—æ®ç‚¹)
     else if( seqno == CHAR_WINDOWTYPE_FM_MESSAGE1)
     {
 			int fd;
@@ -476,7 +476,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 			}
     }        
 
-    // ËµÃ÷ÊÓ´°(³ÉÔ±ÁĞ±í)
+    // è¯´æ˜è§†çª—(æˆå‘˜åˆ—è¡¨)
     else if( seqno == CHAR_WINDOWTYPE_FM_MESSAGE2)
     {
 			int fd,i;
@@ -498,8 +498,8 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						strcat( numberlistbuf, memberlist[fmindex_wk].numberlistarray[i]);
 						strcat( numberlistbuf, "\n");
 					}
-					// Ôö¼Ó³ÌÊ½Âë(ÏòACÒªÕÙÄ¼ÈËÔ±µÄÖµ)
-					sprintf(enlistbuf, "ÊÇ·ñ¼ÌĞøÕÙÄ¼¼Ò×åÈËÔ±|0|%d",memberlist[fmindex_wk].accept);
+					// å¢åŠ ç¨‹å¼ç (å‘ACè¦å¬å‹Ÿäººå‘˜çš„å€¼)
+					sprintf(enlistbuf, "æ˜¯å¦ç»§ç»­å¬å‹Ÿå®¶æ—äººå‘˜|0|%d",memberlist[fmindex_wk].accept);
 					strcat( numberlistbuf, enlistbuf);
 					strcat( numberlistbuf, "\n");
 					lssproto_WN_send( fd, WINDOW_FMMESSAGETYPE_SELECT,
@@ -519,7 +519,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 			}
     }        
 
-    // Ç¿Õß±íµÄÑ¡ÏîÊÓ´°
+    // å¼ºè€…è¡¨çš„é€‰é¡¹è§†çª—
     else if( seqno == CHAR_WINDOWTYPE_FM_DPSELECT)
     {
 			int fmindex_wk;
@@ -534,7 +534,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 			
 			buttonevent = atoi(data);
 			switch( buttonevent ){
-			case 1:				// Ç°ÈşÊ®´ó¼Ò×å×ÛºÏÉùÍûÁĞ±í
+			case 1:				// å‰ååå¤§å®¶æ—ç»¼åˆå£°æœ›åˆ—è¡¨
 				{
 					int  fd,i;
 					char listbuf[4096];
@@ -564,7 +564,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						makeEscapeString( listbuf, buf, sizeof(buf)));
 				}
 				break;
-			case 2:				// Ç°Ê®´ó¼Ò×åÃ°ÏÕÁĞ±í
+			case 2:				// å‰åå¤§å®¶æ—å†’é™©åˆ—è¡¨
 				{
 					int  fd,i;
 					char listbuf[4096];
@@ -590,7 +590,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						makeEscapeString( listbuf, buf, sizeof(buf)));
 				}
 				break;
-			case 3:				// Ç°Ê®´ó¼Ò×åËÅÓıÁĞ±í
+			case 3:				// å‰åå¤§å®¶æ—ä¼ºè‚²åˆ—è¡¨
 				{
 					int  fd,i;
 					char listbuf[4096];
@@ -617,7 +617,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 				}
 				break;
 #ifndef _NEW_MANOR_LAW
-			case 4:				// Ç°Ê®´ó¼Ò×åºÏ³ÉÁĞ±í
+			case 4:				// å‰åå¤§å®¶æ—åˆæˆåˆ—è¡¨
 				{
 					int  fd,i;
 					char listbuf[4096];
@@ -643,7 +643,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						makeEscapeString( listbuf, buf, sizeof(buf)));
 				}
 				break;
-			case 5:				// Ç°Ê®´ó¼Ò×åÁÏÀíÁĞ±í
+			case 5:				// å‰åå¤§å®¶æ—æ–™ç†åˆ—è¡¨
 				{
 					int  fd,i;
 					char listbuf[4096];
@@ -671,9 +671,9 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 				break;
 #endif
 #ifdef _NEW_MANOR_LAW
-			case 4:				// Ç°Ê®´ó¼Ò×å£Ğ£ËÁĞ±í
+			case 4:				// å‰åå¤§å®¶æ—ï¼°ï¼«åˆ—è¡¨
 #else
-			case 6:				// Ç°Ê®´ó¼Ò×å£Ğ£ËÁĞ±í
+			case 6:				// å‰åå¤§å®¶æ—ï¼°ï¼«åˆ—è¡¨
 #endif
 				{
 					int  fd,i;
@@ -701,7 +701,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 				}
 				break;
 #ifdef _NEW_MANOR_LAW
-			case 5:						// Ê®´óÆøÊÆ¼Ò×å
+			case 5:						// åå¤§æ°”åŠ¿å®¶æ—
 				{
 					int  fd,i;
 					char listbuf[4096];
@@ -729,7 +729,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 				break;
 #endif
 #ifndef _NEW_MANOR_LAW
-			case 7:				// ×Ô¼º¼Ò×åÉùÍûÅÅĞĞ°ñ
+			case 7:				// è‡ªå·±å®¶æ—å£°æœ›æ’è¡Œæ¦œ
 #else
 			case 6:
 #endif
@@ -742,7 +742,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 					
 					fmid = CHAR_getWorkInt(talker, CHAR_WORKFMINDEXI);
 					if( fmid < 0 ){
-						sprintf( NPC_sendbuf, "              ¡º¾¯       ¸æ¡»\n ±§Ç¸£¡Äã²»ÊÇ¼Ò×åÈËÔ±£¬ÎŞ·¨²é¿´¡£");
+						sprintf( NPC_sendbuf, "              ã€è­¦       å‘Šã€\n æŠ±æ­‰ï¼ä½ ä¸æ˜¯å®¶æ—äººå‘˜ï¼Œæ— æ³•æŸ¥çœ‹ã€‚");
 						lssproto_WN_send( fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
 							-1,
 							-1,
@@ -754,7 +754,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						if( fmdptop.fmtopid[h] == fmid ) 
 							break;
 						
-						k = h;                 // ±êÊ¾ÑÕÉ«ÓÃ(¶à´«Ò»¸ö1£¬ÒÔ¹©ClientÖ®ÓÃ)
+						k = h;                 // æ ‡ç¤ºé¢œè‰²ç”¨(å¤šä¼ ä¸€ä¸ª1ï¼Œä»¥ä¾›Clientä¹‹ç”¨)
 						if(h <= 4) h = 0;
 						else if(h >= 994 ) h = 990;
 						else h -= 4;
@@ -784,7 +784,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 				}
 				break;
 #ifdef _NEW_MANOR_LAW
-			case 7:		// ×Ô¼º¼Ò×åÆøÊÆÅÅÃû
+			case 7:		// è‡ªå·±å®¶æ—æ°”åŠ¿æ’å
 				{
 					int  fd,h,fmid;
 					char listbuf[4096];
@@ -795,7 +795,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 					
 					fmid = CHAR_getWorkInt(talker, CHAR_WORKFMINDEXI);
 					if( fmid < 0 ){
-						sprintf( NPC_sendbuf, "              ¡º¾¯       ¸æ¡»\n ±§Ç¸£¡Äã²»ÊÇ¼Ò×åÈËÔ±£¬ÎŞ·¨²é¿´¡£");
+						sprintf( NPC_sendbuf, "              ã€è­¦       å‘Šã€\n æŠ±æ­‰ï¼ä½ ä¸æ˜¯å®¶æ—äººå‘˜ï¼Œæ— æ³•æŸ¥çœ‹ã€‚");
 						lssproto_WN_send( fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
 							-1,
 							-1,
@@ -826,7 +826,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
         }
     }
         
-    // Ñ¡ÏîÊÓ´°
+    // é€‰é¡¹è§†çª—
     else if( seqno == CHAR_WINDOWTYPE_FM_SELECT)
     {
 			int fmindex_wk;
@@ -850,7 +850,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 					if( fd == -1 )  return;
 					
 					if( CHAR_getInt(talker, CHAR_FMINDEX) <= 0){  
-						sprintf( NPC_sendbuf, "              ¡º¾¯       ¸æ¡»\n ±§Ç¸£¡Äã²»ÊÇ¼Ò×åÈËÔ±£¬²»µÃÊ¹ÓÃ¹«²¼À¸¡£");
+						sprintf( NPC_sendbuf, "              ã€è­¦       å‘Šã€\n æŠ±æ­‰ï¼ä½ ä¸æ˜¯å®¶æ—äººå‘˜ï¼Œä¸å¾—ä½¿ç”¨å…¬å¸ƒæ ã€‚");
 						lssproto_WN_send( fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
 							-1, -1, makeEscapeString( NPC_sendbuf, buf, sizeof(buf)));
 						return;
@@ -880,9 +880,9 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 #else
 						if( CHAR_getInt( talker, CHAR_FMLEADERFLAG) == FMMEMBER_MEMBER ){
 #endif              
-							sprintf( NPC_sendbuf, "               ¡º×å ³¤ Ğè Öª¡»\nÇëĞ¡ĞÄ´¦Àí×åÔ±µÄ×ÊÁÏ£¬Ò»¾­ĞŞ¸Äáá¾ÍÎŞ·¨»Ø¸´Ô­Ì¬£¬¾´ÇëĞ¡ĞÄ¡£");
+							sprintf( NPC_sendbuf, "               ã€æ— é•¿ éœ€ çŸ¥ã€\nè¯·å°å¿ƒå¤„ç†æ—å‘˜çš„èµ„æ–™ï¼Œä¸€ç»ä¿®æ”¹å¾Œå°±æ— æ³•å›å¤åŸæ€ï¼Œæ•¬è¯·å°å¿ƒã€‚");
 						}else{
-							sprintf( NPC_sendbuf, "               ¡ºÁĞ ±í Ğè Öª¡»\n ´Ë±í×å³¤¿É×÷ĞŞ¸Ä£¬×åÔ±½öÄÜ²é¿´¡£");
+							sprintf( NPC_sendbuf, "               ã€åˆ— è¡¨ éœ€ çŸ¥ã€\n æ­¤è¡¨æ—é•¿å¯ä½œä¿®æ”¹ï¼Œæ—å‘˜ä»…èƒ½æŸ¥çœ‹ã€‚");
 						}
 						
 						lssproto_WN_send( fd, WINDOW_MESSAGETYPE_MESSAGE,
@@ -909,11 +909,11 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						if( CHAR_getInt( talker, CHAR_FMLEADERFLAG) == FMMEMBER_MEMBER ){
 #endif              
 							saacproto_ACFMPointList_send(acfd);
-							sprintf( NPC_sendbuf, "               ¡º×å ³¤ Ğè Öª¡»\nÇëĞ¡ĞÄÉ÷Ñ¡ËùÉêÇëµÄ¾İµã£¬Ò»µ«Ñ¡È¡¾İµãáá¾ÍÎŞ·¨»Ø¸´Ô­Ì¬£¬¾´ÇëĞ¡ĞÄ¡£");
+							sprintf( NPC_sendbuf, "               ã€æ— é•¿ éœ€ çŸ¥ã€\nè¯·å°å¿ƒæ…é€‰æ‰€ç”³è¯·çš„æ®ç‚¹ï¼Œä¸€ä½†é€‰å–æ®ç‚¹å¾Œå°±æ— æ³•å›å¤åŸæ€ï¼Œæ•¬è¯·å°å¿ƒã€‚");
 							READTIME4 = NowTime.tv_sec+FM_WAITTIME;
 						}
 						else{
-							sprintf( NPC_sendbuf, "               ¡ºÁĞ ±í Ğè Öª¡»\n´Ë±í×å³¤¿ÉÒÔÉêÇë£¬ÆäâÅ½öÄÜ²é¿´¡£");
+							sprintf( NPC_sendbuf, "               ã€åˆ— è¡¨ éœ€ çŸ¥ã€\næ­¤è¡¨æ—é•¿å¯ä»¥ç”³è¯·ï¼Œå…¶é¦€ä»…èƒ½æŸ¥çœ‹ã€‚");
 						}
 						
 						if( NowTime.tv_sec > READTIME4 ){
@@ -952,20 +952,20 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						READTIME3 = NowTime.tv_sec+FM_WAITTIME;
 					}
 					memset(NPC_sendbuf,0,sizeof(NPC_sendbuf));
-					strcpy( NPC_sendbuf, "\n              ÈıÊ®´ó¼Ò×åÉùÍûÁĞ±í\n");
-					strcat( NPC_sendbuf, "              Ê®´óÃ°ÏÕ¼Ò×å\n");
-					strcat( NPC_sendbuf, "              Ê®´óËÇÓı¼Ò×å\n");
+					strcpy( NPC_sendbuf, "\n              ä¸‰åå¤§å®¶æ—å£°æœ›åˆ—è¡¨\n");
+					strcat( NPC_sendbuf, "              åå¤§å†’é™©å®¶æ—\n");
+					strcat( NPC_sendbuf, "              åå¤§é¥²è‚²å®¶æ—\n");
 #ifndef _NEW_MANOR_LAW
-					strcat( NPC_sendbuf, "              Ê®´óºÏ³É¼Ò×å\n");
-					strcat( NPC_sendbuf, "              Ê®´óÁÏÀí¼Ò×å\n");
+					strcat( NPC_sendbuf, "              åå¤§åˆæˆå®¶æ—\n");
+					strcat( NPC_sendbuf, "              åå¤§æ–™ç†å®¶æ—\n");
 #endif
-					strcat( NPC_sendbuf, "              Ê®´óÕ½¶·¼Ò×å\n");
+					strcat( NPC_sendbuf, "              åå¤§æˆ˜æ–—å®¶æ—\n");
 #ifdef _NEW_MANOR_LAW
-					strcat( NPC_sendbuf, "              Ê®´óÆøÊÆ¼Ò×å\n");
+					strcat( NPC_sendbuf, "              åå¤§æ°”åŠ¿å®¶æ—\n");
 #endif
-					strcat( NPC_sendbuf, "              ×Ô¼º¼Ò×åÉùÍûÁĞ±í\n");
+					strcat( NPC_sendbuf, "              è‡ªå·±å®¶æ—å£°æœ›åˆ—è¡¨\n");
 #ifdef _NEW_MANOR_LAW
-					strcat( NPC_sendbuf, "              ×Ô¼º¼Ò×åÆøÊÆÅÅÃû\n");
+					strcat( NPC_sendbuf, "              è‡ªå·±å®¶æ—æ°”åŠ¿æ’å\n");
 #endif					
 						
 					lssproto_WN_send( fd, WINDOW_MESSAGETYPE_SELECT,
@@ -989,7 +989,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 					if( fd == -1 )  return;
 					
 					if( CHAR_getInt(talker, CHAR_FMINDEX) <= 0){  
-						sprintf( NPC_sendbuf, "              ¡º¾¯       ¸æ¡»\n ±§Ç¸£¡Äã²»ÊÇ¼Ò×åÈËÔ±£¬²»µÃÊ¹ÓÃ¹«²¼À¸¡£");
+						sprintf( NPC_sendbuf, "              ã€è­¦       å‘Šã€\n æŠ±æ­‰ï¼ä½ ä¸æ˜¯å®¶æ—äººå‘˜ï¼Œä¸å¾—ä½¿ç”¨å…¬å¸ƒæ ã€‚");
 						
 						lssproto_WN_send( fd, WINDOW_MESSAGETYPE_MESSAGE,
 							WINDOW_BUTTONTYPE_OK,
@@ -1108,9 +1108,9 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 					int fd;
 					fd = getfdFromCharaIndex( talker );
 					memset(&NPC_sendbuf,0,sizeof(NPC_sendbuf));
-					strcpy(NPC_sendbuf, "[×¯Ô°×åÕ½Ê±¼ä±í]");
+					strcpy(NPC_sendbuf, "[åº„å›­æ—æˆ˜æ—¶é—´è¡¨]");
 				  {
-				  	char fmpointname[MANORNUM][16] = {"ÈøÄ·¼ª¶û×¯Ô°", "ÂêÀöÄÈË¿×¯Ô°", "¼Ó    ¼Ó×¯Ô°", "¿¨Â³ËüÄÇ×¯Ô°", "ÒÁ µé Ô°×¯Ô°", "Ëş ¶û Ëş×¯Ô°", "Äá ¿Ë Ë¹×¯Ô°", "¸¥ ÁÒ ¶Ù×¯Ô°", "ÑÇ ÒÀ Å·×¯Ô°", "Èğ¶ûÑÇË¹×¯Ô°"};
+				  	char fmpointname[MANORNUM][16] = {"è¨å§†å‰å°”åº„å›­", "ç›ä¸½å¨œä¸åº„å›­", "åŠ     åŠ åº„å›­", "å¡é²å®ƒé‚£åº„å›­", "ä¼Š ç”¸ å›­åº„å›­", "å¡” å°” å¡”åº„å›­", "å°¼ å…‹ æ–¯åº„å›­", "å¼— çƒˆ é¡¿åº„å›­", "äºš ä¾ æ¬§åº„å›­", "ç‘å°”äºšæ–¯åº„å›­"};
 					  int i, fmpks_pos;
 						for( i=1; i<=MANORNUM; i++){
 							fmpks_pos = i * MAX_SCHEDULE;
@@ -1132,9 +1132,9 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 									time_t dueltime = (time_t)fmpks[fmpks_pos + 1].dueltime;
 									struct tm *tm1 = localtime(&dueltime);
 									
-									sprintf(tmpbuf, "¡º%s¡»%02dÔÂ%02dÈÕ %d:%d ¡¾%s¡¿\n"
-																	"                %s £ö£ó %s\n"
-																	"                PKÈËÊı£º%d £ö£ó %d\n", fmpointname[i - 1],
+									sprintf(tmpbuf, "ã€%sã€%02dæœˆ%02dæ—¥ %d:%d ã€%sã€‘\n"
+																	"                %s ï½–ï½“ %s\n"
+																	"                PKäººæ•°ï¼š%d ï½–ï½“ %d\n", fmpointname[i - 1],
 												tm1->tm_mon + 1, tm1->tm_mday, tm1->tm_hour, tm1->tm_min,
 												fmpks[fmpks_pos + 2].host_name,
 												fmpks[fmpks_pos + 1].guest_name,
@@ -1143,11 +1143,11 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 												fmpks[fmpks_pos + 1].max_player);
 
 									if(fmpks[fmpks_pos+1].flag == FMPKS_FLAG_MANOR_BATTLEBEGIN){
-										strcat( tmpbuf, "                ×¯Ô°×´Ì¬£º×åÕ½ÖĞ\n");
+										strcat( tmpbuf, "                åº„å›­çŠ¶æ€ï¼šæ—æˆ˜ä¸­\n");
 									}else if(fmpks[fmpks_pos+1].flag == FMPKS_FLAG_MANOR_PREPARE){
-										strcat( tmpbuf, "                ×¯Ô°×´Ì¬£º×¼±¸ÖĞ");
+										strcat( tmpbuf, "                åº„å›­çŠ¶æ€ï¼šå‡†å¤‡ä¸­");
 									}else if(fmpks[fmpks_pos+1].flag == FMPKS_FLAG_MANOR_OTHERPLANET){
-										strcat( tmpbuf, "                ×¯Ô°×´Ì¬£ºÔÚ±ğµÄÏßÂ·¾öÕ½");
+										strcat( tmpbuf, "                åº„å›­çŠ¶æ€ï¼šåœ¨åˆ«çš„çº¿è·¯å†³æˆ˜");
 									}
 
 								}
@@ -1155,7 +1155,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 
 								default:
 									{
-										sprintf(tmpbuf, "¡º%s¡»ÎŞÌôÕ½ÅÅ³Ì\n\n\n",fmpointname[i - 1]);
+										sprintf(tmpbuf, "ã€%sã€æ— æŒ‘æˆ˜æ’ç¨‹\n\n\n",fmpointname[i - 1]);
 									}
 
 								break;
@@ -1184,7 +1184,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 					char fmname[255];
 					fd = getfdFromCharaIndex( talker );
 					memset(&NPC_sendbuf,0,sizeof(NPC_sendbuf));
-					strcpy(NPC_sendbuf, "×¯Ô°Õ¼¾İÊ±¼ä±í");
+					strcpy(NPC_sendbuf, "åº„å›­å æ®æ—¶é—´è¡¨");
 				  {
 					  int i;
 						for( i=0; i<FMPOINTNUM; i++){
@@ -1218,7 +1218,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
         }
     }
         
-    // ³ÉÔ±ÁĞ±í
+    // æˆå‘˜åˆ—è¡¨
     else if( seqno == CHAR_WINDOWTYPE_FM_MEMBERLIST)
     {
 			char numberlistbuf[4096],tmp_buffer[4096],dutybuf[64];
@@ -1257,7 +1257,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 					
 					int_status = atoi(getstatus);
 					
-					// ¼Ò×åµÄ¼ÓÈë¡¢ÍË³ö¡¢ÉêÇëµÈÑ¡Ïî
+					// å®¶æ—çš„åŠ å…¥ã€é€€å‡ºã€ç”³è¯·ç­‰é€‰é¡¹
 					if( buttonevent!=11 )
 #ifdef _FMVER21            
 						strcpy( memberlist[fmindex_wk].numberlistarray[numberlistindex+buttonevent - 1]
@@ -1277,7 +1277,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						break;
 					}              
 #endif                 
-					// ¼Ò×åµÄÕÙÄ¼Ñ¡Ïî
+					// å®¶æ—çš„å¬å‹Ÿé€‰é¡¹
 					if( buttonevent == 11 )
 					{
 						strcpy( getstatus, enlistbuf + (strlen(enlistbuf) - 1));
@@ -1286,11 +1286,11 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						switch( int_status ){
 						case 1:
 							memberlist[fmindex_wk].accept = 0;
-							sprintf(enlistbuf, "ÊÇ·ñ¼ÌĞøÕÙÄ¼¼Ò×åÈËÔ±|%d|%d",numberlistindex,memberlist[fmindex_wk].accept);
+							sprintf(enlistbuf, "æ˜¯å¦ç»§ç»­å¬å‹Ÿå®¶æ—äººå‘˜|%d|%d",numberlistindex,memberlist[fmindex_wk].accept);
 							break;
 						case 0:
 							memberlist[fmindex_wk].accept = 1;
-							sprintf(enlistbuf, "ÊÇ·ñ¼ÌĞøÕÙÄ¼¼Ò×åÈËÔ±|%d|%d",numberlistindex,memberlist[fmindex_wk].accept);
+							sprintf(enlistbuf, "æ˜¯å¦ç»§ç»­å¬å‹Ÿå®¶æ—äººå‘˜|%d|%d",numberlistindex,memberlist[fmindex_wk].accept);
 							break;
 						default:
 							break;    
@@ -1303,7 +1303,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						strcat( numberlistbuf, memberlist[fmindex_wk].numberlistarray[i]);
 						strcat( numberlistbuf, "\n");
 					}
-					sprintf(enlistbuf, "ÊÇ·ñ¼ÌĞøÕÙÄ¼¼Ò×åÈËÔ±|%d|%d",numberlistindex,memberlist[fmindex_wk].accept);
+					sprintf(enlistbuf, "æ˜¯å¦ç»§ç»­å¬å‹Ÿå®¶æ—äººå‘˜|%d|%d",numberlistindex,memberlist[fmindex_wk].accept);
 					strcat( numberlistbuf, enlistbuf);
 					strcat( numberlistbuf, "\n");
 					
@@ -1359,7 +1359,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 							strcat( numberlistbuf, memberlist[fmindex_wk].numberlistarray[i]);
 							strcat( numberlistbuf, "\n");
 						}
-						sprintf(enlistbuf, "ÊÇ·ñ¼ÌĞøÕÙÄ¼¼Ò×åÈËÔ±|%d|%d",numberlistindex,memberlist[fmindex_wk].accept);
+						sprintf(enlistbuf, "æ˜¯å¦ç»§ç»­å¬å‹Ÿå®¶æ—äººå‘˜|%d|%d",numberlistindex,memberlist[fmindex_wk].accept);
 						strcat( numberlistbuf, enlistbuf);
 						strcat( numberlistbuf, "\n");
 						lssproto_WN_send( fd, WINDOW_FMMESSAGETYPE_SELECT,
@@ -1380,7 +1380,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
         }
     }
     
-    // ¼Ò×åÇ¿Õß±í(Ç°ÈşÊ®)
+    // å®¶æ—å¼ºè€…è¡¨(å‰åå)
     else if( seqno == CHAR_WINDOWTYPE_FM_DPTOP)
     {
 			char listbuf[4096],tmp_buffer[4096];
@@ -1447,7 +1447,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 			}
     }
 
-    // ¾İµãÁĞ±í
+    // æ®ç‚¹åˆ—è¡¨
     else if( seqno == CHAR_WINDOWTYPE_FM_POINTLIST)
     {
 			char pointbuf[1024];
@@ -1508,7 +1508,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 			}
     }        
 
-    // ¼Ò×åÇ¿Õß±í(×Ô¼º¼°Ç°Ê®´ó)
+    // å®¶æ—å¼ºè€…è¡¨(è‡ªå·±åŠå‰åå¤§)
     else if( seqno == CHAR_WINDOWTYPE_FM_DPME )
     {
 			switch( select ){
@@ -1532,20 +1532,20 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						READTIME3 = NowTime.tv_sec+FM_WAITTIME;
 					}
 					
-					strcpy( NPC_sendbuf, "\n              ÈıÊ®´ó¼Ò×åÉùÍûÁĞ±í\n");
-					strcat( NPC_sendbuf, "              Ê®´óÃ°ÏÕ¼Ò×å\n");
-					strcat( NPC_sendbuf, "              Ê®´óËÇÓı¼Ò×å\n");
+					strcpy( NPC_sendbuf, "\n              ä¸‰åå¤§å®¶æ—å£°æœ›åˆ—è¡¨\n");
+					strcat( NPC_sendbuf, "              åå¤§å†’é™©å®¶æ—\n");
+					strcat( NPC_sendbuf, "              åå¤§é¥²è‚²å®¶æ—\n");
 #ifndef _NEW_MANOR_LAW
-					strcat( NPC_sendbuf, "              Ê®´óºÏ³É¼Ò×å\n");
-					strcat( NPC_sendbuf, "              Ê®´óÁÏÀí¼Ò×å\n");
+					strcat( NPC_sendbuf, "              åå¤§åˆæˆå®¶æ—\n");
+					strcat( NPC_sendbuf, "              åå¤§æ–™ç†å®¶æ—\n");
 #endif
-					strcat( NPC_sendbuf, "              Ê®´óÕ½¶·¼Ò×å\n");
+					strcat( NPC_sendbuf, "              åå¤§æˆ˜æ–—å®¶æ—\n");
 #ifdef _NEW_MANOR_LAW
-					strcat( NPC_sendbuf, "              Ê®´óÆøÊÆ¼Ò×å\n");
+					strcat( NPC_sendbuf, "              åå¤§æ°”åŠ¿å®¶æ—\n");
 #endif
-					strcat( NPC_sendbuf, "              ×Ô¼º¼Ò×åÉùÍûÁĞ±í\n");
+					strcat( NPC_sendbuf, "              è‡ªå·±å®¶æ—å£°æœ›åˆ—è¡¨\n");
 #ifdef _NEW_MANOR_LAW
-					strcat( NPC_sendbuf, "              ×Ô¼º¼Ò×åÆøÊÆÅÅÃû\n");
+					strcat( NPC_sendbuf, "              è‡ªå·±å®¶æ—æ°”åŠ¿æ’å\n");
 #endif					
 					lssproto_WN_send( fd, WINDOW_MESSAGETYPE_SELECT,
 						WINDOW_BUTTONTYPE_NONE,
@@ -1580,19 +1580,19 @@ void NPC_FmDengonLooked( int meindex, int lookedindex )
     fd = getfdFromCharaIndex( lookedindex );
     if( fd == -1 )  return;
     
-    // ±ØĞëÕ¾ÔÚ²¼¸æÀ¸µÄÇ°ÃæÒ»¸ñ
+    // å¿…é¡»ç«™åœ¨å¸ƒå‘Šæ çš„å‰é¢ä¸€æ ¼
     if( NPC_Util_CharDistance( lookedindex, meindex ) > 1) return;
-    // ¿Õ°×´¦ÇëÎğ¸ü¶¯
-    strcpy( menubuf, "                  ¡º¼Ò×å²¼¸æÀ¸¡»");
-	strcat( menubuf, "\n                   ¼Ò×å³ÉÔ±ÁĞ±í");
-	strcat( menubuf, "\n                     ¼Ò×åÁôÑÔ");
-	strcat( menubuf, "\n                  ¼Ò×åÖ®¼äÁôÑÔ°å");
-	strcat( menubuf, "\n                   ÉêÇë¼Ò×å¾İµã");
-	strcat( menubuf, "\n                  ¼Ò×åÖ®¼äÇ¿Õß±í");
+    // ç©ºç™½å¤„è¯·å‹¿æ›´åŠ¨
+    strcpy( menubuf, "                  ã€å®¶æ—å¸ƒå‘Šæ ã€");
+	strcat( menubuf, "\n                   å®¶æ—æˆå‘˜åˆ—è¡¨");
+	strcat( menubuf, "\n                     å®¶æ—ç•™è¨€");
+	strcat( menubuf, "\n                  å®¶æ—ä¹‹é—´ç•™è¨€æ¿");
+	strcat( menubuf, "\n                   ç”³è¯·å®¶æ—æ®ç‚¹");
+	strcat( menubuf, "\n                  å®¶æ—ä¹‹é—´å¼ºè€…è¡¨");
 #ifdef _FM_FMPOINTPK_LIST
-	strcat( menubuf, "\n                  ×¯Ô°×åÕ½Ê±¼ä±í");
+	strcat( menubuf, "\n                  åº„å›­æ—æˆ˜æ—¶é—´è¡¨");
 #endif
-	strcat( menubuf, "\n                  ×¯Ô°Õ¼¾İÊ±¼ä±í");
+	strcat( menubuf, "\n                  åº„å›­å æ®æ—¶é—´è¡¨");
     lssproto_WN_send(fd, WINDOW_MESSAGETYPE_SELECT,
         	     WINDOW_BUTTONTYPE_CANCEL,
                      CHAR_WINDOWTYPE_FM_SELECT,
@@ -1611,17 +1611,17 @@ void NPC_FmDengonLooked( int meindex, int lookedindex )
     fd = getfdFromCharaIndex( lookedindex );
     if( fd == -1 )  return;
     
-    // ¿Õ°×´¦ÇëÎğ¸ü¶¯
-    strcpy( menubuf, "                  ¡º¼Ò×å²¼¸æÀ¸¡»");
-	strcat( menubuf, "\n                   ¼Ò×å³ÉÔ±ÁĞ±í");
-	strcat( menubuf, "\n                     ¼Ò×åÁôÑÔ");
-	strcat( menubuf, "\n                  ¼Ò×åÖ®¼äÁôÑÔ°å");
-	strcat( menubuf, "\n                   ÉêÇë¼Ò×å¾İµã");
-	strcat( menubuf, "\n                  ¼Ò×åÖ®¼äÇ¿Õß±í");
+    // ç©ºç™½å¤„è¯·å‹¿æ›´åŠ¨
+    strcpy( menubuf, "                  ã€å®¶æ—å¸ƒå‘Šæ ã€");
+	strcat( menubuf, "\n                   å®¶æ—æˆå‘˜åˆ—è¡¨");
+	strcat( menubuf, "\n                     å®¶æ—ç•™è¨€");
+	strcat( menubuf, "\n                  å®¶æ—ä¹‹é—´ç•™è¨€æ¿");
+	strcat( menubuf, "\n                   ç”³è¯·å®¶æ—æ®ç‚¹");
+	strcat( menubuf, "\n                  å®¶æ—ä¹‹é—´å¼ºè€…è¡¨");
 #ifdef _FM_FMPOINTPK_LIST
-	strcat( menubuf, "\n                  ×¯Ô°×åÕ½Ê±¼ä±í");
+	strcat( menubuf, "\n                  åº„å›­æ—æˆ˜æ—¶é—´è¡¨");
 #endif
-	strcat( menubuf, "\n                  ×¯Ô°Õ¼¾İÊ±¼ä±í");
+	strcat( menubuf, "\n                  åº„å›­å æ®æ—¶é—´è¡¨");
     lssproto_WN_send(fd,
 										 WINDOW_MESSAGETYPE_SELECT,
         						 WINDOW_BUTTONTYPE_CANCEL,

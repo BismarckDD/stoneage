@@ -1,12 +1,12 @@
-function ½Å±¾¼ÓÔØ(Â·¾¶)
-	return dofile(Â·¾¶);
-end
-
-function Ö÷º¯Êı()
-	½Å±¾¼ÓÔØ("./data/lua/onlineshop/main.lua");
-	--Ê±¼äÖÖ×Ó
-	math.randomseed(os.time());
-end
-
-Ö÷º¯Êı()
-
+function è„šæœ¬åŠ è½½(è·¯å¾„)
+	return dofile(è·¯å¾„);
+end
+
+function ä¸»å‡½æ•°()
+	è„šæœ¬åŠ è½½("./data/lua/onlineshop/main.lua");
+	--æ—¶é—´ç§å­
+	math.randomseed(os.time());
+end
+
+ä¸»å‡½æ•°()
+

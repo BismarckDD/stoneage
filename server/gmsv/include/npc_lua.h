@@ -25,23 +25,23 @@ typedef struct __CREATEENEMY
 
 typedef struct __SCRIPTREGLIB
 {
-	const char *LibName;				//º¯Êı¿âÃû
-	luaL_reg *FuncRegList;			//ĞèÒª×¢²áµÄº¯Êı¿âº¯ÊıÁĞ±í
+	const char *LibName;				//å‡½æ•°åº“å
+	luaL_reg *FuncRegList;			//éœ€è¦æ³¨å†Œçš„å‡½æ•°åº“å‡½æ•°åˆ—è¡¨
 }SCRIPTREGLIB,*PSCRIPTREGLIB;
 
 typedef struct __SCRIPTREGCLASS
 {
-	const char *ClassName;			//ÀàĞÍÃû
-	PSCRIPTREGLIB NewLib;				//ÓÃÓÚÉêÇëÀàÊµÀıµÄ SCRIPTREGLIB
-	luaL_reg *FuncRegList;			//ĞèÒª×¢²áµÄÀàº¯ÊıÁĞ±í
+	const char *ClassName;			//ç±»å‹å
+	PSCRIPTREGLIB NewLib;				//ç”¨äºç”³è¯·ç±»å®ä¾‹çš„ SCRIPTREGLIB
+	luaL_reg *FuncRegList;			//éœ€è¦æ³¨å†Œçš„ç±»å‡½æ•°åˆ—è¡¨
 }SCRIPTREGCLASS,*PSCRIPTREGCLASS;
 
 typedef struct __SCRIPTREGARRAY
 {
-	const char *ArrayName;			//Êı×éÃû
-	const char **SetMetaTable;	//ÓÃÓÚÉèÖÃÊı×éÏìÓ¦¶¯×÷
-	const char **SetFuncName;		//ÓÃÓÚÉèÖÃÊı×éÏìÓ¦¶¯×÷µÄº¯ÊıÃû×Ö
-	PSCRIPTREGLIB FuncList;			//ÓÃÓÚÏìÓ¦¶ÔÓ¦ SetMetaTable µÄ´¦Àíº¯ÊıÁĞ±í
+	const char *ArrayName;			//æ•°ç»„å
+	const char **SetMetaTable;	//ç”¨äºè®¾ç½®æ•°ç»„å“åº”åŠ¨ä½œ
+	const char **SetFuncName;		//ç”¨äºè®¾ç½®æ•°ç»„å“åº”åŠ¨ä½œçš„å‡½æ•°åå­—
+	PSCRIPTREGLIB FuncList;			//ç”¨äºå“åº”å¯¹åº” SetMetaTable çš„å¤„ç†å‡½æ•°åˆ—è¡¨
 }SCRIPTREGARRAY,*PSCRIPTREGARRAY;
 
 typedef struct __ARRAY_NTINT
@@ -50,37 +50,37 @@ typedef struct __ARRAY_NTINT
 	int Num[1];
 }ARRAY_NTINT,*PARRAY_NTINT;
 
-//´´½¨NPC-·µ»ØNPCÎ¨Ò»Ë÷Òı
+//åˆ›å»ºNPC-è¿”å›NPCå”¯ä¸€ç´¢å¼•
 int NPC_Lua_Create(const char *_DoFile, const char *_InitFuncName, char *_seek, BOOL _IsFly);
 
-//É¾³ıNPC ´«ÈëNPCÎ¨Ò»Ë÷Òı
+//åˆ é™¤NPC ä¼ å…¥NPCå”¯ä¸€ç´¢å¼•
 int NPC_Lua_Del(int _index);
 
-//´´½¨Õ½¶·
+//åˆ›å»ºæˆ˜æ–—
 int NPC_Lua_CreateVsEnemy(lua_State *_NLL, int _CharaIndex, int _NpcIndex, const char *_DoFunc, PCREATEENEMY _CreateEnemy, int _ARLen, int _Flg);
 
 const char *NPC_Lua_SetErrorStr(const char *ErrStr);
 
-//×¢²áÀ©Õ¹µ÷ÓÃ½Ó¿Ú
+//æ³¨å†Œæ‰©å±•è°ƒç”¨æ¥å£
 int NPC_Lua_RegCallEx(lua_State * _NLL, luaL_Reg *_RegList);
-//×¢²áÀ©Õ¹º¯Êı¿â½Ó¿Ú
+//æ³¨å†Œæ‰©å±•å‡½æ•°åº“æ¥å£
 int NPC_Lua_RegLibEx(lua_State * _NLL, PSCRIPTREGLIB _RegLib);
-//×¢²áÀ©Õ¹Àà½Ó¿Ú
+//æ³¨å†Œæ‰©å±•ç±»æ¥å£
 int NPC_Lua_RegClassEx(lua_State * _NLL, PSCRIPTREGCLASS _RegClass);
-//×¢²áÀ©Õ¹Êı×é½Ó¿Ú
+//æ³¨å†Œæ‰©å±•æ•°ç»„æ¥å£
 int NPC_Lua_RegArrayEx(lua_State * _NLL, PSCRIPTREGARRAY _RegArray);
 
-//À©Õ¹ÀàĞÍ½Ó¿Úº¯Êı
+//æ‰©å±•ç±»å‹æ¥å£å‡½æ•°
 //NTInt
 int NPC_Lua_NTInt_New(lua_State *_NLL);
 int NPC_Lua_NTInt_Get(lua_State *_NLL);
 int NPC_Lua_NTInt_Set(lua_State *_NLL);
 int NPC_Lua_NTInt_Len(lua_State *_NLL);
 
-//½Ó¿Úº¯Êı
+//æ¥å£å‡½æ•°
 ////////////////////////////////////////////////NL/////////////////////////////////////////////////
-int NPC_Lua_NL_GetErrorStr(lua_State *_NLL);						//·µ»Ø´íÎóĞÅÏ¢
-int NPC_Lua_NL_CreateNpc(lua_State *_NLL);							//´´½¨NPC
+int NPC_Lua_NL_GetErrorStr(lua_State *_NLL);						//è¿”å›é”™è¯¯ä¿¡æ¯
+int NPC_Lua_NL_CreateNpc(lua_State *_NLL);							//åˆ›å»ºNPC
 int NPC_Lua_NL_CreateSpecialNpc(lua_State *L);
 extern int copyChar(lua_State *L);
 extern int createPet(lua_State *L);
@@ -94,25 +94,25 @@ extern int talkToAllServer(lua_State *L);
 extern int dengon(lua_State *L);
 extern int RandRandWalk(lua_State *L);
 
-int NPC_Lua_NL_DelNpc(lua_State *_NLL);									//É¾³ıNPC
-int NPC_Lua_NL_Mod(lua_State *_NLL);									  //ÇóÓàÊı
-int NPC_Lua_NL_GetStringFromIndexWithDelim(lua_State *_NLL);									//Ê¹ÓÃÖ¸¶¨×Ö·û·Ö¸î×Ö·û´®£¬²¢·µ»Øµ÷ÓÃÕßÖ¸¶¨indexÎ»ÖÃµÄ×Ö·û´®
-//int NPC_Lua_NL_ANSI_PlayerLoop(lua_State *_NLL);		    //±éÀúËùÓĞ´æÔÚÈËÎï£¬·µ»ØË÷ÒıºÅ
-int NPC_Lua_NL_PetLoopGetNext(lua_State *_NLL);		      //±éÀúËùÓĞ´æÔÚ³èÎï£¬·µ»Ø³èÎïË÷ÒıºÅ Ğ´·¨ÀàËÆ¶¨Ê±Æ÷
-int NPC_Lua_NL_ItemLoopGetNext(lua_State *_NLL);		    //±éÀúËùÓĞ´æÔÚµÀ¾ß£¬·µ»ØµÀ¾ßË÷ÒıºÅ ÈçÉÏ
-int NPC_Lua_NL_PlayerLoopGetNext(lua_State *_NLL);		  //±éÀúËùÓĞ´æÔÚÈËÎï£¬·µ»ØÈËÎïË÷ÒıºÅ ÈçÉÏ
-int NPC_Lua_NL_GetConfigLineType(lua_State *_NLL);	  	//·µ»Ø0Îª×Ö·û´®ĞÎ¡£1ÎªSHORTĞÎ¡£2ÎªINTĞÍ¡£3ÎªDOUBLEĞÍ¡£Èç¹û²»´æÔÚ¸Ã×Ö¶Î£¬·µ»Ø-1.
-int NPC_Lua_NL_GetConfigLineVal(lua_State *_NLL);	  	  //×ÜÊÇ·µ»Ø[×Ö·û´®]¡£Èç¹ûĞèÒª×ª»»ÎªÊı×Ö£¬ÇëÓÃtonumber()º¯Êı¡£ÕÒ²»µ½¸Ã×Ö¶Î·µ»Ønil
+int NPC_Lua_NL_DelNpc(lua_State *_NLL);									//åˆ é™¤NPC
+int NPC_Lua_NL_Mod(lua_State *_NLL);									  //æ±‚ä½™æ•°
+int NPC_Lua_NL_GetStringFromIndexWithDelim(lua_State *_NLL);									//ä½¿ç”¨æŒ‡å®šå­—ç¬¦åˆ†å‰²å­—ç¬¦ä¸²ï¼Œå¹¶è¿”å›è°ƒç”¨è€…æŒ‡å®šindexä½ç½®çš„å­—ç¬¦ä¸²
+//int NPC_Lua_NL_ANSI_PlayerLoop(lua_State *_NLL);		    //éå†æ‰€æœ‰å­˜åœ¨äººç‰©ï¼Œè¿”å›ç´¢å¼•å·
+int NPC_Lua_NL_PetLoopGetNext(lua_State *_NLL);		      //éå†æ‰€æœ‰å­˜åœ¨å® ç‰©ï¼Œè¿”å›å® ç‰©ç´¢å¼•å· å†™æ³•ç±»ä¼¼å®šæ—¶å™¨
+int NPC_Lua_NL_ItemLoopGetNext(lua_State *_NLL);		    //éå†æ‰€æœ‰å­˜åœ¨é“å…·ï¼Œè¿”å›é“å…·ç´¢å¼•å· å¦‚ä¸Š
+int NPC_Lua_NL_PlayerLoopGetNext(lua_State *_NLL);		  //éå†æ‰€æœ‰å­˜åœ¨äººç‰©ï¼Œè¿”å›äººç‰©ç´¢å¼•å· å¦‚ä¸Š
+int NPC_Lua_NL_GetConfigLineType(lua_State *_NLL);	  	//è¿”å›0ä¸ºå­—ç¬¦ä¸²å½¢ã€‚1ä¸ºSHORTå½¢ã€‚2ä¸ºINTå‹ã€‚3ä¸ºDOUBLEå‹ã€‚å¦‚æœä¸å­˜åœ¨è¯¥å­—æ®µï¼Œè¿”å›-1.
+int NPC_Lua_NL_GetConfigLineVal(lua_State *_NLL);	  	  //æ€»æ˜¯è¿”å›[å­—ç¬¦ä¸²]ã€‚å¦‚æœéœ€è¦è½¬æ¢ä¸ºæ•°å­—ï¼Œè¯·ç”¨tonumber()å‡½æ•°ã€‚æ‰¾ä¸åˆ°è¯¥å­—æ®µè¿”å›nil
 int NPC_Lua_NL_getGameservername(lua_State *_NLL);
-BOOL NPC_Lua_CheckNpcEventFree(lua_State *_NLL);									//¼ì²â¶ÔÏóÊÇ·ñÂú×ãÄ³Ìõ¼ş
-int NPC_Lua_DoNpcEventAction(lua_State *_NLL);									//Ö´ĞĞNPC½Å±¾ÃüÁî
-int NPC_Lua_NL_SetTimer(lua_State *_NLL);	  	          //Éè¶¨Ò»¸ö¼ÆÊ±Æ÷£¬ËùÉèµÄº¯Êı½«°´Éè¶¨µÄ¼ä¸ôÊ±¼äÖÜÆÚµ÷ÓÃ¡£
-int NPC_Lua_NL_DelTimer(lua_State *_NLL);	  	          //É¾³ıÒ»¸ö¼ÆÊ±Æ÷¡£Ò»¸ö¼ÆÊ±Æ÷±»É¾³ı£¬¾Í²»»áÔÙ±»ÖÜÆÚµ÷ÓÃ£»
-int NPC_Lua_NL_RunSaFuncII(lua_State *_NLL);	  	      //µ÷ÓÃÒ»¸ö·şÎñ¶ËÄÚ¶¨ÒåºÃµÄ2¸öINT²ÎÊıµÄº¯Êı¡£
-int NPC_Lua_NL_RunSaFuncIII(lua_State *_NLL);	  	      //µ÷ÓÃÒ»¸ö·şÎñ¶ËÄÚ¶¨ÒåºÃµÄ3¸öINT²ÎÊıµÄº¯Êı(ÈçITEM_USEµÈÊ¹ÓÃµÀ¾ßºóµÄ»Øµ÷º¯Êı£©¡£
-int NPC_Lua_NL_ANSI_PlayerLoop(lua_State *_NLL);		    //±éÀúËùÓĞ´æÔÚÈËÎï£¬·µ»ØË÷ÒıºÅ
-int NPC_Lua_NL_ANSI_PetLoop(lua_State *_NLL);		        //±éÀúËùÓĞ´æÔÚ³èÎï£¬·µ»ØË÷ÒıºÅ
-int NPC_Lua_NL_ANSI_ItemLoop(lua_State *_NLL);		      //±éÀúËùÓĞ´æÔÚµÀ¾ß£¬·µ»ØË÷ÒıºÅ
+BOOL NPC_Lua_CheckNpcEventFree(lua_State *_NLL);									//æ£€æµ‹å¯¹è±¡æ˜¯å¦æ»¡è¶³æŸæ¡ä»¶
+int NPC_Lua_DoNpcEventAction(lua_State *_NLL);									//æ‰§è¡ŒNPCè„šæœ¬å‘½ä»¤
+int NPC_Lua_NL_SetTimer(lua_State *_NLL);	  	          //è®¾å®šä¸€ä¸ªè®¡æ—¶å™¨ï¼Œæ‰€è®¾çš„å‡½æ•°å°†æŒ‰è®¾å®šçš„é—´éš”æ—¶é—´å‘¨æœŸè°ƒç”¨ã€‚
+int NPC_Lua_NL_DelTimer(lua_State *_NLL);	  	          //åˆ é™¤ä¸€ä¸ªè®¡æ—¶å™¨ã€‚ä¸€ä¸ªè®¡æ—¶å™¨è¢«åˆ é™¤ï¼Œå°±ä¸ä¼šå†è¢«å‘¨æœŸè°ƒç”¨ï¼›
+int NPC_Lua_NL_RunSaFuncII(lua_State *_NLL);	  	      //è°ƒç”¨ä¸€ä¸ªæœåŠ¡ç«¯å†…å®šä¹‰å¥½çš„2ä¸ªINTå‚æ•°çš„å‡½æ•°ã€‚
+int NPC_Lua_NL_RunSaFuncIII(lua_State *_NLL);	  	      //è°ƒç”¨ä¸€ä¸ªæœåŠ¡ç«¯å†…å®šä¹‰å¥½çš„3ä¸ªINTå‚æ•°çš„å‡½æ•°(å¦‚ITEM_USEç­‰ä½¿ç”¨é“å…·åçš„å›è°ƒå‡½æ•°ï¼‰ã€‚
+int NPC_Lua_NL_ANSI_PlayerLoop(lua_State *_NLL);		    //éå†æ‰€æœ‰å­˜åœ¨äººç‰©ï¼Œè¿”å›ç´¢å¼•å·
+int NPC_Lua_NL_ANSI_PetLoop(lua_State *_NLL);		        //éå†æ‰€æœ‰å­˜åœ¨å® ç‰©ï¼Œè¿”å›ç´¢å¼•å·
+int NPC_Lua_NL_ANSI_ItemLoop(lua_State *_NLL);		      //éå†æ‰€æœ‰å­˜åœ¨é“å…·ï¼Œè¿”å›ç´¢å¼•å·
 int NPC_Lua_NL_ClsMk(lua_State *_NLL);
 int NPC_Lua_NL_AddCheckNum(lua_State *_NLL);
 int NPC_Lua_NL_Mkstring(lua_State *_NLL);
@@ -120,141 +120,141 @@ int NPC_Lua_NL_Mkint(lua_State *_NLL);
 int NPC_Lua_NL_SendMesg(lua_State *_NLL);
 int NPC_Lua_NL_WriteShopData(lua_State *_NLL);
 ////////////////////////////////////////////////NLG////////////////////////////////////////////////
-//¹¦ÄÜ½Ó¿Ú
+//åŠŸèƒ½æ¥å£
 int NPC_Lua_NLG_UpItem(lua_State *_NLL);
 int NPC_Lua_NLG_GiveItemOne(lua_State *_NLL);
 int NPC_Lua_NLG_GivePetOne(lua_State *_NLL);
 int NPC_Lua_NLG_DelItemByIndex(lua_State *_NLL);	
-int NPC_Lua_NLG_FindPet(lua_State *_NLL);								//²éÕÒ³èÎïÀ¸¿ÕÎ»
-int NPC_Lua_NLG_GetMap(lua_State *_NLL);						    //»ñµÃµ±Ç°Î»ÖÃµÄ½¨ÖşÎï
-int NPC_Lua_NLG_PetUp(lua_State *_NLL);								  //³èÎïÉı¼¶
-int NPC_Lua_NLG_AddSk(lua_State *_NLL);								  //¸øÖ°Òµ¼¼ÄÜ
-int NPC_Lua_NLG_SetZy(lua_State *_NLL);								  //Éè¶¨Ö°Òµ
-int NPC_Lua_Char_GetPlayerMaxNum(lua_State *_NLL);			//»ñÈ¡×î´óÈËÊı
-int NPC_Lua_NLG_GetXY(lua_State *_NLL);							  	//»ñÈ¡Ò»¸öµØÍ¼µÄ×ø±ê
-int NPC_Lua_NLG_WalkJc(lua_State *_NLL);							  //¼ì²éÕÏ°­Îï
-int NPC_Lua_NLG_KickPlayer(lua_State *_NLL);				  	//T³ıÖ¸¶¨Íæ¼Ò
-int NPC_Lua_NLG_HealOne(lua_State *_NLL);				  	    //Ö¸¶¨Ò»¸ö¶ÔÏó »Ø¸´ÂúHP ÂúMP
-int NPC_Lua_NLG_HealAll(lua_State *_NLL);				  	    //Ö¸¶¨Ò»¸öÍæ¼ÒMP »Ø¸´ËùÓĞ°üÀ¨³èÎïHP
-int NPC_Lua_NLG_LevelUpTo(lua_State *_NLL);				  	  //ÌáÉı¶ÔÏóµÄµÈ¼¶¡£
-int NPC_Lua_NLG_AddExp(lua_State *_NLL);			  	  	  //¸øÓëÒ»¸ö¶ÔÏó¾­Ñé¡£
-int NPC_Lua_NLG_UpPet(lua_State *_NLL);			  	  	    //¸üĞÂ¶ÔÏóµÄ³èÎï£¬ÓÃÓÚ¸üĞÂ¡¾¿Í»§¶Ë¡¿³èÎïÊı¾İ£¬ÔÚÄ³Ğ©ºóÌ¨µÀ¾ßÊôĞÔ±»ĞŞ¸ÄµÄÇé¿öÏÂ²»ÄÜ°Ñ¸üĞÂÊı¾İ·¢ËÍµ½Ç°Ì¨£»
-int NPC_Lua_NLG_DelPetByPos(lua_State *_NLL);						//É¾³ı ¶ÔÏñ ÉíÉÏÖ¸¶¨À¸Î»µÄ³èÎï
-int NPC_Lua_NLG_DelPetByIndex(lua_State *_NLL);					//É¾³ı ¶ÔÏñ ÉíÉÏÖ¸¶¨Ë÷ÒıºÅ£¨·ÇID£©µÄ³èÎï
-int NPC_Lua_NLG_GivePetByIndex(lua_State *_NLL);				//¸øÓèÒ»Ö»Ö¸¶¨Ë÷ÒıºÅµÄ³èÎï¸øÖ¸¶¨ ¶ÔÏñ£¬ ·µ»Ø³èÎïÀ¸Î»ÖÃ
-int NPC_Lua_NLG_GiveItemByIndex(lua_State *_NLL);				//¸øÓëÒ»¸öµÀ¾ßindexÖ¸¶¨Íæ¼Ò ·µ»ØµÀ¾ßÀ¸Î»
-int NPC_Lua_NLG_WarpToSpecificPoint(lua_State *_NLL);	  //ÒÆ¶¯NPC ¿É×öÍÅÌåÒÆ¶¯
-BOOL NPC_Lua_NLG_UpSkillupPoint(lua_State *_NLL);       //¸üĞÂÈËÎïµãÊı
-int NPC_Lua_NLG_StayEncount(lua_State *_NLL);	          //Ô­µØ
+int NPC_Lua_NLG_FindPet(lua_State *_NLL);								//æŸ¥æ‰¾å® ç‰©æ ç©ºä½
+int NPC_Lua_NLG_GetMap(lua_State *_NLL);						    //è·å¾—å½“å‰ä½ç½®çš„å»ºç­‘ç‰©
+int NPC_Lua_NLG_PetUp(lua_State *_NLL);								  //å® ç‰©å‡çº§
+int NPC_Lua_NLG_AddSk(lua_State *_NLL);								  //ç»™èŒä¸šæŠ€èƒ½
+int NPC_Lua_NLG_SetZy(lua_State *_NLL);								  //è®¾å®šèŒä¸š
+int NPC_Lua_Char_GetPlayerMaxNum(lua_State *_NLL);			//è·å–æœ€å¤§äººæ•°
+int NPC_Lua_NLG_GetXY(lua_State *_NLL);							  	//è·å–ä¸€ä¸ªåœ°å›¾çš„åæ ‡
+int NPC_Lua_NLG_WalkJc(lua_State *_NLL);							  //æ£€æŸ¥éšœç¢ç‰©
+int NPC_Lua_NLG_KickPlayer(lua_State *_NLL);				  	//Té™¤æŒ‡å®šç©å®¶
+int NPC_Lua_NLG_HealOne(lua_State *_NLL);				  	    //æŒ‡å®šä¸€ä¸ªå¯¹è±¡ å›å¤æ»¡HP æ»¡MP
+int NPC_Lua_NLG_HealAll(lua_State *_NLL);				  	    //æŒ‡å®šä¸€ä¸ªç©å®¶MP å›å¤æ‰€æœ‰åŒ…æ‹¬å® ç‰©HP
+int NPC_Lua_NLG_LevelUpTo(lua_State *_NLL);				  	  //æå‡å¯¹è±¡çš„ç­‰çº§ã€‚
+int NPC_Lua_NLG_AddExp(lua_State *_NLL);			  	  	  //ç»™ä¸ä¸€ä¸ªå¯¹è±¡ç»éªŒã€‚
+int NPC_Lua_NLG_UpPet(lua_State *_NLL);			  	  	    //æ›´æ–°å¯¹è±¡çš„å® ç‰©ï¼Œç”¨äºæ›´æ–°ã€å®¢æˆ·ç«¯ã€‘å® ç‰©æ•°æ®ï¼Œåœ¨æŸäº›åå°é“å…·å±æ€§è¢«ä¿®æ”¹çš„æƒ…å†µä¸‹ä¸èƒ½æŠŠæ›´æ–°æ•°æ®å‘é€åˆ°å‰å°ï¼›
+int NPC_Lua_NLG_DelPetByPos(lua_State *_NLL);						//åˆ é™¤ å¯¹åƒ èº«ä¸ŠæŒ‡å®šæ ä½çš„å® ç‰©
+int NPC_Lua_NLG_DelPetByIndex(lua_State *_NLL);					//åˆ é™¤ å¯¹åƒ èº«ä¸ŠæŒ‡å®šç´¢å¼•å·ï¼ˆéIDï¼‰çš„å® ç‰©
+int NPC_Lua_NLG_GivePetByIndex(lua_State *_NLL);				//ç»™äºˆä¸€åªæŒ‡å®šç´¢å¼•å·çš„å® ç‰©ç»™æŒ‡å®š å¯¹åƒï¼Œ è¿”å›å® ç‰©æ ä½ç½®
+int NPC_Lua_NLG_GiveItemByIndex(lua_State *_NLL);				//ç»™ä¸ä¸€ä¸ªé“å…·indexæŒ‡å®šç©å®¶ è¿”å›é“å…·æ ä½
+int NPC_Lua_NLG_WarpToSpecificPoint(lua_State *_NLL);	  //ç§»åŠ¨NPC å¯åšå›¢ä½“ç§»åŠ¨
+BOOL NPC_Lua_NLG_UpSkillupPoint(lua_State *_NLL);       //æ›´æ–°äººç‰©ç‚¹æ•°
+int NPC_Lua_NLG_StayEncount(lua_State *_NLL);	          //åŸåœ°
 
-int NPC_Lua_NLG_CheckInFront(lua_State *_NLL);					//ÓÃÓÚ¼ì²éÄ³¸ö¶ÔÏóÊÇ·ñÔÚÄ³¸ö¶ÔÏóÃæÇ°
-int NPC_Lua_NLG_CheckObj(lua_State *_NLL);							//¼ì²éÄ³¸öµØÍ¼Î»ÖÃÊÇ·ñÓĞ¶ÔÏó´æÔÚ
-int NPC_Lua_NLG_CharLook(lua_State *_NLL);							//ÉèÖÃÈËÎï·½Ïò(·¢ËÍ¸üĞÂ·â°ü)
-int NPC_Lua_NLG_CreateBattle(lua_State *_NLL);					//´´½¨Õ½¶·
+int NPC_Lua_NLG_CheckInFront(lua_State *_NLL);					//ç”¨äºæ£€æŸ¥æŸä¸ªå¯¹è±¡æ˜¯å¦åœ¨æŸä¸ªå¯¹è±¡é¢å‰
+int NPC_Lua_NLG_CheckObj(lua_State *_NLL);							//æ£€æŸ¥æŸä¸ªåœ°å›¾ä½ç½®æ˜¯å¦æœ‰å¯¹è±¡å­˜åœ¨
+int NPC_Lua_NLG_CharLook(lua_State *_NLL);							//è®¾ç½®äººç‰©æ–¹å‘(å‘é€æ›´æ–°å°åŒ…)
+int NPC_Lua_NLG_CreateBattle(lua_State *_NLL);					//åˆ›å»ºæˆ˜æ–—
 int NPC_Lua_NLG_CreateVsEnemyAB (lua_State *L);
-int NPC_Lua_NLG_InputCard(lua_State *_NLL);							//´´½¨Ò»¸ö¶Ô»°¿òÈÃÍæ¼ÒÊäÈëĞéÄâ¿¨ºÅ
+int NPC_Lua_NLG_InputCard(lua_State *_NLL);							//åˆ›å»ºä¸€ä¸ªå¯¹è¯æ¡†è®©ç©å®¶è¾“å…¥è™šæ‹Ÿå¡å·
 int NPC_Lua_NLG_CreateBattlePvP(lua_State *_NLL);
 
 int NPC_Lua_NLG_SearchWatchBattleRandIndex(lua_State *_NLL);
 
-int NPC_Lua_NLG_DelPet(lua_State *_NLL);								//É¾³ıÖ¸¶¨Íæ¼Ò³èÎïÀ¸Ò»¸ö»ò¶à¸ö³èÎï
+int NPC_Lua_NLG_DelPet(lua_State *_NLL);								//åˆ é™¤æŒ‡å®šç©å®¶å® ç‰©æ ä¸€ä¸ªæˆ–å¤šä¸ªå® ç‰©
 int NPC_Lua_NLG_DelHaveIndexPet(lua_State *_NLL);
-int NPC_Lua_NLG_DelItem(lua_State *_NLL);								//É¾³ıÖ¸¶¨Íæ¼ÒµÀ¾ßÀ¸Ò»¸ö»ò¶à¸ö³èÎï
-int NPC_Lua_NLG_DelItemByPos(lua_State *_NLL);								//É¾³ıÖ¸¶¨Íæ¼ÒµÀ¾ßÀ¸Ò»¸ö»ò¶à¸ö³èÎï
-int NPC_Lua_NLG_DischargeParty(lua_State *_NLL);				//½âÉ¢ ÍÅ¶Ó
+int NPC_Lua_NLG_DelItem(lua_State *_NLL);								//åˆ é™¤æŒ‡å®šç©å®¶é“å…·æ ä¸€ä¸ªæˆ–å¤šä¸ªå® ç‰©
+int NPC_Lua_NLG_DelItemByPos(lua_State *_NLL);								//åˆ é™¤æŒ‡å®šç©å®¶é“å…·æ ä¸€ä¸ªæˆ–å¤šä¸ªå® ç‰©
+int NPC_Lua_NLG_DischargeParty(lua_State *_NLL);				//è§£æ•£ å›¢é˜Ÿ
 
-int NPC_Lua_NLG_GivePet(lua_State *_NLL);								//¸øÖ¸¶¨Íæ¼ÒÒ»¸ö»ò¶à¸ö³èÎï
-int NPC_Lua_NLG_GiveOnePet(lua_State *_NLL);								//¸øÖ¸¶¨Íæ¼ÒÒ»¸ö³èÎï
-int NPC_Lua_NLG_GiveItem(lua_State *_NLL);							//¸øÖ¸¶¨Íæ¼ÒÒ»¸ö»ò¶à¸ö³èÎï
-int NPC_Lua_NLG_GiveOneItem(lua_State *_NLL);							//¸øÖ¸¶¨Íæ¼ÒÒ»¸öµÀ¾ß
+int NPC_Lua_NLG_GivePet(lua_State *_NLL);								//ç»™æŒ‡å®šç©å®¶ä¸€ä¸ªæˆ–å¤šä¸ªå® ç‰©
+int NPC_Lua_NLG_GiveOnePet(lua_State *_NLL);								//ç»™æŒ‡å®šç©å®¶ä¸€ä¸ªå® ç‰©
+int NPC_Lua_NLG_GiveItem(lua_State *_NLL);							//ç»™æŒ‡å®šç©å®¶ä¸€ä¸ªæˆ–å¤šä¸ªå® ç‰©
+int NPC_Lua_NLG_GiveOneItem(lua_State *_NLL);							//ç»™æŒ‡å®šç©å®¶ä¸€ä¸ªé“å…·
 int NPC_Lua_NLG_GiveRandItem(lua_State *_NLL);
-int NPC_Lua_Char_GetOnLinePlayer(lua_State *_NLL);			//»ñÈ¡µ±Ç°ÔÚÏßÈËÊı
+int NPC_Lua_Char_GetOnLinePlayer(lua_State *_NLL);			//è·å–å½“å‰åœ¨çº¿äººæ•°
 
-int NPC_Lua_NLG_ShowWindowTalked(lua_State *_NLL);			//ÔÚÖ¸¶¨Íæ¼Ò¿Í»§¶ËÏÔÊ¾Ö¸¶¨ÄÚÈİ¡¢ÀàĞÍµÄ¶Ô»°¿ò
-int NPC_Lua_NLG_SetAction(lua_State *_NLL);							//ÉèÖÃ¶ÔÏóµÄ¶¯×÷
+int NPC_Lua_NLG_ShowWindowTalked(lua_State *_NLL);			//åœ¨æŒ‡å®šç©å®¶å®¢æˆ·ç«¯æ˜¾ç¤ºæŒ‡å®šå†…å®¹ã€ç±»å‹çš„å¯¹è¯æ¡†
+int NPC_Lua_NLG_SetAction(lua_State *_NLL);							//è®¾ç½®å¯¹è±¡çš„åŠ¨ä½œ
 
-int NPC_Lua_NLG_TalkToCli(lua_State *_NLL);							//ÆÕÍ¨Ëµ»°£¬¿ÉÒÔ¶ÔÈ«·şÎñÆ÷ÈËËµ
-int NPC_Lua_NLG_TalkToFloor(lua_State *_NLL);						//¶ÔÔÚÄ³Ò»Ö¸¶¨µØÍ¼ÄÚµÄÍæ¼ÒËµ»°
+int NPC_Lua_NLG_TalkToCli(lua_State *_NLL);							//æ™®é€šè¯´è¯ï¼Œå¯ä»¥å¯¹å…¨æœåŠ¡å™¨äººè¯´
+int NPC_Lua_NLG_TalkToFloor(lua_State *_NLL);						//å¯¹åœ¨æŸä¸€æŒ‡å®šåœ°å›¾å†…çš„ç©å®¶è¯´è¯
 
-int NPC_Lua_NLG_UpChar(lua_State *_NLL);								//ÏòNPCÖÜÎ§µÄÍæ¼Ò·¢ËÍNPCµÄÊı¾İ¸üĞÂ·â°ü
-int NPC_Lua_NLG_UpStateBySecond(lua_State *_NLL);				//ÏòÖ¸¶¨Íæ¼Ò·¢ËÍµÚ2Àà×´Ì¬¸üĞÂ·â°ü
-int NPC_Lua_NLG_UpStateByThird(lua_State *_NLL);				//ÏòÖ¸¶¨Íæ¼Ò·¢ËÍµÚ3Àà×´Ì¬¸üĞÂ·â°ü
-int NPC_Lua_NLG_Update_Party(lua_State *_NLL);					//ÏòÍæ¼ÒËùÔÚµÄÍÅ¶Ó³ÉÔ±·¢ËÍÍæ¼ÒµÄ×´Ì¬¸üĞÂ·â°ü
+int NPC_Lua_NLG_UpChar(lua_State *_NLL);								//å‘NPCå‘¨å›´çš„ç©å®¶å‘é€NPCçš„æ•°æ®æ›´æ–°å°åŒ…
+int NPC_Lua_NLG_UpStateBySecond(lua_State *_NLL);				//å‘æŒ‡å®šç©å®¶å‘é€ç¬¬2ç±»çŠ¶æ€æ›´æ–°å°åŒ…
+int NPC_Lua_NLG_UpStateByThird(lua_State *_NLL);				//å‘æŒ‡å®šç©å®¶å‘é€ç¬¬3ç±»çŠ¶æ€æ›´æ–°å°åŒ…
+int NPC_Lua_NLG_Update_Party(lua_State *_NLL);					//å‘ç©å®¶æ‰€åœ¨çš„å›¢é˜Ÿæˆå‘˜å‘é€ç©å®¶çš„çŠ¶æ€æ›´æ–°å°åŒ…
 
-int NPC_Lua_NLG_Warp(lua_State *_NLL);									//´«ËÍÒ»¸ö¶ÔÏó
-int NPC_Lua_NLG_WalkMove(lua_State *_NLL);							//ÒÆ¶¯Ò»¸ö¶ÔÏó
-int NPC_Lua_NLG_WatchEntry(lua_State *_NLL);						//¹ÛÕ½
-int NPC_Lua_NLG_HealerAllHeal(lua_State *_NLL);         //¼ÓÑª
-int NPC_Lua_NLG_GetMaxPlayNum(lua_State *_NLL);					//»ñÈ¡·şÎñÆ÷×î´óÔÚÏßÊı
-int NPC_Lua_NLG_CheckPlayIndex(lua_State *_NLL);				//¼ì²éÍæ¼ÒË÷ÒıÊÇ·ñÕı³£
+int NPC_Lua_NLG_Warp(lua_State *_NLL);									//ä¼ é€ä¸€ä¸ªå¯¹è±¡
+int NPC_Lua_NLG_WalkMove(lua_State *_NLL);							//ç§»åŠ¨ä¸€ä¸ªå¯¹è±¡
+int NPC_Lua_NLG_WatchEntry(lua_State *_NLL);						//è§‚æˆ˜
+int NPC_Lua_NLG_HealerAllHeal(lua_State *_NLL);         //åŠ è¡€
+int NPC_Lua_NLG_GetMaxPlayNum(lua_State *_NLL);					//è·å–æœåŠ¡å™¨æœ€å¤§åœ¨çº¿æ•°
+int NPC_Lua_NLG_CheckPlayIndex(lua_State *_NLL);				//æ£€æŸ¥ç©å®¶ç´¢å¼•æ˜¯å¦æ­£å¸¸
 int NPC_Lua_NLG_Save(lua_State *_NLL);
 ////add by mo
-int NPC_Lua_NLG_SetExp(lua_State *_NLL);							//ÉèÖÃ·şÎñÆ÷¾­Ñé±¶ÂÊ
-int NPC_Lua_NLG_GetExp(lua_State *_NLL);							//»ñÈ¡·şÎñÆ÷¾­Ñé±¶ÂÊ
-int NPC_Lua_NLG_SetPetTransRange(lua_State *_NLL);				//ÉèÖÃ³èÎï×ªÉú·¶Î§²ÎÊı
-int NPC_Lua_NLG_GetPetTransRange(lua_State *_NLL);				//»ñµÃ³èÎï×ªÉú·¶Î§²ÎÊı
+int NPC_Lua_NLG_SetExp(lua_State *_NLL);							//è®¾ç½®æœåŠ¡å™¨ç»éªŒå€ç‡
+int NPC_Lua_NLG_GetExp(lua_State *_NLL);							//è·å–æœåŠ¡å™¨ç»éªŒå€ç‡
+int NPC_Lua_NLG_SetPetTransRange(lua_State *_NLL);				//è®¾ç½®å® ç‰©è½¬ç”ŸèŒƒå›´å‚æ•°
+int NPC_Lua_NLG_GetPetTransRange(lua_State *_NLL);				//è·å¾—å® ç‰©è½¬ç”ŸèŒƒå›´å‚æ•°
 ///////////////////////////////////////////////Char////////////////////////////////////////////////
-//ÉèÖÃÊı¾İµÄ½Ó¿Ú
-int NPC_Lua_Char_ClrEvtEnd(lua_State *_NLL);						//ÉèÖÃÇå³ı½áÊøÈÎÎñ±êÖ¾
-int NPC_Lua_Char_ClrEvtNow(lua_State *_NLL);						//ÉèÖÃÇå³ıÕıÔÚ×öÈÎÎñ±êÖ¾
-int NPC_Lua_Char_ClrEvt(lua_State *_NLL);								//ÉèÖÃÇå³ıÈÎÎñ±êÖ¾
-int NPC_Lua_Char_GetAllocPoint(lua_State *_NLL);	      //»ñÈ¡³èÎïCharIndexµÄËÄÎ¬³É³¤
-int NPC_Lua_Char_GetDataFromEnemyBase(lua_State *_NLL);	//»ñÈ¡¶ÔÓ¦ ±êÖ¾ µÄ³èÎïÄ£°åÊı¾İ£¨enemybaseX.txt£©£»
-int NPC_Lua_Char_GetPlayerIndex(lua_State *_NLL);       //Íæ¼ÒË÷Òı
-int NPC_Lua_Char_FindItemIndex(lua_State *_NLL);				//ËÑË÷Ö¸¶¨¶ÔÏñÉíÉÏÊÇ·ñÓµÓĞÄ³µÀ¾ßÎªÖ¸¶¨µÄË÷ÒıºÅ
-int NPC_Lua_Char_FindPetIndex(lua_State *_NLL);		      //ËÑË÷Ö¸¶¨¶ÔÏñÉíÉÏÊÇ·ñÓµÓĞ³èÎïÎªÖ¸¶¨µÄË÷ÒıºÅ
-int NPC_Lua_CHAR_CHECKINDEX(lua_State *_NLL);				     //Íæ¼ÒË÷Òı
-int NPC_Lua_Char_GetPetSkill(lua_State *_NLL);				  //È¡µÃ³èÎïÖ¸¶¨¼¼ÄÜÀ¸µÄ¼¼ÄÜ±àºÅ
-int NPC_Lua_Char_GetPetSkillNo(lua_State *_NLL);	      //»ñÈ¡CharÊı¾İ
-int NPC_Lua_Char_RidNo(lua_State *_NLL);								//ÉèÖÃÇå³ıÈÎÎñ±êÖ¾
-int NPC_Lua_Char_GetEmptyItemBoxNum(lua_State *_NLL);	  //ËÑË÷Ö¸¶¨¶ÔÏñÉíÉÏµÀ¾ßÀ¸¿ÕÎ»µÄÊıÁ¿
-int NPC_Lua_Char_GetEmptyPetBoxNum(lua_State *_NLL);	  //ËÑË÷Ö¸¶¨¶ÔÏñÉíÉÏ³èÎïÀ¸¿ÕÎ»µÄÊıÁ¿
-int NPC_Lua_Char_GetPlayerItemNum(lua_State *_NLL);	    //ËÑË÷Ö¸¶¨¶ÔÏñÉíÉÏÎªÄ³IDµÄµÀ¾ßµÄÊıÁ¿
-int NPC_Lua_Char_GetPlayerPetNum(lua_State *_NLL);	    //ËÑË÷Ö¸¶¨¶ÔÏñÉíÉÏÎªÄ³IDµÄ³èÎïµÄÊıÁ¿
-int NPC_ABLua_char_getPlayerMaxNum(lua_State *_NLL);    //Íæ¼Ò×î´óÈËÊı
-int NPC_ABLua_char_getBattleexp(lua_State *_NLL);       //Õ½¶·¾­Ñé±¶Êı
-int NPC_Lua_Char_SetPetSkill(lua_State *_NLL);				  //ÉèÖÃ³èÎïÖ¸¶¨¼¼ÄÜÀ¸µÄ¼¼ÄÜ±àºÅ
+//è®¾ç½®æ•°æ®çš„æ¥å£
+int NPC_Lua_Char_ClrEvtEnd(lua_State *_NLL);						//è®¾ç½®æ¸…é™¤ç»“æŸä»»åŠ¡æ ‡å¿—
+int NPC_Lua_Char_ClrEvtNow(lua_State *_NLL);						//è®¾ç½®æ¸…é™¤æ­£åœ¨åšä»»åŠ¡æ ‡å¿—
+int NPC_Lua_Char_ClrEvt(lua_State *_NLL);								//è®¾ç½®æ¸…é™¤ä»»åŠ¡æ ‡å¿—
+int NPC_Lua_Char_GetAllocPoint(lua_State *_NLL);	      //è·å–å® ç‰©CharIndexçš„å››ç»´æˆé•¿
+int NPC_Lua_Char_GetDataFromEnemyBase(lua_State *_NLL);	//è·å–å¯¹åº” æ ‡å¿— çš„å® ç‰©æ¨¡æ¿æ•°æ®ï¼ˆenemybaseX.txtï¼‰ï¼›
+int NPC_Lua_Char_GetPlayerIndex(lua_State *_NLL);       //ç©å®¶ç´¢å¼•
+int NPC_Lua_Char_FindItemIndex(lua_State *_NLL);				//æœç´¢æŒ‡å®šå¯¹åƒèº«ä¸Šæ˜¯å¦æ‹¥æœ‰æŸé“å…·ä¸ºæŒ‡å®šçš„ç´¢å¼•å·
+int NPC_Lua_Char_FindPetIndex(lua_State *_NLL);		      //æœç´¢æŒ‡å®šå¯¹åƒèº«ä¸Šæ˜¯å¦æ‹¥æœ‰å® ç‰©ä¸ºæŒ‡å®šçš„ç´¢å¼•å·
+int NPC_Lua_CHAR_CHECKINDEX(lua_State *_NLL);				     //ç©å®¶ç´¢å¼•
+int NPC_Lua_Char_GetPetSkill(lua_State *_NLL);				  //å–å¾—å® ç‰©æŒ‡å®šæŠ€èƒ½æ çš„æŠ€èƒ½ç¼–å·
+int NPC_Lua_Char_GetPetSkillNo(lua_State *_NLL);	      //è·å–Charæ•°æ®
+int NPC_Lua_Char_RidNo(lua_State *_NLL);								//è®¾ç½®æ¸…é™¤ä»»åŠ¡æ ‡å¿—
+int NPC_Lua_Char_GetEmptyItemBoxNum(lua_State *_NLL);	  //æœç´¢æŒ‡å®šå¯¹åƒèº«ä¸Šé“å…·æ ç©ºä½çš„æ•°é‡
+int NPC_Lua_Char_GetEmptyPetBoxNum(lua_State *_NLL);	  //æœç´¢æŒ‡å®šå¯¹åƒèº«ä¸Šå® ç‰©æ ç©ºä½çš„æ•°é‡
+int NPC_Lua_Char_GetPlayerItemNum(lua_State *_NLL);	    //æœç´¢æŒ‡å®šå¯¹åƒèº«ä¸Šä¸ºæŸIDçš„é“å…·çš„æ•°é‡
+int NPC_Lua_Char_GetPlayerPetNum(lua_State *_NLL);	    //æœç´¢æŒ‡å®šå¯¹åƒèº«ä¸Šä¸ºæŸIDçš„å® ç‰©çš„æ•°é‡
+int NPC_ABLua_char_getPlayerMaxNum(lua_State *_NLL);    //ç©å®¶æœ€å¤§äººæ•°
+int NPC_ABLua_char_getBattleexp(lua_State *_NLL);       //æˆ˜æ–—ç»éªŒå€æ•°
+int NPC_Lua_Char_SetPetSkill(lua_State *_NLL);				  //è®¾ç½®å® ç‰©æŒ‡å®šæŠ€èƒ½æ çš„æŠ€èƒ½ç¼–å·
 int NPC_Lua_Char_SetPetSkillNo(lua_State *_NLL);	
-int NPC_Lua_Char_ComplianceParameter(lua_State *_NLL);	//¸ù¾İ¶ÔÏóÊôĞÔÀ´ÖØĞÂ¼ÆËã²¢ÉèÖÃWORKÊôĞÔ£¬ÒÔ´ïµ½ÉúĞ§µÄÄ¿µÄ¡£
-int NPC_Lua_Char_HcItemId(lua_State *_NLL);					  	//ºÏ³ÉÓÃµ½µÄËÑË÷ÉíÉÏ·ûºÏÎïÆ·¡£
-int NPC_Lua_Char_DelHcItem(lua_State *_NLL);					  //É¾³ıÉíÉÏÄ³¸öÎ»ÖÃµÄÎïÆ·¡£
-int NPC_Lua_Char_GETFM(lua_State *_NLL);					      //»ñÈ¡¼Ò×åÆøÊÆ ÉùÍû ×Ê½ğ
-int NPC_Lua_Char_FindPetEnemyBaseId(lua_State *_NLL);		//ËÑË÷Ö¸¶¨¶ÔÏóÉíÉÏÊÇ·ñÓµÓĞ³èÎïEnemyBaseÎÄ¼şµÄ¶ÔÓ¦ID
-int NPC_Lua_Char_ITEMID_NAME(lua_State *_NLL);					//»ñµÃÖ¸¶¨µÀ¾ßIDµÄÃû×Ö
-int NPC_Lua_Char_ITEMID_NAME2(lua_State *_NLL);					//»ñµÃÖ¸¶¨µÀ¾ßIDµÄËµÃ÷
-int NPC_Lua_Char_ITEMID_LEVEL(lua_State *_NLL);					//»ñµÃÖ¸¶¨µÀ¾ßIDµÄµÈ¼¶
-int NPC_Lua_Char_ITEMID_GOLD(lua_State *_NLL);					//»ñµÃÖ¸¶¨µÀ¾ßIDµÄ¼Û¸ñ
-int NPC_Lua_Char_ITEMID_RANO(lua_State *_NLL);					//»ñµÃÖ¸¶¨µÀ¾ßIDµÄÍ¼ĞÎ
-int NPC_Lua_Char_CharRidNo(lua_State *_NLL);					  //¼ì²é¶ÔÏñÊÇ·ñÒÑ¾­³ÔÁËÄ³Æï³èÖ¤£»
-int NPC_Lua_Char_GetPetOwner(lua_State *_NLL);				  //»ñµÃ³èÎïÖ÷ÈËµÄË÷ÒıºÅ
-int NPC_Lua_Char_GetEnemyBaseIdFromEnemyId(lua_State *_NLL);	//Í¨¹ıenemy.txtÉÏËùÉèÖÃµÄ³èÎï±àºÅÀ´²éÕÒenemybase.txtÉÏËùÉè¶¨µÄ³èÎï±àºÅ¡£
-int NPC_Lua_Char_GetEnemyIdFromEnemyBaseId(lua_State *_NLL);	//Í¨¹ıenemybase.txtÉÏËùÉèÖÃµÄ³èÎï±àºÅÀ´²éÕÒenemy.txtÉÏËùÉè¶¨µÄ³èÎï±àºÅ¡£
-int NPC_Lua_Char_GetIp(lua_State *_NLL);	              //»ñÈ¡Ö¸¶¨¶ÔÏñµÄIPµØÖ·
-int NPC_Lua_Char_SetAllocPoint(lua_State *_NLL);	      //ÉèÖÃ³èÎïCharIndexµÄËÄÎ¬³É³¤
-int NPC_Lua_Char_GetMaxPetIndex(lua_State *_NLL);	      //»ñÈ¡×î´ó³èÎïË÷Òı
-int NPC_Lua_Char_GetMaxPlayerIndex(lua_State *_NLL);	  //»ñÈ¡×î´óÈËÎïË÷Òı
-int NPC_Lua_Char_SavePetToString(lua_State *_NLL);	    //Éú³ÉÒ»¸öÃèÊö³èÎïµÄ×Ö·û´®¡£
-int NPC_Lua_Char_LoadPetFromString(lua_State *_NLL);	  //¸ù¾İÒ»¸öÃèÊö³èÎïµÄ×Ö·û´®£¬Éú³ÉÒ»¸ö³èÎï¡£
-int NPC_Lua_Char_GetPlayerFromAccAndName(lua_State *_NLL);//¸ù¾İÍæ¼ÒµÄÕÊºÅºÍÈËÎïÃûÀ´Ñ°ÕÒÍæ¼Ò¡£ÕÊºÅºÍÈËÎïÃûÁô¿ÕÒ²¿É²éÕÒ¡£²»¿É¶¼Áô¿Õ
-int NPC_Lua_Char_CheckPet(lua_State *_NLL);             //¼ì²é³èÎïË÷ÒıÊÇ·ñÓĞĞ§¡£
-int NPC_Lua_Char_CheckPlayer(lua_State *_NLL);          //¼ì²éÈËÎïË÷ÒıÊÇ·ñÓĞĞ§¡£
-int NPC_Lua_Char_CheckItemIndex(lua_State *_NLL);           //¼ì²éµÀ¾ßË÷ÒıÊÇ·ñÓĞĞ§¡£
+int NPC_Lua_Char_ComplianceParameter(lua_State *_NLL);	//æ ¹æ®å¯¹è±¡å±æ€§æ¥é‡æ–°è®¡ç®—å¹¶è®¾ç½®WORKå±æ€§ï¼Œä»¥è¾¾åˆ°ç”Ÿæ•ˆçš„ç›®çš„ã€‚
+int NPC_Lua_Char_HcItemId(lua_State *_NLL);					  	//åˆæˆç”¨åˆ°çš„æœç´¢èº«ä¸Šç¬¦åˆç‰©å“ã€‚
+int NPC_Lua_Char_DelHcItem(lua_State *_NLL);					  //åˆ é™¤èº«ä¸ŠæŸä¸ªä½ç½®çš„ç‰©å“ã€‚
+int NPC_Lua_Char_GETFM(lua_State *_NLL);					      //è·å–å®¶æ—æ°”åŠ¿ å£°æœ› èµ„é‡‘
+int NPC_Lua_Char_FindPetEnemyBaseId(lua_State *_NLL);		//æœç´¢æŒ‡å®šå¯¹è±¡èº«ä¸Šæ˜¯å¦æ‹¥æœ‰å® ç‰©EnemyBaseæ–‡ä»¶çš„å¯¹åº”ID
+int NPC_Lua_Char_ITEMID_NAME(lua_State *_NLL);					//è·å¾—æŒ‡å®šé“å…·IDçš„åå­—
+int NPC_Lua_Char_ITEMID_NAME2(lua_State *_NLL);					//è·å¾—æŒ‡å®šé“å…·IDçš„è¯´æ˜
+int NPC_Lua_Char_ITEMID_LEVEL(lua_State *_NLL);					//è·å¾—æŒ‡å®šé“å…·IDçš„ç­‰çº§
+int NPC_Lua_Char_ITEMID_GOLD(lua_State *_NLL);					//è·å¾—æŒ‡å®šé“å…·IDçš„ä»·æ ¼
+int NPC_Lua_Char_ITEMID_RANO(lua_State *_NLL);					//è·å¾—æŒ‡å®šé“å…·IDçš„å›¾å½¢
+int NPC_Lua_Char_CharRidNo(lua_State *_NLL);					  //æ£€æŸ¥å¯¹åƒæ˜¯å¦å·²ç»åƒäº†æŸéª‘å® è¯ï¼›
+int NPC_Lua_Char_GetPetOwner(lua_State *_NLL);				  //è·å¾—å® ç‰©ä¸»äººçš„ç´¢å¼•å·
+int NPC_Lua_Char_GetEnemyBaseIdFromEnemyId(lua_State *_NLL);	//é€šè¿‡enemy.txtä¸Šæ‰€è®¾ç½®çš„å® ç‰©ç¼–å·æ¥æŸ¥æ‰¾enemybase.txtä¸Šæ‰€è®¾å®šçš„å® ç‰©ç¼–å·ã€‚
+int NPC_Lua_Char_GetEnemyIdFromEnemyBaseId(lua_State *_NLL);	//é€šè¿‡enemybase.txtä¸Šæ‰€è®¾ç½®çš„å® ç‰©ç¼–å·æ¥æŸ¥æ‰¾enemy.txtä¸Šæ‰€è®¾å®šçš„å® ç‰©ç¼–å·ã€‚
+int NPC_Lua_Char_GetIp(lua_State *_NLL);	              //è·å–æŒ‡å®šå¯¹åƒçš„IPåœ°å€
+int NPC_Lua_Char_SetAllocPoint(lua_State *_NLL);	      //è®¾ç½®å® ç‰©CharIndexçš„å››ç»´æˆé•¿
+int NPC_Lua_Char_GetMaxPetIndex(lua_State *_NLL);	      //è·å–æœ€å¤§å® ç‰©ç´¢å¼•
+int NPC_Lua_Char_GetMaxPlayerIndex(lua_State *_NLL);	  //è·å–æœ€å¤§äººç‰©ç´¢å¼•
+int NPC_Lua_Char_SavePetToString(lua_State *_NLL);	    //ç”Ÿæˆä¸€ä¸ªæè¿°å® ç‰©çš„å­—ç¬¦ä¸²ã€‚
+int NPC_Lua_Char_LoadPetFromString(lua_State *_NLL);	  //æ ¹æ®ä¸€ä¸ªæè¿°å® ç‰©çš„å­—ç¬¦ä¸²ï¼Œç”Ÿæˆä¸€ä¸ªå® ç‰©ã€‚
+int NPC_Lua_Char_GetPlayerFromAccAndName(lua_State *_NLL);//æ ¹æ®ç©å®¶çš„å¸å·å’Œäººç‰©åæ¥å¯»æ‰¾ç©å®¶ã€‚å¸å·å’Œäººç‰©åç•™ç©ºä¹Ÿå¯æŸ¥æ‰¾ã€‚ä¸å¯éƒ½ç•™ç©º
+int NPC_Lua_Char_CheckPet(lua_State *_NLL);             //æ£€æŸ¥å® ç‰©ç´¢å¼•æ˜¯å¦æœ‰æ•ˆã€‚
+int NPC_Lua_Char_CheckPlayer(lua_State *_NLL);          //æ£€æŸ¥äººç‰©ç´¢å¼•æ˜¯å¦æœ‰æ•ˆã€‚
+int NPC_Lua_Char_CheckItemIndex(lua_State *_NLL);           //æ£€æŸ¥é“å…·ç´¢å¼•æ˜¯å¦æœ‰æ•ˆã€‚
 int NPC_Lua_Char_GetfdFromCharaIndex(lua_State *_NLL);
 
-BOOL NPC_Lua_Char_JoinParty(lua_State *_NLL);           //¼ÓÈëÍÅ¶Ó
-int NPC_Lua_Char_getFamilyPlayIndex(lua_State *_NLL);   //»ñµÃ¼Ò×åÀï±ßÈËÊıµÄË÷Òı¡£
+BOOL NPC_Lua_Char_JoinParty(lua_State *_NLL);           //åŠ å…¥å›¢é˜Ÿ
+int NPC_Lua_Char_getFamilyPlayIndex(lua_State *_NLL);   //è·å¾—å®¶æ—é‡Œè¾¹äººæ•°çš„ç´¢å¼•ã€‚
 
-int NPC_Lua_Char_SetEvtEnd(lua_State *_NLL);						//ÉèÖÃÈÎÎñ±êÖ¾Îª½áÊø×´Ì¬
-int NPC_Lua_Char_SetEvtNow(lua_State *_NLL);						//ÉèÖÃÈÎÎñ±êÖ¾ÎªÕıÔÚ×ö×´Ì¬
-int NPC_Lua_Char_SetData(lua_State *_NLL);							//ÉèÖÃCharÊı¾İ
+int NPC_Lua_Char_SetEvtEnd(lua_State *_NLL);						//è®¾ç½®ä»»åŠ¡æ ‡å¿—ä¸ºç»“æŸçŠ¶æ€
+int NPC_Lua_Char_SetEvtNow(lua_State *_NLL);						//è®¾ç½®ä»»åŠ¡æ ‡å¿—ä¸ºæ­£åœ¨åšçŠ¶æ€
+int NPC_Lua_Char_SetData(lua_State *_NLL);							//è®¾ç½®Charæ•°æ®
 int NPC_Lua_Char_logout(lua_State *_NLL);
 
-int NPC_Lua_Char_getVipPoint(lua_State *_NLL);          //½ğ±Ò¸üĞÂ
-int NPC_Lua_Char_getjfPoint(lua_State *_NLL);           //»ı·Ö¸üĞÂ
-int NPC_Lua_Char_getxjPoint(lua_State *_NLL);           //ÏÖ½ğ¸üĞÂ
-int NPC_Lua_Char_setVipPoint(lua_State *_NLL);          //½ğ±Ò²Ù×÷
-int NPC_Lua_Char_setjfPoint(lua_State *_NLL);           //»ı·Ö²Ù×÷
-int NPC_Lua_Char_setxjPoint(lua_State *_NLL);           //ÏÖ½ğ²Ù×÷
+int NPC_Lua_Char_getVipPoint(lua_State *_NLL);          //é‡‘å¸æ›´æ–°
+int NPC_Lua_Char_getjfPoint(lua_State *_NLL);           //ç§¯åˆ†æ›´æ–°
+int NPC_Lua_Char_getxjPoint(lua_State *_NLL);           //ç°é‡‘æ›´æ–°
+int NPC_Lua_Char_setVipPoint(lua_State *_NLL);          //é‡‘å¸æ“ä½œ
+int NPC_Lua_Char_setjfPoint(lua_State *_NLL);           //ç§¯åˆ†æ“ä½œ
+int NPC_Lua_Char_setxjPoint(lua_State *_NLL);           //ç°é‡‘æ“ä½œ
 
 int NPC_Lua_Char_GetVipPoint(lua_State *_NLL);
 int NPC_Lua_Char_SetVipPoint(lua_State *_NLL);
@@ -263,37 +263,37 @@ int NPC_Lua_Char_SetAmPoint(lua_State *_NLL);
 int NPC_Lua_Char_GetRmbPoint(lua_State *_NLL);
 int NPC_Lua_Char_SetRmbPoint(lua_State *_NLL);
 
-//ÊÂ¼şÉèÖÃµÄ½Ó¿Ú
-int NPC_Lua_Char_SetWalkPreEvent(lua_State *_NLL);			//ÉèÖÃWalkPreÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetWalkPostEvent(lua_State *_NLL);			//ÉèÖÃWalkPostÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetPreOverEvent(lua_State *_NLL);			//ÉèÖÃPreOverÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetPostOverEvent(lua_State *_NLL);			//ÉèÖÃPostOverÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetWatchEvent(lua_State *_NLL);				//ÉèÖÃWatchÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetLoopEvent(lua_State *_NLL);					//ÉèÖÃLoopÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetTalkedEvent(lua_State *_NLL);				//ÉèÖÃTalkedÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetOFFEvent(lua_State *_NLL);					//ÉèÖÃOFFÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetLookedEvent(lua_State *_NLL);				//ÉèÖÃLookedÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetItemPutEvent(lua_State *_NLL);			//ÉèÖÃItemPutÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetWindowTalkedEvent(lua_State *_NLL);	//ÉèÖÃWindowTalkedÊÂ¼şÏìÓ¦
+//äº‹ä»¶è®¾ç½®çš„æ¥å£
+int NPC_Lua_Char_SetWalkPreEvent(lua_State *_NLL);			//è®¾ç½®WalkPreäº‹ä»¶å“åº”
+int NPC_Lua_Char_SetWalkPostEvent(lua_State *_NLL);			//è®¾ç½®WalkPostäº‹ä»¶å“åº”
+int NPC_Lua_Char_SetPreOverEvent(lua_State *_NLL);			//è®¾ç½®PreOveräº‹ä»¶å“åº”
+int NPC_Lua_Char_SetPostOverEvent(lua_State *_NLL);			//è®¾ç½®PostOveräº‹ä»¶å“åº”
+int NPC_Lua_Char_SetWatchEvent(lua_State *_NLL);				//è®¾ç½®Watchäº‹ä»¶å“åº”
+int NPC_Lua_Char_SetLoopEvent(lua_State *_NLL);					//è®¾ç½®Loopäº‹ä»¶å“åº”
+int NPC_Lua_Char_SetTalkedEvent(lua_State *_NLL);				//è®¾ç½®Talkedäº‹ä»¶å“åº”
+int NPC_Lua_Char_SetOFFEvent(lua_State *_NLL);					//è®¾ç½®OFFäº‹ä»¶å“åº”
+int NPC_Lua_Char_SetLookedEvent(lua_State *_NLL);				//è®¾ç½®Lookedäº‹ä»¶å“åº”
+int NPC_Lua_Char_SetItemPutEvent(lua_State *_NLL);			//è®¾ç½®ItemPutäº‹ä»¶å“åº”
+int NPC_Lua_Char_SetWindowTalkedEvent(lua_State *_NLL);	//è®¾ç½®WindowTalkedäº‹ä»¶å“åº”
 #ifdef _USER_CHARLOOPS
-int NPC_Lua_Char_SetCharLoopsEvent(lua_State *_NLL);		//ÉèÖÃCharLoopsÊÂ¼şÏìÓ¦
-int NPC_Lua_Char_SetBattleProPertyEvent(lua_State *_NLL);//ÉèÖÃBattleProPertyÊÂ¼şÏìÓ¦
+int NPC_Lua_Char_SetCharLoopsEvent(lua_State *_NLL);		//è®¾ç½®CharLoopsäº‹ä»¶å“åº”
+int NPC_Lua_Char_SetBattleProPertyEvent(lua_State *_NLL);//è®¾ç½®BattleProPertyäº‹ä»¶å“åº”
 #endif
 
-//»ñÈ¡Êı¾İµÄ½Ó¿Ú
-int NPC_Lua_Char_IsEventEnd(lua_State *_NLL);						//¼ì²éÊÇ·ñ½áÊøµÄÈÎÎñ±êÖ¾
-int NPC_Lua_Char_IsEventNow(lua_State *_NLL);						//¼ì²éÊÇ·ñÕıÔÚ×öµÄÈÎÎñ±êÖ¾
+//è·å–æ•°æ®çš„æ¥å£
+int NPC_Lua_Char_IsEventEnd(lua_State *_NLL);						//æ£€æŸ¥æ˜¯å¦ç»“æŸçš„ä»»åŠ¡æ ‡å¿—
+int NPC_Lua_Char_IsEventNow(lua_State *_NLL);						//æ£€æŸ¥æ˜¯å¦æ­£åœ¨åšçš„ä»»åŠ¡æ ‡å¿—
 
-int NPC_Lua_Char_FindItemId(lua_State *_NLL);						//ËÑË÷Ö¸¶¨¶ÔÏóÉíÉÏÊÇ·ñÓµÓĞÄ³µÀ¾ßID
-int NPC_Lua_Char_FindPetEnemyId(lua_State *_NLL);				//ËÑË÷Ö¸¶¨¶ÔÏóÉíÉÏÊÇ·ñÓµÓĞ³èÎïEnemyÎÄ¼şµÄ¶ÔÓ¦ID
+int NPC_Lua_Char_FindItemId(lua_State *_NLL);						//æœç´¢æŒ‡å®šå¯¹è±¡èº«ä¸Šæ˜¯å¦æ‹¥æœ‰æŸé“å…·ID
+int NPC_Lua_Char_FindPetEnemyId(lua_State *_NLL);				//æœç´¢æŒ‡å®šå¯¹è±¡èº«ä¸Šæ˜¯å¦æ‹¥æœ‰å® ç‰©Enemyæ–‡ä»¶çš„å¯¹åº”ID
 
-int NPC_Lua_Char_GetData(lua_State *_NLL);						//»ñÈ¡CharÊı¾İ
-int NPC_Lua_Char_GetItemId(lua_State *_NLL);						//»ñÈ¡Ö¸¶¨¶ÔÏóÉíÉÏÖ¸¶¨Î»ÖÃµÄµÀ¾ßID
-int NPC_Lua_Char_GetPetEnemyId(lua_State *_NLL);				//»ñÈ¡Ö¸¶¨¶ÔÏóÉíÉÏÖ¸¶¨Î»ÖÃµÄ³èÎïEnemyÎÄ¼şµÄ¶ÔÓ¦ID
-int NPC_Lua_Char_GetItemIndex(lua_State *_NLL);					//»ñÈ¡Ö¸¶¨¶ÔÏóÉíÉÏÖ¸¶¨Î»ÖÃµÄµÀ¾ßË÷Òı
-int NPC_Lua_Char_GetPetIndex(lua_State *_NLL);					//»ñÈ¡Ö¸¶¨¶ÔÏóÉíÉÏÖ¸¶¨Î»ÖÃµÄ³èÎï¶ÔÏóË÷Òı
-int NPC_Lua_Char_GetTeamIndex(lua_State *_NLL);					//»ñÈ¡¶ÓÔ±µÄ¶ÔÏóË÷Òı
-int NPC_Lua_Char_GetPlayerIndexByCdkey(lua_State *_NLL);		//Í¨¹ıÕÊºÅ²éÑ¯ÈËÎïË÷Òı
+int NPC_Lua_Char_GetData(lua_State *_NLL);						//è·å–Charæ•°æ®
+int NPC_Lua_Char_GetItemId(lua_State *_NLL);						//è·å–æŒ‡å®šå¯¹è±¡èº«ä¸ŠæŒ‡å®šä½ç½®çš„é“å…·ID
+int NPC_Lua_Char_GetPetEnemyId(lua_State *_NLL);				//è·å–æŒ‡å®šå¯¹è±¡èº«ä¸ŠæŒ‡å®šä½ç½®çš„å® ç‰©Enemyæ–‡ä»¶çš„å¯¹åº”ID
+int NPC_Lua_Char_GetItemIndex(lua_State *_NLL);					//è·å–æŒ‡å®šå¯¹è±¡èº«ä¸ŠæŒ‡å®šä½ç½®çš„é“å…·ç´¢å¼•
+int NPC_Lua_Char_GetPetIndex(lua_State *_NLL);					//è·å–æŒ‡å®šå¯¹è±¡èº«ä¸ŠæŒ‡å®šä½ç½®çš„å® ç‰©å¯¹è±¡ç´¢å¼•
+int NPC_Lua_Char_GetTeamIndex(lua_State *_NLL);					//è·å–é˜Ÿå‘˜çš„å¯¹è±¡ç´¢å¼•
+int NPC_Lua_Char_GetPlayerIndexByCdkey(lua_State *_NLL);		//é€šè¿‡å¸å·æŸ¥è¯¢äººç‰©ç´¢å¼•
 int NPC_Lua_Char_VipPoint(lua_State *_NLL);
 int NPC_Lua_Char_HealAll(lua_State *_NLL);
 int NPC_Lua_Char_GetPetSkillId(lua_State *_NLL);
@@ -303,35 +303,35 @@ int NPC_Lua_Char_SetPetSkill(lua_State *_NLL);
 int NPC_Lua_Char_RandMsg(lua_State *_NLL);
 int NPC_Lua_Char_GetBeatitudeNum(lua_State *_NLL);
 ///////////////////////////////////////////////GAME////////////////////////////////////////////////
-int NPC_Lua_Game_FMPOINT_GetData(lua_State *_NLL);           //»ñµÃ×¯Ô°¾İµãµÄĞÅÏ¢
-int NPC_Lua_Game_FMPOINT_ACSetFMPoint(lua_State *_NLL);      //Éè¶¨¼Ò×å¾İµãĞÅÏ¢¡£½öµ±¾İµãÎ´±»Õ¼¾İÊ±ÓĞĞ§¡£
-int NPC_Lua_Game_FMPOINT_ACFixFMPoint(lua_State *_NLL);      //ĞŞ¸Ä¼Ò×å¾İµãĞÅÏ¢£¬²¢Çå¿ÕÆøÊÆ¡£Ò»°ãÓÃÓÚ×åÕ½½áÊø¡£
-int NPC_Lua_Game_FMPOINT_ACCleanFMPoint(lua_State *_NLL);    //ÎŞÌõ¼şÇå³ı¼Ò×å¾İµã¡£
+int NPC_Lua_Game_FMPOINT_GetData(lua_State *_NLL);           //è·å¾—åº„å›­æ®ç‚¹çš„ä¿¡æ¯
+int NPC_Lua_Game_FMPOINT_ACSetFMPoint(lua_State *_NLL);      //è®¾å®šå®¶æ—æ®ç‚¹ä¿¡æ¯ã€‚ä»…å½“æ®ç‚¹æœªè¢«å æ®æ—¶æœ‰æ•ˆã€‚
+int NPC_Lua_Game_FMPOINT_ACFixFMPoint(lua_State *_NLL);      //ä¿®æ”¹å®¶æ—æ®ç‚¹ä¿¡æ¯ï¼Œå¹¶æ¸…ç©ºæ°”åŠ¿ã€‚ä¸€èˆ¬ç”¨äºæ—æˆ˜ç»“æŸã€‚
+int NPC_Lua_Game_FMPOINT_ACCleanFMPoint(lua_State *_NLL);    //æ— æ¡ä»¶æ¸…é™¤å®¶æ—æ®ç‚¹ã€‚
 ///////////////////////////////////////////////Item////////////////////////////////////////////////
-//»ñÈ¡Êı¾İµÄ½Ó¿Ú
-int NPC_Lua_Item_GetData(lua_State *_NLL);							//»ñÈ¡µÀ¾ßÊı¾İ
-int NPC_Lua_Item_GetDataFromItemSet(lua_State *_NLL);		//»ñÈ¡ITEMSETXÎÄ¼şµÄÊı¾İ
-int NPC_Lua_Item_GetValidity(lua_State *_NLL);		      //»ñÈ¡Ö¸¶¨µÀ¾ßµÄ¹ıÆÚÊ±¼ä
-int NPC_Lua_Item_GetItemOwner(lua_State *_NLL);		      //»ñÈ¡Ö¸¶¨µÀ¾ßÖ÷ÈËµÄË÷Òı
-int NPC_Lua_Item_GetMaxItemIndex(lua_State *_NLL);		  //»ñÈ¡×î´óµÀ¾ßË÷Òı
-int NPC_Lua_Item_SaveItemToString(lua_State *_NLL);	    //Éú³ÉÒ»¸öÃèÊöÎïÆ·µÄ×Ö·û´®¡£
-int NPC_Lua_Item_SetValidity(lua_State *_NLL);		      //ÉèÖÃÖ¸¶¨µÀ¾ßµÄ¹ıÆÚÊ±¼ä¡£
-int NPC_Lua_Item_LoadItemFromString(lua_State *_NLL);	  //¸ù¾İÒ»¸öÃèÊöÎïÆ·µÄ×Ö·û´®£¬Éú³ÉÒ»¸öÎïÆ·¡£
+//è·å–æ•°æ®çš„æ¥å£
+int NPC_Lua_Item_GetData(lua_State *_NLL);							//è·å–é“å…·æ•°æ®
+int NPC_Lua_Item_GetDataFromItemSet(lua_State *_NLL);		//è·å–ITEMSETXæ–‡ä»¶çš„æ•°æ®
+int NPC_Lua_Item_GetValidity(lua_State *_NLL);		      //è·å–æŒ‡å®šé“å…·çš„è¿‡æœŸæ—¶é—´
+int NPC_Lua_Item_GetItemOwner(lua_State *_NLL);		      //è·å–æŒ‡å®šé“å…·ä¸»äººçš„ç´¢å¼•
+int NPC_Lua_Item_GetMaxItemIndex(lua_State *_NLL);		  //è·å–æœ€å¤§é“å…·ç´¢å¼•
+int NPC_Lua_Item_SaveItemToString(lua_State *_NLL);	    //ç”Ÿæˆä¸€ä¸ªæè¿°ç‰©å“çš„å­—ç¬¦ä¸²ã€‚
+int NPC_Lua_Item_SetValidity(lua_State *_NLL);		      //è®¾ç½®æŒ‡å®šé“å…·çš„è¿‡æœŸæ—¶é—´ã€‚
+int NPC_Lua_Item_LoadItemFromString(lua_State *_NLL);	  //æ ¹æ®ä¸€ä¸ªæè¿°ç‰©å“çš„å­—ç¬¦ä¸²ï¼Œç”Ÿæˆä¸€ä¸ªç‰©å“ã€‚
 
-//ÉèÖÃÊı¾İµÄ½Ó¿Ú
-int NPC_Lua_Item_SetData(lua_State *_NLL);							//»ñÈ¡µÀ¾ßÊı¾İ
+//è®¾ç½®æ•°æ®çš„æ¥å£
+int NPC_Lua_Item_SetData(lua_State *_NLL);							//è·å–é“å…·æ•°æ®
 
-//ÊÂ¼şÉèÖÃµÄ½Ó¿Ú
-int NPC_Lua_Item_SetPreOverEvent(lua_State *_NLL);			//ÉèÖÃPreOverÊÂ¼şÏìÓ¦
-int NPC_Lua_Item_SetPostOverEvent(lua_State *_NLL);			//ÉèÖÃPostOverÊÂ¼şÏìÓ¦
-int NPC_Lua_Item_SetWatchEvent(lua_State *_NLL);				//ÉèÖÃWatchÊÂ¼şÏìÓ¦
-int NPC_Lua_Item_SetUseEvent(lua_State *_NLL);					//ÉèÖÃUseÊÂ¼şÏìÓ¦
-int NPC_Lua_Item_SetAttachEvent(lua_State *_NLL);				//ÉèÖÃAttachÊÂ¼şÏìÓ¦
-int NPC_Lua_Item_SetDetachEvent(lua_State *_NLL);				//ÉèÖÃDetachÊÂ¼şÏìÓ¦
-int NPC_Lua_Item_SetDropEvent(lua_State *_NLL);					//ÉèÖÃDropÊÂ¼şÏìÓ¦
-int NPC_Lua_Item_SetPickUPEvent(lua_State *_NLL);				//ÉèÖÃPickUPÊÂ¼şÏìÓ¦
+//äº‹ä»¶è®¾ç½®çš„æ¥å£
+int NPC_Lua_Item_SetPreOverEvent(lua_State *_NLL);			//è®¾ç½®PreOveräº‹ä»¶å“åº”
+int NPC_Lua_Item_SetPostOverEvent(lua_State *_NLL);			//è®¾ç½®PostOveräº‹ä»¶å“åº”
+int NPC_Lua_Item_SetWatchEvent(lua_State *_NLL);				//è®¾ç½®Watchäº‹ä»¶å“åº”
+int NPC_Lua_Item_SetUseEvent(lua_State *_NLL);					//è®¾ç½®Useäº‹ä»¶å“åº”
+int NPC_Lua_Item_SetAttachEvent(lua_State *_NLL);				//è®¾ç½®Attachäº‹ä»¶å“åº”
+int NPC_Lua_Item_SetDetachEvent(lua_State *_NLL);				//è®¾ç½®Detachäº‹ä»¶å“åº”
+int NPC_Lua_Item_SetDropEvent(lua_State *_NLL);					//è®¾ç½®Dropäº‹ä»¶å“åº”
+int NPC_Lua_Item_SetPickUPEvent(lua_State *_NLL);				//è®¾ç½®PickUPäº‹ä»¶å“åº”
 #ifdef _Item_ReLifeAct
-int NPC_Lua_Item_SetDieReLifeEvent(lua_State *_NLL);		//ÉèÖÃDieReLifeÊÂ¼şÏìÓ¦
+int NPC_Lua_Item_SetDieReLifeEvent(lua_State *_NLL);		//è®¾ç½®DieReLifeäº‹ä»¶å“åº”
 #endif
 ///////////////////////////////////////////////BIT///////////////////////////////////////////////
 int NPC_Lua_Bit_band(lua_State *_NLL);
@@ -340,89 +340,89 @@ int NPC_Lua_Bit_bxor(lua_State *_NLL);
 int NPC_Lua_Bit_lshift(lua_State *_NLL);
 int NPC_Lua_Bit_rshift(lua_State *_NLL);
 ///////////////////////////////////////////////Obj////////////////////////////////////////////////
-//»ñÈ¡Êı¾İµÄ½Ó¿Ú
-int NPC_Lua_Obj_GetType(lua_State *_NLL);								//»ñÈ¡OBJµÄÀàĞÍ
+//è·å–æ•°æ®çš„æ¥å£
+int NPC_Lua_Obj_GetType(lua_State *_NLL);								//è·å–OBJçš„ç±»å‹
 /*
-int NPC_Lua_Obj_GetName(lua_State *_NLL);								//»ñÈ¡OBJµÄÃû³Æ
-int NPC_Lua_Obj_GetDIR(lua_State *_NLL);								//»ñÈ¡OBJµÄ·½Ïò
-int NPC_Lua_Obj_GetImageNum(lua_State *_NLL);						//»ñÈ¡OBJµÄĞÎÏóºÅ
+int NPC_Lua_Obj_GetName(lua_State *_NLL);								//è·å–OBJçš„åç§°
+int NPC_Lua_Obj_GetDIR(lua_State *_NLL);								//è·å–OBJçš„æ–¹å‘
+int NPC_Lua_Obj_GetImageNum(lua_State *_NLL);						//è·å–OBJçš„å½¢è±¡å·
 */
-int NPC_Lua_Obj_GetCharType(lua_State *_NLL);						//»ñÈ¡OBJ¶ÔÓ¦µÄCharÊı¾İ½á¹¹µÄÀàĞÍ
-int NPC_Lua_Obj_GetCharIndex(lua_State *_NLL);					//»ñÈ¡OBJ¶ÔÓ¦µÄCharÊı¾İ½á¹¹µÄË÷Òı
-int NPC_Lua_Obj_GetX(lua_State *_NLL);									//»ñÈ¡OBJµÄX×ø±ê
-int NPC_Lua_Obj_GetY(lua_State *_NLL);									//»ñÈ¡OBJµÄY×ø±ê
-int NPC_Lua_Obj_GetFloor(lua_State *_NLL);							//»ñÈ¡OBJËùÔÚµÄµØÍ¼±àºÅ
-//int NPC_Lua_Obj_GetDelTime(lua_State *_NLL);						//»ñÈ¡OBJµÄÉ¾³ıÊ±¼ä
+int NPC_Lua_Obj_GetCharType(lua_State *_NLL);						//è·å–OBJå¯¹åº”çš„Charæ•°æ®ç»“æ„çš„ç±»å‹
+int NPC_Lua_Obj_GetCharIndex(lua_State *_NLL);					//è·å–OBJå¯¹åº”çš„Charæ•°æ®ç»“æ„çš„ç´¢å¼•
+int NPC_Lua_Obj_GetX(lua_State *_NLL);									//è·å–OBJçš„Xåæ ‡
+int NPC_Lua_Obj_GetY(lua_State *_NLL);									//è·å–OBJçš„Yåæ ‡
+int NPC_Lua_Obj_GetFloor(lua_State *_NLL);							//è·å–OBJæ‰€åœ¨çš„åœ°å›¾ç¼–å·
+//int NPC_Lua_Obj_GetDelTime(lua_State *_NLL);						//è·å–OBJçš„åˆ é™¤æ—¶é—´
 
-int NPC_Lua_Obj_SetType(lua_State *_NLL);								//»ñÈ¡OBJµÄÀàĞÍ
+int NPC_Lua_Obj_SetType(lua_State *_NLL);								//è·å–OBJçš„ç±»å‹
 /*
-int NPC_Lua_Obj_SetName(lua_State *_NLL);								//»ñÈ¡OBJµÄÃû³Æ
-int NPC_Lua_Obj_SetDIR(lua_State *_NLL);								//»ñÈ¡OBJµÄ·½Ïò
-int NPC_Lua_Obj_SetImageNum(lua_State *_NLL);						//»ñÈ¡OBJµÄĞÎÏóºÅ
+int NPC_Lua_Obj_SetName(lua_State *_NLL);								//è·å–OBJçš„åç§°
+int NPC_Lua_Obj_SetDIR(lua_State *_NLL);								//è·å–OBJçš„æ–¹å‘
+int NPC_Lua_Obj_SetImageNum(lua_State *_NLL);						//è·å–OBJçš„å½¢è±¡å·
 */
-int NPC_Lua_Obj_SetCharType(lua_State *_NLL);						//»ñÈ¡OBJ¶ÔÓ¦µÄCharÊı¾İ½á¹¹µÄÀàĞÍ
-int NPC_Lua_Obj_SetX(lua_State *_NLL);									//»ñÈ¡OBJµÄX×ø±ê
-int NPC_Lua_Obj_SetY(lua_State *_NLL);									//»ñÈ¡OBJµÄY×ø±ê
-int NPC_Lua_Obj_SetFloor(lua_State *_NLL);							//»ñÈ¡OBJËùÔÚµÄµØÍ¼±àºÅ
-//int NPC_Lua_Obj_SetDelTime(lua_State *_NLL);						//»ñÈ¡OBJµÄÉ¾³ıÊ±¼ä
+int NPC_Lua_Obj_SetCharType(lua_State *_NLL);						//è·å–OBJå¯¹åº”çš„Charæ•°æ®ç»“æ„çš„ç±»å‹
+int NPC_Lua_Obj_SetX(lua_State *_NLL);									//è·å–OBJçš„Xåæ ‡
+int NPC_Lua_Obj_SetY(lua_State *_NLL);									//è·å–OBJçš„Yåæ ‡
+int NPC_Lua_Obj_SetFloor(lua_State *_NLL);							//è·å–OBJæ‰€åœ¨çš„åœ°å›¾ç¼–å·
+//int NPC_Lua_Obj_SetDelTime(lua_State *_NLL);						//è·å–OBJçš„åˆ é™¤æ—¶é—´
 
 //////////////////////////////////////////////Battle///////////////////////////////////////////////
-//»ñÈ¡Êı¾İµÄ½Ó¿Ú
-int NPC_Lua_Battle_GetPlayIndex(lua_State *_NLL);				//»ñÈ¡Õ½¶·ÖĞµÄÍæ¼ÒË÷Òı
-int NPC_Lua_Battle_GetData(lua_State *_NLL);				    //»ñÈ¡Õ½¶·Êı¾İ
-int NPC_Lua_Battle_SetData(lua_State *_NLL);				    //ÉèÖÃÕ½¶·Êı¾İ
-int NPC_Lua_Battle_IndexToNo(lua_State *_NLL);				  //Í¨¹ı¶ÔÏóË÷Òı»ñÈ¡ËùÔÚµÄÕ½³¡±àºÅ
-int NPC_Lua_Battle_NoToIndex(lua_State *_NLL);				  //Í¨¹ıÕ½³¡±àºÅ»ñÈ¡ËûµÄË÷Òı
-int NPC_Lua_Battle_CheckIndex(lua_State *_NLL);				  //¼ì²éÕ½¶·Ë÷ÒıÊÇ·ñÓĞĞ§¡£
-//ÉèÖÃÊı¾İµÄ½Ó¿Ú
-int NPC_Lua_Battle_SetNORisk(lua_State *_NLL);					//ÉèÖÃÊÇ·ñ¿ªÆôÎŞ·çÏÕÄ£Ê½
-int NPC_Lua_Battle_SetMod(lua_State *_NLL);							//ÉèÖÃÕ½¶·Ä£Ê½±êÖ¾
-int NPC_Lua_Battle_SetType(lua_State *_NLL);						//ÉèÖÃÕ½¶·ÀàĞÍ
-int NPC_Lua_Battle_Exit(lua_State *_NLL);				        //ÍË³öÕ½¶·
-//ÊÂ¼şÉèÖÃµÄ½Ó¿Ú
-int NPC_Lua_Battle_SetWinEvent(lua_State *_NLL);				//ÉèÖÃWinÊÂ¼şÏìÓ¦
-int NPC_Lua_Battle_SetEndEvent(lua_State *_NLL);				//ÉèÖÃWinÊÂ¼şÏìÓ¦
+//è·å–æ•°æ®çš„æ¥å£
+int NPC_Lua_Battle_GetPlayIndex(lua_State *_NLL);				//è·å–æˆ˜æ–—ä¸­çš„ç©å®¶ç´¢å¼•
+int NPC_Lua_Battle_GetData(lua_State *_NLL);				    //è·å–æˆ˜æ–—æ•°æ®
+int NPC_Lua_Battle_SetData(lua_State *_NLL);				    //è®¾ç½®æˆ˜æ–—æ•°æ®
+int NPC_Lua_Battle_IndexToNo(lua_State *_NLL);				  //é€šè¿‡å¯¹è±¡ç´¢å¼•è·å–æ‰€åœ¨çš„æˆ˜åœºç¼–å·
+int NPC_Lua_Battle_NoToIndex(lua_State *_NLL);				  //é€šè¿‡æˆ˜åœºç¼–å·è·å–ä»–çš„ç´¢å¼•
+int NPC_Lua_Battle_CheckIndex(lua_State *_NLL);				  //æ£€æŸ¥æˆ˜æ–—ç´¢å¼•æ˜¯å¦æœ‰æ•ˆã€‚
+//è®¾ç½®æ•°æ®çš„æ¥å£
+int NPC_Lua_Battle_SetNORisk(lua_State *_NLL);					//è®¾ç½®æ˜¯å¦å¼€å¯æ— é£é™©æ¨¡å¼
+int NPC_Lua_Battle_SetMod(lua_State *_NLL);							//è®¾ç½®æˆ˜æ–—æ¨¡å¼æ ‡å¿—
+int NPC_Lua_Battle_SetType(lua_State *_NLL);						//è®¾ç½®æˆ˜æ–—ç±»å‹
+int NPC_Lua_Battle_Exit(lua_State *_NLL);				        //é€€å‡ºæˆ˜æ–—
+//äº‹ä»¶è®¾ç½®çš„æ¥å£
+int NPC_Lua_Battle_SetWinEvent(lua_State *_NLL);				//è®¾ç½®Winäº‹ä»¶å“åº”
+int NPC_Lua_Battle_SetEndEvent(lua_State *_NLL);				//è®¾ç½®Winäº‹ä»¶å“åº”
 ///////////////////////////////////////////////Other///////////////////////////////////////////////
-int NPC_Lua_GetFuncPoint(lua_State *_NLL);							//»ñÈ¡º¯ÊıÖ¸Õë
+int NPC_Lua_GetFuncPoint(lua_State *_NLL);							//è·å–å‡½æ•°æŒ‡é’ˆ
 
 //////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////MAP////////////////////////////////////////////////
-int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL);         //¼ì²âÄ³µãÊÇ·ñÔÚµØÍ¼·¶Î§ÄÚ¡£
-int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL);           //¼ì²âµØÍ¼ÊÇ·ñÖ§³ÖµÇ³ö
-int NPC_Lua_Map_GetfloorX(lua_State *_NLL);                //»ñÈ¡µØÍ¼X³¤¶È
-int NPC_Lua_Map_GetfloorY(lua_State *_NLL);                 //»ñÈ¡µØÍ¼Y³¤¶È
-int NPC_Lua_Map_GetTileAndObjId(lua_State *_NLL);           //»ñÈ¡µØÍ¼Ä³µãµÄµØ°åºÍ×°ÊÎ²ã
-int NPC_Lua_Map_SetTileAndObjId(lua_State *_NLL);           //ÉèÖÃµØÍ¼Ä³µãµÄµØ°åºÍ×°ÊÎ²ã
-int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *_NLL);      //»ñÈ¡Ä³µãÊÇ·ñ¿ÉÒÔĞĞ×ß
-int NPC_Lua_Map_GetImageData(lua_State *_NLL);              //»ñÈ¡Í¼Æ¬Êı¾İ
-int NPC_Lua_Map_SetImageData(lua_State *_NLL);              //ÉèÖÃÍ¼Æ¬Êı¾İ
-int NPC_Lua_Map_GetTopObj(lua_State *_NLL);                 //ÓÃÀ´»ñÈ¡µØÍ¼Ä³µãÉÏ¶ÔÏó
-int NPC_Lua_Map_GetNextObj(lua_State *_NLL);                //»ñÈ¡ÏÂÒ»¸ö¶ÔÏóË÷Òı
-int NPC_Lua_Map_CheckImageIndex(lua_State *_NLL);           //¼ì²âÄ³µØÍ¼ºÅÍ¼Æ¬ÊÇ·ñ´æÔÚ
-int NPC_Lua_Map_CheckIndex(lua_State *_NLL);                //¼ì²âÄ³µØÍ¼ºÅµØÍ¼ÊÇ·ñ´æÔÚ
-int NPC_Lua_Map_MakeNewMap(lua_State *_NLL);                //ÖÆÔìÒ»¸öĞÂµÄµØÍ¼ ²¢·µ»ØµØÍ¼µÄID
-int NPC_Lua_Map_DelNewMap(lua_State *_NLL);                 //É¾³ıÒ»¸ö¸±±¾µØÍ¼
-int NPC_Lua_Map_SetExWarp(lua_State *_NLL);                 //ÉèÖÃÈËÎïµÇ³öºóµØÍ¼µÄ´«ËÍµã
-int NPC_Lua_Map_SetMapPoint(lua_State *_NLL);               //Ìí¼ÓµØÍ¼´«ËÍµã
-int NPC_Lua_Map_DelMapPoint(lua_State *_NLL);               //É¾³ıµØÍ¼´«ËÍµã
-int NPC_Lua_Map_getFloorName(lua_State *_NLL);               //»ñµÃµØÍ¼Ãû
-int NPC_Lua_Map_Upmap(lua_State *_NLL);                      //¸üĞÂµØÍ¼
+int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL);         //æ£€æµ‹æŸç‚¹æ˜¯å¦åœ¨åœ°å›¾èŒƒå›´å†…ã€‚
+int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL);           //æ£€æµ‹åœ°å›¾æ˜¯å¦æ”¯æŒç™»å‡º
+int NPC_Lua_Map_GetfloorX(lua_State *_NLL);                //è·å–åœ°å›¾Xé•¿åº¦
+int NPC_Lua_Map_GetfloorY(lua_State *_NLL);                 //è·å–åœ°å›¾Yé•¿åº¦
+int NPC_Lua_Map_GetTileAndObjId(lua_State *_NLL);           //è·å–åœ°å›¾æŸç‚¹çš„åœ°æ¿å’Œè£…é¥°å±‚
+int NPC_Lua_Map_SetTileAndObjId(lua_State *_NLL);           //è®¾ç½®åœ°å›¾æŸç‚¹çš„åœ°æ¿å’Œè£…é¥°å±‚
+int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *_NLL);      //è·å–æŸç‚¹æ˜¯å¦å¯ä»¥è¡Œèµ°
+int NPC_Lua_Map_GetImageData(lua_State *_NLL);              //è·å–å›¾ç‰‡æ•°æ®
+int NPC_Lua_Map_SetImageData(lua_State *_NLL);              //è®¾ç½®å›¾ç‰‡æ•°æ®
+int NPC_Lua_Map_GetTopObj(lua_State *_NLL);                 //ç”¨æ¥è·å–åœ°å›¾æŸç‚¹ä¸Šå¯¹è±¡
+int NPC_Lua_Map_GetNextObj(lua_State *_NLL);                //è·å–ä¸‹ä¸€ä¸ªå¯¹è±¡ç´¢å¼•
+int NPC_Lua_Map_CheckImageIndex(lua_State *_NLL);           //æ£€æµ‹æŸåœ°å›¾å·å›¾ç‰‡æ˜¯å¦å­˜åœ¨
+int NPC_Lua_Map_CheckIndex(lua_State *_NLL);                //æ£€æµ‹æŸåœ°å›¾å·åœ°å›¾æ˜¯å¦å­˜åœ¨
+int NPC_Lua_Map_MakeNewMap(lua_State *_NLL);                //åˆ¶é€ ä¸€ä¸ªæ–°çš„åœ°å›¾ å¹¶è¿”å›åœ°å›¾çš„ID
+int NPC_Lua_Map_DelNewMap(lua_State *_NLL);                 //åˆ é™¤ä¸€ä¸ªå‰¯æœ¬åœ°å›¾
+int NPC_Lua_Map_SetExWarp(lua_State *_NLL);                 //è®¾ç½®äººç‰©ç™»å‡ºååœ°å›¾çš„ä¼ é€ç‚¹
+int NPC_Lua_Map_SetMapPoint(lua_State *_NLL);               //æ·»åŠ åœ°å›¾ä¼ é€ç‚¹
+int NPC_Lua_Map_DelMapPoint(lua_State *_NLL);               //åˆ é™¤åœ°å›¾ä¼ é€ç‚¹
+int NPC_Lua_Map_getFloorName(lua_State *_NLL);               //è·å¾—åœ°å›¾å
+int NPC_Lua_Map_Upmap(lua_State *_NLL);                      //æ›´æ–°åœ°å›¾
 ///////////////////////////////////////////////MAP////////////////////////////////////////////////
 ///////////////////////////////////////////////Spell////////////////////////////////////////////////
-int NPC_Lua_Spell_PETSKILL_GetData(lua_State *_NLL);    //»ñÈ¡³èÎï¼¼ÄÜID
-int NPC_Lua_Spell_PROFESSION_GetData(lua_State *_NLL);  //»ñÈ¡Ö°Òµ¼¼ÄÜID
-int NPC_Lua_Spell_MAGIC_GetData(lua_State *_NLL);       //»ñÈ¡¾«Áé¼¼ÄÜID
-int NPC_Lua_Spell_PETSKILL_SetData(lua_State *_NLL);    //ÉèÖÃ¶ÔÓ¦IDµÄ¼¼ÄÜÊı¾İ£»
-int NPC_Lua_Spell_PROFESSION_SetData(lua_State *_NLL);  //ÉèÖÃ¶ÔÓ¦IDµÄ¼¼ÄÜÊı¾İ£»
-int NPC_Lua_Spell_MAGIC_SetData(lua_State *_NLL);       //ÉèÖÃ¶ÔÓ¦IDµÄ¼¼ÄÜÊı¾İ£»
+int NPC_Lua_Spell_PETSKILL_GetData(lua_State *_NLL);    //è·å–å® ç‰©æŠ€èƒ½ID
+int NPC_Lua_Spell_PROFESSION_GetData(lua_State *_NLL);  //è·å–èŒä¸šæŠ€èƒ½ID
+int NPC_Lua_Spell_MAGIC_GetData(lua_State *_NLL);       //è·å–ç²¾çµæŠ€èƒ½ID
+int NPC_Lua_Spell_PETSKILL_SetData(lua_State *_NLL);    //è®¾ç½®å¯¹åº”IDçš„æŠ€èƒ½æ•°æ®ï¼›
+int NPC_Lua_Spell_PROFESSION_SetData(lua_State *_NLL);  //è®¾ç½®å¯¹åº”IDçš„æŠ€èƒ½æ•°æ®ï¼›
+int NPC_Lua_Spell_MAGIC_SetData(lua_State *_NLL);       //è®¾ç½®å¯¹åº”IDçš„æŠ€èƒ½æ•°æ®ï¼›
 ///////////////////////////////////////////////Spell////////////////////////////////////////////////
 ///////////////////////////////////////////////SQL/////////////////////////////////////////////////
-int NPC_Lua_SQL_Push(lua_State *_NLL);						//ÓÃÓÚÍÆËÍMySQLÖ¸Áî
-int NPC_Lua_SQL_PushPop(lua_State *_NLL);			//ÓÃÓÚÍÆËÍMySQLÖ¸Áî²¢ÉèÖÃÏìÓ¦º¯Êı
-int NPC_Lua_SQL_PushPopAdv(lua_State *_NLL);            //ÏòSAAC·¢³öÒ»¸öSQL²éÑ¯ÇëÇó£¬²¢Ö¸¶¨µ±SAAC·µ»Ø´¦Àí½á¹ûÊ±¶Ô½á¹û½øĞĞ´¦ÀíµÄ»Øµ÷º¯Êı,¸Ãº¯Êı½«·µ»ØµÚÒ»ĞĞ½á¹û£¬²¢ÊÍ·Å½á¹û¼¯¡£
-int NPC_Lua_SQL_QueryFirstRow(lua_State *_NLL);         //»Øµ÷º¯Êı,¸Ãº¯Êı½«·µ»ØµÚÒ»ĞĞ½á¹û£¬²¢ÊÍ·Å½á¹û¼¯¡£
-int NPC_Lua_SQL_FetchRow(lua_State *_NLL);              //ÏÂÒ»Ìõ½á¹û
-int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //ÊÍ·Å½á¹û¼¯
+int NPC_Lua_SQL_Push(lua_State *_NLL);						//ç”¨äºæ¨é€MySQLæŒ‡ä»¤
+int NPC_Lua_SQL_PushPop(lua_State *_NLL);			//ç”¨äºæ¨é€MySQLæŒ‡ä»¤å¹¶è®¾ç½®å“åº”å‡½æ•°
+int NPC_Lua_SQL_PushPopAdv(lua_State *_NLL);            //å‘SAACå‘å‡ºä¸€ä¸ªSQLæŸ¥è¯¢è¯·æ±‚ï¼Œå¹¶æŒ‡å®šå½“SAACè¿”å›å¤„ç†ç»“æœæ—¶å¯¹ç»“æœè¿›è¡Œå¤„ç†çš„å›è°ƒå‡½æ•°,è¯¥å‡½æ•°å°†è¿”å›ç¬¬ä¸€è¡Œç»“æœï¼Œå¹¶é‡Šæ”¾ç»“æœé›†ã€‚
+int NPC_Lua_SQL_QueryFirstRow(lua_State *_NLL);         //å›è°ƒå‡½æ•°,è¯¥å‡½æ•°å°†è¿”å›ç¬¬ä¸€è¡Œç»“æœï¼Œå¹¶é‡Šæ”¾ç»“æœé›†ã€‚
+int NPC_Lua_SQL_FetchRow(lua_State *_NLL);              //ä¸‹ä¸€æ¡ç»“æœ
+int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //é‡Šæ”¾ç»“æœé›†
 ///////////////////////////////////////////////SQL///////////////////////////////////////////////
 #define LRet(r) \
 { \
@@ -437,21 +437,21 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //ÊÍ·Å½á¹û¼¯
 }
 
 //////////////////////////////////////////////////////////////////////
-//·µ»ØÒ»¸önil
+//è¿”å›ä¸€ä¸ªnil
 #define LRetNull(L) \
 { \
 	lua_pushnil(L); \
 	LRet(1); \
 }
 
-//·µ»ØÒ»¸öBOOL¸øLUAÒıÇæ
+//è¿”å›ä¸€ä¸ªBOOLç»™LUAå¼•æ“
 #define LRetBool(L, b) \
 { \
 	lua_pushboolean(L, b); \
 	LRet(1); \
 }
 
-//·µ»ØÒ»¸öint¸øLUAÒıÇæ
+//è¿”å›ä¸€ä¸ªintç»™LUAå¼•æ“
 #define LRetInt(L, i) \
 { \
 	lua_pushinteger(L, i); \
@@ -464,33 +464,33 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //ÊÍ·Å½á¹û¼¯
 	LRet(1); \
 }
 ////////////////////////////////////////////////////////////////////
-//ÉèÖÃÒ»¸ö´íÎó×´Ì¬ºÍÒ»¸ö´íĞÅÏ¢
+//è®¾ç½®ä¸€ä¸ªé”™è¯¯çŠ¶æ€å’Œä¸€ä¸ªé”™ä¿¡æ¯
 #define LRetErrInt(L, i, c) \
 { \
 	lua_pushinteger(L, i); \
 	LRetErr(c,1); \
 }
 
-//·µ»ØÒ»¸ö×Ö·û´®¸øLUAÒıÇæ
+//è¿”å›ä¸€ä¸ªå­—ç¬¦ä¸²ç»™LUAå¼•æ“
 #define LRetErrNull(L, c) \
 { \
 	lua_pushnil(L); \
 	LRetErr(c,1); \
 }
 
-//·µ»ØÒ»¸ö×Ö·û´®¸øLUAÒıÇæ
+//è¿”å›ä¸€ä¸ªå­—ç¬¦ä¸²ç»™LUAå¼•æ“
 #define LRetErrMsg(L, c) \
 { \
 	lua_pushstring(L, c); \
 	LRetErr(c,1); \
 }
 
-//ÓÃÓÚ¼ì²é²ÎÊıÊÇ·ñ×ã¹»
+//ç”¨äºæ£€æŸ¥å‚æ•°æ˜¯å¦è¶³å¤Ÿ
 #define CheckEx(L, n) \
 {	\
 	if(lua_gettop(L) != n) \
 	{ \
-		luaL_argerror(L, 1, "²ÎÊıÊıÁ¿´íÎó"); \
+		luaL_argerror(L, 1, "å‚æ•°æ•°é‡é”™è¯¯"); \
 	} \
 }
 
@@ -498,7 +498,7 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //ÊÍ·Å½á¹û¼¯
 {	\
 	if(lua_gettop(L) < (t) || lua_gettop(L) > n) \
 	{ \
-		luaL_argerror(L, 1, "²ÎÊıÊıÁ¿´íÎó"); \
+		luaL_argerror(L, 1, "å‚æ•°æ•°é‡é”™è¯¯"); \
 	} \
 }
 
@@ -506,7 +506,7 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //ÊÍ·Å½á¹û¼¯
 { \
 	if(lua_isnil((L), (n))) \
 	{ \
-		luaL_argerror((L), 1, "¶ÔÏóË÷Òı²»ÄÜÎªnil"); \
+		luaL_argerror((L), 1, "å¯¹è±¡ç´¢å¼•ä¸èƒ½ä¸ºnil"); \
 	} \
 }
 
@@ -514,7 +514,7 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //ÊÍ·Å½á¹û¼¯
 { \
 	if(lua_isnil((L), (n))) \
 	{ \
-		luaL_argerror((L), 1, "Õ½¶·Ë÷Òı²»ÄÜÎªnil"); \
+		luaL_argerror((L), 1, "æˆ˜æ–—ç´¢å¼•ä¸èƒ½ä¸ºnil"); \
 	} \
 }
 
@@ -522,7 +522,7 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //ÊÍ·Å½á¹û¼¯
 { \
 	if(lua_isnil((L), (n))) \
 	{ \
-		luaL_argerror((L), 1, "µÀ¾ßË÷Òı²»ÄÜÎªnil"); \
+		luaL_argerror((L), 1, "é“å…·ç´¢å¼•ä¸èƒ½ä¸ºnil"); \
 	} \
 }
 
@@ -530,7 +530,7 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //ÊÍ·Å½á¹û¼¯
 { \
 	if(lua_isnil((L), (n))) \
 	{ \
-		luaL_argerror((L), 1, "Îï¼şË÷Òı²»ÄÜÎªnil"); \
+		luaL_argerror((L), 1, "ç‰©ä»¶ç´¢å¼•ä¸èƒ½ä¸ºnil"); \
 	} \
 }
 
@@ -541,7 +541,7 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //ÊÍ·Å½á¹û¼¯
 }
 
 #ifdef _LUA_Debug
-int pcall_callback_err_fun(lua_State* L,const char *_InitFuncName); //µ÷ÊÔLUA½Å±¾³ö´íĞÅÏ¢
+int pcall_callback_err_fun(lua_State* L,const char *_InitFuncName); //è°ƒè¯•LUAè„šæœ¬å‡ºé”™ä¿¡æ¯
 #endif
 
 #endif //#ifndef __NPC_LUA__

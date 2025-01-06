@@ -16,7 +16,7 @@ BOOL PlayQuestionOnline(int charaindex, char *messageeraseescape)
 	if(messageeraseescape[0] == '/' && messageeraseescape[1] == 'h' && messageeraseescape[2] == 'd'){
 		
 		if(strlen(PlayerQuestion.question)==0 || strlen(PlayerQuestion.result)==0){
-			CHAR_talkToCli(charaindex,-1,"GM»¹Î´ÔÚÏß·¢ÎÊÌâ!",CHAR_COLORRED);
+			CHAR_talkToCli(charaindex,-1,"GMè¿˜æœªåœ¨çº¿å‘é—®é¢˜!",CHAR_COLORRED);
 			return FALSE;
 		}
 		
@@ -26,7 +26,7 @@ BOOL PlayQuestionOnline(int charaindex, char *messageeraseescape)
 		if(strcmp( token, PlayerQuestion.result) == 0){
 			switch(PlayerQuestion.type){
 				case 0:
-					// ¼ÓÇ®
+					// åŠ é’±
 				  CHAR_setInt(charaindex,CHAR_GOLD, CHAR_getInt(charaindex,CHAR_GOLD) + PlayerQuestion.value);
 					CHAR_send_P_StatusString(charaindex,CHAR_P_STRING_GOLD);
 					
@@ -39,29 +39,29 @@ BOOL PlayQuestionOnline(int charaindex, char *messageeraseescape)
 
 					  itemindex = CHAR_findEmptyItemBox( charaindex );
 						if( itemindex < 0 )	{
-							CHAR_talkToCli( charaindex, -1, "ºÜ±§Ç¸,ÄãµÄÎïÆ·À¸ÒÑÂú!",  CHAR_COLORYELLOW);
+							CHAR_talkToCli( charaindex, -1, "å¾ˆæŠ±æ­‰,ä½ çš„ç‰©å“æ å·²æ»¡!",  CHAR_COLORYELLOW);
 							break;
 						}
 	
 						itemindex = ITEM_makeItemAndRegist( PlayerQuestion.value );
 					  if( itemindex != -1 ){
 							ret = CHAR_addItemSpecificItemIndex( charaindex, itemindex);
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
 							if( ret < 0 ||
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
 								ret >= CheckCharMaxItem(charaindex)
 #else
 								ret >= CHAR_MAXITEMHAVE
 #endif
 								) {
 								ITEM_endExistItemsOne( itemindex);
-								CHAR_talkToCli( charaindex, -1, "ºÜ±§Ç¸,ÎŞ·¨ÔùËÍÄãÎïÆ·¸øÄã!",  CHAR_COLORYELLOW);
+								CHAR_talkToCli( charaindex, -1, "å¾ˆæŠ±æ­‰,æ— æ³•èµ é€ä½ ç‰©å“ç»™ä½ !",  CHAR_COLORYELLOW);
 							break;
 							}
 					
-							sprintf( token,"¹§Ï²Äã»ñµÃ:%s",ITEM_getChar( itemindex, ITEM_NAME));
+							sprintf( token,"æ­å–œä½ è·å¾—:%s",ITEM_getChar( itemindex, ITEM_NAME));
 							CHAR_talkToCli( charaindex, -1, token, CHAR_COLORYELLOW );
 	
 							CHAR_sendItemDataOne( charaindex, ret);
@@ -81,7 +81,7 @@ extern int CheckCharMaxItem(int charindex);
 						}
 					
 					  if( i == CHAR_MAXPETHAVE ){
-							CHAR_talkToCli( charaindex, -1, "ºÜ±§Ç¸,ÄãÉíÉÏ³èÎïÒÑÂú!",  CHAR_COLORYELLOW);
+							CHAR_talkToCli( charaindex, -1, "å¾ˆæŠ±æ­‰,ä½ èº«ä¸Šå® ç‰©å·²æ»¡!",  CHAR_COLORYELLOW);
 							break;
 						}
 					
@@ -93,7 +93,7 @@ extern int CheckCharMaxItem(int charindex);
 						}
 					
 						if( i == enemynum ){
-							CHAR_talkToCli( charaindex, -1, "ºÜ±§Ç¸,¸Ã³èÎï²»´æÔÚ",  CHAR_COLORYELLOW);
+							CHAR_talkToCli( charaindex, -1, "å¾ˆæŠ±æ­‰,è¯¥å® ç‰©ä¸å­˜åœ¨",  CHAR_COLORYELLOW);
 							break;
 						}
 					
@@ -104,9 +104,9 @@ extern int CheckCharMaxItem(int charindex);
 						}
 		
 						if( !CHAR_CHECKINDEX( petindex) ){
-							CHAR_talkToCli( charaindex, -1, "ºÜ±§Ç¸,¸Ã³èÎï²»´æÔÚ",  CHAR_COLORYELLOW);
+							CHAR_talkToCli( charaindex, -1, "å¾ˆæŠ±æ­‰,è¯¥å® ç‰©ä¸å­˜åœ¨",  CHAR_COLORYELLOW);
 						}
-						snprintf( msgbuf,sizeof( msgbuf), "¹§Ï²Äã»ñµÃ³èÎï:%s¡£", CHAR_getChar(petindex,CHAR_NAME));
+						snprintf( msgbuf,sizeof( msgbuf), "æ­å–œä½ è·å¾—å® ç‰©:%sã€‚", CHAR_getChar(petindex,CHAR_NAME));
 						CHAR_talkToCli( charaindex, -1, msgbuf,  CHAR_COLORYELLOW);
 						CHAR_setInt(petindex,CHAR_VARIABLEAI,10000);
 						for(j = 0; j < CHAR_MAXPETHAVE; j++){
@@ -130,7 +130,7 @@ extern int CheckCharMaxItem(int charindex);
 							CHAR_getChar(charaindex,CHAR_FMNAME),CHAR_getInt(charaindex,CHAR_FMINDEX),CHAR_getWorkInt(charaindex,CHAR_WORKFMINDEXI),
 							FM_FIX_FMFEED,buf,"",CHAR_getWorkInt(charaindex,CHAR_WORKFMCHARINDEX),CONNECT_getFdid(getfdFromCharaIndex(charaindex)));
 */
-					sprintf( token, "¹§Ï²Äã»ñµÃ¸öÈËÉùÍû£º%d", PlayerQuestion.value);
+					sprintf( token, "æ­å–œä½ è·å¾—ä¸ªäººå£°æœ›ï¼š%d", PlayerQuestion.value);
 					CHAR_talkToCli(charaindex,-1,token,CHAR_COLORRED);
 					break;
 				case 4:
@@ -140,24 +140,24 @@ extern int CheckCharMaxItem(int charindex);
 									         	CHAR_getChar( charaindex, CHAR_CDKEY ),
 									          PlayerQuestion.value,
 									   				CHAR_getInt( charaindex, CHAR_AMPOINT ),
-									         	"(ÔÚÏßÎÊÌâ)",
+									         	"(åœ¨çº¿é—®é¢˜)",
 									         	CHAR_getInt( charaindex,CHAR_FLOOR),
 									         	CHAR_getInt( charaindex,CHAR_X ),
 									         	CHAR_getInt( charaindex,CHAR_Y ));
 #endif
-					sprintf( token, "¹§Ï²Äã»ñµÃ¸öÈË»ı·Ö£º%d", PlayerQuestion.value);
+					sprintf( token, "æ­å–œä½ è·å¾—ä¸ªäººç§¯åˆ†ï¼š%d", PlayerQuestion.value);
 					CHAR_talkToCli(charaindex,-1,token,CHAR_COLORRED);
 					break;
 			}
 			{
-				char type[5][32]={"Ê¯±Ò","µÀ¾ß±àºÅÎª","³èÎï±àºÅÎª","ÉùÍû","»ı·Ö"};
+				char type[5][32]={"çŸ³å¸","é“å…·ç¼–å·ä¸º","å® ç‰©ç¼–å·ä¸º","å£°æœ›","ç§¯åˆ†"};
 				
 				int i;
 				int playernum = CHAR_getPlayerMaxNum();
 			  char token1[128];
 			  char token2[128];
-			  sprintf(token1, "¹§Ï²Íæ¼Ò %s »Ø´ğÕıÈ·,´ğ°¸ÊÇ:%s", CHAR_getChar(charaindex, CHAR_NAME), PlayerQuestion.result);
-				sprintf(token2, "ÈÃÎÒÃÇ¹§Ï²Ëû»ñµÃ%s %d", type[PlayerQuestion.type], PlayerQuestion.value);
+			  sprintf(token1, "æ­å–œç©å®¶ %s å›ç­”æ­£ç¡®,ç­”æ¡ˆæ˜¯:%s", CHAR_getChar(charaindex, CHAR_NAME), PlayerQuestion.result);
+				sprintf(token2, "è®©æˆ‘ä»¬æ­å–œä»–è·å¾—%s %d", type[PlayerQuestion.type], PlayerQuestion.value);
 
 				for( i = 0 ; i < playernum ; i++) {
 				  if( CHAR_getCharUse(i) != FALSE ){
@@ -169,7 +169,7 @@ extern int CheckCharMaxItem(int charindex);
 			strcpy(PlayerQuestion.question,"");
 			strcpy(PlayerQuestion.result,"");
 		}else{
-			CHAR_talkToCli(charaindex,-1,"ºÜ±§Ç¸,Äã»Ø´ğ²»ÕıÈ·!",CHAR_COLORRED);
+			CHAR_talkToCli(charaindex,-1,"å¾ˆæŠ±æ­‰,ä½ å›ç­”ä¸æ­£ç¡®!",CHAR_COLORRED);
 			return FALSE;
 		}
 	}

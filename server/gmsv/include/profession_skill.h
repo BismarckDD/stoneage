@@ -1,56 +1,56 @@
 #include "version.h"
 
-#ifdef _PROFESSION_SKILL			// WON ADD ÈËÎïÖ°Òµ¼¼ÄÜ
+#ifdef _PROFESSION_SKILL			// WON ADD äººç‰©èŒä¸šæŠ€èƒ½
 #include "common.h"
 #include "util.h"
 #include "skill.h"
 
-#define PROFESSION_MAX_LEVEL 26			// Ö°ÒµµÈ¼¶ÉÏÏÞ  26¼¶
-#define PROFESSION_SKILL_MAX_LEVEL 100 	// ¼¼ÄÜµÈ¼¶ÉÏÏÞ 100¼¶
-#define PROFESSION_SKILL_ADD_POINT 1   // Éý¼¶¼ì¶¨Í¨¹ý£¬Ôö¼Ó¾­ÑéÖµ
-// Ö°Òµ±ð
+#define PROFESSION_MAX_LEVEL 26			// èŒä¸šç­‰çº§ä¸Šé™  26çº§
+#define PROFESSION_SKILL_MAX_LEVEL 100 	// æŠ€èƒ½ç­‰çº§ä¸Šé™ 100çº§
+#define PROFESSION_SKILL_ADD_POINT 1   // å‡çº§æ£€å®šé€šè¿‡ï¼Œå¢žåŠ ç»éªŒå€¼
+// èŒä¸šåˆ«
 typedef enum
 {
-	PROFESSION_CLASS_NONE=0,					// ÎÞÖ°Òµ
-	PROFESSION_CLASS_FIGHTER,					// ÓÂÊ¿
-	PROFESSION_CLASS_WIZARD,					// Î×Ê¦
-	PROFESSION_CLASS_HUNTER,					// ÁÔÈË
+	PROFESSION_CLASS_NONE=0,					// æ— èŒä¸š
+	PROFESSION_CLASS_FIGHTER,					// å‹‡å£«
+	PROFESSION_CLASS_WIZARD,					// å·«å¸ˆ
+	PROFESSION_CLASS_HUNTER,					// çŒŽäºº
 	PROFESSION_CLASS_NUM,
 }PROFESSION_CLASS_TYPE;
 
 typedef enum
 {
-	PROFESSION_SKILL_NAME,						// ¼¼ÄÜÃû³Æ
-	PROFESSION_SKILL_TXT,						// ËµÃ÷
-	PROFESSION_SKILL_FUNCNAME,					// Ê¹ÓÃº¯Êý
-	PROFESSION_SKILL_OPTION,					// º¯Êý²ÎÊý
+	PROFESSION_SKILL_NAME,						// æŠ€èƒ½åç§°
+	PROFESSION_SKILL_TXT,						// è¯´æ˜Ž
+	PROFESSION_SKILL_FUNCNAME,					// ä½¿ç”¨å‡½æ•°
+	PROFESSION_SKILL_OPTION,					// å‡½æ•°å‚æ•°
 	PROFESSION_SKILL_DATACHARNUM,
 }PROFESSION_SKILL_DATACHAR;
 
 
 typedef enum
 {
-	PROFESSION_SKILL_ID,						// ¼¼ÄÜ±àºÅ
-	PROFESSION_SKILL_PROFESSION_CLASS,			// Ö°Òµ
-	PROFESSION_SKILL_TARGET,					// Ä¿±êÖÖÀà
-	PROFESSION_SKILL_COST_MP,					// ºÄ·ÑMP
-	PROFESSION_SKILL_USE_FLAG,					// Ê¹ÓÃÆì±ê
-	PROFESSION_SKILL_KIND,						// ¼¼ÄÜÖÖÀà
-	PROFESSION_SKILL_ICON,						// ICONÍ¼ºÅ
-	PROFESSION_SKILL_IMG_1,						// ¹¥»÷Ç°Í¼ºÅ(¼¯Æø×´Ì¬)
-	PROFESSION_SKILL_IMG_2,						// ¹¥»÷Í¼ºÅ(¹¥»÷ÖÐ)	
-	PROFESSION_SKILL_COST,						// ¹ºÂò½ð¶î
-	PROFESSION_SKILL_FIX_VALUE,					// Éý¼¶ÐÞÕýÊýÖµ
+	PROFESSION_SKILL_ID,						// æŠ€èƒ½ç¼–å·
+	PROFESSION_SKILL_PROFESSION_CLASS,			// èŒä¸š
+	PROFESSION_SKILL_TARGET,					// ç›®æ ‡ç§ç±»
+	PROFESSION_SKILL_COST_MP,					// è€—è´¹MP
+	PROFESSION_SKILL_USE_FLAG,					// ä½¿ç”¨æ——æ ‡
+	PROFESSION_SKILL_KIND,						// æŠ€èƒ½ç§ç±»
+	PROFESSION_SKILL_ICON,						// ICONå›¾å·
+	PROFESSION_SKILL_IMG_1,						// æ”»å‡»å‰å›¾å·(é›†æ°”çŠ¶æ€)
+	PROFESSION_SKILL_IMG_2,						// æ”»å‡»å›¾å·(æ”»å‡»ä¸­)	
+	PROFESSION_SKILL_COST,						// è´­ä¹°é‡‘é¢
+	PROFESSION_SKILL_FIX_VALUE,					// å‡çº§ä¿®æ­£æ•°å€¼
 	
-	//½ÇÉ«ÏÈÑ§Ï°ÒÔÏÂËùÉè¶¨¼¼ÄÜÓëÊìÁ·¶È¾ù´ïµ½Ê±²Å¿ÉÒÔÑ§Ï°±¾¼¼ÄÜ
-	PROFESSION_SKILL_LIMIT1,					// ±ØÐÞ¼¼ÄÜ 1 ±àºÅ
-	PROFESSION_SKILL_PERCENT1,					// ±ØÐÞ¼¼ÄÜÓ¦ÓÐÊìÁ·¶È% 1
-	PROFESSION_SKILL_LIMIT2,					// ±ØÐÞ¼¼ÄÜ 2 ±àºÅ
-	PROFESSION_SKILL_PERCENT2,					// ±ØÐÞ¼¼ÄÜÓ¦ÓÐÊìÁ·¶È% 2
-	PROFESSION_SKILL_LIMIT3,					// ±ØÐÞ¼¼ÄÜ 3 ±àºÅ
-	PROFESSION_SKILL_PERCENT3,					// ±ØÐÞ¼¼ÄÜÓ¦ÓÐÊìÁ·¶È% 3
-	PROFESSION_SKILL_LIMIT4,					// ±ØÐÞ¼¼ÄÜ 4 ±àºÅ
-	PROFESSION_SKILL_PERCENT4,					// ±ØÐÞ¼¼ÄÜÓ¦ÓÐÊìÁ·¶È% 4
+	//è§’è‰²å…ˆå­¦ä¹ ä»¥ä¸‹æ‰€è®¾å®šæŠ€èƒ½ä¸Žç†Ÿç»ƒåº¦å‡è¾¾åˆ°æ—¶æ‰å¯ä»¥å­¦ä¹ æœ¬æŠ€èƒ½
+	PROFESSION_SKILL_LIMIT1,					// å¿…ä¿®æŠ€èƒ½ 1 ç¼–å·
+	PROFESSION_SKILL_PERCENT1,					// å¿…ä¿®æŠ€èƒ½åº”æœ‰ç†Ÿç»ƒåº¦% 1
+	PROFESSION_SKILL_LIMIT2,					// å¿…ä¿®æŠ€èƒ½ 2 ç¼–å·
+	PROFESSION_SKILL_PERCENT2,					// å¿…ä¿®æŠ€èƒ½åº”æœ‰ç†Ÿç»ƒåº¦% 2
+	PROFESSION_SKILL_LIMIT3,					// å¿…ä¿®æŠ€èƒ½ 3 ç¼–å·
+	PROFESSION_SKILL_PERCENT3,					// å¿…ä¿®æŠ€èƒ½åº”æœ‰ç†Ÿç»ƒåº¦% 3
+	PROFESSION_SKILL_LIMIT4,					// å¿…ä¿®æŠ€èƒ½ 4 ç¼–å·
+	PROFESSION_SKILL_PERCENT4,					// å¿…ä¿®æŠ€èƒ½åº”æœ‰ç†Ÿç»ƒåº¦% 4
 	PROFESSION_SKILL_DATAINTNUM,
 }PROFESSION_SKILL_DATAINT;
 
@@ -90,7 +90,7 @@ int PROFESSION_SKILL_DEC_COST_MP( int charaindex, int skill, int Pskillid, int s
 int PROFESSION_SKILL_ADDSK( int charaindex, int skill, int level );
 
 //----------------------------------------------------------------------------
-// Ö°Òµ¼¼ÄÜ
+// èŒä¸šæŠ€èƒ½
 void profession_common_fun( int charaindex, int toNo, int skill_level, int array, int com1 );
 int PROFESSION_brust( int charaindex, int toindex, int array, char *data, int skill_level );
 int PROFESSION_chain_atk( int charaindex, int toindex, int array, char *data, int skill_level );

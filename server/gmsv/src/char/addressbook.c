@@ -25,36 +25,36 @@
 // message max length.
 #define ADDRESSBOOK_FIXEDMESSAGE_MAXLEN 128
 // failed to exchange cards due to some reasons.
-#define ADDRESSBOOK_CANTADD  "����û���κ��ˡ�"
-#define ADDRESSBOOK_CANTADD2 "�޷�������Ƭ��"
+#define ADDRESSBOOK_CANTADD  "那里没有任何人。"
+#define ADDRESSBOOK_CANTADD2 "无法交换名片。"
 // succeed to exchange cards with others.
-#define ADDRESSBOOK_ADDED "��%s������Ƭ ��"
+#define ADDRESSBOOK_ADDED "和%s交换名片 。"
 // begin to exchange cards with others.
-#define ADDRESSBOOK_BEINGADDED "��%s������Ƭ��"
+#define ADDRESSBOOK_BEINGADDED "和%s交换名片。"
 // my table is full.
-#define ADDRESSBOOK_MYTABLEFULL "��Ƭϻ������"
+#define ADDRESSBOOK_MYTABLEFULL "名片匣已满。"
 // others is full.
-#define ADDRESSBOOK_HISTABLEFULL "�Է�����Ƭϻ������"
-#define ADDRESSBOOK_SENT  "���Ÿ�%s ��"
-#define ADDRESSBOOK_UNSENT  "�޷����Ÿ�%s ��"
-#define ADDRESSBOOK_ALREADYADDED  "�Ѿ���%s��������Ƭ�ˡ� "
-/*   ͭë��  ����  ������   */
-#define ADDRESSBOOK_GIVEADDRESS  "��%s�õ���Ƭ��"
-/*   ͭë��  ����ؤ��������   */
-#define ADDRESSBOOK_TAKEADDRESS1  "��%s�Լ�����Ƭ��"
-/*   ͭë��  ����ؤ��������   */
-#define ADDRESSBOOK_TAKEADDRESS2  "��Ϊ%s��Ҫ��Ƭ�����Խ���Ƭ�����ˡ�"
+#define ADDRESSBOOK_HISTABLEFULL "对方的名片匣已满。"
+#define ADDRESSBOOK_SENT  "送信给%s 。"
+#define ADDRESSBOOK_UNSENT  "无法送信给%s 。"
+#define ADDRESSBOOK_ALREADYADDED  "已经和%s交换过名片了。 "
+/*   铜毛域  读卞  丹橇谪   */
+#define ADDRESSBOOK_GIVEADDRESS  "从%s得到名片。"
+/*   铜毛域  读卞丐仆月橇谪   */
+#define ADDRESSBOOK_TAKEADDRESS1  "给%s自己的名片。"
+/*   铜毛域  读卞丐仆月橇谪   */
+#define ADDRESSBOOK_TAKEADDRESS2  "因为%s想要名片，所以将名片给他了。"
 // after exchange cards, the card in mine is delete.
 #define  ADDRESSBOOK_RETURNED1  \
-"��%s�����ż��������û��%s����Ƭ�ֽ��ż��˻ء�"
+"从%s寄来信件，但由於没有%s的名片又将信件退回。"
 // after exchange cards, the card in others is deleted.
 #define  ADDRESSBOOK_RETURNED2  \
-"���ż���%s�������%s û����Ƭ�������ż��ֱ��˻����ˡ�"
+"寄信件给%s，但由於%s 没有名片，所以信件又被退回来了。"
 // 
 #define  PETMAIL_RETURNED1  \
-"%s�����������������޷������ż�������"
+"%s不在这个世界里，所以无法寄送信件给他。"
 
-/* staticƥ�����ã�  ���а���*/
+/* static匹银丹迕［  五中袄手*/
 char ADDRESSBOOK_returnstring[25*128];
 
 static int ADDRESSBOOK_findBlankEntry( int cindex );
@@ -62,20 +62,20 @@ static BOOL ADDRESSBOOK_makeEntryFromCharaindex( int charaindex,
                          ADDRESSBOOK_entry* ae);
 
 /*------------------------------------------------------------
- * ʧ������Ƥ���ͼ�����������ë˪������
- * MSG�������ﾮ�չ�����ľ�£�
+ * 失玉伊旦皮永弁及丢永本□斥毛霜耨允月
+ * MSG皿夫玄戊伙井日勾井歹木月［
  *
- * ֧�³��練��connection����cdkeyƥ�����ƻ���ƽ�ҷ�  ��
- * �����������գ� MSG_send���£۹������������м���  ��
- * ���켰��������ئ��������������ئ�����е�����֣�
- * ¦��
- *  cindex  int     ƽ�ҷ¼�index
- *  aindex  int     ʧ������Ƥ���ͼ�index
- *  text    char*   ˪������  ٯ
- *  color   int     ��
- * ߯Ի��
- * ������̼���ƽ�ҷ±嶪��������ë˪��������TRUE ,
- * ��׷��̼����  ������FALSEë������
+ * 支月仇午反｝connection井日cdkey匹腹绸仄化｝平乓仿  手
+ * 甲永玄仄凶日｝ MSG_send允月［公及午五卞｝愤坌及树  互
+ * 锹澎及伉旦玄卞卅井匀凶日窒手仄卅中午中丹仇午分［
+ * 娄醒
+ *  cindex  int     平乓仿及index
+ *  aindex  int     失玉伊旦皮永弁及index
+ *  text    char*   霜耨允月  侬
+ *  color   int     缙
+ * 忒曰袄
+ * 左件仿奶件及平乓仿卞丢永本□斥毛霜耨仄凶日TRUE ,
+ * 左白仿奶件卞瓒  仄凶日FALSE毛井尹允
  ------------------------------------------------------------*/
 BOOL ADDRESSBOOK_sendMessage( int cindex, int aindex, char* text , int color )
 {
@@ -103,16 +103,16 @@ BOOL ADDRESSBOOK_sendMessage( int cindex, int aindex, char* text , int color )
         tm1.tm_mon +1, tm1.tm_mday, tm1.tm_hour, tm1.tm_min,
         text);
   
-  /*   �ӡ����  �������� */
+  /*   扔□田□  卞中月凛 */
   for( i = 0 ; i < playernum ; i ++){
     if( CHAR_CHECKINDEX( i) &&
       strcmp( CHAR_getChar( i, CHAR_CDKEY), ae->cdkey) == 0 &&
       strcmp( CHAR_getChar( i, CHAR_NAME), ae->charname) == 0 )
     {
       /*
-       * CDKEY �� ƽ�ҷ�  ���������ף۹���ƽ�ҷ�������
-       * ʧ������Ƥ���ͱ���м���  ��ؤ�¾�Ʃ�ͻ���
-       * ��������գ�MSG���£�
+       * CDKEY 手 平乓仿  手域谯仄凶［公及平乓仿弁正及
+       * 失玉伊旦皮永弁卞愤坌及树  互丐月井譬屯化｝
+       * 绣箕仄凶日｝MSG允月［
        */
       int index_to_my_info = 
           ADDRESSBOOK_getIndexInAddressbook( i , 
@@ -121,8 +121,8 @@ BOOL ADDRESSBOOK_sendMessage( int cindex, int aindex, char* text , int color )
       int    fd;
       if( index_to_my_info < 0 ){
         /*
-         * ���컥����ë�����ƻ������Ȼ��£�
-         * ��ɱ  �б�ݶ����ﻥ  �������ɧ�����£�
+         * 锹澎互愤坌毛坫壅仄化仄引匀化月［
+         * 域杀  谛卞］丢□伙互  凶午分仃骚襞允月［
          */
         //snprintf( tmpmsg, sizeof( tmpmsg), 
         //      ADDRESSBOOK_RETURNED1,
@@ -137,7 +137,7 @@ BOOL ADDRESSBOOK_sendMessage( int cindex, int aindex, char* text , int color )
               CHAR_getChar( i, CHAR_NAME),
               CHAR_getChar( i, CHAR_NAME));
 
-        /* ˪ԻǱ���ֶ��������� */
+        /* 霜曰潜卞手丢永本□斥 */
         CHAR_talkToCli( cindex, -1, 
                 tmpmsg , CHAR_COLORYELLOW );
         return FALSE;
@@ -146,13 +146,13 @@ BOOL ADDRESSBOOK_sendMessage( int cindex, int aindex, char* text , int color )
       fd = getfdFromCharaIndex( i);
       if( fd != -1 ) {
         lssproto_MSG_send( fd , index_to_my_info , textbuffer , color );
-        /* �����Ի */
+        /* 夫弘午曰 */
         printl( LOG_TALK, "CD=%s\tNM=%s\tT=%s" , mycd, mycharaname, textbuffer );
       
       }
       snprintf(tmpmsg, sizeof(tmpmsg), ADDRESSBOOK_SENT, ae->charname);
       CHAR_talkToCli(cindex, -1, tmpmsg, color);
-      // WON ADD ����snprintf�ᵼ�µ�����bug
+      // WON ADD 修正snprintf会导致当机的bug
       {
           char tmp[1000];
           sprintf(tmp, "ADDRESSBOOK_sendMessage:" "Send MSG to: %s %s\n",
@@ -162,7 +162,7 @@ BOOL ADDRESSBOOK_sendMessage( int cindex, int aindex, char* text , int color )
       return TRUE;
     }
   }
-  /* έ������ئ�������ݷ���ʧ���������ӡ������˪�� */
+  /* 苇勾井日卅井匀凶凛反］失市它件玄扔□田□卞霜月 */
   saacproto_Message_send( acfd, mycd, mycharaname, 
               ae->cdkey, ae->charname, textbuffer, color);
   CHAR_setInt(cindex, CHAR_SENDMAILCOUNT, CHAR_getInt(cindex, CHAR_SENDMAILCOUNT) + 1);
@@ -172,10 +172,10 @@ BOOL ADDRESSBOOK_sendMessage( int cindex, int aindex, char* text , int color )
   return FALSE;
 }
 /*------------------------------------------------------------
- * ʧ������Ƥ���ͼ�����������ë˪������
- * saac ����msg ë�������Ȼ��ͷ���ʧ������̵������£�
+ * 失玉伊旦皮永弁及丢永本□斥毛霜耨允月
+ * saac 井日msg 毛熬仃午匀化弁仿奶失件玄卞禾旦玄允月［
  *
- * ߯Ի��
+ * 忒曰袄
  ------------------------------------------------------------*/
 BOOL ADDRESSBOOK_sendMessage_FromOther(
     char *fromcdkey,
@@ -198,12 +198,12 @@ BOOL ADDRESSBOOK_sendMessage_FromOther(
     {
       int index_to_my_info;
       /*
-       * CDKEY �� ƽ�ҷ�  ���������ף۹���ƽ�ҷ�������
-       * ʧ������Ƥ���ͱ���м���  ��ؤ�¾�Ʃ�ͻ���
-       * ��������գ�MSG���£�
+       * CDKEY 手 平乓仿  手域谯仄凶［公及平乓仿弁正及
+       * 失玉伊旦皮永弁卞愤坌及树  互丐月井譬屯化｝
+       * 绣箕仄凶日｝MSG允月［
        */
        
-      /* �˵�  ة���������⻥���Ȼ����� */
+      /* 扑旦  丞丢永本□斥互窖匀化五凶 */
       if (strcmp(fromcdkey, ADDRESSBOOK_SYSTEM) == 0 &&
           strcmp(fromcharaname, ADDRESSBOOK_SYSTEM) == 0 ) 
       {
@@ -224,7 +224,7 @@ BOOL ADDRESSBOOK_sendMessage_FromOther(
         int fd = getfdFromCharaIndex( i);
         if( fd != -1 ) {
           lssproto_MSG_send( fd , index_to_my_info , text , color );
-          /* �����Ի */
+          /* 夫弘午曰 */
           printl( LOG_TALK, "CD=%s\tNM=%s\tT=%s" , fromcdkey,
                               fromcharaname, text );
         }
@@ -358,7 +358,7 @@ BOOL ADDRESSBOOK_addEntry( int meindex )
     int    strlength;
     char  msgbuf[1024];
     char  escapebuf[2048];
-    strcpy( msgbuf, "1\n��˭������Ƭ�أ�\n");
+    strcpy( msgbuf, "1\n和谁交换名片呢？\n");
     strlength = strlen( msgbuf);
     for( i = 0;
              CONNECT_getTradecardcharaindex(fd,i) != -1 
@@ -368,7 +368,7 @@ BOOL ADDRESSBOOK_addEntry( int meindex )
       char  buf[256];
       snprintf( buf, sizeof( buf),"%s\n", a);
       if( strlength + strlen( buf) > arraysizeof( msgbuf)){
-        print( "%s:%d�Ӵ�ѶϢbuffer���㡣\n",
+        print( "%s:%d视窗讯息buffer不足。\n",
             __FILE__,__LINE__);
         break;
       }
@@ -517,7 +517,7 @@ BOOL ADDRESSBOOK_sendAddressbookTable( int cindex )
       char charname_escaped[CHARNAMELEN*2];
       makeEscapeString( ae->charname, charname_escaped ,
                 sizeof(charname_escaped  ));
-      /*  ���ð׷º�|  �|��ì��|���̰�|�׷º�   */
+      /*  银迕白仿弘|  蟆|伊矛伙|仿奶白|白仿弘   */
       snprintf( tmp , sizeof( tmp ),
 #ifdef _VERSION_NEW
             "%d|%s|%d|%d|%d|%d|%d|0|" ,
@@ -540,7 +540,7 @@ BOOL ADDRESSBOOK_sendAddressbookTable( int cindex )
         break;
       }
     }else{
-      /*���Ȼ�ئ�з������ֳ��߼���ƥ˪��  */
+      /*银匀化卅中犯□正手冲徇及心匹霜月  */
       char    tmp[32];
 #ifdef _VERSION_NEW
     snprintf( tmp , sizeof( tmp ), "||||||||"  );
@@ -642,12 +642,12 @@ BOOL ADDRESSBOOK_sendAddressbookTableOne( int cindex, int num )
 }
 
 /*------------------------------------------------------------
- * ���繴��ʧ������Ƥ���;޼�����ë��  ٯ  ��ئ���ʣ�
- * ��ľ��ƽ�ҷ�������ئ��ƥ�ͷ���ʧ������˪�����·�Ի�ֿҸ�
- * ئ�ּ�ƥؤ��  ۢ��ؤ�£�
- * ¦��
- *  a   ADDRESSBOOK_entry*    ٯ  ����������հ  �߼����̼���
- * ߯Ի��
+ * 夫午勾及失玉伊旦皮永弁巨件玄伉毛｝  侬  卞卅云允［
+ * 仇木反平乓仿忡绣迕卅及匹弁仿奶失件玄卞霜耨允月方曰手恳割
+ * 卅手及匹丐月  邰互丐月［
+ * 娄醒
+ *  a   ADDRESSBOOK_entry*    侬  卞仄凶中厌瞻  尺及禾奶件正
+ * 忒曰袄
  *  char *
  ------------------------------------------------------------*/
 char *ADDRESSBOOK_makeAddressbookString( ADDRESSBOOK_entry *a )
@@ -655,7 +655,7 @@ char *ADDRESSBOOK_makeAddressbookString( ADDRESSBOOK_entry *a )
   char work1[256], work2[256];
 
   if( a->use == 0 ){
-    /* ��޼���������������  ٯ   */
+    /* 坞巨件玄伉分匀凶日坞  侬   */
     ADDRESSBOOK_returnstring[0] = '\0';
     return ADDRESSBOOK_returnstring;
   }
@@ -672,13 +672,13 @@ char *ADDRESSBOOK_makeAddressbookString( ADDRESSBOOK_entry *a )
 }
 
 /*------------------------------------------------------------
- *   ٯ  ����ľ������ʧ������Ƥ���;޼�����ë����հ  ��ئ���ʣ�
- * ��������հ  ��use��½����  �����ձ�ئ�£�
- * ¦��
- *  in      char*                     ٯ
- *  a       ADDRESSBOOK_entry*      ������ë谻�����
- * ߯Ի��
- * ���ѱ�TRUE
+ *   侬  祭今木化中月失玉伊旦皮永弁巨件玄伉毛｝厌瞻  卞卅云允［
+ * 仇及瑛绊厌瞻  及use动陆及树  反敦僬卞卅月［
+ * 娄醒
+ *  in      char*                     侬
+ *  a       ADDRESSBOOK_entry*      犯□正毛璋户月赭
+ * 忒曰袄
+ * 勾友卞TRUE
  ------------------------------------------------------------*/
 BOOL ADDRESSBOOK_makeAddressbookEntry( char *in , ADDRESSBOOK_entry *a )
 {
@@ -883,7 +883,7 @@ BOOL ADDRESSBOOK_AutoaddAddressBook(int meindex, int toindex)
   me_blank = 79;
   to_blank = 79;
   
-  if (to_blank < 0 || me_blank < 0) { // "��Ƭϻ����."
+  if (to_blank < 0 || me_blank < 0) { // "名片匣已满."
     return FALSE;
   }
   

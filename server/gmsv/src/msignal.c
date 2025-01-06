@@ -84,12 +84,12 @@ static void allDataDump( void )
 }
 
 /*------------------------------------------------------------
- *  Ø¦ØÆ
+ *  å…ä»„
  ------------------------------------------------------------*/
 void shutdownProgram( void )
 {
-    printf("¹Ø±ÕSAACÁ¬½Ó:%d\n",close( acfd ));
-    printf("¹Ø±Õ°ó¶¨¶Ë¿Ú:%d\n",close( bindedfd ));
+    printf("å…³é—­SAACè¿æ¥:%d\n",close( acfd ));
+    printf("å…³é—­ç»‘å®šç«¯å£:%d\n",close( bindedfd ));
     memEnd();
 }
 
@@ -122,63 +122,63 @@ void sigshutdown( int number)
 		char buff[256];
 
 		if( number == 0 ){
-			printf( "\n\n\nGMSVÕı³£¹Ø±Õ\n" );
+			printf( "\n\n\nGMSVæ­£å¸¸å…³é—­\n" );
 		}else if( number == 2 ){
 #ifdef _KEEP_UP_NO_LOGIN
     	if(strlen(keepupnologin) > 0){
     		strcpy(keepupnologin,"");
-    		printf( "ÒÑ½â³ı½ûÖ¹µÇÂ½×´Ì¬\n" );
+    		printf( "å·²è§£é™¤ç¦æ­¢ç™»é™†çŠ¶æ€\n" );
     		return;
     	}
 #endif
-			printf( "\n\n\nGMSV±»CTRL+CÊÖ¶¯ÖĞ¶Ï\n" );
+			printf( "\n\n\nGMSVè¢«CTRL+Cæ‰‹åŠ¨ä¸­æ–­\n" );
 		}else{
-			sprintf( buff, "\n=========ÒÔÏÂÊÇ·şÎñÆ÷³ö´íÔ­Òò=========\n");
+			sprintf( buff, "\n=========ä»¥ä¸‹æ˜¯æœåŠ¡å™¨å‡ºé”™åŸå› =========\n");
 			logerr(buff);
-	    sprintf( buff, "±ê×¼ĞÅÏ¢: %d\n" , number  );
+	    sprintf( buff, "æ ‡å‡†ä¿¡æ¯: %d\n" , number  );
 	    logerr(buff);
 #ifdef _GMSV_DEBUG
-			sprintf( buff, "Ö÷ º¯ Êı: %s\n", DebugMainFunction );
+			sprintf( buff, "ä¸» å‡½ æ•°: %s\n", DebugMainFunction );
 			logerr(buff);
 #endif
-			sprintf( buff, "ÔÚÏßÈËÊı: %d\n", player_online);
+			sprintf( buff, "åœ¨çº¿äººæ•°: %d\n", player_online);
 			logerr(buff);
-			sprintf( buff, "×î¸ßÔÚÏß: %d\n", player_maxonline);
+			sprintf( buff, "æœ€é«˜åœ¨çº¿: %d\n", player_maxonline);
 			logerr(buff);
-			sprintf( buff, "SAAC½ÓÊÕ: %s\n", saacretfunc);
+			sprintf( buff, "SAACæ¥æ”¶: %s\n", saacretfunc);
 			logerr(buff);
-			sprintf( buff, "SAAC·¢ËÍ: %s\n", saacsendfunc);
+			sprintf( buff, "SAACå‘é€: %s\n", saacsendfunc);
 			logerr(buff);
-			sprintf( buff, "cli ½ÓÊÕ: %d\n", cliretfunc);
+			sprintf( buff, "cli æ¥æ”¶: %d\n", cliretfunc);
 			logerr(buff);
-			sprintf( buff, "cli ·¢ËÍ: %d\n", clisendfunc);
+			sprintf( buff, "cli å‘é€: %d\n", clisendfunc);
 			logerr(buff);
 #ifdef _ABSOLUTE_DEBUG
-			sprintf( buff, "´íÎóÊı¾İ: %s\n", errordata);
+			sprintf( buff, "é”™è¯¯æ•°æ®: %s\n", errordata);
 			logerr(buff);
-			sprintf( buff, "´íÎóÕËºÅ: %s\n", charId);
+			sprintf( buff, "é”™è¯¯è´¦å·: %s\n", charId);
 			logerr(buff);
-			sprintf( buff, "×îºóÖ´ĞĞ: %d\n", lastfunctime);
+			sprintf( buff, "æœ€åæ‰§è¡Œ: %d\n", lastfunctime);
 			logerr(buff);
-			sprintf( buff, "µ÷ÊÔĞĞÊı: %d\n", debugline);
+			sprintf( buff, "è°ƒè¯•è¡Œæ•°: %d\n", debugline);
 			logerr(buff);
-			sprintf( buff, "COM ½Ó¿Ú: %d\n", comnum);
+			sprintf( buff, "COM æ¥å£: %d\n", comnum);
 			logerr(buff);
-			sprintf( buff, "µ±Ç°°æ±¾: %s\n", SERVER_VERSION);
+			sprintf( buff, "å½“å‰ç‰ˆæœ¬: %s\n", SERVER_VERSION);
 			logerr(buff);
 #endif
-			sprintf( buff, "ÒÔÏÂÊÇÖ÷Òª´íÎó£¬±ØĞëÏòÎÒÃÇÌá½»µÄ´íÎó\n");
+			sprintf( buff, "ä»¥ä¸‹æ˜¯ä¸»è¦é”™è¯¯ï¼Œå¿…é¡»å‘æˆ‘ä»¬æäº¤çš„é”™è¯¯\n");
 			logerr(buff);
 			dump();
 
-			sprintf( buff, "=========ÒÔÉÏÊÇ·şÎñÆ÷³ö´íÔ­Òò=========\n");
+			sprintf( buff, "=========ä»¥ä¸Šæ˜¯æœåŠ¡å™¨å‡ºé”™åŸå› =========\n");
 			logerr(buff);
 
 		}
 		if( number == 0 || number == 2 ){
-			printf( "ÔÚÏßÈËÊı: %d\n", player_online);
-			printf( "×î¸ßÔÚÏß: %d\n", player_maxonline);
-			printf( "µ±Ç°°æ±¾: %s\n", SERVER_VERSION);
+			printf( "åœ¨çº¿äººæ•°: %d\n", player_online);
+			printf( "æœ€é«˜åœ¨çº¿: %d\n", player_maxonline);
+			printf( "å½“å‰ç‰ˆæœ¬: %s\n", SERVER_VERSION);
 		}
 		
 #ifdef _GMSV_DEBUG
@@ -188,7 +188,7 @@ void sigshutdown( int number)
 	    	char buf[128];
 	    	time(&new_t);
 	    	if(initTime==0){
-	    		printf( "ÔËĞĞÊ±¼ä: ÉĞÎ´³õÊ¼»¯Íê\n" );
+	    		printf( "è¿è¡Œæ—¶é—´: å°šæœªåˆå§‹åŒ–å®Œ\n" );
 	    	}else{
 		    	new_t-=initTime;
 			
@@ -198,16 +198,16 @@ void sigshutdown( int number)
 		      ss=(int) new_t;
 		      
 					if (dd>0) {
-		      	snprintf( buf, sizeof( buf ) , "·şÎñÆ÷¹²ÔËĞĞÁË %d ÈÕ %d Ğ¡Ê± %d ·Ö %d Ãë¡£",dd,hh,mm,ss);
+		      	snprintf( buf, sizeof( buf ) , "æœåŠ¡å™¨å…±è¿è¡Œäº† %d æ—¥ %d å°æ—¶ %d åˆ† %d ç§’ã€‚",dd,hh,mm,ss);
 		      } else if (hh>0) {
-		      	snprintf( buf, sizeof( buf ) , "·şÎñÆ÷¹²ÔËĞĞÁË %d Ğ¡Ê± %d ·Ö %d Ãë¡£",hh,mm,ss);
+		      	snprintf( buf, sizeof( buf ) , "æœåŠ¡å™¨å…±è¿è¡Œäº† %d å°æ—¶ %d åˆ† %d ç§’ã€‚",hh,mm,ss);
 		      } else {
-		       	snprintf( buf, sizeof( buf ) , "·şÎñÆ÷¹²ÔËĞĞÁË %d ·Ö %d Ãë¡£",mm,ss);
+		       	snprintf( buf, sizeof( buf ) , "æœåŠ¡å™¨å…±è¿è¡Œäº† %d åˆ† %d ç§’ã€‚",mm,ss);
 		      }
 		      if( number == 0 || number == 2 ){
-		      	printf( "ÔËĞĞÊ±¼ä: %s\n", buf );
+		      	printf( "è¿è¡Œæ—¶é—´: %s\n", buf );
 		      }else{
-			      sprintf( buff, "ÔËĞĞÊ±¼ä: %s\n", buf );
+			      sprintf( buff, "è¿è¡Œæ—¶é—´: %s\n", buf );
 			      logerr(buff);
 			    }
 	    	}
@@ -241,7 +241,7 @@ void sigshutdown( int number)
 void signalset( void )
 {
     // CoolFish: Test Signal 2001/10/26
-    print("\n¿ªÊ¼»ñÈ¡ĞÅºÅ..\n");
+    print("\nå¼€å§‹è·å–ä¿¡å·..\n");
 
 		print("SIGINT:%d\n",  SIGINT);
 		print("SIGQUIT:%d\n", SIGQUIT);

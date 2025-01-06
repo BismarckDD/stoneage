@@ -1,4 +1,4 @@
---µÇÂ¼¹ı³Ì¶ÁÈ¡ºÍÑéÖ¤
+--ç™»å½•è¿‡ç¨‹è¯»å–å’ŒéªŒè¯
 function FreeLoginCheck(fd)
 	local mun = 0
 	local maxnum = 0
@@ -7,16 +7,16 @@ function FreeLoginCheck(fd)
 	local ip = net.getIP(fd)
 
 	if mac == "" then
-		lssproto.CharList(fd, "ÓÉÓÚÄãÊ¹ÓÃ·Ç±¾·şµÄÈÏ¿ÉµÄ³ÌĞò½øÈëÓÎÏ·£¬ËùÒÔ½ûÖ¹ÄãµÄµÇÂ½£¡")
+		lssproto.CharList(fd, "ç”±äºä½ ä½¿ç”¨éæœ¬æœçš„è®¤å¯çš„ç¨‹åºè¿›å…¥æ¸¸æˆï¼Œæ‰€ä»¥ç¦æ­¢ä½ çš„ç™»é™†ï¼")
 		return 0
 	end
 	if string.len(mac) < 32 then
-		lssproto.CharList(fd, "ÓÉÓÚÄãÊ¹ÓÃ·Ç±¾·şµÄÈÏ¿ÉµÄ³ÌĞò½øÈëÓÎÏ·£¬ËùÒÔ½ûÖ¹ÄãµÄµÇÂ½£¡")
+		lssproto.CharList(fd, "ç”±äºä½ ä½¿ç”¨éæœ¬æœçš„è®¤å¯çš„ç¨‹åºè¿›å…¥æ¸¸æˆï¼Œæ‰€ä»¥ç¦æ­¢ä½ çš„ç™»é™†ï¼")
 		return 0
 	end
 	local key = other.getString(mac, "-", 1)
 	if key ~= "ver100" then
-		lssproto.CharList(fd, "ÓÉÓÚÄãµÄ°æ±¾¹ı¾É£¬Çë¸üĞÂºóÔÙ½øÈëÓÎÏ·£¡")
+		lssproto.CharList(fd, "ç”±äºä½ çš„ç‰ˆæœ¬è¿‡æ—§ï¼Œè¯·æ›´æ–°åå†è¿›å…¥æ¸¸æˆï¼")
 		return 0
 	end
 
@@ -28,7 +28,7 @@ function FreeLoginCheck(fd)
 			if mac == net.getMac(i) then
 				mun = mun + 1
 				if mun > maxnum then
-					lssproto.CharList(fd, "ÄãµÄÓÎÏ·ÕËºÅµÇÂ½ÒÑÒÔ´ï" .. mun - 1 .. "¸ö£¬Çë²»Òª¹ıÁ¿½øÈëÓÎÏ·£¡")
+					lssproto.CharList(fd, "ä½ çš„æ¸¸æˆè´¦å·ç™»é™†å·²ä»¥è¾¾" .. mun - 1 .. "ä¸ªï¼Œè¯·ä¸è¦è¿‡é‡è¿›å…¥æ¸¸æˆï¼")
 					return 0
 				end
 			end
@@ -47,7 +47,7 @@ function FreeLoginCheck(fd)
 			sasql.fetch_row(0)
 			onlinenum = other.atoi(sasql.data(1))
 			if onlinenum > totalnum then
-				lssproto.CharList(fd, "ÄúµÄÓÎÏ·µÇÂ¼ÕËºÅÊıÁ¿ÒÑ´ïÉÏÏŞ£¬Çë²»Òª¹ıÁ¿½øÈëÓÎÏ·¡£")
+				lssproto.CharList(fd, "æ‚¨çš„æ¸¸æˆç™»å½•è´¦å·æ•°é‡å·²è¾¾ä¸Šé™ï¼Œè¯·ä¸è¦è¿‡é‡è¿›å…¥æ¸¸æˆã€‚")
 				return 0
 			end
 		end

@@ -1,6 +1,4 @@
 #include "version.h"
-#include <stdio.h>
-
 #include "config_file.h"
 #include "buf.h"
 #include "char_base.h"

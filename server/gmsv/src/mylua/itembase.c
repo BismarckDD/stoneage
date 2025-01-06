@@ -8,164 +8,164 @@
 #include "lauxlib.h"
 #include "lualib.h"
 #include "lssproto_serv.h"
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
 #ifdef _ALLBLUES_LUA_1_2   
 #include "mylua/mylua.h"
 extern MY_Lua MYLua;
 static CharBase ItemBaseInt[] = {
-	{{"ÐòºÅ"},							ITEM_ID}
-	,{{"Í¼ºÅ"},							ITEM_BASEIMAGENUMBER}
-	,{{"¼ÛÖµ"},							ITEM_COST}
-	,{{"ÀàÐÍ"},							ITEM_TYPE}
-	,{{"Ê¹ÓÃ"},							ITEM_ABLEUSEFIELD}
-	,{{"Ä¿±ê"},							ITEM_TARGET}
-	,{{"µÈ¼¶"},							ITEM_LEVEL}
-	,{{"´ÎÊý"},							ITEM_DAMAGEBREAK}
-	,{{"¶Ñµþ"},							ITEM_USEPILENUMS}
-	,{{"ÖØµþ"},							ITEM_CANBEPILE}
-	,{{"Ðè¹¥"},							ITEM_NEEDSTR}
-	,{{"ÐèÃô"},							ITEM_NEEDDEX}
-	,{{"Ðè×ª"},							ITEM_NEEDTRANS}
-	,{{"ÐèÖ°Òµ"},						ITEM_NEEDPROFESSION}
+	{{"åºå·"},							ITEM_ID}
+	,{{"å›¾å·"},							ITEM_BASEIMAGENUMBER}
+	,{{"ä»·å€¼"},							ITEM_COST}
+	,{{"ç±»åž‹"},							ITEM_TYPE}
+	,{{"ä½¿ç”¨"},							ITEM_ABLEUSEFIELD}
+	,{{"ç›®æ ‡"},							ITEM_TARGET}
+	,{{"ç­‰çº§"},							ITEM_LEVEL}
+	,{{"æ¬¡æ•°"},							ITEM_DAMAGEBREAK}
+	,{{"å †å "},							ITEM_USEPILENUMS}
+	,{{"é‡å "},							ITEM_CANBEPILE}
+	,{{"éœ€æ”»"},							ITEM_NEEDSTR}
+	,{{"éœ€æ•"},							ITEM_NEEDDEX}
+	,{{"éœ€è½¬"},							ITEM_NEEDTRANS}
+	,{{"éœ€èŒä¸š"},						ITEM_NEEDPROFESSION}
 #ifdef _TAKE_ITEMDAMAGE
-	,{{"×îÐ¡¶È"},						ITEM_DAMAGECRUSHE}
-	,{{"×î´ó¶È"},						ITEM_MAXDAMAGECRUSHE}
+	,{{"æœ€å°åº¦"},						ITEM_DAMAGECRUSHE}
+	,{{"æœ€å¤§åº¦"},						ITEM_MAXDAMAGECRUSHE}
 #endif
-	,{{"ÉË"},								ITEM_OTHERDAMAGE}
-	,{{"Îü"},								ITEM_OTHERDEFC}
-	,{{"Ì××°"},							ITEM_SUITCODE}
-	,{{"×îÐ¡¹¥»÷"},					ITEM_ATTACKNUM_MIN}
-	,{{"×î´ó¹¥»÷"},					ITEM_ATTACKNUM_MAX}
-	,{{"¹¥"},								ITEM_MODIFYATTACK}
-	,{{"·À"},								ITEM_MODIFYDEFENCE}
-	,{{"Ãô"},								ITEM_MODIFYQUICK}
+	,{{"ä¼¤"},								ITEM_OTHERDAMAGE}
+	,{{"å¸"},								ITEM_OTHERDEFC}
+	,{{"å¥—è£…"},							ITEM_SUITCODE}
+	,{{"æœ€å°æ”»å‡»"},					ITEM_ATTACKNUM_MIN}
+	,{{"æœ€å¤§æ”»å‡»"},					ITEM_ATTACKNUM_MAX}
+	,{{"æ”»"},								ITEM_MODIFYATTACK}
+	,{{"é˜²"},								ITEM_MODIFYDEFENCE}
+	,{{"æ•"},								ITEM_MODIFYQUICK}
 	,{{"HP"},								ITEM_MODIFYHP}
 	,{{"MP"},								ITEM_MODIFYMP}
-	,{{"ÔËÆø"},							ITEM_MODIFYLUCK}
-	,{{"÷ÈÁ¦"},							ITEM_MODIFYCHARM}
-	,{{"»Ø±Ü"},							ITEM_MODIFYAVOID}
-	,{{"ÊôÐÔ"},							ITEM_MODIFYATTRIB}
-	,{{"ÊôÐÔ±ÈÀý"},					ITEM_MODIFYATTRIBVALUE}
-	,{{"¾«Áé"},							ITEM_MAGICID}
-	,{{"ÖÐ¾«ÂÊ"},						ITEM_MAGICPROB}
-	,{{"¾«ºÄMP"},						ITEM_MAGICUSEMP}
-	,{{"¸ñµµ"},							ITEM_MODIFYARRANGE}
-	,{{"´ÎÐò"},							ITEM_MODIFYSEQUENCE}
-	,{{"¸ºÖØ"},							ITEM_ATTACHPILE}
-	,{{"ÃüÖÐ"},							ITEM_HITRIGHT}
-	,{{"ºö·À"},							ITEM_NEGLECTGUARD}
-	,{{"¶¾ÄÍ"},							ITEM_POISON}
-	,{{"ÂéÄÍ"},							ITEM_PARALYSIS}
-	,{{"Ë¯ÄÍ"},							ITEM_SLEEP}
-	,{{"Ê¯ÄÍ"},							ITEM_STONE}
-	,{{"¾ÆÄÍ"},							ITEM_DRUNK}
-	,{{"»ìÄÍ"},							ITEM_CONFUSION}
-	,{{"»áÐÄ"},							ITEM_CRITICAL}
-	,{{"¶¯×÷"},							ITEM_USEACTION}
-	,{{"µÇ³öÏûÊ§"},					ITEM_DROPATLOGOUT}
-	,{{"¶ªÆúÏûÊ§"},					ITEM_VANISHATDROP}
+	,{{"è¿æ°”"},							ITEM_MODIFYLUCK}
+	,{{"é­…åŠ›"},							ITEM_MODIFYCHARM}
+	,{{"å›žé¿"},							ITEM_MODIFYAVOID}
+	,{{"å±žæ€§"},							ITEM_MODIFYATTRIB}
+	,{{"å±žæ€§æ¯”ä¾‹"},					ITEM_MODIFYATTRIBVALUE}
+	,{{"ç²¾çµ"},							ITEM_MAGICID}
+	,{{"ä¸­ç²¾çŽ‡"},						ITEM_MAGICPROB}
+	,{{"ç²¾è€—MP"},						ITEM_MAGICUSEMP}
+	,{{"æ ¼æ¡£"},							ITEM_MODIFYARRANGE}
+	,{{"æ¬¡åº"},							ITEM_MODIFYSEQUENCE}
+	,{{"è´Ÿé‡"},							ITEM_ATTACHPILE}
+	,{{"å‘½ä¸­"},							ITEM_HITRIGHT}
+	,{{"å¿½é˜²"},							ITEM_NEGLECTGUARD}
+	,{{"æ¯’è€"},							ITEM_POISON}
+	,{{"éº»è€"},							ITEM_PARALYSIS}
+	,{{"ç¡è€"},							ITEM_SLEEP}
+	,{{"çŸ³è€"},							ITEM_STONE}
+	,{{"é…’è€"},							ITEM_DRUNK}
+	,{{"æ··è€"},							ITEM_CONFUSION}
+	,{{"ä¼šå¿ƒ"},							ITEM_CRITICAL}
+	,{{"åŠ¨ä½œ"},							ITEM_USEACTION}
+	,{{"ç™»å‡ºæ¶ˆå¤±"},					ITEM_DROPATLOGOUT}
+	,{{"ä¸¢å¼ƒæ¶ˆå¤±"},					ITEM_VANISHATDROP}
 	,{{""},									ITEM_ISOVERED}
-	,{{"ÓÊ¼Ä"},							ITEM_CANPETMAIL}
-	,{{"ºÏ³É´Ó"},						ITEM_CANMERGEFROM}
-	,{{"ºÏ³ÉÖÁ"},						ITEM_CANMERGETO}
-	,{{"·ÝÁ¿0"},						ITEM_INGVALUE0}
-	,{{"·ÝÁ¿1"},						ITEM_INGVALUE1}
-	,{{"·ÝÁ¿2"},						ITEM_INGVALUE2}
-	,{{"·ÝÁ¿3"},						ITEM_INGVALUE3}
-	,{{"·ÝÁ¿4"},						ITEM_INGVALUE4}
-	,{{"ÑÕÉ«"},							ITEM_COLOER}
-	,{{"ÎïÆ·µÈ¼¶"},					ITEM_LEAKLEVEL}
+	,{{"é‚®å¯„"},							ITEM_CANPETMAIL}
+	,{{"åˆæˆä»Ž"},						ITEM_CANMERGEFROM}
+	,{{"åˆæˆè‡³"},						ITEM_CANMERGETO}
+	,{{"ä»½é‡0"},						ITEM_INGVALUE0}
+	,{{"ä»½é‡1"},						ITEM_INGVALUE1}
+	,{{"ä»½é‡2"},						ITEM_INGVALUE2}
+	,{{"ä»½é‡3"},						ITEM_INGVALUE3}
+	,{{"ä»½é‡4"},						ITEM_INGVALUE4}
+	,{{"é¢œè‰²"},							ITEM_COLOER}
+	,{{"ç‰©å“ç­‰çº§"},					ITEM_LEAKLEVEL}
 #ifdef _ITEM_USE_TIME
-	,{{"ÎïÆ·Ê±¼ä"},					ITEM_USETIME}
+	,{{"ç‰©å“æ—¶é—´"},					ITEM_USETIME}
 #endif
 }; 
 
 static CharBase ItemBaseChar[] = {
-	{{"Ãû³Æ"},					ITEM_NAME}
-	,{{"ÏÔÊ¾Ãû"},				ITEM_SECRETNAME}
-	,{{"ËµÃ÷"},					ITEM_EFFECTSTRING}
-	,{{"×Ö¶Î"},					ITEM_ARGUMENT}
-	,{{"³É·ÝÃû0"},			ITEM_INGNAME0}
-	,{{"³É·ÝÃû1"},			ITEM_INGNAME1}
-	,{{"³É·ÝÃû2"},			ITEM_INGNAME2}
-	,{{"³É·ÝÃû3"},			ITEM_INGNAME3}
-	,{{"³É·ÝÃû4"},			ITEM_INGNAME4}
+	{{"åç§°"},					ITEM_NAME}
+	,{{"æ˜¾ç¤ºå"},				ITEM_SECRETNAME}
+	,{{"è¯´æ˜Ž"},					ITEM_EFFECTSTRING}
+	,{{"å­—æ®µ"},					ITEM_ARGUMENT}
+	,{{"æˆä»½å0"},			ITEM_INGNAME0}
+	,{{"æˆä»½å1"},			ITEM_INGNAME1}
+	,{{"æˆä»½å2"},			ITEM_INGNAME2}
+	,{{"æˆä»½å3"},			ITEM_INGNAME3}
+	,{{"æˆä»½å4"},			ITEM_INGNAME4}
 #ifdef _ANGEL_SUMMON
-	,{{"¾«ÕÙ"},					ITEM_ANGELMISSION}
-	,{{"ÌìÊ¹"},					ITEM_ANGELINFO}
-	,{{"Ó¢ÐÛ"},					ITEM_HEROINFO}
+	,{{"ç²¾å¬"},					ITEM_ANGELMISSION}
+	,{{"å¤©ä½¿"},					ITEM_ANGELINFO}
+	,{{"è‹±é›„"},					ITEM_HEROINFO}
 #endif
 	,{{"Unicode"},	ITEM_UNIQUECODE}
-	,{{"±àÂë"},	ITEM_UNIQUECODE}
+	,{{"ç¼–ç "},	ITEM_UNIQUECODE}
 }; 
 
 static CharBase ItemBaseValue[] = {
-	{{"×¦"},							ITEM_FIST}
-	,{{"¸«"},							ITEM_AXE}
-	,{{"¹÷"},							ITEM_CLUB}
-	,{{"Ç¹"},							ITEM_SPEAR}
-	,{{"¹­"},							ITEM_BOW}
-	,{{"¶Ü"},							ITEM_SHIELD}
-	,{{"¿ø"},							ITEM_HELM}
-	,{{"îø"},							ITEM_ARMOUR}
-	,{{"»·"},							ITEM_BRACELET}
-	,{{"ÀÖ"},							ITEM_MUSIC}
-	,{{"Ïî"},							ITEM_NECKLACE}
-	,{{"»·"},							ITEM_RING}
-	,{{"´ø"},							ITEM_BELT}
-	,{{"¶ú»·"},						ITEM_EARRING}
-	,{{"±Ç»·"},						ITEM_NOSERING}
-	,{{"»¤Éí·û"},					ITEM_AMULET}
-	,{{"ÆäËü"},						ITEM_OTHER}
-	,{{"»ØÐýïÚ"},					ITEM_BOOMERANG}
-	,{{"Í¶ÖÀ¸«"},					ITEM_BOUNDTHROW}
-	,{{"Í¶ÖÀÊ¯"},					ITEM_BREAKTHROW}
-	,{{"µú"},							ITEM_DISH}
+	{{"çˆª"},							ITEM_FIST}
+	,{{"æ–§"},							ITEM_AXE}
+	,{{"æ£"},							ITEM_CLUB}
+	,{{"æžª"},							ITEM_SPEAR}
+	,{{"å¼“"},							ITEM_BOW}
+	,{{"ç›¾"},							ITEM_SHIELD}
+	,{{"ç›”"},							ITEM_HELM}
+	,{{"é“ "},							ITEM_ARMOUR}
+	,{{"çŽ¯"},							ITEM_BRACELET}
+	,{{"ä¹"},							ITEM_MUSIC}
+	,{{"é¡¹"},							ITEM_NECKLACE}
+	,{{"çŽ¯"},							ITEM_RING}
+	,{{"å¸¦"},							ITEM_BELT}
+	,{{"è€³çŽ¯"},						ITEM_EARRING}
+	,{{"é¼»çŽ¯"},						ITEM_NOSERING}
+	,{{"æŠ¤èº«ç¬¦"},					ITEM_AMULET}
+	,{{"å…¶å®ƒ"},						ITEM_OTHER}
+	,{{"å›žæ—‹é•–"},					ITEM_BOOMERANG}
+	,{{"æŠ•æŽ·æ–§"},					ITEM_BOUNDTHROW}
+	,{{"æŠ•æŽ·çŸ³"},					ITEM_BREAKTHROW}
+	,{{"ç¢Ÿ"},							ITEM_DISH}
 #ifdef _ITEM_INSLAY
-	,{{"½ðÊô"},						ITEM_METAL}
-	,{{"±¦Ê¯"},						ITEM_JEWEL}
+	,{{"é‡‘å±ž"},						ITEM_METAL}
+	,{{"å®çŸ³"},						ITEM_JEWEL}
 #endif
 #ifdef _ITEM_CHECKWARES
-	,{{"»õÎï"},						ITEM_WARES}
+	,{{"è´§ç‰©"},						ITEM_WARES}
 #endif
 #ifdef _ITEM_EQUITSPACE
-	,{{"Ñü´ø"},						ITEM_WBELT}
-	,{{"¶ÜÅÆ"},						ITEM_WSHIELD}
-	,{{"Ð¬×Ó"},						ITEM_WSHOES}
+	,{{"è…°å¸¦"},						ITEM_WBELT}
+	,{{"ç›¾ç‰Œ"},						ITEM_WSHIELD}
+	,{{"éž‹å­"},						ITEM_WSHOES}
 #endif
 #ifdef _EQUIT_NEWGLOVE 
-	,{{"ÊÖÌ×"},						ITEM_WGLOVE}
+	,{{"æ‰‹å¥—"},						ITEM_WGLOVE}
 #endif
 #ifdef _ALCHEMIST
-	,{{"Á¶½ðÊõ"},					ITEM_ALCHEMIST}
+	,{{"ç‚¼é‡‘æœ¯"},					ITEM_ALCHEMIST}
 #endif
 #ifdef _PET_ITEM
-	,{{"³èÍ·"},						ITEM_PET_HEAD}
-	,{{"³èÑÀ"},						ITEM_PET_TOOTH}
-	,{{"³è×¦"},						ITEM_PET_CLAW}
-	,{{"³èÐØ"},						ITEM_PET_BREAST}
-	,{{"³è±³"},						ITEM_PET_BACK}
-	,{{"³è³á"},						ITEM_PET_WING}
-	,{{"³è½Å"},						ITEM_PET_FEET}
+	,{{"å® å¤´"},						ITEM_PET_HEAD}
+	,{{"å® ç‰™"},						ITEM_PET_TOOTH}
+	,{{"å® çˆª"},						ITEM_PET_CLAW}
+	,{{"å® èƒ¸"},						ITEM_PET_BREAST}
+	,{{"å® èƒŒ"},						ITEM_PET_BACK}
+	,{{"å® ç¿…"},						ITEM_PET_WING}
+	,{{"å® è„š"},						ITEM_PET_FEET}
 #endif
 }; 
 
 static CharBase ItemBaseWorkInt[] = {
-	{{"¶ÔÏó"}, 						ITEM_WORKOBJINDEX}
-	,{{"Íæ¼Ò"}, 					ITEM_WORKCHARAINDEX}
+	{{"å¯¹è±¡"}, 						ITEM_WORKOBJINDEX}
+	,{{"çŽ©å®¶"}, 					ITEM_WORKCHARAINDEX}
 }; 
 
 static CharBase ItemBaseEvent[] = {
-	{{"Î´ÖªÊÂ¼þ"}, 				ITEM_PREOVERFUNC}
-	,{{"ÓÊ¼þÊÂ¼þ"}, 			ITEM_POSTOVERFUNC}
-	,{{"Ê¹ÓÃÊÂ¼þ"}, 			ITEM_USEFUNC}
-	,{{"×°ÉÏÊÂ¼þ"}, 			ITEM_ATTACHFUNC}
-	,{{"Ð¶ÏÂÊÂ¼þ"}, 			ITEM_DETACHFUNC}
-	,{{"¶ªÆúÊÂ¼þ"}, 			ITEM_DROPFUNC}
-	,{{"¼ìÆðÊÂ¼þ"}, 			ITEM_PICKUPFUNC}
-	,{{"ËÀÍöÊÂ¼þ"}, 			ITEM_DIERELIFEFUNC}
+	{{"æœªçŸ¥äº‹ä»¶"}, 				ITEM_PREOVERFUNC}
+	,{{"é‚®ä»¶äº‹ä»¶"}, 			ITEM_POSTOVERFUNC}
+	,{{"ä½¿ç”¨äº‹ä»¶"}, 			ITEM_USEFUNC}
+	,{{"è£…ä¸Šäº‹ä»¶"}, 			ITEM_ATTACHFUNC}
+	,{{"å¸ä¸‹äº‹ä»¶"}, 			ITEM_DETACHFUNC}
+	,{{"ä¸¢å¼ƒäº‹ä»¶"}, 			ITEM_DROPFUNC}
+	,{{"æ£€èµ·äº‹ä»¶"}, 			ITEM_PICKUPFUNC}
+	,{{"æ­»äº¡äº‹ä»¶"}, 			ITEM_DIERELIFEFUNC}
 }; 
 
 static int getInt(lua_State *L) 

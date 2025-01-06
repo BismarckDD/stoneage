@@ -1,9 +1,9 @@
-function 攻击特效(charaindex, data)
-	local 特效动画ID = other.atoi(other.getString(data, " ", 2));
-	char.setWorkInt(char.getCharPet(charaindex,0),"攻击特效",特效动画ID);
-	--char.setWorkInt(charaindex,"攻击特效",特效动画ID);
+function 鏀诲嚮鐗规晥(charaindex, data)
+	local 鐗规晥鍔ㄧ敾ID = other.atoi(other.getString(data, " ", 2));
+	char.setWorkInt(char.getCharPet(charaindex,0),"鏀诲嚮鐗规晥",鐗规晥鍔ㄧ敾ID);
+	--char.setWorkInt(charaindex,"鏀诲嚮鐗规晥",鐗规晥鍔ㄧ敾ID);
 end
 
 function main()
-	magic.addLUAListFunction("攻击特效", "攻击特效", "", 1, "[gm 攻击特效 动画编号]")
+	magic.addLUAListFunction("鏀诲嚮鐗规晥", "鏀诲嚮鐗规晥", "", 1, "[gm 鏀诲嚮鐗规晥 鍔ㄧ敾缂栧彿]")
 end

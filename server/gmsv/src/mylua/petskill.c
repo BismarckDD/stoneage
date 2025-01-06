@@ -14,24 +14,24 @@
 #include "mylua/mylua.h"
 extern MY_Lua MYLua;
 static CharBase PetSkillBaseInt[] = {
-	{{"ÐòºÅ"},							PETSKILL_ID}
-	,{{"×Ö¶Î"},							PETSKILL_FIELD}
-	,{{"Ä¿±ê"},							PETSKILL_TARGET}
+	{{"åºå·"},							PETSKILL_ID}
+	,{{"å­—æ®µ"},							PETSKILL_FIELD}
+	,{{"ç›®æ ‡"},							PETSKILL_TARGET}
 #ifdef _PETSKILL2_TXT
-	,{{"ÀàÐÍ"},							PETSKILL_USETYPE}
+	,{{"ç±»åž‹"},							PETSKILL_USETYPE}
 #endif
-	,{{"¼ÛÖµ"},							PETSKILL_COST}
-	,{{"·Ç·¨"},							PETSKILL_ILLEGAL}
+	,{{"ä»·å€¼"},							PETSKILL_COST}
+	,{{"éžæ³•"},							PETSKILL_ILLEGAL}
 }; 
 
 static CharBase PetSkillBaseChar[] = {
-	{{"Ãû³Æ"},					PETSKILL_NAME}
-	,{{"×¢ÊÍ"},					PETSKILL_COMMENT}
-	,{{"º¯Êý"},					PETSKILL_FUNCNAME}
-	,{{"Ñ¡Ïî"},					PETSKILL_OPTION}
+	{{"åç§°"},					PETSKILL_NAME}
+	,{{"æ³¨é‡Š"},					PETSKILL_COMMENT}
+	,{{"å‡½æ•°"},					PETSKILL_FUNCNAME}
+	,{{"é€‰é¡¹"},					PETSKILL_OPTION}
 #ifdef _CFREE_petskill
-	,{{"×ÔÓÉ"},					PETSKILL_FREE}
-	,{{"ÖÖÀà"},					PETSKILL_KINDCODE}
+	,{{"è‡ªç”±"},					PETSKILL_FREE}
+	,{{"ç§ç±»"},					PETSKILL_KINDCODE}
 #endif
 }; 
 

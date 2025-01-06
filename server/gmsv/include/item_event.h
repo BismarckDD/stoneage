@@ -59,10 +59,10 @@ void ITEM_Cracker(int charaindex,int toindex,int haveitemindex);
 #ifdef _DEL_DROP_GOLD
 void GOLD_DeleteTimeCheckLoop( void);
 #endif
-#ifdef _ITEM_ADDEXP	//vincent ¾­ÑéÌáÉı
+#ifdef _ITEM_ADDEXP	//vincent ç»éªŒæå‡
 void ITEM_Addexp(int charaindex,int toindex,int haveitemindex);
 #endif
-#ifdef _ITEM_REFRESH //vincent ½â³ıÒì³£×´Ì¬µÀ¾ß
+#ifdef _ITEM_REFRESH //vincent è§£é™¤å¼‚å¸¸çŠ¶æ€é“å…·
 void ITEM_Refresh(int charaindex,int toindex,int haveitemindex);
 #endif
 //Terry 2001/12/21
@@ -120,7 +120,7 @@ void ITEM_MagicResist( int charaindex, int itemindex);
 void ITEM_MagicReResist( int charaindex, int itemindex);
 #endif
 
-#ifdef _MAGIC_RESIST_EQUIT			// WON ADD Ö°Òµ¿¹ĞÔ×°±¸
+#ifdef _MAGIC_RESIST_EQUIT			// WON ADD èŒä¸šæŠ—æ€§è£…å¤‡
 void ITEM_P_MagicEquitWear( int charaindex, int itemindex );
 void ITEM_P_MagicEquitReWear( int charaindex, int itemindex );
 #endif
@@ -130,7 +130,7 @@ void ITEM_P_MagicEquitReWear( int charaindex, int itemindex );
 void ITEM_UseDeathCounter( int charaindex, int toindex, int haveitemindex);
 #endif
 
-#ifdef _FEV_ADD_NEW_ITEM			// FEV ADD Ôö¼Ó¸´»îÊØ¾«
+#ifdef _FEV_ADD_NEW_ITEM			// FEV ADD å¢åŠ å¤æ´»å®ˆç²¾
 void ITEM_ResAndDef( int charaindex, int toindex, int haveitemindex );
 #endif
 
@@ -222,7 +222,7 @@ void ITEM_AddMemberPoint( int charaindex, int toindex, int haveitemindex);
 #endif
 #ifdef _VIP_RIDE
 void ITEM_VipRide( int charaindex, int toindex, int haveitemindex);
-#ifdef _NEW_NAME      //×Ô¶¨Òå³ÆºÅ
+#ifdef _NEW_NAME      //è‡ªå®šä¹‰ç§°å·
 void ITEM_NewName( int charaindex, int toindex, int haveitemindex);
 #endif
 #endif

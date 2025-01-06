@@ -14,7 +14,7 @@
 #include "npcutil.h"
 #include "log.h"
 #ifdef _ALLBLUES_LUA   
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
 static int CreateNpc (lua_State *L) {
@@ -42,7 +42,7 @@ static int CreateNpc (lua_State *L) {
 	int npcindex = CHAR_initCharOneArray(&one);
 
 	if( npcindex < 0 ) {
-	 	print( "NPC制作失败。\n");
+	 	print( "NPC鍒朵綔澶辫触銆俓n");
 	}
   
 	Object object;
@@ -411,8 +411,8 @@ static int DelItemNum (lua_State *L)
 	int i, itemindex;
 	char token[256];
 	int num=0;
-#ifdef _NEW_ITEM_
-	int itemMax = CheckCharMaxItem(index);
+#ifdef _NEW_ITEM_
+	int itemMax = CheckCharMaxItem(index);
 	for( i = CHAR_STARTITEMARRAY ; i < itemMax ; i++ ){
 #else
 	for( i = CHAR_STARTITEMARRAY ; i < CHAR_MAXITEMHAVE ; i++ ){
@@ -421,18 +421,18 @@ static int DelItemNum (lua_State *L)
 		itemindex = CHAR_getItemIndex( index , i );
 		if( !ITEM_CHECKINDEX(itemindex) ) continue;
 		if( ITEM_getInt(itemindex, ITEM_ID) != itemID ) continue;
-		sprintf( token, "交出道具%s",ITEM_getChar( itemindex, ITEM_NAME));
+		sprintf( token, "浜ゅ嚭閬撳叿%s",ITEM_getChar( itemindex, ITEM_NAME));
 		CHAR_talkToCli( index, -1, token, CHAR_COLORYELLOW);
 
 						LogItem(
 							CHAR_getChar( index, CHAR_NAME ),
 							CHAR_getChar( index, CHAR_CDKEY ),
-#ifdef _add_item_log_name  // WON ADD 在item的log中增加item名称
+#ifdef _add_item_log_name  // WON ADD 鍦╥tem鐨刲og涓鍔爄tem鍚嶇О
 							itemindex,
 #else
 							ITEM_getInt( itemindex, ITEM_ID),
 #endif
-							"任务收取",
+							"浠诲姟鏀跺彇",
 							CHAR_getInt( index,CHAR_FLOOR),
 							CHAR_getInt( index,CHAR_X ),
 							CHAR_getInt( index,CHAR_Y ),
@@ -497,7 +497,7 @@ static int CreateSpecialNpc (lua_State *L)
 	
 	int npcindex = ENEMY_createEnemy( i, 0);
 	if( npcindex < 0 ) {
-	 	print( "NPC制作失败。\n");
+	 	print( "NPC鍒朵綔澶辫触銆俓n");
 	}
 	
 
@@ -569,7 +569,7 @@ static int CreatePlayer (lua_State *L) {
 	int npcindex = CHAR_initCharOneArray(&one);
 
 	if( npcindex < 0 ) {
-	 	print( "NPC制作失败。\n");
+	 	print( "NPC鍒朵綔澶辫触銆俓n");
 	}
   
 	Object object;

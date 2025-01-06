@@ -15,8 +15,8 @@ typedef struct
   int duelpoint;             //
   int graphicsno;            // Profile Graph.
   char cdkey[CDKEYLEN];      // CD-KEY
-  char charname[CHARNAMELEN];// 游戏名称.
-  int transmigration;        // 转生.
+  char charname[CHARNAMELEN];// 娓告垙鍚嶇О.
+  int transmigration;        // 杞敓.
 } ADDRESSBOOK_entry;
 
 char *ADDRESSBOOK_makeAddressbookString( ADDRESSBOOK_entry *a );

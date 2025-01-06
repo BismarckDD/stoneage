@@ -1,55 +1,55 @@
-local ¼Ò×å»ÕÕÂÊı¾İ={};
-local »ÕÕÂÄÚÈİ="";
+local å®¶æ—å¾½ç« æ•°æ®={};
+local å¾½ç« å†…å®¹="";
 
 
 
-function ×Ö·û´®ÇĞ¸î(Êı¾İ,ÇĞ¸î×Ö·û)
-	Êı¾İ = Êı¾İ .. ÇĞ¸î×Ö·û
+function å­—ç¬¦ä¸²åˆ‡å‰²(æ•°æ®,åˆ‡å‰²å­—ç¬¦)
+	æ•°æ® = æ•°æ® .. åˆ‡å‰²å­—ç¬¦
 	local t = {}
-	local Ä¿Ç°Î»ÖÃ = 1
+	local ç›®å‰ä½ç½® = 1
 	repeat
-			local nexti = string.find(Êı¾İ, ÇĞ¸î×Ö·û, Ä¿Ç°Î»ÖÃ)
-			table.insert(t, string.sub(Êı¾İ, Ä¿Ç°Î»ÖÃ,nexti-string.len(ÇĞ¸î×Ö·û)))
-			Ä¿Ç°Î»ÖÃ = nexti + string.len(ÇĞ¸î×Ö·û)
-	until Ä¿Ç°Î»ÖÃ > string.len(Êı¾İ)
+			local nexti = string.find(æ•°æ®, åˆ‡å‰²å­—ç¬¦, ç›®å‰ä½ç½®)
+			table.insert(t, string.sub(æ•°æ®, ç›®å‰ä½ç½®,nexti-string.len(åˆ‡å‰²å­—ç¬¦)))
+			ç›®å‰ä½ç½® = nexti + string.len(åˆ‡å‰²å­—ç¬¦)
+	until ç›®å‰ä½ç½® > string.len(æ•°æ®)
 	return t
 end
 
 
 function LoadFamilyBadge(fd)
-	lssproto.FamilyBadge(fd,»ÕÕÂÄÚÈİ);
+	lssproto.FamilyBadge(fd,å¾½ç« å†…å®¹);
 end
 
-function ¶ÁÈ¡¼Ò×å»ÕÕÂÊı¾İ()
-	local ÎÄ¼şºÅ;
-	local Êı¾İ,ÊıÁ¿;
-	ÎÄ¼şºÅ = assert(io.open("./data/ablua/other/familybadge/data.txt", "r"))
-	Êı¾İ = ÎÄ¼şºÅ:read("*a"); -- ¶ÁÈ¡ËùÓĞÄÚÈİ
-	ÎÄ¼şºÅ:close();
-	»ÕÕÂÄÚÈİ = »»»ÕÕÂ¼Û¸ñ.."|"
-	if Êı¾İ ~= "" then
-		ÊıÁ¿ = 0;
-		Êı¾İ = ×Ö·û´®ÇĞ¸î(Êı¾İ,"\n");
-		for b = 1,table.getn(Êı¾İ) do 
-			if string.sub(Êı¾İ[b],1,1) ~= "#" then
-				ÊıÁ¿ = ÊıÁ¿ + 1;
-				¼Ò×å»ÕÕÂÊı¾İ[ÊıÁ¿] = tonumber(Êı¾İ[b]);
+function è¯»å–å®¶æ—å¾½ç« æ•°æ®()
+	local æ–‡ä»¶å·;
+	local æ•°æ®,æ•°é‡;
+	æ–‡ä»¶å· = assert(io.open("./data/ablua/other/familybadge/data.txt", "r"))
+	æ•°æ® = æ–‡ä»¶å·:read("*a"); -- è¯»å–æ‰€æœ‰å†…å®¹
+	æ–‡ä»¶å·:close();
+	å¾½ç« å†…å®¹ = æ¢å¾½ç« ä»·æ ¼.."|"
+	if æ•°æ® ~= "" then
+		æ•°é‡ = 0;
+		æ•°æ® = å­—ç¬¦ä¸²åˆ‡å‰²(æ•°æ®,"\n");
+		for b = 1,table.getn(æ•°æ®) do 
+			if string.sub(æ•°æ®[b],1,1) ~= "#" then
+				æ•°é‡ = æ•°é‡ + 1;
+				å®¶æ—å¾½ç« æ•°æ®[æ•°é‡] = tonumber(æ•°æ®[b]);
 			end
 		end
-		for b=1,table.getn(¼Ò×å»ÕÕÂÊı¾İ) do 
-			if b~=table.getn(¼Ò×å»ÕÕÂÊı¾İ) then
-				»ÕÕÂÄÚÈİ = »ÕÕÂÄÚÈİ .. ¼Ò×å»ÕÕÂÊı¾İ[b].."|";
+		for b=1,table.getn(å®¶æ—å¾½ç« æ•°æ®) do 
+			if b~=table.getn(å®¶æ—å¾½ç« æ•°æ®) then
+				å¾½ç« å†…å®¹ = å¾½ç« å†…å®¹ .. å®¶æ—å¾½ç« æ•°æ®[b].."|";
 			else
-				»ÕÕÂÄÚÈİ = »ÕÕÂÄÚÈİ .. ¼Ò×å»ÕÕÂÊı¾İ[b];
+				å¾½ç« å†…å®¹ = å¾½ç« å†…å®¹ .. å®¶æ—å¾½ç« æ•°æ®[b];
 			end
 		end
 	end
 end
 
 function main()
-	»»»ÕÕÂ¼Û¸ñ=1000;
-	¶ÁÈ¡¼Ò×å»ÕÕÂÊı¾İ();
-	lssproto.GetFBData(¼Ò×å»ÕÕÂÊı¾İ,»»»ÕÕÂ¼Û¸ñ);
+	æ¢å¾½ç« ä»·æ ¼=1000;
+	è¯»å–å®¶æ—å¾½ç« æ•°æ®();
+	lssproto.GetFBData(å®¶æ—å¾½ç« æ•°æ®,æ¢å¾½ç« ä»·æ ¼);
 end
 main();
 

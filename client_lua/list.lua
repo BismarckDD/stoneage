@@ -1,21 +1,21 @@
-function data()
-	grouplist = {{1, 2, 0, "²âÊÔÏßÂ·"}
-							}
-
-	serlist = {
-						{"192.168.1.2","19065","µçĞÅÏßÂ·"},
-						{"192.168.1.2","19065","ÍøÍ¨ÏßÂ·"},
-				}
-end
-
-function main()
-	data()
-	ServerList.SetGroupMaxNum(table.getn(grouplist))
-	for i = 1, table.getn(grouplist) do
-		ServerList.SetGroupList(i - 1, grouplist[i][1], grouplist[i][2], grouplist[i][3], grouplist[i][4])
-	end
-	for i = 1, table.getn(serlist) do
-		ServerList.SetServerList(i - 1, serlist[i][1], serlist[i][2], serlist[i][3])
-	end
-end
-
+function data()
+	grouplist = {{1, 2, 0, "æµ‹è¯•çº¿è·¯"}
+							}
+
+	serlist = {
+						{"192.168.1.2","19065","ç”µä¿¡çº¿è·¯"},
+						{"192.168.1.2","19065","ç½‘é€šçº¿è·¯"},
+				}
+end
+
+function main()
+	data()
+	ServerList.SetGroupMaxNum(table.getn(grouplist))
+	for i = 1, table.getn(grouplist) do
+		ServerList.SetGroupList(i - 1, grouplist[i][1], grouplist[i][2], grouplist[i][3], grouplist[i][4])
+	end
+	for i = 1, table.getn(serlist) do
+		ServerList.SetServerList(i - 1, serlist[i][1], serlist[i][2], serlist[i][3])
+	end
+end
+

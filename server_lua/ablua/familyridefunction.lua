@@ -1,5 +1,5 @@
 function FamilyRideCheck( meindex, petindex,pethaveindex)
-	local petNo = char.getInt( petindex, "Ô­Í¼ÏñºÅ")
+	local petNo = char.getInt( petindex, "åŸå›¾åƒå·")
 	for i=1,table.getn(ridepet) do
 		if petNo == ridepet[i] then
 			return 1
@@ -14,31 +14,31 @@ function FreeRideQuery(charaindex)
 	for i=1,table.getn(ridepet) do
 		token = token .. "|"..petname[i].."|"..CheckPetRideByPetNo( charaindex, ridepet[i]).."|"..ridepet[i]
 	end
-	lssproto.windows(charaindex, 1023, 0, 1, char.getWorkInt( npcindex, "¶ÔÏó"), token)
+	lssproto.windows(charaindex, 1023, 0, 1, char.getWorkInt( npcindex, "å¯¹è±¡"), token)
 end
 
 function CheckPetRideByPetNo( meindex, petNo)
-	local playerid = getNOindex(char.getInt( meindex, "Ô­Í¼ÏñºÅ"))
+	local playerid = getNOindex(char.getInt( meindex, "åŸå›¾åƒå·"))
 
-	if char.getInt( meindex, "Í¼ÏñºÅ") == 101178 then
+	if char.getInt( meindex, "å›¾åƒå·") == 101178 then
 		if petNo == 101177 then
 			return 101179
 		end
-	elseif char.getInt( meindex, "Í¼ÏñºÅ") == 101177 then
+	elseif char.getInt( meindex, "å›¾åƒå·") == 101177 then
 		if petNo == 101178 then
 			return 101179
 		end
 	elseif playerid > 0 then
 		for i = 1, table.getn(petlist) do
 			if petNo == petlist[i] then
-				if other.DataAndData(char.getInt(meindex, "Ö¤ÊéÆï³è"), i - 1) ~= 0 then
+				if other.DataAndData(char.getInt(meindex, "è¯ä¹¦éª‘å® "), i - 1) ~= 0 then
 					return 1
 				end
 			end
 		end
 
 		for i = 1, table.getn(PlayerColor[1]) do
-			if PlayerColor[playerid][i] == char.getInt( meindex, "Ô­Í¼ÏñºÅ") or (char.getInt( meindex, "Ô­Í¼ÏñºÅ") >= 100700 and char.getInt( meindex, "Ô­Í¼ÏñºÅ") < 108400) then
+			if PlayerColor[playerid][i] == char.getInt( meindex, "åŸå›¾åƒå·") or (char.getInt( meindex, "åŸå›¾åƒå·") >= 100700 and char.getInt( meindex, "åŸå›¾åƒå·") < 108400) then
 				if petNo == CommonPetList[i] then
 					return 1
 				end
@@ -46,7 +46,7 @@ function CheckPetRideByPetNo( meindex, petNo)
 		end
 
 		for i = 1, table.getn(CommonPetList1) do
-			if char.getInt( meindex, "Ô­Í¼ÏñºÅ") == CommonPetList1[i][2] and petNo == CommonPetList1[i][3] then
+			if char.getInt( meindex, "åŸå›¾åƒå·") == CommonPetList1[i][2] and petNo == CommonPetList1[i][3] then
 				return 1
 			end
 		end
@@ -54,11 +54,11 @@ function CheckPetRideByPetNo( meindex, petNo)
 
 		for i = 1, table.getn(Pointpetlist) do
 			if petNo == Pointpetlist[i][1] then
-				floorid = char.getWorkInt( meindex, "¼Ò×åµØÍ¼")
+				floorid = char.getWorkInt( meindex, "å®¶æ—åœ°å›¾")
 				for j = 1, table.getn(Pointpetlist[i][2]) do
 					if Pointpetlist[i][2][j] == floorid then
-						if char.getInt( meindex, "¼Ò×åµØÎ»") > 0 and char.getInt( meindex, "¼Ò×åµØÎ»") ~= 2 then
-							if char.getInt( meindex, "¼Ò×åÀàĞÍ") == Pointpetlist[i][3] then
+						if char.getInt( meindex, "å®¶æ—åœ°ä½") > 0 and char.getInt( meindex, "å®¶æ—åœ°ä½") ~= 2 then
+							if char.getInt( meindex, "å®¶æ—ç±»å‹") == Pointpetlist[i][3] then
 								if PointRideNoList[playerid][i] > -1 then
 									return 1
 								end
@@ -73,9 +73,9 @@ function CheckPetRideByPetNo( meindex, petNo)
 				for j = 0, 5 do
 					itemindex = char.getItemIndex(meindex, j)
 					if itemindex > -1 then
-						if item.getChar(itemindex, "ÀàĞÍ´úÂë") == "INSLAY" or other.getString(item.getChar(itemindex, "ÀàĞÍ´úÂë"), " ", 1) == "INSLAY"  then
+						if item.getChar(itemindex, "ç±»å‹ä»£ç ") == "INSLAY" or other.getString(item.getChar(itemindex, "ç±»å‹ä»£ç "), " ", 1) == "INSLAY"  then
 							local field = {"", "", "", "", ""}
-							local data = item.getChar(itemindex, "ÏâÇ¶´úÂë")
+							local data = item.getChar(itemindex, "é•¶åµŒä»£ç ")
 
 							field[1] = other.getString(data, "|", 1)
 							field[2] = other.getString(data, "|", 2)
@@ -98,70 +98,70 @@ function CheckPetRideByPetNo( meindex, petNo)
 end
 
 function Loop(meindex)
-	if char.getWorkInt(meindex,"NPCÁÙÊ±7") == char.getInt(meindex, "Í¼ÏñºÅ") then
-		char.setInt(meindex, "Í¼ÏñºÅ", 102201)
+	if char.getWorkInt(meindex,"NPCä¸´æ—¶7") == char.getInt(meindex, "å›¾åƒå·") then
+		char.setInt(meindex, "å›¾åƒå·", 102201)
 		char.ToAroundChar(meindex)
-		char.setInt(meindex, "Ñ­»·ÊÂ¼şÊ±¼ä", 300)
+		char.setInt(meindex, "å¾ªç¯äº‹ä»¶æ—¶é—´", 300)
 	else
-		char.setInt(meindex, "Í¼ÏñºÅ", char.getWorkInt(meindex,"NPCÁÙÊ±7"))
+		char.setInt(meindex, "å›¾åƒå·", char.getWorkInt(meindex,"NPCä¸´æ—¶7"))
 		char.ToAroundChar(meindex)
-		char.setInt(meindex, "Ñ­»·ÊÂ¼şÊ±¼ä", 0)
-		char.delFunctionPointer(meindex, "Ñ­»·ÊÂ¼ş")
-		char.setWorkInt(meindex,"NPCÁÙÊ±7",0)
+		char.setInt(meindex, "å¾ªç¯äº‹ä»¶æ—¶é—´", 0)
+		char.delFunctionPointer(meindex, "å¾ªç¯äº‹ä»¶")
+		char.setWorkInt(meindex,"NPCä¸´æ—¶7",0)
 	end
 end
 
 function FamilyRideFunction( meindex, petindex,pethaveindex)
-	if char.getInt( petindex, "×ªÊı") >0 then
-		char.TalkToCli(meindex, -1, "¡¾ÏµÍ³ÌáÊ¾¡¿ÓÉÓÚ[" .. char.getChar(petindex, "Ãû×Ö") .. "]ÒÑ¾­×ªÉú£¬ËùÒÔÎŞ·¨Æï³Ë¡£", "ºìÉ«")
+	if char.getInt( petindex, "è½¬æ•°") >0 then
+		char.TalkToCli(meindex, -1, "ã€ç³»ç»Ÿæç¤ºã€‘ç”±äº[" .. char.getChar(petindex, "åå­—") .. "]å·²ç»è½¬ç”Ÿï¼Œæ‰€ä»¥æ— æ³•éª‘ä¹˜ã€‚", "çº¢è‰²")
 		return 0
 	end
 
-	local playerid = getNOindex(char.getInt( meindex, "Ô­Í¼ÏñºÅ"))
+	local playerid = getNOindex(char.getInt( meindex, "åŸå›¾åƒå·"))
 
-	local petNo = char.getInt( petindex, "Ô­Í¼ÏñºÅ")
-	if char.getInt( meindex, "Í¼ÏñºÅ") == 101178 then
+	local petNo = char.getInt( petindex, "åŸå›¾åƒå·")
+	if char.getInt( meindex, "å›¾åƒå·") == 101178 then
 		if petNo == 101177 then
-			char.setWorkInt(meindex,"NPCÁÙÊ±7",101179)
-			char.setFunctionPointer(meindex, "Ñ­»·ÊÂ¼ş", "Loop", "")
-			char.setInt(meindex, "Ñ­»·ÊÂ¼şÊ±¼ä", 1000)
+			char.setWorkInt(meindex,"NPCä¸´æ—¶7",101179)
+			char.setFunctionPointer(meindex, "å¾ªç¯äº‹ä»¶", "Loop", "")
+			char.setInt(meindex, "å¾ªç¯äº‹ä»¶æ—¶é—´", 1000)
 			return 101179
 		end
-	elseif char.getInt( meindex, "Í¼ÏñºÅ") == 101177 then
+	elseif char.getInt( meindex, "å›¾åƒå·") == 101177 then
 		if petNo == 101178 then
-			char.setWorkInt(meindex,"NPCÁÙÊ±7",101179)
-			char.setFunctionPointer(meindex, "Ñ­»·ÊÂ¼ş", "Loop", "")
-			char.setInt(meindex, "Ñ­»·ÊÂ¼şÊ±¼ä", 1000)
+			char.setWorkInt(meindex,"NPCä¸´æ—¶7",101179)
+			char.setFunctionPointer(meindex, "å¾ªç¯äº‹ä»¶", "Loop", "")
+			char.setInt(meindex, "å¾ªç¯äº‹ä»¶æ—¶é—´", 1000)
 			return 101179
 		end
 	elseif playerid > 0 then
 		for i = 1, table.getn(petlist) do
 			if petNo == petlist[i] then
-				if other.DataAndData(char.getInt(meindex, "Ö¤ÊéÆï³è"), i - 1) ~= 0 then
-					char.setWorkInt(meindex,"NPCÁÙÊ±7",NewRideNoList[playerid][i])
-					char.setFunctionPointer(meindex, "Ñ­»·ÊÂ¼ş", "Loop", "")
-					char.setInt(meindex, "Ñ­»·ÊÂ¼şÊ±¼ä", 1000)
+				if other.DataAndData(char.getInt(meindex, "è¯ä¹¦éª‘å® "), i - 1) ~= 0 then
+					char.setWorkInt(meindex,"NPCä¸´æ—¶7",NewRideNoList[playerid][i])
+					char.setFunctionPointer(meindex, "å¾ªç¯äº‹ä»¶", "Loop", "")
+					char.setInt(meindex, "å¾ªç¯äº‹ä»¶æ—¶é—´", 1000)
 					return NewRideNoList[playerid][i]
 				end
 			end
 		end
 
 		for i = 1, table.getn(PlayerColor[1]) do
-			if PlayerColor[playerid][i] == char.getInt( meindex, "Ô­Í¼ÏñºÅ") or (char.getInt( meindex, "Ô­Í¼ÏñºÅ") >= 100700 and char.getInt( meindex, "Ô­Í¼ÏñºÅ") < 108400) then
+			if PlayerColor[playerid][i] == char.getInt( meindex, "åŸå›¾åƒå·") or (char.getInt( meindex, "åŸå›¾åƒå·") >= 100700 and char.getInt( meindex, "åŸå›¾åƒå·") < 108400) then
 				if petNo == CommonPetList[i] then
-					char.setWorkInt(meindex,"NPCÁÙÊ±7",CommonRideNoList[playerid][i])
-					char.setFunctionPointer(meindex, "Ñ­»·ÊÂ¼ş", "Loop", "")
-					char.setInt(meindex, "Ñ­»·ÊÂ¼şÊ±¼ä", 1000)
+					char.setWorkInt(meindex,"NPCä¸´æ—¶7",CommonRideNoList[playerid][i])
+					char.setFunctionPointer(meindex, "å¾ªç¯äº‹ä»¶", "Loop", "")
+					char.setInt(meindex, "å¾ªç¯äº‹ä»¶æ—¶é—´", 1000)
 					return CommonRideNoList[playerid][i]
 				end
 			end
 		end
 
 		for i = 1, table.getn(CommonPetList1) do
-			if char.getInt( meindex, "Ô­Í¼ÏñºÅ") == CommonPetList1[i][2] and petNo == CommonPetList1[i][3] then
-				char.setWorkInt(meindex,"NPCÁÙÊ±7",CommonPetList1[i][1])
-				char.setFunctionPointer(meindex, "Ñ­»·ÊÂ¼ş", "Loop", "")
-				char.setInt(meindex, "Ñ­»·ÊÂ¼şÊ±¼ä", 1000)
+			if char.getInt( meindex, "åŸå›¾åƒå·") == CommonPetList1[i][2] and petNo == CommonPetList1[i][3] then
+				char.setWorkInt(meindex,"NPCä¸´æ—¶7",CommonPetList1[i][1])
+				char.setFunctionPointer(meindex, "å¾ªç¯äº‹ä»¶", "Loop", "")
+				char.setInt(meindex, "å¾ªç¯äº‹ä»¶æ—¶é—´", 1000)
 				return CommonPetList1[i][1]
 			end
 		end
@@ -169,15 +169,15 @@ function FamilyRideFunction( meindex, petindex,pethaveindex)
 
 		for i = 1, table.getn(Pointpetlist) do
 			if petNo == Pointpetlist[i][1] then
-				floorid = char.getWorkInt( meindex, "¼Ò×åµØÍ¼")
+				floorid = char.getWorkInt( meindex, "å®¶æ—åœ°å›¾")
 				for j = 1, table.getn(Pointpetlist[i][2]) do
 					if Pointpetlist[i][2][j] == floorid then
-						if char.getInt( meindex, "¼Ò×åµØÎ»") > 0 and char.getInt( meindex, "¼Ò×åµØÎ»") ~= 2 then
-							if char.getInt( meindex, "¼Ò×åÀàĞÍ") == Pointpetlist[i][3] then
+						if char.getInt( meindex, "å®¶æ—åœ°ä½") > 0 and char.getInt( meindex, "å®¶æ—åœ°ä½") ~= 2 then
+							if char.getInt( meindex, "å®¶æ—ç±»å‹") == Pointpetlist[i][3] then
 								if PointRideNoList[playerid][i] > -1 then
-									char.setWorkInt(meindex,"NPCÁÙÊ±7",PointRideNoList[playerid][i])
-									char.setFunctionPointer(meindex, "Ñ­»·ÊÂ¼ş", "Loop", "")
-									char.setInt(meindex, "Ñ­»·ÊÂ¼şÊ±¼ä", 1000)
+									char.setWorkInt(meindex,"NPCä¸´æ—¶7",PointRideNoList[playerid][i])
+									char.setFunctionPointer(meindex, "å¾ªç¯äº‹ä»¶", "Loop", "")
+									char.setInt(meindex, "å¾ªç¯äº‹ä»¶æ—¶é—´", 1000)
 									return PointRideNoList[playerid][i]
 								end
 							end
@@ -191,9 +191,9 @@ function FamilyRideFunction( meindex, petindex,pethaveindex)
 				for j = 0, 5 do
 					itemindex = char.getItemIndex(meindex, j)
 					if itemindex > -1 then
-						if item.getChar(itemindex, "ÀàĞÍ´úÂë") == "INSLAY" or other.getString(item.getChar(itemindex, "ÀàĞÍ´úÂë"), " ", 1) == "INSLAY"  then
+						if item.getChar(itemindex, "ç±»å‹ä»£ç ") == "INSLAY" or other.getString(item.getChar(itemindex, "ç±»å‹ä»£ç "), " ", 1) == "INSLAY"  then
 							local field = {"", "", "", "", ""}
-							local data = item.getChar(itemindex, "ÏâÇ¶´úÂë")
+							local data = item.getChar(itemindex, "é•¶åµŒä»£ç ")
 
 							field[1] = other.getString(data, "|", 1)
 							field[2] = other.getString(data, "|", 2)
@@ -202,9 +202,9 @@ function FamilyRideFunction( meindex, petindex,pethaveindex)
 							field[5] = other.getString(data, "|", 5)
 							for k = 1, table.getn(field) do
 								if field[k] == EquipagePetlist[i][2] then
-									char.setWorkInt(meindex,"NPCÁÙÊ±7",EquipageRideNoList[playerid][i])
-									char.setFunctionPointer(meindex, "Ñ­»·ÊÂ¼ş", "Loop", "")
-									char.setInt(meindex, "Ñ­»·ÊÂ¼şÊ±¼ä", 1000)
+									char.setWorkInt(meindex,"NPCä¸´æ—¶7",EquipageRideNoList[playerid][i])
+									char.setFunctionPointer(meindex, "å¾ªç¯äº‹ä»¶", "Loop", "")
+									char.setInt(meindex, "å¾ªç¯äº‹ä»¶æ—¶é—´", 1000)
 
 									return EquipageRideNoList[playerid][i]
 								end
@@ -243,12 +243,12 @@ end
 
 function data()
 	ridepet = {100329,    100327,     100330,     100328,    100351,    100352,    100353,     100354,     100396,    100374, 			100358, 			100362,		 100279, 			100288, 		100283, 			100346,		 100310, 		100372, 		100373,		 101532, 101576,100907}
-	petname = {"¸ñÂ³Î÷Ë¹","±´Â³¿¨","½ğ¸ñÈø±´Â³","±´Â³ÒÁ¿¨","²¼Âå¶àË¹","²¼ÁÖÌûË¹","²¼À­Ææ¶àË¹","Ë¹Ìì¶àË¹","°î¶÷¶àË¹","ÌûÀ­ËùÒÁ¶ä", "Âê¶÷Ä¦ÂåË¹", "¶äÀ­±ÈË¹", "À­ÆæÂ³¸ç", "ÑïÆæÂåË¹", "¿¨´ïÂ³¿¨Ë¹", "¿¨¿¨½ğ±¦", "¸ñ¶û¸ñ", "×óµÏÂåË¹", "°Í¶äÀ¼¶÷", "Ê·¿¨Â³", "ÂŞ¶à¿ËÀ×","°ßÄáµÏ¿Ë"}
+	petname = {"æ ¼é²è¥¿æ–¯","è´é²å¡","é‡‘æ ¼è¨è´é²","è´é²ä¼Šå¡","å¸ƒæ´›å¤šæ–¯","å¸ƒæ—å¸–æ–¯","å¸ƒæ‹‰å¥‡å¤šæ–¯","æ–¯å¤©å¤šæ–¯","é‚¦æ©å¤šæ–¯","å¸–æ‹‰æ‰€ä¼Šæœµ", "ç›æ©æ‘©æ´›æ–¯", "æœµæ‹‰æ¯”æ–¯", "æ‹‰å¥‡é²å“¥", "æ‰¬å¥‡æ´›æ–¯", "å¡è¾¾é²å¡æ–¯", "å¡å¡é‡‘å®", "æ ¼å°”æ ¼", "å·¦è¿ªæ´›æ–¯", "å·´æœµå…°æ©", "å²å¡é²", "ç½—å¤šå…‹é›·","æ–‘å°¼è¿ªå…‹"}
 
-	 --ËµÃ÷ĞĞ, »ú±©00, °×Ïó01, ½ğ·É02, ºì¹·03, À¶Áú04, ÂÌ¼×05, ºìÍÜ06, ºìĞÉ07, À¶±©08, ºì±©09, Ë®Óã10, Ë®À×11, °×»¢12,°ßÄáµÏ¿Ë13
+	 --è¯´æ˜è¡Œ, æœºæš´00, ç™½è±¡01, é‡‘é£02, çº¢ç‹—03, è“é¾™04, ç»¿ç”²05, çº¢è›™06, çº¢çŒ©07, è“æš´08, çº¢æš´09, æ°´é±¼10, æ°´é›·11, ç™½è™12,æ–‘å°¼è¿ªå…‹13
 	petlist = {100374, 100358, 100362, 100279, 100288, 100283, 100346, 100310, -1, -1, 101532, 101576, 100872, 100907}
 
-					--ËµÃ÷ĞĞ, »ú±©00, °×Ïó01, ½ğ·É02, ºì¹·03, À¶Áú04, ÂÌ¼×05, ºìÍÜ06, ºìĞÉ07, À¶±©08, ºì±©09, Ë®Óã10, Ë®À×11, °×»¢12, ½ğ±©13
+					--è¯´æ˜è¡Œ, æœºæš´00, ç™½è±¡01, é‡‘é£02, çº¢ç‹—03, è“é¾™04, ç»¿ç”²05, çº¢è›™06, çº¢çŒ©07, è“æš´08, çº¢æš´09, æ°´é±¼10, æ°´é›·11, ç™½è™12, é‡‘æš´13
 	NewRideNoList = {{101305, 101306, 101307, 101308, 101309, 101310, 101311, 101312, 101008, 101009, 101978, 101989, 104025, 103266}
 									,{101313, 101314, 101315, 101316, 101317, 101318, 101319, 101320, 101018, 101019, 101986, 101988, 104026, 103262}
 									,{101321, 101322, 101323, 101324, 101325, 101326, 101327, 101328, 101028, 101029, 101975, 101965, 104027, 103263}
@@ -278,7 +278,7 @@ function data()
 								}
 
 
-										 --  ºì»¢,   ÂÌ»¢,   ½ğ»¢,   »Æ»¢
+										 --  çº¢è™,   ç»¿è™,   é‡‘è™,   é»„è™
 	CommonPetList   =   {100329, 100327, 100330, 100328}
 	CommonRideNoList = {{101004, 101005, 101006, 101007}
 										 ,{101015, 101016, 101017, 101014}
@@ -378,64 +378,64 @@ function data()
 										,{ 101110, 100815, 100396}
 										}
 
-	Pointpetlist = {--À¶±©
+	Pointpetlist = {--è“æš´
 								 {100372, {1041, 2031, 3031, 4031, 5031}, 0}
-								  --ºì±©
+								  --çº¢æš´
 								,{100373, {1041, 2031, 3031, 4031, 5031}, 1}
 								}
-	                  --À¶±©,  --ºì±©
-	PointRideNoList = {{101008, 101009}	--Ğ¡°«×Ó
-					  ,{101018, 101019}	--ÈüÑÇÈË
-					  ,{101028, 101029}	--±è×ÓÄĞº¢
-					  ,{101038, 101039}	--¿á¸ç
-					  ,{101048, 101049}	--ĞÜÆ¤ÄĞ
-					  ,{101058, 101059}	--´ó¸ö
-					  ,{101068, 101069}	--Ğ¡°«ÃÃ
-					  ,{101078, 101079}	--ĞÜÆ¤ÃÃ
-					  ,{101088, 101089}	--Ã±×ÓÃÃ
-					  ,{101098, 101099}	--¶Ì·¨·¢¼ĞÃÃ
-					  ,{101108, 101109}	--ÊÖÌ×Å®
-					  ,{101118, 101119}	--À±ÃÃ
+	                  --è“æš´,  --çº¢æš´
+	PointRideNoList = {{101008, 101009}	--å°çŸ®å­
+					  ,{101018, 101019}	--èµ›äºšäºº
+					  ,{101028, 101029}	--è¾«å­ç”·å­©
+					  ,{101038, 101039}	--é…·å“¥
+					  ,{101048, 101049}	--ç†Šçš®ç”·
+					  ,{101058, 101059}	--å¤§ä¸ª
+					  ,{101068, 101069}	--å°çŸ®å¦¹
+					  ,{101078, 101079}	--ç†Šçš®å¦¹
+					  ,{101088, 101089}	--å¸½å­å¦¹
+					  ,{101098, 101099}	--çŸ­æ³•å‘å¤¹å¦¹
+					  ,{101108, 101109}	--æ‰‹å¥—å¥³
+					  ,{101118, 101119}	--è¾£å¦¹
 										}
 
-	EquipagePetlist = {--Ê¯ĞÉĞÉ
+	EquipagePetlist = {--çŸ³çŒ©çŒ©
 										 {100307, "Cb"}
-										 --º£Ö÷ÈË
+										 --æµ·ä¸»äºº
 										 ,{100348, "Ca"}
-										 --ºì·É
+										 --çº¢é£
 										 ,{100360, "Cc"}
-										 --À¶¹·
+										 --è“ç‹—
 										 ,{104124, "Cd"}
-										 --ºÚ¼¦
+										 --é»‘é¸¡
 										 ,{100904, "Ce"}
-										 --ºì¼¦
+										 --çº¢é¸¡
 										 ,{100370, "Cf"}
-										 --»Ò¼¦
+										 --ç°é¸¡
 										 ,{100369, "Cg"}
 										}
-	                  		--Ê¯ĞÉĞÉ,º£Ö÷ÈË, ºì·É  , À¶¹·  , ºÚ¼¦  , ºì¼¦  , »Ò¼¦
-	EquipageRideNoList = {{104100, 104112, 104137, 104125, 100444, 100425, 100424}	--Ğ¡°«×Ó
-											 ,{104101, 104113, 104138, 104126, 100444, 100425, 100424}	--ÈüÑÇÈË
-											 ,{104102, 104114, 104139, 104127, 100444, 100425, 100424}	--±è×ÓÄĞº¢
-											 ,{104103, 104115, 104140, 104128, 100444, 100425, 100424}	--¿á¸ç
-											 ,{104104, 104116, 104141, 104129, 100444, 100425, 100424}	--ĞÜÆ¤ÄĞ
-											 ,{104105, 104117, 104142, 104130, 100444, 100425, 100424}	--´ó¸ö
-											 ,{104106, 104118, 104143, 104131, 100444, 100425, 100424}	--Ğ¡°«ÃÃ
-											 ,{104107, 104119, 104144, 104132, 100444, 100425, 100424}	--ĞÜÆ¤ÃÃ
-											 ,{104108, 104120, 104145, 104133, 100444, 100425, 100424}	--Ã±×ÓÃÃ
-											 ,{104109, 104121, 104146, 104134, 100444, 100425, 100424}	--¶Ì·¨·¢¼ĞÃÃ
-											 ,{104110, 104122, 104147, 104135, 100444, 100425, 100424}	--ÊÖÌ×Å®
-											 ,{104111, 104123, 104148, 104136, 100444, 100425, 100424}	--À±ÃÃ
+	                  		--çŸ³çŒ©çŒ©,æµ·ä¸»äºº, çº¢é£  , è“ç‹—  , é»‘é¸¡  , çº¢é¸¡  , ç°é¸¡
+	EquipageRideNoList = {{104100, 104112, 104137, 104125, 100444, 100425, 100424}	--å°çŸ®å­
+											 ,{104101, 104113, 104138, 104126, 100444, 100425, 100424}	--èµ›äºšäºº
+											 ,{104102, 104114, 104139, 104127, 100444, 100425, 100424}	--è¾«å­ç”·å­©
+											 ,{104103, 104115, 104140, 104128, 100444, 100425, 100424}	--é…·å“¥
+											 ,{104104, 104116, 104141, 104129, 100444, 100425, 100424}	--ç†Šçš®ç”·
+											 ,{104105, 104117, 104142, 104130, 100444, 100425, 100424}	--å¤§ä¸ª
+											 ,{104106, 104118, 104143, 104131, 100444, 100425, 100424}	--å°çŸ®å¦¹
+											 ,{104107, 104119, 104144, 104132, 100444, 100425, 100424}	--ç†Šçš®å¦¹
+											 ,{104108, 104120, 104145, 104133, 100444, 100425, 100424}	--å¸½å­å¦¹
+											 ,{104109, 104121, 104146, 104134, 100444, 100425, 100424}	--çŸ­æ³•å‘å¤¹å¦¹
+											 ,{104110, 104122, 104147, 104135, 100444, 100425, 100424}	--æ‰‹å¥—å¥³
+											 ,{104111, 104123, 104148, 104136, 100444, 100425, 100424}	--è¾£å¦¹
 											 }
 end
 
 
 function Create(name, metamo, floor, x, y, dir)
-	--´´½¨NPC(NPCÃû×Ö£¬Í¼ÏñºÅ£¬µØÍ¼ºÅ£¬×ø±êX£¬×ø±êY£¬·½ÏòºÅ)½«·µ»ØÒ»¸öNPCË÷Òı
+	--åˆ›å»ºNPC(NPCåå­—ï¼Œå›¾åƒå·ï¼Œåœ°å›¾å·ï¼Œåæ ‡Xï¼Œåæ ‡Yï¼Œæ–¹å‘å·)å°†è¿”å›ä¸€ä¸ªNPCç´¢å¼•
 	npcindex = npc.CreateNpc(name, metamo, floor, x, y, dir)
 end
 
 function main()
 	data()
-	Create("²éÑ¯³èÎïNPCÁÙÊ±", 100000, 777, 20, 20, 4)
+	Create("æŸ¥è¯¢å® ç‰©NPCä¸´æ—¶", 100000, 777, 20, 20, 4)
 end

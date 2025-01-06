@@ -18,11 +18,11 @@ BOOL talk_move_map(int charaindex, char *messageeraseescape)
 			easyGetTokenFromString( messageeraseescape , 2 , token, sizeof(token));
 
 			if(strcmp( token, "?") == 0){
-				strcpy( buf, "您可顺移地方:");
+				strcpy( buf, "鎮ㄥ彲椤虹Щ鍦版柟:");
 				for(i=0;i<MAXTALKMOVEFLOOR;i++){
 					if( strlen( buf ) >= 220 ){
 						CHAR_talkToCli( charaindex, -1, buf, CHAR_COLORYELLOW);	
-						strcpy( buf, "您可顺移地方:");
+						strcpy( buf, "鎮ㄥ彲椤虹Щ鍦版柟:");
 					}
 					if( CHAR_getInt(charaindex, CHAR_TRANSMIGRATION) > talkmovefloor[i].trans 
 							|| ( CHAR_getInt(charaindex, CHAR_TRANSMIGRATION) == talkmovefloor[i].trans
@@ -70,7 +70,7 @@ BOOL MoveMap_init()
 }
 	if (fp == NULL)
 	{
-		print("无法打开文件\n");
+		print("鏃犳硶鎵撳紑鏂囦欢\n");
 		return FALSE;
 	}
 	for(i=0;i<MAXTALKMOVEFLOOR;i++){

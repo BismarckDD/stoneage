@@ -37,12 +37,12 @@
 			CHAR_setWorkInt( charaindex, CHAR_WORKBATTLECOM1, BATTLE_COM_BOOMERANG );
 #ifdef _PETSKILL_BECOMEFOX
 			if( CHAR_getInt( charaindex, CHAR_BASEIMAGENUMBER)==101749
-				|| CHAR_getWorkInt( charaindex, CHAR_WORKFOXROUND ) != -1 ){ //ÈôÊÇ±ä³ÉĞ¡ºüÀê²»¿ÉÒÔÊ¹ÓÃ»ØÁ¦±ê
+				|| CHAR_getWorkInt( charaindex, CHAR_WORKFOXROUND ) != -1 ){ //è‹¥æ˜¯å˜æˆå°ç‹ç‹¸ä¸å¯ä»¥ä½¿ç”¨å›åŠ›æ ‡
 			    CHAR_setWorkInt( charaindex, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE );
 			}
 #endif
 #ifdef _PETSKILL_BECOMEPIG
-			if( CHAR_getInt( charaindex, CHAR_BECOMEPIG) > -1 ){//±ä³ÉÎÚÁ¦ÁË
+			if( CHAR_getInt( charaindex, CHAR_BECOMEPIG) > -1 ){//å˜æˆä¹ŒåŠ›äº†
 			    CHAR_setWorkInt( charaindex, CHAR_WORKBATTLECOM1, BATTLE_COM_ATTACK );
 			}
 #endif

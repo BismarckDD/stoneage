@@ -1,199 +1,199 @@
-
-function getIntPart(x)
-    if x <= 0 then
-       return math.ceil(x);
-    end
-
-    if math.ceil(x) == x then
-       x = math.ceil(x);
-    else
-       x = math.ceil(x) - 1;
-    end
-    return x;
-end
-
-function lua_string_split(str, split_char)
-    local sub_str_tab = {};
-    while (true) do
-        local pos = string.find(str, split_char);
-        if (not pos) then
-            sub_str_tab[#sub_str_tab + 1] = str;
-            break;
-        end
-        local sub_str = string.sub(str, 1, pos - 1);
-        sub_str_tab[#sub_str_tab + 1] = sub_str;
-        str = string.sub(str, pos + 1, #str);
-    end
-
-    return sub_str_tab;
-end
-
-function WindowInit(data)
-	winW = 8
-	winH = 7
-	winX = (800 - winW*64)/4
-	winY = (600 - winH*48)/4
-	if addr ~= 0 then
-		sa.DeathAction(addr)
-		addr = 0
-	end
-	if petaddr ~= 0 then
-		sa.DeathAction(petaddr);
-		petaddr=0;
-	end
-	local data = lua_string_split(data,"|");
-	RideNum = tonumber(data[1]);
-	for i=1,RideNum do
-		RideData["³èÎïÃû"][i] = data[2+(i-1)*3];
-		if data[3+(i-1)*3] == "1" then
-			RideData["Ğí¿É"][i] = "¡Ì";
-		else
-			RideData["Ğí¿É"][i] = "¡Á";
-		end
-		RideData["ÔìĞÍ"][i] = tonumber(data[4+(i-1)*3]);
-	end
-	TotalPages = 1;
-	if math.mod(RideNum,Row) > 0 then
-		if RideNum > Row then
-			TotalPages = getIntPart(RideNum/Row) + 1;
-		end
-	else
-		if RideNum > Row then
-			TotalPages = getIntPart(RideNum/Row);
-		end
-	end
-	Pages=0;
-end
-
-function CreateWinType()
-	if addr == 0 then
-		addr = sa.MakeWindowDisp(winX,winY,winW, winH, 0, 1)
-	end
-	sa.PlaySe(202, 320, 240)
-	return addr;
-end
-
-
-function ServerWindowType()
-	local str = "¡ºÆï³èÔ¤ÀÀ²éÑ¯¡»"
-	sa.StockFontBuffer(winX*2+256-sa.getTextLength(str)/2,winY*2+20, 1, 4, str, 0)
-	str = string.format("¡°³èÎïÃû×Ö¡±          ¡°Æï³ËĞí¿É¡±          ¡°³èÎïÔìĞÍ¡±");
-	sa.StockFontBuffer(winX*2+256-sa.getTextLength(str)/2,winY*2+44, 1, 5, str, 0)
-	local lstart,lend,butid;
-	lstart = Pages * Row +1;
-	if RideNum > Pages * Row + 11 then
-		lend = Pages * Row + Row;
-	else
-		lend = Pages * Row + Row + RideNum - (Pages+1) * Row;
-	end
-	local index=1;
-	for i =lstart,lend do
-		str = "                                                              ";
-		butid = sa.StockFontBuffer(winX*2+70,winY*2+44+index*24, 1, 5, str, 2);
-		sa.StockFontBuffer(winX*2+125-sa.getTextLength(RideData["³èÎïÃû"][i])/2,winY*2+44+index*24, 1, 5, RideData["³èÎïÃû"][i], 0);
-		sa.StockFontBuffer(winX*2+250,winY*2+44+index*24, 1, 5, RideData["Ğí¿É"][i], 0);
-		if win.getMouseLeftCrick() > 0 then
-			if win.getHitFontNo() == butid then
-				if petaddr ~= 0 then
-					sa.DeathAction(petaddr);
-				end
-				petaddr = sa.MakeAnimDisp(winX +460, winY + 260,RideData["ÔìĞÍ"][i], 0);
-			end
-		end
-		index=index+1;
-	end
-
-	if TotalPages > 1 then
-		if Pages == 0 then
-			str = "ÏÂÒ»Ò³"
-			butid = sa.StockFontBuffer(winX*2+180,winY*2+44+(Row+1)*24, 1, 4, str, 2)
-			if win.getMouseLeftCrick() > 0 then
-				if win.getHitFontNo() == butid then
-					Pages = Pages+1;
-				end
-			end
-			str = "¹Ø  ±Õ"
-			butid = sa.StockFontBuffer(winX*2+270,winY*2+44+(Row+1)*24, 1, 4, str, 2)
-			if win.getMouseLeftCrick() > 0 then
-				if win.getHitFontNo() == butid then
-					win.CloseWindow();
-				end
-			end
-		else
-			if Pages == (TotalPages-1) then
-				str = "ÉÏÒ»Ò³"
-				butid = sa.StockFontBuffer(winX*2+180,winY*2+44+(Row+1)*24, 1, 4, str, 2)
-				if win.getMouseLeftCrick() > 0 then
-					if win.getHitFontNo() == butid then
-						Pages = Pages-1;
-					end
-				end
-				str = "¹Ø  ±Õ"
-				butid = sa.StockFontBuffer(winX*2+270,winY*2+44+(Row+1)*24, 1, 4, str, 2)
-				if win.getMouseLeftCrick() > 0 then
-					if win.getHitFontNo() == butid then
-						win.CloseWindow();
-					end
-				end
-			else
-				str = "ÉÏÒ»Ò³"
-				butid = sa.StockFontBuffer(winX*2+170,winY*2+44+(Row+1)*24, 1, 4, str, 2)
-				if win.getMouseLeftCrick() > 0 then
-					if win.getHitFontNo() == butid then
-						Pages = Pages-1;
-					end
-				end
-				str = "ÏÂÒ»Ò³"
-				butid = sa.StockFontBuffer(winX*2+235,winY*2+44+(Row+1)*24, 1, 4, str, 2)
-				if win.getMouseLeftCrick() > 0 then
-					if win.getHitFontNo() == butid then
-						Pages = Pages+1;
-					end
-				end
-				str = "¹Ø  ±Õ"
-				butid = sa.StockFontBuffer(winX*2+300,winY*2+44+(Row+1)*24, 1, 4, str, 2)
-				if win.getMouseLeftCrick() > 0 then
-					if win.getHitFontNo() == butid then
-						win.CloseWindow();
-					end
-				end
-			end
-		end
-	else
-		str = "¹Ø  ±Õ"
-		butid = sa.StockFontBuffer(winX*2+256-sa.getTextLength(str)/2,winY*2+44+(Row+1)*24, 1, 4, str, 2)
-		if win.getMouseLeftCrick() > 0 then
-			if win.getHitFontNo() == butid then
-				win.CloseWindow();
-			end
-		end
-	end
-
-	if win.DelWindow() == 1 then
-		sa.DeathAction(petaddr);
-		sa.DeathAction(addr)
-		win.CloseFlg()
-		addr = 0;
-		petaddr=0;
-		win.CloseWindow()
-	end
-	return addr;
-end
-
-
-function data()
-	Row=9;
-	TotalPages = 0;
-	petaddr=0;
-	addr = 0;
-	RideData = {};
-	RideNum=0;
-	RideData["³èÎïÃû"] = {};
-	RideData["Ğí¿É"] = {};
-	RideData["ÔìĞÍ"] = {};
-	Pages = 0;
-end
-
-function main()
-	data()
-end
+
+function getIntPart(x)
+    if x <= 0 then
+       return math.ceil(x);
+    end
+
+    if math.ceil(x) == x then
+       x = math.ceil(x);
+    else
+       x = math.ceil(x) - 1;
+    end
+    return x;
+end
+
+function lua_string_split(str, split_char)
+    local sub_str_tab = {};
+    while (true) do
+        local pos = string.find(str, split_char);
+        if (not pos) then
+            sub_str_tab[#sub_str_tab + 1] = str;
+            break;
+        end
+        local sub_str = string.sub(str, 1, pos - 1);
+        sub_str_tab[#sub_str_tab + 1] = sub_str;
+        str = string.sub(str, pos + 1, #str);
+    end
+
+    return sub_str_tab;
+end
+
+function WindowInit(data)
+	winW = 8
+	winH = 7
+	winX = (800 - winW*64)/4
+	winY = (600 - winH*48)/4
+	if addr ~= 0 then
+		sa.DeathAction(addr)
+		addr = 0
+	end
+	if petaddr ~= 0 then
+		sa.DeathAction(petaddr);
+		petaddr=0;
+	end
+	local data = lua_string_split(data,"|");
+	RideNum = tonumber(data[1]);
+	for i=1,RideNum do
+		RideData["å® ç‰©å"][i] = data[2+(i-1)*3];
+		if data[3+(i-1)*3] == "1" then
+			RideData["è®¸å¯"][i] = "âˆš";
+		else
+			RideData["è®¸å¯"][i] = "Ã—";
+		end
+		RideData["é€ å‹"][i] = tonumber(data[4+(i-1)*3]);
+	end
+	TotalPages = 1;
+	if math.mod(RideNum,Row) > 0 then
+		if RideNum > Row then
+			TotalPages = getIntPart(RideNum/Row) + 1;
+		end
+	else
+		if RideNum > Row then
+			TotalPages = getIntPart(RideNum/Row);
+		end
+	end
+	Pages=0;
+end
+
+function CreateWinType()
+	if addr == 0 then
+		addr = sa.MakeWindowDisp(winX,winY,winW, winH, 0, 1)
+	end
+	sa.PlaySe(202, 320, 240)
+	return addr;
+end
+
+
+function ServerWindowType()
+	local str = "ã€éª‘å® é¢„è§ˆæŸ¥è¯¢ã€"
+	sa.StockFontBuffer(winX*2+256-sa.getTextLength(str)/2,winY*2+20, 1, 4, str, 0)
+	str = string.format("â€œå® ç‰©åå­—â€          â€œéª‘ä¹˜è®¸å¯â€          â€œå® ç‰©é€ å‹â€");
+	sa.StockFontBuffer(winX*2+256-sa.getTextLength(str)/2,winY*2+44, 1, 5, str, 0)
+	local lstart,lend,butid;
+	lstart = Pages * Row +1;
+	if RideNum > Pages * Row + 11 then
+		lend = Pages * Row + Row;
+	else
+		lend = Pages * Row + Row + RideNum - (Pages+1) * Row;
+	end
+	local index=1;
+	for i =lstart,lend do
+		str = "                                                              ";
+		butid = sa.StockFontBuffer(winX*2+70,winY*2+44+index*24, 1, 5, str, 2);
+		sa.StockFontBuffer(winX*2+125-sa.getTextLength(RideData["å® ç‰©å"][i])/2,winY*2+44+index*24, 1, 5, RideData["å® ç‰©å"][i], 0);
+		sa.StockFontBuffer(winX*2+250,winY*2+44+index*24, 1, 5, RideData["è®¸å¯"][i], 0);
+		if win.getMouseLeftCrick() > 0 then
+			if win.getHitFontNo() == butid then
+				if petaddr ~= 0 then
+					sa.DeathAction(petaddr);
+				end
+				petaddr = sa.MakeAnimDisp(winX +460, winY + 260,RideData["é€ å‹"][i], 0);
+			end
+		end
+		index=index+1;
+	end
+
+	if TotalPages > 1 then
+		if Pages == 0 then
+			str = "ä¸‹ä¸€é¡µ"
+			butid = sa.StockFontBuffer(winX*2+180,winY*2+44+(Row+1)*24, 1, 4, str, 2)
+			if win.getMouseLeftCrick() > 0 then
+				if win.getHitFontNo() == butid then
+					Pages = Pages+1;
+				end
+			end
+			str = "å…³  é—­"
+			butid = sa.StockFontBuffer(winX*2+270,winY*2+44+(Row+1)*24, 1, 4, str, 2)
+			if win.getMouseLeftCrick() > 0 then
+				if win.getHitFontNo() == butid then
+					win.CloseWindow();
+				end
+			end
+		else
+			if Pages == (TotalPages-1) then
+				str = "ä¸Šä¸€é¡µ"
+				butid = sa.StockFontBuffer(winX*2+180,winY*2+44+(Row+1)*24, 1, 4, str, 2)
+				if win.getMouseLeftCrick() > 0 then
+					if win.getHitFontNo() == butid then
+						Pages = Pages-1;
+					end
+				end
+				str = "å…³  é—­"
+				butid = sa.StockFontBuffer(winX*2+270,winY*2+44+(Row+1)*24, 1, 4, str, 2)
+				if win.getMouseLeftCrick() > 0 then
+					if win.getHitFontNo() == butid then
+						win.CloseWindow();
+					end
+				end
+			else
+				str = "ä¸Šä¸€é¡µ"
+				butid = sa.StockFontBuffer(winX*2+170,winY*2+44+(Row+1)*24, 1, 4, str, 2)
+				if win.getMouseLeftCrick() > 0 then
+					if win.getHitFontNo() == butid then
+						Pages = Pages-1;
+					end
+				end
+				str = "ä¸‹ä¸€é¡µ"
+				butid = sa.StockFontBuffer(winX*2+235,winY*2+44+(Row+1)*24, 1, 4, str, 2)
+				if win.getMouseLeftCrick() > 0 then
+					if win.getHitFontNo() == butid then
+						Pages = Pages+1;
+					end
+				end
+				str = "å…³  é—­"
+				butid = sa.StockFontBuffer(winX*2+300,winY*2+44+(Row+1)*24, 1, 4, str, 2)
+				if win.getMouseLeftCrick() > 0 then
+					if win.getHitFontNo() == butid then
+						win.CloseWindow();
+					end
+				end
+			end
+		end
+	else
+		str = "å…³  é—­"
+		butid = sa.StockFontBuffer(winX*2+256-sa.getTextLength(str)/2,winY*2+44+(Row+1)*24, 1, 4, str, 2)
+		if win.getMouseLeftCrick() > 0 then
+			if win.getHitFontNo() == butid then
+				win.CloseWindow();
+			end
+		end
+	end
+
+	if win.DelWindow() == 1 then
+		sa.DeathAction(petaddr);
+		sa.DeathAction(addr)
+		win.CloseFlg()
+		addr = 0;
+		petaddr=0;
+		win.CloseWindow()
+	end
+	return addr;
+end
+
+
+function data()
+	Row=9;
+	TotalPages = 0;
+	petaddr=0;
+	addr = 0;
+	RideData = {};
+	RideNum=0;
+	RideData["å® ç‰©å"] = {};
+	RideData["è®¸å¯"] = {};
+	RideData["é€ å‹"] = {};
+	Pages = 0;
+end
+
+function main()
+	data()
+end

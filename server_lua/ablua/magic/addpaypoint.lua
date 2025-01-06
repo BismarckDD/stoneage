@@ -4,17 +4,17 @@ function addpay(charaindex, data)
 	if cdkey == "" then
 		local oldvalue = sasql.getPayPoint(charaindex)
 		sasql.setPayPoint(charaindex, sasql.getPayPoint(charaindex) + value)
-		char.TalkToCli(charaindex, -1, "³É¹¦½«ÕËºÅ[" .. char.getChar(charaindex, "ÕËºÅ") .. "]Ãû×Ö[" .. char.getChar(charaindex, "Ãû×Ö") .. "]¸öÈË³äÖµ»ı·ÖÔ­" .. oldvalue .. "Ôöµ½Îª" .. sasql.getPayPoint(charaindex), "ÇàÉ«")
+		char.TalkToCli(charaindex, -1, "æˆåŠŸå°†è´¦å·[" .. char.getChar(charaindex, "è´¦å·") .. "]åå­—[" .. char.getChar(charaindex, "åå­—") .. "]ä¸ªäººå……å€¼ç§¯åˆ†åŸ" .. oldvalue .. "å¢åˆ°ä¸º" .. sasql.getPayPoint(charaindex), "é’è‰²")
 	else
 		local maxplayer = char.getPlayerMaxNum()
 		local cimelia = other.atoi(data)
 		for i = 0, maxplayer - 1 do
 			if char.check(i) == 1 then
-				if char.getChar(i, "ÕËºÅ") ==  cdkey then
+				if char.getChar(i, "è´¦å·") ==  cdkey then
 					local oldvalue = sasql.getPayPoint(i)
 					sasql.setPayPoint(i, sasql.getPayPoint(i) + value)
-					char.TalkToCli(charaindex, -1, "³É¹¦½«ÕËºÅ[" .. char.getChar(i, "ÕËºÅ") .. "]Ãû×Ö[" .. char.getChar(i, "Ãû×Ö") .. "]¸öÈË³äÖµ»ı·ÖÔ­" .. oldvalue .. "Ôöµ½Îª" .. sasql.getPayPoint(i), "ÇàÉ«")
-					char.TalkToCli(i, -1, "GM[" .. char.getChar(charaindex, "Ãû×Ö") .. "]½«ÄãµÄ¸öÈË³äÖµ»ı·ÖÔ­" .. oldvalue .. "Ôöµ½Îª" .. sasql.getPayPoint(i), "ÇàÉ«")
+					char.TalkToCli(charaindex, -1, "æˆåŠŸå°†è´¦å·[" .. char.getChar(i, "è´¦å·") .. "]åå­—[" .. char.getChar(i, "åå­—") .. "]ä¸ªäººå……å€¼ç§¯åˆ†åŸ" .. oldvalue .. "å¢åˆ°ä¸º" .. sasql.getPayPoint(i), "é’è‰²")
+					char.TalkToCli(i, -1, "GM[" .. char.getChar(charaindex, "åå­—") .. "]å°†ä½ çš„ä¸ªäººå……å€¼ç§¯åˆ†åŸ" .. oldvalue .. "å¢åˆ°ä¸º" .. sasql.getPayPoint(i), "é’è‰²")
 					return
 				end
 			end
@@ -24,6 +24,6 @@ end
 
 function main()
 	minute = 0
-	magic.addLUAListFunction("³äÖµ»ı·Ö", "addpay", "", 1, "[]")
+	magic.addLUAListFunction("å……å€¼ç§¯åˆ†", "addpay", "", 1, "[]")
 end
 

@@ -2,10 +2,10 @@
 #ifdef __DEBUG_H__
 #define __DEBUG_H__
 #ifdef _DEBUG_ALL
-//#define _DEBUG                   // µ÷ÊÔ
-#define _DEBUG_RET               // ½ÓÊÕ¿Í»§¶ËÊı¾İµ÷ÊÔ
-#define _DEBUG_RET_CLI           // ½ÓÊÕ¿Í»§¶ËÊı¾İµ÷ÊÔ
-#define _DEBUG_SEND_CLI          // ·¢ËÍ¿Í»§¶ËÊı¾İµ÷ÊÔ
+//#define _DEBUG                   // è°ƒè¯•
+#define _DEBUG_RET               // æ¥æ”¶å®¢æˆ·ç«¯æ•°æ®è°ƒè¯•
+#define _DEBUG_RET_CLI           // æ¥æ”¶å®¢æˆ·ç«¯æ•°æ®è°ƒè¯•
+#define _DEBUG_SEND_CLI          // å‘é€å®¢æˆ·ç«¯æ•°æ®è°ƒè¯•
 #endif
 #endif
 

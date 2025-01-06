@@ -1,31 +1,31 @@
 /*
  * epollnet.h
  *
- *  Created on: 2015Äê10ÔÂ23ÈÕ
+ *  Created on: 2015å¹´10æœˆ23æ—¥
  *      Author: hult
  */
 
 #ifndef EPOLLNET_H_
 #define EPOLLNET_H_
 #ifdef _EPOLL_ET_MODE
-//°ó¶¨epoll¼àÌı¶Ë¿Ú
+//ç»‘å®šepollç›‘å¬ç«¯å£
 int epoll_bind(unsigned short port);
-//½«acfdÌí¼Óµ½epollÖĞ
+//å°†acfdæ·»åŠ åˆ°epollä¸­
 int epoll_add_acfd(int acfd);
-//·Ç×èÈû
+//éé˜»å¡
 int epoll_set_nonblock(int fd) ;
-//×¢²áµ½epoll
+//æ³¨å†Œåˆ°epoll
 int epoll_new_conn(int sfd) ;
-//´ÓepollÖĞÒÆ³ı
+//ä»epollä¸­ç§»é™¤
 int epoll_close_conn(int sfd);
-//¶Áepoll
+//è¯»epoll
 int epoll_mod_read(int sfd) ;
-//Ğ´epoll
+//å†™epoll
 int epoll_mod_write(int sfd) ;
 
-//Æô¶¯·â°ü´¦ÀíÏß³Ì
+//å¯åŠ¨å°åŒ…å¤„ç†çº¿ç¨‹
 int Start_PacketWrapper();
-//Æô¶¯epollÖ÷Ñ­»·Ïß³Ì
+//å¯åŠ¨epollä¸»å¾ªç¯çº¿ç¨‹
 int Start_Epoll_Loop();
 //int Start_Epoll_SendLoop();
 #endif

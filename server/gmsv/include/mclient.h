@@ -20,7 +20,7 @@
 
 #define MPROTO_TYPE_SEND		1016
 
-#ifdef _GSERVER_RUNTIME //传送GSERVER执行多少时间给MSERVER
+#ifdef _GSERVER_RUNTIME //浼犻�丟SERVER鎵ц澶氬皯鏃堕棿缁橫SERVER
 #define MPROTO_RECALL_GSERVER_RUNTIME       1026
 #endif
 
@@ -39,7 +39,7 @@ void mproto_Message_Recv(int fd,char* uid,int userfdid,char* ans);
 int connectmServer(char* hostname,unsigned short port);
 void mproto_Type_Send( int fd, int playernum, int itemuse);
 
-#ifdef _RECAL_ASK_PLAYER			// WON 要求人物资料
+#ifdef _RECAL_ASK_PLAYER			// WON 瑕佹眰浜虹墿璧勬枡
 void mproto_RECALL_ASK_PLAYER_Recv(int fd, char *uid, int userfdid, int GmCliId, char *id, int char_num, int date, int backup_flag);
 void mproto_RECALL_BACKUP_PLAYER_Recv(int fd, char *uid, int userfdid, int GmCliId, char *id, int char_num, int date, char *char_data, int backup_flag);
 #endif
