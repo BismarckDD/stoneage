@@ -1,17 +1,15 @@
 #ifndef __ITEM_H__
 #define __ITEM_H__
 
-#define NULLITEM "0"
-
 #ifdef _SIMPLIFY_ITEMSTRING
-typedef struct ITEM_tag_intDataSetting {
+typedef struct ITEM_tagIntDataSetting {
   char *dumpchar;
   int defaults;
   int table;
   char *string;
 } ITEM_intDataSetting;
 
-typedef struct ITEM_tag_charDataSetting {
+typedef struct ITEM_tagCharDataSetting {
   char *dumpchar;
   char *defaults;
   int table;
@@ -47,7 +45,7 @@ typedef enum {
   ITEM_JEWEL,
 #endif
 #ifdef _ITEM_CHECKWARES
-  ITEM_WARES, // ����
+  ITEM_WARES,   //
 #endif
 #ifdef _ITEM_EQUITSPACE
   ITEM_WBELT,   //
@@ -55,7 +53,7 @@ typedef enum {
   ITEM_WSHOES,  //
 #endif
 #ifdef _EQUIT_NEWGLOVE
-  ITEM_WGLOVE, // ����
+  ITEM_WGLOVE, //
 #endif
 #ifdef _ALCHEMIST
   ITEM_ALCHEMIST = 30,
@@ -75,9 +73,7 @@ typedef enum {
 // ITEM_ANGELTOKEN,
 // ITEM_HEROTOKEN,
 #endif
-
   ITEM_CATEGORYNUM,
-
 } ITEM_CATEGORY;
 
 typedef enum {
@@ -101,11 +97,10 @@ typedef enum {
   ITEM_TYPE,
   ITEM_ABLEUSEFIELD,
   ITEM_TARGET,
-  ITEM_LEVEL, /*  LEVEL  */
+  ITEM_LEVEL, /* LEVEL */
 #ifdef _ITEM_MAXUSERNUM
-  ITEM_DAMAGEBREAK, // ��Ʒʹ�ô���
+  ITEM_DAMAGEBREAK, // DAMAGEBREAK?
 #endif
-
 #ifdef _ITEMSET4_TXT
   ITEM_USEPILENUMS, //
   ITEM_CANBEPILE,   //
@@ -123,17 +118,17 @@ typedef enum {
 #ifdef _SUIT_ITEM
   ITEM_SUITCODE,
 #endif
-  ITEM_ATTACKNUM_MIN,     /*    �  ������  */
-  ITEM_ATTACKNUM_MAX,     /*    ��  ������  */
-  ITEM_MODIFYATTACK,      /*  + ATTACK */
-  ITEM_MODIFYDEFENCE,     /*  + DEFENCE */
-  ITEM_MODIFYQUICK,       /*  + QUICK */
-  ITEM_MODIFYHP,          /*  + HP  ����    */
-  ITEM_MODIFYMP,          /*  + MP */
-  ITEM_MODIFYLUCK,        /*  + LUCK */
-  ITEM_MODIFYCHARM,       /*  + CHARM */
-  ITEM_MODIFYAVOID,       /*  + AVOID */
-  ITEM_MODIFYATTRIB,      /*  + */
+  ITEM_ATTACKNUM_MIN,     /* min attack */
+  ITEM_ATTACKNUM_MAX,     /* mix attack */
+  ITEM_MODIFYATTACK,      /* + ATTACK   */
+  ITEM_MODIFYDEFENCE,     /* + DEFENCE  */
+  ITEM_MODIFYQUICK,       /* + QUICK    */
+  ITEM_MODIFYHP,          /* + HP       */
+  ITEM_MODIFYMP,          /* + MP       */
+  ITEM_MODIFYLUCK,        /* + LUCK     */
+  ITEM_MODIFYCHARM,       /* + CHARM   */
+  ITEM_MODIFYAVOID,       /* + AVOID */
+  ITEM_MODIFYATTRIB,      /* +          */
   ITEM_MODIFYATTRIBVALUE, /* */
   ITEM_MAGICID,           /*  magic id */
   ITEM_MAGICPROB,         /*  magic */
@@ -154,17 +149,17 @@ typedef enum {
   ITEM_STONE,     /* sprit of stone. */
   ITEM_DRUNK,     /* sprit of drunk. */
   ITEM_CONFUSION, /* sprit of confustion. */
-  ITEM_CRITICAL, /* ����  ū�л�  Ĥ�� */
+  ITEM_CRITICAL,  /* ? */
 
-  ITEM_USEACTION, /* �������ݼ�ʧ������� */
-  ITEM_DROPATLOGOUT, /* ���ʧ���������ݱ�  �ʾ�������  */
-  ITEM_VANISHATDROP, /*   �����ݱ������¾������� */
-  ITEM_ISOVERED, /*  ������Ⱦ�����ľ�¾���������*/
-  ITEM_CANPETMAIL,   /* ʸ����������ƥ˪ľ�¾� */
-  ITEM_CANMERGEFROM, /* �������ئľ�¾� */
-  ITEM_CANMERGETO,   /* �����Ʊ�ئľ�¾� */
+  ITEM_USEACTION,    /* �������ݼ�ʧ������� */
+  ITEM_DROPATLOGOUT, /* drop this item when LOGOUT. */
+  ITEM_VANISHATDROP, /* disappear when drp this item. */
+  ITEM_ISOVERED,     /* */
+  ITEM_CANPETMAIL,   /* e.g. Abu Water. */
+  ITEM_CANMERGEFROM, /* be able to merge from. */
+  ITEM_CANMERGETO,   /* ba able to merge to. */
 
-  ITEM_INGVALUE0, /* ����(5����) */
+  ITEM_INGVALUE0,    /* ����(5����) */
   ITEM_INGVALUE1,
   ITEM_INGVALUE2,
   ITEM_INGVALUE3,
@@ -198,9 +193,8 @@ typedef enum {
 #ifdef _ITEM_USE_TIME
   ITEM_USETIME,
 #endif
-  ITEM_DATAINTNUM,
-
-} ITEM_DATAINT;
+  ITEM_DATA_ENUM_MAX,
+} ITEM_DATA_ENUM;
 
 typedef enum {
   ITEM_NAME,         /* */
@@ -220,13 +214,11 @@ typedef enum {
 #ifdef _UNIQUE_P_I
   ITEM_UNIQUECODE, /* ��Ʒ���� */
 #endif
-
   ITEM_INGNAME0, /*  ���м�  �(5����) */
   ITEM_INGNAME1,
   ITEM_INGNAME2,
   ITEM_INGNAME3,
   ITEM_INGNAME4,
-
   ITEM_INITFUNC, /* */
   ITEM_FIRSTFUNCTION = ITEM_INITFUNC,
   ITEM_PREOVERFUNC,  /* CHAR_PREOVERFUNC ë��� */
@@ -298,7 +290,7 @@ typedef enum {
 } ITEM_WORKDATAINT;
 
 typedef struct tagItem {
-  int data[ITEM_DATAINTNUM];
+  int data[ITEM_DATA_ENUM_MAX];
   STRING64 string[ITEM_DATACHARNUM];
   int workint[ITEM_WORKDATAINTNUM];
 
@@ -318,7 +310,7 @@ typedef struct tagItem {
 typedef struct tagITEM_table {
   int use;
   ITEM_Item itm;
-  int randomdata[ITEM_DATAINTNUM];
+  int randomdata[ITEM_DATA_ENUM_MAX];
 } ITEM_table;
 
 typedef struct tagITEM_index {
@@ -345,20 +337,20 @@ int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *itm);
 
 void _ITEM_endExistItemsOne(int index, char *file, int line);
 
-#define ITEM_getInt(Index, element)                                            \
-  _ITEM_getInt(__FILE__, __LINE__, Index, element)
-INLINE int _ITEM_getInt(char *file, int line, int index, ITEM_DATAINT element);
+#define ITEM_getInt(Index, item_data_enum)                                            \
+  _ITEM_getInt(__FILE__, __LINE__, Index, item_data_enum)
+INLINE int _ITEM_getInt(char *file, int line, int index, ITEM_DATA_ENUM item_data_enum);
 
-#define ITEM_setInt(Index, element, data)                                      \
-  _ITEM_setInt(__FILE__, __LINE__, Index, element, data)
-INLINE int _ITEM_setInt(char *file, int line, int index, ITEM_DATAINT element,
+#define ITEM_setInt(Index, item_data_enum, data)                                      \
+  _ITEM_setInt(__FILE__, __LINE__, Index, item_data_enum, data)
+INLINE int _ITEM_setInt(char *file, int line, int index, ITEM_DATA_ENUM item_data_enum,
                         int data);
 
-INLINE char *ITEM_getChar(int index, ITEM_DATACHAR element);
-INLINE BOOL ITEM_setChar(int index, ITEM_DATACHAR element, char *new);
+INLINE char *ITEM_getChar(int index, ITEM_DATACHAR item_data_enum);
+INLINE BOOL ITEM_setChar(int index, ITEM_DATACHAR item_data_enum, char *new);
 
-INLINE int ITEM_getWorkInt(int index, ITEM_WORKDATAINT element);
-INLINE int ITEM_setWorkInt(int index, ITEM_WORKDATAINT element, int data);
+INLINE int ITEM_getWorkInt(int index, ITEM_WORKDATAINT item_data_enum);
+INLINE int ITEM_setWorkInt(int index, ITEM_WORKDATAINT item_data_enum, int data);
 INLINE int ITEM_getITEM_itemnum(void);
 INLINE int ITEM_getITEM_UseItemnum(void);
 INLINE BOOL ITEM_getITEM_use(int index);
@@ -410,24 +402,24 @@ void Other_DefcharWorkInt(int index);
 char *ITEM_getAppropriateName(int itemindex);
 char *ITEM_getEffectString(int itemindex);
 
-int ITEM_getcostFromITEMtabl(int itemid);
+int ITEM_getcostFromITEMtabl(int item_id);
 
 #define ITEM_getNameFromNumber(id)                                             \
   _ITEM_getNameFromNumber(__FILE__, __LINE__, id)
-INLINE char *_ITEM_getNameFromNumber(char *file, int line, int itemid);
+INLINE char *_ITEM_getNameFromNumber(char *file, int line, int item_id);
 
 #define ITEM_getArgumentString(id)                                             \
   _ITEM_getArgumentString(__FILE__, __LINE__, id)
-INLINE char *_ITEM_getArgumentString(char *file, int line, int itemid);
+INLINE char *_ITEM_getArgumentString(char *file, int line, int item_id);
 
-int ITEM_getlevelFromITEMtabl(int itemid);
-int ITEM_getgraNoFromITEMtabl(int itemid);
-char *ITEM_getItemInfoFromNumber(int itemid);
+int ITEM_getlevelFromITEMtabl(int item_id);
+int ITEM_getgraNoFromITEMtabl(int item_id);
+char *ITEM_getItemInfoFromNumber(int item_id);
 
-int ITEM_getdropatlogoutFromITEMtabl(int itemid);
-int ITEM_getvanishatdropFromITEMtabl(int itemid);
-int ITEM_getcanpetmailFromITEMtabl(int itemid);
-int ITEM_getmergeItemFromFromITEMtabl(int itemid);
+int ITEM_getdropatlogoutFromITEMtabl(int item_id);
+int ITEM_getvanishatdropFromITEMtabl(int item_id);
+int ITEM_getcanpetmailFromITEMtabl(int item_id);
+int ITEM_getmergeItemFromFromITEMtabl(int item_id);
 
 #ifdef _ITEM_CHECKWARES
 BOOL CHAR_CheckInItemForWares(int charaindex, int flg);
@@ -437,7 +429,7 @@ BOOL ITEM_canuseMagic(int itemindex);
 // Nuke +1 08/23 : For checking the validity of item target
 int ITEM_isTargetValid(int charaindex, int itemindex, int toindex);
 
-int ITEMTBL_getInt(int ItemID, ITEM_DATAINT datatype);
+int ITEMTBL_getInt(int ItemID, ITEM_DATA_ENUM datatype);
 char *ITEMTBL_getChar(int ItemID, ITEM_DATACHAR datatype);
 
 int ITEM_getItemDamageCrusheED(int itemindex);
@@ -450,7 +442,7 @@ void ITEM_getDefaultItemData(int itemID, ITEM_Item *itm);
 #endif
 
 #ifdef _PET_ITEM
-char *ITEM_petmakeItemStatusString(int petindex, int itemid);
+char *ITEM_petmakeItemStatusString(int petindex, int item_id);
 #endif
 
 #endif

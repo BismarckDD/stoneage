@@ -55,19 +55,25 @@ typedef enum {
 
 void closeAllLogFile(void);
 BOOL initLog(const char *filename);
-void printl(LOG_TYPE logtype, char *format, ...);
+void LogHelper(LOG_TYPE logtype, char *format, ...);
 
 void LogAcMess(int fd, char *type, char *mess);
 
-void LogItem(char *char_name,           /* 平乓仿弁正   */
-             char *CharID, int ItemNo, /* 失奶  丞  寞 */
-             char *key,                /* 平□伐□玉 */
-             int floor,                /* 甄   */
-             int x, int y,
-             char *uniquecode, // shan 2001/12/14
-             char *itemname, int itemID);
-void LogPkContend(char *teamname1, char *teamname2, int floor, int x, int y,
-                  int flg);
+void LogItem(const char *char_name,
+             const char *char_id,
+             const int item_no,
+             const char *cdkey,
+             const int floor,
+             const int x,
+             const int y,
+             const char *uniquecode,
+             const char *item_name,
+             const int item_id);
+void LogPkContend(const char *team_name1,
+                  const char *team_name2,
+                  const int floor,
+                  const int x, const int y,
+                  const int flg);
 
 void LogPetTrans(char *cdkey, char *uniwuecde, char *uniwuecde2, char *char_name,
                  int floor, int x, int y, int petID1, char *PetName1, int petLV,
@@ -76,15 +82,20 @@ void LogPetTrans(char *cdkey, char *uniwuecde, char *uniwuecde2, char *char_name
                  int tgh2, int dex2, int total2, int work0, int work1,
                  int work2, int work3, int ans, int trans);
 
-void LogPet(char *char_name, /* 平乓仿弁正   */
-            char *CharID, char *PetName, int PetLv, char *key, /* 平□伐□玉 */
-            int floor,                                         /* 甄   */
-            int x, int y,
-            char *uniquecode // shan 2001/12/14
-);
+void LogPet(const char *char_name,
+            const char *char_id,
+            const char *pet_name,
+            const int pet_lv,
+            const char *cdkey,
+            const int floor,
+            const int x,
+            const int y,
+            const char *uniquecode);
 
 #ifdef _STREET_VENDOR
-void LogStreetVendor(char *SellName, char *SellID, char *BuyName, char *BuyID,
+void LogStreetVendor(char *sell_name,
+                     char *SellID,
+                     char *BuyName,char *BuyID,
                      char *ItemPetName,
                      int PetLv, // 若是道具此值为 -1
                      int iPrice, char *key, int Sfloor, int Sx, int Sy,
@@ -112,24 +123,28 @@ void LogTensei(char *char_name,          /* 平乓仿弁正   */
 void LogFamilyBankStone(char *char_name, char *char_id, int Gold, int MyGold,
                         char *key, int floor, int x, int y, int banksum);
 
-void LogStone(int TotalGold, char *char_name, /* 平乓仿弁正   */
-              char *char_id,                  /* 交□扒□ID */
-              int Gold,                      /* 嗯喊 */
-              int MyGold, char *key,         /* 平□伐□玉 */
-              int floor,                     /* 甄   */
-              int x, int y);
+void LogStone(const int total_gold,
+              const char *char_name,
+              const char *char_id,
+              const int gold,
+              const int my_gold,
+              const char *cdkey,
+              const int floor,
+              const int x, const int y);
 
-void LogTalk(char *char_name,          /* 平乓仿弁正   */
-             char *CharID, int floor, /* 甄   */
-             int x, int y, char *message);
+void LogTalk(const char *char_name,
+             const char *char_id,
+             const int floor,
+             const int x, const int y,
+             const char *message);
 // ttom 12/26/2000 kill pet & items
 void LogKill(char *char_name, char *char_id, char *CharPet_Item);
 // ttom
 
 // CoolFish: 2001/4/19
-void LogTrade(char *message);
+void LogTrade(const char *message);
 // CoolFish: 2001/9/12
-void LogFMPOP(char *message);
+void LogFMPOP(const char *message);
 
 // Arminius 2001/6/14
 enum {
@@ -150,20 +165,22 @@ int openAllLogFile(void);
 // Robin 10/02
 void LogFamily(const char *family_name,
                const int family_index,
-							 const char *char_name,
-							 const char *char_id,
+               const char *char_name,
+               const char *char_id,
                const char *keyword,
-							 const char *data);
+               const char *data);
 
 // Shan 11/02
-void LogGM(char *char_name, // 角色名称
-           char *CharID,   // 玩家ID
-           char *Message,  // 指令内容
-           int floor, int x, int y);
+void LogGM(const char *char_name,    // 角色名称
+           const char *char_id,      // 玩家ID
+           const char *instruction,  // 指令内容
+           const int floor,
+           const int x, const int y);
 
-void LogLogin(char *CharID,   // 玩家ID
-              char *char_name, // 角色名称
-              int saveIndex, char *ipadress
+void LogLogin(const char *char_id,   // 玩家ID
+              const char *char_name, // 角色名称
+              const int save_index,
+              const char *ipadress
 #ifdef _NEWCLISETMAC
               ,
               char *mac
@@ -177,23 +194,25 @@ void LogCreatFUPet(char *PetName, int petid, int lv, int hp, int vital, int str,
 #ifdef _GAMBLE_ROULETTE
 
 void LogGamble(const char *char_name, // 角色名称
-               const char *CharID,   // 玩家ID
-               const char *key,      // 说明
-               int floor, int x, int y,
-               int player_stone, // 所拥有金钱
-               int Gamble_stone, // 下注本金
-               int get_stone,    // 获得
-               int Gamble_num,
-               int flg // flg = 1 玩家 2 庄家
-);
+               const char *char_id,   // 玩家ID
+               const char *cdkey,      // 说明
+               const int floor,
+               const int x, const int y,
+               const int player_stone, // 所拥有金钱
+               const int gamble_stone, // 下注本金
+               const int get_stone,    // 获得
+               const int gamble_num,
+               const int flg); // flg = 1 玩家 2 庄家
 #endif
 
-void LogBankStone(char *char_name,        /* 平乓仿弁正   */
-                  char *char_id,          /* 交□扒□ID */
-                  int meindex, int Gold, /* 嗯喊 */
-                  char *key,             /* 平□伐□玉 */
-                  int floor,             /* 甄   */
-                  int x, int y, int my_gold, int my_personagold);
+void LogBankStone(const char *char_name,
+                  const char *char_id,
+                  const int meindex, int Gold,
+                  const char *cdkey,
+                  const int floor,
+                  const int x, const int y,
+                  const int my_gold,
+                  const int my_personal_gold);
 
 // Syu 增加庄园战胜负Log
 void Logfmpk(char *winner, int winnerindex, int num1, char *loser,
@@ -241,26 +260,31 @@ typedef struct {
 extern tagWarpCount warpCount[MAXMAPLINK];
 
 #ifdef _AMPOINT_LOG
-void LogAmPoint(char *char_name,           /* 平乓仿弁正   */
-                char *char_id,             /* 交□扒□ID */
-                int Gold,                 /* 嗯喊 */
-                int MyAmPoint, char *key, /* 平□伐□玉 */
-                int floor,                /* 甄   */
-                int x, int y);
+void LogAmPoint(const char *char_name,
+                const char *char_id,
+                const int gold,
+                const int my_am_point,
+                const char *key,
+                const int floor,
+                const int x, const int y);
 #endif
 
 #ifdef _SQL_VIPPOINT_LOG
-void LogSqlVipPoint(char *char_name, /* 平乓仿弁正   */
-                    char *char_id,   /* 交□扒□ID */
-                    char *key,      /* 平□伐□玉 */
-                    int VipPoint,   /* 嗯喊 */
-                    int floor,      /* 甄   */
-                    int x, int y);
+void LogSqlVipPoint(const char *char_name,
+                    const char *char_id,
+                    const char *cdkey,
+                    const int vip_point,
+                    const int floor,
+                    const int x, const int y);
 #endif
 
 #endif
 #ifdef _NETLOG_
-void LogCharOut(char *char_name, char *char_id, char *file, char *fun, int ilne,
-                char *yuanyin);
+void LogCharOut(const char *char_name,
+                const char *char_id,
+                const char *file,
+                const char *function,
+                const int line,
+                const char *reason);
 
 #endif

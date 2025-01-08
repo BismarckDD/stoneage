@@ -81,7 +81,6 @@ int main(int argc, char **argv, char **env) {
 #endif
 
   mainloop();
-
   return 0;
 }
 
@@ -99,7 +98,7 @@ void mainloop(void) {
 #ifdef _MAP_WARPPOINT
   print("��ʼ����ͼ���͵�...");
   MAPPOINT_InitMapWarpPoint();
-  print("���\n");
+  print("succeed.\n");
   if (!MAPPOINT_loadMapWarpPoint()) {
     return;
   }
@@ -122,14 +121,14 @@ void mainloop(void) {
 #endif
 #endif
 #ifdef _ANGEL_SUMMON
-  print("��ʼ��������ۼʱ��...");
+  print("Start to init ANGEL SUMMON......");
   AngelReady = 0;
 #ifdef _ANGEL_TIME
   AngelNextTime = time(NULL) + getAngelPlayerTime();
 #else
   AngelNextTime = time(NULL) + 1 * 60;
 #endif
-  print("���\n");
+  print("succeed.\n");
 #endif
 #ifdef _JZ_NEWSCRIPT_LUA
   print("��ʼ��LNS����...");
@@ -143,23 +142,12 @@ void mainloop(void) {
 #endif
 
 #ifdef _EPOLL_ET_MODE
-  // ������������߳�
   print("������������߳�...");
   if (Start_PacketWrapper() != 0) {
     print("ʧ��\n");
     return;
   }
-  print("���\n");
-
-  //	//�������ͷ���߳�
-  //  print("�������ͷ���߳�...");
-  //	if(Start_Epoll_SendLoop() != 0 )
-  //	{
-  //		print("ʧ��\n");
-  //		return;
-  //	}
-  //	print("���\n");
-
+  print("succeed.\n");
   // ����epoll��ѭ���߳�
   print("����epoll��ѭ���߳�...");
   if (Start_Epoll_Loop() != 0) {
@@ -185,7 +173,7 @@ void mainloop(void) {
     }
 
     setNewTime();
-#ifdef _ASSESS_SYSEFFICACY_SUB // ��ʾLOOPʱ��
+#ifdef _ASSESS_SYSEFFICACY_SUB
 
     Assess_SysEfficacy_sub(0, 1);
 #ifdef _GMSV_DEBUG
@@ -197,7 +185,6 @@ void mainloop(void) {
 #else
     netloop_faster();
 #endif
-
     Assess_SysEfficacy_sub(1, 1);
     Assess_SysEfficacy_sub(0, 2);
 #ifdef _GMSV_DEBUG
@@ -205,14 +192,12 @@ void mainloop(void) {
 #endif
     NPC_generateLoop(0);
     Assess_SysEfficacy_sub(1, 2);
-
     Assess_SysEfficacy_sub(0, 3);
 #ifdef _GMSV_DEBUG
     DebugMainFunction = "BATTLE_Loop";
 #endif
     BATTLE_Loop();
     Assess_SysEfficacy_sub(1, 3);
-
     Assess_SysEfficacy_sub(0, 4);
 #ifdef _GMSV_DEBUG
     DebugMainFunction = "CHAR_Loop";
@@ -254,7 +239,6 @@ void mainloop(void) {
 #endif
     }
     tmOld = tmNow;
-
 #ifdef _ASSESS_SYSEFFICACY
     Assess_SysEfficacy(1);
 #endif
@@ -265,18 +249,18 @@ void mainloop(void) {
 static void sendmsg_toall(char *msg) {
   int i;
   int playernum = CHAR_getPlayerMaxNum();
-
   for (i = 0; i < playernum; i++) {
     if (CHAR_getCharUse(i) != FALSE) {
       CHAR_talkToCli(i, -1, msg, CHAR_COLORYELLOW);
     }
   }
 }
-static void ShutdownProc(void) {
-#define SYSINFO_SHUTDOWN_MSG "%d ���Ӻ�ʼ����ϵͳͣ��ά��, ������ǰ�����������ݶ�ʧ��"
-#define SYSINFO_SHUTDOWN_MSG_COMP "�������ѹرա�"
-  int diff, hun;
 
+#define SYSINFO_SHUTDOWN_MSG "服务器即将在%d分钟后关闭, 请各位玩家及时保存游戏信息并登出。"
+#define SYSINFO_SHUTDOWN_MSG_COMP "服务器即将关闭."
+
+static void ShutdownProc(void) {
+  int diff, hun;
   diff = NowTime.tv_sec - SERVSTATE_getShutdown();
   hun = SERVSTATE_getLimittime() - (diff / 60);
   if (hun != SERVSTATE_getDsptime()) {
@@ -302,9 +286,9 @@ static void ShutdownProc(void) {
 }
 
 void family_proc() {
-  static unsigned long gettime = 0;
-  static unsigned long checktime = 0;
-  static unsigned long proctime = 0;
+  static unsigned gettime = 0;
+  static unsigned checktime = 0;
+  static unsigned proctime = 0;
 
   if (time(NULL) < proctime)
     return;
@@ -335,14 +319,10 @@ void warplog_proc() {
 extern int player_online;
 
 void AngelReadyProc() {
-  // static time_t lastCreateTime = time(NULL);
   time_t nowTime;
-  // static unsigned long AngelNextTime = 30*60;
   struct tm *temptime;
   char msg[1024];
-
   nowTime = time(NULL);
-
   if (nowTime < AngelNextTime)
     return;
 #ifdef _ANGEL_TIME
@@ -351,10 +331,9 @@ void AngelReadyProc() {
   if (player_online <= 10)
 #endif
   {
-    //		print("\n�����ٻ�:������������=%d\n",	player_online );
+    //		print("\n当前在线人数=%d\n",	player_online );
     return;
   }
-
   AngelReady = 1;
   // AngelNextTime = min( (int)(10000/player_online), 100)*60 + (unsigned
   // long)nowTime;
@@ -371,7 +350,6 @@ void AngelReadyProc() {
           temptime->tm_mon + 1, temptime->tm_mday, temptime->tm_hour,
           temptime->tm_min, player_online);
   print(msg);
-  // LogAngel( msg);
 }
 
 #endif

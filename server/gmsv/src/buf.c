@@ -131,18 +131,9 @@ void *allocateMemory(const unsigned int nbyte) {
       }
       memcpy(&AllocOldTime, &NowTime, sizeof(AllocOldTime));
     }
-    // print( "NowMemory.remnants:%4.2f\n",
-    // (float)(UNITNUMBER-NowMemory)/UNITNUMBER);
   }
-
   return ret;
 }
-
-/*------------------------------------------------------------
- * ¦��
- * ߯Ի��
- *  ئ��
- ------------------------------------------------------------*/
 void freeMemory(void *freepointer) {
   int arrayindex;
   char *toppointer;
@@ -158,7 +149,7 @@ void freeMemory(void *freepointer) {
   NowMemory -= mem[arrayindex].nsize;
 }
 
-void showMem(char *buf) {
+void showMem(const char *buf) {
   sprintf(buf, "NowMemory.remnants:%d%%",
           ((UNITNUMBER - NowMemory) * 100) / UNITNUMBER);
   printf("\n");

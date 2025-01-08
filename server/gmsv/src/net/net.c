@@ -3378,7 +3378,7 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
   }
 
   if (mode == 0) {
-    printl(LOG_PROC, buffer);
+    LogHelper(LOG_PROC, buffer);
   } else if (mode == 1) {
     lssproto_ProcGet_send(fd, buffer);
   }

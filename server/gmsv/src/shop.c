@@ -1,10 +1,8 @@
 #include "version.h"
 #include "autil.h"
 #include "lssproto_serv.h"
-#include "common.h"
-#include <stdio.h>
 #include "buf.h"
-#include "md5.h"
+#include "utils/md5.h"
 #include "shop.h"
 
 typedef struct tagShopData{

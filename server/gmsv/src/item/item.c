@@ -114,7 +114,7 @@ typedef struct ITEM_tag_charDataSetting {
   char *defaults;
 } ITEM_charDataSetting;
 
-ITEM_intDataSetting ITEM_setintdata[ITEM_DATAINTNUM] = {
+ITEM_intDataSetting ITEM_setintdata[ITEM_DATA_ENUM_MAX] = {
     {"id", 0},          /*  ITEM_ID */
     {"bi", 0},          /*  ITEM_ITEMBASEIMAGENUMBER */
     {"cs", 0},          /*  ITEM_COST    */
@@ -408,7 +408,7 @@ INLINE BOOL _ITEM_CHECKINDEX(char *file, int line, int index) {
 }
 
 static INLINE int ITEM_CHECKINTDATAINDEX(int index) {
-  if (ITEM_DATAINTNUM <= index || index < 0)
+  if (ITEM_DATA_ENUM_MAX <= index || index < 0)
     return FALSE;
   return TRUE;
 }
@@ -547,7 +547,7 @@ void _ITEM_endExistItemsOne(int index, char *file, int line) {
   }
 }
 
-INLINE int ITEM_getIntStrict(int index, ITEM_DATAINT element, int *error) {
+INLINE int ITEM_getIntStrict(int index, ITEM_DATA_ENUM element, int *error) {
   if (!ITEM_CHECKINDEX(index))
     return *error = FALSE;
   if (!ITEM_CHECKINTDATAINDEX(element))
@@ -555,7 +555,7 @@ INLINE int ITEM_getIntStrict(int index, ITEM_DATAINT element, int *error) {
   return ITEM_item[index].itm.data[element];
 }
 
-INLINE int _ITEM_getInt(char *file, int line, int index, ITEM_DATAINT element) {
+INLINE int _ITEM_getInt(char *file, int line, int index, ITEM_DATA_ENUM element) {
   if (!ITEM_CHECKINDEX(index)) {
     return -1;
   }
@@ -565,7 +565,7 @@ INLINE int _ITEM_getInt(char *file, int line, int index, ITEM_DATAINT element) {
   return ITEM_item[index].itm.data[element];
 }
 
-INLINE int ITEM_setIntStrict(int index, ITEM_DATAINT element, int data,
+INLINE int ITEM_setIntStrict(int index, ITEM_DATA_ENUM element, int data,
                              int *error) {
   int buf;
   if (!ITEM_CHECKINDEX(index))
@@ -577,7 +577,7 @@ INLINE int ITEM_setIntStrict(int index, ITEM_DATAINT element, int data,
   return buf;
 }
 
-INLINE int _ITEM_setInt(char *file, int line, int index, ITEM_DATAINT element,
+INLINE int _ITEM_setInt(char *file, int line, int index, ITEM_DATA_ENUM element,
                         int data) {
   int buf;
   if (!ITEM_CHECKINDEX(index)) {
@@ -747,7 +747,7 @@ int ITEM_getItemMaxIdNum(void) { return ITEM_idxlen; }
 
 BOOL ITEM_checksetdata(void) {
   int i;
-  char *strings[ITEM_DATAINTNUM + ITEM_DATACHARNUM + 1];
+  char *strings[ITEM_DATA_ENUM_MAX + ITEM_DATACHARNUM + 1];
 #ifdef _SIMPLIFY_ITEMSTRING
   int num = 0;
   for (i = 0; i < arraysizeof(ITEM_setintdata); i++) {
@@ -756,19 +756,19 @@ BOOL ITEM_checksetdata(void) {
   for (i = 0; i < arraysizeof(ITEM_setchardata); i++) {
     strings[num++] = ITEM_setchardata[i].dumpchar;
   }
-  strings[ITEM_DATAINTNUM + ITEM_DATACHARNUM] = ITEM_setmemdata.dumpchar;
+  strings[ITEM_DATA_ENUM_MAX + ITEM_DATACHARNUM] = ITEM_setmemdata.dumpchar;
 
   if (!checkStringsUnique(strings, num, 1)) {
     fprint("ITEM_set????data is overlapped.\nIt is not allowed\n");
     return FALSE;
   }
 #else
-  for (i = 0; i < ITEM_DATAINTNUM; i++)
+  for (i = 0; i < ITEM_DATA_ENUM_MAX; i++)
     strings[i] = ITEM_setintdata[i].dumpchar;
   for (i = 0; i < ITEM_DATACHARNUM; i++)
-    strings[ITEM_DATAINTNUM + i] = ITEM_setchardata[i].dumpchar;
+    strings[ITEM_DATA_ENUM_MAX + i] = ITEM_setchardata[i].dumpchar;
 
-  strings[ITEM_DATAINTNUM + ITEM_DATACHARNUM] = ITEM_setmemdata.dumpchar;
+  strings[ITEM_DATA_ENUM_MAX + ITEM_DATACHARNUM] = ITEM_setmemdata.dumpchar;
 
   if (!checkStringsUnique(strings, arraysizeof(strings), 1)) {
     fprint("ITEM_set????data is overlapped.\nIt is not allowed\n");
@@ -848,7 +848,7 @@ char *ITEM_makeStringFromItemData(ITEM_Item *one, int mode) {
     strlength += strlen(linedata);
   }
 #else
-  for (i = 0; i < ITEM_DATAINTNUM; i++) {
+  for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
     char linedata[128];
     snprintf(linedata, sizeof(linedata), "%s%c%d%c",
              ITEM_setintdata[i].dumpchar, delim1, one->data[i], delim2);
@@ -955,7 +955,7 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
       goto NEXT;
     }
 #else
-    for (i = 0; i < ITEM_DATAINTNUM; i++) {
+    for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
       if (strcmp(firstToken, ITEM_setintdata[i].dumpchar) == 0) {
         item->data[i] = atoi(secondToken);
         goto NEXT;
@@ -994,7 +994,7 @@ void ITEM_getDefaultItemSetting(ITEM_Item *itm) {
                ITEM_setchardata[i].defaults);
   }
 #else
-  for (i = 0; i < ITEM_DATAINTNUM; i++)
+  for (i = 0; i < ITEM_DATA_ENUM_MAX; i++)
     itm->data[i] = ITEM_setintdata[i].defaults;
   for (i = 0; i < ITEM_DATACHARNUM; i++)
     strcpysafe(itm->string[i].string, sizeof(itm->string[i].string),
@@ -1015,7 +1015,7 @@ void ITEM_getDefaultItemData(int itemID, ITEM_Item *itm) {
   int i;
   //	memset( itm, 0 , sizeof( ITEM_Item ));
 
-  for (i = 0; i < ITEM_DATAINTNUM; i++) {
+  for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
     itm->data[i] = ITEMTBL_getInt(itemID, i);
   }
   for (i = 0; i < ITEM_DATACHARNUM; i++) {
@@ -1094,7 +1094,7 @@ BOOL ITEM_readItemConfFile(char *filename) {
   int i;
   int maxid = 0, itemid;
   int ret;
-  int intdata[ITEM_DATAINTNUM];
+  int intdata[ITEM_DATA_ENUM_MAX];
 
   print("NORMAL: %s\n", filename);
 #ifdef _CRYPTO_DATA
@@ -1231,7 +1231,7 @@ BOOL ITEM_readItemConfFile(char *filename) {
 
       ITEM_getDefaultItemSetting(&itm);
 
-      for (i = 0; i < ITEM_DATAINTNUM; i++) {
+      for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
         intdata[i] = 0;
       }
       itemid = 0;
@@ -1316,7 +1316,7 @@ BOOL ITEM_readItemConfFile(char *filename) {
           memcpy(&ITEM_tbl[itemnum].itm, &itm, sizeof(ITEM_Item));
           ITEM_idx[itemid].use = TRUE;
           ITEM_idx[itemid].index = itemnum;
-          for (i = 0; i < ITEM_DATAINTNUM; i++) {
+          for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
             ITEM_tbl[itemnum].randomdata[i] = intdata[i];
           }
         }
@@ -1344,23 +1344,16 @@ CHAR_EquipPlace ITEM_getEquipPlace(int charaindex, int itmid) {
 #ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
   {
     int i = 0;
-
-    // ��ʿְҵ���ܶ�����
     for (i = 0; i < CHAR_SKILLMAXHAVE; i++) {
       char *skill_name = "\0";
-      // ����ID
       int skillid = CHAR_getCharSkill(charaindex, i);
       int Pskillid = PROFESSION_SKILL_getskillArray(skillid);
       if (Pskillid <= 0)
         continue;
-
-      // ��������
-      skill_name =
-          PROFESSION_SKILL_getChar(Pskillid, PROFESSION_SKILL_FUNCNAME);
+      skill_name = PROFESSION_SKILL_getChar(Pskillid, PROFESSION_SKILL_FUNCNAME);
       if (skill_name == "\0")
         continue;
 
-      // ������
       if ((strcmp(skill_name, "PROFESSION_DUAL_WEAPON")) == 0) {
         int get_item = BATTLE_GetWepon(charaindex);
 
@@ -1477,20 +1470,11 @@ char *ITEM_makeItemStatusString(int haveitemindex, int itemindex) {
                     char    sign;
                     char    tmpbuf[128];
                     value = ITEM_getInt(itemindex,showparamint[i].intindex);
-
-#ifdef _PROFESSION_SKILL			// WON ADD ����ְҵ����
-
-
-
-#endif
-
                     if( value == 0 )continue;
                     else if( value > 0 ) sign = '+';
                     else sign = '-';
-
                     snprintf(  tmpbuf,sizeof( tmpbuf ), "%s%c%d ",
                                        showparamint[i].name,sign,ABS(value) );
-
                     strcpysafe( paramshow + stringlen ,
                                             sizeof(paramshow) - stringlen,
 tmpbuf ); stringlen +=strlen(tmpbuf); if( stringlen >= arraysizeof( paramshow ))
@@ -1563,9 +1547,8 @@ tmpbuf ); stringlen +=strlen(tmpbuf); if( stringlen >= arraysizeof( paramshow ))
     strcpy(INGNAME0, "��");
   }
 #endif
-
   if (haveitemindex == -1) {
-#ifdef _ADD_SHOW_ITEMDAMAGE // WON ADD ��ʾ��Ʒ�;ö�
+#ifdef _ADD_SHOW_ITEMDAMAGE //
     char buff1[256];
     int crushe = ITEM_getInt(itemindex, ITEM_DAMAGECRUSHE);
     int maxcrushe = ITEM_getInt(itemindex, ITEM_MAXDAMAGECRUSHE);
@@ -1580,44 +1563,43 @@ tmpbuf ); stringlen +=strlen(tmpbuf); if( stringlen >= arraysizeof( paramshow ))
         maxcrushe = 1;
       snprintf(buff1, sizeof(buff1), "%d%%", (int)((crushe * 100) / maxcrushe));
     }
-
     snprintf(ITEM_itemStatusStringBuffer, sizeof(ITEM_itemStatusStringBuffer),
 
 #ifdef _ITEM_PILENUMS
 #ifdef _ALCHEMIST
-             "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d|%s|%d|",
+            "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d|%s|%d|",
 #else
-             "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d|%s",
+            "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d|%s",
 #endif
 #else
-             "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s",
+            "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s",
 #endif
-             escapename, paramshow, itemcolor, escapeeffectstring,
-             ITEM_getInt(itemindex, ITEM_BASEIMAGENUMBER),
-             ITEM_getInt(itemindex, ITEM_ABLEUSEFIELD),
-             ITEM_getInt(itemindex, ITEM_TARGET),
-             ITEM_getInt(itemindex, ITEM_LEVEL), flg, buff1
+            escapename, paramshow, itemcolor, escapeeffectstring,
+            ITEM_getInt(itemindex, ITEM_BASEIMAGENUMBER),
+            ITEM_getInt(itemindex, ITEM_ABLEUSEFIELD),
+            ITEM_getInt(itemindex, ITEM_TARGET),
+            ITEM_getInt(itemindex, ITEM_LEVEL), flg, buff1
 #ifdef _ITEM_PILENUMS
-             ,
-             ITEM_getInt(itemindex, ITEM_USEPILENUMS)
+            ,
+            ITEM_getInt(itemindex, ITEM_USEPILENUMS)
 #ifdef _ALCHEMIST
-                 ,
-             INGNAME0 //,ITEM_getInt( itemindex, ITEM_ALCHEMIST)
-             ,
-             ITEM_getInt(itemindex, ITEM_TYPE)
+            ,
+            INGNAME0 //,ITEM_getInt( itemindex, ITEM_ALCHEMIST)
+            ,
+            ITEM_getInt(itemindex, ITEM_TYPE)
 #endif
 #endif
     );
 #else
     snprintf(ITEM_itemStatusStringBuffer, sizeof(ITEM_itemStatusStringBuffer),
-             "%s|%s|%d|%s|%d|%d|%d|%d|%d", escapename, paramshow, itemcolor,
-             escapeeffectstring, ITEM_getInt(itemindex, ITEM_BASEIMAGENUMBER),
-             ITEM_getInt(itemindex, ITEM_ABLEUSEFIELD),
-             ITEM_getInt(itemindex, ITEM_TARGET),
-             ITEM_getInt(itemindex, ITEM_LEVEL), flg);
+            "%s|%s|%d|%s|%d|%d|%d|%d|%d", escapename, paramshow, itemcolor,
+            escapeeffectstring, ITEM_getInt(itemindex, ITEM_BASEIMAGENUMBER),
+            ITEM_getInt(itemindex, ITEM_ABLEUSEFIELD),
+            ITEM_getInt(itemindex, ITEM_TARGET),
+            ITEM_getInt(itemindex, ITEM_LEVEL), flg);
 #endif
   } else {
-#ifdef _ADD_SHOW_ITEMDAMAGE // WON ADD ��ʾ��Ʒ�;ö�
+#ifdef _ADD_SHOW_ITEMDAMAGE
     char buff1[256];
     int crushe = ITEM_getInt(itemindex, ITEM_DAMAGECRUSHE);
     int maxcrushe = ITEM_getInt(itemindex, ITEM_MAXDAMAGECRUSHE);
@@ -1722,7 +1704,7 @@ BOOL ITEM_makeItem(ITEM_Item *itm, int number) {
     return FALSE;
   }
   memcpy(itm, &ITEM_tbl[ITEM_idx[number].index].itm, sizeof(ITEM_Item)); // new
-  for (i = 0; i < ITEM_DATAINTNUM; i++) {
+  for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
     int randomvalue;
     randomvalue =
         RAND(0, ITEM_tbl[ITEM_idx[number].index].randomdata[i]); // new
@@ -1761,7 +1743,6 @@ void ITEM_equipEffect(int index) {
       {ITEM_MODIFYQUICK, CHAR_WORKQUICK, -100, 0, EQUIP_FIX_MAX, 0},
       {ITEM_MODIFYHP, CHAR_WORKMAXHP, 0, 0, EQUIP_FIX_MAX, 0},
       {ITEM_MODIFYMP, CHAR_WORKMAXMP, 0, 0, 1000, 0}, // MP ��100��ƥ
-
       {ITEM_MODIFYLUCK, CHAR_WORKFIXLUCK, 0, 1, 5, 0},
       {ITEM_MODIFYCHARM, CHAR_WORKFIXCHARM, 0, 0, 100, 0},
       {ITEM_MODIFYAVOID, CHAR_WORKFIXAVOID, 0, 0, EQUIP_FIX_MAX, 0},
@@ -1776,7 +1757,6 @@ void ITEM_equipEffect(int index) {
       {ITEM_OTHERDAMAGE, CHAR_WORKOTHERDMAGE, 0, -100, 100, 0},
       {ITEM_OTHERDEFC, CHAR_WORKOTHERDEFC, 0, -100, 100, 0},
 #endif
-
 #ifdef _ITEMSET5_TXT
       {ITEM_MODIFYARRANGE, CHAR_WORKFIXARRANGE, 0, 0, 1000, 0},
       {ITEM_MODIFYSEQUENCE, CHAR_WORKFIXSEQUENCE, 0, 0, 100, 1},
@@ -1821,30 +1801,25 @@ void ITEM_equipEffect(int index) {
             CHAR_getInt(index, CHAR_WHICHTYPE) != CHAR_TYPEPET) {
           int item_type = ITEM_FIST;
           item_type = ITEM_getInt(id, ITEM_TYPE);
-
           // ������װ��������ʱ��
           if (item_type != ITEM_WSHIELD) {
             int k;
             // ��ʿְҵ���ܶ�����
             for (k = 0; k < CHAR_SKILLMAXHAVE; k++) {
               char *skill_name = "\0";
-              // ����ID
-              int skillid = CHAR_getCharSkill(index, k);
-              int Pskillid = PROFESSION_SKILL_getskillArray(skillid);
+              // SKILL ID
+              int skill_id = CHAR_getCharSkill(index, k);
+              int Pskillid = PROFESSION_SKILL_getskillArray(skill_id);
               if (Pskillid <= 0)
                 continue;
-
-              // ��������
-              skill_name =
-                  PROFESSION_SKILL_getChar(Pskillid, PROFESSION_SKILL_FUNCNAME);
+              // SKILL NAME
+              skill_name = PROFESSION_SKILL_getChar(Pskillid, PROFESSION_SKILL_FUNCNAME);
               if (skill_name == "\0")
                 continue;
 
-              // ������
               if ((strcmp(skill_name, "PROFESSION_DUAL_WEAPON")) == 0) {
                 int skill = k, skill_level = 0, rate = 0, value = 0;
                 CHAR_HaveSkill *hskill;
-                // ���＼�ܵȼ�
                 hskill = CHAR_getCharHaveSkill(index, skill);
                 skill_level = SKILL_getInt(&hskill->skill, SKILL_LEVEL);
                 skill_level = PROFESSION_CHANGE_SKILL_LEVEL_A(skill_level);
@@ -1894,7 +1869,7 @@ void ITEM_equipEffect(int index) {
 #ifdef _ANGEL_SUMMON
       // if( !strcmp( ITEM_getChar( id, ITEM_USEFUNC), "ITEM_AngelToken") ) {
       if (ITEM_getInt(id, ITEM_ID) == ANGELITEM) {
-        // print(" ʹ������װ���� ");
+        // print("Angel Euip:%d, %d.", id, ITEM_ID);
         angelequip = TRUE;
       }
 #endif
@@ -2393,8 +2368,8 @@ BOOL CHAR_CheckInItemForWares(int charaindex, int flg) {
 }
 #endif
 
-int ITEMTBL_getInt(int ItemID, ITEM_DATAINT datatype) {
-  if (datatype >= ITEM_DATAINTNUM || datatype < 0)
+int ITEMTBL_getInt(int ItemID, ITEM_DATA_ENUM datatype) {
+  if (datatype >= ITEM_DATA_ENUM_MAX || datatype < 0)
     return -1;
   if (ITEM_CHECKITEMTABLE(ItemID) == FALSE)
     return -1;

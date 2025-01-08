@@ -15,7 +15,6 @@
 #include "pet_skill.h"
 #include "saacproto_cli.h"
 #include "title.h"
-
 // CoolFish: 2001/10/29
 #include "log.h"
 extern int CheckCharMaxItemChar(Char *ch);
@@ -2750,13 +2749,12 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
         ;
       else
         one->flg[flgindex] = atoi(secondToken);
-
       goto NEXT;
     }
     if (strncmp(firstToken, ITEMRESERVESTRING, strlen(ITEMRESERVESTRING)) ==
         0) {
       int itemindex;
-      if (strcmp(secondToken, NULLITEM) == 0)
+      if (strcmp(secondToken, "0") == 0)
         goto NEXT;
       itemindex = atoi(firstToken + strlen(ITEMRESERVESTRING));
       int itemMax = CheckCharMaxItemChar(one);
@@ -2788,7 +2786,7 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
     if (strncmp(firstToken, POOLITEMRESERVESTRING,
                 strlen(POOLITEMRESERVESTRING)) == 0) {
       int itemindex;
-      if (strcmp(secondToken, NULLITEM) == 0)
+      if (strcmp(secondToken, "0") == 0)
         goto NEXT;
       itemindex = atoi(firstToken + strlen(POOLITEMRESERVESTRING));
       if (itemindex < 0 || CHAR_MAXPOOLITEMHAVE <= itemindex ||
@@ -3750,7 +3748,7 @@ BOOL CHAR_makeDepotItemStringToChar(int charaindex, char *data) {
 
     if (strncmp(firstToken, DEPOTITEMRESERVESTRING,
                 strlen(DEPOTITEMRESERVESTRING)) == 0) {
-      if (strcmp(secondToken, NULLITEM) == 0)
+      if (strcmp(secondToken, "0") == 0)
         goto NEXT;
       itemindex = atoi(firstToken + strlen(DEPOTITEMRESERVESTRING));
       if (itemindex < 0 || CHAR_MAXDEPOTITEMHAVE <= itemindex ||
@@ -4006,7 +4004,7 @@ BOOL CHAR_makeDepotPetStringToChar(int charaindex, char *data) {
 
     if (strncmp(firstToken, DEPOTPETRESERVESTRING,
                 strlen(DEPOTPETRESERVESTRING)) == 0) {
-      if (strcmp(secondToken, NULLITEM) == 0)
+      if (strcmp(secondToken, "0") == 0)
         goto NEXT;
       petindex = atoi(firstToken + strlen(DEPOTPETRESERVESTRING));
       if (petindex < 0 || CHAR_MAXDEPOTPETHAVE <= petindex ||

@@ -663,18 +663,6 @@ void getFourIntsFromString(char *src, int *int1, int *int2, int *int3,
     *int4 = atoi(string);
 }
 
-/*----------------------------------------------
- * src ��  ƥdelsƥ϶������  ٯ��  ���ƻ�������
- * 1�������继�£�
- * �����͵�������ب���޵��������ˡ���������ئ�£�
- * ���׻��Ȼ�
- �����������͵�������بë�����Ƿ�ƥ��ئ�У�
- * ¦��
- *  src      ������  ٯ
- *  dels   ����  ٯ(  ٯ  ƥ϶�õ�)
- * ߯Ի��
- *  ئ��
- ---------------------------------------------*/
 void deleteSequentChar(char *src, char *dels) {
   int length;           /* src ��Ӯ�� */
   int delength;         /* dels ��Ӯ�� */
@@ -774,12 +762,6 @@ int bindLocalhost(unsigned short port) {
   return _s_fd;
 }
 
-/*----------------------------------------
- * �����������£�( TCP )
- * hostname
- * (xx.xxx.xxx.xxxƥ��������xxx.co.jp�羮ƥ������)
- *      port        ��������ʯ�������̡���
- ----------------------------------------*/
 int connectHost(char *hostname, unsigned short port) {
   struct sockaddr_in _socket;
   struct hostent *hoste;
@@ -824,18 +806,14 @@ int existsNewLineCharacter(char *line) {
 }
 
 /*----------------------------------------
- *    ٯ    ��  ٯ��  ��ľ������ë�����ʣ���    ��ë裻�ľ�£�
- *  nindex( string , c , 1 ) �� index( string , c ) �� equivalent ƥؤ�£�
- *  number�� ���׷�0���ݷ�߯Ի������string��
- Ԫƥؤ�£�
- *
- *  ¦��
- *      string  char*   Ʃ����  ٯ
- *      c       int     Ʃ����  ٯ
- *      number  int       ����  į
- *  ߯Ի��
- *      ��������  ٯ�����̼�����
- *      NULL    �Ĺ�����ئ�����ף�
+ *  number
+ *  Param:
+ *    string  char*   Ʃ����  ٯ
+ *    c       int     Ʃ����  ٯ
+ *    number  int       ����  į
+ *  Return Values:
+ *  
+ *    NULL    �Ĺ�����ئ�����ף�
  ----------------------------------------*/
 char *nindex(char *string, int c, int number) {
   int i; /*�����  ��*/
@@ -998,15 +976,9 @@ void easyGetTokenFromString(char *src, int count, char *output, int len) {
 
 /*------------------------------------------------------------
  * ˲��ƥ  ����ë���继�£� by ringo
- * Ǿ���  ��
- *
  * double val1 , val2 : �𼰰���ؤ�з�ë����
  * double d :   ��
- *
- *
  *  -d<0----- val1 ---0<d<1------- val2 ------d>1----
- *
- *
  ------------------------------------------------------------*/
 float linearDiv(float val1, float val2, float d) {
   return val1 + (val2 - val1) * (d);
@@ -1038,7 +1010,6 @@ void makeRandomString(char *cand, char *out, int len) {
  *  FALSE(0)
  ------------------------------------------------------------*/
 BOOL isExistFile(char *filename) {
-  /*  fopen ƥƩ����  */
   FILE *fp;
   fp = fopen(filename, "w");
   if (fp) {
@@ -1047,16 +1018,7 @@ BOOL isExistFile(char *filename) {
   } else
     return FALSE;
 }
-/*------------------------------------------------------------
- * 10��  62��  ��
- * ¦��
- * a        int     �缰�����
- * out      char *  ɡ  ���������
- * outlen   int     ɡ  �������뼰  ���
- *   Ի��
- *          ��      out��ʧ������
- *          ��      NULL
- ------------------------------------------------------------*/
+
 char *cnv10to62(int a, char *out, int outlen) {
   int i, j;
   char base[] = {

@@ -1,11 +1,7 @@
 #define __ADDRESSBOOK_C_
 #include "version.h"
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <strings.h>
-
 #include "addressbook.h"
 #include "char.h"
 #include "handletime.h"
@@ -147,7 +143,7 @@ BOOL ADDRESSBOOK_sendMessage( int cindex, int aindex, char* text , int color )
       if( fd != -1 ) {
         lssproto_MSG_send( fd , index_to_my_info , textbuffer , color );
         /* 夫弘午曰 */
-        printl( LOG_TALK, "CD=%s\tNM=%s\tT=%s" , mycd, mycharaname, textbuffer );
+        LogHelper( LOG_TALK, "CD=%s\tNM=%s\tT=%s" , mycd, mycharaname, textbuffer );
       
       }
       snprintf(tmpmsg, sizeof(tmpmsg), ADDRESSBOOK_SENT, ae->charname);
@@ -224,8 +220,7 @@ BOOL ADDRESSBOOK_sendMessage_FromOther(
         int fd = getfdFromCharaIndex( i);
         if( fd != -1 ) {
           lssproto_MSG_send( fd , index_to_my_info , text , color );
-          /* 夫弘午曰 */
-          printl( LOG_TALK, "CD=%s\tNM=%s\tT=%s" , fromcdkey,
+          LogHelper( LOG_TALK, "CD=%s\tNM=%s\tT=%s" , fromcdkey,
                               fromcharaname, text );
         }
       }

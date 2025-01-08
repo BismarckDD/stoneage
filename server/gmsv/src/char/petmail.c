@@ -644,9 +644,9 @@ static void PETMAIL_sendPetmail( int index, int tocharaindex)
 		CHAR_setInt( index, CHAR_PETSENDMAILCOUNT, 
 					CHAR_getInt( index, CHAR_PETSENDMAILCOUNT) +1);
 		{
-			char   *cdkey = CHAR_getChar( index, CHAR_CDKEY);
-			if( cdkey) printl( LOG_TALK, "CDKEY=%s\tTEXT=%s" , cdkey, offmsg->text );
-			else 	   printl( LOG_TALK, "CDKEY=(null)\tTEXT=%s" , offmsg->text );
+			char *cdkey = CHAR_getChar(index, CHAR_CDKEY);
+			if(cdkey) LogHelper(LOG_TALK, "CDKEY=%s\tTEXT=%s", cdkey, offmsg->text);
+			else LogHelper(LOG_TALK, "CDKEY=(null)\tTEXT=%s", offmsg->text);
 		}
 	}
 }

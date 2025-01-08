@@ -6,6 +6,6 @@ BOOL configmem(int unit, int unitnumber);
 BOOL memInit(void);
 void* allocateMemory(const unsigned int nbyte);
 void freeMemory(void* freepointer);
-void showMem(char *buf);
+void showMem(const char *buf);
 
 #endif 
