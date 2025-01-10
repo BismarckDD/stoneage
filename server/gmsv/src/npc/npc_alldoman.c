@@ -26,8 +26,8 @@
 char Herolist[MAX_HERO_LIST][MAX_HERO_COLUMN][72];
 
 int sort[MAX_HERO_LIST][2];
-int countnum = -1 ;
-int showpage = 1 ;
+int countnum = -1;
+int showpage = 1;
 int totalpage = 1;
 
 static void NPC_Alldoman_selectWindow( int meindex, int talker, int seqno,char *data);

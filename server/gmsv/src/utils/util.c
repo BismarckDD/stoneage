@@ -5,7 +5,6 @@
 #include <assert.h>
 #include <ctype.h>
 #include <errno.h>
-#define IS_2BYTEWORD(_a_) ((char)(0x80) <= (_a_) && (_a_) <= (char)(0xFF))
 
 void chompex(char *buf) {
   while (*buf) {
@@ -1070,6 +1069,45 @@ char *cnv10to62(int a, char *out, int outlen) {
   }
   *(out + j) = '\0';
   return (out);
+}
+
+int cnv62to10(const char *input) {
+  int ret = 0;
+  int minus ;
+  if (input[0] == '-' ) {
+    minus = -1;
+    input++;
+  } else {
+    minus = 1;
+  }
+  while (*input != '\0')
+  {
+    ret *= 62;
+    if( '0' <= (*input) && (*input) <= '9' )
+      ret += (*input)-'0';
+    else
+    if( 'a' <= (*input) && (*input) <= 'z' )
+      ret += (*input)-'a'+10;
+    else
+    if( 'A' <= (*input) && (*input) <= 'Z' )
+      ret += (*input)-'A'+36;
+    else
+      return 0;
+    input++;
+  }
+  return ret * minus;
+}
+
+char *util_ltoa(long v) {
+  char out[64];
+  cnv10to62((int)v, out, sizeof(out));
+  return out;
+}
+
+char *util_utoa(unsigned long v) {
+  char out[64];
+  sprintf(out, "%u", (unsigned int)v);
+  return out;
 }
 
 // 查看数组中是否有重复数字.

@@ -3,6 +3,8 @@
 
 #include "common.h"
 
+#define IS_2BYTEWORD(_a_) ((char)(0x80) <= (_a_) && (_a_) <= (char)(0xFF))
+
 typedef struct tagSTRING32 {
   char string[32];
 } STRING32;
@@ -77,7 +79,11 @@ void easyGetTokenFromString(char *src, int count, char *output, int len);
 
 float linearDiv(float val1, float val2, float d);
 BOOL isExistFile(char *filename);
-char *cnv10to62(int a, char *out, int outlen);
+char *cnv10to62(int input, char *out, int outlen);
+int cnv62to10(const char *input);
+char *util_ltoa(long l);
+char *util_utoa(unsigned long u);
+
 BOOL checkRedundancy(const int *array, const int array_size);
 unsigned short CheckCRC(unsigned char *p, int size);
 // Shan Add

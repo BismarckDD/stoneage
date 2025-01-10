@@ -1,14 +1,9 @@
 #include "version.h"
 #define _SAACPROTOCLI_C_
-#include "version.h"
 #include "saacproto_cli.h"
-#include <stdio.h>
-#include <string.h>
-#include <time.h>
-#include "common.h"
 #include "net.h"
 #include "lssproto_serv.h"
-#ifdef _SEND_EFFECT	   	        // WON ADD AC送下雪、下雨等特效
+#ifdef _SEND_EFFECT
 #include "chatmagic.h"
 #endif
 

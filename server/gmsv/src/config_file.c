@@ -1894,13 +1894,8 @@ BOOL readconfigfile(char *filename) {
   lastConfig();
   return TRUE;
 }
-/*------------------------------------------------------------
- * �޼������ƽ��ëɬ������
- * ¦��
- *  ئ��
- * ߯Ի��
- *  unsigned int ƽ��ë߯��
-------------------------------------------------------------*/
+
+extern int JENCODE_KEY;
 unsigned int setEncodeKey(void) {
   JENCODE_KEY = config.encodekey;
   return JENCODE_KEY;

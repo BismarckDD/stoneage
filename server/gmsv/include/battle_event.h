@@ -18,15 +18,15 @@
 #define BCF_ABSORB   (1 << 11)
 #define BCF_VANISH   (1 << 12)
 #define BCF_CRUSH    (1 << 13)
-#define BCF_FALL     (1 << 14)  //ÂäÂíÊõ
+#define BCF_FALL     (1 << 14)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #ifdef _SKILL_TOOTH
-#define BCF_TOOTH    (1 << 15)  //‡Ü³Ý
+#define BCF_TOOTH    (1 << 15)  //ï¿½Ü³ï¿½
 #endif
 #ifdef _PSKILL_MODIFY
-#define BCF_ATTDOUBLE  (1 << 16)  //ÊôÐÔÇ¿»¯
+#define BCF_ATTDOUBLE  (1 << 16)  //ï¿½ï¿½ï¿½ï¿½Ç¿ï¿½ï¿½
 #endif
 #ifdef _SKILL_ROAR  
-#define BCF_ROAR     (1 << 17)  //³è¼¼:´óºð(¿ËÄêÊÞ)
+#define BCF_ROAR     (1 << 17)  //ï¿½è¼¼:ï¿½ï¿½ï¿½(ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½)
 #endif 
 
 #ifdef _MAGIC_DEFMAGICATT
@@ -39,17 +39,17 @@
 #define BCF_MODIFY (1 << 21)
 #endif
 
-#ifdef _PROFESSION_SKILL      // WON ADD ÈËÎïÖ°Òµ¼¼ÄÜ
-#define BCF_F_SKILLACT  (1 << 22)  //»÷ÖÐÇ°ÐãÍ¼
-#define  BCF_TRAP    (1 << 25)  //ÏÝÚå
-#define BCF_NO_DAMAGE   (1 << 26)   //Ë«ÖØ¹¥»÷
+#ifdef _PROFESSION_SKILL      // WON ADD ï¿½ï¿½ï¿½ï¿½Ö°Òµï¿½ï¿½ï¿½ï¿½
+#define BCF_F_SKILLACT  (1 << 22)  //ï¿½ï¿½ï¿½ï¿½Ç°ï¿½ï¿½Í¼
+#define  BCF_TRAP    (1 << 25)  //ï¿½ï¿½ï¿½ï¿½
+#define BCF_NO_DAMAGE   (1 << 26)   //Ë«ï¿½Ø¹ï¿½ï¿½ï¿½
 #endif
-#define BCF_B_SKILLACT  (1 << 23)  //»÷ÖÐááÐãÍ¼
+#define BCF_B_SKILLACT  (1 << 23)  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í¼
 
 
 
 #ifdef _EQUIT_ARRANGE
-#define BCF_B_ARRANGE  (1 << 24)  //¸ñµ²ÐãÍ¼
+#define BCF_B_ARRANGE  (1 << 24)  //ï¿½ï¿½ï¿½ï¿½Í¼
 #endif
 
 #ifdef _PETSKILL_ACUPUNCTURE
@@ -92,47 +92,47 @@ extern int   gBattleStausChange;
 extern int   gBattleStausTurn;
 
 enum{
-  BATTLE_ST_NONE,     //  0 "Õý³£",
-  BATTLE_ST_POISON,   //  1 "¶¾",
-  BATTLE_ST_PARALYSIS, //  2 "Âé",
-  BATTLE_ST_SLEEP,   //  3 "Ãß",
+  BATTLE_ST_NONE,     //  0 "ï¿½ï¿½ï¿½ï¿½",
+  BATTLE_ST_POISON,   //  1 "ï¿½ï¿½",
+  BATTLE_ST_PARALYSIS, //  2 "ï¿½ï¿½",
+  BATTLE_ST_SLEEP,   //  3 "ï¿½ï¿½",
   BATTLE_ST_STONE,   //  4 "Ê¯",
-  BATTLE_ST_DRUNK,   //  5 "×í",
-  BATTLE_ST_CONFUSION, //  6 "ÂÒ",
-    BATTLE_ST_WEAKEN,    //  7 "Ðé"
-  BATTLE_ST_DEEPPOISON,//  8 "¾ç¶¾"
-  BATTLE_ST_BARRIER,   //  9 "Ä§ÕÏ"
-  BATTLE_ST_NOCAST,    // 10 "³ÁÄ¬"
-#ifdef _PET_SKILL_SARS        // WON ADD ¶¾É·ÂûÑÓ
+  BATTLE_ST_DRUNK,   //  5 "ï¿½ï¿½",
+  BATTLE_ST_CONFUSION, //  6 "ï¿½ï¿½",
+    BATTLE_ST_WEAKEN,    //  7 "ï¿½ï¿½"
+  BATTLE_ST_DEEPPOISON,//  8 "ï¿½ç¶¾"
+  BATTLE_ST_BARRIER,   //  9 "Ä§ï¿½ï¿½"
+  BATTLE_ST_NOCAST,    // 10 "ï¿½ï¿½Ä¬"
+#ifdef _PET_SKILL_SARS        // WON ADD ï¿½ï¿½É·ï¿½ï¿½ï¿½ï¿½
   BATTLE_ST_SARS,     // 11 "É·"
 #endif
-#ifdef _PROFESSION_SKILL      // WON ADD ÈËÎïÖ°Òµ¼¼ÄÜ
-  BATTLE_ST_DIZZY,   // 12 "ÔÎ"
-  BATTLE_ST_ENTWINE,   // 13 "²ø"
-  BATTLE_ST_DRAGNET,   // 14 "ÌìÂÞµØÍø"
-  BATTLE_ST_ICECRACK,  // 15 "±ù±¬Êõ"
-  BATTLE_ST_OBLIVION,   // 16 "ÒÅÍü"
-  BATTLE_ST_ICEARROW,   // 17 "±ù¼ý"
-  BATTLE_ST_BLOODWORMS,// 18 "ÊÈÑª¹Æ"
-  BATTLE_ST_SIGN,     // 19 "Ò»Õë¼ûÑª"
-  BATTLE_ST_INSTIGATE, // 20 "Ìô²¦"
-  BATTLE_ST_F_ENCLOSE, // 21 "»ð¸½Ìå"
-  BATTLE_ST_I_ENCLOSE, // 22 "±ù¸½Ìå"
-  BATTLE_ST_T_ENCLOSE, // 23 "À×¸½Ìå"
-  BATTLE_ST_FOCUS,   // 24 "×¨×¢Õ½¶·"  
-  BATTLE_ST_RESIST_F,   // 25 "»ð¿¹"
-  BATTLE_ST_RESIST_I,   // 26 "±ù¿¹"
-  BATTLE_ST_RESIST_T,   // 27 "À×¿¹"
-  BATTLE_ST_F_ENCLOSE2, // 28 "»ð¸½"
-  BATTLE_ST_I_ENCLOSE2, // 29 "±ù¸½"
-  BATTLE_ST_T_ENCLOSE2, // 30 "À×¸½"
+#ifdef _PROFESSION_SKILL      // WON ADD ï¿½ï¿½ï¿½ï¿½Ö°Òµï¿½ï¿½ï¿½ï¿½
+  BATTLE_ST_DIZZY,   // 12 "ï¿½ï¿½"
+  BATTLE_ST_ENTWINE,   // 13 "ï¿½ï¿½"
+  BATTLE_ST_DRAGNET,   // 14 "ï¿½ï¿½ï¿½Þµï¿½ï¿½ï¿½"
+  BATTLE_ST_ICECRACK,  // 15 "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_OBLIVION,   // 16 "ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_ICEARROW,   // 17 "ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_BLOODWORMS,// 18 "ï¿½ï¿½Ñªï¿½ï¿½"
+  BATTLE_ST_SIGN,     // 19 "Ò»ï¿½ï¿½ï¿½Ñª"
+  BATTLE_ST_INSTIGATE, // 20 "ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_F_ENCLOSE, // 21 "ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_I_ENCLOSE, // 22 "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_T_ENCLOSE, // 23 "ï¿½×¸ï¿½ï¿½ï¿½"
+  BATTLE_ST_FOCUS,   // 24 "×¨×¢Õ½ï¿½ï¿½"  
+  BATTLE_ST_RESIST_F,   // 25 "ï¿½ï¿½"
+  BATTLE_ST_RESIST_I,   // 26 "ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_RESIST_T,   // 27 "ï¿½×¿ï¿½"
+  BATTLE_ST_F_ENCLOSE2, // 28 "ï¿½ï¿½"
+  BATTLE_ST_I_ENCLOSE2, // 29 "ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_T_ENCLOSE2, // 30 "ï¿½×¸ï¿½"
 #ifdef _PROFESSION_ADDSKILL
-    BATTLE_ST_RESIST_F_I_T, //31 "»ð±ùÀ×¿¹"
-    //BATTLE_ST_BOUNDARY_F, //32 "»ð½á½ç
-  BATTLE_ST_WATER, //32 "Ë®¸½Ìå"
-  BATTLE_ST_WORKANNEX, //33 "¸½Éí"
-  BATTLE_ST_FEAR, //34 "¿Ö¾å"
-  BATTLE_ST_ICECRACK2,  // 35 "±ù±¬Êõ"
+    BATTLE_ST_RESIST_F_I_T, //31 "ï¿½ï¿½ï¿½ï¿½×¿ï¿½"
+    //BATTLE_ST_BOUNDARY_F, //32 "ï¿½ï¿½ï¿½ï¿½
+  BATTLE_ST_WATER, //32 "Ë®ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_WORKANNEX, //33 "ï¿½ï¿½ï¿½ï¿½"
+  BATTLE_ST_FEAR, //34 "ï¿½Ö¾ï¿½"
+  BATTLE_ST_ICECRACK2,  // 35 "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½"
   BATTLE_ST_ICECRACK3,  // 36
   BATTLE_ST_ICECRACK4,  // 37
   BATTLE_ST_ICECRACK5,  // 38
@@ -169,13 +169,13 @@ enum{
   BATTLE_MD_VANISH,
   BATTLE_MD_TRAP,
 #ifdef _PETSKILL_ACUPUNCTURE
-    BATTLE_MD_ACUPUNCTURE, //Õë´ÌÍâÆ¤
+  BATTLE_MD_ACUPUNCTURE,
 #endif
   BATTLE_MD_END 
 };
 
 #ifdef _PETSKILL_RETRACE
-    //´æ·ÅBATTLE_Attackº¯Ê½Ö´ÐÐááµÄ¹¥»÷Ä£Ê½   
+    //ï¿½ï¿½ï¿½BATTLE_Attackï¿½ï¿½Ê½Ö´ï¿½ï¿½ï¿½ï¿½Ä¹ï¿½ï¿½ï¿½Ä£Ê½   
 typedef struct tagBattle_Attack_ReturnData_x1
 {
     int Battle_Attack_ReturnData;
@@ -214,7 +214,7 @@ int BATTLE_Magic( int battleindex, int attackNo );
 
 int BATTLE_S_GBreak( int battleindex, int attackNo, int defNo );
 
-#ifdef _SKILL_GUARDBREAK2//ÆÆ³ý·ÀÓù2 vincent add 2002/05/20
+#ifdef _SKILL_GUARDBREAK2//ï¿½Æ³ï¿½ï¿½ï¿½ï¿½ï¿½2 vincent add 2002/05/20
 int BATTLE_S_GBreak2( int battleindex, int attackNo, int defNo );
 #endif
 
@@ -226,23 +226,23 @@ int BATTLE_S_Sacrifice( int battleindex, int attackNo, int defNo );
 int BATTLE_S_Refresh( int battleindex, int attackNo, int defNo, int marray );
 #endif
 
-#ifdef _SKILL_WEAKEN  //vincent³è¼¼:ÐéÈõ
+#ifdef _SKILL_WEAKEN  //vincentï¿½è¼¼:ï¿½ï¿½ï¿½ï¿½
 int BATTLE_S_Weaken( int battleindex, int attackNo, int defNo, int marray );
 #endif
 
-#ifdef _SKILL_DEEPPOISON  //vincent³è¼¼:¾ç¶¾ 
+#ifdef _SKILL_DEEPPOISON  //vincentï¿½è¼¼:ï¿½ç¶¾ 
 int BATTLE_S_Deeppoison( int battleindex, int attackNo, int defNo, int marray );
 #endif
 
-#ifdef _SKILL_BARRIER  //vincent³è¼¼:Ä§ÕÏ
+#ifdef _SKILL_BARRIER  //vincentï¿½è¼¼:Ä§ï¿½ï¿½
 int BATTLE_S_Barrier( int battleindex, int attackNo, int defNo, int marray );
 #endif
 
-#ifdef _SKILL_NOCAST  //vincent³è¼¼:³ÁÄ¬
+#ifdef _SKILL_NOCAST  //vincentï¿½è¼¼:ï¿½ï¿½Ä¬
 int BATTLE_S_Nocast( int battleindex, int attackNo, int defNo, int marray );
 #endif
 
-#ifdef _SKILL_ROAR //vincent³è¼¼:´óºð
+#ifdef _SKILL_ROAR //vincentï¿½è¼¼:ï¿½ï¿½ï¿½
 int BATTLE_S_Roar( int battleindex, int attackNo, int defNo, int marray );
 #endif
 
@@ -254,12 +254,12 @@ int BATTLE_StatusAttackCheck(
   int attackindex,
   int defindex,
   int status,
-  //BATTLE_ST_POISON,      1 "¶¾",
-  //BATTLE_ST_PARALYSIS,  2 "Âé",
-  //BATTLE_ST_SLEEP,      3 "Ãß",
+  //BATTLE_ST_POISON,      1 "ï¿½ï¿½",
+  //BATTLE_ST_PARALYSIS,  2 "ï¿½ï¿½",
+  //BATTLE_ST_SLEEP,      3 "ï¿½ï¿½",
   //BATTLE_ST_STONE,      4 "Ê¯",
-  //BATTLE_ST_DRUNK,      5 "×í",
-  //BATTLE_ST_CONFUSION,  6 "ÂÒ"
+  //BATTLE_ST_DRUNK,      5 "ï¿½ï¿½",
+  //BATTLE_ST_CONFUSION,  6 "ï¿½ï¿½"
   int PerOffset,
   int Range,
   float Bai,
@@ -311,7 +311,7 @@ float BATTLE_adjustRidePet3A( int charaindex, int petindex, int workindex, int a
 
 int BATTLE_getRidePet( int charaindex );
 
-#ifdef _PSKILL_FALLGROUND  //ÂäÂíÊõ
+#ifdef _PSKILL_FALLGROUND  //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 int BATTLE_S_FallGround( int battleindex, int attackNo, int defNo, int skill_type );
 #endif
 #ifdef _PETSKILL_EXPLODE
@@ -355,7 +355,7 @@ int BATTLE_CheckSameSide( int charaindex, int toNo);
 #endif
 
 #ifdef _USER_CHARLOOPS
-int CHAR_BattleStayLoop( int charaindex);//Ô­µØÓöµÐ
+int CHAR_BattleStayLoop( int charaindex);//Ô­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 #endif
 
 #ifdef _PETSKILL_PROPERTY
@@ -369,7 +369,7 @@ int  PETSKILL_SetStrength_Battle( int battleindex, int attackNo, int toNo, int m
 int  OFFLINE_MultiRessurect( int battleindex, int attackNo, int toNo, int HP, int flg);
 #endif
 
-#ifdef _PROFESSION_SKILL      // WON ADD ÈËÎïÖ°Òµ¼¼ÄÜ
+#ifdef _PROFESSION_SKILL      // WON ADD ï¿½ï¿½ï¿½ï¿½Ö°Òµï¿½ï¿½ï¿½ï¿½
 int battle_profession_attack_fun(int battleindex, int attackNo, int defNo, int charaindex);
 int battle_profession_attack_magic_fun(int battleindex, int attackNo, int defNo, int charaindex);
 int battle_profession_assist_fun(int battleindex, int attackNo, int defNo, int charaindex);
@@ -383,14 +383,12 @@ int BATTLE_PROFESSION_RANG_ATTACK_DAMAGE( int charaindex, int attackNo, int defN
 
 #endif
 
-#ifdef _PETSKILL_FIREKILL //»ðÏßÁÔÉ±×¨ÓÃ
+#ifdef _PETSKILL_FIREKILL //ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½É±×¨ï¿½ï¿½
 int BATTLE_Attack_FIREKILL( int battleindex, int attackNo, int defNo );
 #endif
 #ifdef _PROFESSION_ADDSKILL
-BOOL BATTLE_BattleUltimate( int battleindex, int bid ); //¼ì²é´ËÎ»ÁDÉÏÊÇ·ñ±»´ò·É
+BOOL BATTLE_BattleUltimate( int battleindex, int bid ); //ï¿½ï¿½ï¿½ï¿½Î»ï¿½Dï¿½ï¿½ï¿½Ç·ñ±»´ï¿½ï¿½
 #endif
-
-
 
 #ifdef _NEED_ITEM_ENEMY
 int need_item_eneny_init();
