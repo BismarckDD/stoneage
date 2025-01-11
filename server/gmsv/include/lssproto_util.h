@@ -1,25 +1,14 @@
 #ifndef __LSSPROTO_UTIL_H__
 #define __LSSPROTO_UTIL_H__
-#include <stdlib.h>
-#include <string.h>
+#include "utils/proto.h"
 #ifndef WIN32
 #include <strings.h>
 #include <unistd.h>
 #endif
 // #define lssproto__ENCRYPT
 #define lssproto__NODEBUG
-struct lssproto_ {
-  int (*write_func)(int, char *, int); /* write function */
-  size_t workbufsize;                  /* size of work area */
-  char *work, *arraywork, *escapework, *val_str,
-      *ret_work; /* work areas which have same size  */
-  char *cryptwork, *jencodecopy, *jencodeout,
-      *compresswork;                   /* these work has bigger size (3times)*/
-  char **token_list;                   /* token list */
-  unsigned long message_id; /*= 1,  */ /* for generating message IDs */
-};
 #ifdef __LSSPROTO_UTIL_C__
-struct lssproto_ lssproto = {
+TagProto lssproto = {
     NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1,
 };
 char **lssproto_stringwrapper;
@@ -27,7 +16,7 @@ char lssproto_readlogfilename[1024];
 char lssproto_writelogfilename[1024];
 #else
 extern char **lssproto_stringwrapper;
-extern struct lssproto_ lssproto;
+extern TagProto lssproto;
 extern char lssproto_readlogfilename[1024];
 extern char lssproto_writelogfilename[1024];
 #endif
@@ -35,8 +24,6 @@ extern char lssproto_writelogfilename[1024];
 char *lssproto_escapeString(char *a);
 char *lssproto_descapeString(char *a);
 void lssproto_splitString(char *src);
-void lssproto_strcpysafe(char *dest, char *src, int len);
-void lssproto_strcatsafe(char *dest, char *src, int maxlen);
 char *lssproto_mkstr_int(int i);
 char *lssproto_mkstr_u_int(unsigned int i);
 char *lssproto_mkstr_long(long l);

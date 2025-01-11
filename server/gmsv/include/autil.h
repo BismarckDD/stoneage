@@ -3,31 +3,32 @@
 #ifndef __AUTIL_H_
 #define __AUTIL_H_
 
-#define SLICE_MAX  20
-#define SLICE_SIZE  1024*96
+#define SLICE_MAX 20
+#define SLICE_SIZE 1024 * 96
 
 extern char *MesgSlice[SLICE_MAX];
-extern int SliceCount;    // count slices in MesgSlice
+extern int SliceCount; // count slices in MesgSlice
 
 extern char PersonalKey[4096];
 
-#define DEFAULTTABLE  \
+#define DEFAULTTABLE                                                           \
   "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz{}"
-#define DEFAULTFUNCBEGIN  "&"
-#define DEFAULTFUNCEND    "#"
+#define DEFAULTFUNCBEGIN "&"
+#define DEFAULTFUNCEND "#"
 
 BOOL util_Init(void);
 
-//void util_SplitMessage(char *source, char *separator);
+// void util_SplitMessage(char *source, char *separator);
 BOOL util_SplitMessage(char *source, char *separator);
 #ifdef _NEW_FUNC_DECRYPT
-BOOL util_DecodeMessageTea(char *dst,char *sac);
+BOOL util_DecodeMessageTea(char *dst, char *sac);
 #endif
 void util_EncodeMessage(char *dst, char *src);
 void util_DecodeMessage(char *dst, char *src);
 int util_GetFunctionFromSlice(int *func, int *fieldcount);
 void util_DiscardMessage(void);
-#define util_SendMesg( fd, func, buffer) _util_SendMesg( __FILE__, __LINE__, fd, func, buffer)
+#define util_SendMesg(fd, func, buffer)                                        \
+  _util_SendMesg(__FILE__, __LINE__, fd, func, buffer)
 void _util_SendMesg(char *file, int line, int fd, int func, char *buffer);
 
 // -------------------------------------------------------------------
@@ -50,10 +51,9 @@ int util_mkint(char *buffer, int value);
 int util_destring(int sliceno, char *value);
 int util_mkstring(char *buffer, char *value);
 
-
 #ifdef _CRYPTO_DATA
-void CryptoKey(char* usrkey);
-void DecryptKey(char* usrkey);
+void CryptoKey(char *usrkey);
+void DecryptKey(char *usrkey);
 void List(char *path);
 #endif
 

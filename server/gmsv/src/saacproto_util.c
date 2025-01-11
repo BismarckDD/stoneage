@@ -66,95 +66,72 @@ int saacproto_StringRest() { return 0; }
 void saacproto_GetMessageInfo(int *id, char *funcname, int len, char **tk) {
   if (tk[0] == NULL || tk[1] == NULL) {
     *id = 0;
-    saacproto_strcpysafe(funcname, "", len);
+    proto_strcpysafe(funcname, "", len);
     return;
   }
   *id = strtoul(tk[0], NULL, 10);
-  saacproto_strcpysafe(funcname, tk[1], len);
+  proto_strcpysafe(funcname, tk[1], len);
   return;
 }
 
-void saacproto_strcpysafe(char *dest, char *src, int maxlen) {
-  int i;
-  for (i = 0; i < maxlen - 1; i++) {
-    dest[i] = src[i];
-    if (src[i] == 0)
-      break;
-  }
-  dest[i] = 0;
-}
-void saacproto_strcatsafe(char *dest, char *src, int maxlen) {
-  int i, j;
 
-  for (i = 0; i < maxlen - 1; i++) {
-    if (dest[i] == 0) {
-      for (j = i; j < maxlen - 1; j++) {
-        dest[j] = src[j - i];
-        if (src[j - i] == 0)
-          break;
-      }
-      dest[j] = 0;
-      break;
-    }
-  }
-}
 char *saacproto_mkstr_int(int i) {
-#define MKSTR_INT(v) util_ltoa((long)(v))
-  saacproto_strcpysafe(saacproto.val_str, (char *)MKSTR_INT(i),
+#define MKSTR_INT(v) proto_ltoa((long)(v))
+  proto_strcpysafe(saacproto.val_str, (char *)MKSTR_INT(i),
                        saacproto.workbufsize);
-  saacproto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
+  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
   return saacproto.val_str;
 }
 char *saacproto_mkstr_u_int(unsigned int i) {
-#define MKSTR_U_INT(v) util_utoa((unsigned long)(v))
-  saacproto_strcpysafe(saacproto.val_str, MKSTR_U_INT(i),
+#define MKSTR_U_INT(v) proto_utoa((unsigned long)(v))
+  proto_strcpysafe(saacproto.val_str, MKSTR_U_INT(i),
                        saacproto.workbufsize);
-  saacproto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
+  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
   return saacproto.val_str;
 }
 char *saacproto_mkstr_long(long l) {
-#define MKSTR_LONG(v) util_ltoa(v)
-  saacproto_strcpysafe(saacproto.val_str, MKSTR_LONG(l), saacproto.workbufsize);
-  saacproto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
+#define MKSTR_LONG(v) proto_ltoa(v)
+  proto_strcpysafe(saacproto.val_str, MKSTR_LONG(l), saacproto.workbufsize);
+  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
   return saacproto.val_str;
 }
 char *saacproto_mkstr_u_long(unsigned long l) {
-#define MKSTR_U_LONG(v) util_utoa(v)
-  saacproto_strcpysafe(saacproto.val_str, MKSTR_U_LONG(l),
+#define MKSTR_U_LONG(v) proto_utoa(v)
+  proto_strcpysafe(saacproto.val_str, MKSTR_U_LONG(l),
                        saacproto.workbufsize);
-  saacproto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
+  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
   return saacproto.val_str;
 }
 char *saacproto_mkstr_short(short s) {
-#define MKSTR_SHORT(v) util_ltoa((long)(v))
-  saacproto_strcpysafe(saacproto.val_str, MKSTR_SHORT(s),
+#define MKSTR_SHORT(v) proto_ltoa((long)(v))
+  proto_strcpysafe(saacproto.val_str, MKSTR_SHORT(s),
                        saacproto.workbufsize);
-  saacproto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
+  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
   return saacproto.val_str;
 }
 char *saacproto_mkstr_u_short(unsigned short s) {
-#define MKSTR_U_SHORT(v) util_utoa((unsigned long)(v)&0xFFFF)
-  saacproto_strcpysafe(saacproto.val_str, MKSTR_U_SHORT(s),
+#define MKSTR_U_SHORT(v) proto_utoa((unsigned long)(v)&0xFFFF)
+  proto_strcpysafe(saacproto.val_str, MKSTR_U_SHORT(s),
                        saacproto.workbufsize);
-  saacproto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
+  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
   return saacproto.val_str;
 }
 char *saacproto_mkstr_char(char c) {
-#define MKSTR_CHAR(v) util_ltoa((long)(v))
-  saacproto_strcpysafe(saacproto.val_str, MKSTR_CHAR(c), saacproto.workbufsize);
-  saacproto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
+#define MKSTR_CHAR(v) proto_ltoa((long)(v))
+  proto_strcpysafe(saacproto.val_str, MKSTR_CHAR(c), saacproto.workbufsize);
+  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
   return saacproto.val_str;
 }
 char *saacproto_mkstr_u_char(unsigned char c) {
-#define MKSTR_U_CHAR(v) util_utoa((unsigned long)(v)&0xFF)
-  saacproto_strcpysafe(saacproto.val_str, MKSTR_U_CHAR(c),
+#define MKSTR_U_CHAR(v) proto_utoa((unsigned long)(v)&0xFF)
+  proto_strcpysafe(saacproto.val_str, MKSTR_U_CHAR(c),
                        saacproto.workbufsize);
-  saacproto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
+  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
   return saacproto.val_str;
 }
 char *saacproto_mkstr_string(char *a) {
   char *ret = saacproto_escapeString(a);
-  saacproto_strcatsafe(ret, " ", saacproto.workbufsize);
+  proto_strcatsafe(ret, " ", saacproto.workbufsize);
   return ret;
 }
 char *saacproto_mkstr_float(float f) {
@@ -171,7 +148,7 @@ char *saacproto_mkstr_int_array(int size, int *array) {
     int i;                                                                     \
     saacproto.arraywork[0] = '\0';                                             \
     for (i = 0; i < size; i++) {                                               \
-      saacproto_strcatsafe(saacproto.arraywork, func(array[i]),                \
+      proto_strcatsafe(saacproto.arraywork, func(array[i]),                \
                            saacproto.workbufsize);                             \
     }                                                                          \
     return saacproto.arraywork;                                                \
@@ -254,7 +231,7 @@ double saacproto_demkstr_double(char *a) {
 }
 char *saacproto_demkstr_string(char *a) {
   if (a == (char *)NULL) {
-    saacproto_strcpysafe(saacproto.escapework, "", saacproto.workbufsize);
+    proto_strcpysafe(saacproto.escapework, "", saacproto.workbufsize);
     return saacproto.escapework;
   }
   return saacproto_descapeString(a);
@@ -456,7 +433,7 @@ void saacproto_copyLine(char *src, char *out, int outlen) {
     if (src[i] == '\0')
       return;
   }
-  saacproto_strcpysafe(out, "", outlen);
+  proto_strcpysafe(out, "", outlen);
 }
 
 unsigned long saacproto_GetNewMessageID(void) { return saacproto.message_id++; }
@@ -505,7 +482,7 @@ void saacproto_CreateHeaderID(char *out, unsigned long msgid, char *fname) {
 }
 
 char *saacproto_wrapStringAddr(char *copy, int maxcopylen, char *src) {
-  saacproto_strcpysafe(copy, src, maxcopylen);
+  proto_strcpysafe(copy, src, maxcopylen);
   return copy;
 }
 #ifdef saacproto__ENCRYPT
@@ -546,7 +523,7 @@ static void saacproto_encodeString(char *src, char *out, int maxoutlen) {
   }
   /* return empty line if error or buffer excess */
   if (compressed_l <= 0) {
-    saacproto_strcpysafe(out, "\n", maxoutlen);
+    proto_strcpysafe(out, "\n", maxoutlen);
     return;
   }
   memcpy(saacproto.jencodecopy, saacproto.compresswork, compressed_l);

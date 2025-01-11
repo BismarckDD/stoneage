@@ -1,25 +1,15 @@
 #ifndef __SAACPROTO_UTIL_H__
 #define __SAACPROTO_UTIL_H__
-#include <stdlib.h>
-#include <string.h>
+#include "utils/proto.h"
 #ifndef WIN32
 #include <strings.h>
 #include <unistd.h>
 #endif
 #define saacproto__NOENCRYPT
 #define saacproto__NODEBUG
-struct saacproto_ {
-  int (*write_func)(int, char *, int); /* write function */
-  size_t workbufsize;                  /* size of work area */
-  char *work, *arraywork, *escapework, *val_str,
-      *ret_work; /* work areas which have same size  */
-  char *cryptwork, *jencodecopy, *jencodeout,
-      *compresswork;                   /* these work has bigger size (3times)*/
-  char **token_list;                   /* token list */
-  unsigned long message_id; /*= 1,  */ /* for generating message IDs */
-};
+
 #ifdef __SAACPROTO_UTIL_C__
-struct saacproto_ saacproto = {
+TagProto saacproto = {
     NULL, 0, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1,
 };
 char **saacproto_stringwrapper;
@@ -27,7 +17,7 @@ char saacproto_readlogfilename[1024];
 char saacproto_writelogfilename[1024];
 #else
 extern char **saacproto_stringwrapper;
-extern struct saacproto_ saacproto;
+extern TagProto saacproto;
 extern char saacproto_readlogfilename[1024];
 extern char saacproto_writelogfilename[1024];
 #endif

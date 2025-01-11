@@ -18,10 +18,10 @@ extern int lastfunctime;
 #endif
 
 void lssproto_SetServerLogFiles(char *r, char *w) {
-  lssproto_strcpysafe(lssproto_writelogfilename, w,
-                      sizeof(lssproto_writelogfilename));
-  lssproto_strcpysafe(lssproto_readlogfilename, r,
-                      sizeof(lssproto_readlogfilename));
+  proto_strcpysafe(lssproto_writelogfilename, w,
+                   sizeof(lssproto_writelogfilename));
+  proto_strcpysafe(lssproto_readlogfilename, r,
+                   sizeof(lssproto_readlogfilename));
 }
 
 int lssproto_InitServer(int (*writefunc)(int, char *, int), int worksiz) {

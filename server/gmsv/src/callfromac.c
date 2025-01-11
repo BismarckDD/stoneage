@@ -377,7 +377,7 @@ void saacproto_DBGetEntryByCount_recv(int fd, char *result, char *list,
     NPC_Duelranking_PrintRanking(list, count_start, msgid, msgid2);
   }
 }
-#ifdef _ALLDOMAN // (���ɿ�) Syu ADD ���а�NPC
+#ifdef _ALLDOMAN
 void saacproto_UpdataStele_recv(int fd, char *token) {
   NPC_AlldomanWriteStele(token);
 }
@@ -389,21 +389,16 @@ void saacproto_S_UpdataStele_recv(int i, char *ocdkey, char *oname,
   NPC_Alldoman_S_WriteStele(ocdkey, oname, ncdkey, nname, title, level, trns,
                             floor);
 }
-
 #endif
-/* ---------------------------------------------
- * Ƥ�����ƽ�ҵ������������ⰾ����Ի
- * --------------------------------------------*/
+
 void saacproto_Broadcast_recv(int fd, char *id, char *charname, char *message) {
 
   if (strstr(message, "online") == 0 || strstr(message, "offline") == 0 ||
       strstr(message, "param") == 0 || strstr(message, "chardelete") == 0) {
     char buff[512];
     char escapebuf[1024];
-
     snprintf(buff, sizeof(buff), "%s_%s", id, charname);
     makeEscapeString(buff, escapebuf, sizeof(escapebuf));
-
     saacproto_DBGetEntryString_send(acfd, DB_ADDRESSBOOK, escapebuf, 0, 0);
   }
 }
@@ -419,24 +414,19 @@ void saacproto_Message_recv(int fd, char *id_from, char *charname_from,
   }
 }
 
-/* ---------------------------------------------
- *	CoolFish: Family 2001/5/9
- * --------------------------------------------*/
 void saacproto_ACAddFM_recv(int fd, char *result, int fmindex, int charfdid,
                             int index) {
   int ret;
   int clifd = getfdFromFdid(charfdid);
-  //	print("ACAddFM_0\n");
   if (CONNECT_checkfd(clifd) == FALSE)
     return;
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
   else
     ret = 0;
-  //	print("ACAddFM_1 clifd:%d ret:%d fmindex:%d index:%d\n",
-  //		clifd, ret, fmindex, index);
   ACAddFM(clifd, ret, fmindex, index);
 }
+
 void saacproto_ACJoinFM_recv(int fd, char *result, int recv, int charfdid) {
   int ret;
   int clifd = getfdFromFdid(charfdid);
@@ -472,11 +462,10 @@ void saacproto_ACDelFM_recv(int fd, char *result, int charfdid) {
     ret = 1;
   else
     ret = 0;
-
   ACDelFM(clifd, ret);
-
-  print(" ACDelFM_%d ", ret);
+  print("ACDelFM_%d", ret);
 }
+
 void saacproto_ACShowFMList_recv(int fd, char *result, int fmnum, char *data) {
   int ret;
   if (strcmp(result, SUCCESSFUL) == 0)
@@ -495,8 +484,6 @@ void saacproto_ACShowMemberList_recv(int fd, char *result, int index,
 #endif
 ) {
   int ret;
-  // fmmemnum -1:�޴�����ֵ, -2:�޸���
-  // else:��ʾ�˼�������
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
   else
@@ -523,7 +510,7 @@ void saacproto_ACMemberJoinFM_recv(int fd, char *result, char *data,
                                    int charfdid) {}
 void saacproto_ACMemberLeaveFM_recv(int fd, char *result, char *data,
                                     int charfdid) {}
-#ifdef _PERSONAL_FAME // Arminius: �����������
+#ifdef _PERSONAL_FAME
 void saacproto_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
                                   int fmdp, int joinflag, int fmsetupflag,
                                   int flag, int charindex, int charfame,
@@ -547,11 +534,7 @@ void saacproto_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
     ret = 1;
   else
     ret = 0;
-//	print("Login fd:%d result:%s index:%d floor:%d fmdp:%d joinflag:%d
-//setup:%d charfdid:%d\n", 		fd, result, index, floor, fmdp, joinflag,
-//fmsetupflag, charfdid);
-#ifdef _PERSONAL_FAME // Arminius: �����������
-                      //        print("Login charfame:%d\n", charfame);
+#ifdef _PERSONAL_FAME // Arminius:
   ACFMCharLogin(clifd, ret, index, floor, fmdp, joinflag, fmsetupflag, flag,
                 charindex, charfame
 #ifdef _NEW_MANOR_LAW
@@ -568,10 +551,6 @@ void saacproto_ACFMCharLogout_recv(int fd, char *result, int charfdid) {}
 void saacproto_ACFMReadMemo_recv(int fd, char *result, int index, int num,
                                  int dataindex, char *data) {
   int ret;
-  // index(���� WORK ������)��num(���ϱ��������35��)
-  // dataindex(���µ�������)��data(����)��
-  // ע��num -1:�޴�����ֵ, -2:�޸���
-  // else:��ʾ�˼�������
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
   else
@@ -978,23 +957,17 @@ void saacproto_ACKick_recv(int fd, int act, char *data, int retfd) {
   // if( CONNECT_checkfd(clifd) == FALSE )return;
   // char cdkey[CDKEYLEN];
   int cindex = getCharindexFromFdid(retfd);
-
-  // print("״̬��%s ", data);
-
   switch (act) {
   case 0: // FAIL
     if (CONNECT_checkfd(clifd) == FALSE)
       return;
     CHAR_talkToCli(cindex, -1, data, CHAR_COLORYELLOW);
     break;
-  case 1: // ����������
+  case 1: //
   {
     char szName[64];
     int i, MAX_USER = 0;
     BOOL find = FALSE;
-
-    // print("�������:%s\n", data);
-
     {
       int i;
       int playernum = CHAR_getPlayerMaxNum();
@@ -1007,8 +980,6 @@ void saacproto_ACKick_recv(int fd, int act, char *data, int retfd) {
             if (!CHAR_logout(i, TRUE)) {
               print("err %s:%d\n", __FILE__, __LINE__);
             }
-            //			  	lssproto_CharList_send( fd, FAILED, "-1"
-            //); 			  	CONNECT_setState( fd, NOTLOGIN );
           } else
 #endif
           {
@@ -1022,37 +993,11 @@ void saacproto_ACKick_recv(int fd, int act, char *data, int retfd) {
             LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
                        "�����쳣������");
 #endif
-
             CONNECT_setCloseRequest(getfdFromCharaIndex(i), 1);
           }
-          //				lssproto_CharList_send( fd, FAILED, "-1"
-          //); 				CONNECT_setState( fd, NOTLOGIN ); 				return;
         }
       }
     }
-
-    /*
-                            MAX_USER=getFdnum();
-                            for(i=0;i<MAX_USER;i++){
-                                    int i_use;
-                                    if(fd==i)continue;
-                                    i_use=CONNECT_getUse(i);
-                                    if(i_use){
-                                            CONNECT_getCdkey( i, cdkey, sizeof(
-       cdkey )); if( !strcmp( cdkey, data) ){ int fd_charaindex =
-       CONNECT_getCharaindex( i ); CONNECT_getCharname( i, szName, sizeof(
-       szName ) ); if( retfd == -1 ){ print("���ظ�����"); CHAR_talkToCli(
-       fd_charaindex, -1, "���ظ��ʺŵ�������ߣ�",CHAR_COLORYELLOW); }else{
-                                                            print("�������� ");
-                                                            CHAR_talkToCli(fd_charaindex,
-       -1, "�������¶����ߡ�",CHAR_COLORYELLOW);
-                                                    }
-                                                    CONNECT_setCloseRequest( i ,
-       1 ); find=TRUE;
-                                            }
-                                    }
-                            }
-    */
     if (find == TRUE && retfd != -1 && CHAR_CHECKINDEX(cindex)) {
       char buf1[256]; //, buf2[256];
       sprintf(buf1, "ϵͳ��[%s]����ŷ�����",
@@ -1138,7 +1083,7 @@ void saacproto_ACCharGetPoolItem_recv(int fd, char *result, char *data,
 #endif
 }
 
-#endif // ������
+#endif //
 
 #ifdef _CHAR_POOLPET
 void saacproto_ACCharSavePoolPet_recv(int fd, char *result, char *data,
@@ -1794,7 +1739,6 @@ void saacproto_LotterySystem_recv(char *data) {
 void saacproto_AllServSend_recv(char *data) {
   int i;
   int playernum = CHAR_getPlayerMaxNum();
-
   for (i = 0; i < playernum; i++) {
     if (CHAR_getCharUse(i) != FALSE) {
       CHAR_talkToCli(i, -1, data, rand() % CHAR_COLORNUM);

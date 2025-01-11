@@ -1000,14 +1000,6 @@ void makeRandomString(char *cand, char *out, int len) {
   out[i] = '\0';
 }
 
-/*------------------------------------------------------------
- * ¦�ѱ�϶�ý�ľ�װ����̻ﻥ�����̻ﾮ����ëƩ����
- * ¦��
- *  filename char*
- *
- *  TRUE(1)
- *  FALSE(0)
- ------------------------------------------------------------*/
 BOOL isExistFile(char *filename) {
   FILE *fp;
   fp = fopen(filename, "w");
@@ -1016,98 +1008,6 @@ BOOL isExistFile(char *filename) {
     return TRUE;
   } else
     return FALSE;
-}
-
-char *cnv10to62(int a, char *out, int outlen) {
-  int i, j;
-  char base[] = {
-      "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"};
-  int tmp[64];
-  int src;
-  int minus;
-  int baselen = sizeof(base) - 1;
-  if (a < 0) {
-    minus = 1;
-    a *= -1;
-  } else {
-    minus = 0;
-  }
-  /* special case */
-  if (a < baselen) {
-    if (minus) {
-      *(out) = '-';
-      *(out + 1) = base[a];
-      *(out + 2) = '\0';
-      return (out);
-    } else {
-      *out = base[a];
-      *(out + 1) = '\0';
-      return (out);
-    }
-  }
-  src = a;
-  for (i = 0; src >= baselen; i++) {
-    tmp[i] = src % baselen;
-    src /= baselen;
-  }
-  i--;
-  if (minus) {
-    *out = '-';
-    *(out + 1) = base[src];
-    for (j = 2; i >= 0; i--, j++) {
-      if (j > outlen - 2)
-        return NULL;
-      *(out + j) = base[tmp[i]];
-    }
-  } else {
-    *out = base[src];
-    for (j = 1; i >= 0; i--, j++) {
-      if (j > outlen - 2)
-        return NULL;
-      *(out + j) = base[tmp[i]];
-    }
-  }
-  *(out + j) = '\0';
-  return (out);
-}
-
-int cnv62to10(const char *input) {
-  int ret = 0;
-  int minus ;
-  if (input[0] == '-' ) {
-    minus = -1;
-    input++;
-  } else {
-    minus = 1;
-  }
-  while (*input != '\0')
-  {
-    ret *= 62;
-    if( '0' <= (*input) && (*input) <= '9' )
-      ret += (*input)-'0';
-    else
-    if( 'a' <= (*input) && (*input) <= 'z' )
-      ret += (*input)-'a'+10;
-    else
-    if( 'A' <= (*input) && (*input) <= 'Z' )
-      ret += (*input)-'A'+36;
-    else
-      return 0;
-    input++;
-  }
-  return ret * minus;
-}
-
-char *util_ltoa(long v) {
-  char out[64];
-  cnv10to62((int)v, out, sizeof(out));
-  return out;
-}
-
-char *util_utoa(unsigned long v) {
-  char out[64];
-  sprintf(out, "%u", (unsigned int)v);
-  return out;
 }
 
 // 查看数组中是否有重复数字.

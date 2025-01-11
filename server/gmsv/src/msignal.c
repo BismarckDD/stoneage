@@ -2,10 +2,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <unistd.h>
-
-#include <stdio.h>
 #include <execinfo.h> 
-
 #include "buf.h"
 #include "net.h"
 #include "char.h"
@@ -57,22 +54,18 @@ void dump()
 
 }
 
-void signalset( void );
+void signalset(void);
  
 static void allDataDump( void )
 {
-
 	int i;
 	for( i = 0; i < CHAR_getPlayerMaxNum(); i ++ ){
 		if(CHAR_CHECKINDEX(i) == TRUE){
 			CHAR_charSaveFromConnect(i, FALSE);
 		}
 	}
-
 	saveforsaac();
-
 	storeCharaData();
-
   closeAllLogFile();
 #ifdef _PET_ITEM
 	storeObjects( getStoredir() );
@@ -83,9 +76,6 @@ static void allDataDump( void )
 #endif
 }
 
-/*------------------------------------------------------------
- *  卅仄
- ------------------------------------------------------------*/
 void shutdownProgram( void )
 {
     printf("关闭SAAC连接:%d\n",close( acfd ));
@@ -170,10 +160,8 @@ void sigshutdown( int number)
 			sprintf( buff, "以下是主要错误，必须向我们提交的错误\n");
 			logerr(buff);
 			dump();
-
 			sprintf( buff, "=========以上是服务器出错原因=========\n");
 			logerr(buff);
-
 		}
 		if( number == 0 || number == 2 ){
 			printf( "在线人数: %d\n", player_online);
@@ -236,13 +224,10 @@ void sigshutdown( int number)
     exit(number);
 }
 
-
-
 void signalset( void )
 {
     // CoolFish: Test Signal 2001/10/26
     print("\n开始获取信号..\n");
-
 		print("SIGINT:%d\n",  SIGINT);
 		print("SIGQUIT:%d\n", SIGQUIT);
 		print("SIGFPE:%d\n",  SIGILL);
@@ -254,7 +239,6 @@ void signalset( void )
 		print("SIGSEGV:%d\n", SIGSEGV);
 		print("SIGPIPE:%d\n", SIGPIPE);
 		print("SIGTERM:%d\n", SIGTERM);
-    
     signal( SIGINT , sigshutdown );
     signal( SIGQUIT, sigshutdown );
     signal( SIGILL,  sigshutdown );

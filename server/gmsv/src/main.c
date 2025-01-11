@@ -51,16 +51,10 @@ int main(int argc, char **argv, char **env) {
   setNewTime();
   ShopData_Init();
   EXIT_WITH_CODE_IF_FALSE(util_Init(), 1);
-
   LoadAnnounce(); // Arminius 7.12 loginannounce
-
   memcpy(&tmOld, localtime((time_t *)&NowTime.tv_sec), sizeof(tmNow));
-
   EXIT_WITH_CODE_IF_FALSE(init(argc, argv, env), 1);
-
   LoadPetTalk(); // Arminius 8.14 pet talk
-  // print("Load Pet Talk end.");
-
 #ifdef _GAMBLE_BANK
   Load_GambleBankItems();
 #endif
@@ -85,18 +79,18 @@ int main(int argc, char **argv, char **env) {
 }
 
 void mainloop(void) {
-  print("��ʼ��NPC...");
+  print("Init NPC......");
   NPC_generateLoop(1);
-  print("���\n");
-  print("��ʼ��signal1...");
+  print("succeed.\n");
+  print("Init signal1...");
   signal(SIGUSR1, sigusr1);
-  print("���\n");
-  print("��ʼ��signal2...");
+  print("succeed.\n");
+  print("Init signal2...");
   signal(SIGUSR2, sigusr2);
-  print("���\n");
+  print("succeed.\n");
 
 #ifdef _MAP_WARPPOINT
-  print("��ʼ����ͼ���͵�...");
+  print("Init map warp point...");
   MAPPOINT_InitMapWarpPoint();
   print("succeed.\n");
   if (!MAPPOINT_loadMapWarpPoint()) {
@@ -108,16 +102,16 @@ void mainloop(void) {
   Assess_InitSysEfficacy();
 #endif
 #ifdef _CHATROOMPROTOCOL
-  print("��ʼ��������Ƶ...");
+  print("Init chat room...");
   InitChatRoom();
-  print("���\n");
+  print("succeed.\n");
 #endif
 #ifdef _CHAR_PROFESSION
 #ifdef _CHANNEL_MODIFY
-  print("��ʼ��ְҵƵ��...");
+  print("Init occupation channel...");
   if (!InitOccChannel())
     return;
-  print("���\n");
+  print("succeed.\n");
 #endif
 #endif
 #ifdef _ANGEL_SUMMON
@@ -131,30 +125,29 @@ void mainloop(void) {
   print("succeed.\n");
 #endif
 #ifdef _JZ_NEWSCRIPT_LUA
-  print("��ʼ��LNS����...");
+  print("Init NPC lua file......");
   NPC_Lua_Init(getLuaFile());
-  print("���\n");
+  print("succeed.\n");
 #endif
 #ifdef _ALLBLUES_LUA
-  print("��ʼ��LUA�ű�...");
+  print("Init allblues lua......");
   LoadAllbluesLUA("data/ablua");
-  print("���\n");
+  print("succeed.\n");
 #endif
 
 #ifdef _EPOLL_ET_MODE
   print("������������߳�...");
   if (Start_PacketWrapper() != 0) {
-    print("ʧ��\n");
+    print("failed.\n");
     return;
   }
   print("succeed.\n");
-  // ����epoll��ѭ���߳�
   print("����epoll��ѭ���߳�...");
   if (Start_Epoll_Loop() != 0) {
     print("ʧ��\n");
     return;
   }
-  print("���\n");
+  print("succeed.\n");
 #endif
 
   while (1) {

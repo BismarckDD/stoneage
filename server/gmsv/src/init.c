@@ -126,8 +126,6 @@ BOOL parseCommandLine(int argc, char **argv) {
   return TRUE;
 }
 
-/*
- */
 BOOL parseEnvironment(char **env) {
   if (getDebuglevel() >= 3) {
     int index = 0;
@@ -168,9 +166,7 @@ BOOL init(int argc, char **argv, char **env) {
     debug(sizeof(aho.workint), d);
     debug(sizeof(aho.workchar), d);
   }
-
   print("Current Config File name: %s.\n", getConfigfilename());
-
   RETURN_FALSE_IF_FALSE(readconfigfile(getConfigfilename()));
 
   nice(getrunlevel());
@@ -178,8 +174,7 @@ BOOL init(int argc, char **argv, char **env) {
     int iWork = setEncodeKey();
     if (iWork == 0) {
       printf("----------------------------------------\n");
-      printf("-------------[EncodeKey] EncodeKey %s\n",
-             getConfigfilename());
+      printf("-------------[EncodeKey] EncodeKey %s\n", getConfigfilename());
       printf("----------------------------------------\n");
       exit(1);
     } else {
@@ -200,7 +195,6 @@ BOOL init(int argc, char **argv, char **env) {
   }
 
   if (getDebuglevel() >= 1) {
-    //		print("ServerType: %d\n", getServerType() );
     print("Current Debug Level: %d\n", getDebuglevel());
     print("Current Run Level: %d\n", getrunlevel());
     print("Recv Buf Size: %d\n", getrecvbuffer() * 1024);
@@ -265,10 +259,10 @@ BOOL init(int argc, char **argv, char **env) {
 #ifdef _DEL_DROP_GOLD
     print("ʯ�����ʱ��: %d\n", getGolddeletetime());
 #endif
-    print("���ݱ�����: %d\n", getCharSavesendinterval());
-    print("��Ƭ�����Ŀ: %d\n", getAddressbookoffmsgnum());
-    print("��ȡƵ��Э��: %d\n", getProtocolreadfrequency());
-    print("���Ӵ�������: %d\n", getAllowerrornum());
+    print("角色存储消息间隔: %d\n", getCharSavesendinterval());
+    print("通信录离线消息数量: %d\n", getAddressbookoffmsgnum());
+    print("通信协议读取频率: %d\n", getProtocolreadfrequency());
+    print("程序中允许出错的数量: %d\n", getAllowerrornum());
 #ifdef _GET_BATTLE_EXP
     print("ս�����鱶��: %d��\n", getBattleexp());
 #endif
@@ -278,7 +272,7 @@ BOOL init(int argc, char **argv, char **env) {
     print("NewPlayerGold: %d(stone).\n", getNewplayergivegold());
     print("NewPlayerPetLevel: %d\n", getNewplayerpetlv());
 #ifdef _VIP_SERVER
-    print("����ӵ�е���: %d��\n", getNewplayergivevip());
+    print("IF new player give VIP?: %d.\n", getNewplayergivevip());
 #endif
     print("RidePetLevel: %d\n", getRidePetLevel());
 #ifdef _NEW_PLAYER_RIDE
@@ -323,8 +317,8 @@ BOOL init(int argc, char **argv, char **env) {
 #endif
 
 #ifdef _TRANS_LEVEL_CF
-    print("����ȼ�ת��: %d��\n", getChartrans());
-    print("����ȼ�ת��: %d��\n", getPettrans());
+    print("����ȼ�ת��: %d\n", getChartrans());
+    print("����ȼ�ת��: %d\n", getPettrans());
 #endif
 
 #ifdef _POINT
@@ -341,8 +335,8 @@ BOOL init(int argc, char **argv, char **env) {
     print("�����ܷ���: %s\n", getItemup());
 #endif
 #ifdef _LOOP_ANNOUNCE
-    print("ѭ������·��: %s\n", getLoopAnnouncePath());
-    print("ѭ��ʱ����: %d����\n", getLoopAnnounceTime());
+    print("循环公告的文件路径: %s.\n", getLoopAnnouncePath());
+    print("循环公告的间隔时间: %d.\n", getLoopAnnounceTime());
 #endif
 #ifdef _SKILLUPPOINT_CF
     print("ÿ����������: %d\n", getSkup());
@@ -355,30 +349,30 @@ BOOL init(int argc, char **argv, char **env) {
     print("REV LEVEL: %s\n", getRevLevel());
 #endif
 #ifdef _TRANS_LEVEL_CF
-    print("һ��ȼ�����: %d��\n", getYBLevel());
-    print("��ߵȼ�����: %d��\n", getMaxLevel());
+    print("Player YB Level: %d\n", getYBLevel());
+    print("Player Max Level: %d\n", getMaxLevel());
 #endif
 #ifdef _FIX_CHARLOOPS
-    print("��ħʱ�䱶��: %d��\n", getCharloops());
+    print("Char Loops: %d\n", getCharloops());
 #endif
 #ifdef _PLAYER_ANNOUNCE
     if (getPAnnounce() == -1)
-      print("�������ĵ���: �ر�ʹ��\n");
+      print("Player Announce: Disable\n");
     else
-      print("�������ĵ���: %d��\n", getPAnnounce());
+      print("Player Announce: %d\n", getPAnnounce());
 #endif
 #ifdef _PLAYER_MOVE
     if (getPMove() == -1)
-      print("˳�����ĵ���: �ر�ʹ��\n");
+      print("Player Move: Disable\n");
     else
-      print("˳�����ĵ���: %d��\n", getPMove());
+      print("Player Move: %d\n", getPMove());
 #endif
 #ifdef _BATTLE_GOLD
-    print("ս����ý�Ǯ: %d\n", getBattleGold());
+    print("Battle Gold: %d\n", getBattleGold());
 #endif
 #ifdef _ANGEL_TIME
-    print("�����ٻ�ʱ��: (%d��/��������)��\n", getAngelPlayerTime());
-    print("�����ٻ�����: %d��\n", getAngelPlayerMun());
+    print("Angel Player Time: (%d��/��������)��\n", getAngelPlayerTime());
+    print("Angel Player Mun: %d��\n", getAngelPlayerMun());
 #endif
 #ifdef _RIDEMODE_20
     print("2.0 RIDE MODE: %d\n", getRideMode());

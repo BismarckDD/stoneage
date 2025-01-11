@@ -1,5 +1,5 @@
-#define __LSSPROTO_UTIL_C__
 #include "version.h"
+#define __LSSPROTO_UTIL_C__
 #include "lssproto_util.h"
 #include "util.h"
 
@@ -60,244 +60,6 @@ int lssproto_AllocateCommonWork(int bufsiz) {
   return 0;
 }
 
-void lssproto_GetMessageInfo(int *id, char *funcname, int len, char **tk) {
-  if (tk[0] == NULL || tk[1] == NULL) {
-    *id = 0;
-    lssproto_strcpysafe(funcname, "", len);
-    return;
-  }
-  *id = strtoul(tk[0], NULL, 10);
-  lssproto_strcpysafe(funcname, tk[1], len);
-  return;
-}
-
-void lssproto_strcpysafe(char *dest, char *src, int maxlen) {
-  int i;
-  for (i = 0; i < maxlen - 1; i++) {
-    dest[i] = src[i];
-    if (src[i] == 0)
-      break;
-  }
-  dest[i] = 0;
-}
-void lssproto_strcatsafe(char *dest, char *src, int maxlen) {
-  int i, j;
-  for (i = 0; i < maxlen - 1; i++) {
-    if (dest[i] == 0) {
-      for (j = i; j < maxlen - 1; j++) {
-        dest[j] = src[j - i];
-        if (src[j - i] == 0)
-          break;
-      }
-      dest[j] = 0;
-      break;
-    }
-  }
-}
-char *lssproto_mkstr_int(int i) {
-#define MKSTR_INT(v) util_ltoa((long)(v))
-  lssproto_strcpysafe(lssproto.val_str, (char *)MKSTR_INT(i),
-                      lssproto.workbufsize);
-  lssproto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_u_int(unsigned int i) {
-#define MKSTR_U_INT(v) util_utoa((unsigned long)(v))
-  lssproto_strcpysafe(lssproto.val_str, MKSTR_U_INT(i), lssproto.workbufsize);
-  lssproto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_long(long l) {
-#define MKSTR_LONG(v) util_ltoa(v)
-  lssproto_strcpysafe(lssproto.val_str, MKSTR_LONG(l), lssproto.workbufsize);
-  lssproto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_u_long(unsigned long l) {
-#define MKSTR_U_LONG(v) util_utoa(v)
-  lssproto_strcpysafe(lssproto.val_str, MKSTR_U_LONG(l), lssproto.workbufsize);
-  lssproto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_short(short s) {
-#define MKSTR_SHORT(v) util_ltoa((long)(v))
-  lssproto_strcpysafe(lssproto.val_str, MKSTR_SHORT(s), lssproto.workbufsize);
-  lssproto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_u_short(unsigned short s) {
-#define MKSTR_U_SHORT(v) util_utoa((unsigned long)(v) & 0xFFFF)
-  lssproto_strcpysafe(lssproto.val_str, MKSTR_U_SHORT(s), lssproto.workbufsize);
-  lssproto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_char(char c) {
-#define MKSTR_CHAR(v) util_ltoa((long)(v))
-  lssproto_strcpysafe(lssproto.val_str, MKSTR_CHAR(c), lssproto.workbufsize);
-  lssproto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_u_char(unsigned char c) {
-#define MKSTR_U_CHAR(v) util_utoa((unsigned long)(v) & 0xFF)
-  lssproto_strcpysafe(lssproto.val_str, MKSTR_U_CHAR(c), lssproto.workbufsize);
-  lssproto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_string(char *a) {
-  char *ret = lssproto_escapeString(a);
-  lssproto_strcatsafe(ret, " ", lssproto.workbufsize);
-  return ret;
-}
-char *lssproto_mkstr_float(float f) {
-  sprintf(lssproto.val_str, "%f ", f);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_double(double d) {
-  sprintf(lssproto.val_str, "%f ", d);
-  return lssproto.val_str;
-}
-char *lssproto_mkstr_int_array(int size, int *array) {
-#define MKSTR_ARRAYMACRO(func)                                                 \
-  {                                                                            \
-    int i;                                                                     \
-    lssproto.arraywork[0] = '\0';                                              \
-    for (i = 0; i < size; i++) {                                               \
-      lssproto_strcatsafe(lssproto.arraywork, func(array[i]),                  \
-                          lssproto.workbufsize);                               \
-    }                                                                          \
-    return lssproto.arraywork;                                                 \
-  }
-
-  MKSTR_ARRAYMACRO(lssproto_mkstr_int);
-}
-char *lssproto_mkstr_u_int_array(int size, unsigned int *array) {
-  MKSTR_ARRAYMACRO(lssproto_mkstr_u_int);
-}
-char *lssproto_mkstr_short_array(int size, short *array) {
-  MKSTR_ARRAYMACRO(lssproto_mkstr_short);
-}
-char *lssproto_mkstr_u_short_array(int size, unsigned short *array) {
-  MKSTR_ARRAYMACRO(lssproto_mkstr_u_short);
-}
-char *lssproto_mkstr_char_array(int size, char *array) {
-  MKSTR_ARRAYMACRO(lssproto_mkstr_char);
-}
-char *lssproto_mkstr_u_char_array(int size, unsigned char *array) {
-  MKSTR_ARRAYMACRO(lssproto_mkstr_u_char);
-}
-char *lssproto_mkstr_float_array(int size, float *array) {
-  MKSTR_ARRAYMACRO(lssproto_mkstr_float);
-}
-char *lssproto_mkstr_double_array(int size, double *array) {
-  MKSTR_ARRAYMACRO(lssproto_mkstr_double);
-}
-
-int lssproto_demkstr_int(char *a) {
-  if (a == (char *)NULL)
-    return 0;
-  return cnv62to10(a);
-}
-unsigned int lssproto_demkstr_u_int(char *a) {
-  if (a == (char *)NULL)
-    return 0;
-  return (unsigned int)strtoul(a, NULL, 10);
-}
-long lssproto_demkstr_long(char *a) {
-  if (a == (char *)NULL)
-    return 0;
-  return (long)strtol(a, NULL, 10);
-}
-unsigned long lssproto_demkstr_u_long(char *a) {
-  if (a == (char *)NULL)
-    return 0;
-  return (unsigned long)strtoul(a, NULL, 10);
-}
-short lssproto_demkstr_short(char *a) {
-  if (a == (char *)NULL)
-    return 0;
-  return (short)strtol(a, NULL, 10);
-}
-unsigned short lssproto_demkstr_u_short(char *a) {
-  if (a == (char *)NULL)
-    return 0;
-  return (unsigned short)strtoul(a, NULL, 10);
-}
-char lssproto_demkstr_char(char *a) {
-  if (a == (char *)NULL)
-    return 0;
-  return (char)strtol(a, NULL, 10);
-}
-unsigned char lssproto_demkstr_u_char(char *a) {
-  if (a == (char *)NULL)
-    return 0;
-  return (unsigned char)strtoul(a, NULL, 10);
-}
-float lssproto_demkstr_float(char *a) {
-  if (a == (char *)NULL)
-    return 0.0F;
-  return (float)atof(a);
-}
-double lssproto_demkstr_double(char *a) {
-  if (a == (char *)NULL)
-    return 0.0F;
-  return (double)strtod(a, NULL);
-}
-char *lssproto_demkstr_string(char *a) {
-  if (a == (char *)NULL) {
-    lssproto_strcpysafe(lssproto.escapework, "", lssproto.workbufsize);
-    return lssproto.escapework;
-  }
-  return lssproto_descapeString(a);
-}
-int *lssproto_demkstr_int_array(char **tk, int *buf, int start, int size) {
-#define DEMKSTR_ARRAYMACRO(func, defaultvalue)                                 \
-  {                                                                            \
-    int i;                                                                     \
-    for (i = start; i < (start + size); i++) {                                 \
-      if (tk[i] == NULL) {                                                     \
-        buf[i - start] = defaultvalue;                                         \
-      } else {                                                                 \
-        buf[i - start] = func(tk[i]);                                          \
-      }                                                                        \
-    }                                                                          \
-    return buf;                                                                \
-  }
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_int, 0);
-}
-int *lssproto_demkstr_u_int_array(char **tk, int *buf, int start, int size) {
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_u_int, 0);
-}
-unsigned int *lssproto_demkstr_long_array(char **tk, unsigned int *buf,
-                                          int start, int size) {
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_long, 0);
-}
-unsigned long *lssproto_demkstr_u_long_array(char **tk, unsigned long *buf,
-                                             int start, int size) {
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_u_long, 0);
-}
-short *lssproto_demkstr_short_array(char **tk, short *buf, int start,
-                                    int size) {
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_short, 0);
-}
-unsigned short *lssproto_demkstr_u_short_array(char **tk, unsigned short *buf,
-                                               int start, int size) {
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_u_short, 0);
-}
-char *lssproto_demkstr_char_array(char **tk, char *buf, int start, int size) {
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_u_char, 0);
-}
-unsigned char *lssproto_demkstr_u_char_array(char **tk, unsigned char *buf,
-                                             int start, int size) {
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_u_char, 0);
-}
-float *lssproto_demkstr_float_array(char **tk, float *buf, int start,
-                                    int size) {
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_float, (float)0.0);
-}
-double *lssproto_demkstr_u_double_array(char **tk, double *buf, int start,
-                                        int size) {
-  DEMKSTR_ARRAYMACRO(lssproto_demkstr_double, (double)0.0);
-}
 char *lssproto_escapeString(char *a) {
   int i, c = 0;
   lssproto.escapework[0] = '\0';
@@ -335,15 +97,14 @@ char *lssproto_descapeString(char *a) {
       lssproto.escapework[c++] = '\0';
       break;
     } else if ((char)0x80 <= a[i] && a[i] <= (char)0xFF) {
-      // for 2 Byte Word
       lssproto.escapework[c++] = a[i++];
       lssproto.escapework[c++] = a[i];
     } else if (a[i] == '\\') {
-      if (a[i + 1] == 0) { /* null */
+      if (a[i + 1] == 0) {
         lssproto.escapework[c++] = a[i];
         continue;
       }
-      if (a[i + 1] == 'S') { /* space */
+      if (a[i + 1] == 'S') {
         lssproto.escapework[c++] = ' ';
       } else if (a[i + 1] == 'n') {
         lssproto.escapework[c++] = '\n';
@@ -361,14 +122,214 @@ char *lssproto_descapeString(char *a) {
   }
   return lssproto.escapework;
 }
-/*
-   This function works only when char*src is escaped
-   NOTICE: Effects and Modifies the contents of char*src!
-   NOTICE : Ends the output token list with NULL pointer
-Ex:
-        v out[0]       v out[1]
-  "     asdjfhasfdasdf asdf asf asdf "
- */
+
+char *mkstr_int(int i) {
+#define MKSTR_INT(v) proto_ltoa((long)(v))
+  proto_strcpysafe(lssproto.val_str, (char *)MKSTR_INT(i), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
+}
+char *mkstr_u_int(unsigned int i) {
+#define MKSTR_U_INT(v) proto_utoa((unsigned long)(v))
+  proto_strcpysafe(lssproto.val_str, MKSTR_U_INT(i), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
+}
+char *mkstr_long(long l) {
+#define MKSTR_LONG(v) proto_ltoa(v)
+  proto_strcpysafe(lssproto.val_str, MKSTR_LONG(l), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
+}
+char *mkstr_u_long(unsigned long l) {
+#define MKSTR_U_LONG(v) proto_utoa(v)
+  proto_strcpysafe(lssproto.val_str, MKSTR_U_LONG(l), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
+}
+char *mkstr_short(short s) {
+#define MKSTR_SHORT(v) proto_ltoa((long)(v))
+  proto_strcpysafe(lssproto.val_str, MKSTR_SHORT(s), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
+}
+char *mkstr_u_short(unsigned short s) {
+#define MKSTR_U_SHORT(v) proto_utoa((unsigned long)(v)&0xFFFF)
+  proto_strcpysafe(lssproto.val_str, MKSTR_U_SHORT(s), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
+}
+char *mkstr_char(char c) {
+#define MKSTR_CHAR(v) proto_ltoa((long)(v))
+  proto_strcpysafe(lssproto.val_str, MKSTR_CHAR(c), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
+}
+char *mkstr_u_char(unsigned char c) {
+#define MKSTR_U_CHAR(v) proto_utoa((unsigned long)(v)&0xFF)
+  proto_strcpysafe(lssproto.val_str, MKSTR_U_CHAR(c), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
+}
+char *mkstr_string(char *a) {
+  char *ret = lssproto_escapeString(a);
+  proto_strcatsafe(ret, " ", lssproto.workbufsize);
+  return ret;
+}
+char *mkstr_float(float f) {
+  sprintf(lssproto.val_str, "%f ", f);
+  return lssproto.val_str;
+}
+char *mkstr_double(double d) {
+  sprintf(lssproto.val_str, "%f ", d);
+  return lssproto.val_str;
+}
+
+#define MKSTR_ARRAY_MACRO(func)                                                \
+  {                                                                            \
+    int i;                                                                     \
+    lssproto.arraywork[0] = '\0';                                                 \
+    for (i = 0; i < size; i++) {                                               \
+      proto_strcatsafe(lssproto.arraywork, func(array[i]), lssproto.workbufsize);    \
+    }                                                                          \
+    return lssproto.arraywork;                                                    \
+  }
+
+char *mkstr_int_array(int size, int *array) { MKSTR_ARRAY_MACRO(mkstr_int); }
+char *mkstr_u_int_array(int size, unsigned int *array) {
+  MKSTR_ARRAY_MACRO(mkstr_u_int);
+}
+char *mkstr_short_array(int size, short *array) {
+  MKSTR_ARRAY_MACRO(mkstr_short);
+}
+char *mkstr_u_short_array(int size, unsigned short *array) {
+  MKSTR_ARRAY_MACRO(mkstr_u_short);
+}
+char *mkstr_char_array(int size, char *array) { MKSTR_ARRAY_MACRO(mkstr_char); }
+char *mkstr_u_char_array(int size, unsigned char *array) {
+  MKSTR_ARRAY_MACRO(mkstr_u_char);
+}
+char *mkstr_float_array(int size, float *array) {
+  MKSTR_ARRAY_MACRO(mkstr_float);
+}
+char *mkstr_double_array(int size, double *array) {
+  MKSTR_ARRAY_MACRO(mkstr_double);
+}
+int demkstr_int(char *a) {
+  if (a == (char *)NULL)
+    return 0;
+  return cnv62to10(a);
+}
+unsigned int demkstr_u_int(char *a) {
+  if (a == (char *)NULL)
+    return 0;
+  return (unsigned int)strtoul(a, NULL, 10);
+}
+long demkstr_long(char *a) {
+  if (a == (char *)NULL)
+    return 0;
+  return (long)strtol(a, NULL, 10);
+}
+unsigned long demkstr_u_long(char *a) {
+  if (a == (char *)NULL)
+    return 0;
+  return (unsigned long)strtoul(a, NULL, 10);
+}
+short demkstr_short(char *a) {
+  if (a == (char *)NULL)
+    return 0;
+  return (short)strtol(a, NULL, 10);
+}
+unsigned short demkstr_u_short(char *a) {
+  if (a == (char *)NULL)
+    return 0;
+  return (unsigned short)strtoul(a, NULL, 10);
+}
+char demkstr_char(const char *a) {
+  if (a == NULL)
+    return 0;
+  return (char)strtol(a, NULL, 10);
+}
+unsigned char demkstr_u_char(const unsigned char *a) {
+  if (a == NULL)
+    return 0;
+  return (unsigned char)strtoul(a, NULL, 10);
+}
+float demkstr_float(char *a) {
+  if (a == (char *)NULL)
+    return 0.0F;
+  return (float)atof(a);
+}
+double demkstr_double(char *a) {
+  if (a == (char *)NULL)
+    return 0.0F;
+  return (double)strtod(a, NULL);
+}
+char *demkstr_string(char *a) {
+  if (a == (char *)NULL) {
+    proto_strcpysafe(lssproto.escapework, "", lssproto.workbufsize);
+    return lssproto.escapework;
+  }
+  return lssproto_descapeString(a);
+}
+#define DEMKSTR_ARRAY_MACRO(func, defaultvalue)                                \
+  {                                                                            \
+    int i;                                                                     \
+    for (i = start; i < (start + size); i++) {                                 \
+      if (tk[i] == NULL) {                                                     \
+        buf[i - start] = defaultvalue;                                         \
+      } else {                                                                 \
+        buf[i - start] = func(tk[i]);                                          \
+      }                                                                        \
+    }                                                                          \
+    return buf;                                                                \
+  }
+int *demkstr_int_array(char **tk, int *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_int, 0);
+}
+int *demkstr_u_int_array(char **tk, int *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_u_int, 0);
+}
+unsigned int *demkstr_long_array(char **tk, unsigned int *buf, int start,
+                                 int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_long, 0);
+}
+unsigned long *demkstr_u_long_array(char **tk, unsigned long *buf, int start,
+                                    int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_u_long, 0);
+}
+short *demkstr_short_array(char **tk, short *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_short, 0);
+}
+unsigned short *demkstr_u_short_array(char **tk, unsigned short *buf, int start,
+                                      int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_u_short, 0);
+}
+char *demkstr_char_array(char **tk, char *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_u_char, 0);
+}
+unsigned char *demkstr_u_char_array(char **tk, unsigned char *buf, int start,
+                                    int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_u_char, 0);
+}
+float *demkstr_float_array(char **tk, float *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_float, (float)0.0);
+}
+double *demkstr_u_double_array(char **tk, double *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(demkstr_double, (double)0.0);
+}
+
+void lssproto_GetMessageInfo(int *id, char *funcname, int len, char **tk) {
+  if (tk[0] == NULL || tk[1] == NULL) {
+    *id = 0;
+    proto_strcpysafe(funcname, "", len);
+    return;
+  }
+  *id = strtoul(tk[0], NULL, 10);
+  proto_strcpysafe(funcname, tk[1], len);
+  return;
+}
+
 #ifdef lssproto__ENCRYPT
 static void lssproto_decodeString(char *src, char *out);
 static void lssproto_encodeString(char *src, char *out, int maxoutlen);
@@ -376,14 +337,12 @@ static void lssproto_encodeString(char *src, char *out, int maxoutlen);
 void lssproto_splitString(char *src) {
   int i, c = 0;
   char *decoded;
-
 #ifdef lssproto__ENCRYPT
   decoded = lssproto.cryptwork;
   lssproto_decodeString(src, decoded);
 #else
   decoded = src;
 #endif
-
   if (lssproto_readlogfilename[0] != '\0') {
     FILE *rfp;
     rfp = fopen(lssproto_readlogfilename, "a+");
@@ -446,12 +405,9 @@ void lssproto_copyLine(char *src, char *out, int outlen) {
     if (src[i] == '\0')
       return;
   }
-  lssproto_strcpysafe(out, "", outlen);
+  proto_strcpysafe(out, "", outlen);
 }
 unsigned int lssproto_GetNewMessageID(void) { return lssproto.message_id++; }
-/*****************
-  WRITE int flg : if 1, actually write. Otherwise no Network access
-*****************/
 void lssproto_DebugSend(int fd, char *msg) { lssproto_Send(fd, msg); }
 void lssproto_Send(int fd, char *msg) {
   char *encoded;
@@ -490,9 +446,8 @@ void lssproto_CreateHeader(char *out, char *fname) {
 void lssproto_CreateHeaderID(char *out, unsigned long msgid, char *fname) {
   sprintf(out, "%u %s ", (unsigned int)msgid, fname);
 }
-
 char *lssproto_wrapStringAddr(char *copy, int maxcopylen, char *src) {
-  lssproto_strcpysafe(copy, src, maxcopylen);
+  proto_strcpysafe(copy, src, maxcopylen);
   return copy;
 }
 
@@ -528,12 +483,10 @@ static void lssproto_encodeString(char *src, char *out, int maxoutlen) {
     compressed_l =
         lssproto_ringoCompressor((unsigned char *)lssproto.compresswork + 1,
                                  (long)lssproto.workbufsize * 3 - 1,
-                                 (unsigned char *)src, (long)strlen(src)) +
-        1; /* be careful! */
+                                 (unsigned char *)src, (long)strlen(src)) + 1;
   }
-  /* return empty line if error or buffer excess */
   if (compressed_l <= 0) {
-    lssproto_strcpysafe(out, "\n", maxoutlen);
+    proto_strcpysafe(out, "\n", maxoutlen);
     return;
   }
   memcpy(lssproto.jencodecopy, lssproto.compresswork, compressed_l);
@@ -1043,9 +996,7 @@ int lssproto_modifymask_second[8][9] = {
     {0, B00000000, B00000001, B00000011, B00000111, B00001111, B00011111,
      B00111111, B01111111}, /* mod 7 */
 };
-/*
- * used by bitstream routines
- */
+
 int bitstream_maxbyte, bitstream_bitaddr;
 char *bitstream_buf;
 /* initialize bitstream for output */
@@ -1086,10 +1037,7 @@ static unsigned int readInputBitStreamBody(int bwidth) {
     return 0;
   }
 }
-/*
- *  read from bit stream. used from 1 bit to 32 bits
- *
- */
+/* read from bit stream. used from 1 bit to 32 bits */
 static unsigned int readInputBitStream(int bwidth) {
   if (bwidth <= 0) {
     return 0;
@@ -1113,22 +1061,16 @@ static unsigned int readInputBitStream(int bwidth) {
   }
   return 0;
 }
-/*
- * write to a bitstream. only used from 1 bit to 8 bits
- * this is a base routine.
- */
+/* write to a bitstream. only used from 1 bit to 8 bits this is a base routine. */
 static int writeOutputBitStreamBody(int bwidth, unsigned char b) {
   int mod = bitstream_bitaddr % 8;
   int byteaddr = bitstream_bitaddr / 8;
-  /* return error if excess */
   if (bitstream_maxbyte <= (byteaddr + 1))
     return -1;
   bitstream_buf[byteaddr] &= lssproto_modifymask_first[mod][bwidth];
-  bitstream_buf[byteaddr] |=
-      (b << mod) & lssproto_modifymask_first[mod][bwidth];
+  bitstream_buf[byteaddr] |= (b << mod) & lssproto_modifymask_first[mod][bwidth];
   bitstream_buf[byteaddr + 1] &= lssproto_modifymask_second[mod][bwidth];
-  bitstream_buf[byteaddr + 1] |=
-      (b >> (8 - mod)) & lssproto_modifymask_second[mod][bwidth];
+  bitstream_buf[byteaddr + 1] |= (b >> (8 - mod)) & lssproto_modifymask_second[mod][bwidth];
   bitstream_bitaddr += bwidth;
   return byteaddr + 1;
 }
@@ -1192,8 +1134,7 @@ long lssproto_ringoCompressor(unsigned char *code, long codelen,
   if (textlen <= 0)
     return -1;
   initOutputBitStream((char *)code, codelen);
-  /* fill characters ( 0 ~ 255 ) in the beggining part of
-     Node list */
+  /* fill characters ( 0 ~ 255 ) in the beggining part of Node list */
   for (i = 0; i <= CHAR_SIZE; i++) {
     node[i].chr = (unsigned char)i;
     node[i].brother = i + 1;
@@ -1221,7 +1162,6 @@ long lssproto_ringoCompressor(unsigned char *code, long codelen,
       rv = node[rv].brother;
     }
     if (rv > 0) {
-      /* found it */
       w = rv;
     } else {
       position = writeOutputBitStream(BITS_LEN, w);

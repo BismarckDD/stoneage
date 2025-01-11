@@ -44,25 +44,25 @@ static unsigned char PADDING[64] = {
 
 #define FF(a, b, c, d, x, s, ac)                                               \
   {                                                                            \
-    (a) += F((b), (c), (d)) + (x) + (unsigned)(ac);                               \
+    (a) += F((b), (c), (d)) + (x) + (unsigned)(ac);                            \
     (a) = ROTATE_LEFT((a), (s));                                               \
     (a) += (b);                                                                \
   }
 #define GG(a, b, c, d, x, s, ac)                                               \
   {                                                                            \
-    (a) += G((b), (c), (d)) + (x) + (unsigned)(ac);                               \
+    (a) += G((b), (c), (d)) + (x) + (unsigned)(ac);                            \
     (a) = ROTATE_LEFT((a), (s));                                               \
     (a) += (b);                                                                \
   }
 #define HH(a, b, c, d, x, s, ac)                                               \
   {                                                                            \
-    (a) += H((b), (c), (d)) + (x) + (unsigned)(ac);                               \
+    (a) += H((b), (c), (d)) + (x) + (unsigned)(ac);                            \
     (a) = ROTATE_LEFT((a), (s));                                               \
     (a) += (b);                                                                \
   }
 #define II(a, b, c, d, x, s, ac)                                               \
   {                                                                            \
-    (a) += I((b), (c), (d)) + (x) + (unsigned)(ac);                               \
+    (a) += I((b), (c), (d)) + (x) + (unsigned)(ac);                            \
     (a) = ROTATE_LEFT((a), (s));                                               \
     (a) += (b);                                                                \
   }
@@ -82,7 +82,8 @@ inline void Decode(unsigned *output, unsigned char *input, unsigned len) {
 
   for (i = 0, j = 0; j < len; i++, j += 4)
     output[i] = ((unsigned)input[j]) | (((unsigned)input[j + 1]) << 8) |
-                (((unsigned)input[j + 2]) << 16) | (((unsigned)input[j + 3]) << 24);
+                (((unsigned)input[j + 2]) << 16) |
+                (((unsigned)input[j + 3]) << 24);
 }
 
 inline void MD5Transform(unsigned state[4], unsigned char block[64]) {
@@ -171,7 +172,8 @@ inline void MD5Update(MD5_CTX *context, unsigned char *input,
                       unsigned inputLen) {
   unsigned i, index, partLen;
   index = (unsigned)((context->count[0] >> 3) & 0x3F);
-  if ((context->count[0] += ((unsigned)inputLen << 3)) < ((unsigned)inputLen << 3))
+  if ((context->count[0] += ((unsigned)inputLen << 3)) <
+      ((unsigned)inputLen << 3))
     context->count[1]++;
   context->count[1] += ((unsigned)inputLen >> 29);
 

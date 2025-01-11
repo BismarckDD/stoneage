@@ -1,14 +1,7 @@
 #include "version.h"
 #include <sys/stat.h>
-
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
 #include <dirent.h>
-
 #include "handletime.h"
-
-#include "common.h"
 #include "object.h"
 #include "char_base.h"
 #include "char.h"
@@ -35,7 +28,7 @@ BOOL initObjectArray( int num )
         memset( &obj[i], 0 , sizeof( Object ));
         obj[i].type = OBJTYPE_NOUSE;
     }
-    print( "·ÖÅä %.2f MB MB ¿Õ¼ä...", sizeof( Object ) * objnum / 1024.0 / 1024.0 );
+    print("Allocate %.2f MB memory...", sizeof( Object ) * objnum / 1024.0 / 1024.0 );
     return TRUE;
 }
 
@@ -66,7 +59,7 @@ INLINE int _initObjectOne( char *file, int line, Object* ob )
                 return i;
             }else{
                 allocobjnum = ( i+1 >= objnum) ? 0:i+1;
-                fprint( "%d µØÍ¼²»´æÔÚ\n",ob->floor );
+                fprint( "%d ï¿½ï¿½Í¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n",ob->floor );
                 return -1;
             }
         }else {
@@ -183,10 +176,10 @@ INLINE int OBJECT_setTime( int index, int newvalue )
 
 
 /*------------------------------------------------------------
- * index Ã«  ÔÂ
- * Â¦ÐÑ
- *  index      int     ÄÌ¼þ·¸ÓÀÛÍµ©
- * ß¯Ô»°À
+ * index Ã«  ï¿½ï¿½
+ * Â¦ï¿½ï¿½
+ *  index      int     ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+ * ß¯Ô»ï¿½ï¿½
  *  int
  ------------------------------------------------------------*/
 INLINE int OBJECT_getIndex( int index )
@@ -194,12 +187,12 @@ INLINE int OBJECT_getIndex( int index )
     return obj[index].index;
 }
 /*------------------------------------------------------------
- * y Ã«É¬ÀÃÔÊÔÂ
- * Â¦ÐÑ
- *  index      int     ÄÌ¼þ·¸ÓÀÛÍµ©
- *  newvalue    int     Þ¥ØÆÖÐ°À
- * ß¯Ô»°À
- *  int éÉ¼°°À
+ * y Ã«É¬ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ * Â¦ï¿½ï¿½
+ *  index      int     ï¿½Ì¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½
+ *  newvalue    int     Þ¥ï¿½ï¿½ï¿½Ð°ï¿½
+ * ß¯Ô»ï¿½ï¿½
+ *  int ï¿½É¼ï¿½ï¿½ï¿½
  ------------------------------------------------------------*/
 INLINE int OBJECT_setIndex( int index, int newvalue )
 {
@@ -211,10 +204,10 @@ INLINE int OBJECT_setIndex( int index, int newvalue )
 
 
 /*------------------------------------------------------------
- * ×óÆ¤³âÄáÛÍÐþ¼°    ÐÑÃ«·Æ»§ÔÂ
- * Â¦ÐÑ
- *  Ø¦ØÆ
- * ß¯Ô»°À
+ * ï¿½ï¿½Æ¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½    ï¿½ï¿½Ã«ï¿½Æ»ï¿½ï¿½ï¿½
+ * Â¦ï¿½ï¿½
+ *  Ø¦ï¿½ï¿½
+ * ß¯Ô»ï¿½ï¿½
  *  int
  ------------------------------------------------------------*/
 INLINE int OBJECT_getNum( void )
@@ -223,17 +216,17 @@ INLINE int OBJECT_getNum( void )
 }
 
 /*------------------------------------------------------------
- *  ×óÆ¤³âÄáÛÍÐþÑáÕ°  ¼°¶ª¼þÌïÃ«òå  Â¦ÐÑ±å  ÔÈ»¯
- *  ×óÆ¤³âÄáÛÍÐþÑáÕ°  Ã«×ÛÔ»ÇëØÆ»¯£ýè¶  ÔÊÔÂ£Û
+ *  ï¿½ï¿½Æ¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ°  ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ã«ï¿½ï¿½  Â¦ï¿½Ñ±ï¿½  ï¿½È»ï¿½
+ *  ï¿½ï¿½Æ¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Õ°  Ã«ï¿½ï¿½Ô»ï¿½ï¿½ï¿½Æ»ï¿½ï¿½ï¿½ï¿½  ï¿½ï¿½ï¿½Â£ï¿½
  *
- * Â¦ÐÑ
- *  type    OBJTYPE     ×óÆ¤³âÄáÛÍÐþ¼°ÕýÄÌÃó
- *  index   int         ¹«Ä¾ÈßÄ¾¼°    Æ¥¼°index
- *  x       int         xÕç
- *  y       int         yÕç
+ * Â¦ï¿½ï¿½
+ *  type    OBJTYPE     ï¿½ï¿½Æ¤ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+ *  index   int         ï¿½ï¿½Ä¾ï¿½ï¿½Ä¾ï¿½ï¿½    Æ¥ï¿½ï¿½index
+ *  x       int         xï¿½ï¿½
+ *  y       int         yï¿½ï¿½
  *  floor   int         floorid
- * ß¯Ô»°À
- *   int  à«Ô»ñ²»¯Ä¾Ð×index, ÁÃ  ¼°ÁÝ·´£ý -1
+ * ß¯Ô»ï¿½ï¿½
+ *   int  ï¿½Ô»ñ²»¯Ä¾ï¿½ï¿½index, ï¿½ï¿½  ï¿½ï¿½ï¿½Ý·ï¿½ï¿½ï¿½ -1
  ------------------------------------------------------------*/
 int initObjectFromObjectMember(
     OBJTYPE type, int index, int x, int y , int floor )
@@ -257,11 +250,10 @@ int searchObjectFromCharaIndex( int index )
     return -1;
 }
 
-#define ITEMGOLDSTOREFILENAME   "itemgold"
-
-#define STOREITEMID         "ITEM"
-#define STOREGOLDID         "GOLD"
-#define	STORECHARID			"CHAR"
+#define ITEMGOLDSTOREFILENAME "itemgold"
+#define STOREITEMID "ITEM"
+#define STOREGOLDID "GOLD"
+#define	STORECHARID "CHAR"
 
 #ifdef _PET_ITEM
 static BOOL checkObjectStoreFile( char* line, Object* one, char** stringstart)
@@ -269,7 +261,6 @@ static BOOL checkObjectStoreFile( char* line, Object* one, char** stringstart)
     char    token[16];
     int     ret;
     int     i;
-
     ret = getStringFromIndexWithDelim(line,"|" ,1 , token, sizeof( token ) );
     if( ret == FALSE )return FALSE;
     if( strcmp( token , STOREITEMID ) == 0 )
@@ -316,16 +307,15 @@ BOOL storeObjects( char* dirname )
 	}else{
     	snprintf( igfilename ,sizeof( igfilename ) ,"%s/%s_extra" ,dirname ,
               ITEMGOLDSTOREFILENAME );
-
-                print( "\n---- Êý¾Ý±£´æÖÐ£¬Çë±ð¹Ø±ÕGMSV ----- \n");
+                print( "\n---- ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½Ð£ï¿½ï¿½ï¿½ï¿½Ø±ï¿½GMSV ----- \n");
 	}
     igfile = fopen( igfilename , "w" );
     if( igfile == NULL ){
-        print( "\n\n---- ²»ÄÜ´ò¿ª (%s) ±¸·ÝÎïÆ·ÎÄ¼þ. ----- \n\n", igfilename );
+        print( "\n\n---- ï¿½ï¿½ï¿½Ü´ï¿½ (%s) ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æ·ï¿½Ä¼ï¿½. ----- \n\n", igfilename );
     	return FALSE;
     }
 
-    print( "ÔÚÏßÊý¾Ý±£´æ...");
+    print( "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½...");
     for( i = 0 ; i < objnum ; i ++ ){
         switch( obj[i].type ){
         case OBJTYPE_ITEM:
@@ -358,9 +348,8 @@ BOOL storeObjects( char* dirname )
         }
     }
     fclose( igfile );
-    print( "Íê³É\n");
-//		system( "./itemda.pl" );
-    print( "Êý¾Ý±£´æ½áÊø\n");
+    print( "ï¿½ï¿½ï¿½\n");
+    print( "ï¿½ï¿½ï¿½Ý±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½\n");
     return TRUE;
 }
 #endif
@@ -437,7 +426,7 @@ BOOL restoreObjects( char* dirname )
 					  int objindex;
 				    int petindex = PET_initCharOneArray( &ch );
 				    if( petindex < 0 ) {
-				     	print( "³èÎïÖÆ×÷Ê§°Ü¡£\n");
+				     	print( "ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ê§ï¿½Ü¡ï¿½\n");
 				    }
 					  object.type = OBJTYPE_CHARA;
 					  object.index = petindex;
@@ -464,7 +453,7 @@ BOOL restoreObjects( char* dirname )
 }
 #endif
 #ifdef _MO_LNS_MAPSUOXU
-INLINE int get_mappointindex( int fl,int x, int y)//ÕÒ³öµØÍ¼´«ËÍµãË÷Òý
+INLINE int get_mappointindex( int fl,int x, int y)
 {
 	int i;
 	for(i=0;i<objnum;i++)
