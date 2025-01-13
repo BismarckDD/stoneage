@@ -23,7 +23,6 @@
 #ifdef _ALLDOMAN // (���ɿ�) Syu ADD ���а�NPC
 #include "npc_alldoman.h"
 #endif
-#include "copyright.h"
 
 time_t initTime = 0;
 
@@ -38,10 +37,10 @@ extern struct MissionTable missiontable[MAXMISSIONTABLE];
 void saacproto_ACGmsvDownRequest_recv(int fd, int min) {
   char buff[32];
   int i;
-  int playernum = CHAR_getPlayerMaxNum();
+  int player_max_num = CHAR_getPlayerMaxNum();
 
   snprintf(buff, sizeof(buff), "%s���档", getGameservername());
-  for (i = 0; i < playernum; i++) {
+  for (i = 0; i < player_max_num; i++) {
     if (CHAR_getCharUse(i) != FALSE) {
       CHAR_talkToCli(i, -1, buff, CHAR_COLORYELLOW);
     }
@@ -75,7 +74,7 @@ void saacproto_ACServerLogin_recv(int fd, char *result, char *data) {
 #ifdef _SERVER_NUMS
     print("Enable Server Nums!\n");
 #endif
-    print("StoneAge version: <%s>.\n", SERVER_VERSION);
+    print("StoneAge version: Origin.\n");
     print("Visit Us: http://github.com\n");
     print("@Copyright Michael Franklin.\n");
     print("Start to init family......");
@@ -91,7 +90,6 @@ void saacproto_ACServerLogin_recv(int fd, char *result, char *data) {
 
 void saacproto_ACCharList_recv(int fd, char *result, char *data, int retfd) {
   int clifd = getfdFromFdid(retfd);
-
   if (CONNECT_checkfd(clifd) == FALSE)
     return;
 #ifdef _ALLBLUES_LUA_1_9
@@ -105,22 +103,22 @@ void saacproto_ACCharList_recv(int fd, char *result, char *data, int retfd) {
   CONNECT_setState(clifd, NOTLOGIN);
 }
 
-void saacproto_ACCharLoad_recv(int fd, char *result, char *data, int retfd,
-                               int saveindex) {
-  int clifd = getfdFromFdid(retfd);
-  if (CONNECT_checkfd(clifd) == FALSE)
+void saacproto_ACCharLoad_recv(int fd, char *result, char *data, int ret_fd,
+                               int save_index) {
+  const int client_fd = getfdFromFdid(ret_fd);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if ((strcmp(result, SUCCESSFUL) == 0) && (data[0])) {
-    CHAR_login(clifd, data, saveindex);
+    CHAR_login(client_fd, data, save_index);
   } else {
     char cdkey[64];
 #ifndef _FIX_MESSAGE
     data = "";
 #endif
-    CONNECT_getCdkey(clifd, cdkey, sizeof(cdkey));
+    CONNECT_getCdkey(client_fd, cdkey, sizeof(cdkey));
     print(" (%s)ACCharLoad:%s ", cdkey, data);
-    lssproto_CharLogin_send(clifd, result, data);
-    CONNECT_setState(clifd, NOTLOGIN);
+    lssproto_CharLogin_send(client_fd, result, data);
+    CONNECT_setState(client_fd, NOTLOGIN);
   }
 }
 
@@ -147,11 +145,9 @@ void saacproto_ACCharSave_recv(int fd, char *result, char *data, int retfd) {
     if (strcmp(result, SUCCESSFUL) == 0)
       lssproto_CharLogout_send(clifd, result, "success");
     else
-      /* �޷¡�֧����������   */
       lssproto_CharLogout_send(clifd, result, "Cannot save");
     CONNECT_setState(clifd, NOTLOGIN);
     CONNECT_setCharaindex(clifd, -1);
-    // CONNECT_setCloseRequest( clifd , 1 );
     break;
 
   case WHILELOSTCHARSAVE:
@@ -186,22 +182,19 @@ void saacproto_ACCharDelete_recv(int fd, char *result, char *data, int retfd) {
   int clifd = getfdFromFdid(retfd);
   if (CONNECT_checkfd(clifd) == FALSE)
     return;
-
   switch (CONNECT_getState(clifd)) {
   case WHILELOSTCHARDELETE:
-    /*  ������ئ��  */
     CONNECT_setState(clifd, NOTLOGIN);
     CONNECT_setCharaindex(clifd, -1);
-    // CONNECT_setCloseRequest( clifd , 1 );
+    // CONNECT_setCloseRequest(clifd, 1);
     break;
   case WHILECHARDELETE:
-    /*  ��������˪��  */
     if (strcmp(result, FAILED) == 0)
       data = "";
     lssproto_CharDelete_send(clifd, result, data);
     CONNECT_setState(clifd, NOTLOGIN);
     CONNECT_setCharaindex(clifd, -1);
-    // CONNECT_setCloseRequest( clifd , 1 );
+    // CONNECT_setCloseRequest(clifd, 1);
     break;
   default:
     break;
@@ -212,10 +205,8 @@ void saacproto_ACLock_recv(int fd, char *result, char *data, int retfd) {
   int clifd = getfdFromFdid(retfd);
   char cdkey[CDKEYLEN];
   int cindex = getCharindexFromFdid(retfd);
-
   if (CONNECT_checkfd(clifd) == FALSE)
     return;
-
   // Arminius 7.25 GM unlock test
   if (strncmp(data, "USRLOCKED", 9) == 0) {
     char buf[4096];
@@ -235,7 +226,6 @@ void saacproto_ACLock_recv(int fd, char *result, char *data, int retfd) {
     CHAR_talkToCli(cindex, -1, "Server unlocked", CHAR_COLORYELLOW);
     return;
   }
-
   CONNECT_getCdkey(clifd, cdkey, sizeof(cdkey));
 
   switch (CONNECT_getState(clifd)) {
@@ -247,8 +237,6 @@ void saacproto_ACLock_recv(int fd, char *result, char *data, int retfd) {
       char mesg[128];
       snprintf(mesg, sizeof(mesg), "%s hasn't been locked", cdkey);
       if (strcmp(data, mesg) == 0) {
-        /*
-         */
         CONNECT_setState(clifd, NOTLOGIN);
       } else {
         saacproto_ACLock_send(fd, cdkey, UNLOCK, CONNECT_getFdid(clifd));
@@ -308,8 +296,7 @@ void saacproto_DBDeleteEntryInt_recv(int fd, char *result, char *table,
     return;
   }
 }
-/* ---------------------------------------------
- * --------------------------------------------*/
+
 void saacproto_DBDeleteEntryString_recv(int fd, char *result, char *table,
                                         char *key, int msgid, int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
@@ -318,8 +305,6 @@ void saacproto_DBDeleteEntryString_recv(int fd, char *result, char *table,
   }
 }
 
-/* ---------------------------------------------
- * --------------------------------------------*/
 void saacproto_DBGetEntryInt_recv(int fd, char *result, int value, char *table,
                                   char *key, int msgid, int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
@@ -327,8 +312,7 @@ void saacproto_DBGetEntryInt_recv(int fd, char *result, int value, char *table,
     return;
   }
 }
-/* ---------------------------------------------
- * --------------------------------------------*/
+
 void saacproto_DBGetEntryString_recv(int fd, char *result, char *value,
                                      char *table, char *key, int msgid,
                                      int msgid2) {
@@ -364,8 +348,7 @@ void saacproto_DBGetEntryByRank_recv(int fd, char *result, char *list,
     return;
   }
 }
-/* ---------------------------------------------
- * --------------------------------------------*/
+
 void saacproto_DBGetEntryByCount_recv(int fd, char *result, char *list,
                                       char *table, int count_start, int msgid,
                                       int msgid2) {
@@ -384,49 +367,53 @@ void saacproto_UpdataStele_recv(int fd, char *token) {
 void saacproto_S_UpdataStele_recv(int i, char *ocdkey, char *oname,
                                   char *ncdkey, char *nname, char *title,
                                   int level, int trns, int floor) {
-  print("\nSyu log �յ�Single=> %s , %s , %s , %s ", ocdkey, oname, ncdkey,
+  print("\nSyu log Single=> %s , %s , %s , %s ", ocdkey, oname, ncdkey,
         nname);
   NPC_Alldoman_S_WriteStele(ocdkey, oname, ncdkey, nname, title, level, trns,
                             floor);
 }
 #endif
 
-void saacproto_Broadcast_recv(int fd, char *id, char *charname, char *message) {
+/* */
+void saacproto_Broadcast_recv(const int fd, const char *char_id, const char *char_name, const char *message) {
 
   if (strstr(message, "online") == 0 || strstr(message, "offline") == 0 ||
       strstr(message, "param") == 0 || strstr(message, "chardelete") == 0) {
-    char buff[512];
-    char escapebuf[1024];
-    snprintf(buff, sizeof(buff), "%s_%s", id, charname);
-    makeEscapeString(buff, escapebuf, sizeof(escapebuf));
-    saacproto_DBGetEntryString_send(acfd, DB_ADDRESSBOOK, escapebuf, 0, 0);
+    char info[512];
+    char escape_info[1024];
+    snprintf(info, sizeof(info), "%s_%s", char_id, char_name);
+    makeEscapeString(info, escape_info, sizeof(escape_info));
+    saacproto_DBGetEntryString_send(acfd, DB_ADDRESSBOOK, escape_info, 0, 0);
   }
 }
 
-void saacproto_Message_recv(int fd, char *id_from, char *charname_from,
-                            char *id_to, char *charname_to, char *message,
-                            int option, int mesgid) {
+/* */
+void saacproto_Message_recv(const int fd, const char *id_from, const char *char_name_from,
+                            const char *id_to, const char *char_name_to, const char *message,
+                            const int option, const int mesgid) {
   BOOL ret;
-  ret = ADDRESSBOOK_sendMessage_FromOther(id_from, charname_from, id_to,
-                                          charname_to, message, option);
+  ret = ADDRESSBOOK_sendMessage_FromOther(id_from, char_name_from, id_to,
+                                          char_name_to, message, option);
   if (ret == TRUE) {
-    saacproto_MessageAck_send(acfd, id_to, charname_to, "successful", mesgid);
+    saacproto_MessageAck_send(acfd, id_to, char_name_to, "successful", mesgid);
   }
 }
 
-void saacproto_ACAddFM_recv(int fd, char *result, int fmindex, int charfdid,
+/* 收到从客户端发送创建family的请求 */
+void saacproto_ACAddFM_recv(int fd, char *result, int family_index, int char_fdid,
                             int index) {
   int ret;
-  int clifd = getfdFromFdid(charfdid);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  const int client_fd = getfdFromFdid(char_fdid);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
   else
     ret = 0;
-  ACAddFM(clifd, ret, fmindex, index);
+  ACAddFM(client_fd, ret, family_index, index);
 }
 
+/* 收到从客户端发送加入family的请求 */
 void saacproto_ACJoinFM_recv(int fd, char *result, int recv, int charfdid) {
   int ret;
   int clifd = getfdFromFdid(charfdid);
@@ -438,6 +425,8 @@ void saacproto_ACJoinFM_recv(int fd, char *result, int recv, int charfdid) {
     ret = 0;
   ACJoinFM(clifd, ret, recv);
 }
+
+/* 收到从客户端发送离开family的请求 */
 void saacproto_ACLeaveFM_recv(int fd, char *result, int resultflag,
                               int charfdid) {
   int ret;
@@ -449,10 +438,13 @@ void saacproto_ACLeaveFM_recv(int fd, char *result, int resultflag,
   else
     ret = 0;
   ACLeaveFM(clifd, ret, resultflag);
-
-  print(" ACLeaveFM_%d ", ret);
+  print("ACLeaveFM_%d", ret);
 }
+
+/* */
 void saacproto_ACChangeFM_recv(int fd, char *result, int charfdid) {}
+
+/* 收到从客户端发送删除family的请求 */
 void saacproto_ACDelFM_recv(int fd, char *result, int charfdid) {
   int ret;
   int clifd = getfdFromFdid(charfdid);
@@ -479,8 +471,7 @@ void saacproto_ACShowMemberList_recv(int fd, char *result, int index,
                                      int fmmemnum, int fmacceptflag,
                                      int fmjoinnum, char *data
 #ifdef _FAMILYBADGE_
-                                     ,
-                                     int badge
+                                     , int badge
 #endif
 ) {
   int ret;
@@ -490,11 +481,11 @@ void saacproto_ACShowMemberList_recv(int fd, char *result, int index,
     ret = 0;
   ACShowMemberList(ret, index, fmmemnum, fmacceptflag, fmjoinnum, data
 #ifdef _FAMILYBADGE_
-                   ,
-                   badge
+                   , badge
 #endif
   );
 }
+
 void saacproto_ACFMDetail_recv(int fd, char *result, char *data, int charfdid) {
   int ret;
   int clifd = getfdFromFdid(charfdid);
@@ -591,9 +582,7 @@ void saacproto_ACFMAnnounce_recv(int fd, char *result, char *fmname,
   }
   ACFMAnnounce(ret, fmname, fmindex, index, kindflag, data, color);
 }
-// #ifdef _NEW_MANOR_LAW
-// extern void SortManorSchedule();
-// #endif
+
 void saacproto_ACShowTopFMList_recv(int fd, char *result, int kindflag, int num,
                                     char *data) {
   int ret;
@@ -602,9 +591,6 @@ void saacproto_ACShowTopFMList_recv(int fd, char *result, int kindflag, int num,
   else
     ret = 0;
   ACShowDpTop(ret, num, data, kindflag);
-  // #ifdef _NEW_MANOR_LAW
-  //	SortManorSchedule();
-  // #endif
 }
 #ifdef _NEW_MANOR_LAW
 extern struct FMS_DPTOP fmdptop;
@@ -670,11 +656,9 @@ void saacproto_ACFixFMData_recv(int fd, char *result, int kindflag, char *data1,
       strcpy(flag, "FOOD");
     sprintf(tmpbuf, "%s::%d %s %s", flag, CHAR_getInt(charaindex, CHAR_FMINDEX),
             CHAR_getChar(charaindex, CHAR_FMNAME), data1);
-    // print("ACFixFMData tmpbuf:%s\n", tmpbuf);
     LogFMPOP(tmpbuf);
 #ifdef _NEW_MANOR_LAW
     for (i = 0; i < FAMILY_MAXNUM; i++) {
-      // ��������
       if (fmdptop.fmtopid[i] == CHAR_getWorkInt(charaindex, CHAR_WORKFMINDEXI))
         break;
     }

@@ -9,7 +9,7 @@ typedef enum
     OBJTYPE_CHARA,      /*  平乓仿弁正 CHAR_chara尺及奶件犯永弁旦   */
     OBJTYPE_ITEM,       /*  失奶  丞    ITEM_item 尺及奶件犯永弁旦  */
     OBJTYPE_GOLD,       /*  打□伙玉    云嗯及汹互index卞  匀化中月 */
-#ifdef _MAP_WARPPOINT
+#ifdef __MAP_WARP_POINT
 	OBJTYPE_WARPPOINT,
 #endif
     OBJTYPE_NUM

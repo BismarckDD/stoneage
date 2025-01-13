@@ -1,35 +1,28 @@
-INCFLAGS=-I../../include -I../lua
-CFLAGS=-w -O3 -Wall -pipe $(INCFLAGS)
+INCFLAGS=-I../../include -I.. -I../lua
+CFLAGS=-m32 -w -O3 -Wall -pipe $(INCFLAGS)
 
-PROG=libmagic.a
+TARGET=libmagic.a
 SRC=magic.c magic_base.c magic_field.c
 OBJ=$(SRC:.c=.o)
 
 ifeq (0,$(MAKELEVEL))
-CC=gcc -m32
-RM=rm -f
-AR=ar cr
-MV=mv
-RANLIB=ranlib
-SED=sed
-SHELL=/bin/sh
+	CC=gcc
+	RM=rm -f
+	AR=ar cr
+	MV=mv
+	RANLIB=ranlib
 endif
 
-all: $(PROG)
+all: $(TARGET)
 
-$(PROG): $(OBJ)
-	$(RM) $(PROG)
-	$(AR) $(PROG) $(OBJ)
-	$(RANLIB) $(PROG)
+$(TARGET): $(OBJ)
+	$(RM) $(TARGET)
+	$(AR) $(TARGET) $(OBJ)
+	$(RANLIB) $(TARGET)
+	$(RM) $(OBJ)
 	
-depend:
-	$(MV) makefile makefile.bak
-	$(SED) -ne '1,/^# DO NOT DELETE THIS LINE/p' makefile.bak>makefile
-	$(CC) $(INCFLAGS) -M $(SRC) >> makefile 
-	chmod 777 makefile
-
 clean:
-	$(RM) $(PROG)
+	$(RM) $(TARGET)
 	$(RM) $(OBJ)
 	$(RM) *~
 

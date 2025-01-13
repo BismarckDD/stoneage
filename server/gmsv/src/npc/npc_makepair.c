@@ -1,5 +1,4 @@
 #include "version.h"
-#include <string.h>
 #include "char.h"
 #include "object.h"
 #include "char_base.h"

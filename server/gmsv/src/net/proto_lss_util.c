@@ -1,243 +1,283 @@
-#define __SAACPROTO_UTIL_C__
 #include "version.h"
-#include "saacproto_util.h"
-#include "util.h"
+#define __LSSPROTO_UTIL_C__
+#include "lssproto_util.h"
 
-#ifdef saacproto__ENCRYPT
-long saacproto_ringoCompressor(unsigned char *code, long codelen,
-                               unsigned char *text, long textlen);
-long saacproto_ringoDecompressor(unsigned char *text, long textlen,
-                                 unsigned char *code, long codelen);
+#ifdef lssproto__ENCRYPT
+long lssproto_ringoCompressor(unsigned char *code, long codelen,
+                              unsigned char *text, long textlen);
+long lssproto_ringoDecompressor(unsigned char *text, long textlen,
+                                unsigned char *code, long codelen);
 #endif
 
-int saacproto_AllocateCommonWork(int bufsiz) {
-  saacproto.workbufsize = bufsiz;
-  saacproto.work = NULL;
-  saacproto.arraywork = NULL;
-  saacproto.escapework = NULL;
-  saacproto.val_str = NULL;
-  saacproto.token_list = NULL;
-  saacproto.cryptwork = NULL;
-  saacproto.jencodecopy = NULL;
-  saacproto.jencodeout = NULL;
-  saacproto.compresswork = NULL;
-  saacproto.work = (char *)calloc(1, saacproto.workbufsize);
-  saacproto.arraywork = (char *)calloc(1, saacproto.workbufsize);
-  saacproto.escapework = (char *)calloc(1, saacproto.workbufsize);
-  saacproto.val_str = (char *)calloc(1, saacproto.workbufsize);
-  saacproto.token_list =
-      (char **)calloc(1, saacproto.workbufsize * sizeof(char **));
-  saacproto.cryptwork = (char *)calloc(1, saacproto.workbufsize * 3);
-  saacproto.jencodecopy = (char *)calloc(1, saacproto.workbufsize * 3);
-  saacproto.jencodeout = (char *)calloc(1, saacproto.workbufsize * 3);
-  saacproto.compresswork = (char *)calloc(1, saacproto.workbufsize * 3);
-  memset(saacproto.work, 0, saacproto.workbufsize);
-  memset(saacproto.arraywork, 0, saacproto.workbufsize);
-  memset(saacproto.escapework, 0, saacproto.workbufsize);
-  memset(saacproto.val_str, 0, saacproto.workbufsize);
-  memset((char *)saacproto.token_list, 0,
-         saacproto.workbufsize * sizeof(char **));
-  memset(saacproto.cryptwork, 0, saacproto.workbufsize * 3);
-  memset(saacproto.jencodecopy, 0, saacproto.workbufsize * 3);
-  memset(saacproto.jencodeout, 0, saacproto.workbufsize * 3);
-  memset(saacproto.compresswork, 0, saacproto.workbufsize * 3);
-  if (saacproto.work == NULL || saacproto.arraywork == NULL ||
-      saacproto.escapework == NULL || saacproto.val_str == NULL ||
-      saacproto.token_list == NULL || saacproto.cryptwork == NULL ||
-      saacproto.jencodecopy == NULL || saacproto.jencodeout == NULL ||
-      saacproto.compresswork == NULL) {
-    free(saacproto.work);
-    free(saacproto.val_str);
-    free(saacproto.escapework);
-    free(saacproto.arraywork);
-    free(saacproto.token_list);
-    free(saacproto.cryptwork);
-    free(saacproto.jencodecopy);
-    free(saacproto.jencodeout);
-    free(saacproto.compresswork);
+int lssproto_AllocateCommonWork(int bufsiz) {
+  lssproto.workbufsize = bufsiz;
+  lssproto.work = NULL;
+  lssproto.arraywork = NULL;
+  lssproto.escapework = NULL;
+  lssproto.val_str = NULL;
+  lssproto.token_list = NULL;
+  lssproto.cryptwork = NULL;
+  lssproto.jencodecopy = NULL;
+  lssproto.jencodeout = NULL;
+  lssproto.compresswork = NULL;
+  lssproto.work = (char *)calloc(1, lssproto.workbufsize);
+  lssproto.arraywork = (char *)calloc(1, lssproto.workbufsize);
+  lssproto.escapework = (char *)calloc(1, lssproto.workbufsize);
+  lssproto.val_str = (char *)calloc(1, lssproto.workbufsize);
+  lssproto.token_list =
+      (char **)calloc(1, lssproto.workbufsize * sizeof(char **));
+  lssproto.cryptwork = (char *)calloc(1, lssproto.workbufsize * 3);
+  lssproto.jencodecopy = (char *)calloc(1, lssproto.workbufsize * 3);
+  lssproto.jencodeout = (char *)calloc(1, lssproto.workbufsize * 3);
+  lssproto.compresswork = (char *)calloc(1, lssproto.workbufsize * 3);
+  memset(lssproto.work, 0, lssproto.workbufsize);
+  memset(lssproto.arraywork, 0, lssproto.workbufsize);
+  memset(lssproto.escapework, 0, lssproto.workbufsize);
+  memset(lssproto.val_str, 0, lssproto.workbufsize);
+  memset((char *)lssproto.token_list, 0,
+         lssproto.workbufsize * sizeof(char **));
+  memset(lssproto.cryptwork, 0, lssproto.workbufsize * 3);
+  memset(lssproto.jencodecopy, 0, lssproto.workbufsize * 3);
+  memset(lssproto.jencodeout, 0, lssproto.workbufsize * 3);
+  memset(lssproto.compresswork, 0, lssproto.workbufsize * 3);
+  if (lssproto.work == NULL || lssproto.arraywork == NULL ||
+      lssproto.escapework == NULL || lssproto.val_str == NULL ||
+      lssproto.token_list == NULL || lssproto.cryptwork == NULL ||
+      lssproto.jencodecopy == NULL || lssproto.jencodeout == NULL ||
+      lssproto.compresswork == NULL) {
+    free(lssproto.work);
+    free(lssproto.val_str);
+    free(lssproto.escapework);
+    free(lssproto.arraywork);
+    free(lssproto.token_list);
+    free(lssproto.cryptwork);
+    free(lssproto.jencodecopy);
+    free(lssproto.jencodeout);
+    free(lssproto.compresswork);
     return -1;
   }
   return 0;
 }
 
-int saacproto_StringRest() { return 0; }
-
-/* Get message information from a network input */
-void saacproto_GetMessageInfo(int *id, char *funcname, int len, char **tk) {
-  if (tk[0] == NULL || tk[1] == NULL) {
-    *id = 0;
-    proto_strcpysafe(funcname, "", len);
-    return;
+char *lssproto_escapeString(char *a) {
+  int i, c = 0;
+  lssproto.escapework[0] = '\0';
+  for (i = 0;; i++) {
+    if (a[i] == '\0') {
+      lssproto.escapework[c++] = '\0';
+      break;
+    } else if ((char)0x80 <= a[i] && a[i] <= (char)0xFF) {
+      // for 2 Byte Word
+      lssproto.escapework[c++] = a[i++];
+      lssproto.escapework[c++] = a[i];
+    } else if (a[i] == '\\') {
+      lssproto.escapework[c++] = '\\';
+      lssproto.escapework[c++] = '\\';
+    } else if (a[i] == ' ') {
+      lssproto.escapework[c++] = '\\';
+      lssproto.escapework[c++] = 'S';
+    } else if (a[i] == '\n') {
+      lssproto.escapework[c++] = '\\';
+      lssproto.escapework[c++] = 'n';
+    } else if (a[i] == '\r') {
+      lssproto.escapework[c++] = '\\';
+      lssproto.escapework[c++] = 'r';
+    } else {
+      lssproto.escapework[c++] = a[i];
+    }
   }
-  *id = strtoul(tk[0], NULL, 10);
-  proto_strcpysafe(funcname, tk[1], len);
-  return;
+  return lssproto.escapework;
 }
 
+char *lssproto_descapeString(char *a) {
+  int i, c = 0;
+  lssproto.escapework[0] = '\0';
+  for (i = 0;; i++) {
+    if (a[i] == '\0') {
+      lssproto.escapework[c++] = '\0';
+      break;
+    } else if ((char)0x80 <= a[i] && a[i] <= (char)0xFF) {
+      lssproto.escapework[c++] = a[i++];
+      lssproto.escapework[c++] = a[i];
+    } else if (a[i] == '\\') {
+      if (a[i + 1] == 0) {
+        lssproto.escapework[c++] = a[i];
+        continue;
+      }
+      if (a[i + 1] == 'S') {
+        lssproto.escapework[c++] = ' ';
+      } else if (a[i + 1] == 'n') {
+        lssproto.escapework[c++] = '\n';
+      } else if (a[i + 1] == 'r') {
+        lssproto.escapework[c++] = '\r';
+      } else if (a[i + 1] == '\\') {
+        lssproto.escapework[c++] = '\\';
+      } else {
+        lssproto.escapework[c++] = a[i];
+      }
+      i++;
+    } else {
+      lssproto.escapework[c++] = a[i];
+    }
+  }
+  return lssproto.escapework;
+}
 
-char *saacproto_mkstr_int(int i) {
+char *mkstr_int(TagProto *proto, int i) {
 #define MKSTR_INT(v) proto_ltoa((long)(v))
-  proto_strcpysafe(saacproto.val_str, (char *)MKSTR_INT(i),
-                       saacproto.workbufsize);
-  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
-  return saacproto.val_str;
+  proto_strcpysafe(proto->val_str, MKSTR_INT(i), proto->workbufsize);
+  proto_strcatsafe(proto->val_str, " ", proto->workbufsize);
+  return proto->val_str;
 }
-char *saacproto_mkstr_u_int(unsigned int i) {
+
+char *lssproto_mkstr_int(int i) {
+  return mkstr_int(&lssproto, i);
+}
+
+char *lssproto_mkstr_u_int(unsigned int i) {
 #define MKSTR_U_INT(v) proto_utoa((unsigned long)(v))
-  proto_strcpysafe(saacproto.val_str, MKSTR_U_INT(i),
-                       saacproto.workbufsize);
-  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
-  return saacproto.val_str;
+  proto_strcpysafe(lssproto.val_str, MKSTR_U_INT(i), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
 }
-char *saacproto_mkstr_long(long l) {
+char *lssproto_mkstr_long(long l) {
 #define MKSTR_LONG(v) proto_ltoa(v)
-  proto_strcpysafe(saacproto.val_str, MKSTR_LONG(l), saacproto.workbufsize);
-  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
-  return saacproto.val_str;
+  proto_strcpysafe(lssproto.val_str, MKSTR_LONG(l), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
 }
-char *saacproto_mkstr_u_long(unsigned long l) {
+char *lssproto_mkstr_u_long(unsigned long l) {
 #define MKSTR_U_LONG(v) proto_utoa(v)
-  proto_strcpysafe(saacproto.val_str, MKSTR_U_LONG(l),
-                       saacproto.workbufsize);
-  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
-  return saacproto.val_str;
+  proto_strcpysafe(lssproto.val_str, MKSTR_U_LONG(l), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
 }
-char *saacproto_mkstr_short(short s) {
+char *lssproto_mkstr_short(short s) {
 #define MKSTR_SHORT(v) proto_ltoa((long)(v))
-  proto_strcpysafe(saacproto.val_str, MKSTR_SHORT(s),
-                       saacproto.workbufsize);
-  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
-  return saacproto.val_str;
+  proto_strcpysafe(lssproto.val_str, MKSTR_SHORT(s), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
 }
-char *saacproto_mkstr_u_short(unsigned short s) {
+char *lssproto_mkstr_u_short(unsigned short s) {
 #define MKSTR_U_SHORT(v) proto_utoa((unsigned long)(v)&0xFFFF)
-  proto_strcpysafe(saacproto.val_str, MKSTR_U_SHORT(s),
-                       saacproto.workbufsize);
-  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
-  return saacproto.val_str;
+  proto_strcpysafe(lssproto.val_str, MKSTR_U_SHORT(s), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
 }
-char *saacproto_mkstr_char(char c) {
+char *lssproto_mkstr_char(char c) {
 #define MKSTR_CHAR(v) proto_ltoa((long)(v))
-  proto_strcpysafe(saacproto.val_str, MKSTR_CHAR(c), saacproto.workbufsize);
-  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
-  return saacproto.val_str;
+  proto_strcpysafe(lssproto.val_str, MKSTR_CHAR(c), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
 }
-char *saacproto_mkstr_u_char(unsigned char c) {
+char *lssproto_mkstr_u_char(unsigned char c) {
 #define MKSTR_U_CHAR(v) proto_utoa((unsigned long)(v)&0xFF)
-  proto_strcpysafe(saacproto.val_str, MKSTR_U_CHAR(c),
-                       saacproto.workbufsize);
-  proto_strcatsafe(saacproto.val_str, " ", saacproto.workbufsize);
-  return saacproto.val_str;
+  proto_strcpysafe(lssproto.val_str, MKSTR_U_CHAR(c), lssproto.workbufsize);
+  proto_strcatsafe(lssproto.val_str, " ", lssproto.workbufsize);
+  return lssproto.val_str;
 }
-char *saacproto_mkstr_string(char *a) {
-  char *ret = saacproto_escapeString(a);
-  proto_strcatsafe(ret, " ", saacproto.workbufsize);
+char *lssproto_mkstr_string(char *a) {
+  char *ret = lssproto_escapeString(a);
+  proto_strcatsafe(ret, " ", lssproto.workbufsize);
   return ret;
 }
-char *saacproto_mkstr_float(float f) {
-  sprintf(saacproto.val_str, "%f ", f);
-  return saacproto.val_str;
+char *lssproto_mkstr_float(float f) {
+  sprintf(lssproto.val_str, "%f ", f);
+  return lssproto.val_str;
 }
-char *saacproto_mkstr_double(double d) {
-  sprintf(saacproto.val_str, "%f ", d);
-  return saacproto.val_str;
+char *lssproto_mkstr_double(double d) {
+  sprintf(lssproto.val_str, "%f ", d);
+  return lssproto.val_str;
 }
-char *saacproto_mkstr_int_array(int size, int *array) {
-#define MKSTR_ARRAYMACRO(func)                                                 \
+
+#define MKSTR_ARRAY_MACRO(func)                                                \
   {                                                                            \
     int i;                                                                     \
-    saacproto.arraywork[0] = '\0';                                             \
+    lssproto.arraywork[0] = '\0';                                                 \
     for (i = 0; i < size; i++) {                                               \
-      proto_strcatsafe(saacproto.arraywork, func(array[i]),                \
-                           saacproto.workbufsize);                             \
+      proto_strcatsafe(lssproto.arraywork, func(array[i]), lssproto.workbufsize);    \
     }                                                                          \
-    return saacproto.arraywork;                                                \
+    return lssproto.arraywork;                                                    \
   }
 
-  MKSTR_ARRAYMACRO(saacproto_mkstr_int);
+char *lssproto_mkstr_int_array(int size, int *array) { MKSTR_ARRAY_MACRO(lssproto_mkstr_int); }
+char *lssproto_mkstr_u_int_array(int size, unsigned int *array) {
+  MKSTR_ARRAY_MACRO(lssproto_mkstr_u_int);
 }
-char *saacproto_mkstr_u_int_array(int size, unsigned int *array) {
-  MKSTR_ARRAYMACRO(saacproto_mkstr_u_int);
+char *lssproto_mkstr_short_array(int size, short *array) {
+  MKSTR_ARRAY_MACRO(lssproto_mkstr_short);
 }
-char *saacproto_mkstr_short_array(int size, short *array) {
-  MKSTR_ARRAYMACRO(saacproto_mkstr_short);
+char *lssproto_mkstr_u_short_array(int size, unsigned short *array) {
+  MKSTR_ARRAY_MACRO(lssproto_mkstr_u_short);
 }
-char *saacproto_mkstr_u_short_array(int size, unsigned short *array) {
-  MKSTR_ARRAYMACRO(saacproto_mkstr_u_short);
+char *lssproto_mkstr_char_array(int size, char *array) { MKSTR_ARRAY_MACRO(lssproto_mkstr_char); }
+char *lssproto_mkstr_u_char_array(int size, unsigned char *array) {
+  MKSTR_ARRAY_MACRO(lssproto_mkstr_u_char);
 }
-char *saacproto_mkstr_char_array(int size, char *array) {
-  MKSTR_ARRAYMACRO(saacproto_mkstr_char);
+char *lssproto_mkstr_float_array(int size, float *array) {
+  MKSTR_ARRAY_MACRO(lssproto_mkstr_float);
 }
-char *saacproto_mkstr_u_char_array(int size, unsigned char *array) {
-  MKSTR_ARRAYMACRO(saacproto_mkstr_u_char);
+char *lssproto_mkstr_double_array(int size, double *array) {
+  MKSTR_ARRAY_MACRO(lssproto_mkstr_double);
 }
-char *saacproto_mkstr_float_array(int size, float *array) {
-  MKSTR_ARRAYMACRO(saacproto_mkstr_float);
-}
-char *saacproto_mkstr_double_array(int size, double *array) {
-  MKSTR_ARRAYMACRO(saacproto_mkstr_double);
-}
-
-int saacproto_demkstr_int(char *a) {
+int lssproto_demkstr_int(char *a) {
   if (a == (char *)NULL)
     return 0;
   return cnv62to10(a);
 }
-
-unsigned int saacproto_demkstr_u_int(char *a) {
+unsigned int lssproto_demkstr_u_int(char *a) {
   if (a == (char *)NULL)
     return 0;
   return (unsigned int)strtoul(a, NULL, 10);
 }
-long saacproto_demkstr_long(char *a) {
+long lssproto_demkstr_long(char *a) {
   if (a == (char *)NULL)
     return 0;
   return (long)strtol(a, NULL, 10);
 }
-unsigned long saacproto_demkstr_u_long(char *a) {
+unsigned long lssproto_demkstr_u_long(char *a) {
   if (a == (char *)NULL)
     return 0;
   return (unsigned long)strtoul(a, NULL, 10);
 }
-short saacproto_demkstr_short(char *a) {
+short lssproto_demkstr_short(char *a) {
   if (a == (char *)NULL)
     return 0;
   return (short)strtol(a, NULL, 10);
 }
-unsigned short saacproto_demkstr_u_short(char *a) {
+unsigned short lssproto_demkstr_u_short(char *a) {
   if (a == (char *)NULL)
     return 0;
   return (unsigned short)strtoul(a, NULL, 10);
 }
-char saacproto_demkstr_char(char *a) {
-  if (a == (char *)NULL)
+char lssproto_demkstr_char(char *a) {
+  if (a == NULL)
     return 0;
   return (char)strtol(a, NULL, 10);
 }
-unsigned char saacproto_demkstr_u_char(char *a) {
-  if (a == (char *)NULL)
+unsigned char lssproto_demkstr_u_char(char *a) {
+  if (a == NULL)
     return 0;
   return (unsigned char)strtoul(a, NULL, 10);
 }
-float saacproto_demkstr_float(char *a) {
+float lssproto_demkstr_float(char *a) {
   if (a == (char *)NULL)
     return 0.0F;
   return (float)atof(a);
 }
-double saacproto_demkstr_double(char *a) {
+double lssproto_demkstr_double(char *a) {
   if (a == (char *)NULL)
     return 0.0F;
   return (double)strtod(a, NULL);
 }
-char *saacproto_demkstr_string(char *a) {
+char *lssproto_demkstr_string(char *a) {
   if (a == (char *)NULL) {
-    proto_strcpysafe(saacproto.escapework, "", saacproto.workbufsize);
-    return saacproto.escapework;
+    proto_strcpysafe(lssproto.escapework, "", lssproto.workbufsize);
+    return lssproto.escapework;
   }
-  return saacproto_descapeString(a);
+  return lssproto_descapeString(a);
 }
-int *saacproto_demkstr_int_array(char **tk, int *buf, int start, int size) {
-#define DEMKSTR_ARRAYMACRO(func, defaultvalue)                                 \
+#define DEMKSTR_ARRAY_MACRO(func, defaultvalue)                                \
   {                                                                            \
     int i;                                                                     \
     for (i = start; i < (start + size); i++) {                                 \
@@ -249,131 +289,68 @@ int *saacproto_demkstr_int_array(char **tk, int *buf, int start, int size) {
     }                                                                          \
     return buf;                                                                \
   }
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_int, 0);
+int *lssproto_demkstr_int_array(char **tk, int *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_int, 0);
 }
-int *saacproto_demkstr_u_int_array(char **tk, int *buf, int start, int size) {
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_u_int, 0);
+int *lssproto_demkstr_u_int_array(char **tk, int *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_u_int, 0);
 }
-unsigned int *saacproto_demkstr_long_array(char **tk, unsigned int *buf,
-                                           int start, int size) {
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_long, 0);
+unsigned int *lssproto_demkstr_long_array(char **tk, unsigned int *buf, int start,
+                                 int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_long, 0);
 }
-unsigned long *saacproto_demkstr_u_long_array(char **tk, unsigned long *buf,
-                                              int start, int size) {
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_u_long, 0);
+unsigned long *lssproto_demkstr_u_long_array(char **tk, unsigned long *buf, int start,
+                                    int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_u_long, 0);
 }
-short *saacproto_demkstr_short_array(char **tk, short *buf, int start,
-                                     int size) {
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_short, 0);
+short *lssproto_demkstr_short_array(char **tk, short *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_short, 0);
 }
-unsigned short *saacproto_demkstr_u_short_array(char **tk, unsigned short *buf,
-                                                int start, int size) {
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_u_short, 0);
+unsigned short *lssproto_demkstr_u_short_array(char **tk, unsigned short *buf, int start,
+                                      int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_u_short, 0);
 }
-char *saacproto_demkstr_char_array(char **tk, char *buf, int start, int size) {
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_u_char, 0);
+char *lssproto_demkstr_char_array(char **tk, char *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_u_char, 0);
 }
-unsigned char *saacproto_demkstr_u_char_array(char **tk, unsigned char *buf,
-                                              int start, int size) {
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_u_char, 0);
+unsigned char *lssproto_demkstr_u_char_array(char **tk, unsigned char *buf, int start,
+                                    int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_u_char, 0);
 }
-float *saacproto_demkstr_float_array(char **tk, float *buf, int start,
-                                     int size) {
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_float, (float)0.0);
+float *lssproto_demkstr_float_array(char **tk, float *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_float, (float)0.0);
 }
-double *saacproto_demkstr_u_double_array(char **tk, double *buf, int start,
-                                         int size) {
-  DEMKSTR_ARRAYMACRO(saacproto_demkstr_double, (double)0.0);
+double *lssproto_demkstr_u_double_array(char **tk, double *buf, int start, int size) {
+  DEMKSTR_ARRAY_MACRO(lssproto_demkstr_double, (double)0.0);
 }
-char *saacproto_escapeString(char *a) {
-  int i, c = 0;
-  saacproto.escapework[0] = '\0';
-  for (i = 0;; i++) {
-    if (a[i] == '\0') {
-      saacproto.escapework[c++] = '\0';
-      break;
-    } else if ((char)0x80 <= a[i] && a[i] <= (char)0xFF) {
-      // for 2 Byte Word
-      saacproto.escapework[c++] = a[i++];
-      saacproto.escapework[c++] = a[i];
-    } else if (a[i] == '\\') {
-      saacproto.escapework[c++] = '\\';
-      saacproto.escapework[c++] = '\\';
-    } else if (a[i] == ' ') {
-      saacproto.escapework[c++] = '\\';
-      saacproto.escapework[c++] = 'S';
-    } else if (a[i] == '\n') {
-      saacproto.escapework[c++] = '\\';
-      saacproto.escapework[c++] = 'n';
-    } else if (a[i] == '\r') {
-      saacproto.escapework[c++] = '\\';
-      saacproto.escapework[c++] = 'r';
-    } else {
-      saacproto.escapework[c++] = a[i];
-    }
+
+void lssproto_GetMessageInfo(int *id, char *funcname, int len, char **tk) {
+  if (tk[0] == NULL || tk[1] == NULL) {
+    *id = 0;
+    proto_strcpysafe(funcname, "", len);
+    return;
   }
-  return saacproto.escapework;
+  *id = strtoul(tk[0], NULL, 10);
+  proto_strcpysafe(funcname, tk[1], len);
+  return;
 }
-char *saacproto_descapeString(char *a) {
-  int i, c = 0;
-  saacproto.escapework[0] = '\0';
-  for (i = 0;; i++) {
-    if (a[i] == '\0') {
-      saacproto.escapework[c++] = '\0';
-      break;
-    } else if ((char)0x80 <= a[i] && a[i] <= (char)0xFF) {
-      // for 2 Byte Word
-      saacproto.escapework[c++] = a[i++];
-      saacproto.escapework[c++] = a[i];
-    } else if (a[i] == '\\') {
-      if (a[i + 1] == 0) { /* null */
-        saacproto.escapework[c++] = a[i];
-        continue;
-      }
-      if (a[i + 1] == 'S') { /* space */
-        saacproto.escapework[c++] = ' ';
-      } else if (a[i + 1] == 'n') {
-        saacproto.escapework[c++] = '\n';
-      } else if (a[i + 1] == 'r') {
-        saacproto.escapework[c++] = '\r';
-      } else if (a[i + 1] == '\\') {
-        saacproto.escapework[c++] = '\\';
-      } else {
-        saacproto.escapework[c++] = a[i];
-      }
-      i++;
-    } else {
-      saacproto.escapework[c++] = a[i];
-    }
-  }
-  return saacproto.escapework;
-}
-/*
-   This function works only when src(char *) is escaped
-   NOTICE: Effects and Modifies the contents of char*src!
-   NOTICE: Ends the output token list with NULL pointer
-Ex:
-        v out[0]       v out[1]
-  "     asdjfhasfdasdf asdf asf asdf "
- */
-#ifdef saacproto__ENCRYPT
-static void saacproto_decodeString(char *src, char *out);
-static void saacproto_encodeString(char *src, char *out, int maxoutlen);
+
+#ifdef lssproto__ENCRYPT
+static void lssproto_decodeString(char *src, char *out);
+static void lssproto_encodeString(char *src, char *out, int maxoutlen);
 #endif
-void saacproto_splitString(char *src) {
+void lssproto_splitString(char *src) {
   int i, c = 0;
   char *decoded;
-
-#ifdef saacproto__ENCRYPT
-  decoded = saacproto.cryptwork;
-  saacproto_decodeString(src, decoded);
+#ifdef lssproto__ENCRYPT
+  decoded = lssproto.cryptwork;
+  lssproto_decodeString(src, decoded);
 #else
   decoded = src;
 #endif
-
-  if (saacproto_readlogfilename[0] != '\0') {
+  if (lssproto_readlogfilename[0] != '\0') {
     FILE *rfp;
-    rfp = fopen(saacproto_readlogfilename, "a+");
+    rfp = fopen(lssproto_readlogfilename, "a+");
     if (rfp)
       fprintf(rfp, "%s\n", decoded);
     if (rfp)
@@ -383,10 +360,10 @@ void saacproto_splitString(char *src) {
     if (decoded[i] == '\0')
       break;
     if (i == 0) {
-      saacproto.token_list[c++] = &(decoded[i]);
+      lssproto.token_list[c++] = &(decoded[i]);
     }
     if (decoded[i] == ' ') {
-      saacproto.token_list[c++] = &(decoded[i + 1]);
+      lssproto.token_list[c++] = &(decoded[i + 1]);
     }
   }
   while (*decoded) {
@@ -394,9 +371,9 @@ void saacproto_splitString(char *src) {
       *decoded = '\0';
     decoded++;
   }
-  saacproto.token_list[c] = (char *)NULL;
+  lssproto.token_list[c] = (char *)NULL;
 }
-int saacproto_default_write_wrap(int fd, char *buf, int size) {
+int lssproto_default_write_wrap(int fd, char *buf, int size) {
 #ifndef WIN32
   return write(fd, buf, size);
 #else
@@ -404,7 +381,7 @@ int saacproto_default_write_wrap(int fd, char *buf, int size) {
 #endif
 }
 
-void saacproto_consumeLine(char *buf, int offset) {
+void lssproto_consumeLine(char *buf, int offset) {
   int i;
   int shift = 0;
   buf += offset;
@@ -422,7 +399,7 @@ void saacproto_consumeLine(char *buf, int offset) {
       break;
   }
 }
-void saacproto_copyLine(char *src, char *out, int outlen) {
+void lssproto_copyLine(char *src, char *out, int outlen) {
   int i;
   for (i = 0;; i++) {
     out[i] = src[i];
@@ -435,106 +412,97 @@ void saacproto_copyLine(char *src, char *out, int outlen) {
   }
   proto_strcpysafe(out, "", outlen);
 }
-
-unsigned long saacproto_GetNewMessageID(void) { return saacproto.message_id++; }
-
-void saacproto_DebugSend(int fd, char *msg) { saacproto_Send(fd, msg); }
-void saacproto_Send(int fd, char *msg) {
+unsigned int lssproto_GetNewMessageID(void) { return lssproto.message_id++; }
+void lssproto_DebugSend(int fd, char *msg) { lssproto_Send(fd, msg); }
+void lssproto_Send(int fd, char *msg) {
   char *encoded;
-  if (saacproto_writelogfilename[0] != '\0') {
-    FILE *wfp = fopen(saacproto_writelogfilename, "a+");
+
+  if (lssproto_writelogfilename[0] != '\0') {
+    FILE *wfp = fopen(lssproto_writelogfilename, "a+");
     if (wfp)
       fprintf(wfp, "%s\n", msg);
     if (wfp)
       fclose(wfp);
   }
-#ifdef saacproto__ENCRYPT
-  encoded = saacproto.cryptwork;
-  saacproto_encodeString(msg, encoded, saacproto.workbufsize * 3);
+
+#ifdef lssproto__ENCRYPT
+  encoded = lssproto.cryptwork;
+  lssproto_encodeString(msg, encoded, lssproto.workbufsize * 3);
 #else
   encoded = msg;
 #endif
   {
     /* add a newline character*/
     unsigned int l = strlen(encoded);
-    if (l < saacproto.workbufsize * 3) {
+    if (l < lssproto.workbufsize * 3) {
       encoded[l] = '\n';
       encoded[l + 1] = 0;
       l++;
+    } else {
+      print("\n lssproto.workbufsize:%d len:%d ", lssproto.workbufsize, l);
     }
-    saacproto.write_func(fd, encoded, l);
+    lssproto.write_func(fd, encoded, l);
   }
 }
 
-extern char *saacsendfunc;
-#ifdef _ABSOLUTE_DEBUG
-extern int lastfunctime;
-#endif
-void saacproto_CreateHeader(char *out, char *fname) {
-  saacsendfunc = fname;
-#ifdef _ABSOLUTE_DEBUG
-  lastfunctime = 2;
-#endif
-  sprintf(out, "%u %s ", (unsigned int)saacproto_GetNewMessageID(), fname);
+void lssproto_CreateHeader(char *out, char *fname) {
+  sprintf(out, "%u %s ", lssproto_GetNewMessageID(), fname);
 }
-void saacproto_CreateHeaderID(char *out, unsigned long msgid, char *fname) {
+void lssproto_CreateHeaderID(char *out, unsigned long msgid, char *fname) {
   sprintf(out, "%u %s ", (unsigned int)msgid, fname);
 }
-
-char *saacproto_wrapStringAddr(char *copy, int maxcopylen, char *src) {
+char *lssproto_wrapStringAddr(char *copy, int maxcopylen, char *src) {
   proto_strcpysafe(copy, src, maxcopylen);
   return copy;
 }
-#ifdef saacproto__ENCRYPT
+
+int JENCODE_KEY = 9922;
+#ifdef lssproto__ENCRYPT
 /* define function body only if the macro is set( but it's default) */
-static void saacproto_encode64(unsigned char *in, int i, unsigned char *out);
-static int saacproto_decode64(unsigned char *in, unsigned char *out);
-static void saacproto_jDecode(char *src, int srclen, int key, char *decoded,
-                              int *decodedlen);
-static void saacproto_jEncode(char *src, int srclen, int key, char *encoded,
-                              int *encodedlen, int maxencodedlen);
-/*#define JENCODE_KEY    1000 */
-int JENCODE_KEY = 1000;
+static void lssproto_encode64(unsigned char *in, int i, unsigned char *out);
+static int lssproto_decode64(unsigned char *in, unsigned char *out);
+static void lssproto_jDecode(char *src, int srclen, int key, char *decoded,
+                             int *decodedlen);
+static void lssproto_jEncode(char *src, int srclen, int key, char *encoded,
+                             int *encodedlen, int maxencodedlen);
 /* translate original lsrpc text to code64 text */
-static void saacproto_encodeString(char *src, char *out, int maxoutlen) {
+static void lssproto_encodeString(char *src, char *out, int maxoutlen) {
   int jencodedlen = 0;
   long compressed_l = 0;
   int srclen = strlen(src) + 1;
   int flag = srclen;
   if (srclen < 100) {
-    if ((int)srclen > (int)(saacproto.workbufsize * 3 - 2)) {
+    if ((int)srclen > (int)(lssproto.workbufsize * 3 - 2)) {
       fprintf(stderr, "lsgen: badly configured work buflen\n");
       exit(1);
     }
     if ((flag % 2) == 1)
       flag++;
-    saacproto.compresswork[0] = flag;
-    memcpy(saacproto.compresswork + 1, src, srclen);
+    lssproto.compresswork[0] = flag;
+    memcpy(lssproto.compresswork + 1, src, srclen);
     compressed_l = srclen + 1;
   } else {
     if ((flag % 2) == 0)
       flag++;
-    saacproto.compresswork[0] = flag;
+    lssproto.compresswork[0] = flag;
     compressed_l =
-        saacproto_ringoCompressor((unsigned char *)saacproto.compresswork + 1,
-                                  (long)saacproto.workbufsize * 3 - 1,
-                                  (unsigned char *)src, (long)strlen(src)) +
-        1; /* be careful! */
+        lssproto_ringoCompressor((unsigned char *)lssproto.compresswork + 1,
+                                 (long)lssproto.workbufsize * 3 - 1,
+                                 (unsigned char *)src, (long)strlen(src)) + 1;
   }
-  /* return empty line if error or buffer excess */
   if (compressed_l <= 0) {
     proto_strcpysafe(out, "\n", maxoutlen);
     return;
   }
-  memcpy(saacproto.jencodecopy, saacproto.compresswork, compressed_l);
-  saacproto_jEncode(saacproto.jencodecopy, compressed_l, JENCODE_KEY,
-                    saacproto.jencodeout, &jencodedlen,
-                    saacproto.workbufsize * 3 - 1);
-  saacproto_encode64((unsigned char *)saacproto.jencodeout, jencodedlen,
-                     (unsigned char *)out);
+  memcpy(lssproto.jencodecopy, lssproto.compresswork, compressed_l);
+  lssproto_jEncode(lssproto.jencodecopy, compressed_l, JENCODE_KEY,
+                   lssproto.jencodeout, &jencodedlen,
+                   lssproto.workbufsize * 3 - 1);
+  lssproto_encode64((unsigned char *)lssproto.jencodeout, jencodedlen,
+                    (unsigned char *)out);
 }
 /* translate code64 text to original lsrpc text */
-static void saacproto_decodeString(char *src, char *out) {
+static void lssproto_decodeString(char *src, char *out) {
   int compressed_l = 0, outlen64;
   int l;
   long decompressed_l = 0;
@@ -544,34 +512,34 @@ static void saacproto_decodeString(char *src, char *out) {
     src[l - 1] = 0;
   if (src[l - 2] == '\n' || src[l - 2] == '\r')
     src[l - 2] = 0;
-  outlen64 = saacproto_decode64((unsigned char *)src,
-                                (unsigned char *)saacproto.jencodecopy);
-  saacproto_jDecode(saacproto.jencodecopy, outlen64, JENCODE_KEY,
-                    saacproto.compresswork, &compressed_l);
+  outlen64 = lssproto_decode64((unsigned char *)src,
+                               (unsigned char *)lssproto.jencodecopy);
+  lssproto_jDecode(lssproto.jencodecopy, outlen64, JENCODE_KEY,
+                   lssproto.compresswork, &compressed_l);
   /*out[outlen]=0;  PENDING*/
-  if ((saacproto.compresswork[0] % 2) == 0) {
+  if ((lssproto.compresswork[0] % 2) == 0) {
     if (compressed_l <= 0) {
       decompressed_l = 0;
       fprintf(stderr, "LSRPC: too short:[%s]\n", src);
     } else {
-      memcpy(out, saacproto.compresswork + 1, compressed_l - 1);
+      memcpy(out, lssproto.compresswork + 1, compressed_l - 1);
       decompressed_l = compressed_l - 1;
     }
   } else {
-    decompressed_l = saacproto_ringoDecompressor(
-        (unsigned char *)out, (long)saacproto.workbufsize,
-        (unsigned char *)saacproto.compresswork + 1, (long)compressed_l - 1);
+    decompressed_l = lssproto_ringoDecompressor(
+        (unsigned char *)out, (long)lssproto.workbufsize,
+        (unsigned char *)lssproto.compresswork + 1, (long)compressed_l - 1);
   }
   out[decompressed_l] = 0;
 }
 /* followings are taken from code64.c */
-char saacproto_charset[64] = {
+char lssproto_charset[64] = {
     'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M',
     'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
     'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm',
     'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '-'};
-char saacproto_reversecharset[256] = {
+char lssproto_reversecharset[256] = {
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  62, 0,  63, 0,  0,  52, 53, 54, 55, 56, 57, 58, 59, 60,
@@ -587,7 +555,7 @@ char saacproto_reversecharset[256] = {
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
     0,  0,  0,  0,  0,  0,  0,  0,  0};
 
-static void saacproto_encode64(unsigned char *in, int len, unsigned char *out) {
+static void lssproto_encode64(unsigned char *in, int len, unsigned char *out) {
   int i;
   int use_bytes;
   int address = 0;
@@ -617,16 +585,16 @@ static void saacproto_encode64(unsigned char *in, int len, unsigned char *out) {
     out3 = ((in2 & 0x0f) << 2) | (((in3 & 0xc0) >> 6) & 0x03);
     out4 = (in3 & 0x3f);
     if (use_bytes >= 2) {
-      out[address++] = saacproto_charset[out1];
-      out[address++] = saacproto_charset[out2];
+      out[address++] = lssproto_charset[out1];
+      out[address++] = lssproto_charset[out2];
       out[address] = 0;
     }
     if (use_bytes >= 3) {
-      out[address++] = saacproto_charset[out3];
+      out[address++] = lssproto_charset[out3];
       out[address] = 0;
     }
     if (use_bytes >= 4) {
-      out[address++] = saacproto_charset[out4];
+      out[address++] = lssproto_charset[out4];
       out[address] = 0;
     }
   }
@@ -640,7 +608,7 @@ static void saacproto_encode64(unsigned char *in, int len, unsigned char *out) {
  * note: no need to have bigger buffer. because output is to
  * be smaller than input string size
  */
-static int saacproto_decode64(unsigned char *in, unsigned char *out) {
+static int lssproto_decode64(unsigned char *in, unsigned char *out) {
   unsigned char in1, in2, in3, in4;
   unsigned char out1, out2, out3;
   int use_bytes;
@@ -652,21 +620,21 @@ static int saacproto_decode64(unsigned char *in, unsigned char *out) {
     } else if (in[i + 1] == 0) { /* the last letter */
       break;
     } else if (in[i + 2] == 0) { /* the last 2 letters */
-      in1 = saacproto_reversecharset[in[i]];
-      in2 = saacproto_reversecharset[in[i + 1]];
+      in1 = lssproto_reversecharset[in[i]];
+      in2 = lssproto_reversecharset[in[i + 1]];
       in3 = in4 = 0;
       use_bytes = 1;
     } else if (in[i + 3] == 0) { /* the last  3 letters */
-      in1 = saacproto_reversecharset[in[i]];
-      in2 = saacproto_reversecharset[in[i + 1]];
-      in3 = saacproto_reversecharset[in[i + 2]];
+      in1 = lssproto_reversecharset[in[i]];
+      in2 = lssproto_reversecharset[in[i + 1]];
+      in3 = lssproto_reversecharset[in[i + 2]];
       in4 = 0;
       use_bytes = 2;
     } else { /* process 4 letters */
-      in1 = saacproto_reversecharset[in[i]];
-      in2 = saacproto_reversecharset[in[i + 1]];
-      in3 = saacproto_reversecharset[in[i + 2]];
-      in4 = saacproto_reversecharset[in[i + 3]];
+      in1 = lssproto_reversecharset[in[i]];
+      in2 = lssproto_reversecharset[in[i + 1]];
+      in3 = lssproto_reversecharset[in[i + 2]];
+      in4 = lssproto_reversecharset[in[i + 3]];
       use_bytes = 3;
     }
     out1 = (in1 << 2) | (((in2 & 0x30) >> 4) & 0x0f);
@@ -689,8 +657,8 @@ static int saacproto_decode64(unsigned char *in, unsigned char *out) {
 }
 
 /* followings are taken from Jencode.c by jun */
-static void saacproto_jEncode(char *src, int srclen, int key, char *encoded,
-                              int *encodedlen, int maxencodedlen) {
+static void lssproto_jEncode(char *src, int srclen, int key, char *encoded,
+                             int *encodedlen, int maxencodedlen) {
   char sum = 0;
   int i;
   if (srclen + 1 > maxencodedlen) {
@@ -715,8 +683,8 @@ static void saacproto_jEncode(char *src, int srclen, int key, char *encoded,
     }
   }
 }
-static void saacproto_jDecode(char *src, int srclen, int key, char *decoded,
-                              int *decodedlen) {
+static void lssproto_jDecode(char *src, int srclen, int key, char *decoded,
+                             int *decodedlen) {
   char sum = 0;
   int i;
   *decodedlen = srclen - 1;
@@ -736,7 +704,9 @@ static void saacproto_jDecode(char *src, int srclen, int key, char *decoded,
   }
 }
 
-/* Compress / Decompress routine */
+/*****************************************************************/
+/*       Compress / Decompress routine                           */
+/*****************************************************************/
 #define B00000000 0
 #define B00000001 1
 #define B00000010 2
@@ -994,7 +964,7 @@ static void saacproto_jDecode(char *src, int srclen, int key, char *decoded,
 #define B11111110 254
 #define B11111111 255
 /* masks for first byte ( write )*/
-int saacproto_modifymask_first[8][9] = {
+int lssproto_modifymask_first[8][9] = {
     {0, B00000001, B00000011, B00000111, B00001111, B00011111, B00111111,
      B01111111, B11111111}, /* mod 0*/
     {0, B00000011, B00000111, B00001111, B00011111, B00111111, B01111111,
@@ -1013,7 +983,7 @@ int saacproto_modifymask_first[8][9] = {
      B11111111, B11111111}, /* mod 7*/
 };
 /* masks for second byte ( write ) */
-int saacproto_modifymask_second[8][9] = {
+int lssproto_modifymask_second[8][9] = {
     {0, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000,
      B00000000, B00000000}, /* mod 0 */
     {0, B00000000, B00000000, B00000000, B00000000, B00000000, B00000000,
@@ -1031,9 +1001,7 @@ int saacproto_modifymask_second[8][9] = {
     {0, B00000000, B00000001, B00000011, B00000111, B00001111, B00011111,
      B00111111, B01111111}, /* mod 7 */
 };
-/*
- * used by bitstream routines
- */
+
 int bitstream_maxbyte, bitstream_bitaddr;
 char *bitstream_buf;
 /* initialize bitstream for output */
@@ -1063,18 +1031,18 @@ static unsigned int readInputBitStreamBody(int bwidth) {
     return 0;
   if (bwidth >= 1 && bwidth <= 8) {
     int b1 =
-        ((bitstream_buf[byteaddr] & saacproto_modifymask_first[mod][bwidth]) >>
+        ((bitstream_buf[byteaddr] & lssproto_modifymask_first[mod][bwidth]) >>
          mod);
-    int b2 = ((bitstream_buf[byteaddr + 1] &
-               saacproto_modifymask_second[mod][bwidth])
-              << (8 - mod));
+    int b2 =
+        ((bitstream_buf[byteaddr + 1] & lssproto_modifymask_second[mod][bwidth])
+         << (8 - mod));
     bitstream_bitaddr += bwidth;
     return b1 | b2;
   } else {
     return 0;
   }
 }
-/* read from bit stream. used from 1 bit to 32 bits. */
+/* read from bit stream. used from 1 bit to 32 bits */
 static unsigned int readInputBitStream(int bwidth) {
   if (bwidth <= 0) {
     return 0;
@@ -1098,22 +1066,16 @@ static unsigned int readInputBitStream(int bwidth) {
   }
   return 0;
 }
-/*
- * write to a bitstream. only used from 1 bit to 8 bits
- * this is a base routine.
- */
+/* write to a bitstream. only used from 1 bit to 8 bits this is a base routine. */
 static int writeOutputBitStreamBody(int bwidth, unsigned char b) {
   int mod = bitstream_bitaddr % 8;
   int byteaddr = bitstream_bitaddr / 8;
-  /* return error if excess */
   if (bitstream_maxbyte <= (byteaddr + 1))
     return -1;
-  bitstream_buf[byteaddr] &= saacproto_modifymask_first[mod][bwidth];
-  bitstream_buf[byteaddr] |=
-      (b << mod) & saacproto_modifymask_first[mod][bwidth];
-  bitstream_buf[byteaddr + 1] &= saacproto_modifymask_second[mod][bwidth];
-  bitstream_buf[byteaddr + 1] |=
-      (b >> (8 - mod)) & saacproto_modifymask_second[mod][bwidth];
+  bitstream_buf[byteaddr] &= lssproto_modifymask_first[mod][bwidth];
+  bitstream_buf[byteaddr] |= (b << mod) & lssproto_modifymask_first[mod][bwidth];
+  bitstream_buf[byteaddr + 1] &= lssproto_modifymask_second[mod][bwidth];
+  bitstream_buf[byteaddr + 1] |= (b >> (8 - mod)) & lssproto_modifymask_second[mod][bwidth];
   bitstream_bitaddr += bwidth;
   return byteaddr + 1;
 }
@@ -1166,9 +1128,8 @@ typedef struct {
   int brother;
   int child;
 } NODE;
-
-long saacproto_ringoCompressor(unsigned char *code, long codelen,
-                               unsigned char *text, long textlen) {
+long lssproto_ringoCompressor(unsigned char *code, long codelen,
+                              unsigned char *text, long textlen) {
   NODE node[NODE_SIZE];
   int freeNode;
   int w, k;    /* used in this algo */
@@ -1206,7 +1167,6 @@ long saacproto_ringoCompressor(unsigned char *code, long codelen,
       rv = node[rv].brother;
     }
     if (rv > 0) {
-      /* found it */
       w = rv;
     } else {
       position = writeOutputBitStream(BITS_LEN, w);
@@ -1233,10 +1193,11 @@ long saacproto_ringoCompressor(unsigned char *code, long codelen,
 
 /*
  * Decoder.
- * return -1 if buffer excession. Notice buffer text is modified .
+ * return -1 if buffer excession. Notice buffer text
+ * is modified .
  */
-long saacproto_ringoDecompressor(unsigned char *text, long textlen,
-                                 unsigned char *code, long codelen) {
+long lssproto_ringoDecompressor(unsigned char *text, long textlen,
+                                unsigned char *code, long codelen) {
   NODE node[NODE_SIZE];
   int stack[NODE_SIZE];
   int sp;
@@ -1304,4 +1265,4 @@ long saacproto_ringoDecompressor(unsigned char *text, long textlen,
   }
   return len;
 }
-#endif /* ifdef saacproto__ENCRYPT */
+#endif /* ifdef lssproto__ENCRYPT */

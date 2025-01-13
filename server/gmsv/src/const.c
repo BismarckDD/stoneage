@@ -702,7 +702,7 @@ lua_const M_Lua_RegConstList[] = {
 #ifdef _NPCSERVER_NEW
   {"物件_NPC%", sizeof("物件_NPC%"), OBJTYPE_NPCSCHARA},
 #endif
-#ifdef _MAP_WARPPOINT
+#ifdef __MAP_WARP_POINT
   {"物件_传%", sizeof("物件_传%"), OBJTYPE_WARPPOINT},
 #endif
 

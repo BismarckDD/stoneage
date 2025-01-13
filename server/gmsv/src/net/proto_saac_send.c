@@ -1,6 +1,5 @@
 #include "version.h"
 #define __SAACPROTO_CLI_C__
-#include "lssproto_serv.h"
 #include "net.h"
 #include "saacproto_cli.h"
 
@@ -303,31 +302,32 @@ void saacproto_DBGetEntryByCount_send(int fd, char *table, int count_start,
   saacproto_Send(fd, saacproto.work);
 }
 
-void saacproto_Broadcast_send(int fd, char *id, char *charname, char *message,
-                              int flag) {
-  /*
-          saacproto_CreateHeader( saacproto.work , "Broadcast" );
-          proto_strcatsafe( saacproto.work , saacproto_mkstr_string( id )
-     ,saacproto.workbufsize ); proto_strcatsafe( saacproto.work ,
-     saacproto_mkstr_string( charname ) ,saacproto.workbufsize );
-          proto_strcatsafe( saacproto.work , saacproto_mkstr_string( message
-     ) ,saacproto.workbufsize ); proto_strcatsafe( saacproto.work ,
-     saacproto_mkstr_int( flag ) ,saacproto.workbufsize ); saacproto_Send( fd ,
-     saacproto.work );
-  */
+void saacproto_Broadcast_send(const int fd, const char *id,
+                              const char *charname, const char *message,
+                              const int flag) {
+  //  saacproto_CreateHeader( saacproto.work , "Broadcast" );
+  //  proto_strcatsafe(saacproto.work, saacproto_mkstr_string(id),
+  //                   saacproto.workbufsize);
+  //  proto_strcatsafe(saacproto.work, saacproto_mkstr_string(charname),
+  //                   saacproto.workbufsize);
+  //  proto_strcatsafe(saacproto.work, saacproto_mkstr_string(message),
+  //                   saacproto.workbufsize);
+  //  proto_strcatsafe(saacproto.work, saacproto_mkstr_int(flag),
+  //                   saacproto.workbufsize);
+  //  saacproto_Send(fd, saacproto.work);
 }
 
-void saacproto_Message_send(int fd, char *id_from, char *charname_from,
-                            char *id_to, char *charname_to, char *message,
+void saacproto_Message_send(int fd, char *id_from, char *char_name_from,
+                            char *id_to, char *char_name_to, char *message,
                             int option) {
   saacproto_CreateHeader(saacproto.work, "Message");
   proto_strcatsafe(saacproto.work, saacproto_mkstr_string(id_from),
                    saacproto.workbufsize);
-  proto_strcatsafe(saacproto.work, saacproto_mkstr_string(charname_from),
+  proto_strcatsafe(saacproto.work, saacproto_mkstr_string(char_name_from),
                    saacproto.workbufsize);
   proto_strcatsafe(saacproto.work, saacproto_mkstr_string(id_to),
                    saacproto.workbufsize);
-  proto_strcatsafe(saacproto.work, saacproto_mkstr_string(charname_to),
+  proto_strcatsafe(saacproto.work, saacproto_mkstr_string(char_name_to),
                    saacproto.workbufsize);
   proto_strcatsafe(saacproto.work, saacproto_mkstr_string(message),
                    saacproto.workbufsize);
@@ -428,7 +428,7 @@ void saacproto_ACJoinFM_send(int fd, char *fmname, int fmindex, char *charname,
                    saacproto.workbufsize);
   proto_strcatsafe(saacproto.work, saacproto_mkstr_int(index),
                    saacproto.workbufsize);
-  // #ifdef _PERSONAL_FAME	// Arminius: 家族个人声望
+  // #ifdef _PERSONAL_FAME  // Arminius: 家族个人声望
   proto_strcatsafe(saacproto.work, saacproto_mkstr_int(fame),
                    saacproto.workbufsize);
   // #endif
@@ -1204,20 +1204,6 @@ int saacproto_ClientDispatchMessage(int fd, char *line) {
     saacproto_DBGetEntryInt_recv(fd, result, value, table, key, msgid, msgid2);
     return 0;
   }
-  /*
-  562 :  <LI><a name="DBGetEntryByRankS"><font color=blue>servertoclient
-  DBGetEntryByRank( string result , string list , string table, int msgid, int
-  msgid2 );</font></a><BR> 563 : 	 DBGetEntryByRank及瑛绊［ 564 :
-  <dl> 565 : 	   <dt>string result 566 : 	   <dd> 567 : <dt>string list
-  568 : 	   <dd>"RANK,KEY,SCORE,INFO|RANK,KEY,SCORE,INFO|...."<BR>
-  569 :
-  RANK反赐匏匹丐月［KEY反公及赐匏卞卅匀化中月旦戊失毛手匀化中月 570 :
-  平□［SCORE反帮醒袄匹旦戊失匹丐月［ 571 : 		     ［<br> 572 :
-  "1,RINGO,123465,data1|2,HOGE,4567,data2|2,FUCK,4567,data3"<BR> 573 :
-  仇及  分午｝2匏反2谛中月仇午卞卅月［ 574 : 	   <dt>string table 575 :
-  <dd>  □皮伙 576 : 	   <dt>int msgid, int msgid2 577 : 	   <dd> 578 :
-  </dl> 579 : 580 :
-  */
 
   if (strcmp(funcname, "DBGetEntryByRank") == 0) {
     char *result;
@@ -1239,25 +1225,6 @@ int saacproto_ClientDispatchMessage(int fd, char *line) {
     saacproto_DBGetEntryByRank_recv(fd, result, list, table, msgid, msgid2);
     return 0;
   }
-  /*
-  593 :  <LI><a name="DBGetEntryByCountS"><font color=blue>servertoclient
-  DBGetEntryByCount( string result , string list , string table, int
-  count_start, int msgid, int msgid2 );</font></a><BR>
-  594 : 	 DBGetEntryByCount 及瑛绊［
-  595 : 	 <dl>
-  596 : 	   <dt>string result
-  597 : 	   <dd>SUCCESSFUL/FAILED
-  598 : 	   <dt>string list
-  599 : 	   <dd>请  伉旦玄［1巨件玄伉丐凶曰 "INDEX,RANK,KEY,SCORE,INFO"
-  及4蜊及树 600 : 		   及赚匹丐曰｝公木互蜊醒坌 "|"
-  匹勾卅互月［蜊醒互0及桦宁反 601 : 		   坞  侬  ［
-  602 : 	   <dt>int num
-  603 : 	   <dd>中仁勾午曰分允井［1卅日1蜊［2卅日2蜊［
-  604 : 	   <dt>int msgid ,msgid2
-  605 : 	   <dd>丢永本□斥ID.
-  606 : 	 </dL>
-  607 :
-  */
 
   if (strcmp(funcname, "DBGetEntryByCount") == 0) {
     char *result;
@@ -2084,7 +2051,8 @@ void saacproto_ACCheckCharacterOnLine_send(int acfd, int charaindex, char *id,
 
 void saacproto_ACCharLogin_send(int fd, int clifd, char *id, char *pas, char *ip
 #ifdef _NEWCLISETMAC
-                                , char *mac
+                                ,
+                                char *mac
 #endif
 ) {
   saacproto_CreateHeader(saacproto.work, "ACCharLogin");
@@ -2286,15 +2254,17 @@ void saacproto_CharadataSaveSQL_send(int fd, char *id, Charadata charadata,
   proto_strcatsafe(saacproto.work,
                    saacproto_mkstr_string(charadata.CHAR_list_info4_String),
                    saacproto.workbufsize);
-  proto_strcatsafe(saacproto.work,
-	                 saacproto_mkstr_string(charadata.CHAR_list_attackmagic_String),
-                   saacproto.workbufsize);
+  proto_strcatsafe(
+      saacproto.work,
+      saacproto_mkstr_string(charadata.CHAR_list_attackmagic_String),
+      saacproto.workbufsize);
   proto_strcatsafe(saacproto.work,
                    saacproto_mkstr_string(charadata.CHAR_list_info5_String),
                    saacproto.workbufsize);
-  proto_strcatsafe(saacproto.work,
-                   saacproto_mkstr_string(charadata.CHAR_list_profession_String),
-                   saacproto.workbufsize);
+  proto_strcatsafe(
+      saacproto.work,
+      saacproto_mkstr_string(charadata.CHAR_list_profession_String),
+      saacproto.workbufsize);
   proto_strcatsafe(saacproto.work,
                    saacproto_mkstr_string(charadata.CHAR_list_info6_String),
                    saacproto.workbufsize);

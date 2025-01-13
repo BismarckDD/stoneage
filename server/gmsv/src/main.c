@@ -89,7 +89,7 @@ void mainloop(void) {
   signal(SIGUSR2, sigusr2);
   print("succeed.\n");
 
-#ifdef _MAP_WARPPOINT
+#ifdef _MAP_WARP_POINT
   print("Init map warp point...");
   MAPPOINT_InitMapWarpPoint();
   print("succeed.\n");

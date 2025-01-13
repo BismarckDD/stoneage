@@ -44,7 +44,7 @@ char rbmess[1024 * 256];
 
 #define MAXSIZE 64000
 #define MAXEPS 256
-// #define EVENTS            100
+// #define EVENTS 100
 #define LISTENQ 32
 #define SERV_PORT 8000
 
@@ -110,22 +110,19 @@ static unsigned long useripcount = 0;
 static unsigned long *useriptime = 0;
 #endif
 
-/*------------------------------------------------------------
- * �ӡ��Ｐ����
- ------------------------------------------------------------*/
 typedef struct tagServerState {
   BOOL acceptmore;
-  unsigned int fdid; /*  fd ��ɧԻ�� */
+  unsigned int fdid; /* fd */
   unsigned int closeallsocketnum;
   int shutdown;  /*  �ӡ���ëshutdown����ƹ���� */
   int dsptime;   /* shutdown ƹ���񼰷�����  ��*/
-  int limittime; /* ��ľ�� */
+  int limittime;
 } ServerState;
 
 #ifdef _MO_LNS_NLSUOXU
 typedef struct tagFuncKk {
-  char *FileName; /*�ű�·��*/
-  char *FuncName; /*ִ�к���*/
+  char *FileName; /* file_name */
+  char *FuncName; /*ִ func_name */
   unsigned int EspTime;
   unsigned int MespTime;
   int ID;
@@ -133,7 +130,7 @@ typedef struct tagFuncKk {
 } FuncKk;
 
 FuncKk TimerLua[50];
-void SetTimerLua(void) // ��ʼ��LUA��ʱ��
+void SetTimerLua(void)
 {
   int i;
   for (i = 0; i < arraysizeof(TimerLua); i++) {
@@ -278,11 +275,8 @@ typedef struct tagCONNECT {
   int tradelist;
 #endif
   // Shan Recvdata Time
-
   struct timeval lastrecvtime; // 'FM' Stream Control time
-
   struct timeval lastrecvtime_d; // DENGON Talk Control time
-
   // Arminius: 6.22 encounter
   int CEP; // Current Encounter Probability
   // Arminius 7.12 login announce

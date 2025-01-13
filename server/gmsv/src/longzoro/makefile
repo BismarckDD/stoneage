@@ -4,11 +4,9 @@ export AR=ar cr
 export MV=mv
 export RANLIB=ranlib
 export SED=sed
-
-
 export SHELL=/bin/sh
 
-INCFLAGS=-I. -I../../include -I../lua
+INCFLAGS=-I. -I../../include -I.. -I../lua
 
 CFLAGS=-w -O3 -Wall -pipe $(INCFLAGS)
 
@@ -17,9 +15,7 @@ ifeq ($(shell uname),Linux)
 	SQL=-L /usr/lib/mysql/ -lmysqlclient -lz
 endif
 
-
 PROG=custom.a
-
 SRC=move.c crypto.c characters.c luckstar.c newshop.c playerquestion.c $(SQLSRC)
 OBJ=$(SRC:.c=.o)
 

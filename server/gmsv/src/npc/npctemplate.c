@@ -1,10 +1,5 @@
 #include "version.h"
 #define __NPCTEMPLATE__
-
-#include <stdio.h>
-#include <string.h>
-
-#include "common.h"
 #include "npctemplate.h"
 #include "buf.h"
 #include "char_data.h"
@@ -15,7 +10,6 @@
 #include "config_file.h"
 #include "autil.h"
 
-/*涩烂毛棵签卞允月凶户卞楮醒烂聒本永玄毛综月    */
 typedef struct tagFunctionNameSet
 {
     char*   id;
@@ -43,19 +37,14 @@ static FunctionNameSet  functionSet[]={
     { "Sample" , "", "", "",  "", "", "", "SampleLoop",
       "SampleDying" ,"","", "","","","","",""},
 
-	/* 玉失 */
     { "Door" , "DoorInit" , "","",
       "","DoorPostOver","DoorWatch","",
       "","DoorTalked","", "",
       "DoorOff","DoorLooked","","",""},
-
-	/* 饕 */
     { "SimpleShop" ,"SimpleShopInit","","",
       "","","","","",
       "SimpleShopTalked" , "","",
       "","","" ,"SimpleShopSpecialTalked" ,""},
-
-	/* 丢永本□斥 */
     { "Msg" , "MsgInit" , "","",
       "","","","",
       "","","", "",
@@ -1067,22 +1056,13 @@ BOOL NPC_readNPCTemplateFiles( char* topdirectory ,int templatesize)
     return TRUE;
 }
 
-
-
-/*------------------------------------------------------------
- * 娄醒
- * 忒曰袄
- *  -1  及凛巨仿□
- ------------------------------------------------------------*/
 int NPC_templateGetTemplateIndex( char* templatename )
 {
     int     i;
     int     hash=hashpjw( templatename );
-
     for( i = 0 ; i < NPC_templatenum ; i ++ )
         if( hash == NPC_template[i].hash &&
             strcasecmp( templatename , NPC_template[i].chardata[NPC_TEMPLATENAME].string) ==  0 )
             return i;
-
     return -1;
 }

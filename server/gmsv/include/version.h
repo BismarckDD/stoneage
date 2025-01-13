@@ -190,7 +190,7 @@
 // 新功能：专案6.0    人员：
 #define _PETSKILL_CANNEDFOOD     // (可开放) ANDY 宠物技能罐头
 #define _TEST_DROPITEMS          // (可开放) ANDY 测试丢宠
-#define _MAP_WARPPOINT           // (可开放) ANDY Map WarpPoint
+#define __MAP_WARP_POINT           // (可开放) ANDY Map WarpPoint
 #define _BENEMY_EVENTRUN         // (可开放) ANDY 战斗npc给道具
 #define _BATTLE_ABDUCTII         // (可开放) ANDY 旅途夥伴2
 #define _BATTLE_LIGHTTAKE        // (可开放) ANDY 采光术

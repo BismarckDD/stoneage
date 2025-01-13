@@ -1,12 +1,12 @@
-INCFLAGS=-I../../include -I../lua
-CFLAGS=-w -O3 -Wall -pipe $(INCFLAGS)
+INCFLAGS=-I../../include -I.. -I../lua
+CFLAGS=-m32 -w -O3 -Wall -pipe $(INCFLAGS)
 
 TARGET=libmap.a
 SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
 
 ifeq (0,$(MAKELEVEL))
-	CC=gcc -m32
+	CC=gcc
 	RM=rm -f
 	AR=ar cr
 	RANLIB=ranlib

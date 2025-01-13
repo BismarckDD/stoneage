@@ -6012,7 +6012,7 @@ void CHAR_ObjectDelete( int objindex )
               OBJECT_getX(objindex),
               OBJECT_getY(objindex),
               objindex );
-#ifdef _MAP_WARPPOINT
+#ifdef __MAP_WARP_POINT
   if( OBJECT_getType( objindex) == OBJTYPE_WARPPOINT ){
     print("Delete OBJTYPE_WARPPOINT endObjectOne( %d) [%d,%d,%d] \n ", objindex,
               OBJECT_getFloor(objindex), OBJECT_getX(objindex),

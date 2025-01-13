@@ -23,9 +23,9 @@ typedef struct tagProto {
   char *cryptwork;
   char *jencodecopy;
   char *jencodeout;
-  char *compresswork;  /* these work has bigger size (3times)*/
+  char *compresswork;  /* these work has bigger size (3times) */
   char **token_list;   /* token list */
-  unsigned message_id; /*= 1,  */ /* for generating message IDs */
+  unsigned message_id; /* = 1, for generating message IDs */
 } TagProto;
 
 #endif // __UTILS_PROTO_H__

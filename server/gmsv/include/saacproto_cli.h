@@ -1,7 +1,7 @@
 #ifndef __SAACPROTO_CLI_H__
 #define __SAACPROTO_CLI_H__
-#include "saacproto_util.h"
 #include "version.h"
+#include "saacproto_util.h"
 #ifdef _CHARADATA_SAVE_SQL
 #include "longzoro/characters.h"
 #endif
@@ -42,19 +42,18 @@ void saacproto_ACCharList_send(int fd, char *id, char *pas, char *ip, char *mac,
 #endif
 
 void saacproto_ACCharList_recv(int fd, char *result, char *output, int id);
-void saacproto_ACCharLoad_send(int fd, char *id, char *pas, char *charname,
-                               int lock, char *opt, int mesgid);
-void saacproto_ACCharLoad_recv(
-    int fd, char *result, char *data, int id,
-    int saveindex); /* ../../doc/saacproto.html line 185 */
+void saacproto_ACCharLoad_send(int fd, char *id, char *pas, char *char_name,
+                               int lock, char *opt, const int msg_id);
+void saacproto_ACCharLoad_recv(int fd, char *result, char *data,
+                               const int id, const int save_index);
 #ifdef _NEWSAVE
 void saacproto_ACCharSave_send(
     int fd, char *id, char *charname, char *opt, char *charinfo, int unlock,
-    int mesgid, int saveindex); /* ../../doc/saacproto.html line 201 */
+    int mesgid, int saveindex);
 #else
 void saacproto_ACCharSave_send(
     int fd, char *id, char *charname, char *opt, char *charinfo, int unlock,
-    int mesgid); /* ../../doc/saacproto.html line 201 */
+    int mesgid);
 #endif
 void saacproto_ACCharSave_recv(int fd, char *result, char *data,
                                int id); /* ../../doc/saacproto.html line 224 */
@@ -119,15 +118,16 @@ void saacproto_DBGetEntryByCount_send(int fd, char *table, int count_start,
 void saacproto_DBGetEntryByCount_recv(int fd, char *result, char *list,
                                       char *table, int count_start, int msgid,
                                       int msgid2);
-void saacproto_Broadcast_send(int fd, char *id, char *charname, char *message,
-                              int flag);
-void saacproto_Broadcast_recv(int fd, char *id, char *charname, char *message);
+void saacproto_Broadcast_send(int fd, const char *id, const char *char_name,
+                              const char *message, int flag);
+void saacproto_Broadcast_recv(int fd, const char *id, const char *char_name,
+                              const char *message);
 void saacproto_Message_send(int fd, char *id_from, char *charname_from,
                             char *id_to, char *charname_to, char *message,
                             int option);
-void saacproto_Message_recv(int fd, char *id_from, char *charname_from,
-                            char *id_to, char *charname_to, char *message,
-                            int option, int mesgid);
+void saacproto_Message_recv(const int fd, const char *id_from, const char *char_name_from,
+                            const char *id_to, const char *char_name_to, const char *message,
+                            const int option, const int mesgid);
 void saacproto_MessageAck_send(int fd, char *id, char *charname, char *result,
                                int mesgid);
 void saacproto_MessageFlush_send(int fd, char *id, char *charname);

@@ -1,6 +1,6 @@
 #ifndef __LSSPROTO_UTIL_H__
 #define __LSSPROTO_UTIL_H__
-#include "utils/proto.h"
+#include "net/proto.h"
 #ifndef WIN32
 #include <strings.h>
 #include <unistd.h>
@@ -15,8 +15,8 @@ char **lssproto_stringwrapper;
 char lssproto_readlogfilename[1024];
 char lssproto_writelogfilename[1024];
 #else
-extern char **lssproto_stringwrapper;
 extern TagProto lssproto;
+extern char **lssproto_stringwrapper;
 extern char lssproto_readlogfilename[1024];
 extern char lssproto_writelogfilename[1024];
 #endif

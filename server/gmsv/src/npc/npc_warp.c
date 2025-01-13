@@ -52,7 +52,7 @@ BOOL NPC_WarpInit( int charaindex )
 		CHAR_setWorkInt( charaindex, CHAR_WORKEVENTTYPE, CHAR_EVENT_WARP);
 	}else	{
 #endif
-#ifdef _MAP_WARPPOINT
+#ifdef __MAP_WARP_POINT
 		return FALSE;
 #endif
 #ifdef _RECORD_NPCMAN_ //纪录

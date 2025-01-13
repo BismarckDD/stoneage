@@ -114,9 +114,7 @@ BOOL MAP_readMapConfFile(char *filename) {
     pohcd(line, " \t");
     dchop(line, " \t");
 
-    if (line[0] == '#')
-      continue;
-    if (line[0] == '\n')
+    if (line[0] == '#' || line[0] == '\n')
       continue;
     chomp(line);
     ret = getStringFromIndexWithDelim(line, " ", 1, imgnum, sizeof(imgnum));
@@ -251,9 +249,7 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
     pohcd(line, " \t");
     dchop(line, " \t");
 
-    if (line[0] == '#')
-      continue;
-    if (line[0] == '\n')
+    if (line[0] == '#' || line[0] == '\0')
       continue;
     chomp(line);
 
@@ -420,16 +416,13 @@ FCLOSERETURNTRUE:
 }
 
 BOOL MAP_readMapOne(char *filename) {
-  FILE *f;      /*  �����̻�    */
+  FILE *f;
   char buf[16]; /*  Ѩ�����͹ϼ����  ����  */
   short data[1024]; /*  �������  ������������  */
   int ret;          /*  ߯Ի��������Ի��        */
-  int i;            /*  �����  ��  */
+  int i;
   int mapindex;
-
-  int id = 0, xsiz = 0,
-      ysiz =
-          0; /*  Ѩ���󷸡���������ɡ  ����  */
+  int id = 0, xsiz = 0, ysiz =  0;
 
   unsigned short *tile = NULL;
   unsigned short *obj = NULL;
@@ -475,16 +468,6 @@ BOOL MAP_readMapOne(char *filename) {
     errorprint;
     goto FCLOSERETURNFALSE;
   }
-
-  /*
-      FILE* fff = fopen( "map" , "a+" );
-      if(fff != NULL){
-        char token[256];
-        sprintf( token, "ID:%d, ����:%s, ·��:%s\n", id, showstring, filename );
-        fwrite(token, strlen(token), 1, fff);
-        fclose(fff);
-      }
-  */
 
   showstring[arraysizeof(showstring) - 1] = '\0';
   ret = fread(data, sizeof(short), 1, f);
@@ -557,27 +540,9 @@ BOOL MAP_readMapOne(char *filename) {
              (int)(i / xsiz), obj[i]);
       invaliddata = TRUE;
     }
-    /*
-    else{
-        fprint(
-            "��ͼ��ͼƬΪ:%d x:%d y:%d ����:%d\n",
-            id, i % xsiz, (int)(i / xsiz) , obj[i]);
-
-    }
-    */
   }
   if (invaliddata)
     goto FREELINK;
-  /*    if( ftell(f) != filestat.st_size)
-          fprintf(stderr,"�ļ���С����ȷ(%s). Ŀ���ļ���С:%"
-  #ifdef linux
-                  "l"
-  #elif __FreeBSD__
-                  "ll"
-  #endif
-                  "d ʵ�ʴ�С:%ld\n",
-                  filename, filestat.st_size,ftell(f));
-  */
 
   for (i = 0; i < xsiz * ysiz; i++)
     olink[i] = NULL;
@@ -872,7 +837,7 @@ char *MAP_getdataFromRECT(int floor, RECT *seekr, RECT *realr) {
             break;
           }
         }
-#ifdef _MAP_WARPPOINT
+#ifdef __MAP_WARP_POINT
         else if (OBJECT_getType(o) == OBJTYPE_WARPPOINT) {
           int etype = OBJECT_getchartype(o);
           if (etype != CHAR_EVENT_NONE) {
@@ -962,7 +927,7 @@ char *MAP_getChecksumFromRECT(int floor, RECT *seekr, RECT *realr, int *tilesum,
             break;
           }
         }
-#ifdef _MAP_WARPPOINT
+#ifdef __MAP_WARP_POINT
         else if (OBJECT_getType(o) == OBJTYPE_WARPPOINT) {
           int etype = OBJECT_getchartype(o);
           if (etype != CHAR_EVENT_NONE) {
@@ -1132,69 +1097,6 @@ BOOL MAP_IsValidCoordinate(int floor, int x, int y) {
   return TRUE;
 }
 
-int MAP_attackSpecificPoint(int floor, int x, int y, int damage,
-                            int charaindex) {
-#if 0
-    int     mapindex;
-    int     xsiz;
-    int     objimagenumber;
-
-    mapindex = MAP_getfloorIndex(floor);
-    if( mapindex == -1 ) {
-      print( "%s:%d:err\n", __FILE__, __LINE__);
-      return 5;
-  }
-    xsiz = MAP_map[mapindex].xsiz;
-    if( 0 > x || x >= xsiz || 0 >y || y >= MAP_map[mapindex].ysiz ) {
-      print( "%s:%d:err\n", __FILE__, __LINE__);
-        return 5;
-  }
-    if( damage <= 0 )return 5;
-
-    objimagenumber = MAP_map[mapindex].obj[x+y*xsiz];
-
-    if( MAP_getImageInt( objimagenumber,MAP_DEFENCE ) > 0 ){
-        MAP_map[mapindex].objhp[x+y*xsiz] -= damage;
-        if( MAP_map[mapindex].objhp[x+y*xsiz] < 0 ){
-            MAP_map[mapindex].obj[x+y*xsiz] = 0;
-#if 1
-            {
-                char *stringdata;
-                RECT seekr , retr;
-                seekr.x = x;
-                seekr.y = y;
-                seekr.width = 1;
-                seekr.height = 1;
-                stringdata = MAP_getdataFromRECT(floor,&seekr,&retr);
-                if( stringdata ){
-                    print("RINGO: RETR: %d %d %d %d\n",
-                          retr.x,retr.y,retr.width,retr.height);
-                    if( CHAR_getInt( charaindex , CHAR_WHICHTYPE )
-                        == CHAR_TYPEPLAYER ){
-                        int fd = getfdFromCharaIndex( charaindex );
-                        lssproto_M_send(fd,floor, retr.x, retr.y,
-                                        retr.x + retr.width, retr.y + retr.height,
-                                        stringdata );
-                    }
-                } else {
-                    print("RINGO: bad stringdata. %d %d %d %d\n",
-                          seekr.x,seekr.y,seekr.width,seekr.height);
-
-                }
-
-            }
-#endif
-            return 1;
-        }
-        return 2;
-    }
-
-    if( MAP_getImageInt(MAP_map[mapindex].obj[y*xsiz+x],MAP_HAVEHEIGHT )
-        == 0 )
-        return 4;
-#endif
-  return 3;
-}
 BOOL MAP_appendTailObj(int floor, int x, int y, int objindex) {
   int mapindex;
   int xsiz;
@@ -1217,8 +1119,6 @@ BOOL MAP_appendTailObj(int floor, int x, int y, int objindex) {
   if (top == NULL) {
     top = allocateMemory(sizeof(MAP_Objlink));
     if (top == NULL) {
-      // print( "%s:%d:err(fl=%d,x=%d,y=%d)\n", __FILE__, __LINE__, floor, x,
-      // y);
       return FALSE;
     }
     top->next = NULL;
@@ -1274,11 +1174,8 @@ BOOL MAP_removeObj(int floor, int x, int y, int objindex) {
 
 BOOL _MAP_objmove(char *file, int line, int objindex, int ofloor, int ox,
                   int oy, int nfloor, int nx, int ny) {
-#if 1
-
   int oldmapindex;
   int oldxsiz;
-
   int dataindex;
   MAP_Objlink *c;
   MAP_Objlink *last = NULL;
@@ -1354,11 +1251,6 @@ BOOL _MAP_objmove(char *file, int line, int objindex, int ofloor, int ox,
     c->next->next = NULL;
     return TRUE;
   }
-#else
-  if (MAP_removeObj(ofloor, ox, oy, objindex) &&
-      MAP_appendTailObj(nfloor, nx, ny, objindex))
-    return TRUE;
-#endif
   print("%s:%d:����\n", __FILE__, __LINE__);
   return FALSE;
 }
@@ -1609,25 +1501,6 @@ int MAP_savePlayerMap(int charaindex, int ff, int fx, int fy, int tile,
       break;
     }
   }
-  /*
-    if(i==Player_Diy_Map_NUM){
-      for(i=0;i<Player_Diy_Map_NUM;i++){
-        if(PlayerDiyMap[i].ff==0){
-          PlayerDiyMap[i].ff=ff;
-          strcpy( PlayerDiyMap[i].cdkey, CHAR_getChar(charaindex, CHAR_CDKEY));
-          if( tile != -1 ){
-            MAP_map[floorindex].tile[fy*xsiz+fx] = tile;
-            PlayerDiyMap[i].MapPic[fx][fy].tile=tile;
-          }
-          if( obj != -1 ){
-            MAP_map[floorindex].obj[fy*xsiz+fx] = obj;
-            PlayerDiyMap[i].MapPic[fx][fy].obj=obj;
-          }
-          break;
-        }
-      }
-    }
-  */
   if (i < Player_Diy_Map_NUM) {
     char map[Player_Diy_Map_SIZE];
     memcpy(&map, &PlayerDiyMap[i], sizeof(PlayerDiyMap[i]));
@@ -1797,7 +1670,7 @@ BOOL MAP_DelMap(int mapid) {
   freeMemory(MAP_map[tomapindex].olink); // �ͷŵ�������
   MAP_map[tomapindex].startpoint = -1; // �ͷ��˳���ͼ���͵�
   MAP_map[tomapindex].MapType = 0; // ��ͼ���ͣ� Ŀǰ����������
-  MAP_idjumptbl[mapid] = -1; // ��ͼ����
+  MAP_idjumptbl[mapid] = -1;
   return TRUE;
 }
 #endif

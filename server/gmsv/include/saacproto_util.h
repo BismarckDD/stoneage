@@ -1,6 +1,6 @@
 #ifndef __SAACPROTO_UTIL_H__
 #define __SAACPROTO_UTIL_H__
-#include "utils/proto.h"
+#include "net/proto.h"
 #ifndef WIN32
 #include <strings.h>
 #include <unistd.h>
