@@ -2597,8 +2597,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
           totalacfd = 0;
 #endif
           i_counter = 0;
-          item_max = ITEM_getITEM_itemnum();
-          total_item_use = ITEM_getITEM_UseItemnum();
+          item_max = ITEM_getITEM_sItemNum();
+          total_item_use = ITEM_getITEM_sUseItemNum();
           for (i = 0; i < ConnectLen; i++) {
             if ((Connect[i].use) && (i != acfd)) {
               if (CHAR_CHECKINDEX(Connect[i].charaindex))
@@ -3338,7 +3338,7 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
   {
 
     int i;
-    int item_max = ITEM_getITEM_itemnum();
+    int item_max = ITEM_getITEM_sItemNum();
     int item_use = 0;
 
     for (i = 0; i < item_max; i++) {

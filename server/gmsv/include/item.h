@@ -293,7 +293,6 @@ typedef struct tagItem {
   int data[ITEM_DATA_ENUM_MAX];
   STRING64 string[ITEM_DATACHARNUM];
   int workint[ITEM_WORKDATAINTNUM];
-
   void *functable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
 #ifdef _ALLBLUES_LUA_1_2
   lua_State *lua[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
@@ -301,7 +300,6 @@ typedef struct tagItem {
 #endif
 #ifdef _JZ_NEWSCRIPT_LUA
   STRING32 lua_charfunctable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
-
   void *sur_functable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
   STRING32 sur_charfunctable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
 #endif
@@ -345,14 +343,12 @@ INLINE int _ITEM_getInt(char *file, int line, int index, ITEM_DATA_ENUM item_dat
   _ITEM_setInt(__FILE__, __LINE__, Index, item_data_enum, data)
 INLINE int _ITEM_setInt(char *file, int line, int index, ITEM_DATA_ENUM item_data_enum,
                         int data);
-
 INLINE char *ITEM_getChar(int index, ITEM_DATACHAR item_data_enum);
 INLINE BOOL ITEM_setChar(int index, ITEM_DATACHAR item_data_enum, char *new);
-
 INLINE int ITEM_getWorkInt(int index, ITEM_WORKDATAINT item_data_enum);
 INLINE int ITEM_setWorkInt(int index, ITEM_WORKDATAINT item_data_enum, int data);
-INLINE int ITEM_getITEM_itemnum(void);
-INLINE int ITEM_getITEM_UseItemnum(void);
+INLINE int ITEM_getITEM_sItemNum(void);
+INLINE int ITEM_getITEM_sUseItemNum(void);
 INLINE BOOL ITEM_getITEM_use(int index);
 void ITEM_constructFunctable(int itemindex);
 #define ITEM_getFunctionPointer(itemindex, functype)                           \

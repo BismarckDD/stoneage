@@ -1,3 +1,4 @@
+#include "version.h"
 #include "chatmagic.h"
 #include "battle.h"
 #include "buf.h"
@@ -31,7 +32,6 @@
 #include "saacproto_cli.h"
 #include "trade.h"
 #include "util.h"
-#include "version.h"
 #include <malloc.h>
 #include <math.h>
 
@@ -855,7 +855,7 @@ void CHAR_CHAT_DEBUG_sysinfo(int charindex, char *message) {
   int whichtype = -1;
   int objnum = OBJECT_getNum();
 
-  int itemnum = ITEM_getITEM_itemnum();
+  int itemnum = ITEM_getITEM_sItemNum();
   int itemuse = 0;
 
   makeEscapeString(getGameservername(), name, sizeof(name));
@@ -4129,7 +4129,7 @@ void CHAR_CHAT_DEBUG_samecode(int charaindex, char *message) {
   int type = -1, j, total = 0;
   BOOL checkn = FALSE;
   int MAXPLAYER = CHAR_getPlayerMaxNum();
-  int MAXITEM = ITEM_getITEM_itemnum();
+  int MAXITEM = ITEM_getITEM_sItemNum();
   int MAXPET = CHAR_getPetMaxNum();
 
   if (getStringFromIndexWithDelim(message, " ", 1, buf1, sizeof(buf1)) == FALSE)

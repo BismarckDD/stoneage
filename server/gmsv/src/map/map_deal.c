@@ -11,7 +11,6 @@
 
 BOOL MAP_walkAbleFromPoint(int ff, int fx, int fy, BOOL isfly) {
   int map[2];
-
   if (!MAP_getTileAndObjData(ff, fx, fy, &map[0], &map[1])) {
     return FALSE;
   }
@@ -103,11 +102,11 @@ void MAP_preovered(int index) { MAP_dealprepostevent(index, FALSE); }
 
 void MAP_postovered(int index) { MAP_dealprepostevent(index, TRUE); }
 
-BOOL MAP_sendArroundCharNeedFD(int fd, int charaindex) {
+BOOL MAP_sendArroundCharNeedFD(int fd, int char_index) {
   char *stringdata;
-  int x = CHAR_getInt(charaindex, CHAR_X);
-  int y = CHAR_getInt(charaindex, CHAR_Y);
-  int fl = CHAR_getInt(charaindex, CHAR_FLOOR);
+  int x = CHAR_getInt(char_index, CHAR_X);
+  int y = CHAR_getInt(char_index, CHAR_Y);
+  int fl = CHAR_getInt(char_index, CHAR_FLOOR);
   int size = MAP_CHAR_DEFAULTSEESIZ;
   RECT seekr, retr;
   seekr.x = x - (int)(size / 2);
@@ -137,21 +136,11 @@ BOOL MAP_sendArroundCharNeedFD(int fd, int charaindex) {
   return TRUE;
 }
 
-/*----------------------------------------
- * �ޥåץǡ��������롣
- * ����
- *  charaindex      int     �����Υ���ǥå���
- * �֤���
- *  ����    TRUE(1)
- *  ����    FALSE(0)
- ----------------------------------------*/
-BOOL MAP_sendArroundChar(int charaindex) {
-  int fd;
-  fd = getfdFromCharaIndex(charaindex);
+BOOL MAP_sendArroundChar(int char_index) {
+  const int fd = getfdFromCharaIndex(char_index);
   if (fd == -1)
     return FALSE;
-
-  return MAP_sendArroundCharNeedFD(fd, charaindex);
+  return MAP_sendArroundCharNeedFD(fd, char_index);
 }
 #ifdef _MO_LNS_NLGSUOXU
 static int YCXX[] = {
@@ -1466,68 +1455,66 @@ static int SMDXY[] = {
     110, 95,  99,  100, 101, 102, 103, 104, 105, 106, 107, 96,  107, 97,  98,
     99,  100, 101, 102, 103, 104, 105, 106, 107, 108};
 
-int QuBiao(int MapId) {
+int QuBiao(const int map_id) {
   int Xy = -1;
   int biao = -1;
-
-  if (MapId == 2000) { // ���
+  if (map_id == 2000) {
     Xy = rand() % 1019;
     biao = YCXX[Xy] * 1000;
     biao += YCXY[Xy];
-  } else if (MapId == 3000) { // �ӼӴ�
+  } else if (map_id == 3000) {
     Xy = rand() % 456;
     biao = JJXX[Xy] * 1000;
     biao += JJXY[Xy];
-  } else if (MapId == 1000) { // ����
+  } else if (map_id == 1000) {
     Xy = rand() % 790;
     biao = KLXX[Xy] * 1000;
     biao += KLXY[Xy];
-  } else if (MapId == 4000) { // ����
+  } else if (map_id == 4000) {
     Xy = rand() % 1109;
     biao = SCXX[Xy] * 1000;
     biao += SCXY[Xy];
-  } else if (MapId == 5000) { // ����
+  } else if (map_id == 5000) {
     Xy = rand() % 280;
     biao = FCXX[Xy] * 1000;
     biao += FCXY[Xy];
-  } else if (MapId == 3400) { // �濩��
+  } else if (map_id == 3400) {
     Xy = rand() % 272;
     biao = QGGXX[Xy] * 1000;
     biao += QGGXY[Xy];
-  } else if (MapId == 5100) { // ����
+  } else if (map_id == 5100) {
     Xy = rand() % 201;
     biao = DNXX[Xy] * 1000;
     biao += DNXY[Xy];
-  } else if (MapId == 1100) { // �ɰ´�
+  } else if (map_id == 1100) {
     Xy = rand() % 1263;
     biao = KAXX[Xy] * 1000;
     biao += KAXY[Xy];
-  } else if (MapId == 3100) {
+  } else if (map_id == 3100) {
     Xy = rand() % 783;
     biao = TMXX[Xy] * 1000;
     biao += TMXY[Xy];
-  } else if (MapId == 1400) {
+  } else if (map_id == 1400) {
     Xy = rand() % 697;
     biao = KTXX[Xy] * 1000;
     biao += KTXY[Xy];
-  } else if (MapId == 3300) { // ��³����
+  } else if (map_id == 3300) {
     Xy = rand() % 401;
     biao = WLXX[Xy] * 1000;
     biao += WLXY[Xy];
-  } else if (MapId == 1300) { // �����ش�
+  } else if (map_id == 1300) {
     Xy = rand() % 1016;
     biao = HETXX[Xy] * 1000;
     biao += HETXY[Xy];
-  } else if (MapId == 3200) { // ����
+  } else if (map_id == 3200) {
     Xy = rand() % 484;
     biao = DDXX[Xy] * 1000;
     biao += DDXY[Xy];
-  } else if (MapId == 400) { // ɳķ��
+  } else if (map_id == 400) {
     Xy = rand() % 1330;
     biao = SMDXX[Xy] * 1000;
     biao += SMDXY[Xy];
   }
-
   return biao;
 }
 #endif

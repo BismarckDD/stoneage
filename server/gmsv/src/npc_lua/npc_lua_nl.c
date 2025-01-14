@@ -9,8 +9,6 @@
 #include "npc_eventaction.h"
 #include "battle.h"
 #include "readmap.h"
-#include <stdio.h>
-#include <string.h>
 #include "autil.h"
 #include "config_file.h"
 #include "enemy.h"
@@ -23,8 +21,6 @@ extern unsigned int M_Create_Num;
 static char Buff_Data[1024*64];
 static int Check_Num=0;
 
-
-//////////////////////////////////////////////////////////////////////////////
 int NPC_Lua_NL_GetErrorStr(lua_State *_NLL)
 {
 	CheckEx(_NLL, 0);
@@ -238,7 +234,7 @@ BOOL NPC_Lua_NL_ANSI_ItemLoop(lua_State *_NLL)
 		LRetBool(_NLL, TRUE);
 		return;
 	}
-	int itemnum = ITEM_getITEM_itemnum();
+	int itemnum = ITEM_getITEM_sItemNum();
 	for( i = indexn ; i < itemnum ; i++) {
 		if( ITEM_CHECKINDEX(i) ){
 			indexn++;
@@ -270,7 +266,7 @@ BOOL NPC_Lua_NL_PetLoopGetNext(lua_State *_NLL)
 
 int NPC_Lua_NL_ItemLoopGetNext(lua_State *_NLL)
 {
-	int itemnum = ITEM_getITEM_itemnum();
+	int itemnum = ITEM_getITEM_sItemNum();
 	CheckEx(_NLL, 1);
 	int i;
 	char *TM_FuncName = lua_tostring(_NLL, 1);

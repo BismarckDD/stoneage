@@ -289,14 +289,15 @@ int DelMapPoint(int warp_point_idx) // 卸载地图传送点
   return TRUE; // 注意设置传送点时先检查是否原来有传送点
 }
 
-int SetMapPoint(char *line) // 加载地图传送点
-{                           // "传送点类型:NULL:2000,50,50:2006,20,20:？"
+int SetMapPoint(char *line) {
+  // 加载地图传送点 
+  // NULL:2000,50,50:2006,20,20:？"
+  // from map(2000)(x:50,y:50) -> MAP(2006)(x:20,y:20)
   if (map_warp_point_num >= MAX_MAP_WARP_POINT) {
     print("传送点已达上限！\n");
     return -1;
   }
   char segment[256];
-  char line2[256];
   int objtype, i;
   if (getStringFromIndexWithDelim(line, ":", 1, segment, sizeof(segment)) ==
       FALSE) // 找出传送点类型
@@ -332,16 +333,14 @@ int SetMapPoint(char *line) // 加载地图传送点
     return -7;
   }
   memset(segment, 0, sizeof(segment));
-  if (getStringFromIndexWithDelim(line, ":", 4, segment, sizeof(segment)) ==
-      FALSE) {
+  if (getStringFromIndexWithDelim(line, ":", 4, segment, sizeof(segment)) == FALSE) {
     return -8;
   }
   if (MAPPOINT_setMapWarpGoal(i, segment) == -1) {
     return -9;
   }
   memset(segment, 0, sizeof(segment));
-  if (getStringFromIndexWithDelim(line, ":", 5, segment, sizeof(segment)) ==
-      FALSE) {
+  if (getStringFromIndexWithDelim(line, ":", 5, segment, sizeof(segment)) == FALSE) {
     return -10;
   }
   map_warp_point[i].use = 1;

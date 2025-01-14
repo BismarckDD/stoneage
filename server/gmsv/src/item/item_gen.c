@@ -155,10 +155,8 @@ int ITEM_initItemIngCache(void) {
     print("icache is NULL.\n");
     return FALSE;
   }
-
   print("IngCache %4.2f MB ...\n",
         sizeof(struct ingcache) * icache_num / 1024.0 / 1024.0);
-
   remove("old_icache.txt");
   memset(icache, 0, icache_num * sizeof(struct ingcache));
   for (i = 0; i < icache_num; i++) {

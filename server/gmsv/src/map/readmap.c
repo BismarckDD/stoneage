@@ -1504,16 +1504,13 @@ int MAP_savePlayerMap(int charaindex, int ff, int fx, int fy, int tile,
   if (i < Player_Diy_Map_NUM) {
     char map[Player_Diy_Map_SIZE];
     memcpy(&map, &PlayerDiyMap[i], sizeof(PlayerDiyMap[i]));
-
     char filename[128];
     sprintf(filename, "playermap/%d", ff);
     FILE *fp = fopen(filename, "wb");
-
     fwrite(map, sizeof(map), 1, fp);
     fclose(fp);
     return TRUE;
   }
-
   return FALSE;
 }
 
@@ -1528,15 +1525,14 @@ int MAP_getfloorId(int index) {
 }
 #ifdef _MO_LNS_MAPSUOXU
 BOOL MAP_SetExWarp(int mapid, int fl, int x, int y, int type) {
-  int tomapindex = MAP_getfloorIndex(mapid);
+  const int tomapindex = MAP_getfloorIndex(mapid);
   if (tomapindex == -1) {
     print("�Ҳ���Ŀ���ͼ����ȷ�ϵ�ͼID�Ƿ���ȷ��\n");
     return FALSE;
   }
 
   MAP_map[tomapindex].startpoint = (fl << 16) + (x << 8) + (y << 0);
-  MAP_map[tomapindex].MapType = type; // ��ͼ���ͣ� Ŀǰ����������
-                                      // �����޸ĵ�Ȩ��
+  MAP_map[tomapindex].MapType = type;
   return TRUE;
 }
 
@@ -1547,7 +1543,7 @@ int MAP_makenew(int mapid, char *map_name) {
     print("�Ҳ���Ŀ���ͼ����ȷ�ϵ�ͼID�Ƿ���ȷ��\n");
     return -1;
   }
-  int mapstartid = getCopymapstartingID(); // ��ø�����ͼ��ʼID
+  int mapstartid = getCopymapstartingID();
   for (j = mapstartid; j < mapstartid + 9999; j++) // ����һ����ͼID
   {
     for (i = 0; i < MAP_mapnum_index; i++) // �������е�ͼ��ID
@@ -1564,12 +1560,9 @@ int MAP_makenew(int mapid, char *map_name) {
     print("������ͼID�Ե������ޣ���ע�⼰ʱ�ͷ�һЩ����Ҫ�ĵ�ͼ\n");
     return -1;
   }
-  for (i = 0; i < MAP_mapnum_index;
-       i++) // ����һ���ռ䣬�Ƿ��б��ͷţ�����У�����Ҫ���¿��ٿռ��ˡ�
-  {
+  for (i = 0; i < MAP_mapnum_index; ++i)
     if (MAP_map[i].id == 0)
       break;
-  }
   makemapindex = i;
   if (makemapindex >= MAP_mapnum) { // û���㹻�Ŀռ�װ���µĵ�ͼ������10���µĿռ���װ�µ�ͼ��
     //    print( "û���㹻���ڴ棬���·����ڴ档\n");
@@ -1588,7 +1581,6 @@ int MAP_makenew(int mapid, char *map_name) {
       print("���·����ͼ�ڴ�ʧ�ܣ�\n");
       return -1;
     }
-    //      print( "���·����ͼ�ڴ�ɹ���\n");
     memcpy(MAP_map, MAP_map2,
            sizeof(MAP_Map) * (MAP_mapnum - 100)); // ����֮ǰ������
     freeMemory(MAP_map2);
@@ -1606,17 +1598,17 @@ int MAP_makenew(int mapid, char *map_name) {
   }
 
   obj = allocateMemory(sizeof(short) * MAP_map[tomapindex].xsiz *
-                       MAP_map[tomapindex].ysiz); // �����ͼ�����ڴ�
+                       MAP_map[tomapindex].ysiz);
   if (obj == NULL) {
-    print("�޷������ڴ����ͼ����\n");
+    print("[map]OBJ memory allocate failed.\n");
     freeMemory(tile);
     return -1;
   }
 
   olink = allocateMemory(sizeof(MAP_Objlink *) * MAP_map[tomapindex].xsiz *
-                         MAP_map[tomapindex].ysiz); // �����ͼ�����ڴ�
+                         MAP_map[tomapindex].ysiz);
   if (olink == 0) {
-    print("�޷������ڴ����ͼ����\n");
+    print("[map]olink memory allocate failed.\n");
     freeMemory(obj);
     return -1;
   }
@@ -1641,7 +1633,7 @@ int MAP_makenew(int mapid, char *map_name) {
   MAP_map[makemapindex].obj = obj;
   MAP_map[makemapindex].olink = olink;
   MAP_map[makemapindex].startpoint =
-      (2006 << 16) + (20 << 8) + (15 << 0); // Ĭ��Ϊ���ͻ����峤��
+      (2006 << 16) + (20 << 8) + (15 << 0);
   MAP_map[makemapindex].MapType = 0;
 
   MAP_idjumptbl[mymapid] = makemapindex;
@@ -1669,7 +1661,7 @@ BOOL MAP_DelMap(int mapid) {
     freeMemory(MAP_map[tomapindex].obj); // �ͷŵ�������
   freeMemory(MAP_map[tomapindex].olink); // �ͷŵ�������
   MAP_map[tomapindex].startpoint = -1; // �ͷ��˳���ͼ���͵�
-  MAP_map[tomapindex].MapType = 0; // ��ͼ���ͣ� Ŀǰ����������
+  MAP_map[tomapindex].MapType = 0;
   MAP_idjumptbl[mapid] = -1;
   return TRUE;
 }

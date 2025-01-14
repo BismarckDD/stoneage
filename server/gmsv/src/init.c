@@ -257,14 +257,14 @@ BOOL init(int argc, char **argv, char **env) {
     print("PetDeleteTime: %d\n", getPetdeletetime());
     print("ItemDeleteTime: %d\n", getItemdeletetime());
 #ifdef _DEL_DROP_GOLD
-    print("ʯ�����ʱ��: %d\n", getGolddeletetime());
+    print("金币消失时间: %d\n", getGolddeletetime());
 #endif
     print("角色存储消息间隔: %d\n", getCharSavesendinterval());
     print("通信录离线消息数量: %d\n", getAddressbookoffmsgnum());
     print("通信协议读取频率: %d\n", getProtocolreadfrequency());
     print("程序中允许出错的数量: %d\n", getAllowerrornum());
 #ifdef _GET_BATTLE_EXP
-    print("ս�����鱶��: %d��\n", getBattleexp());
+    print("BattleEXP?: %d\n", getBattleexp());
 #endif
 #ifdef _NEW_PLAYER_CF
     print("NewPlayerTrans: %d\n", getNewplayertrans());
@@ -453,15 +453,15 @@ BOOL init(int argc, char **argv, char **env) {
   if (!CHAR_initInvinciblePlace(getInvfile()))
     goto CLOSEBIND;
   print("succeed.\n");
-  print("��ȡ��ʾλ���ļ�......");
+  print("Start to init appear position......");
   if (!CHAR_initAppearPosition(getAppearfile()))
     goto CLOSEBIND;
   print("succeed.\n");
-  print("��ȡͷ�������ļ�......");
+  print("Start to init title name......");
   if (!TITLE_initTitleName(getTitleNamefile()))
     goto CLOSEBIND;
   print("succeed.\n");
-  print("��ȡͷ�������ļ�......");
+  print("Start to init title......");
   if (!TITLE_initTitleConfig(getTitleConfigfile()))
     goto CLOSEBIND;
   print("succeed.\n");

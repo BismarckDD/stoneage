@@ -624,7 +624,7 @@ int NPC_Lua_Item_GetItemOwner(lua_State *_NLL)
 int NPC_Lua_Item_GetMaxItemIndex(lua_State *_NLL)
 {
 	CheckEx(_NLL, 0);
-	int itemnum = ITEM_getITEM_itemnum();
+	int itemnum = ITEM_getITEM_sItemNum();
 	LRetInt(_NLL, itemnum);
 }
 

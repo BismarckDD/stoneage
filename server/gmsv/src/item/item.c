@@ -14,11 +14,11 @@
 #ifdef _ALLBLUES_LUA_1_2
 ITEM_LuaFunc ITEM_luaFunc;
 #endif
-static int ITEM_tblen = 0;
-static int ITEM_idxlen = 0;
+static int ITEM_sTableLen = 0;
+static int ITEM_sIndexLen = 0;
+static int ITEM_sItemNum = 0;
+static int ITEM_sUseItemNum = 0;
 ITEM_exists *ITEM_item;
-static int ITEM_itemnum;
-static int ITEM_UseItemnum = 0;
 static char *ITEM_checkString(char *string);
 static int ITEM_getRandomValue(char *string, int *randomwidth, int num);
 static int ITEM_isstring1or0(char *string, int *randomwidth, int num);
@@ -169,33 +169,32 @@ ITEM_intDataSetting ITEM_setintdata[ITEM_DATA_ENUM_MAX] = {
     {"arr", 0},     /*ITEM_MODIFYARRANGE*/
     {"seqce", 0},   // ITEM_MODIFYSEQUENCE,
     {"iapi", 0},    // ITEM_ATTACHPILE
-    {"hirt", 0},    // ITEM_HITRIGHT		//��������
+    {"hirt", 0},    // ITEM_HITRIGHT
 #endif
 
 #ifdef _ITEMSET6_TXT
     {"neguard", 0}, // ITEM_NEGLECTGUARD
-                    //	{"bemerge", 0},					//ITEM_BEMERGE
+//	{"bemerge", 0},	// ITEM_BEMERGE
 #endif
-    {"mpo", 0},     /*  ITEM_POISON  */
-    {"mpa", 0},     /*  ITEM_PARALYSIS  */
-    {"msl", 0},     /*  ITEM_SLEEP  */
-    {"mst", 0},     /*  ITEM_STONE  */
-    {"mdr", 0},     /*  ITEM_DRUNK  */
-    {"mco", 0},     /*  ITEM_CONFUSION  */
-
-    {"mcr", 0}, /*  ITEM_CRITICAL  */
-
-    {"ua", -1},      /*  ITEM_USEACTION */
-    {"drlo", FALSE}, /*  ITEM_DROPATLOGOUT   */
-    {"valo", FALSE}, /*  ITEM_VANISHATLOGOUT */
-    {"ioed", TRUE},  /*  ITEM_ISOVERED   */
-    {"cpm", TRUE},   /*  ITEM_CANPETMAIL   */
-    {"cmf", TRUE},   /*  ITEM_CANMERGEFROM   */
-    {"cmt", TRUE},   /*  ITEM_CANMERGETO   */
-
-    {"ingv0", 0}, /*  ITEM_INGVALUE0 */
-    {"ingv1", 0},       {"ingv2", 0}, {"ingv3", 0}, {"ingv4", 0},
-
+    {"mpo", 0},      /* ITEM_POISON  */
+    {"mpa", 0},      /* ITEM_PARALYSIS  */
+    {"msl", 0},      /* ITEM_SLEEP  */
+    {"mst", 0},      /* ITEM_STONE  */
+    {"mdr", 0},      /* ITEM_DRUNK  */
+    {"mco", 0},      /* ITEM_CONFUSION  */
+    {"mcr", 0},      /* ITEM_CRITICAL  */
+    {"ua", -1},      /* ITEM_USEACTION */
+    {"drlo", FALSE}, /* ITEM_DROPATLOGOUT   */
+    {"valo", FALSE}, /* ITEM_VANISHATLOGOUT */
+    {"ioed", TRUE},  /* ITEM_ISOVERED   */
+    {"cpm", TRUE},   /* ITEM_CANPETMAIL   */
+    {"cmf", TRUE},   /* ITEM_CANMERGEFROM   */
+    {"cmt", TRUE},   /* ITEM_CANMERGETO   */
+    {"ingv0", 0},    /* ITEM_INGVALUE0 */
+    {"ingv1", 0}, 
+    {"ingv2", 0},
+    {"ingv3", 0},
+    {"ingv4", 0},
     {"ipt", 0}, /*  ITEM_PUTTIME    */
     {"ll", 0},  /*  ITEM_LEAKLEVEL  */
     {"mrf", 0}, /*  ITEM_MERGEFLG  */
@@ -389,7 +388,7 @@ ITEM_table *ITEM_tbl = NULL;
 ITEM_index *ITEM_idx = NULL;
 
 static INLINE BOOL ITEM_CHECKARRAYINDEX(int index) {
-  if (ITEM_itemnum <= (index) || (index) < 0)
+  if (ITEM_sItemNum <= (index) || (index) < 0)
     return FALSE;
   return TRUE;
 }
@@ -426,7 +425,7 @@ BOOL ITEM_initExistItemsArray(int num) {
   if (ITEM_checksetdata() == FALSE)
     return FALSE;
 
-  ITEM_itemnum = num;
+  ITEM_sItemNum = num;
 
   ITEM_item = allocateMemory(sizeof(ITEM_exists) * num);
   if (ITEM_item == NULL)
@@ -441,7 +440,7 @@ BOOL ITEM_initExistItemsArray(int num) {
     ITEM_item[i].use = FALSE;
   }
 
-  print("�ڶ��η��� %4.2f MB �ռ�...",
+  print("初始化已有物品数组，分配 %4.2f MB 空间......",
         sizeof(ITEM_exists) * num / 1024.0 / 1024.0);
   return TRUE;
 }
@@ -458,17 +457,17 @@ BOOL ITEM_endExistItemsIndexArray(ITEM_index *ITEM_item) {
 
 int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *itm) {
   int i;
-  int itemID = -1;
+  int item_id = -1;
   static int Sindex = 1;
-  itemID = itm->data[ITEM_ID];
+  item_id = itm->data[ITEM_ID];
   if (ITEM_CHECKITEMTABLE(itm->data[ITEM_ID]) == FALSE) {
     print("CHAR itemData err Item_id:%d=%s%d!!\n", itm->data[ITEM_ID], file,
           line);
     return -1;
   }
-  for (i = 0; i < ITEM_itemnum; i++) {
+  for (i = 0; i < ITEM_sItemNum; i++) {
     Sindex++;
-    if (Sindex >= ITEM_itemnum)
+    if (Sindex >= ITEM_sItemNum)
       Sindex = 1;
     if (Sindex < 1)
       Sindex = 1;
@@ -480,8 +479,8 @@ int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *itm) {
         int j;
         for (j = 0; j < CheckCharMaxItem(charaindex); j++) {
           if (CHAR_getItemIndex(charaindex, j) == Sindex) {
-            print("item.c: error! chara have this item charaindex[%d] "
-                  "itemindex[%d] Name(%s)POS(%d)NAME(%s)\n",
+            print("item.c: error! chara have this item char_index[%d] "
+                  "item_index[%d] Name(%s)POS(%d)NAME(%s)\n",
                   charaindex, Sindex, CHAR_getUseName(charaindex), j,
                   ITEM_item[Sindex].itm.string[ITEM_NAME].string);
             print("from %s:%d\n", file, line);
@@ -506,12 +505,12 @@ int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *itm) {
           }
         }
       }
-      ITEM_UseItemnum++;
+      ITEM_sUseItemNum++;
       ITEM_constructFunctable(Sindex);
       return Sindex;
     }
   }
-  fprint("��Ʒ����\n");
+  fprint("InitExistOne结束.\n");
   return -1;
 }
 
@@ -539,11 +538,10 @@ void _ITEM_endExistItemsOne(int index, char *file, int line) {
       }
     }
   }
-
   if (hitcnt < 1) {
     ITEM_item[index].use = FALSE;
     ITEM_item[index].itm.workint[ITEM_WORKCHARAINDEX] = -1;
-    ITEM_UseItemnum--;
+    ITEM_sUseItemNum--;
   }
 }
 
@@ -631,9 +629,9 @@ INLINE int ITEM_setWorkInt(int index, ITEM_WORKDATAINT element, int data) {
   return buf;
 }
 
-INLINE int ITEM_getITEM_itemnum(void) { return ITEM_itemnum; }
+INLINE int ITEM_getITEM_sItemNum(void) { return ITEM_sItemNum; }
 
-INLINE int ITEM_getITEM_UseItemnum(void) { return ITEM_UseItemnum; }
+INLINE int ITEM_getITEM_sUseItemNum(void) { return ITEM_sUseItemNum; }
 
 INLINE BOOL ITEM_getITEM_use(int index) {
   if (!ITEM_CHECKINDEX(index))
@@ -662,7 +660,7 @@ void *_ITEM_getFunctionPointer(int itemindex, int functype, char *file,
   if (!ITEM_CHECKINDEX(itemindex))
     return NULL;
   if (functype < ITEM_FIRSTFUNCTION || functype >= ITEM_LASTFUNCTION) {
-    print("���ʹ���:%d, �ļ�:%s,%d\n", functype, file, line);
+    print("GetFunctionFailed. func_type:%d, file:%s, line:%d\n", functype, file, line);
     return NULL;
   }
   return ITEM_item[itemindex].itm.functable[functype - ITEM_FIRSTFUNCTION];
@@ -743,7 +741,7 @@ INLINE lua_State *ITEM_getLUAFunction(int itemindex, int functype) {
 
 #endif
 
-int ITEM_getItemMaxIdNum(void) { return ITEM_idxlen; }
+int ITEM_getItemMaxIdNum(void) { return ITEM_sIndexLen; }
 
 BOOL ITEM_checksetdata(void) {
   int i;
@@ -780,7 +778,7 @@ BOOL ITEM_checksetdata(void) {
 
 static char ITEM_dataString[STRINGBUFSIZ];
 char *ITEM_makeStringFromItemIndex(int index, int mode) {
-  if (0 <= index && index < ITEM_itemnum && ITEM_item[index].use == TRUE)
+  if (0 <= index && index < ITEM_sItemNum && ITEM_item[index].use == TRUE)
     ;
   else
     return "\0";
@@ -788,10 +786,10 @@ char *ITEM_makeStringFromItemIndex(int index, int mode) {
 }
 
 #ifdef _SIMPLIFY_ITEMSTRING2
-BOOL CHECK_HaveBeSave(int itemID, int oneNum, int type) {
+BOOL CHECK_HaveBeSave(int item_id, int oneNum, int type) {
   if (ITEM_ID == type)
     return TRUE;
-  if (ITEMTBL_getInt(itemID, type) == oneNum)
+  if (ITEMTBL_getInt(item_id, type) == oneNum)
     return FALSE;
   return TRUE;
 }
@@ -804,8 +802,8 @@ char *ITEM_makeStringFromItemData(ITEM_Item *one, int mode) {
   int strlength = 0;
 
 #ifdef _SIMPLIFY_ITEMSTRING2
-  int itemID = one->data[ITEM_ID];
-  if (!ITEM_CHECKITEMTABLE(itemID))
+  int item_id = one->data[ITEM_ID];
+  if (!ITEM_CHECKITEMTABLE(item_id))
     return "\0";
 #endif
   if (mode == 0) {
@@ -820,7 +818,7 @@ char *ITEM_makeStringFromItemData(ITEM_Item *one, int mode) {
   for (i = 0; i < arraysizeof(ITEM_setintdata); i++) {
     char linedata[128];
 #ifdef _SIMPLIFY_ITEMSTRING2
-    if (!CHECK_HaveBeSave(itemID, one->data[ITEM_setintdata[i].table],
+    if (!CHECK_HaveBeSave(item_id, one->data[ITEM_setintdata[i].table],
                           ITEM_setintdata[i].table))
       continue;
 #endif
@@ -891,7 +889,7 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
 #ifdef _SIMPLIFY_ITEMSTRING
   {
 
-    int itemID = -1;
+    int item_id = -1;
     while (1) {
       char linebuf[512];
       char firstToken[256];
@@ -908,10 +906,10 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
         continue;
       strcpysafe(secondToken, sizeof(secondToken),
                  linebuf + strlen(firstToken) + strlen(delim1));
-      itemID = atoi(secondToken);
-      if (!ITEM_CHECKITEMTABLE(itemID))
+      item_id = atoi(secondToken);
+      if (!ITEM_CHECKITEMTABLE(item_id))
         return FALSE;
-      ITEM_getDefaultItemData(itemID, item);
+      ITEM_getDefaultItemData(item_id, item);
       break;
     }
     readindex = 1;
@@ -1011,16 +1009,16 @@ void ITEM_getDefaultItemSetting(ITEM_Item *itm) {
 }
 
 #ifdef _SIMPLIFY_ITEMSTRING
-void ITEM_getDefaultItemData(int itemID, ITEM_Item *itm) {
+void ITEM_getDefaultItemData(int item_id, ITEM_Item *itm) {
   int i;
   //	memset( itm, 0 , sizeof( ITEM_Item ));
 
   for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
-    itm->data[i] = ITEMTBL_getInt(itemID, i);
+    itm->data[i] = ITEMTBL_getInt(item_id, i);
   }
   for (i = 0; i < ITEM_DATACHARNUM; i++) {
     strcpysafe(itm->string[i].string, sizeof(itm->string[i].string),
-               ITEMTBL_getChar(itemID, i));
+               ITEMTBL_getChar(item_id, i));
   }
   for (i = 0; i < ITEM_WORKDATAINTNUM; i++) {
     itm->workint[i] = -1;
@@ -1085,248 +1083,155 @@ static char *ITEM_checkString(char *string) {
 #undef ITEM_STRINGLEN
 }
 
-BOOL ITEM_readItemConfFile(char *filename) {
-  FILE *f;
-  char line[512];
-  char token[64];
-  int linenum = 0;
-  int itemnum = 0;
-  int i;
-  int maxid = 0, itemid;
-  int ret;
-  int intdata[ITEM_DATA_ENUM_MAX];
+// 记录当前配置文件中最大的ItemId.
+int max_item_id = 0;
 
-  print("NORMAL: %s\n", filename);
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  print("CRYPTO_DATA: %s\n", realopfile);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    f = fopen(filename, "r");
-  }
-  if (f == NULL) {
-    print("read file!!!!(%s) failed.\n", filename);
-    return FALSE;
-  }
+// 主要用于寻找 max_item_id 和 line_num;
+void callbackReadItemConfigFile(int *line_num, const char *line) {
 #ifdef _ITEMSET2_ITEM
-
 #define ITEM_ID_TOKEN_INDEX 17
-
 #else
-
 #ifdef _ITEM_MAXUSERNUM
 #define ITEM_ID_TOKEN_INDEX 15
 #endif
-
 #endif
-  while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
-    linenum++;
-    if (line[0] == '#')
-      continue; /* comment */
-    if (line[0] == '\n')
-      continue; /* none    */
-    chomp(line);
+  char token[64];
+  int ret = getStringFromIndexWithDelim(line, ",", ITEM_ID_TOKEN_INDEX, token,
+                                    sizeof(token));
+  if (ret != TRUE) {
+    print("Failed to parse %s, %d\n", line, ITEM_ID_TOKEN_INDEX);
+    return;
+  }
+  const int item_id = atoi(token);
+  if (max_item_id < item_id) {
+    max_item_id = item_id;
+  }
+  ++(*line_num);
+}
 
-    ret = getStringFromIndexWithDelim(line, ",", ITEM_ID_TOKEN_INDEX, token,
-                                      sizeof(token));
+void callbackReadItemConfigFile2(int *line_num, const char *line)
+{
+  char token[256];
+  int intdata[ITEM_DATA_ENUM_MAX];
+  memset(intdata, 0, sizeof(intdata));
+  int ret, i, item_id;
+  int read_pos = 1;
+  BOOL data_error = FALSE;
+  ITEM_Item item;
+  ITEM_getDefaultItemSetting(&item);
+  for (i = 0; i < arraysizeof(ITEM_itemconfentries); i++) {
+    ret = getStringFromIndexWithDelim(line, ",", read_pos, token, sizeof(token));
     if (ret == FALSE) {
-      fprint("�ļ��������:%s ��:%d��\n", filename, linenum);
-      continue;
+      data_error = TRUE;
+      return;
     }
-    itemid = atoi(token);
-    if (itemid > maxid) {
-      maxid = itemid;
-    }
-    itemnum++;
-  }
+    if (read_pos == ITEM_ID_TOKEN_INDEX)
+      item_id = atoi(token);
+    ++read_pos;
+    if (strlen(token) != 0) {
+      switch (ITEM_itemconfentries[i].type) {
+      case ITEM_INTENTRY:
+        item.data[ITEM_itemconfentries[i].index] = atoi(token);
+        break;
+      case ITEM_CHARENTRY:
+        strcpysafe(item.string[ITEM_itemconfentries[i].index].string,
+                   sizeof(item.string[ITEM_itemconfentries[i].index].string),
+                   token);
+        break;
+      case ITEM_INTFUNC: {
+        int (*int_function)(char *, int *, int);
+        int_function = ITEM_itemconfentries[i].func;
+        item.data[ITEM_itemconfentries[i].index] = int_function(
+            line, &intdata[ITEM_itemconfentries[i].index], read_pos);
+        if (int_function == ITEM_getRandomValue)
+          ++read_pos;
 
-  if (maxid <= 0) {
-    print("���ID����\n");
-    fclose(f);
+      } break;
+      case ITEM_CHARFUNC: {
+        char *(*char_function)(char *);
+        char_function = ITEM_itemconfentries[i].func;
+        strcpysafe(item.string[ITEM_itemconfentries[i].index].string,
+                   sizeof(item.string[ITEM_itemconfentries[i].index].string),
+                   char_function(token));
+        break;
+      }
+      default:
+        break;
+      }
+    }
+  }
+  if (!data_error) {
+    if (item_id >= ITEM_sIndexLen) {
+      print("ITEM_tbl full:%d err!!!\n", item_id);
+    } else if (ITEM_idx[item_id].use == TRUE) {
+      print("Duplicate ItemId %d.ignore.\n", item_id);
+    } else {
+      if (item.string[ITEM_SECRETNAME].string[0] == '\0') {
+        fprint("ERROR: ID %d item doesn't have secretname\n", item_id);
+        memcpy(&item.string[ITEM_SECRETNAME].string,
+               &item.string[ITEM_NAME].string,
+               sizeof(item.string[ITEM_NAME].string));
+      }
+      
+      int attacknum_min, attacknum_max;
+      attacknum_min = item.data[ITEM_ATTACKNUM_MIN];
+      attacknum_max = item.data[ITEM_ATTACKNUM_MAX];
+      if (attacknum_min == 0)
+        attacknum_min = attacknum_max;
+      item.data[ITEM_ATTACKNUM_MIN] = min(attacknum_min, attacknum_max);
+      item.data[ITEM_ATTACKNUM_MAX] = max(attacknum_min, attacknum_max);
+      
+      memcpy(&ITEM_tbl[*line_num].itm, &item, sizeof(ITEM_Item));
+      ITEM_idx[item_id].use = TRUE;
+      ITEM_idx[item_id].index = *line_num;
+      for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
+        ITEM_tbl[*line_num].randomdata[i] = intdata[i];
+      }
+    }
+  } else {
+    print("Item Data Error.\n");
+  }
+}
+
+BOOL ITEM_readItemConfFile(char *filename) {
+  max_item_id = 0;
+  int line_num, i;
+  get_file_lines(filename, &line_num, callbackReadItemConfigFile);
+  if (max_item_id <= 0) {
+    print("Max item ID is illegal.\n");
     return FALSE;
   }
-
-  if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("��������\n");
-    fclose(f);
-    return FALSE;
-  }
-  print("��Ʒ���ID %d...", maxid);
-  ITEM_tblen = itemnum + 1;
-  ITEM_idxlen = maxid + 1;
+  print("Max Item ID: %d...", max_item_id);
+  ITEM_sTableLen = line_num + 1;
+  ITEM_sIndexLen = max_item_id + 1;
   if (ITEM_tbl != NULL)
     ITEM_endExistItemsArray(ITEM_tbl);
-  ITEM_tbl = allocateMemory(sizeof(ITEM_table) * ITEM_tblen);
+  ITEM_tbl = allocateMemory(sizeof(ITEM_table) * ITEM_sTableLen);
   if (ITEM_idx != NULL)
     ITEM_endExistItemsIndexArray(ITEM_idx);
-  ITEM_idx = allocateMemory(sizeof(ITEM_index) * ITEM_idxlen);
-
+  ITEM_idx = allocateMemory(sizeof(ITEM_index) * ITEM_sIndexLen);
   if (ITEM_tbl == NULL) {
-    fprint("�޷������ڴ� %d\n",
-           sizeof(ITEM_table) * ITEM_tblen);
-    fclose(f);
+    fprint("gItemTable is not allocated. %d\n",
+           sizeof(ITEM_table) * ITEM_sTableLen);
     return FALSE;
   }
   if (ITEM_idx == NULL) {
-    fprint("�޷������ڴ� %d\n",
-           sizeof(ITEM_index) * ITEM_idxlen);
-    fclose(f);
+    fprint("gItemIndex is not allocated. %d\n",
+           sizeof(ITEM_index) * ITEM_sIndexLen);
     return FALSE;
   }
-  print("ITEM_tbl���� %4.2f MB �ռ�...",
-        sizeof(ITEM_table) * ITEM_tblen / 1024.0 / 1024.0);
-  print("ITEM_idx���� %4.2f MB �ռ�...",
-        sizeof(ITEM_index) * ITEM_idxlen / 1024.0 / 1024.0);
-
-  for (i = 0; i < ITEM_idxlen; i++) {
+  print("gItemTable cost %4.2f MB ......",
+        sizeof(ITEM_table) * ITEM_sTableLen / 1024.0 / 1024.0);
+  print("gItemIndex cost %4.2f MB ......",
+        sizeof(ITEM_index) * ITEM_sIndexLen / 1024.0 / 1024.0);
+  for (i = 0; i < ITEM_sIndexLen; i++) {
     ITEM_idx[i].use = FALSE;
   }
-  linenum = 0;
-  itemnum = 0;
-  while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
-
-    linenum++;
-
-    if (line[0] == '#')
-      continue; /* comment */
-    if (line[0] == '\n')
-      continue; /* none    */
-    chomp(line);
-    replaceString(line, '\t', ' ');
-    itemnum++;
-    {
-      char buf[256];
-      for (i = 0; i < strlen(line); i++) {
-        if (line[i] != ' ') {
-          break;
-        }
-        strcpy(buf, &line[i]);
-      }
-      if (i != 0) {
-        strcpy(line, buf);
-      }
-    }
-    {
-      char token[256];
-      int ret;
-      int readpos = 1;
-      BOOL dataerror = FALSE;
-      ITEM_Item itm;
-
-      ITEM_getDefaultItemSetting(&itm);
-
-      for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
-        intdata[i] = 0;
-      }
-      itemid = 0;
-      for (i = 0; i < arraysizeof(ITEM_itemconfentries); i++) {
-        ret = getStringFromIndexWithDelim(line, ",", readpos, token,
-                                          sizeof(token));
-        if (ret == FALSE) {
-#ifdef _Item_ReLifeAct
-          {
-            char buf[256];
-            char buf1[256];
-            sscanf(line, "%s,%s", buf, buf1);
-            print("[ITEM data Error] tbl=%d:%s line:%d[%s]\n", readpos,
-                  ITEM_itemconfentries[i].entryname, linenum, line);
-          }
-#else
-          fprint("Syntax Error tki:%d file:%s line:%d[%s]\n", i, filename,
-                 linenum, line);
-#endif
-          dataerror = TRUE;
-          break;
-        }
-
-        if (readpos == ITEM_ID_TOKEN_INDEX)
-          itemid = atoi(token);
-
-        readpos++;
-
-        if (strlen(token) != 0) {
-          switch (ITEM_itemconfentries[i].type) {
-          case ITEM_INTENTRY:
-            itm.data[ITEM_itemconfentries[i].index] = atoi(token);
-            break;
-          case ITEM_CHARENTRY:
-            strcpysafe(itm.string[ITEM_itemconfentries[i].index].string,
-                       sizeof(itm.string[ITEM_itemconfentries[i].index].string),
-                       token);
-            break;
-          case ITEM_INTFUNC: {
-            int (*intfunction)(char *, int *, int);
-            intfunction = ITEM_itemconfentries[i].func;
-            itm.data[ITEM_itemconfentries[i].index] = intfunction(
-                line, &intdata[ITEM_itemconfentries[i].index], readpos);
-            if (intfunction == ITEM_getRandomValue)
-              readpos++;
-
-          } break;
-          case ITEM_CHARFUNC: {
-            char *(*charfunction)(char *);
-            charfunction = ITEM_itemconfentries[i].func;
-            strcpysafe(itm.string[ITEM_itemconfentries[i].index].string,
-                       sizeof(itm.string[ITEM_itemconfentries[i].index].string),
-                       charfunction(token));
-            break;
-          }
-          default:
-            break;
-          }
-        }
-      }
-      if (!dataerror) {
-        if (itemid >= ITEM_idxlen) {
-          print("ITEM_tbl full:%d err !!\n", itemid);
-        } else if (ITEM_idx[itemid].use == TRUE) {
-          fprint("Duplicate Itemid %d.ignore\n", itemid);
-        } else {
-          if (itm.string[ITEM_SECRETNAME].string[0] == '\0') {
-            fprint("ERROR: ID %d item doesn't have secretname\n", itemid);
-            memcpy(&itm.string[ITEM_SECRETNAME].string,
-                   &itm.string[ITEM_NAME].string,
-                   sizeof(itm.string[ITEM_NAME].string));
-          }
-          {
-            int attacknum_min, attacknum_max;
-            attacknum_min = itm.data[ITEM_ATTACKNUM_MIN];
-            attacknum_max = itm.data[ITEM_ATTACKNUM_MAX];
-            if (attacknum_min == 0)
-              attacknum_min = attacknum_max;
-            itm.data[ITEM_ATTACKNUM_MIN] = min(attacknum_min, attacknum_max);
-            itm.data[ITEM_ATTACKNUM_MAX] = max(attacknum_min, attacknum_max);
-          }
-          memcpy(&ITEM_tbl[itemnum].itm, &itm, sizeof(ITEM_Item));
-          ITEM_idx[itemid].use = TRUE;
-          ITEM_idx[itemid].index = itemnum;
-          for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
-            ITEM_tbl[itemnum].randomdata[i] = intdata[i];
-          }
-        }
-      }
-    }
-  }
-
-  fclose(f);
+  get_file_lines(filename, &line_num, callbackReadItemConfigFile2);
   return TRUE;
 }
+
+
 
 CHAR_EquipPlace ITEM_getEquipPlace(int charaindex, int itmid) {
   ITEM_CATEGORY cat;
@@ -2385,10 +2290,10 @@ char *ITEMTBL_getChar(int ItemID, ITEM_DATACHAR datatype) {
 }
 
 INLINE BOOL ITEM_CHECKITEMTABLE(int number) {
-  if (number < 0 || number >= ITEM_idxlen) {
+  if (number < 0 || number >= ITEM_sIndexLen) {
     // andy_log
-    print("ITEM_CHECKITEMTABLE() number:%d ITEM_tblen:%d !!\n", number,
-          ITEM_idxlen);
+    print("ITEM_CHECKITEMTABLE() number:%d ITEM_sTableLen:%d !!\n", number,
+          ITEM_sIndexLen);
     return FALSE;
   }
   return ITEM_idx[number].use; // new
@@ -2422,34 +2327,34 @@ void ITEM_RsetEquit(int charaindex) {
   }
 }
 
-void ITEM_reChangeItemToPile(int itemindex) {
-  int itemID;
-  if (!ITEM_CHECKINDEX(itemindex))
+void ITEM_reChangeItemToPile(int item_index) {
+  int item_id;
+  if (!ITEM_CHECKINDEX(item_index))
     return;
 
-  if (ITEM_getInt(itemindex, ITEM_USEPILENUMS) <= 0)
-    ITEM_setInt(itemindex, ITEM_USEPILENUMS, 1);
-  itemID = ITEM_getInt(itemindex, ITEM_ID);
-  if (!ITEM_CHECKITEMTABLE(itemID))
+  if (ITEM_getInt(item_index, ITEM_USEPILENUMS) <= 0)
+    ITEM_setInt(item_index, ITEM_USEPILENUMS, 1);
+  item_id = ITEM_getInt(item_index, ITEM_ID);
+  if (!ITEM_CHECKITEMTABLE(item_id))
     return;
-  if (itemID == 20284)
-    return; // ��ǹ�����⴦��
-  if (ITEM_getInt(itemindex, ITEM_CANBEPILE) !=
-      ITEMTBL_getInt(itemID, ITEM_CANBEPILE))
-    ITEM_setInt(itemindex, ITEM_CANBEPILE,
-                ITEMTBL_getInt(itemID, ITEM_CANBEPILE));
+  if (item_id == 20284)
+    return;
+  if (ITEM_getInt(item_index, ITEM_CANBEPILE) !=
+      ITEMTBL_getInt(item_id, ITEM_CANBEPILE))
+    ITEM_setInt(item_index, ITEM_CANBEPILE,
+                ITEMTBL_getInt(item_id, ITEM_CANBEPILE));
 }
 
 void ITEM_reChangeItemName(int itemindex) { // ITEM_NAME
   /*
-          int itemID;
+          int item_id;
           char *IDNAME;
           char *NAME;
           if( !ITEM_CHECKINDEX(itemindex) ) return;
-          itemID = ITEM_getInt( itemindex, ITEM_ID);
-          if( !ITEM_CHECKITEMTABLE( itemID) ) return;
+          item_id = ITEM_getInt( itemindex, ITEM_ID);
+          if( !ITEM_CHECKITEMTABLE( item_id) ) return;
 
-          IDNAME = ITEMTBL_getChar( itemID, ITEM_NAME);
+          IDNAME = ITEMTBL_getChar( item_id, ITEM_NAME);
           NAME = ITEM_getChar( itemindex, ITEM_NAME);
           if( IDNAME==NULL || NAME==NULL ) return;
           if( !strcmp( IDNAME, NAME) ) return;
