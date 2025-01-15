@@ -9,20 +9,20 @@ LockNode **userlock;
 void Lock_Init(void)
 {
 	int i;
- 	userlock= (LockNode **) calloc( 1, sizeof(LockNode *) * 256);
+ 	userlock = (LockNode **) calloc( 1, sizeof(LockNode *) * 256);
 	memset(userlock, 0, sizeof(userlock));
 	for (i=0; i<256; i++) {
 		userlock[i] = (LockNode *)calloc( 1,sizeof(LockNode));
 		userlock[i]->use=0;
 		userlock[i]->next=NULL;
 		userlock[i]->prev=NULL;
-		memset( userlock[i]->cdkey, 0, sizeof( userlock[i]->cdkey) );
-		memset( userlock[i]->server, 0, sizeof( userlock[i]->server) );
+		memset(userlock[i]->cdkey, 0, sizeof(userlock[i]->cdkey));
+		memset(userlock[i]->server, 0, sizeof(userlock[i]->server));
 #ifdef _LOCK_ADD_NAME
-		memset( userlock[i]->name, 0, sizeof( userlock[i]->name) );
+		memset(userlock[i]->name, 0, sizeof( userlock[i]->name));
 #endif
 	}
-	log("´æÖüÆ÷³õÊ¼»¯");
+	log("å­˜è´®å™¨åˆå§‹åŒ–");
 }
 
 LockNode *Creat_newNodes( void)
@@ -52,9 +52,9 @@ int InsertMemLock(int entry, char *cdkey, char *passwd, char *server, int proces
 	int j;
 	LockNode *ln = userlock[entry];
 #ifdef _LOCK_ADD_NAME
-		log("½øÈëÓÎÏ·:Ä¿Â¼:char/0x%x ÕËºÅ:%s Ãû³Æ:%s ·şÎñÆ÷:%s\n", entry, cdkey, name, server);
+		log("è¿›å…¥æ¸¸æˆ:ç›®å½•:char/0x%x è´¦å·:%s åç§°:%s æœåŠ¡å™¨:%s\n", entry, cdkey, name, server);
 #else
-		log("½øÈëÓÎÏ·:Ä¿Â¼:%x ÕËºÅ:%s ·şÎñÆ÷:%s\n", entry, cdkey, server);
+		log("è¿›å…¥æ¸¸æˆ:ç›®å½•:%x è´¦å·:%s æœåŠ¡å™¨:%s\n", entry, cdkey, server);
 #endif
   
 	while( (ln!=NULL) && (ln->use!=0)) ln=ln->next;
@@ -93,7 +93,7 @@ int DeleteMemLock(int entry, char *cdkey, int *process)
 {
 	LockNode *ln = userlock[entry];
 
-	log("É¾³ıÄÚ´æĞÅÏ¢ Î»ÖÃ=%x ÕËºÅ=%s ..", entry, cdkey);
+	log("åˆ é™¤å†…å­˜ä¿¡æ¯ ä½ç½®=%x è´¦å·=%s ..", entry, cdkey);
 
 	while (ln!=NULL) {
 		if( ln->use != 0) {
@@ -109,13 +109,13 @@ int DeleteMemLock(int entry, char *cdkey, int *process)
 		memset( ln->name, 0, sizeof( ln->name) );
 #endif
 		*process = ln->process;
-		log("É¾³ı³É¹¦\n");
+		log("åˆ é™¤æˆåŠŸ\n");
 #ifdef _SQL_BACKGROUND
 		sasql_online(cdkey,NULL,NULL,NULL,0);
 #endif
 		return 1;
 	}
-	log("É¾³ıÊ§°Ü!!\n");
+	log("åˆ é™¤å¤±è´¥!!\n");
 	return 0;
 }
 
@@ -142,8 +142,8 @@ int isMemLocked(int entry, char *cdkey)
 	while (ln!=NULL) {
 		if (ln->use != 0) {
 			if (strcmp(ln->cdkey, cdkey)==0) {
-				if( !strcmp(ln->server, "ĞÇÏµÒÆÃñ"))
-					log(" ĞÇÏµÒÆÃñÖĞ ");
+				if( !strcmp(ln->server, "æ˜Ÿç³»ç§»æ°‘"))
+					log(" æ˜Ÿç³»ç§»æ°‘ä¸­ ");
 				break;
 			}
 		}
@@ -159,13 +159,13 @@ int GetMemLockState(int entry, char *cdkey, char *result)
 	while (ln!=NULL) {
 		if (ln->use != 0) {
 			if (strcmp(ln->cdkey, cdkey)==0) {
-				sprintf(result, "%s ÊÇÔÚ %s ±»ËøµÄ.",cdkey, ln->server);
+				sprintf(result, "%s æ˜¯åœ¨ %s è¢«é”çš„.",cdkey, ln->server);
 				return 1;
 			}
 		}
 		ln=ln->next;
 	}
-	sprintf(result, "%s Ã»ÓĞ±»Ëø.", cdkey);
+	sprintf(result, "%s æ²¡æœ‰è¢«é”.", cdkey);
 	return 0;
 }
 

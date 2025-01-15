@@ -8,12 +8,21 @@ typedef struct ITEM_tagIntDataSetting {
   int table;
   char *string;
 } ITEM_intDataSetting;
-
 typedef struct ITEM_tagCharDataSetting {
   char *dumpchar;
   char *defaults;
   int table;
   char *string;
+} ITEM_charDataSetting;
+#else
+typedef struct ITEM_tag_intDataSetting {
+  char *dumpchar;
+  int defaults;
+} ITEM_intDataSetting;
+
+typedef struct ITEM_tag_charDataSetting {
+  char *dumpchar;
+  char *defaults;
 } ITEM_charDataSetting;
 #endif
 
@@ -151,7 +160,7 @@ typedef enum {
   ITEM_CONFUSION, /* sprit of confustion. */
   ITEM_CRITICAL,  /* ? */
 
-  ITEM_USEACTION,    /* �������ݼ�ʧ������� */
+  ITEM_USEACTION,    /* ??? */
   ITEM_DROPATLOGOUT, /* drop this item when LOGOUT. */
   ITEM_VANISHATDROP, /* disappear when drp this item. */
   ITEM_ISOVERED,     /* */
@@ -159,21 +168,21 @@ typedef enum {
   ITEM_CANMERGEFROM, /* be able to merge from. */
   ITEM_CANMERGETO,   /* ba able to merge to. */
 
-  ITEM_INGVALUE0,    /* ����(5����) */
+  ITEM_INGVALUE0,    /*  */
   ITEM_INGVALUE1,
   ITEM_INGVALUE2,
   ITEM_INGVALUE3,
   ITEM_INGVALUE4,
 
-  ITEM_PUTTIME,   /*  ʧ��  ة��  ��ľ������ */
-  ITEM_LEAKLEVEL, /*    ������ľ������ľ�׾�  */
-  ITEM_MERGEFLG, /*  ������ľ��ʧ��  ة�������� */
-  ITEM_CRUSHLEVEL, /*  çľպ���� 0  2 �߷�çľ��ئ�� 2����ç */
+  ITEM_PUTTIME,    /*  */
+  ITEM_LEAKLEVEL,  /*  */
+  ITEM_MERGEFLG,   /*  */
+  ITEM_CRUSHLEVEL, /*  */
 
-  ITEM_VAR1, /*    ���۽�       */
-  ITEM_VAR2, /*    ���۽�       */
-  ITEM_VAR3, /*    ���۽�       */
-  ITEM_VAR4, /*    ���۽�       */
+  ITEM_VAR1, /*   */
+  ITEM_VAR2, /*   */
+  ITEM_VAR3, /*   */
+  ITEM_VAR4, /*   */
 
 #ifdef _ITEM_COLOER
   ITEM_COLOER,
@@ -212,53 +221,38 @@ typedef enum {
 #endif
 // CoolFish: 2001/10/11
 #ifdef _UNIQUE_P_I
-  ITEM_UNIQUECODE, /* ��Ʒ���� */
+  ITEM_UNIQUECODE, /* 每个物品唯一的CODE. */
 #endif
-  ITEM_INGNAME0, /*  ���м�  �(5����) */
+  ITEM_INGNAME0,
   ITEM_INGNAME1,
   ITEM_INGNAME2,
   ITEM_INGNAME3,
   ITEM_INGNAME4,
   ITEM_INITFUNC, /* */
   ITEM_FIRSTFUNCTION = ITEM_INITFUNC,
-  ITEM_PREOVERFUNC,  /* CHAR_PREOVERFUNC ë��� */
-  ITEM_POSTOVERFUNC, /* CHAR_POSTOVERFUNC ë���*/
-  ITEM_WATCHFUNC,    /* CHAR_WATCHFUNC ë��� */
-  ITEM_USEFUNC,      /* ¦�ѷ���
-                      * int charaindex ƽ�ҷ��̼������͵�
-                      * int charitemindex ���м�
-                      *              ʧ��  ة    ����
-                      *              ë�����׾�
-                      */
-  ITEM_ATTACHFUNC,   /* ¦�ѷ���
-                      * int charaindex ƽ�ҷ��̼������͵�
-                      * int itemindex  ʧ��  ة�̼������͵�
-                      *      ƽ�ҷ�������  �Ȼ�����ʧ��  ة
-                      *      ��ʧ��  ة  ƥ���̼������͵�
-                      *      ƥ��ئ���Ǳ�������
-                      */
-  ITEM_DETACHFUNC,   /* ¦�ѷ���
-                      * int charaindex ƽ�ҷ��̼������͵�
-                      * int itemindex  ʧ��  ة�̼������͵�
-                      *      ƽ�ҷ�������  �Ȼ�����ʧ��  ة
-                      *      ��ʧ��  ة  ƥ���̼������͵�
-                      *      ƥ��ئ���Ǳ�������
-                      */
-  ITEM_DROPFUNC,     /*   ����������
-                      * ¦�ѷ�
-                      *  int charaindex   ������ƽ�ҷ�
-                      *  int itemindex ʧ��  ة�̼������͵�
-                      */
-  ITEM_PICKUPFUNC,   /* ʧ��  ةë��������
-                      * ¦�ѷ�
-                      *  int charaindex  ������ƽ�ҷ�index
-                      *  int itemindex ʧ��  ة�̼������͵�
-                      */
+  ITEM_PREOVERFUNC,  /* CHAR_PREOVERFUNC */
+  ITEM_POSTOVERFUNC, /* CHAR_POSTOVERFUNC */
+  ITEM_WATCHFUNC,    /* CHAR_WATCHFUNC */
+  ITEM_USEFUNC,      /* 使用物品后的回调方法.
+                      * int char_index: 使用物品的玩家编号.
+                      * int char_item_index: 使用物品在玩家物品栏中的编号. */
+  ITEM_ATTACHFUNC,   /* Attach是什么操作？
+                      * int char_index: 
+                      * int item_index: */
+  ITEM_DETACHFUNC,   /* Attach的相反操作.
+                      * int charaindex: 
+                      * int itemindex: */
+  ITEM_DROPFUNC,     /* 丢弃物品后的回调方法.
+                      *  int char_index: 丢弃物品的玩家编号.
+                      *  int item_index: 丢弃物品的全局编号. */
+  ITEM_PICKUPFUNC,   /* 拾取物品后的回调方法.
+                      *  int char_index: 拾取物品的玩家编号.
+                      *  int item_index: 拾取前物品只有全局编号，没有玩家物品栏编号. */
 #ifdef _Item_ReLifeAct
   ITEM_DIERELIFEFUNC,
 #endif
   ITEM_LASTFUNCTION,
-  ITEM_DATACHARNUM = ITEM_LASTFUNCTION,
+  ITEM_CHAR_DATA_ENUM_MAX = ITEM_LASTFUNCTION,
 #ifdef _ANGEL_SUMMON
   ITEM_ANGELMISSION = ITEM_INGNAME0,
   ITEM_ANGELINFO = ITEM_INGNAME1,
@@ -267,7 +261,7 @@ typedef enum {
 #ifdef _VERSION_GF
   ITEM_UNKNOWN10,
 #endif
-} ITEM_DATACHAR;
+} ITEM_CHAR_DATA_ENUM;
 
 typedef enum {
   ITEM_WORKOBJINDEX,
@@ -291,7 +285,7 @@ typedef enum {
 
 typedef struct tagItem {
   int data[ITEM_DATA_ENUM_MAX];
-  STRING64 string[ITEM_DATACHARNUM];
+  STRING64 string[ITEM_CHAR_DATA_ENUM_MAX];
   int workint[ITEM_WORKDATAINTNUM];
   void *functable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
 #ifdef _ALLBLUES_LUA_1_2
@@ -305,30 +299,30 @@ typedef struct tagItem {
 #endif
 } ITEM_Item;
 
-typedef struct tagITEM_table {
+typedef struct ITEM_tagTable {
   int use;
-  ITEM_Item itm;
+  ITEM_Item item;
   int randomdata[ITEM_DATA_ENUM_MAX];
-} ITEM_table;
+} ITEM_Table;
 
-typedef struct tagITEM_index {
+typedef struct ITEM_tagIndex {
   BOOL use;
   int index;
-} ITEM_index;
+} ITEM_Index;
 
-typedef struct tagITEM_exists {
+typedef struct ITEM_tagExists {
   BOOL use;
-  ITEM_Item itm;
-} ITEM_exists;
+  ITEM_Item item;
+} ITEM_Exists;
 
 #define ITEM_CHECKINDEX(index) _ITEM_CHECKINDEX(__FILE__, __LINE__, index)
 INLINE BOOL _ITEM_CHECKINDEX(char *file, int line, int index);
 
 BOOL ITEM_initExistItemsArray(int num);
-BOOL ITEM_endExistItemsArray(ITEM_table *ITEM_item);
-#define ITEM_initExistItemsOne(itm)                                            \
-  _ITEM_initExistItemsOne(__FILE__, __LINE__, itm)
-int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *itm);
+BOOL ITEM_endExistItemsArray(ITEM_Table *item_table);
+#define ITEM_initExistItemsOne(item)                                            \
+  _ITEM_initExistItemsOne(__FILE__, __LINE__, item)
+int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *item);
 
 #define ITEM_endExistItemsOne(index)                                           \
   _ITEM_endExistItemsOne(index, __FILE__, __LINE__)
@@ -343,8 +337,8 @@ INLINE int _ITEM_getInt(char *file, int line, int index, ITEM_DATA_ENUM item_dat
   _ITEM_setInt(__FILE__, __LINE__, Index, item_data_enum, data)
 INLINE int _ITEM_setInt(char *file, int line, int index, ITEM_DATA_ENUM item_data_enum,
                         int data);
-INLINE char *ITEM_getChar(int index, ITEM_DATACHAR item_data_enum);
-INLINE BOOL ITEM_setChar(int index, ITEM_DATACHAR item_data_enum, char *new);
+INLINE char *ITEM_getChar(int index, ITEM_CHAR_DATA_ENUM item_data_enum);
+INLINE BOOL ITEM_setChar(int index, ITEM_CHAR_DATA_ENUM item_data_enum, char *new);
 INLINE int ITEM_getWorkInt(int index, ITEM_WORKDATAINT item_data_enum);
 INLINE int ITEM_setWorkInt(int index, ITEM_WORKDATAINT item_data_enum, int data);
 INLINE int ITEM_getITEM_sItemNum(void);
@@ -356,19 +350,19 @@ void ITEM_constructFunctable(int itemindex);
 void *_ITEM_getFunctionPointer(int itemindex, int functype, char *file,
                                int line);
 #ifdef _ALLBLUES_LUA_1_2
-typedef struct tagITEM_LuaFunc {
+typedef struct ITEM_tagLuaFunc {
   lua_State *lua;
   char luafuncname[128];
   char luafunctable[128];
-  struct tagITEM_LuaFunc *next;
+  struct ITEM_tagLuaFunc *next;
 } ITEM_LuaFunc;
 
-INLINE BOOL ITEM_setLUAFunction(int itemindex, int functype,
-                                const char *luafuncname);
-INLINE lua_State *ITEM_getLUAFunction(int itemindex, int functype);
+INLINE BOOL ITEM_setLUAFunction(int item_index, int function_type,
+                                const char *lua_function_name);
+INLINE lua_State *ITEM_getLUAFunction(int item_index, int function_type);
 
-BOOL ITEM_addLUAListFunction(lua_State *L, const char *luafuncname,
-                             const char *luafunctable);
+BOOL ITEM_addLUAListFunction(lua_State *L, const char *lua_function_name,
+                             const char *lua_function_table);
 #endif
 INLINE ITEM_Item *ITEM_getItemPointer(int index);
 int ITEM_getItemMaxIdNum(void);
@@ -426,7 +420,7 @@ BOOL ITEM_canuseMagic(int itemindex);
 int ITEM_isTargetValid(int charaindex, int itemindex, int toindex);
 
 int ITEMTBL_getInt(int ItemID, ITEM_DATA_ENUM datatype);
-char *ITEMTBL_getChar(int ItemID, ITEM_DATACHAR datatype);
+char *ITEMTBL_getChar(int ItemID, ITEM_CHAR_DATA_ENUM datatype);
 
 int ITEM_getItemDamageCrusheED(int itemindex);
 void ITEM_RsetEquit(int charaindex);

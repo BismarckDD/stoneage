@@ -14,8 +14,8 @@
 #define mj_sprintf(format,arg...) ((sizeof(format)==4)?sprintf(format,##arg):snprintf(format,sizeof(format),##arg))
 
 
-#define debug(x,y) fprintf( stderr, #x " = %" #y "\n" , x)
-#define arraysizeof( x ) (sizeof(x)/sizeof(x[0]))
+#define debug(x, y) fprintf(stderr, #x " = %" #y "\n" , x)
+#define arraysizeof(x) (sizeof(x) / sizeof(x[0]))
 
 #define errorprint {extern int errno;fprint( "%s\n" ,strerror(errno));}
 

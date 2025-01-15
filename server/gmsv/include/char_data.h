@@ -4,7 +4,6 @@
 #include "item.h"
 #include "char.h"
 
-
 #define CHAR_CLASS01_PASSLV     20
 
 #define BATEBAN	2

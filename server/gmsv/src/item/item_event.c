@@ -93,10 +93,10 @@ int ITEM_eventDrop(int itemindex, int char_index, int itemchar_index) {
   {
     LogItem(CHAR_getChar(char_index, CHAR_NAME),
             CHAR_getChar(char_index, CHAR_CDKEY),
-#ifdef _add_item_log_name // WON ADD ��item��log������item����
+#ifdef _add_item_log_name // WON ADD
             itemindex,
 #else
-             ITEM_getInt(itemindex, ITEM_ID), /* ʧ��  ة  į */
+             ITEM_getInt(itemindex, ITEM_ID),
 #endif
             "Drop&Delete(��������ʧ)", CHAR_getInt(char_index, CHAR_FLOOR),
             CHAR_getInt(char_index, CHAR_X), CHAR_getInt(char_index, CHAR_Y),
@@ -117,7 +117,7 @@ typedef struct {
   char *onmessage;  /*  ����������  ٯ      */
   char *offmessage; /*  ����������  ٯ      */
   int element;      /* ���ޱ�ئ��ۢ�� */
-  int maxElement; /* elementƥ϶�ý�ľ��ۢ�ټ�    ��ë�ֹ�ۢ�� */
+  int maxElement; /* element*/
 } ITEM_EFFECTPARAM;
 static ITEM_EFFECTPARAM ITEM_restorableParam[] = {
     {"hp", "HP�ظ��ˡ�", "HP�����ˡ�", CHAR_HP, CHAR_WORKMAXHP},
@@ -125,23 +125,15 @@ static ITEM_EFFECTPARAM ITEM_restorableParam[] = {
 };
 static ITEM_EFFECTPARAM ITEM_statusParam[] = {
     {"po", CHAR_POISONSTRING, CHAR_RECOVERPOISONSTRING, CHAR_POISON, UNDEF},
-
-    {"pa", CHAR_PARALYSISSTRING, CHAR_RECOVERPARALYSISSTRING, CHAR_PARALYSIS,
-     UNDEF},
-
+    {"pa", CHAR_PARALYSISSTRING, CHAR_RECOVERPARALYSISSTRING, CHAR_PARALYSIS, UNDEF},
     {"si", CHAR_SILENCESTRING, CHAR_RECOVERSILENCESTRING, CHAR_SLEEP, UNDEF},
-
     {"st", CHAR_STONESTRING, CHAR_RECOVERSTONESTRING, CHAR_STONE, UNDEF},
-
     {"da", CHAR_DARKNESSSTRING, CHAR_RECOVERDARKNESSSTRING, CHAR_DRUNK, UNDEF},
-
-    {"co", CHAR_CONFUSIONSTRING, CHAR_RECOVERCONFUSIONSTRING, CHAR_CONFUSION,
-     UNDEF},
+    {"co", CHAR_CONFUSIONSTRING, CHAR_RECOVERCONFUSIONSTRING, CHAR_CONFUSION, UNDEF},
 };
 
 static BOOL ITEM_isValidEffect(char *cmd, int value) {
   int i;
-
   for (i = 0; i < arraysizeof(ITEM_restorableParam); i++) {
     if (!strcmp(cmd, ITEM_restorableParam[i].cmd)) {
       return value <= 0 ? FALSE : TRUE;
@@ -204,7 +196,6 @@ static BOOL ITEM_medicineRaiseEffect(int char_index, char *cmd, int value) {
   char ansmsg[256];
   for (i = 0; i < arraysizeof(ITEM_restorableParam); i++) {
     if (!strcmp(cmd, ITEM_restorableParam[i].cmd)) {
-#if 1
       int maxv, curv, amount;
       char *onoroff = NULL;
       maxv = CHAR_getWorkInt(char_index, ITEM_restorableParam[i].maxElement);
@@ -223,31 +214,6 @@ static BOOL ITEM_medicineRaiseEffect(int char_index, char *cmd, int value) {
       strcpysafe(ansmsg, sizeof(ansmsg), onoroff);
       CHAR_talkToCli(char_index, -1, ansmsg, CHAR_COLORWHITE);
       return TRUE;
-#else
-      if (value == ITEM_EFFECT_RESTORE_NORMAL) {
-        int maxv, curv, amount;
-        maxv = CHAR_getWorkInt(char_index, ITEM_restorableParam[i].maxElement);
-        curv = CHAR_getInt(char_index, ITEM_restorableParam[i].element);
-        amount = 30;
-        if (curv + amount < 0)
-          amount = -curv;
-        CHAR_setInt(char_index, ITEM_restorableParam[i].element,
-                    min((curv + amount), maxv));
-        snprintf(ansmsg, sizeof(ansmsg), "%s�ظ��ˡ�",
-                 ITEM_restorableParam[i].onmessage);
-        CHAR_talkToCli(char_index, -1, ansmsg, CHAR_COLORWHITE);
-        return TRUE;
-      } else if (value == ITEM_EFFECT_RESTORE_COMPLETE) {
-        int maxv;
-        maxv = CHAR_getWorkInt(char_index, ITEM_restorableParam[i].maxElement);
-        CHAR_setInt(char_index, ITEM_restorableParam[i].element, maxv);
-        snprintf(ansmsg, sizeof(ansmsg), "%s����ȫ�ظ���",
-                 ITEM_restorableParam[i].onmessage);
-        CHAR_talkToCli(char_index, -1, ansmsg, CHAR_COLORWHITE);
-        return TRUE;
-      } else
-        return FALSE;
-#endif
     }
   }
   if (value >= 0) {
@@ -283,19 +249,19 @@ static BOOL ITEM_medicineRaiseEffect(int char_index, char *cmd, int value) {
 }
 
 void ITEM_MedicineUsed(int char_index, int to_char_index, int itemindex) {
-  int itemid;
+  int item_id;
   int usedf = 0;
   char cmd[ID_BUF_LEN_MAX], arg[ID_BUF_LEN_MAX];
   int value;
   char *p, *q;
   char *effectarg;
   char ansmsg[256];
-  itemid = CHAR_getItemIndex(char_index, itemindex);
-  if (!ITEM_CHECKINDEX(itemid))
+  item_id = CHAR_getItemIndex(char_index, itemindex);
+  if (!ITEM_CHECKINDEX(item_id))
     return;
-  effectarg = ITEM_getChar(itemid, ITEM_ARGUMENT);
+  effectarg = ITEM_getChar(item_id, ITEM_ARGUMENT);
   snprintf(ansmsg, sizeof(ansmsg), "ץ����%s ��",
-           ITEM_getChar(itemid, ITEM_NAME));
+           ITEM_getChar(item_id, ITEM_NAME));
   CHAR_talkToCli(char_index, -1, ansmsg, CHAR_COLORWHITE);
   for (p = effectarg; *p != '\0';) {
     int i;
@@ -327,15 +293,15 @@ void ITEM_MedicineUsed(int char_index, int to_char_index, int itemindex) {
 #undef SEPARATORI
 }
 
-void ITEM_SandClockDetach(int char_index, int itemid) {
+void ITEM_SandClockDetach(int char_index, int item_id) {
   int i;
-  if (!ITEM_CHECKINDEX(itemid))
+  if (!ITEM_CHECKINDEX(item_id))
     return;
   for (i = 0; i < CheckCharMaxItem(char_index); i++) {
-    if (CHAR_getItemIndex(char_index, i) == itemid) {
+    if (CHAR_getItemIndex(char_index, i) == item_id) {
       CHAR_DelItem(char_index, i);
       CHAR_talkToCli(char_index, -1, "һж��ɳ©������Ȼ���ˣ�", CHAR_COLORWHITE);
-      print("deleted sand clock!\n");
+      print("Deleted sand clock!\n");
       break;
     }
   }
@@ -3820,7 +3786,7 @@ int items4[18] = {14516, 14513, 14216, 14213, 14816, 14813,
 int items5[5] = {20280, 20283, 20277, 20271, 20274};
 int items6[5] = {20284, 20272, 20275, 20281, 20278};
 void ITEM_ThrowItemBox(int char_index, int toindex, int haveitemindex) {
-  int i, ret, Iindex, ItemID = -1, itemindex;
+  int i, ret, Iindex, item_id = -1, itemindex;
   char token[256];
 
   if (!CHAR_CHECKINDEX(char_index))
@@ -3866,24 +3832,24 @@ void ITEM_ThrowItemBox(int char_index, int toindex, int haveitemindex) {
     CHAR_AddGold(char_index, Golds);
   } else {
     if (ret < 924) {
-      ItemID = items1[RAND(0, 17)];
+      item_id = items1[RAND(0, 17)];
     } else if (ret < 964) {
-      ItemID = items2[RAND(0, 10)];
+      item_id = items2[RAND(0, 10)];
     } else if (ret < 984) {
-      ItemID = items3[RAND(0, 9)];
+      item_id = items3[RAND(0, 9)];
       Niceitem++;
     } else if (ret < 994) {
-      ItemID = items4[RAND(0, 17)];
+      item_id = items4[RAND(0, 17)];
       Niceitem++;
     } else if (ret < 999) {
-      ItemID = items5[RAND(0, 4)];
+      item_id = items5[RAND(0, 4)];
       Niceitem++;
     } else {
-      ItemID = items6[RAND(0, 4)];
+      item_id = items6[RAND(0, 4)];
       Niceitem++;
     }
 
-    Iindex = ITEM_makeItemAndRegist(ItemID);
+    Iindex = ITEM_makeItemAndRegist(item_id);
     if (!ITEM_CHECKINDEX(Iindex)) {
       return;
     }
@@ -5470,7 +5436,7 @@ void ITEM_GetMultiItem(int char_index, int toindex, int haveitemindex) {
   char *itemarg = NULL;
   char buf[32];
   int itemnum = 0;
-  int itemid = {-1};
+  int item_id = {-1};
   char itemname[512] = "";
   int i;
   char token[256];
@@ -5510,8 +5476,8 @@ void ITEM_GetMultiItem(int char_index, int toindex, int haveitemindex) {
       CHAR_talkToCli(char_index, -1, "��������!", CHAR_COLORYELLOW);
       return;
     }
-    itemid = atoi(buf);
-    itemindex = ITEM_makeItemAndRegist(itemid);
+    item_id = atoi(buf);
+    itemindex = ITEM_makeItemAndRegist(item_id);
     if (itemindex != -1) {
       int emptyteimbox = CHAR_findEmptyItemBox(char_index);
       CHAR_setItemIndex(char_index, emptyteimbox, itemindex);
@@ -5932,10 +5898,10 @@ void ITEM_SpecialCheckSuitEquip(int char_index, int itemindex) {
   int defCode = ITEM_getInt(itemindex, ITEM_SUITCODE);
 
   for (i = 0; i < CHAR_STARTITEMARRAY; i++) {
-    int itemidx = CHAR_getItemIndex(char_index, i);
-    if (!ITEM_CHECKINDEX(itemidx))
+    int item_idx = CHAR_getItemIndex(char_index, i);
+    if (!ITEM_CHECKINDEX(item_idx))
       continue;
-    if (defCode == ITEM_getInt(itemidx, ITEM_SUITCODE)) {
+    if (defCode == ITEM_getInt(item_idx, ITEM_SUITCODE)) {
       num++;
     }
   }

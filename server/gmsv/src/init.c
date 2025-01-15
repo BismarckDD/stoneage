@@ -254,8 +254,8 @@ BOOL init(int argc, char **argv, char **env) {
     print("CA Send Interval: %d\n", getCAsendinterval_ms());
     print("CD Send Interval: %d\n", getCDsendinterval_ms());
     print("ִOne Loop Time: %d\n", getOnelooptime_ms());
-    print("PetDeleteTime: %d\n", getPetdeletetime());
-    print("ItemDeleteTime: %d\n", getItemdeletetime());
+    print("宠物丢出后消失的时间: %d\n", getPetdeletetime());
+    print("物品丢出后消失的时间: %d\n", getItemdeletetime());
 #ifdef _DEL_DROP_GOLD
     print("金币消失时间: %d\n", getGolddeletetime());
 #endif
@@ -301,26 +301,23 @@ BOOL init(int argc, char **argv, char **env) {
 #endif
 
 #ifdef _WATCH_FLOOR
-    print("�Ƿ�ȫͼ��ս: %s\n", getWatchFloorCF());
-    if (strcmp(getWatchFloorCF(), "��"))
-      print("������ս��ͼ: ��ͼ1:%d ��ͼ2:%d ��ͼ3:%d ��ͼ4:%d ��ͼ5:%d\n",
+    print("Watch Floor CF: %s\n", getWatchFloorCF());
+    if (strcmp(getWatchFloorCF(), "0"))
+      print("WatchFloor: No.1:%d No.2:%d No.3:%d No.4:%d No.5:%d\n",
             getWatchFloor(1), getWatchFloor(2), getWatchFloor(3),
             getWatchFloor(4), getWatchFloor(5));
 #endif
-
 #ifdef _BATTLE_FLOOR
     print("BattleFloorCF: %s\n", getBattleFloorCF());
-    if (strcmp(getBattleFloorCF(), "��"))
-      print("ǿ��ս����ͼ: ��ͼ1:%d ��ͼ2:%d ��ͼ3:%d ��ͼ4:%d ��ͼ5:%d\n",
+    if (strcmp(getBattleFloorCF(), "0"))
+      print("BattleFloor: No.1:%d No.2:%d No.3:%d No.4:%d No.5:%d\n",
             getBattleFloor(1), getBattleFloor(2), getBattleFloor(3),
             getBattleFloor(4), getBattleFloor(5));
 #endif
-
 #ifdef _TRANS_LEVEL_CF
-    print("����ȼ�ת��: %d\n", getChartrans());
-    print("����ȼ�ת��: %d\n", getPettrans());
+    print("Char Trans Num: %d\n", getChartrans());
+    print("Pet Trans Num: %d\n", getPettrans());
 #endif
-
 #ifdef _POINT
     print("��ֹ��������: %s\n", getPoint());
     if (strcmp(getPoint(), "��"))
@@ -329,10 +326,9 @@ BOOL init(int argc, char **argv, char **env) {
             getTransPoint(3), getTransPoint(4), getTransPoint(5),
             getTransPoint(6));
 #endif
-
 #ifdef _PET_AND_ITEM_UP
-    print("�����ܷ���: %s\n", getPetup());
-    print("�����ܷ���: %s\n", getItemup());
+    print("丢出的宠物是否可以给其他玩家捡获: %s\n", getPetup());
+    print("丢出的道具是否可以给其他玩家捡获: %s\n", getItemup());
 #endif
 #ifdef _LOOP_ANNOUNCE
     print("循环公告的文件路径: %s.\n", getLoopAnnouncePath());
@@ -371,8 +367,8 @@ BOOL init(int argc, char **argv, char **env) {
     print("Battle Gold: %d\n", getBattleGold());
 #endif
 #ifdef _ANGEL_TIME
-    print("Angel Player Time: (%d��/��������)��\n", getAngelPlayerTime());
-    print("Angel Player Mun: %d��\n", getAngelPlayerMun());
+    print("Angel Player Time: (%d)\n", getAngelPlayerTime());
+    print("Angel Player Mun: %d.\n", getAngelPlayerMun());
 #endif
 #ifdef _RIDEMODE_20
     print("2.0 RIDE MODE: %d\n", getRideMode());

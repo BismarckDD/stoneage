@@ -104,8 +104,8 @@ static int ITEM_getAtomIndexByName(const char *atom_name)
   return -1;
 }
 
-extern ITEM_table *ITEM_tbl;
-extern ITEM_index *ITEM_idx;
+extern ITEM_Table *ITEM_gTable;
+extern ITEM_Index *ITEM_gIndex;
 
 struct ingcache {
   int use;
@@ -160,20 +160,20 @@ int ITEM_initItemIngCache(void) {
   remove("old_icache.txt");
   memset(icache, 0, icache_num * sizeof(struct ingcache));
   for (i = 0; i < icache_num; i++) {
-    if (ITEM_idx[i].use) { // new
+    if (ITEM_gIndex[i].use) { // new
       int k = 0;
 #define ADD_ICACHE_INGRED(nm, vl)                                              \
-  if (ITEM_tbl[ITEM_idx[i].index].itm.string[nm].string[0]) {                  \
+  if (ITEM_gTable[ITEM_gIndex[i].index].item.string[nm].string[0]) {                  \
     icache[i].ingind[k] = ITEM_getAtomIndexByName(                             \
-        ITEM_tbl[ITEM_idx[i].index].itm.string[nm].string);                    \
+        ITEM_gTable[ITEM_gIndex[i].index].item.string[nm].string);                    \
     if (icache[i].ingind[k] < 0) {                                             \
         print("fucking[%s][%d] for %d %s\n",                                   \
-            ITEM_tbl[ITEM_idx[i].index].itm.string[nm].string,                 \
-            ITEM_tbl[ITEM_idx[i].index].itm.data[vl],                          \
-            ITEM_tbl[i].itm.data[ITEM_ID],                                     \
-            ITEM_tbl[ITEM_idx[i].index].itm.string[ITEM_NAME].string);         \
+            ITEM_gTable[ITEM_gIndex[i].index].item.string[nm].string,                 \
+            ITEM_gTable[ITEM_gIndex[i].index].item.data[vl],                          \
+            ITEM_gTable[i].item.data[ITEM_ID],                                     \
+            ITEM_gTable[ITEM_gIndex[i].index].item.string[ITEM_NAME].string);         \
     } else {                                                                   \
-      icache[i].ingval[k] = ITEM_tbl[ITEM_idx[i].index].itm.data[vl];          \
+      icache[i].ingval[k] = ITEM_gTable[ITEM_gIndex[i].index].item.data[vl];          \
       k++;                                                                     \
     }                                                                          \
   }
@@ -185,22 +185,22 @@ int ITEM_initItemIngCache(void) {
       icache[i].inguse = k;
 
       if (k == 0) {
-        if (ITEM_tbl[ITEM_idx[i].index].itm.data[ITEM_CANMERGEFROM] ==
+        if (ITEM_gTable[ITEM_gIndex[i].index].item.data[ITEM_CANMERGEFROM] ==
                 TRUE || // new
-            ITEM_tbl[ITEM_idx[i].index].itm.data[ITEM_CANMERGETO] ==
+            ITEM_gTable[ITEM_gIndex[i].index].item.data[ITEM_CANMERGETO] ==
                 TRUE) { // new
           print(
               "ID%d (%s)��δ�趨�ɷ�\n",
-              ITEM_tbl[ITEM_idx[i].index].itm.data[ITEM_ID],             // new
-              ITEM_tbl[ITEM_idx[i].index].itm.string[ITEM_NAME].string); // new
+              ITEM_gTable[ITEM_gIndex[i].index].item.data[ITEM_ID],             // new
+              ITEM_gTable[ITEM_gIndex[i].index].item.string[ITEM_NAME].string); // new
         }
       } else {
         FILE *fp;
         icache[i].use = 1;
         icache[i].canmergefrom =
-            ITEM_tbl[ITEM_idx[i].index].itm.data[ITEM_CANMERGEFROM]; // new
+            ITEM_gTable[ITEM_gIndex[i].index].item.data[ITEM_CANMERGEFROM]; // new
         icache[i].canmergeto =
-            ITEM_tbl[ITEM_idx[i].index].itm.data[ITEM_CANMERGETO]; // new
+            ITEM_gTable[ITEM_gIndex[i].index].item.data[ITEM_CANMERGETO]; // new
         if ((fp = fopen("old_icache.txt", "a+")) != NULL) {
           fprintf(fp, "[%s] - %s+%s+%s+%s+%s \n", ITEMTBL_getChar(i, ITEM_NAME),
                   ITEMTBL_getChar(i, ITEM_INGNAME0),
@@ -470,10 +470,6 @@ static void ITEM_merge_getPetFix(int petid, int *fixuse, int *fixatom,
   return;
 }
 
-/*
- * ����    ����������ʧ��  ة��ؤ������FALSEë߯��
- */
-
 static BOOL ITEM_merge_checkitem(ITEM_Item *items, int itemsnum, int id) {
   int loop;
   for (loop = 0; loop < itemsnum; loop++) {
@@ -690,7 +686,7 @@ int ITEM_mergeItem(int charaindex, ITEM_Item *items, int num, int money,
   // #ifdef _VERSION_80
   if (nowtime - CHAR_getWorkInt(charaindex, CHAR_WORKLASTMERGETIME) < 1) {
     CHAR_setWorkInt(charaindex, CHAR_WORKLASTMERGETIME, nowtime);
-    CHAR_talkToCli(charaindex, -1, "�ϳ��������Ƶ������Ϣһ�±ȽϺ�Ӵ��",
+    CHAR_talkToCli(charaindex, -1, "合成料理过于频繁，休息一下比较好哟。",
                    CHAR_COLORRED);
     // print(" �ϳ�Ƶ�� ");
     return items[RAND(0, (num - 1))].data[ITEM_ID];
@@ -1058,10 +1054,10 @@ int ITEM_mergeItem(int charaindex, ITEM_Item *items, int num, int money,
   return -3;
 }
 
-int ITEM_canDigest(ITEM_Item *itm) {
+int ITEM_canDigest(ITEM_Item *item) {
   /* 1��  ����  ��
      󡻥ɬ�ý�ľ��������1�� ����ƥئ��ئ��0 */
-  if (itm->string[ITEM_INGNAME0].string[0])
+  if (item->string[ITEM_INGNAME0].string[0])
     return 1;
   else
     return 0;
@@ -1069,15 +1065,15 @@ int ITEM_canDigest(ITEM_Item *itm) {
 
 int ITEM_merge_test(void) {
   int iid, i, k;
-  ITEM_Item itm[1];
+  ITEM_Item item[1];
 
   for (k = 0; k < 10; k++) {
     iid = 1;
     for (i = 0; i < 20; i++) {
-      ITEM_makeItem(&itm[0], iid);
+      ITEM_makeItem(&item[0], iid);
       print("%d RETURN: %d\n", i,
             // shan
-            iid = ITEM_mergeItem(-1, itm, 1, 0, -1, 0, -1, 0));
+            iid = ITEM_mergeItem(-1, item, 1, 0, -1, 0, -1, 0));
     }
     print("------\n");
   }
@@ -1105,7 +1101,7 @@ int ITEM_mergeItem_merge(int charaindex, int petid, char *data, int petindex,
   {
     int emptyindex = CHAR_findEmptyItemBox(charaindex);
     if (emptyindex == -1) {
-      CHAR_talkToCli(charaindex, -1, "�ϳ�ʱ���������һ����Ʒ��λ��",
+      CHAR_talkToCli(charaindex, -1, "合成时，最少需要一格空物品栏位。",
                      CHAR_COLORYELLOW);
       return -1;
     }
@@ -1135,9 +1131,9 @@ int ITEM_mergeItem_merge(int charaindex, int petid, char *data, int petindex,
 #endif
         if (ITEM_getmergeItemFromFromITEMtabl(
                 ITEM_getInt(itemindex, ITEM_ID)) == TRUE) { // ����Ƿ�ɺϳ�
-          ITEM_Item *itm;
-          itm = ITEM_getItemPointer(itemindex);
-          if (itm != NULL) {
+          ITEM_Item *item;
+          item = ITEM_getItemPointer(itemindex);
+          if (item != NULL) {
             ITEM_makeItem(&items[cnt], ITEM_getInt(itemindex, ITEM_ID));
             itemindexs[cnt] = itemindex;
             haveitemindexs[cnt] = haveitemindex;
@@ -1173,7 +1169,7 @@ int ITEM_mergeItem_merge(int charaindex, int petid, char *data, int petindex,
     ret = ITEM_mergeItem(charaindex, items, cnt, 0, petid, randtable, petindex,
                          alchemist);
     if (ret == -10)
-      CHAR_talkToCli(charaindex, -1, "�Ƿ��ĺϳɷ���", CHAR_COLORWHITE);
+      CHAR_talkToCli(charaindex, -1, "非法的合成方法", CHAR_COLORWHITE);
     CHAR_setInt(charaindex, CHAR_MERGEITEMCOUNT,
                 CHAR_getInt(charaindex, CHAR_MERGEITEMCOUNT) + 1);
     for (i = 0; i < cnt; i++) {
@@ -1493,7 +1489,7 @@ int PETSKILL_ITEM_FixItem(int charindex, int fixindex, int *itemindex) {
     if (ITEM_ARG != "\0" && !strcmp(ITEM_ARG, "FIXITEMALL")) {
     } else {
 #endif
-      CHAR_talkToCli(charindex, -1, "���ϲ���", CHAR_COLORYELLOW);
+      CHAR_talkToCli(charindex, -1, "", CHAR_COLORYELLOW);
       return FALSE;
 #ifdef _ITEM_FIXALLBASE
     }
@@ -1504,15 +1500,13 @@ int PETSKILL_ITEM_FixItem(int charindex, int fixindex, int *itemindex) {
   maxcrushes = ITEM_getInt(fixindex, ITEM_MAXDAMAGECRUSHE);
   if (crushes >= (maxcrushes * 0.80)) {
     char buff[256];
-    sprintf(buff, "%s��û���𻵵���Ҫ�޸���",
-            ITEM_getChar(fixindex, ITEM_NAME));
+    sprintf(buff, "%s并没有损坏到需要修复", ITEM_getChar(fixindex, ITEM_NAME));
     CHAR_talkToCli(charindex, -1, buff, CHAR_COLORYELLOW);
     return FALSE;
   } else {
     char *buf1;
     if (maxcrushes < 500) {
-      CHAR_talkToCli(charindex, -1, "����Ʒ�Ѳ����޸�",
-                     CHAR_COLORYELLOW);
+      CHAR_talkToCli(charindex, -1, "此物品不能修复", CHAR_COLORYELLOW);
       return FALSE;
     }
     if (crushes <= 0)
@@ -1522,7 +1516,6 @@ int PETSKILL_ITEM_FixItem(int charindex, int fixindex, int *itemindex) {
     ITEM_setInt(fixindex, ITEM_DAMAGECRUSHE, crushes);
     // ITEM_setInt( fixindex, ITEM_MAXDAMAGECRUSHE, maxcrushes);
 
-    // ��������
     buf1 = ITEM_getChar(fixindex, ITEM_SECRETNAME);
     if (strstr(buf1, "(") != 0) {
       char buf5[256];
