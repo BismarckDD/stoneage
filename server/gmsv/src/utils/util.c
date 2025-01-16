@@ -46,12 +46,10 @@ void pohcd(char *src, char *del) {
   int dellen, srclen;
   int i;
   BOOL delete = FALSE;
-
   srclen = strlen(src);
   dellen = strlen(del);
   if (srclen == 0 || dellen == 0)
     return;
-
   for (i = 0; i < dellen; i++) {
     if (src[0] == del[i]) {
       delete = TRUE;
@@ -159,19 +157,6 @@ char *UTIL_decimalchar[DECIMAL_CHAR_NUM] = {"0", "1", "2", "3", "4",
 char *UTIL_figurechar[FIGURE_CHAR_NUM] = {"", "", ""};
 char *UTIL_specialchar[SPECIAL_CHAR_NUM] = {"", ""};
 
-/*
- *   ٯ  ���գ��Ѱ�ë  ����  ��ľ��  ��ë  �����ʣ���  ���õ�����
- * ���ƻ�  �����ʣ�euc�ã�
- *
- *    : in "�Ȿ�������300������"
- *      out "7��"
- * ¦��
- * char *in:      ٯ
- * char *out:��    ٯ
- * int outsiz:��    ٯ  ����������������
- * ߯Ի��
- * �Ѱ�ë  ��  �л�ؤ�����չ���  ٯ  ��Ӯ���ئ�������ը�
- */
 static int findNumberString(char *in, char *out, int outsiz) {
   int len, i, j, k, findflag, numstrflag;
   char tmp[3];
@@ -804,16 +789,6 @@ int existsNewLineCharacter(char *line) {
   return -1;
 }
 
-/*----------------------------------------
- *  number
- *  Param:
- *    string  char*   Ʃ����  ٯ
- *    c       int     Ʃ����  ٯ
- *    number  int       ����  į
- *  Return Values:
- *  
- *    NULL    �Ĺ�����ئ�����ף�
- ----------------------------------------*/
 char *nindex(char *string, int c, int number) {
   int i; /*�����  ��*/
   int num = 0;
@@ -973,24 +948,10 @@ void easyGetTokenFromString(char *src, int count, char *output, int len) {
   }
 }
 
-/*------------------------------------------------------------
- * ˲��ƥ  ����ë���继�£� by ringo
- * double val1 , val2 : �𼰰���ؤ�з�ë����
- * double d :   ��
- *  -d<0----- val1 ---0<d<1------- val2 ------d>1----
- ------------------------------------------------------------*/
 float linearDiv(float val1, float val2, float d) {
   return val1 + (val2 - val1) * (d);
 }
 
-/*------------------------------------------------------------
- *   ٯ  ��ئ������  ��ئ  ٯëlen  ٯ��Ի���ƻ��¼�ĸةئ
- *   ٯ  ë�����£�NPC���¼�ĸة�ɵ�������Ϸ���年���Ȼ���
- *
- * char *cand : ����ռ��٣���  ��  ٯ��
- * char *out : ��  ��������
- * int len : ��  ��Ӯ��
- ------------------------------------------------------------*/
 void makeRandomString(char *cand, char *out, int len) {
   int i;
   int l = strlen(cand);

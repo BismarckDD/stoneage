@@ -6,7 +6,7 @@ CREATE DATABASE IF NOT EXISTS sa;
 USE sa;
 
 -- 表的结构 `capture_pet`
-CREATE TABLE IF NOT EXISTS `sa.capture_pet` (
+CREATE TABLE IF NOT EXISTS `capture_pet` (
   `unicode` varchar(32) NOT NULL,
   `id` int(11) NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS `sa.capture_pet` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `cash_draw`
-CREATE TABLE IF NOT EXISTS `sa.cash_draw` (
+CREATE TABLE IF NOT EXISTS `cash_draw` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `type` varchar(16) NOT NULL,
   `point` int(11) NOT NULL,
@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS `sa.cash_draw` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `check`
-CREATE TABLE IF NOT EXISTS `sa.check` (
+CREATE TABLE IF NOT EXISTS `check` (
   `itemcode` varchar(64) NOT NULL,
   `cdkey` varchar(32) NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -52,7 +52,7 @@ CREATE TABLE IF NOT EXISTS `sa.check` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `consignment` 委托
-CREATE TABLE IF NOT EXISTS `sa.consignment` (
+CREATE TABLE IF NOT EXISTS `consignment` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cdkey` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE IF NOT EXISTS `sa.consignment` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 表的结构 `counter`
-CREATE TABLE IF NOT EXISTS `sa.counter` (
+CREATE TABLE IF NOT EXISTS `counter` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cdkey` varchar(32) NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -76,7 +76,7 @@ CREATE TABLE IF NOT EXISTS `sa.counter` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `CSAinfo`
-CREATE TABLE IF NOT EXISTS `sa.CSAinfo` (
+CREATE TABLE IF NOT EXISTS `CSAinfo` (
   `cdkey` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
   `saveindex` int(11) NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE IF NOT EXISTS `sa.CSAinfo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 表的结构 `CSAlogin`
-CREATE TABLE IF NOT EXISTS `sa.CSAlogin` (
+CREATE TABLE IF NOT EXISTS `CSAlogin` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
   `password` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `sa.CSAlogin` (
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 表的结构 `dice`
-CREATE TABLE IF NOT EXISTS `sa.dice` (
+CREATE TABLE IF NOT EXISTS `dice` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cdkey` varchar(32) NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -164,7 +164,7 @@ CREATE TABLE IF NOT EXISTS `sa.dice` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `dicelog`
-CREATE TABLE IF NOT EXISTS `sa.dicelog` (
+CREATE TABLE IF NOT EXISTS `dicelog` (
   `type` int(11) NOT NULL DEFAULT '0',
   `winpoint` int(11) NOT NULL DEFAULT '0',
   `losepoint` int(11) NOT NULL DEFAULT '0',
@@ -172,7 +172,7 @@ CREATE TABLE IF NOT EXISTS `sa.dicelog` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `loan`
-CREATE TABLE IF NOT EXISTS `sa.loan` (
+CREATE TABLE IF NOT EXISTS `loan` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cdkey` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -188,15 +188,15 @@ CREATE TABLE IF NOT EXISTS `sa.loan` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- sa.lock: 用于记录锁定的用户.
-CREATE TABLE IF NOT EXISTS `sa.lock` (
+-- lock: 用于记录锁定的用户.
+CREATE TABLE IF NOT EXISTS `lock` (
   `Name` varchar(64) NOT NULL,
   `LockTime` datetime NOT NULL,
   PRIMARY KEY (`Name`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `OnlineBuy`
-CREATE TABLE IF NOT EXISTS `sa.OnlineBuy` (
+CREATE TABLE IF NOT EXISTS `OnlineBuy` (
   `CostPasswd` varchar(32) NOT NULL,
   `CostStr` varchar(64) DEFAULT NULL,
   `cdkey` varchar(32) DEFAULT NULL,
@@ -206,7 +206,7 @@ CREATE TABLE IF NOT EXISTS `sa.OnlineBuy` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `OnlineCard`
-CREATE TABLE IF NOT EXISTS `sa.OnlineCard` (
+CREATE TABLE IF NOT EXISTS `OnlineCard` (
   `CostPasswd` varchar(32) NOT NULL,
   `CostStr` varchar(64) DEFAULT NULL,
   `cdkey` varchar(32) DEFAULT NULL,
@@ -216,7 +216,7 @@ CREATE TABLE IF NOT EXISTS `sa.OnlineCard` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `OnlineCost`
-CREATE TABLE IF NOT EXISTS `sa.OnlineCost` (
+CREATE TABLE IF NOT EXISTS `OnlineCost` (
   `CostPasswd` varchar(32) NOT NULL,
   `CostVal` int(11) NOT NULL,
   `PayVal` int(11) NOT NULL,
@@ -228,7 +228,7 @@ CREATE TABLE IF NOT EXISTS `sa.OnlineCost` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `OnlinePlayer`
-CREATE TABLE IF NOT EXISTS `sa.OnlinePlayer` (
+CREATE TABLE IF NOT EXISTS `OnlinePlayer` (
   `cdkey` varchar(32) NOT NULL,
   `MAC` varchar(64) NOT NULL,
   `Name` varchar(32) NOT NULL,
@@ -238,7 +238,7 @@ CREATE TABLE IF NOT EXISTS `sa.OnlinePlayer` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `PauctionInfo`
-CREATE TABLE IF NOT EXISTS `sa.PauctionInfo` (
+CREATE TABLE IF NOT EXISTS `PauctionInfo` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cdkey` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -252,7 +252,7 @@ CREATE TABLE IF NOT EXISTS `sa.PauctionInfo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `petbilling`
-CREATE TABLE IF NOT EXISTS `sa.petbilling` (
+CREATE TABLE IF NOT EXISTS `petbilling` (
   `id` int(11) NOT NULL,
   `type` tinyint(4) NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -266,7 +266,7 @@ CREATE TABLE IF NOT EXISTS `sa.petbilling` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `pklist`
-CREATE TABLE IF NOT EXISTS `sa.pklist` (
+CREATE TABLE IF NOT EXISTS `pklist` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `player1` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
   `player2` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -279,7 +279,7 @@ CREATE TABLE IF NOT EXISTS `sa.pklist` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `safedata`
-CREATE TABLE IF NOT EXISTS `sa.safedata` (
+CREATE TABLE IF NOT EXISTS `safedata` (
   `cdkey` varchar(32) NOT NULL DEFAULT '',
   `newsafe` varchar(64) DEFAULT NULL,
   `oldsafe` varchar(64) DEFAULT NULL,
@@ -289,7 +289,7 @@ CREATE TABLE IF NOT EXISTS `sa.safedata` (
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `SaleVipPoint`
-CREATE TABLE IF NOT EXISTS `sa.SaleVipPoint` (
+CREATE TABLE IF NOT EXISTS `SaleVipPoint` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cdkey` varchar(32) NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -307,7 +307,7 @@ CREATE TABLE IF NOT EXISTS `sa.SaleVipPoint` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `SuperStar`
-CREATE TABLE IF NOT EXISTS `sa.SuperStar` (
+CREATE TABLE IF NOT EXISTS `SuperStar` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `cdkey` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -318,7 +318,7 @@ CREATE TABLE IF NOT EXISTS `sa.SuperStar` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `transpointlog`
-CREATE TABLE IF NOT EXISTS `sa.transpointlog` (
+CREATE TABLE IF NOT EXISTS `transpointlog` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `incdkey` varchar(32) DEFAULT NULL,
   `outcdkey` varchar(32) DEFAULT NULL,
@@ -330,7 +330,7 @@ CREATE TABLE IF NOT EXISTS `sa.transpointlog` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `VipShop`
-CREATE TABLE IF NOT EXISTS `sa.VipShop` (
+CREATE TABLE IF NOT EXISTS `VipShop` (
   `cdkey` varchar(32) COLLATE utf8mb4_unicode_ci NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
   `itemid` int(11) NOT NULL,
@@ -341,7 +341,7 @@ CREATE TABLE IF NOT EXISTS `sa.VipShop` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- 表的结构 `weekpay`
-CREATE TABLE IF NOT EXISTS `sa.weekpay` (
+CREATE TABLE IF NOT EXISTS `weekpay` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `term` int(11) NOT NULL,
   `cdkey` varchar(32) NOT NULL,
@@ -351,7 +351,7 @@ CREATE TABLE IF NOT EXISTS `sa.weekpay` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `YamaKing`
-CREATE TABLE IF NOT EXISTS `sa.YamaKing` (
+CREATE TABLE IF NOT EXISTS `YamaKing` (
   `index` int(13) NOT NULL AUTO_INCREMENT,
   `cdkey` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -365,7 +365,7 @@ CREATE TABLE IF NOT EXISTS `sa.YamaKing` (
 ) ENGINE=InnoDB  DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `yuxiaxie`
-CREATE TABLE IF NOT EXISTS `sa.yuxiaxie` (
+CREATE TABLE IF NOT EXISTS `yuxiaxie` (
   `date` date NOT NULL,
   `cdkey` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
   `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
@@ -377,7 +377,7 @@ CREATE TABLE IF NOT EXISTS `sa.yuxiaxie` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- 表的结构 `yuxiaxielog`
-CREATE TABLE IF NOT EXISTS `sa.yuxiaxielog` (
+CREATE TABLE IF NOT EXISTS `yuxiaxielog` (
   `date` date NOT NULL,
   `type` int(11) NOT NULL,
   `vippoint` int(11) NOT NULL,

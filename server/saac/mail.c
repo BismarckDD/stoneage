@@ -3,10 +3,6 @@
 #include "main.h"
 #include "saacproto_serv.h"
 #include "util.h"
-#include <dirent.h>
-#include <malloc.h>
-#include <sys/stat.h>
-#include <sys/types.h>
 
 typedef enum {
   MS_NOUSE = 0,

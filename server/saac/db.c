@@ -1,15 +1,7 @@
-#include "version.h"
-#include "db.h"
 #include "main.h"
 #include "util.h"
 #define _DB_C_
-#include <dirent.h>
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <sys/stat.h>
-#include <sys/types.h>
+#include "db.h"
 
 // #define CHARVALUE_MAX 1024
 #define MAXTABLE 16
@@ -60,7 +52,7 @@ typedef struct tagTable {
 } Table;
 
 DBEntry *gDBEntry; /* 巨件玄伉筏盛迕 */
-int dbsize = 0;             /* 1,2,4,8,16...*/
+int dbsize = 0;    /* 1,2,4,8,16...*/
 static int dbent_finder = 0;
 Table dbt[MAXTABLE];
 
@@ -95,20 +87,11 @@ static int reallocDB(void) {
   // Spock+1 2000/10/12
   new_dbsize = dbsize + DBINIT_SIZE;
   newbuf = (DBEntry *)calloc(1, new_dbsize * sizeof(DBEntry));
-  /* 丢乒伉凶曰卅中   */
   if (newbuf == NULL) {
     log("重新分配数据: 内存不足!!! 新数据大小: %d\n", new_dbsize);
     return -1;
   }
   memset(newbuf, 0, new_dbsize * sizeof(DBEntry));
-  /* Spock deleted 2000/10/19
-  if( previous )memcpy( (char*)newbuf, (char*)previous,
-          dbsize * sizeof( DBEntry ));
-
-  // 衙中幻丹毛荸  仄
-  free( previous );
-  */
-  // Spock 2000/10/19
   if (dbsize > 0) {
     memcpy(newbuf, previous, dbsize * sizeof(DBEntry));
     free(previous);
@@ -136,16 +119,6 @@ static int dbAllocNode() {
     }
     if (gDBEntry[dbent_finder].use == 0) {
       gDBEntry[dbent_finder].use = 1;
-      /* Spock deleted 2000/10/12
-      // int 匹手尥笛树  及啃卞stringbuffer毛  勾仪卞允月 kawata
-      if( type == DB_STRING || type == DB_INT_SORTED){
-          if( ( gDBEntry[dbent_finder].charvalue_index =
-                dbAllocCharValue() ) < 0 ){
-              //   侬  田永白央□互凶曰卅中冗
-              return -1;
-          }
-      }
-      */
       return dbent_finder;
     }
   }
@@ -177,22 +150,12 @@ static void dbReleaseNode(int index) {
 void dbShowLink(int topind) {
   int cur = topind;
   log("开始从 %d 链接数据\n", cur);
-  /* Spock deleted 2000/10/19
-  for(;;){
-      if( cur == -1 )break;
-  */
-  // Spock +1 2000/10/19
   while (cur >= 0) {
     if (gDBEntry[cur].use == 0) {
       log("dbShowLink: use is 0! key:%s\n", gDBEntry[cur].key);
       return;
     }
-    // Spock +1  2000/10/12
     log("%s %i\n", gDBEntry[cur].key, gDBEntry[cur].ivalue);
-    /* Spock deleted 2000/10/12
-    log( "%s %u %i\n", gDBEntry[cur].key ,
-         gDBEntry[cur].keyhash, gDBEntry[cur].ivalue );
-    */
     cur = gDBEntry[cur].next;
   }
 }
@@ -203,8 +166,7 @@ static int reallocHash(int dbi) {
   int new_hashsize;
 
   new_hashsize = dbt[dbi].hashsize + HASH_SIZE;
-  newbuf =
-      (HashEntry *)calloc(1, new_hashsize * sizeof(HashEntry));
+  newbuf = (HashEntry *)calloc(1, new_hashsize * sizeof(HashEntry));
   if (newbuf == NULL) {
     log("重新分配无用信息: 内存不足!!! 新无用信息大小: %d\n", new_hashsize);
     return -1;
@@ -310,18 +272,18 @@ static void tableReleaseNode(int dbi, int ind) {
 
 // Spock 2000/10/13
 static int dbExtractNodeByKey(int dbi, char *k) {
-  int hashind = tableGetEntry(dbi, k);
+  int hash_index = tableGetEntry(dbi, k);
 
-  if (hashind < 0) {
+  if (hash_index < 0) {
     log("dbExtractNodeByKey: tableGetEntry fail, key:%s\n", k);
     return -1;
   }
-  if (dbt[dbi].hashtable[hashind].dbind < 0) {
+  if (dbt[dbi].hashtable[hash_index].dbind < 0) {
     log("dbExtractNodeByKey: invalid dbind in hash, key:%s\n", k);
     return -1;
   }
-  dbReleaseNode(dbt[dbi].hashtable[hashind].dbind);
-  tableReleaseNode(dbi, hashind);
+  dbReleaseNode(dbt[dbi].hashtable[hash_index].dbind);
+  tableReleaseNode(dbi, hash_index);
   return 0;
 }
 
@@ -399,11 +361,10 @@ static int dbGetTableIndex(char *tname, DBTYPE type) {
   return -1;
 }
 
-// Spock 2000/10/16
-int dbUpdateEntryInt(char *table, char *key, int value, char *info) {
+int dbUpdateEntryInt(const char *table, const char *key, const int value,
+                     const char *info) {
   int dbi = dbGetTableIndex(table, DB_INT_SORTED);
-  int dbind, hashind, newpos;
-  // Spock 2000/10/23
+  int dbind, newpos;
   if (strlen(key) >= KEY_MAX) {
     log("dbUpdateEntryInt: key is too long, key:%s\n", key);
     return -1;
@@ -412,13 +373,12 @@ int dbUpdateEntryInt(char *table, char *key, int value, char *info) {
     log("dbUpdateEntryInt: charvalue is too long, charvalue:%s\n", info);
     return -1;
   }
-  // Spock end
   if (dbi < 0) {
     log("dbUpdateEntryInt: dbGetTableIndex fail\n");
     return -1;
   }
-  hashind = tableGetEntry(dbi, key);
-  if (hashind < 0) {
+  const int hash_index = tableGetEntry(dbi, key);
+  if (hash_index < 0) {
     dbind = dbAllocNode();
     if (dbind < 0) {
       log("dbUpdateEntryInt: dbAllocNode fail\n");
@@ -438,7 +398,7 @@ int dbUpdateEntryInt(char *table, char *key, int value, char *info) {
       return -1;
     }
   } else {
-    dbind = dbt[dbi].hashtable[hashind].dbind;
+    dbind = dbt[dbi].hashtable[hash_index].dbind;
     gDBEntry[dbind].ivalue = value;
     strcpy(gDBEntry[dbind].charvalue, info);
     newpos = dbind;
@@ -458,10 +418,6 @@ int dbUpdateEntryInt(char *table, char *key, int value, char *info) {
         gDBEntry[gDBEntry[newpos].prev].next = dbind;
       gDBEntry[newpos].prev = dbind;
       dbt[dbi].updated = 1;
-      /*
-  log( "dbUpdateEntryInt: successfully updated entry %s:%s:%d\n",
-      table, key, value );
-      */
       return 0;
     }
     while (gDBEntry[newpos].next >= 0) {
@@ -481,18 +437,12 @@ int dbUpdateEntryInt(char *table, char *key, int value, char *info) {
     }
   }
   dbt[dbi].updated = 1;
-  /*
-log( "dbUpdateEntryInt: successfully updated entry %s:%s:%d\n",
-       table, key, value );
-                   */
   return 0;
 }
-// Spock end
 
-int dbDeleteEntryInt(char *table, char *key) {
+int dbDeleteEntryInt(const char *table, const char *key) {
   int dbi = dbGetTableIndex(table, DB_INT_SORTED);
   int r;
-
   if (strlen(key) >= KEY_MAX) {
     log("dbDeleteEntryInt: key is too long, key:%s\n", key);
     return -1;
@@ -501,17 +451,14 @@ int dbDeleteEntryInt(char *table, char *key) {
     log("dbDeleteEntryInt: dbGetTableIndex failed for %s\n", table);
     return -1;
   }
-  // r = dbExtractNodeByKey( dbt[dbi].toplinkindex , key );
-  //  Spock fixed 2000/10/19
   r = dbExtractNodeByKey(dbi, key);
   if (r < 0) {
     log("dbDeleteEntryInt: dbExtractNodeByKey failed for %s in %s\n", key,
         table);
     return -1;
   }
-  // Spock +1 2000/10/19
   dbt[dbi].updated = 1;
-  log("删除人物 %s 来至表 %s\n", key, table);
+  log("删除人物 %s 来自表 %s\n", key, table);
   return 0;
 }
 
@@ -526,16 +473,8 @@ static void dbShowAllTable(void) {
   }
 }
 
-/* 犯□正毛1蜊潸曰分允［
- */
-int dbGetEntryInt(char *table, char *key, int *output) {
+int dbGetEntryInt(const char *table, const char *key, int *output) {
   int dbi = dbGetTableIndex(table, DB_INT_SORTED);
-  int entind;
-  // Spock +1 2000/10/19
-  int hashind;
-
-  // Spock deleted 2000/10/19
-  // if( strlen(key) >= sizeof( gDBEntry[entind].key) ) return -1;
   if (dbi < 0) {
     log("dbGetEntryInt: dbGetTableIndex fail\n");
     return -1;
@@ -545,42 +484,23 @@ int dbGetEntryInt(char *table, char *key, int *output) {
     log("dbGetEntryInt: key is too long, key:%s\n", key);
     return -1;
   }
-  hashind = tableGetEntry(dbi, key);
-  if (hashind < 0)
+  const int hash_index = tableGetEntry(dbi, key);
+  if (hash_index < 0)
     return -1;
-  entind = dbt[dbi].hashtable[hashind].dbind;
-  // entind = dbGetEntryByKey( dbt[dbi].toplinkindex , key );
-  //  Spock end
-  if (entind < 0) {
+  const int entry_index = dbt[dbi].hashtable[hash_index].dbind;
+  if (entry_index < 0) {
     log("dbGetEntryInt: Invalid dbind in hashtable of %s\n", table);
     return -1;
   }
-  /* 心勾井匀凶及匹袄毛请  卞  木化忒允 */
-  *output = gDBEntry[entind].ivalue;
-
+  *output = gDBEntry[entry_index].ivalue;
   return 0;
 }
 
-/*
-  巨仿□及桦宁反  ［0分匀凶日岳  ［
-
-  int *rank_out : 仿件弁及请
-  int *count_out : 晓井日窒蜊  井及请
-
-  int 犯□正矛□旦毁迕友
-
- */
-
 int dbGetEntryRank(char *table, char *key, int *rank_out, int *count_out) {
   int dbi = dbGetTableIndex(table, DB_INT_SORTED);
-  // Spock deleted 2000/10/19
-  // unsigned int hash = hashpjw(key);
   int cur;
   int now_score = 0x7fffffff; /*int 匹中切壬氏匹井中袄 */
   int r = -1, i = 0;
-
-  // Spock 2000/10/23
-  // if( strlen(key) >= sizeof( gDBEntry[cur].key) ) return -1;
   if (strlen(key) >= KEY_MAX) {
     log("dbGetEntryRank: key is too long, key:%s\n", key);
     return -1;
@@ -589,31 +509,17 @@ int dbGetEntryRank(char *table, char *key, int *rank_out, int *count_out) {
     log("dbGetEntryRank: dbGetTableIndex fail\n");
     return -1;
   }
-  // Spock end
-
-  // Spock 2000/10/23
-  // cur = gDBEntry[dbt[dbi].toplinkindex].nextind;
   cur = gDBEntry[dbt[dbi].toplinkindex].next;
-  // i=0;
-  // for(;;){
-  //     if( cur == -1 )break;
   while (cur >= 0) {
-    // Spock end
     if (gDBEntry[cur].ivalue != now_score) {
       r = i;
       now_score = gDBEntry[cur].ivalue;
     }
-    // Spock 2000/10/19
-    // if( hash == gDBEntry[cur].keyhash &&
-    //    strcmp( gDBEntry[cur].key, key )== 0 ){
     if (strcmp(gDBEntry[cur].key, key) == 0) {
-      // Spock end
       *rank_out = r;
       *count_out = i;
       return 0;
     }
-    // cur = gDBEntry[cur].nextind;
-    //  Spock fixed 2000/10/19
     cur = gDBEntry[cur].next;
     i++;
   }
@@ -622,14 +528,11 @@ int dbGetEntryRank(char *table, char *key, int *rank_out, int *count_out) {
   return 0;
 }
 
-/*
-  int 毁迕友
- */
 int dbGetEntryRankRange(char *table, int start, int end, char *output,
                         int outlen) {
 #define MAXHITS 1024 /* 赝癫支卅丐［匹手仇木匹蜗坌日仄中冗 ringo */
   struct hitent { /* 仇及厌瞻  卞甲永玄仄凶支勾毛凶户化中仁 */
-    int entind;
+    int entry_index;
     int rank;
   };
 
@@ -646,26 +549,18 @@ int dbGetEntryRankRange(char *table, int start, int end, char *output,
     return -1;
 
   cur = dbt[dbi].toplinkindex;
-  // Spock 2000/10/23
-  // for(;;){
-  //    if( cur == -1 )break;
   while (cur >= 0) {
-    // Spock end
     if (gDBEntry[cur].ivalue != now_score) {
       r++;
       now_score = gDBEntry[cur].ivalue;
     }
     if (r >= start && r <= end) {
-      hits[hitsuse].entind = cur;
+      hits[hitsuse].entry_index = cur;
       hits[hitsuse].rank = r;
       hitsuse++;
-      // if( hitsuse == MAXHITS )break;
-      //  Spock fixed 2000/10/23
       if (hitsuse >= MAXHITS)
         break;
     }
-    // cur = gDBEntry[cur].nextind;
-    //  Spock fixed 2000/10/19
     cur = gDBEntry[cur].next;
   }
   output[0] = 0;
@@ -673,11 +568,9 @@ int dbGetEntryRankRange(char *table, int start, int end, char *output,
   for (i = 0; i < hitsuse; i++) {
     char tmp[1024];
     snprintf(tmp, sizeof(tmp), "%d,%s,%d,%s", hits[i].rank,
-             gDBEntry[hits[i].entind].key, gDBEntry[hits[i].entind].ivalue,
-             //		            dbGetString( gDBEntry[i].charvalue_index
-             //));
-             // Spock fixed 2000/10/19
-             gDBEntry[hits[i].entind].charvalue);
+             gDBEntry[hits[i].entry_index].key,
+             gDBEntry[hits[i].entry_index].ivalue,
+             gDBEntry[hits[i].entry_index].charvalue);
     strcatsafe(output, outlen, tmp);
     if (i != (hitsuse - 1)) {
       strcatsafe(output, outlen, "|");
@@ -686,14 +579,13 @@ int dbGetEntryRankRange(char *table, int start, int end, char *output,
   return 0;
 }
 
-int dbFlush(char *dir) {
+int dbFlush(const char *dir) {
   int i;
 
   for (i = 0; i < MAXTABLE; i++) {
     FILE *fp;
     char filename[1024];
-    int entind;
-    // int j;
+    int entry_index;
     if (!dbt[i].use)
       continue;
     // Spock 2000/10/23
@@ -716,29 +608,17 @@ int dbFlush(char *dir) {
     }
 
     // Spock 2000/10/19
-    // entind = gDBEntry[dbt[i].toplinkindex].nextind;
-    entind = gDBEntry[dbt[i].toplinkindex].next;
-    // for(j=0;;j++){
-    //     if( entind == -1 )break;
-    while (entind >= 0) {
-      // Spock end
+    entry_index = gDBEntry[dbt[i].toplinkindex].next;
+    while (entry_index >= 0) {
       if (dbt[i].type == DB_INT_SORTED) {
-        fprintf(fp, "%s %d %s\n", gDBEntry[entind].key,
-                gDBEntry[entind].ivalue,
-                // makeStringFromEscaped(
-                //     dbGetString(gDBEntry[entind].charvalue_index)));
-                //  Spock fixed 2000/10/19
-                makeStringFromEscaped(gDBEntry[entind].charvalue));
+        fprintf(fp, "%s %d %s\n", gDBEntry[entry_index].key,
+                gDBEntry[entry_index].ivalue,
+                makeStringFromEscaped(gDBEntry[entry_index].charvalue));
       } else {
-        fprintf(fp, "%s %s\n", gDBEntry[entind].key,
-                // makeStringFromEscaped(
-                //     dbGetString(gDBEntry[entind].charvalue_index)));
-                //  Spock fixed 2000/10/19
-                makeStringFromEscaped(gDBEntry[entind].charvalue));
+        fprintf(fp, "%s %s\n", gDBEntry[entry_index].key,
+                makeStringFromEscaped(gDBEntry[entry_index].charvalue));
       }
-      // entind = gDBEntry[entind].nextind;
-      //  Spock fixed 2000/10/19
-      entind = gDBEntry[entind].next;
+      entry_index = gDBEntry[entry_index].next;
     }
     fclose(fp);
     dbt[i].updated = 0;
@@ -747,31 +627,28 @@ int dbFlush(char *dir) {
   return 0;
 }
 
-int dbRead(char *dir) {
+int dbRead(const char *dir) {
   char dirname[1024];
   DIR *d;
   struct dirent *de;
   // Spock +1 2000/10/19
   memset(dbt, 0, MAXTABLE * sizeof(Table));
-  {
-    char tmp[1024];
-    snprintf(tmp, sizeof(tmp), "%s/int", dir);
-    if (mkdir(tmp, 0755) == 0) {
-      log("创建 %s\n", tmp);
-    }
-    snprintf(tmp, sizeof(tmp), "%s/string", dir);
-    if (mkdir(tmp, 0755) == 0) {
-      log("创建 %s\n", tmp);
-    }
-  }
 
+  char tmp[1024];
+  snprintf(tmp, sizeof(tmp), "%s/int", dir);
+  if (mkdir(tmp, 0755) == 0) {
+    log("创建 %s\n", tmp);
+  }
+  snprintf(tmp, sizeof(tmp), "%s/string", dir);
+  if (mkdir(tmp, 0755) == 0) {
+    log("创建 %s\n", tmp);
+  }
   snprintf(dirname, sizeof(dirname), "%s/int", dir);
   d = opendir(dirname);
   if (d == NULL) {
     log("不能打开文件 %s\n", dirname);
     return -1;
   }
-
   while (1) {
     de = readdir(d);
     if (de == NULL)
@@ -845,7 +722,6 @@ int dbRead(char *dir) {
         char k[1024];
         if (fgets(line, sizeof(line), fp) == NULL)
           break;
-        /* chop */
         chop(line);
         k[0] = '\0';
         easyGetTokenFromString(line, 1, k, sizeof(k));
@@ -859,107 +735,41 @@ int dbRead(char *dir) {
   return 0;
 }
 
-/* 隙烂仄凶匏  井日隙烂仄凶蜊醒潸曰分允［
- 撩  仄凶日  ｝岳  仄凶日0［岳  仄化手坞及请  及午五互丐月冗［
-   “num互0及午五午井｝竟癫允月巨件玄伉互卅中午五［
-
- int 犯□正矛□旦毁迕分冗
-
- */
-int dbGetEntryCountRange(char *table, int count_start, int num, char *output,
-                         int outlen) {
+int dbGetEntryCountRange(const char *table, const int count_start,
+                         const int num, char *output, const int outlen) {
   int dbi = dbGetTableIndex(table, DB_INT_SORTED);
   int cur;
-  int i;
-  int now_score = 0x7fffffff, r;
-
+  int now_score = 0x7fffffff;
   if (dbi < 0)
     return -1;
   if (outlen < 1)
     return -1;
   output[0] = 0;
-
-  // cur = gDBEntry[dbt[dbi].toplinkindex].nextind;
-  //  Spock fixed 2000/10/19
   cur = gDBEntry[dbt[dbi].toplinkindex].next;
-  i = 0;
-  r = 0;
-  for (;;) {
-    if (cur == -1)
-      break;
-
+  int i = 0;
+  int r = 0;
+  while (cur != -1) {
     if (gDBEntry[cur].ivalue != now_score) {
       r = i;
       now_score = gDBEntry[cur].ivalue;
     }
-
     if ((i >= count_start) && (i < (count_start + num))) {
       char tmp[1024];
       if ((i != count_start)) {
         strcatsafe(output, outlen, "|");
       }
-
       snprintf(tmp, sizeof(tmp), "%d,%d,%s,%d,%s", i, r, gDBEntry[cur].key,
-               gDBEntry[cur].ivalue,
-               // dbGetString( gDBEntry[cur].charvalue_index ));
-               // Spock fixed 2000/10/19
-               gDBEntry[cur].charvalue);
+               gDBEntry[cur].ivalue, gDBEntry[cur].charvalue);
       strcatsafe(output, outlen, tmp);
     }
-    i++;
-    // cur = gDBEntry[cur].nextind;
-    //  Spock fixed 2000/10/19
+    ++i;
     cur = gDBEntry[cur].next;
   }
   return 0;
 }
 
-/*
-    侬  犯□正矛□旦及质
- */
-/* Spock deleted 2000/10/19
-int
-dbUpdateEntryString( char *table, char *key, char *value )
-{
-    int dbi = dbGetTableIndex(table, DB_STRING);
-    int r, entind;
-
-    log( "dbUpdateEntryString: [%s] [%s] [%s]\n", table, key, value );
-
-    if( strlen(key) >= sizeof(gDBEntry[0].key) )return -1;
-    if( dbi < 0 )return -1;
-
-    r = dbExtractNodeByKey( dbt[dbi].toplinkindex, key );
-    if( r< 0 ){
-        log( "dbUpdateEntryString dbExtractNodeByKey fail! bug!!\n" );
-        return -1;
-    }
-
-    entind = dbAllocNode( DB_STRING );
-    if( entind < 0 ) return -1;
-
-    gDBEntry[entind].ivalue = 0;
-    dbSetString( gDBEntry[entind].charvalue_index, value );
-    snprintf( gDBEntry[entind].key,
-              sizeof(gDBEntry[0].key), "%s",key );
-    gDBEntry[entind].keyhash = hashpjw( gDBEntry[entind].key );
-    gDBEntry[entind].nextind = -1;
-
-    if(  dbAppendNode( dbt[dbi].toplinkindex, entind ) < 0 ){
-        log( "dbUpdateEntryString: dbAppendNode failed\n" );
-        return -1;
-    }
-    log( "dbUpdateEntryString: successfully updated entry %s:%s:%s\n",
-         table,key,value );
-
-    return 0;
-}
-*/
-// Spock 2000/10/19
-int dbUpdateEntryString(char *table, char *key, char *value) {
-  int dbi = dbGetTableIndex(table, DB_STRING);
-  int dbind, hashind;
-
+int dbUpdateEntryString(const char *table, const char *key, const char *value) {
+  const int dbi = dbGetTableIndex(table, DB_STRING);
   if (strlen(key) >= KEY_MAX) {
     log("dbUpdateEntryString: key is too long, key:%s\n", key);
     return -1;
@@ -972,11 +782,12 @@ int dbUpdateEntryString(char *table, char *key, char *value) {
     log("dbUpdateEntryString: dbGetTableIndex fail, table:%s\n", table);
     return -1;
   }
-  hashind = tableGetEntry(dbi, key);
-  if (hashind < 0) {
+  const int hash_index = tableGetEntry(dbi, key);
+  int dbind;
+  if (hash_index < 0) {
     dbind = dbAllocNode();
     if (dbind < 0) {
-      log("dbUpdateEntryString: dbAllocNode fail\n");
+      log("dbUpdateEntryString: dbAllocNode failed.\n");
       return -1;
     }
     strcpy(gDBEntry[dbind].key, key);
@@ -992,23 +803,16 @@ int dbUpdateEntryString(char *table, char *key, char *value) {
       return -1;
     }
   } else {
-    dbind = dbt[dbi].hashtable[hashind].dbind;
+    dbind = dbt[dbi].hashtable[hash_index].dbind;
     strcpy(gDBEntry[dbind].charvalue, value);
   }
   dbt[dbi].updated = 1;
-  /*
-log( "dbUpdateEntryString: successfully updated entry %s:%s:%s\n",
-   table,key,value );
-           */
   return 0;
 }
 
-int dbGetEntryString(char *table, char *key, char *output, int outlen) {
+int dbGetEntryString(const char *table, const char *key, char *output,
+                     const int outlen) {
   int dbi = dbGetTableIndex(table, DB_STRING);
-  int entind;
-  // Spock +1 2000/10/19
-  int hashind;
-
   // Spock 2000/10/23
   if (strlen(key) >= KEY_MAX) {
     log("dbGetEntryString: key is too long, key:%s\n", key);
@@ -1019,24 +823,22 @@ int dbGetEntryString(char *table, char *key, char *output, int outlen) {
     return -1;
   }
   // Spock 2000/10/19
-  hashind = tableGetEntry(dbi, key);
-  if (hashind < 0) {
-    log("err hashind <0\n") return -1;
-  }
-  entind = dbt[dbi].hashtable[hashind].dbind;
-
-  if (entind < 0) {
-    log("entind < 0 ");
+  const int hash_index = tableGetEntry(dbi, key);
+  if (hash_index < 0) {
+    log("err hash index < 0.\n");
     return -1;
   }
-  snprintf(output, outlen, "%s", gDBEntry[entind].charvalue);
-
+  const int entry_index = dbt[dbi].hashtable[hash_index].dbind;
+  if (entry_index < 0) {
+    log("error entry index < 0.\n");
+    return -1;
+  }
+  snprintf(output, outlen, "%s", gDBEntry[entry_index].charvalue);
   return 0;
 }
 
-int dbDeleteEntryString(char *table, char *key) {
+int dbDeleteEntryString(const char *table, const char *key) {
   int dbi = dbGetTableIndex(table, DB_STRING);
-  // Spock 2000/10/23
   if (strlen(key) >= KEY_MAX) {
     log("dbDeleteEntryString: key is too long, key:%s\n", key);
     return -1;
@@ -1052,6 +854,6 @@ int dbDeleteEntryString(char *table, char *key) {
     return -1;
   }
   dbt[dbi].updated = 1;
-  log("删除人物 %s 来至表 %s\n", key, table);
+  log("删除人物 %s 来自表 %s\n", key, table);
   return 0;
 }

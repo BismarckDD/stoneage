@@ -1,32 +1,7 @@
 #define __UTIL_C__
 
-#include <sys/socket.h>
-#include <sys/stat.h>
-#include <sys/time.h>
-#include <sys/types.h>
-
-#include <arpa/inet.h>
-#include <ctype.h>
-#include <dirent.h>
-#include <errno.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <unistd.h>
-
-#include "main.h"
 #include "util.h"
 
-#define min(x, y)                                                              \
-  ({                                                                           \
-    typeof(x) __x = (x), __y = (y);                                            \
-    (__x < __y) ? __x : __y;                                                   \
-  })
-#define max(x, y)                                                              \
-  ({                                                                           \
-    typeof(x) __x = (x), __y = (y);                                            \
-    (__x < __y) ? __y : __x;                                                   \
-  })
-#define IS_2BYTEWORD(_a_) ((char)(0x80) <= (_a_) && (_a_) <= (char)(0xFF))
 #define PRIME 211
 
 int hashpjw(const char *s) {
@@ -94,16 +69,15 @@ void prepareDirectories(char *base) {
     snprintf(dname, sizeof(dname), "%s/0x%x", base, i);
     ret = mkdir(dname, 0755);
     if (ret < 0 && errno != EEXIST) {
-      log("mkdir error:%d %s: %s\n", ret, strerror(errno), dname);
+      printf("mkdir error:%d %s: %s\n", ret, strerror(errno), dname);
     }
     if (ret == 0)
-      log(".");
+      printf(".");
   }
 }
 
-void makeDirFilename(char *out, const int out_len,
-                     const char *base, int dir_char,
-                     const char *child) {
+void makeDirFilename(char *out, const int out_len, const char *base,
+                     int dir_char, const char *child) {
   snprintf(out, out_len, "%s/0x%x/%s", base, dir_char & 0xFF, child);
 }
 
@@ -147,7 +121,7 @@ static EscapeChar sEscapeCharMap[] = {
 // UTF-8编码下，没必要刻意处理2BYTEWORD.
 char *makeStringFromEscaped(char *src) {
   int srclen = strlen(src);
-  int ri/*read pointer*/, wi/*write pointer*/ = 0, j;
+  int ri /*read pointer*/, wi /*write pointer*/ = 0, j;
   int escape_len = arraysizeof(sEscapeCharMap);
   for (ri = 0; ri < srclen; ++ri) {
     if (src[ri] == '\\') {
@@ -204,7 +178,7 @@ char *makeEscapeString(const char *src, char *dst, const int dst_len) {
 #undef FALSE
 #undef TRUE
 
-int strcatsafe(char *dst, const int max_len, const char *app) {
+int util_strcatsafe(char *dst, const int max_len, const char *app) {
   int dst_len = strlen(dst);
   int app_len = strlen(app);
   if ((dst_len + app_len) >= max_len) {
@@ -215,115 +189,87 @@ int strcatsafe(char *dst, const int max_len, const char *app) {
   return 0;
 }
 
-char *chop(char *s) {
-  int l = strlen(s);
-  if (l >= 1) {
-    s[l - 1] = 0;
+//  移除串中的最后一个字符.
+char *chop(char *src) {
+  int len = strlen(src);
+  if (len >= 1) {
+    src[len - 1] = 0;
   }
-  return s;
+  return src;
 }
 
-// 从src向dst拷贝字节，至多拷贝copy_bytes个字节;
-char *strncpy2(char *dst, const char *src, const int copy_bytes) {
-  if (copy_bytes > 0) {
-    int i;
-    for (i = 0; i < copy_bytes; i++) {
-      if (*(dst + i) == 0) {
-        *(dst + i) = '\0';
-        break;
-      }
-      *(dst + i) = *(src + i);
-      if (*(src + i) & 0x80) { // 现在都是UTF8编码, 双字节检测似乎没有意义.
-        i++;
-        if (i >= copy_bytes) {
-          *(dst + i - 1) = '\0';
-          break;
-        } else {
-          *(dst + i) = *(src + i);
-        }
-      }
-    }
-  }
-  return dst;
-}
-
-void strncpysafe(char *dst, const int n, const char *src, const int length) {
-  int len = min(strlen(src), length);
-  if (n < len + 1) {
-    strncpy2(dst, src, n - 1);
-    dst[n - 1] = '\0';
-  } else if (n <= 0) {
+void util_strncpysafe1(char *dst, const int dst_len, const char *src,
+                       const int copy_bytes) {
+  if (dst_len <= 0 || copy_bytes <= 0)
     return;
+  if (!dst || !src)
+    return;
+  int src_len = strlen(src);
+  if (copy_bytes < src_len)
+    src_len = copy_bytes;
+  if (dst_len < src_len + 1) {
+    strncpy(dst, src, dst_len - 1);
+    dst[dst_len - 1] = '\0';
   } else {
-    strncpy2(dst, src, len);
-    dst[len] = '\0';
+    strncpy(dst, src, src_len);
+    dst[src_len] = '\0';
   }
 }
 
-void strcpysafe(char *dst, size_t n, const char *src) {
-  if (!src) {
-    *dst = '\0';
+void util_strncpysafe2(char *dst, const int dst_len, const char *src) {
+  if (dst_len <= 0)
     return;
+  if (!dst || !src)
+    return;
+  int src_len = strlen(src);
+  if (dst_len < src_len + 1) {
+    strncpy(dst, src, dst_len - 1);
+    dst[dst_len - 1] = '\0';
+  } else {
+    strncpy(dst, src, src_len);
+    dst[src_len] = '\0';
   }
-  if (n <= 0)
-    return;
-  else if (n < strlen(src) + 1) {
-    strncpy2(dst, src, n - 1);
-    dst[n - 1] = '\0';
-  } else
-    strcpy(dst, src);
 }
 
-char *ScanOneByte(char *src, char delim) {
+char *strstr_onebyte(char *src, char delim) {
   if (!src)
     return NULL;
-  for (; src[0] != '\0'; src++) {
-    if (IS_2BYTEWORD(src[0])) {
-      if (src[1] != 0) {
-        src++;
-      }
-      continue;
-    }
-    if (src[0] == delim) {
+  while (*src != '\0') {
+    if (*src == delim) {
       return src;
     }
+    ++src;
   }
   return NULL;
 }
 
-int easyGetTokenFromBuf(char *src, char *delim, int count, char *output,
-                        int len) {
-  int i;
-  int length = 0;
-  int addlen = 0;
-  int oneByteMode = 0;
-
+int easyGetTokenFromBuf(const char *src, const char *delim, const int count,
+                        char *output, const int output_len) {
+  int i, length = 0, delta = 0;
+  const char *first = src;
+  const char *last;
   if (strlen(src) == 0)
     return 0;
-
-  if (strlen(delim) == 1) {
-    oneByteMode = 1;
-  }
+  int delim_len = strlen(delim);
   for (i = 0; i < count; i++) {
-    char *last;
-    src += addlen;
-
-    if (oneByteMode) {
-      last = ScanOneByte(src, delim[0]);
+    first += delta;
+    if (delim_len == 1) {
+      last = strstr_onebyte(first, delim[0]);
     } else {
-      last = strstr(src, delim);
+      last = strstr(first, delim);
     }
+    // 针对没有找到delim,要复制到最后的case
     if (last == NULL) {
-      strcpysafe(output, len, src);
-
+      util_strncpysafe2(output, output_len, first);
+      // 做一下校验是否是到最后的这种情况.
       if (i == count - 1)
         return 1;
       return 0;
     }
-    length = last - src;
-    addlen = length + strlen(delim);
+    length = last - first;
+    delta = length + delim_len;
   }
-  strncpysafe(output, len, src, length);
-
+  // 针对找到了delim,要复制到delime的case
+  util_strncpysafe1(output, output_len, first, length);
   return 1;
 }

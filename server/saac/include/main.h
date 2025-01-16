@@ -1,20 +1,32 @@
 #ifndef __MAIN_H__
 #define __MAIN_H__
 
-#include <netinet/in.h>
 #include <arpa/inet.h>
+#include <fcntl.h>
+#include <linux/if.h>
+#include <linux/ioctl.h>
+#include <linux/sockios.h>
+#include <netinet/in.h>
+#include <netinet/tcp.h>
 #include <netdb.h>
 #include <sys/socket.h>
-#include <unistd.h>
-#include <strings.h>
+#include <sys/socket.h>
 #include <sys/time.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
+#include <dirent.h>
 
+#include <errno.h>
+#include <getopt.h>
+#include <malloc.h>
+#include <signal.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <errno.h>
 #include <string.h>
 #include <time.h>
 #include "version.h"
+
 
 #ifdef __MAIN_C__
 #define EXT
@@ -96,13 +108,14 @@ char* getGSName( int i );
 void gmsvBroadcast( int fd, char *p1, char *p2, char *p3 , int flag );
 
 #if _ATTESTAION_ID == 1
-int login_game_server( int ti, int id, char *svname , char *svpas ,
-               char *result , int resultlen ,
-               char *retdata , int retdatalen );
+int login_game_server(const int ti, const int id,
+                      const char *svname, const char *svpas,
+                      char *result, const int resultlen,
+                      char *retdata, int retdatalen);
 #else
-int login_game_server( int ti , char *svname , char *svpas ,
-               char *result , int resultlen ,
-               char *retdata , int retdatalen );
+int login_game_server(const int ti, const char *svname, const char *svpas,
+                      char *result, const int resultlen,
+                      char *retdata, const int retdatalen);
 #endif
 
 #ifdef _ANGEL_SUMMON

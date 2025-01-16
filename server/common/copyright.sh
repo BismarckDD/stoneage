@@ -1,3 +1,3 @@
 #!/bin/sh
 OUT=./copyright.h
-echo "#define SERVER_VERSION \" Saserver 8.0 "$(date +%Y年%m月%d日%H:%M:%S)"\n\"" > $OUT
+echo "#define SERVER_VERSION \" SaServer 8.0 "$(date +%Y年%m月%d日%H:%M:%S)"\"" > $OUT

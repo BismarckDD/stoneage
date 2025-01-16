@@ -17,23 +17,20 @@ endif
 ifeq ($(shell uname),Linux)
 	SQLSRC=sasql_linux.c
 	SQL=-L /usr/lib/mysql/ -lmysqlclient -lz -lpthread
-	TARGET=./saacjt
+	TARGET=../../csa/saac/saacjt
 endif
 
 RPCSRC = saacproto_serv.c saacproto_util.c 
-RPCINCLUDE = saacproto_serv.h saacproto_util.h mac.h
+RPCINCLUDE = saacproto_serv.h saacproto_util.h
 RPCNOUSE = saacproto_cli.c saacproto_cli.h
 
-SRC=main.c recv.c util.c char.c db.c mail.c acfamily.c lock.c attestation.c $(SQLSRC) $(RPCSRC)
+SRC=main.c recv.c char.c db.c mail.c acfamily.c lock.c $(SQLSRC) $(RPCSRC)
 OBJ=$(SRC:.c=.o)
 COMMON_LIB=../common/libcommon.a
 
-${TARGET}: copyright $(RPCSRC) $(OBJ)
+${TARGET}: $(RPCSRC) $(OBJ)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ) $(COMMON_LIB) $(SQL)
 	$(RM) $(OBJ)
-
-copyright:
-	$(SHELL) ../common/copyright.sh
 
 clean:
 	$(RM) $(TARGET)

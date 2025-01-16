@@ -114,13 +114,18 @@ BOOL sasql_init(void) {
     return FALSE;
   }
 
-  mysql_query(&mysql, "set names 'utf8mb4'");
+  /* SET NAMES 'utf8mb4' 设置以下三个系统变量：
+	 * character_set_client：客户端发送给服务器的字符集。
+	 * character_set_results：服务器返回给客户端的字符集。
+	 * character_set_connection：连接层使用的字符集。
+   */
+  mysql_query(&mysql, "SET NAMES 'utf8mb4'");
   printf("\n数据库连接成功！\n");
   return TRUE;
 }
 
 int sasql_mysql_query(char *sqlstr) {
-  mysql_query(&mysql, "set names 'gbk'");
+  mysql_query(&mysql, "SET NAMES 'utf8mb4'");
   return mysql_query(&mysql, sqlstr);
 }
 
@@ -145,7 +150,6 @@ int sasql_query(char *username, char *password) {
     printf("异常字符的用户名%s\n", username);
     return 3;
   }
-
   // sprintf(sqlstr,"select `%s`, `salt` from %s where
   // %s=BINARY'%s'",config.sql_PASS, config.sql_Table,config.sql_NAME,username);
   sprintf(sqlstr,
@@ -218,7 +222,6 @@ BOOL sasql_online(char *ID, char *username, char *IP, char *MAC, int flag) {
         return TRUE;
       }
     }
-
     char sqlstr[256];
     if (flag == 0)
       sprintf(sqlstr, "update %s set Online=0 where %s=BINARY'%s'",
