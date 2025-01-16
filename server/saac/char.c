@@ -46,7 +46,7 @@ static void makeCharPoolItemFileName(char *id, char *output, int outputlen);
   }
 
 #ifdef _ANGEL_SUMMON
-struct MissionTable missiontable[MAXMISSIONTABLE];
+MissionTable missiontable[MISSTION_TABLE_SIZE];
 #endif
 
 void charLoadCallback(int ti, int auth, char *c0, char *c1, char *c2, char *c3,

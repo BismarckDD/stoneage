@@ -1491,9 +1491,9 @@ void saacproto_ACMissionTable_recv(int fd, int num, int type, char *data,
 
   if (type == 1) {   // ask data list
     if (num == -1) { // ask all data
-      char alldata[MAXMISSIONTABLE * 100];
+      char alldata[MISSTION_TABLE_SIZE * 100];
       alldata[0] = '\0';
-      for (i = 0; i < MAXMISSIONTABLE; i++) {
+      for (i = 0; i < MISSTION_TABLE_SIZE; i++) {
         if (missiontable[i].flag == MISSION_NONE)
           continue;
         sprintf(buf, "%d|%s|%s|%d|%d|%d|%d ", i, missiontable[i].angelinfo,
@@ -1522,7 +1522,7 @@ void saacproto_ACMissionTable_recv(int fd, int num, int type, char *data,
     int empty = -1;
 
     log("\n增加精灵召唤任务:%s \n", data);
-    for (i = 0; i < MAXMISSIONTABLE; i++) {
+    for (i = 0; i < MISSTION_TABLE_SIZE; i++) {
       if (missiontable[i].angelinfo[0] == '\0') {
         empty = i;
         break;
@@ -1585,7 +1585,7 @@ void saacproto_ACMissionTable_recv(int fd, int num, int type, char *data,
       strcpy(angelinfo, data);
     }
 
-    for (i = 0; i < MAXMISSIONTABLE; i++) {
+    for (i = 0; i < MISSTION_TABLE_SIZE; i++) {
       if (missiontable[i].angelinfo[0] == '\0')
         continue;
       if (strcmp(missiontable[i].angelinfo, angelinfo) &&

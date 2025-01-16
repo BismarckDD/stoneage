@@ -1,8 +1,7 @@
-#ifndef _CHAR_H_
-#define _CHAR_H_
+#ifndef __CHAR_H__
+#define __CHAR_H__
 #include "version.h"
 
-/* 1½»¡õ°ÇØ¤Ð×Ô»¼°    Æ½ÅÒ·ÂÐÑ(°×ÑëÄÌ»ïÐÑ) */
 #ifdef _MORECHARACTERS_
 #define MAXCHAR_PER_USER 4
 #else
@@ -12,10 +11,6 @@
 int isLocked( char *id );
 void charLoadCallback( int ti , int auth_ok , char *c0, char* c1 ,
                        char *c2 , char *c3, char *c4, int i0 , int i1 );
-// Spock 2000/11/1
-//void charSave( int ti , char *c0 , 
-//                       char *c2 , char *c3 , char *c4, int i0 , int i1 );
-// return process number
 #ifdef _NewSave
 int charSave( int ti , char *c0 , 
                        char *c2 , char *c3 , char *c4, int i0 , int i1 , int charindex );
@@ -75,9 +70,9 @@ int checkCharPoolPet( char *id);
 
 #ifdef _ANGEL_SUMMON
 
-#define MAXMISSIONTABLE 200
+#define MISSTION_TABLE_SIZE 200
 
-struct MissionTable
+typedef struct tagMissionTable
 {
 	char angelinfo[64];
 	char heroinfo[64];
@@ -85,11 +80,9 @@ struct MissionTable
 	int flag;
 	int time;
 	int limittime;
-};
+} MissionTable;
 
-extern struct MissionTable missiontable[MAXMISSIONTABLE];
-
-#endif
+extern MissionTable missiontable[MISSTION_TABLE_SIZE];
 
 #endif
-
+#endif

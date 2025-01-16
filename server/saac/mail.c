@@ -303,7 +303,6 @@ void expireMail() {
     }
   }
 
-  /*   端卞霜耨允月 */
   for (i = 0; i < flush_i; i++) {
 
     snprintf(id_char_name, sizeof(id_char_name), "%s_%s",

@@ -124,14 +124,11 @@ char *chartime() {
   return (buf);
 }
 #ifdef _ANGEL_SUMMON
-extern struct MissionTable missiontable[MAXMISSIONTABLE];
+extern MissionTable missiontable[MISSTION_TABLE_SIZE];
 static int initMissionTable(void);
 int saveMissionTable(void);
 void checkMissionTimelimit(void);
 #endif
-
-/*
-  sigaction白弁 */
 
 void sighandle(int a) {
   if (a == SIGUSR1)
@@ -151,9 +148,7 @@ void sigusr1(int a) {
   int i;
   FILE *f;
   char key[4096], buf[4096];
-
   signal(SIGUSR1, sigusr1);
-
   f = fopen("./unlock.arg", "r");
 
   if (f) {
@@ -186,7 +181,6 @@ void sigusr1(int a) {
       SendEffect(&key[1]);
       break;
 #endif
-
     case 'L': // Robin 列出所有Server连线
       log("\nList All Server Conncet!!!!!\n");
       for (i = 0; i < MAXCONNECTION; i++)
@@ -1525,7 +1519,7 @@ static int initMissionTable(void) {
         missiontable[index].flag, missiontable[index].time,
         missiontable[index].limittime);
     index++;
-    if (index >= MAXMISSIONTABLE)
+    if (index >= MISSTION_TABLE_SIZE)
       break;
   }
   fclose(fp);
@@ -1544,7 +1538,7 @@ int saveMissionTable(void) {
     // return false;
   }
   log("\n保存精灵召唤...");
-  for (index = 0; index < MAXMISSIONTABLE; index++) {
+  for (index = 0; index < MISSTION_TABLE_SIZE; index++) {
 
     if (missiontable[index].angelinfo[0] == '\0')
       continue;
@@ -1565,7 +1559,7 @@ void delMissionTableOnedata(int index) {
   log("\n删除精灵召唤:%d:%s:%s \n", index, missiontable[index].angelinfo,
       missiontable[index].heroinfo);
 
-  if (index < 0 || index >= MAXMISSIONTABLE)
+  if (index < 0 || index >= MISSTION_TABLE_SIZE)
     return;
   strcpy(missiontable[index].angelinfo, "");
   strcpy(missiontable[index].heroinfo, "");
@@ -1593,7 +1587,7 @@ void checkMissionTimelimit(void) {
     return;
 
   log("\n检查精灵召唤时间限制:%d \n", (int)sys_time);
-  for (index = 0; index < MAXMISSIONTABLE; index++) {
+  for (index = 0; index < MISSTION_TABLE_SIZE; index++) {
     if (missiontable[index].flag == MISSION_NONE) {
       continue;
     }
@@ -1652,10 +1646,8 @@ void logerr(char *token) {
   time_t timep;
   time(&timep);
   memcpy(&now, localtime(&timep), sizeof(now));
-
   sprintf(tmp, "%04d-%02d-%02d.log", now.tm_year + 1900, now.tm_mon + 1,
           now.tm_mday);
-
   FILE *fp = fopen(tmp, "a+");
   fwrite(token, strlen(token), 1, fp);
   fclose(fp);
@@ -1677,11 +1669,10 @@ void savezipfile(void) {
   sprintf(buf, "%d-%d-%d.zip", y, m, d);
   if (access(buf, W_OK) == 0)
     return; // 文件存在
-  sprintf(buf,
-          "zip -q -r %d-%d-%d.zip char char_sleep data db lock log mail pklist "
-          "race&", y, m, d);
+  sprintf(buf, "zip -q -r %d-%d-%d.zip char char_sleep data db "
+          "lock log mail pklist race&", y, m, d);
   log("备份档案...");
-  system(buf);
+  system(buf); // 执行shell命令.
   log("成功!\n");
   return;
 }

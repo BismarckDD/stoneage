@@ -499,7 +499,7 @@ int dbGetEntryInt(const char *table, const char *key, int *output) {
 int dbGetEntryRank(char *table, char *key, int *rank_out, int *count_out) {
   int dbi = dbGetTableIndex(table, DB_INT_SORTED);
   int cur;
-  int now_score = 0x7fffffff; /*int 匹中切壬氏匹井中袄 */
+  int now_score = 0x7fffffff;
   int r = -1, i = 0;
   if (strlen(key) >= KEY_MAX) {
     log("dbGetEntryRank: key is too long, key:%s\n", key);
