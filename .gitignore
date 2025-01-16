@@ -16,3 +16,4 @@ luajit
 csa
 *.exe
 test
+server/saac/acserv.cf

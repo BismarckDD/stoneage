@@ -1,8 +1,6 @@
 #define _CHAR_C_
 
 // Spock +1 2000/12/6
-#include <time.h>
-#include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -786,19 +784,10 @@ static int makeSaveCharString( char *out , int outlen ,
 	strncpy( infowork , info , sizeof( infowork ));
 	infowork[strlen(info)]=0;
 	
-	/* 巨旦弗□皿仄 */
-	/*    if ( esc ) {
-	nmwork_p = makeEscapeString1( nm , nmwork ,sizeof( nmwork ));
-	optwork_p = makeEscapeString1( opt , optwork , sizeof( optwork ));
-	infowork_p = makeEscapeString1( info , infowork , sizeof( infowork ));
-} else {*/
-
 	nmwork_p = makeEscapeString( nm , nmwork ,sizeof( nmwork ));
 	optwork_p = makeEscapeString( opt , optwork , sizeof( optwork ));
 	infowork_p = makeEscapeString( info , infowork , sizeof( infowork ));
 
-	//    }
-	/* 勾卅仆月［赞中互巨仿□腹请及凶户卞域荚伐□弁卞中木月［ */
 	snprintf( outwork ,sizeof( outwork ) ,
 		"%s" SPACESTRING "%s" SPACESTRING "%s" ,
 		nmwork_p , optwork_p , infowork_p );

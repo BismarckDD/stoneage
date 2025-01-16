@@ -1,4 +1,4 @@
-#define _MAIN_C_
+#define __MAIN_C__
 
 #include "main.h"
 #include "util.h"
@@ -20,12 +20,8 @@
 #endif
 #include "copyright.h"
 
-#include <stdio.h> 
-#include <time.h> 
-
 #include <signal.h>
 #include <sys/types.h>
-#include <time.h>
 #include <sys/time.h>
 #include <errno.h>
 #include <sys/wait.h>
@@ -33,8 +29,6 @@
 #include <stdio.h>
 #include <malloc.h>
 #include <strings.h>
-#include <string.h>
-#include <unistd.h>
 #include <netdb.h>
 #include <errno.h>
 #include <sys/socket.h>
@@ -397,12 +391,6 @@ static int readConfig( char *path )
           cpuuse = atoi( param );
           log( "CPU使用频率:%d秒\n",cpuuse );
         }
-#ifdef  _OLDPS_TO_MD5PS      
-        else if( strcmp( command , "USEMD5" ) == 0 ){
-          usemd5 = atoi( param );
-          log( "是否使用MD5密码：%d\n",usemd5 );
-        }
-#endif
 #ifdef  _AUTO_BACKUP      
         else if( strcmp( command , "AUTOBACKUPDAY" ) == 0 ){
           autobackupday = atoi( param );

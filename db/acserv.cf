@@ -108,7 +108,6 @@ uLoginDay        60
 #是否限制同一IP登陆次数(0为不限制)
 SameIpMun        0
 
-
 #是否使用MD5(0为否ﺿ为是)
 USEMD5           0
 

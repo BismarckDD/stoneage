@@ -1,5 +1,5 @@
-#include "std_c.h"
-#include "utils/md5.h"
+#include <stdio.h>
+#include "md5.h"
 
 typedef unsigned char *POINTER;
 
@@ -203,10 +203,15 @@ inline void MD5Final(unsigned char digest[16], MD5_CTX *context) {
   memset((POINTER)context, 0, sizeof(*context));
 }
 
-void MD5Digest(const char *input, unsigned out_len, char *out) {
+void MD5Digest(const char *input, unsigned input_len, char *output) {
   MD5_CTX context;
-  unsigned len = strlen(input);
   MD5Init(&context);
-  MD5Update(&context, (unsigned char *)input, len);
-  MD5Final((unsigned char *)out_len, &context);
+  MD5Update(&context, (unsigned char *)input, input_len);
+  MD5Final((unsigned char *)output, &context);
 }
+
+// void MD5Digest(const char *input, char *output) {
+//   unsigned input_len = strlen(input);
+//   MD5Digest(input, input_len, output);
+// }
+

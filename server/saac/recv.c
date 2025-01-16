@@ -1,7 +1,5 @@
-#define _RECV_C_
-
 #include "version.h"
-#include "main.h"
+#define _RECV_C_
 #include "saacproto_util.h"
 #include "saacproto_serv.h"
 #include "recv.h"
@@ -15,16 +13,8 @@
 #include "sasql.h"
 #endif
 
-#ifdef _OLDPS_TO_MD5PS
-#include "md5.h"
-#endif
-
 // CoolFish: Family 2001/5/9
 #include "acfamily.h"
-#include "version.h"
-
-#include <stdlib.h>
-#include <stdio.h>
 
 char retdata[CHARDATASIZE];     
 char result[CHARDATASIZE];        
@@ -104,8 +94,6 @@ void saacproto_ACCharLoad_recv( int ti,char* id,char* pas,char* charname ,
 }
 
 /*
-   平乓仿忡绣
-
    char *id : ID
    char *pas : 天允歹□升
    char *charname : 平乓仿
@@ -352,18 +340,6 @@ void saacproto_DBGetEntryString_recv( int fd,
                                       int msgid,
                                       int msgid2 )
 {
-/*
-    char output[16384];
-    int r;
-    r = dbGetEntryString( table, key, output, sizeof( output) );
-    if( r == 0 ){
-        saacproto_DBGetEntryString_send( fd,SUCCESSFUL,output,table,key,
-                                         msgid,msgid2 );
-    } else {
-        saacproto_DBGetEntryString_send( fd,FAILED,"",table,key,
-                                         msgid,msgid2 );        
-    }
-*/
 }
 
 
@@ -556,14 +532,6 @@ void saacproto_DBGetEntryByCount_recv( int fd,
 
 void saacproto_Broadcast_recv( int fd, char* id, char* charname, char* message, int flag)
 {
-	/*
-    if( !is_game_server_login( fd) ){
-        log( "Broadcast: no login. id:%s charname:%s message:%s flag:%d\n",
-             id, charname, message , flag );
-        return;
-    }
-    gmsvBroadcast( fd, id, charname, message , flag );
-  */
 }
 
 
@@ -2022,6 +1990,7 @@ void saacproto_CharadataSaveSQL_recv( int fd, int clifd, char *id, Charadata cha
 
 
 #ifdef _LOTTERY_SYSTEM
+/*彩票*/
 void saacproto_LotterySystem_recv(int fd)
 {
 	char data[256]={"-1,-1,-1,-1,-1,-1,-1"};
@@ -2038,16 +2007,10 @@ void saacproto_LotterySystem_recv(int fd)
 void saacproto_AllServSend_recv(char *data)
 {
 	int i;
-
 	for (i=0; i<MAXCONNECTION; i++) 
-	{
 		if (gs[i].use && gs[i].name[0]) 
-		{
 			saacproto_AllServSend_send( i , data );
-		}
-	}
 }
 #endif
 
 #endif
-

@@ -6,8 +6,8 @@ export RANLIB=ranlib
 export SED=sed
 export SHELL=/bin/sh
 
-INCFLAGS=-I. -I./include
-CFLAGS=-m32 -w -O3 -g -rdynamic $(INCFLAGS) -pipe -Wall
+INCFLAGS=-I../common -I./include
+CFLAGS=-m32 -w -O3 -g -pipe -Wall $(INCFLAGS)
 
 ifeq ($(shell uname),CYGWIN_NT-5.1)
 	SQLSRC=sasql_cygwin.c
@@ -24,15 +24,16 @@ RPCSRC = saacproto_serv.c saacproto_util.c
 RPCINCLUDE = saacproto_serv.h saacproto_util.h mac.h
 RPCNOUSE = saacproto_cli.c saacproto_cli.h
 
-SRC = main.c recv.c util.c char.c db.c mail.c acfamily.c lock.c attestation.c md5.c $(SQLSRC) $(RPCSRC)
+SRC=main.c recv.c util.c char.c db.c mail.c acfamily.c lock.c attestation.c $(SQLSRC) $(RPCSRC)
 OBJ=$(SRC:.c=.o)
+COMMON_LIB=../common/libcommon.a
 
 ${TARGET}: copyright $(RPCSRC) $(OBJ)
-	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ) $(SQL)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJ) $(COMMON_LIB) $(SQL)
 	$(RM) $(OBJ)
 
 copyright:
-	$(SHELL) ./copyright.sh
+	$(SHELL) ../common/copyright.sh
 
 clean:
 	$(RM) $(TARGET)

@@ -1,13 +1,14 @@
-#ifndef _MAIL_H_
-#define _MAIL_H_
+#ifndef __MAIL_H__
+#define __MAIL_H__
 
-void receiveMail( char *id_from, char *charname_from,
-                  char *id_to, char *charname_to, char *message, int option ,
-                  int use_msgid, unsigned int msgid );
-void receiveMailAck( char *id, char *charname, int a , int mesgid );
-void flushMail( int fd, char *id, char *charname );
+void receiveMail(const char *id_from, const char *char_name_from,
+                 const char *id_to, const char *char_name_to,
+                 const char *message, const int option,
+                 const unsigned use_msgid, const unsigned msg_id);
+void receiveMailAck(const char *id, const char *char_name, const int a,
+                    const unsigned mesgid);
+void flushMail(const int fd, const char *id, const char *char_name);
 void expireMail();
-int readMail( char *dir );
+int readMail(const char *dir);
+
 #endif
-
-

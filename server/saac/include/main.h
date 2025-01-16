@@ -1,29 +1,29 @@
-#ifndef _MAIN_H_
-#define _MAIN_H_
+#ifndef __MAIN_H__
+#define __MAIN_H__
 
-#include <stdio.h>
-#include <stdlib.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <netdb.h>
 #include <sys/socket.h>
 #include <unistd.h>
 #include <strings.h>
-#include <time.h>
 #include <sys/time.h>
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <errno.h>
 #include <string.h>
+#include <time.h>
 #include "version.h"
 
-#ifdef _MAIN_C_
+#ifdef __MAIN_C__
 #define EXT
 #else
 #define EXT extern
 #endif
 
-#define SA_NODEFER	0x40000000
-#define SA_NOMASK	SA_NODEFER
+#define SA_NODEFER  0x40000000
+#define SA_NOMASK  SA_NODEFER
 
 #define CHARDATASIZE ( 1024 * 1024 )
 
@@ -64,10 +64,6 @@ EXT char fmsmemodir[64];
 
 EXT int sameipmun;
 
-#ifdef	_OLDPS_TO_MD5PS	
-EXT int usemd5;
-#endif
-
 EXT int log_rotate_interval;
 EXT int total_ok_charlist, total_ng_charlist;
 
@@ -86,20 +82,20 @@ EXT char sleepchardir[64];
 
 typedef struct _gmsv
 {
-    int use;
-	  int fd;
-    char name[128];
+  int use;
+  int fd;
+  char name[128];
 } gmsv;
 
-int get_rotate_count(void );
-void checkGSUCheck( char *id );
+int get_rotate_count(void);
+void checkGSUCheck(char *id);
 int logout_game_server( int ti );
 int is_game_server_login( int ti );
-char * getGSName( int i );
+char* getGSName( int i );
 
 void gmsvBroadcast( int fd, char *p1, char *p2, char *p3 , int flag );
-#if _ATTESTAION_ID == 1
 
+#if _ATTESTAION_ID == 1
 int login_game_server( int ti, int id, char *svname , char *svpas ,
                char *result , int resultlen ,
                char *retdata , int retdatalen );
@@ -114,19 +110,13 @@ void delMissionTableOnedata( int index);
 
 typedef enum
 {
-	MISSION_NONE =0,
-	MISSION_WAIT_ANSWER,
-	MISSION_DOING,
-	MISSION_HERO_COMPLETE,
-	MISSION_TIMEOVER,
+  MISSION_NONE =0,
+  MISSION_WAIT_ANSWER,
+  MISSION_DOING,
+  MISSION_HERO_COMPLETE,
+  MISSION_TIMEOVER,
 }ANGEL_MISSIONFLAG;
 #endif
 
-
 #undef EXT
 #endif
-
-
-
-
-
