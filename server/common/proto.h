@@ -7,8 +7,8 @@
 
 char *cnv10to62(const int input, char *output, const int output_len);
 int cnv62to10(const char *input);
-char *common_ltoa(long l);
-char *common_utoa(unsigned long u);
+char *common_ltoa(const long l);
+char *common_utoa(const unsigned long u);
 void strcpysafe(char *des, const char *src, const int max_len);
 void strcatsafe(char *des, const char *src, const int max_len);
 void GetMessageInfo(int *id, char *function_name, const int max_len, const char **token_list);
@@ -35,8 +35,8 @@ TagProto gProto;
 extern TagProto gProto;
 #endif
 
-char *escape_string(const char *a);
-char *descape_string(const char *a);
+char *escape_string(TagProto *proto, const char *a);
+char *descape_string(TagProto *proto, const char *a);
 InitProto(TagProto *proto, const int work_buf_size);
 
 #endif // __UTILS_PROTO_H__

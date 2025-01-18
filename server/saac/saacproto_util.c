@@ -89,11 +89,11 @@ void saacproto_Send(const int fd, const char *msg) {
     saacproto.write_func(fd, encoded, l);
   }
 }
-void saacproto_CreateHeader(char *out, char *fname) {
+void saacproto_CreateHeader(char *out, const char *fname) {
   sprintf(out, "%u %s ", saacproto_GetNewMessageID(), fname);
 }
-void saacproto_CreateHeaderID(char *out, unsigned long msgid, char *fname) {
-  sprintf(out, "%u %s ", (unsigned int)msgid, fname);
+void saacproto_CreateHeaderID(char *out, const unsigned msg_id, const char *fname) {
+  sprintf(out, "%u %s ", msg_id, fname);
 }
 char *saacproto_wrapStringAddr(char *copy, int maxcopylen, char *src) {
   strcpysafe(copy, src, maxcopylen);

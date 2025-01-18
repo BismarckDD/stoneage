@@ -77,15 +77,15 @@ int cnv62to10(const char *input) {
   return ret * minus;
 }
 
-char *common_ltoa(long v) {
+char *common_ltoa(const long v) {
   char out[64];
-  sprintf(out, "%ld", (long)v);
+  sprintf(out, "%ld", v);
   return out;
 }
 
-char *common_utoa(unsigned long v) {
+char *common_utoa(const unsigned long v) {
   char out[64];
-  sprintf(out, "%lu", (unsigned long)v);
+  sprintf(out, "%lu", v);
   return out;
 }
 
@@ -128,155 +128,157 @@ void GetMessageInfo(int *id, char *function_name, const int len,
   return;
 }
 
-char *mkstr_int(int i) {
-#define MKSTR_INT(v) common_ltoa((long)(v))
-  strcpysafe(gProto.val_str, (char *)MKSTR_INT(i), gProto.work_buf_size);
-  strcatsafe(gProto.val_str, " ", gProto.work_buf_size);
-  return gProto.val_str;
+char *mkstr_int(TagProto *proto, const int i) {
+#define MKSTR_INT(v) common_ltoa((const long)(v))
+  strcpysafe(proto->val_str, (char *)MKSTR_INT(i), proto->work_buf_size);
+  strcatsafe(proto->val_str, " ", proto->work_buf_size);
+  return proto->val_str;
 }
-char *mkstr_u_int(unsigned int i) {
-#define MKSTR_U_INT(v) common_utoa((unsigned long)(v))
-  strcpysafe(gProto.val_str, MKSTR_U_INT(i), gProto.work_buf_size);
-  strcatsafe(gProto.val_str, " ", gProto.work_buf_size);
-  return gProto.val_str;
+char *mkstr_u_int(TagProto *proto, const unsigned int i) {
+#define MKSTR_U_INT(v) common_utoa((const unsigned long)(v))
+  strcpysafe(proto->val_str, MKSTR_U_INT(i), proto->work_buf_size);
+  strcatsafe(proto->val_str, " ", proto->work_buf_size);
+  return proto->val_str;
 }
-char *mkstr_long(long l) {
+char *mkstr_long(TagProto *proto, const long l) {
 #define MKSTR_LONG(v) common_ltoa(v)
-  strcpysafe(gProto.val_str, MKSTR_LONG(l), gProto.work_buf_size);
-  strcatsafe(gProto.val_str, " ", gProto.work_buf_size);
-  return gProto.val_str;
+  strcpysafe(proto->val_str, MKSTR_LONG(l), proto->work_buf_size);
+  strcatsafe(proto->val_str, " ", proto->work_buf_size);
+  return proto->val_str;
 }
-char *mkstr_u_long(unsigned long l) {
+char *mkstr_u_long(TagProto *proto, const unsigned long l) {
 #define MKSTR_U_LONG(v) common_utoa(v)
-  strcpysafe(gProto.val_str, MKSTR_U_LONG(l), gProto.work_buf_size);
-  strcatsafe(gProto.val_str, " ", gProto.work_buf_size);
-  return gProto.val_str;
+  strcpysafe(proto->val_str, MKSTR_U_LONG(l), proto->work_buf_size);
+  strcatsafe(proto->val_str, " ", proto->work_buf_size);
+  return proto->val_str;
 }
-char *mkstr_short(short s) {
-#define MKSTR_SHORT(v) common_ltoa((long)(v))
-  strcpysafe(gProto.val_str, MKSTR_SHORT(s), gProto.work_buf_size);
-  strcatsafe(gProto.val_str, " ", gProto.work_buf_size);
-  return gProto.val_str;
+char *mkstr_short(TagProto *proto, const short s) {
+#define MKSTR_SHORT(v) common_ltoa((const long)(v))
+  strcpysafe(proto->val_str, MKSTR_SHORT(s), proto->work_buf_size);
+  strcatsafe(proto->val_str, " ", proto->work_buf_size);
+  return proto->val_str;
 }
-char *mkstr_u_short(unsigned short s) {
-#define MKSTR_U_SHORT(v) common_utoa((unsigned long)(v)&0xFFFF)
-  strcpysafe(gProto.val_str, MKSTR_U_SHORT(s), gProto.work_buf_size);
-  strcatsafe(gProto.val_str, " ", gProto.work_buf_size);
-  return gProto.val_str;
+char *mkstr_u_short(TagProto *proto, const unsigned short s) {
+#define MKSTR_U_SHORT(v) common_utoa((const unsigned long)(v))
+  strcpysafe(proto->val_str, MKSTR_U_SHORT(s), proto->work_buf_size);
+  strcatsafe(proto->val_str, " ", proto->work_buf_size);
+  return proto->val_str;
 }
-char *mkstr_char(char c) {
+char *mkstr_char(TagProto *proto, const char c) {
 #define MKSTR_CHAR(v) common_ltoa((long)(v))
-  strcpysafe(gProto.val_str, MKSTR_CHAR(c), gProto.work_buf_size);
-  strcatsafe(gProto.val_str, " ", gProto.work_buf_size);
-  return gProto.val_str;
+  strcpysafe(proto->val_str, MKSTR_CHAR(c), proto->work_buf_size);
+  strcatsafe(proto->val_str, " ", proto->work_buf_size);
+  return proto->val_str;
 }
-char *mkstr_u_char(unsigned char c) {
-#define MKSTR_U_CHAR(v) common_utoa((unsigned long)(v)&0xFF)
-  strcpysafe(gProto.val_str, MKSTR_U_CHAR(c), gProto.work_buf_size);
-  strcatsafe(gProto.val_str, " ", gProto.work_buf_size);
-  return gProto.val_str;
+char *mkstr_u_char(TagProto *proto, const unsigned char c) {
+#define MKSTR_U_CHAR(v) common_utoa((const unsigned long)(v))
+  strcpysafe(proto->val_str, MKSTR_U_CHAR(c), proto->work_buf_size);
+  strcatsafe(proto->val_str, " ", proto->work_buf_size);
+  return proto->val_str;
 }
-char *mkstr_string(char *a) {
-  char *ret = escape_string(a);
-  strcatsafe(ret, " ", gProto.work_buf_size);
+char *mkstr_string(TagProto *proto, const char *a) {
+  char *ret = escape_string(proto, a);
+  strcatsafe(ret, " ", proto->work_buf_size);
   return ret;
 }
-char *mkstr_float(float f) {
-  sprintf(gProto.val_str, "%f ", f);
-  return gProto.val_str;
+char *mkstr_float(TagProto *proto, const float f) {
+  sprintf(proto->val_str, "%f", f);
+  return proto->val_str;
 }
-char *mkstr_double(double d) {
-  sprintf(gProto.val_str, "%f ", d);
-  return gProto.val_str;
+char *mkstr_double(TagProto *proto, const double d) {
+  sprintf(proto->val_str, "%f", d);
+  return proto->val_str;
 }
 
 #define MKSTR_ARRAYMACRO(func)                                                 \
   {                                                                            \
     int i;                                                                     \
-    gProto.array_work[0] = '\0';                                               \
+    proto->array_work[0] = '\0';                                               \
     for (i = 0; i < size; i++) {                                               \
-      strcatsafe(gProto.array_work, func(array[i]), gProto.work_buf_size);     \
+      strcatsafe(proto->array_work, func(proto, array[i]), proto->work_buf_size);     \
     }                                                                          \
-    return gProto.array_work;                                                  \
+    return proto->array_work;                                                  \
   }
-char *mkstr_int_array(int size, int *array) { MKSTR_ARRAYMACRO(mkstr_int); }
-char *mkstr_u_int_array(int size, unsigned int *array) {
+char *mkstr_int_array(TagProto *proto, const int size, const int *array) {
+  MKSTR_ARRAYMACRO(mkstr_int);
+}
+char *mkstr_u_int_array(TagProto *proto, const int size, const unsigned int *array) {
   MKSTR_ARRAYMACRO(mkstr_u_int);
 }
-char *mkstr_short_array(int size, short *array) {
+char *mkstr_short_array(TagProto *proto, const int size, const short *array) {
   MKSTR_ARRAYMACRO(mkstr_short);
 }
-char *mkstr_u_short_array(int size, unsigned short *array) {
+char *mkstr_u_short_array(TagProto *proto, const int size, const unsigned short *array) {
   MKSTR_ARRAYMACRO(mkstr_u_short);
 }
-char *mkstr_char_array(int size, char *array) { MKSTR_ARRAYMACRO(mkstr_char); }
-char *mkstr_u_char_array(int size, unsigned char *array) {
+char *mkstr_char_array(TagProto *proto, const int size, const char *array) {
+  MKSTR_ARRAYMACRO(mkstr_char);
+}
+char *mkstr_u_char_array(TagProto *proto, const int size, const unsigned char *array) {
   MKSTR_ARRAYMACRO(mkstr_u_char);
 }
-char *mkstr_float_array(int size, float *array) {
+char *mkstr_float_array(TagProto *proto, const int size, const float *array) {
   MKSTR_ARRAYMACRO(mkstr_float);
 }
-char *mkstr_double_array(int size, double *array) {
+char *mkstr_double_array(TagProto *proto, const int size, const double *array) {
   MKSTR_ARRAYMACRO(mkstr_double);
 }
-
 int demkstr_int(const char *a) {
-  if (a == (char *)NULL)
+  if (a == (const char *)NULL)
     return 0;
   return (int)strtol(a, NULL, 10);
 }
-
-unsigned int demkstr_u_int(char *a) {
-  if (a == (char *)NULL)
+unsigned int demkstr_u_int(const char *a) {
+  if (a == (const char *)NULL)
     return 0;
   return (unsigned int)strtoul(a, NULL, 10);
 }
-long demkstr_long(char *a) {
-  if (a == (char *)NULL)
+long demkstr_long(const char *a) {
+  if (a == (const char *)NULL)
     return 0;
   return (long)strtol(a, NULL, 10);
 }
-unsigned long demkstr_u_long(char *a) {
-  if (a == (char *)NULL)
+unsigned long demkstr_u_long(const char *a) {
+  if (a == (const char *)NULL)
     return 0;
   return (unsigned long)strtoul(a, NULL, 10);
 }
-short demkstr_short(char *a) {
-  if (a == (char *)NULL)
+short demkstr_short(const char *a) {
+  if (a == (const char *)NULL)
     return 0;
   return (short)strtol(a, NULL, 10);
 }
-unsigned short demkstr_u_short(char *a) {
-  if (a == (char *)NULL)
+unsigned short demkstr_u_short(const char *a) {
+  if (a == (const char *)NULL)
     return 0;
   return (unsigned short)strtoul(a, NULL, 10);
 }
-char demkstr_char(char *a) {
-  if (a == (char *)NULL)
+char demkstr_char(const char *a) {
+  if (a == (const char *)NULL)
     return 0;
   return (char)strtol(a, NULL, 10);
 }
-unsigned char demkstr_u_char(char *a) {
-  if (a == (char *)NULL)
+unsigned char demkstr_u_char(const char *a) {
+  if (a == (const char *)NULL)
     return 0;
   return (unsigned char)strtoul(a, NULL, 10);
 }
-float demkstr_float(char *a) {
-  if (a == (char *)NULL)
+float demkstr_float(const char *a) {
+  if (a == (const char *)NULL)
     return 0.0F;
   return (float)atof(a);
 }
-double demkstr_double(char *a) {
-  if (a == (char *)NULL)
+double demkstr_double(const char *a) {
+  if (a == (const char *)NULL)
     return 0.0F;
   return (double)strtod(a, NULL);
 }
-char *demkstr_string(char *a) {
-  if (a == (char *)NULL) {
-    strcpysafe(gProto.escape_work, "", gProto.work_buf_size);
-    return gProto.escape_work;
+char *demkstr_string(TagProto *proto, const char *a) {
+  if (a == (const char *)NULL) {
+    strcpysafe(proto->escape_work, "", proto->work_buf_size);
+    return proto->escape_work;
   }
-  return descape_string(a);
+  return descape_string(proto, a);
 }
 
 #define DEMKSTR_ARRAYMACRO(func, defaultvalue)                                 \
@@ -333,60 +335,60 @@ double *demkstr_u_double_array(const char **token_list, double *array,
   DEMKSTR_ARRAYMACRO(demkstr_double, (double)0.0);
 }
 
-char *escape_string(const char *a) {
+char *escape_string(TagProto *proto, const char *a) {
   int i, c = 0;
-  gProto.escape_work[0] = '\0';
+  proto->escape_work[0] = '\0';
   for (i = 0;; i++) {
     if (a[i] == '\0') {
-      gProto.escape_work[c++] = '\0';
+      proto->escape_work[c++] = '\0';
       break;
     } else if (a[i] == '\\') {
-      gProto.escape_work[c++] = '\\';
-      gProto.escape_work[c++] = '\\';
+      proto->escape_work[c++] = '\\';
+      proto->escape_work[c++] = '\\';
     } else if (a[i] == ' ') {
-      gProto.escape_work[c++] = '\\';
-      gProto.escape_work[c++] = 'S';
+      proto->escape_work[c++] = '\\';
+      proto->escape_work[c++] = 'S';
     } else if (a[i] == '\n') {
-      gProto.escape_work[c++] = '\\';
-      gProto.escape_work[c++] = 'n';
+      proto->escape_work[c++] = '\\';
+      proto->escape_work[c++] = 'n';
     } else if (a[i] == '\r') {
-      gProto.escape_work[c++] = '\\';
-      gProto.escape_work[c++] = 'r';
+      proto->escape_work[c++] = '\\';
+      proto->escape_work[c++] = 'r';
     } else {
-      gProto.escape_work[c++] = a[i];
+      proto->escape_work[c++] = a[i];
     }
   }
-  return gProto.escape_work;
+  return proto->escape_work;
 }
-char *descape_string(const char *a) {
+char *descape_string(TagProto *proto, const char *a) {
   int i, c = 0;
-  gProto.escape_work[0] = '\0';
+  proto->escape_work[0] = '\0';
   for (i = 0;; i++) {
     if (a[i] == '\0') {
-      gProto.escape_work[c++] = '\0';
+      proto->escape_work[c++] = '\0';
       break;
     } else if (a[i] == '\\') {
       if (a[i + 1] == 0) { /* null */
-        gProto.escape_work[c++] = a[i];
+        proto->escape_work[c++] = a[i];
         continue;
       }
       if (a[i + 1] == 'S') { /* space */
-        gProto.escape_work[c++] = ' ';
+        proto->escape_work[c++] = ' ';
       } else if (a[i + 1] == 'n') {
-        gProto.escape_work[c++] = '\n';
+        proto->escape_work[c++] = '\n';
       } else if (a[i + 1] == 'r') {
-        gProto.escape_work[c++] = '\r';
+        proto->escape_work[c++] = '\r';
       } else if (a[i + 1] == '\\') {
-        gProto.escape_work[c++] = '\\';
+        proto->escape_work[c++] = '\\';
       } else {
-        gProto.escape_work[c++] = a[i];
+        proto->escape_work[c++] = a[i];
       }
       i++;
     } else {
-      gProto.escape_work[c++] = a[i];
+      proto->escape_work[c++] = a[i];
     }
   }
-  return gProto.escape_work;
+  return proto->escape_work;
 }
 
 int InitProto(TagProto *proto, const int work_buf_size) {
