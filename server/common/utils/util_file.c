@@ -8,7 +8,7 @@ FILE* open_realop_file(const char *filename, int *use_realop_file) {
   sprintf(realop_file, "%s.allblues", filename);
   file = fopen(realop_file, "r");
   if (file != NULL) {
-    *use_reloap_file = 1;
+    *use_realop_file = 1;
   } else
 #endif
   file = fopen(filename, "r");
@@ -61,7 +61,7 @@ int get_file_lines(const char* filename, int *line_num,
     callback(line_num, line);
   }
   fclose(file);
-  return line_num;
+  return *line_num;
 }
 
 int read_dir(const char *dirname, CallbackFunction callback) {
@@ -88,6 +88,7 @@ int read_dir(const char *dirname, CallbackFunction callback) {
     }
   }
   closedir(p_dir);
+  return 0;
 }
 
 int IsFileExist(const char *filename) {

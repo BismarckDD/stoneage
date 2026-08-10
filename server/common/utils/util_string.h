@@ -9,7 +9,7 @@ BOOL GeneralSplitImpl(const char *src, const char *delim, const int index,
                       char *buf, const int buflen, const char *file,
                       const int line);
 #define getStringFromIndexWithDelim(src, delim, index, buf, buflen)            \
-  GenerealSplitImpl(src, delim, index, buf, buflen, __FILE__, __LINE__)
+  GeneralSplitImpl(src, delim, index, buf, buflen, __FILE__, __LINE__)
 
 char *makeStringFromEscaped(char *src);
 char *makeEscapeString(const char *src, char *dst, const int dst_len);

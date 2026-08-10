@@ -33,7 +33,7 @@ int InsertMemLock(int entry, char *cdkey, char *passwd, char *server,
                   int process, char *deadline);
 #endif
 int DeleteMemLock(int entry, char *cdkey, int *process);
-void DeleteMemLockServer(char *sname);
+void DeleteMemLockServer(const char *sname);
 int isMemLocked(int entry, char *cdkey);
 int GetMemLockState(int entry, char *cdkey, char *result);
 int GetMemLockServer(int entry, char *cdkey, char *result);

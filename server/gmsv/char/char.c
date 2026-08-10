@@ -2914,6 +2914,7 @@ char *CHAR_makeStatusString(int index, char *category) {
     }
     extern int NPC_StartpointCheck(int meindex, int talker);
     strlength = strlen(CHAR_statusSendBuffer);
+#if defined(_NEW_ITEM_) || defined(CHAR_RECORD_POINT)
     snprintf(CHAR_statusSendBuffer + strlength,
              sizeof(CHAR_statusSendBuffer) - strlength - 1,
 #ifdef _NEW_ITEM_
@@ -2931,6 +2932,7 @@ char *CHAR_makeStatusString(int index, char *category) {
              NPC_StartpointCheck(0, index)
 #endif
     );
+#endif
 #ifdef _CHARSIGNDAY_
     strlength = strlen(CHAR_statusSendBuffer);
     int sdate, ret;
@@ -3837,7 +3839,7 @@ void CHAR_deleteTitle(int index, int titleindex) {
   CHAR_send_P_StatusString(index, CHAR_P_STRING_TITLE);
 }
 
-static void CHAR_initcharWorkInt(index) {
+static void CHAR_initcharWorkInt(int index) {
   float hp;
   static struct substitutionTable {
     CHAR_WORKDATAINT workindex;
@@ -8587,7 +8589,7 @@ int storeCharaData(void) {
       hash = hash % 256;
     }
     sprintf(pathname, "%s/0x%x", getStoredir(), hash);
-    dir = mkdir(pathname, -1);
+    dir = sa_mkdir(pathname, -1);
     if (dir != 0 && errno != EEXIST)
       continue;
     sprintf(szFileName, "%s/%s.%d.char", pathname,
@@ -11017,7 +11019,7 @@ int CharaData(int sockfd, Char *ch) {
   //    sprintf( pathname, "%s/char/0x%x", getStoredir(), hash);
   sprintf(pathname, "%s/0x%x", getStoredir(), hash);
   //  print("文件路径:%s\n", pathname);
-  dir = mkdir(pathname, -1);
+  dir = sa_mkdir(pathname, -1);
 
   if (dir != 0 && errno != EEXIST)
     return 0;
@@ -11043,7 +11045,7 @@ int CharaData(int sockfd, Char *ch) {
                          CHAR_makeOptionString(ch), chardata) == 0) {
 
     fprintf(fp, outbuff);
-    chmod(pathname, 0777);
+    sa_chmod(pathname, 0777);
   } else {
     //      fprintf( fp, "本□皮撩  \n" );
   }
@@ -11058,7 +11060,7 @@ int CharaData(int sockfd, Char *ch) {
     //    print(" 存储:%s\n", szFileName);
     chardata = CHAR_makeDepotItemFromCharIndex(char_index);
     fprintf(fp, chardata);
-    chmod(pathname, 0777);
+    sa_chmod(pathname, 0777);
     fclose(fp);
     CHAR_removeDepotItem(char_index);
   }
@@ -11073,7 +11075,7 @@ int CharaData(int sockfd, Char *ch) {
     //    print(" 存储:%s\n", szFileName);
     chardata = CHAR_makeDepotPetFromCharIndex(char_index);
     fprintf(fp, chardata);
-    chmod(szFileName, 0777);
+    sa_chmod(szFileName, 0777);
     fclose(fp);
     CHAR_removeDepotPet(char_index);
   }

@@ -1334,7 +1334,12 @@ void NPC_ManorSavePKSchedule(int meindex, int toindex, int flg,int setTime,struc
 		fmpks_pos = CHAR_getWorkInt(meindex, NPC_WORK_ID) * MAX_SCHEDULE;
 		manorid = CHAR_getWorkInt(meindex, NPC_WORK_MANORID);
 		memcpy( &tm1, localtime( (time_t *)&NowTime.tv_sec), sizeof( tm1));
+#ifndef _NEW_MANOR_LAW
+		dueltime = CHAR_getWorkInt(meindex, NPC_WORK_CHALLENGEWAIT) +
+		           NowTime.tv_sec - tm1.tm_min * 60 + 1800;
+#else
 		dueltime = NowTime.tv_sec - tm1.tm_min * 60 + ((24 - tm1.tm_hour) * 3600) + 3600 * tm2.tm_hour + tm2.tm_min * 60;
+#endif
 /*
 #ifdef _FIMALY_PK_TIME
 		if(getFimalyPkTime()==-1){
@@ -1369,17 +1374,8 @@ void NPC_ManorSavePKSchedule(int meindex, int toindex, int flg,int setTime,struc
 #endif
 		makeEscapeString( getGameservername(), n3, sizeof(n3));
 		int playernum = FreeFmPk();
-		if(playernum == 0){
-			if(tm2.tm_hour == 20){
-				playernum = 50;
-			}else if(tm2.tm_hour == 21){
-				playernum = 50;
-			}else if(tm2.tm_hour == 22){
-				playernum = 50;
-			}else{
-				playernum = 50;
-			}
-		}
+		if(playernum == 0)
+			playernum = 50;
 		sprintf(msg, "%d|%d|%s|%d|%s|%d|%d|%d|%s",
 			dueltime, hadfmindex-1, n1, tkfmindex, n2, 15, playernum, FMPKS_FLAG_MANOR_OTHERPLANET, n3);
 		PkFlg = 1;

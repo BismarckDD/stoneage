@@ -2,6 +2,8 @@
 
 #include "server_util.h"
 
+int JENCODE_KEY = 1000;
+
 #ifdef SERVER_ENCRYPT
 long ringoCompressor(unsigned char *code, long codelen, unsigned char *text,
                      long textlen);
@@ -18,15 +20,15 @@ void GetMessageInfo(int *id, char *function_name, const int len,
                     const char **token_list) {
   if (token_list[0] == NULL || token_list[1] == NULL) {
     *id = 0;
-    strcpysafe(function_name, "", len);
+    strcpysafe(function_name, len, "");
     return;
   }
   *id = strtoul(token_list[0], NULL, 10);
-  strcpysafe(function_name, token_list[1], len);
+  strcpysafe(function_name, len, token_list[1]);
   return;
 }
 
-void SplitString(const char *src, WorkSpace *ws) {
+void SplitString(char *src, WorkSpace *ws) {
   int i, c = 0;
   char *decoded;
 #ifdef SERVER_ENCRYPT
@@ -59,11 +61,11 @@ unsigned GetNewMessageID() {
   return sMessageId++;
 }
 
-void DebugSend(const int fd, const char *msg, WorkSpace *ws) {
-  Send(fd, msg, ws);
+void DebugSend(WorkSpace *ws, const int fd, char *msg) {
+  Send(ws, fd, msg);
 }
 
-void Send(const int fd, const char *msg, WorkSpace *ws) {
+void Send(WorkSpace *ws, const int fd, char *msg) {
   char *encoded;
   // TODO: log thie original string.
 #ifdef SERVER_ENCRYPT
@@ -96,7 +98,6 @@ int decode64(unsigned char *in, unsigned char *out);
 void jDecode(char *src, int src_len, int key, char *decoded, int *decoded_len);
 void jEncode(char *src, int src_len, int key, char *encoded, int *encoded_len,
              int maxencodedlen);
-#define JENCODE_KEY 1000
 void EncodeString(char *src, char *out, int maxoutlen) {
   int jencodedlen = 0;
   long compressed_l = 0;
@@ -123,7 +124,7 @@ void EncodeString(char *src, char *out, int maxoutlen) {
   }
   /* return empty line if error or buffer excess */
   if (compressed_l <= 0) {
-    strcpysafe(out, "\n", maxoutlen);
+    strcpysafe(out, maxoutlen, "\n");
     return;
   }
   memcpy(ws->jencodecopy, ws->compress_work, compressed_l);

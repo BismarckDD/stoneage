@@ -117,6 +117,8 @@ int GetShutdown(void);
 int getfdFromCdkey(const char *cdkey);
 int getfdFromCdkeyWithLogin(const char *cdkey);
 int getfdFromCharaIndex(int char_index);
+#define getfdFromchar_index getfdFromCharaIndex
+#define getfdFromfrom_char_index getfdFromCharaIndex
 int getcdkeyFromCharaIndex(int char_index, char *out, int outlen);
 int getCharindexFromFdid(int fdid);
 int getFdidFromCharaIndex(int charind);
@@ -156,6 +158,8 @@ int CONNECT_getCtype(int fd);
 void CONNECT_setCtype(int fd, int a);
 void CONNECT_setDuelchar_index(int fd, int i, int a);
 int CONNECT_getDuelchar_index(int fd, int i);
+#define CONNECT_setDuelcharaindex CONNECT_setDuelchar_index
+#define CONNECT_getDuelcharaindex CONNECT_getDuelchar_index
 void CONNECT_setBattlechar_index(int fd, int i, int a);
 int CONNECT_getBattlechar_index(int fd, int i);
 void CONNECT_setJoinpartychar_index(int fd, int i, int a);

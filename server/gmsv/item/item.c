@@ -9,7 +9,9 @@
 #include "config_file.h"
 #include "function.h"
 #include "magic_base.h"
+#ifndef _WIN32
 #include <strings.h>
+#endif
 #ifdef _PROFESSION_SKILL
 #include "profession_skill.h"
 #endif
@@ -515,8 +517,8 @@ void _ITEM_endExistItemsOne(int item_index, char *file, int line) {
     }
   }
   if (hitcnt < 1) {
-    ITEM_gExists[index].use = FALSE;
-    ITEM_gExists[index].item.workint[ITEM_WORKCHARAINDEX] = -1;
+    ITEM_gExists[item_index].use = FALSE;
+    ITEM_gExists[item_index].item.workint[ITEM_WORKCHARAINDEX] = -1;
     ITEM_sUseItemNum--;
   }
 }

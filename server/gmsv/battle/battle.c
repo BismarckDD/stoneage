@@ -1419,8 +1419,10 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
 #endif
 #endif
 #endif
+#ifdef _CHANNEL_MODIFY
           if (CHAR_getFlg(char_index, CHAR_AI_MOD))
             flg |= CHAR_FS_AI;
+#endif
 
           GmsvServer_FS_send(getfdFromchar_index(char_index), flg);
         }
@@ -4425,7 +4427,7 @@ int BATTLE_GetProfit(int battleindex, int side, int num) {
   }
 }
 
-int BATTLE_FinishSet(battleindex) {
+int BATTLE_FinishSet(int battleindex) {
 
   if (BATTLE_CHECKINDEX(battleindex) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
@@ -4589,7 +4591,7 @@ static int BATTLE_Finish(int battleindex) {
   return 0;
 }
 
-int BATTLE_StopSet(battleindex) {
+int BATTLE_StopSet(int battleindex) {
 
   if (BATTLE_CHECKINDEX(battleindex) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;

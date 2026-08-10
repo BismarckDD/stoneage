@@ -35,8 +35,38 @@ struct pl{
 	int answer;
 	int ansno;
 	int oldno[OLDNO];
-	int *ptr;
 };
+
+#define QUIZ_PLAYER_SLOT_COUNT 4096
+static struct pl *quiz_players[QUIZ_PLAYER_SLOT_COUNT];
+
+static int NPC_QuizPlayerRegister(struct pl *player)
+{
+	int i;
+	for (i = 1; i < QUIZ_PLAYER_SLOT_COUNT; ++i) {
+		if (quiz_players[i] == NULL) {
+			quiz_players[i] = player;
+			return i;
+		}
+	}
+	return -1;
+}
+
+static struct pl *NPC_QuizPlayerGet(int handle)
+{
+	if (handle <= 0 || handle >= QUIZ_PLAYER_SLOT_COUNT)
+		return NULL;
+	return quiz_players[handle];
+}
+
+static void NPC_QuizPlayerRelease(int handle)
+{
+	struct pl *player = NPC_QuizPlayerGet(handle);
+	if (player != NULL) {
+		quiz_players[handle] = NULL;
+		free(player);
+	}
+}
 
 
 static int quizcnt = 0;
@@ -233,7 +263,7 @@ static void NPC_Quiz_selectWindow( int meindex, int talker, int num)
   		{
 			int *tbl;
 			int point;
-			int *pl_ptr;
+			struct pl *pl_ptr;
 			int warp_flg = -1;
 			int floor=0,x=0,y=0;
 
@@ -250,7 +280,9 @@ static void NPC_Quiz_selectWindow( int meindex, int talker, int num)
 			/*--荸蚕樊?寞毛丿月--*/
 			p_no = CHAR_getWorkInt( talker, CHAR_WORKSHOPRELEVANT);
 			point = CHAR_getWorkInt( meindex, CHAR_WORK_PLAYER1 + p_no);
-			pl_ptr = (int *)point;
+			pl_ptr = NPC_QuizPlayerGet(point);
+			if (pl_ptr == NULL)
+				return;
 			
 			/*-- 丢乒伉及〇芢毛厌瞻虫卞戊疋□ --*/
 			memcpy(&PLAYER, pl_ptr, sizeof(struct pl));
@@ -347,7 +379,7 @@ static void NPC_Quiz_selectWindow( int meindex, int talker, int num)
 //				print("\n %s %d开放",CHAR_getChar(talker,CHAR_NAME),(int)PLAYER.ptr);
 
 				/*--丢乒伉恄啖钒旵--*/
-				free(PLAYER.ptr);
+				NPC_QuizPlayerRelease(point);
 				
 #if 0
 				/*-仇仇匹霜耨允月--*/
@@ -375,7 +407,8 @@ static void NPC_Quiz_selectWindow( int meindex, int talker, int num)
 			{
 				/*--杽锁互箫曰卅中--*/
 				/*--丢乒伉恄啖钒旵--*/
-				free(PLAYER.ptr);
+				NPC_QuizPlayerRelease(point);
+				CHAR_setWorkInt(meindex, CHAR_WORK_PLAYER1 + p_no, -1);
 				return ;
 			}
 
@@ -412,8 +445,7 @@ static void NPC_Quiz_selectWindow( int meindex, int talker, int num)
 			p_old++;
 			CHAR_setWorkInt( talker, CHAR_WORKSHOPRELEVANTSEC, p_old);
 
-			strncpy( buf, Quiz[questionno].question, 
-							sizeof( Quiz[questionno].question));
+			snprintf(buf, sizeof(buf), "%s", Quiz[questionno].question);
 
 			/*--弁奶术及杽锁及赢今卞方匀化﹜蓟枪勂及刓憎匏嘻毛庍尹月--*/
 			if(strlen( buf) < 40) {
@@ -556,7 +588,7 @@ void NPC_QuizWindowTalked( int meindex, int talkerindex,
 	  case CHAR_WINDOWTYPE_QUIZ_MAIN:
 	  {
 	  	int point;
-		int *pl_ptr;
+		struct pl *pl_ptr;
 		int p_no;
 		struct pl PLAYER;
 			//Change fix 查看当机的原因log
@@ -568,7 +600,9 @@ void NPC_QuizWindowTalked( int meindex, int talkerindex,
 			p_no = CHAR_getWorkInt( talkerindex, CHAR_WORKSHOPRELEVANT);
 	//		print("\n谜题log->CHAR_WORK_PLAYER1:%d,p_no:%d,玩家帐号:%s\n", CHAR_getWorkInt( meindex, CHAR_WORK_PLAYER1), p_no, CHAR_getChar( talkerindex, CHAR_CDKEY ) );
 			point = CHAR_getWorkInt( meindex, CHAR_WORK_PLAYER1 + p_no);
-			pl_ptr = (int *)point;
+			pl_ptr = NPC_QuizPlayerGet(point);
+			if (pl_ptr == NULL)
+				return;
 
 			memcpy(&PLAYER,pl_ptr,sizeof(struct pl));
 
@@ -588,7 +622,7 @@ void NPC_QuizWindowTalked( int meindex, int talkerindex,
 			}else if(select == WINDOW_BUTTONTYPE_CANCEL){
 				CHAR_setWorkInt( meindex, CHAR_WORK_PLAYER1 + 
 							CHAR_getWorkInt( talkerindex, CHAR_WORKSHOPRELEVANT) ,-1);
-				free(PLAYER.ptr);
+				NPC_QuizPlayerRelease(point);
 			}else if( atoi( data) == 0){
 			}else{
 				if(atoi(data) == PLAYER.ansno){
@@ -852,7 +886,8 @@ BOOL NPC_PlayerCheck(int meindex,int talker)
 	{
 	int i;
 	int k=0;
-	int *ptr;
+	int handle;
+	struct pl *ptr;
 	struct pl Player;
 
 
@@ -870,13 +905,18 @@ BOOL NPC_PlayerCheck(int meindex,int talker)
 
 
 	/*-- 丢乒伉割忡 --*/
-	if((ptr =(int *) calloc( 1,sizeof(struct pl)))  == NULL){
+	if((ptr = (struct pl *)calloc(1, sizeof(struct pl))) == NULL){
         print("记忆体无法确保%s",CHAR_getChar(meindex,CHAR_NAME));
     	return FALSE;
 	}
+	handle = NPC_QuizPlayerRegister(ptr);
+	if (handle < 0) {
+		free(ptr);
+		print("问答状态槽已用尽");
+		return FALSE;
+	}
 
     /*-- 禾奶件正及桦赭毛创尹化云仁??-*/
-    Player.ptr = ptr;
     Player.talkerindex = talker;	//npc及奶件犯永弁旦???
 	Player.quizno = 0;		//蜇箕及杽锁醒
 	Player.answer = 0;		//恳荸醒
@@ -899,8 +939,7 @@ BOOL NPC_PlayerCheck(int meindex,int talker)
 	/*--愤坌及荸蚕樊?寞毛创尹化云仁--*/
 	CHAR_setWorkInt( talker, CHAR_WORKSHOPRELEVANT, i);
 
-	k= (int)ptr;
-	CHAR_setWorkInt( meindex, CHAR_WORK_PLAYER1 + i, k );
+	CHAR_setWorkInt( meindex, CHAR_WORK_PLAYER1 + i, handle );
 	return TRUE;
 
 }
@@ -917,7 +956,7 @@ int NPC_RealyCheack(int meindex,int talker)
 	int talkerindex;
 	BOOL okflg = FALSE;
 	struct pl PLAYER;
-	int *pl_ptr;
+	struct pl *pl_ptr;
 	int point;
 	
 	fl = CHAR_getInt( meindex, CHAR_FLOOR);
@@ -928,7 +967,11 @@ int NPC_RealyCheack(int meindex,int talker)
 		if(point == -1) continue;
 
 		/*--荸蚕樊?寞毛丿月--*/
-		pl_ptr = (int *)point;
+		pl_ptr = NPC_QuizPlayerGet(point);
+		if (pl_ptr == NULL) {
+			CHAR_setWorkInt(meindex, CHAR_WORK_PLAYER1 + j, -1);
+			continue;
+		}
 			
 		memcpy(&PLAYER, pl_ptr, sizeof(struct pl));
 		talkerindex = PLAYER.talkerindex;
@@ -947,7 +990,7 @@ int NPC_RealyCheack(int meindex,int talker)
 						if(talkerindex == talker) {
 							okflg = TRUE;
 //							print("\n %s %d开放",CHAR_getChar(talker,CHAR_NAME),(int)PLAYER.ptr);
-							free(PLAYER.ptr);
+							NPC_QuizPlayerRelease(point);
 							CHAR_setWorkInt( meindex, CHAR_WORK_PLAYER1 + j,-1);
 						}else{
 							okflg = TRUE;
@@ -961,7 +1004,7 @@ int NPC_RealyCheack(int meindex,int talker)
 
 		if(okflg ==FALSE){
 //			print("\n %s %d开放",CHAR_getChar(talker,CHAR_NAME),(int)PLAYER.ptr);
-			free(PLAYER.ptr);
+			NPC_QuizPlayerRelease(point);
 			CHAR_setWorkInt( meindex, CHAR_WORK_PLAYER1 + j,-1);
 		}
 		
@@ -1078,7 +1121,8 @@ int *NPC_GetQuestion(int meindex)
 	int type=0;
 	int answer=0;
 	int level=0;
-	int *tbl;
+	static int *tbl;
+	static size_t tbl_capacity;
 	char buf[16];
 #ifdef _NPC_QUIZSCOPE
     int scope0,scope1;
@@ -1138,8 +1182,17 @@ int *NPC_GetQuestion(int meindex)
 	}
 
 	{
-		int tmp_tbl[j+1];
-		tmp_tbl[0] = j+1;
+		size_t required = (size_t)j + 1;
+		if (required > tbl_capacity) {
+			int *new_tbl = (int *)realloc(tbl, required * sizeof(*tbl));
+			if (new_tbl == NULL) {
+				static int empty_tbl[1] = {1};
+				return empty_tbl;
+			}
+			tbl = new_tbl;
+			tbl_capacity = required;
+		}
+		tbl[0] = j+1;
 		for(j=1,i=0; i < quizcnt ;i++){
 			if( (type & (1 << (Quiz[i].type-1)))  != (1 << (Quiz[i].type-1))){
 				continue;
@@ -1157,12 +1210,11 @@ int *NPC_GetQuestion(int meindex)
 			    || i > scope1 )
 			    continue;
 #endif
-			tmp_tbl[j] = i;
+			tbl[j] = i;
 
 			j++;
 		}
 
-		tbl = tmp_tbl;
 		return tbl;
 	}
 }
@@ -1421,4 +1473,3 @@ BOOL NPC_QUIZPARTY_CHAECK(int meindex,int talker)
 	return TRUE;
 
 }
-

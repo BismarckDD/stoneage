@@ -64,8 +64,8 @@ static int reallocMailBuf(void) {
   g_mail_buf_size = new_g_mail_buf_size;
   g_mail_buf = newbuf;
 
-  logErr("重新分配邮件缓冲: 新邮件缓冲:%d, 旧地址:%x, 新地址:%x.\n",
-         new_g_mail_buf_size, (unsigned int)previous, (unsigned int)newbuf);
+  logErr("重新分配邮件缓冲: 新邮件缓冲:%d, 旧地址:%p, 新地址:%p.\n",
+         new_g_mail_buf_size, (void *)previous, (void *)newbuf);
   return 0;
 }
 
@@ -320,7 +320,7 @@ int Mail_read(const char *dir) {
     snprintf(dirname, sizeof(dirname), "%s/0x%x", dir, i);
     d = opendir(dirname);
     if (d == NULL) {
-      mkdir(dirname, 0755);
+      sa_mkdir(dirname, 0755);
       logErr("创建 %s\n", dirname);
       continue;
     }

@@ -11,3 +11,7 @@ GameServer, 游戏服务器
 
 ##saac
 StoneAge Account, 账号认证服务代码
+
+## Windows
+
+Windows 原生编译与运行说明见 [README-Windows.md](README-Windows.md)。

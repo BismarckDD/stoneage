@@ -14,8 +14,9 @@
 #include "family.h"
 #include "handletime.h"
 #include "log.h"
-#include "longzoro/attestation.h"
+#ifdef _SASQL
 #include "longzoro/sasql.h"
+#endif
 #include "map_warppoint.h"
 #include "npcgen.h"
 #include "petmail.h"
@@ -52,6 +53,12 @@ WorkSpace gSaacWorkSpace;
 WorkSpace gGmsvWorkSpace;
 
 int main(int argc, char **argv, char **env) {
+#ifdef _WIN32
+  if (sa_platform_init() != 0) {
+    fprintf(stderr, "WinSock initialization failed: %d\n", errno);
+    return 1;
+  }
+#endif
   setNewTime();
   ShopData_Init();
   EXIT_WITH_CODE_IF_FALSE(util_Init(), 1);
@@ -87,10 +94,14 @@ void main_loop(void) {
   NPC_generateLoop(1);
   print("succeed.\n");
   print("Init signal1...");
+#ifndef _WIN32
   signal(SIGUSR1, sigusr1);
+#endif
   print("succeed.\n");
   print("Init signal2...");
+#ifndef _WIN32
   signal(SIGUSR2, sigusr2);
+#endif
   print("succeed.\n");
 
 #ifdef _MAP_WARP_POINT

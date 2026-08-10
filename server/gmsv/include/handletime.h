@@ -1,7 +1,9 @@
 #ifndef __HANDLETIME_H__ 
 #define __HANDLETIME_H__
 
+#ifndef _WIN32
 #include <sys/time.h>
+#endif
 
 #include "common.h"
 

@@ -67,28 +67,27 @@ struct GMINFO {
 extern struct GMINFO gminfo[GMMAXNUM];
 #endif
 
-BOOL luareadconfigfile(char *data);
-
-BOOL readconfigfile(char *filename);
+BOOL luareadgServerConfigfile(char *data);
+BOOL readgServerConfigfile(char *filename);
 
 void defaultConfig(char *argv0);
-char *getProgname(void);
-char *getConfigfilename(void);
-void setConfigfilename(char *newv);
+char *getProgramName(void);
+char *getConfigFilename(void);
+void setConfigFilename(const char *new_value);
 
-unsigned int getDebuglevel(void);
-unsigned int setDebuglevel(unsigned int newv);
-unsigned int getMemoryunit(void);
-unsigned int getMemoryunitnum(void);
-char *getAccountservername(void);
-unsigned short getAccountserverport(void);
-char *getAccountserverpasswd(void);
-char *getGameservername(void);
+unsigned int getDebugLevel(void);
+unsigned int setDebugLevel(unsigned int new_value);
+unsigned int getMemoryUnitSize(void);
+unsigned int getMemoryUnitNum(void);
+char *getAccountServerName(void);
+unsigned short getAccountServerPort(void);
+char *getAccountServerPassword(void);
+char *getGameServerName(void);
 
-unsigned short getPortnumber(void);
+unsigned short getPortNumber(void);
 
 int getServernumber(void);
-int getReuseaddr(void);
+int getReuseAddr(void);
 int getNodelay(void);
 int getLogWriteTime(void);
 int getLogIOTime(void);
@@ -192,8 +191,26 @@ unsigned int getAcwriteSize(void);
 unsigned int getErrUserDownFlg(void);
 
 // Arminius 7.24 manor pk
-char *getGameserverID(void);
+char *getGameServerID(void);
 unsigned short getAllowManorPK(void);
+
+/* Keep source compatibility with the names used by the legacy game code. */
+#define luareadconfigfile luareadgServerConfigfile
+#define readconfigfile readgServerConfigfile
+#define getProgname getProgramName
+#define getConfigfilename getConfigFilename
+#define setConfigfilename setConfigFilename
+#define getDebuglevel getDebugLevel
+#define setDebuglevel setDebugLevel
+#define getMemoryunit getMemoryUnitSize
+#define getMemoryunitnum getMemoryUnitNum
+#define getAccountservername getAccountServerName
+#define getAccountserverport getAccountServerPort
+#define getAccountserverpasswd getAccountServerPassword
+#define getGameservername getGameServerName
+#define getGameserverID getGameServerID
+#define getPortnumber getPortNumber
+#define getReuseaddr getReuseAddr
 
 // Terry 2001/10/03 service ap
 char *getApID(void);
@@ -255,6 +272,8 @@ int getMaxLevel(void);
 #ifdef _GET_BATTLE_EXP
 unsigned int getBattleexp(void);
 void setBattleexp(int exp);
+#else
+unsigned int getBattleexp(void);
 #endif
 
 #ifdef _POINT
@@ -289,8 +308,8 @@ int getSkup(void);
 #endif
 #ifdef _RIDELEVEL
 int getRideLevel(void);
-int getRideTrans(void);
 #endif
+int getRideTrans(void);
 #ifdef _REVLEVEL
 char *getRevLevel(void);
 #endif
@@ -329,9 +348,7 @@ int getAngelPlayerTime(void);
 int getAngelPlayerMun(void);
 #endif
 
-#ifdef _RIDEMODE_20
 int getRideMode(void);
-#endif
 
 #ifdef _FM_POINT_PK
 char *getFmPointPK(void);

@@ -16,6 +16,7 @@
 #include "log.h"
 #include "pet.h"
 #include "pet_skill.h"
+#include <math.h>
 #include "util.h"
 #ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
 #include "item.h"

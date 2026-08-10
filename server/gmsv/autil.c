@@ -7,6 +7,7 @@
 #include "version.h"
 #include "char.h"
 #include "autil.h"
+#include "net.h"
 #ifdef __STONEAGE
 #include "server_util.h"
 #endif
@@ -220,7 +221,8 @@ void _util_SendMesg(char *file, int line, int fd, int func, char *buffer) {
 #endif
   util_EncodeMessage(t2, t1);
 #ifdef __STONEAGE
-  GmsvServer_Send(fd, t2);
+  lsrpcClientWriteFunc(fd, t2, strlen(t2));
+  lsrpcClientWriteFunc(fd, "\n", 1);
 #endif
 }
 
@@ -471,27 +473,28 @@ void util_xorstring(char *dst, char *src) {
 
 // Shift the string right.
 void util_shrstring(char *dst, char *src, int offs) {
-  char *ptr;
+  size_t len;
+  size_t split;
   if (!dst || !src || (strlen(src) < 1))
     return;
-
-  offs = strlen(src) - (offs % strlen(src));
-  ptr = src + offs;
-  strcpy(dst, ptr);
-  strncat(dst, src, offs);
-  dst[strlen(src)] = '\0';
+  len = strlen(src);
+  split = len - ((size_t)offs % len);
+  memcpy(dst, src + split, len - split);
+  memcpy(dst + (len - split), src, split);
+  dst[len] = '\0';
 }
 
 // Shift the string left.
 void util_shlstring(char *dst, char *src, int offs) {
-  char *ptr;
+  size_t len;
+  size_t split;
   if (!dst || !src || (strlen(src) < 1))
     return;
-  offs = offs % strlen(src);
-  ptr = src + offs;
-  strcpy(dst, ptr);
-  strncat(dst, src, offs);
-  dst[strlen(src)] = '\0';
+  len = strlen(src);
+  split = (size_t)offs % len;
+  memcpy(dst, src + split, len - split);
+  memcpy(dst + (len - split), src, split);
+  dst[len] = '\0';
 }
 
 // Convert a message slice into integer.  Return a checksum.

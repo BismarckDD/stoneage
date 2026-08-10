@@ -119,7 +119,7 @@ int DeleteMemLock(int entry, char *cdkey, int *process) {
   return 0;
 }
 
-void DeleteMemLockServer(char *sname) {
+void DeleteMemLockServer(const char *sname) {
   int i;
   LockNode *lock_node;
   for (i = 0; i < 256; i++) {

@@ -6,6 +6,24 @@
 //
 #include "server_util.h"
 
+int SaacClient_InitClient(int (*write_func)(int, char *, int),
+                          int work_buffer_size, int fd);
+
+/* Compatibility with older generated call sites. */
+#define SaacClient__ACAddFM_send SaacClient_ACAddFM_send
+#define SaacClient__ACDelFM_send SaacClient_ACDelFM_send
+#define SaacClient__ACFixFMData_send SaacClient_ACFixFMData_send
+#define SaacClient__ACFMDetail_send SaacClient_ACFMDetail_send
+#define SaacClient__ACJoinFM_send SaacClient_ACJoinFM_send
+#define SaacClient__ACLeaveFM_send SaacClient_ACLeaveFM_send
+#define SaacClient__ACMemberJoinFM_send SaacClient_ACMemberJoinFM_send
+#define SaacClient__ACMemberLeaveFM_send SaacClient_ACMemberLeaveFM_send
+#define SaacClient__ACSetFMPoint_send SaacClient_ACSetFMPoint_send
+#define SaacClient__ACShowFMList_send SaacClient_ACShowFMList_send
+#define SaacClient__ACShowMemberList_send SaacClient_ACShowMemberList_send
+#define SaacClient__ACShowTopFMList_send SaacClient_ACShowTopFMList_send
+#define SaacClient__QueryPoint_send SaacClient_QueryPoint_send
+
 #ifdef _ALLDOMAN // (不可开) Syu ADD 排行榜NPC
 void SaacClient_UpdataStele_send(int fd, char *cdkey, char *name, char *title,
                                  int level, int trns, int time, int floor);

@@ -3,9 +3,8 @@
 
 #ifdef _SASQL // 新添加
 #include "main.h"
-#include <w32api/sql.h>
-#include <w32api/sqlext.h>
-#include <windows.h>
+#include <sql.h>
+#include <sqlext.h>
 
 
 HENV henv = SQL_NULL_HENV;
@@ -18,10 +17,10 @@ SQLCHAR sps[16];
 SQLINTEGER err;
 
 typedef struct tagConfig {
-  char SQL_DSN[16];
-  char SQL_USER[16];
-  char SQL_INFOTABLE[16];
-  char SQL_LOCK[16];
+  char SQL_DSN[128];
+  char SQL_USER[64];
+  char SQL_INFOTABLE[64];
+  char SQL_LOCK[64];
   char SQL_RegTime[16];
   char SQL_LoginTime[16];
   char SQL_OnlineName[16];
@@ -32,6 +31,33 @@ Config config;
 int AUTOREG;
 int USEMSSQL;
 void check_return(RETCODE rc, HENV henv, HDBC hdbc, HSTMT hstmt);
+
+static BOOL sasql_ready(void) {
+  return USEMSSQL != 0 && hstmt != SQL_NULL_HSTMT;
+}
+
+static BOOL sasql_valid_value(const char *value) {
+  const unsigned char *p = (const unsigned char *)value;
+  if (value == NULL)
+    return FALSE;
+  while (*p) {
+    if (!((*p >= 'a' && *p <= 'z') || (*p >= 'A' && *p <= 'Z') ||
+          (*p >= '0' && *p <= '9') || *p == '.' || *p == '-' || *p == '_' ||
+          *p == '|'))
+      return FALSE;
+    ++p;
+  }
+  return TRUE;
+}
+
+static BOOL sasql_exec(const char *sql) {
+  if (!sasql_ready())
+    return FALSE;
+  SQLCancel(hstmt);
+  rc = SQLExecDirect(hstmt, (SQLCHAR *)sql, SQL_NTS);
+  check_return(rc, henv, hdbc, hstmt);
+  return rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO;
+}
 
 static int readConfig(char *path) {
   char buf[255];
@@ -56,16 +82,16 @@ static int readConfig(char *path) {
         break;
     }
     if (strcmp(command, "SQL_DSN") == 0) {
-      snprintf(config.SQL_DSN, sizeof(config.SQL_DSN), param);
+      snprintf(config.SQL_DSN, sizeof(config.SQL_DSN), "%s", param);
       logErr("数据库 DSN：%s\n", config.SQL_DSN);
     } else if (strcmp(command, "SQL_INFOTABLE") == 0) {
-      snprintf(config.SQL_INFOTABLE, sizeof(config.SQL_INFOTABLE), param);
+      snprintf(config.SQL_INFOTABLE, sizeof(config.SQL_INFOTABLE), "%s", param);
       logErr("人物信息表：%s\n", config.SQL_INFOTABLE);
     } else if (strcmp(command, "SQL_LOCK") == 0) {
-      snprintf(config.SQL_LOCK, sizeof(config.SQL_LOCK), param);
+      snprintf(config.SQL_LOCK, sizeof(config.SQL_LOCK), "%s", param);
       logErr("锁定账号表：%s\n", config.SQL_LOCK);
     } else if (strcmp(command, "SQL_REGTIME") == 0) {
-      snprintf(config.SQL_RegTime, sizeof(config.SQL_RegTime), param);
+      snprintf(config.SQL_RegTime, sizeof(config.SQL_RegTime), "%s", param);
       logErr("注册时间：%s\n", config.SQL_RegTime);
     } else if (strcmp(command, "AUTOREG") == 0) {
       AUTOREG = atoi(param);
@@ -81,7 +107,9 @@ static int readConfig(char *path) {
 }
 
 BOOL sasql_init(void) {
-
+  memset(&config, 0, sizeof(config));
+  AUTOREG = 0;
+  USEMSSQL = 0;
   readConfig("acserv.cf");
   if (USEMSSQL == 0)
     return TRUE;
@@ -89,21 +117,27 @@ BOOL sasql_init(void) {
   char ODBC[257];
   short buflen;
   //  printf ("Initialize the environment structure.\n");
-  SQLAllocEnv(&henv);
+  if (SQLAllocEnv(&henv) != SQL_SUCCESS)
+    return FALSE;
 
   //  printf ("Initialize the connection structure.\n");
-  SQLAllocConnect(henv, &hdbc);
+  if (SQLAllocConnect(henv, &hdbc) != SQL_SUCCESS)
+    return FALSE;
 
   printf("连接ODBC驱动器...");
   sprintf(ODBC, "DSN=%s", config.SQL_DSN);
 
-  rc = SQLDriverConnect(hdbc, 0, ODBC, SQL_NTS, (UCHAR *)buf, sizeof(buf),
-                        &buflen, SQL_DRIVER_COMPLETE);
+  rc = SQLDriverConnect(hdbc, 0, (SQLCHAR *)ODBC, SQL_NTS, (SQLCHAR *)buf,
+                        sizeof(buf), &buflen, SQL_DRIVER_NOPROMPT);
   check_return(rc, henv, hdbc, hstmt);
+  if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
+    return FALSE;
   printf("成功\n");
-  SQLAllocStmt(hdbc, &hstmt);
+  if (SQLAllocStmt(hdbc, &hstmt) != SQL_SUCCESS)
+    return FALSE;
   SQLBindCol(hstmt, 1, SQL_C_CHAR, &sid, 16, &err);
   SQLBindCol(hstmt, 2, SQL_C_CHAR, &sps, 16, &err);
+  return TRUE;
 }
 
 void sasql_close(void) {
@@ -120,6 +154,9 @@ void sasql_close(void) {
 
   //  printf ("Free the environment structure.\n");
   SQLFreeEnv(henv);
+  hstmt = SQL_NULL_HSTMT;
+  hdbc = SQL_NULL_HDBC;
+  henv = SQL_NULL_HENV;
 }
 
 void check_return(RETCODE rc, HENV henv, HDBC hdbc, HSTMT hstmt) {
@@ -177,8 +214,9 @@ int sasql_query(char *id, char *ps) {
   return 0;
 }
 
-BOOL sasql_register(char *id, char *ps) {
-  if (AUTOREG) {
+BOOL sasql_register(const char *id, const char *ps) {
+  if (sasql_ready() && AUTOREG && sasql_valid_value(id) &&
+      sasql_valid_value(ps)) {
     SQLCHAR sqlstr[128];
     SQLCancel(hstmt);
     sprintf(sqlstr, "select * from %s where Name='%s'", config.SQL_INFOTABLE,
@@ -191,7 +229,7 @@ BOOL sasql_register(char *id, char *ps) {
       SQLCancel(hstmt);
       sprintf(sqlstr,
               "INSERT INTO %s (Name,PassWord,RegTime,Path) VALUES "
-              "('%s','%s',NOW(),'char/0x%x')",
+              "('%s','%s',CURRENT_TIMESTAMP,'char/0x%x')",
               config.SQL_INFOTABLE, id, ps, getHash(id) & 0xff);
       rc = SQLExecDirect(hstmt, sqlstr, SQL_NTS);
       check_return(rc, henv, hdbc, hstmt);
@@ -205,6 +243,8 @@ BOOL sasql_register(char *id, char *ps) {
 }
 
 BOOL sasql_craete_lock(void) {
+  if (!sasql_ready())
+    return TRUE;
   char sqlstr[128];
   SQLCancel(hstmt);
   sprintf(sqlstr, "create table %s (Name varchar(16),PRIMARY KEY (Name));",
@@ -220,6 +260,8 @@ BOOL sasql_craete_lock(void) {
 }
 
 BOOL sasql_craete_userinfo(void) {
+  if (!sasql_ready())
+    return TRUE;
   char sqlstr[255];
   SQLCancel(hstmt);
   sprintf(sqlstr,
@@ -244,7 +286,9 @@ BOOL sasql_craete_userinfo(void) {
   return FALSE;
 }
 
-BOOL sasql_chehk_lock(const char *username_ip) {
+BOOL sasql_check_lock(char *username_ip) {
+  if (!sasql_ready() || !sasql_valid_value(username_ip))
+    return FALSE;
   char sqlstr[128];
   SQLCancel(hstmt);
   sprintf(sqlstr, "select * from %s where Name='%s'", config.SQL_LOCK, username_ip);
@@ -258,6 +302,8 @@ BOOL sasql_chehk_lock(const char *username_ip) {
 }
 
 BOOL sasql_add_lock(char *idip) {
+  if (!sasql_ready() || !sasql_valid_value(idip))
+    return FALSE;
   char sqlstr[128];
   SQLCancel(hstmt);
   sprintf(sqlstr, "INSERT INTO %s (Name) VALUES ('%s')", config.SQL_LOCK, idip);
@@ -270,9 +316,11 @@ BOOL sasql_add_lock(char *idip) {
 }
 
 BOOL sasql_del_lock(char *idip) {
+  if (!sasql_ready() || !sasql_valid_value(idip))
+    return FALSE;
   char sqlstr[128];
   SQLCancel(hstmt);
-  sprintf(sqlstr, "delete from config.SQL_LOCK where Name='%s'",
+  sprintf(sqlstr, "delete from %s where Name='%s'",
           config.SQL_LOCK, idip);
 
   rc = SQLExecDirect(hstmt, sqlstr, SQL_NTS);
@@ -284,7 +332,10 @@ BOOL sasql_del_lock(char *idip) {
 }
 
 #ifdef _SQL_BACKGROUND
-BOOL sasql_online(char *ID, char *NM, char *IP, int flag) {
+BOOL sasql_online(char *ID, char *NM, char *IP, char *MAC, int flag) {
+  (void)MAC;
+  if (!sasql_ready())
+    return TRUE;
   char sqlstr[256];
   SQLCancel(hstmt);
   if (flag == 0)
@@ -292,22 +343,21 @@ BOOL sasql_online(char *ID, char *NM, char *IP, int flag) {
             config.SQL_INFOTABLE, ID);
   else if (flag == 1)
     sprintf(sqlstr,
-            "update %s set LoginTime=NOW(), IP='%s', Online=1 where Name='%s'",
+            "update %s set LoginTime=CURRENT_TIMESTAMP, IP='%s', Online=1 "
+            "where Name='%s'",
             config.SQL_INFOTABLE, IP, ID);
   else if (flag == 2)
     sprintf(sqlstr,
-            "update %s set LoginTime=NOW(), OnlineName='%s', Online=1 where "
+            "update %s set LoginTime=CURRENT_TIMESTAMP, OnlineName='%s', "
+            "Online=1 where "
             "Name='%s'",
             config.SQL_INFOTABLE, NM, ID);
   else if (flag == 3)
     sprintf(sqlstr, "update %s set Online=0", config.SQL_INFOTABLE);
   rc = SQLExecDirect(hstmt, sqlstr, SQL_NTS);
   check_return(rc, henv, hdbc, hstmt);
-  if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
-    if (SQL_SUCCESS == SQLFetch(hstmt)) {
-      return TRUE;
-    }
-  }
+  if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO)
+    return TRUE;
 
   printf("\n更新数据库失败！\n");
   return FALSE;
@@ -315,6 +365,8 @@ BOOL sasql_online(char *ID, char *NM, char *IP, int flag) {
 #endif
 
 int sasql_onlinenum(char *IP) {
+  if (!sasql_ready() || !sasql_valid_value(IP))
+    return 0;
   char sqlstr[256];
   SQLCHAR szNum[64] = {0};
   SQLINTEGER cbNum;
@@ -337,12 +389,14 @@ int sasql_onlinenum(char *IP) {
 
 #ifdef _NEW_VIP_SHOP
 int sasql_query_point(char *name) {
+  if (!sasql_ready() || !sasql_valid_value(name))
+    return -1;
   char sqlstr[256];
   SQLCHAR szPoint[64] = {0};
   SQLINTEGER cbPoint;
   SQLCancel(hstmt);
 
-  sprintf(sqlstr, "select VipPoint from `%s` where Name='%s'",
+  sprintf(sqlstr, "select VipPoint from %s where Name='%s'",
           config.SQL_INFOTABLE, name);
 
   rc = SQLExecDirect(hstmt, sqlstr, SQL_NTS);
@@ -359,6 +413,8 @@ int sasql_query_point(char *name) {
 }
 
 BOOL sasql_add_vippoint(char *ID, int point) {
+  if (!sasql_ready() || !sasql_valid_value(ID))
+    return -1;
   char sqlstr[256];
   SQLCHAR szPoint[64] = {0};
   SQLINTEGER cbPoint;
@@ -397,12 +453,16 @@ BOOL sasql_add_vippoint(char *ID, int point) {
 
 #ifdef _ITEM_PET_LOCKED
 char *sasql_ItemPetLocked(char *id, char *safepasswd) {
+  if (!sasql_ready())
+    return "安全锁数据库功能未启用。";
+  if (!sasql_valid_value(id) || !sasql_valid_value(safepasswd))
+    return "安全锁参数无效。";
   char sqlstr[256];
   SQLCHAR szSafePasswd[32] = {0};
   SQLINTEGER cbSafePasswd;
   SQLCancel(hstmt);
 
-  sprintf(sqlstr, "select SafePasswd from `%s` where Name='%s'",
+  sprintf(sqlstr, "select SafePasswd from %s where Name='%s'",
           config.SQL_INFOTABLE, id);
 
   rc = SQLExecDirect(hstmt, sqlstr, SQL_NTS);
@@ -428,6 +488,10 @@ char *sasql_ItemPetLocked(char *id, char *safepasswd) {
 }
 
 char *sasql_ItemPetLocked_Passwd(char *id, char *safepasswd) {
+  if (!sasql_ready())
+    return "安全锁数据库功能未启用。";
+  if (!sasql_valid_value(id) || !sasql_valid_value(safepasswd))
+    return "安全锁参数无效。";
   char sqlstr[256];
   SQLCancel(hstmt);
   sprintf(sqlstr, "update %s set SafePasswd='%s' where Name='%s'",
@@ -440,45 +504,79 @@ char *sasql_ItemPetLocked_Passwd(char *id, char *safepasswd) {
   }
   return "安全密码修改失败，请与本服管理员联系！";
 }
+
+BOOL sasql_ItemPetLocked_Char(char *id, char *safepasswd) {
+  char sqlstr[256];
+  SQLCHAR stored[64] = {0};
+  SQLINTEGER stored_len = 0;
+
+  if (!sasql_ready())
+    return 0;
+  if (!sasql_valid_value(id) || !sasql_valid_value(safepasswd))
+    return -1;
+
+  snprintf(sqlstr, sizeof(sqlstr),
+           "select SafePasswd from %s where Name='%s'",
+           config.SQL_INFOTABLE, id);
+  if (!sasql_exec(sqlstr) || SQLFetch(hstmt) != SQL_SUCCESS)
+    return -1;
+  if (SQLGetData(hstmt, 1, SQL_C_CHAR, stored, sizeof(stored), &stored_len) !=
+      SQL_SUCCESS)
+    return -1;
+  if (stored_len <= 0 || stored[0] == '\0')
+    return 0;
+  return strcmp((char *)stored, safepasswd) == 0 ? 1 : -1;
+}
 #endif
 
 #ifdef _ONLINE_COST
-char *sasql_OnlineCost(char *id, char *costpasswd) {
+char *sasql_OnlineCost(char *id, char *costpasswd, int fmindex, char *fmname) {
   char sqlstr[256];
   SQLCHAR szCostVal[32] = {0};
+  SQLCHAR szPayVal[32] = {0};
   SQLCHAR szTemp[32] = {0};
   SQLINTEGER cbCostVal;
+  SQLINTEGER cbPayVal;
   SQLINTEGER cbTemp;
-  SQLCancel(hstmt);
+  static char token[256];
 
-  sprintf(sqlstr,
-          "select `CostVal`, `check` from `OnlineCost` where CostPasswd = '%s'",
-          costpasswd);
+  (void)fmindex;
+  (void)fmname;
+  if (!sasql_ready())
+    return "充值数据库功能未启用。";
+  if (!sasql_valid_value(id) || !sasql_valid_value(costpasswd))
+    return "充值失败，卡号格式不正确。";
 
-  rc = SQLExecDirect(hstmt, sqlstr, SQL_NTS);
-  check_return(rc, henv, hdbc, hstmt);
-  if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
+  snprintf(sqlstr, sizeof(sqlstr),
+           "select CostVal, PayVal, [check] from OnlineCost "
+           "where CostPasswd='%s'",
+           costpasswd);
+
+  if (sasql_exec(sqlstr)) {
     if (SQL_SUCCESS == SQLFetch(hstmt)) {
-      if (SQLGetData(hstmt, 1, SQL_C_CHAR, szCostVal, 50, &cbCostVal) ==
+      if (SQLGetData(hstmt, 1, SQL_C_CHAR, szCostVal, sizeof(szCostVal),
+                     &cbCostVal) ==
               SQL_SUCCESS &&
-          SQLGetData(hstmt, 2, SQL_C_CHAR, szTemp, 50, &cbTemp) ==
+          SQLGetData(hstmt, 2, SQL_C_CHAR, szPayVal, sizeof(szPayVal),
+                     &cbPayVal) == SQL_SUCCESS &&
+          SQLGetData(hstmt, 3, SQL_C_CHAR, szTemp, sizeof(szTemp), &cbTemp) ==
               SQL_SUCCESS) {
         if (atoi(szTemp) == 1) {
           int costval = atoi(szCostVal);
+          int payval = atoi(szPayVal);
           int vippoint = sasql_add_vippoint(id, costval);
-          char token[256];
-          sprintf(sqlstr,
-                  "update OnlineCost set cdkey='%s', CostTime=NOW(), `check`=0 "
-                  " where CostPasswd='%s'",
-                  id, costpasswd);
+          snprintf(sqlstr, sizeof(sqlstr),
+                   "update OnlineCost set cdkey='%s', "
+                   "CostTime=CURRENT_TIMESTAMP, [check]=0 "
+                   "where CostPasswd='%s'",
+                   id, costpasswd);
 
-          rc = SQLExecDirect(hstmt, sqlstr, SQL_NTS);
-          check_return(rc, henv, hdbc, hstmt);
-          if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
+          if (sasql_exec(sqlstr)) {
             logErr("充值卡号%s已充值！\n", costpasswd);
           }
-          sprintf(token, "充值已成功，充值卡面值为%d，您当前会员点数共%d",
-                  costval, vippoint);
+          snprintf(token, sizeof(token),
+                   "充值成功：会员点增加%d，充值积分为%d，当前会员点为%d。",
+                   costval, payval, vippoint);
           return token;
         } else {
           return "该充值卡已使用过，请勿重复使用！";
@@ -493,29 +591,139 @@ char *sasql_OnlineCost(char *id, char *costpasswd) {
   return "充值失败，请与本服管理员联系！";
 }
 
-void sasql_OnlineCost_add(int cost) {
+char *sasql_TransOnlineCost(void) {
+  char sqlstr[512];
+  static char result[128];
+
+  if (!sasql_ready())
+    return "充值数据库功能未启用。";
+  snprintf(sqlstr, sizeof(sqlstr),
+           "UPDATE u SET u.PayPoint=COALESCE(u.PayPoint,0)+o.PayVal "
+           "FROM %s AS u INNER JOIN OnlineCost AS o ON u.Name=o.cdkey "
+           "WHERE o.[check]=0",
+           config.SQL_INFOTABLE);
+  if (sasql_exec(sqlstr)) {
+    snprintf(result, sizeof(result), "充值积分转换完成。");
+  } else {
+    snprintf(result, sizeof(result), "充值积分转换失败。");
+  }
+  return result;
+}
+
+void sasql_OnlineCost_add(int cost, int num, int point) {
   char sqlstr[256];
   char CostPasswd[32];
-  memset(CostPasswd, 0, sizeof(CostPasswd));
-  int i, j;
-  for (i = 0; i < 100; i++) {
-    for (j = 0; j < 16; j++) {
-      CostPasswd[j++] = (rand() % 26) + 65;
-      CostPasswd[j] = (rand() % 10) + 48;
-    }
-    sprintf(sqlstr,
-            "INSERT INTO OnlineCost (CostPasswd, CostVal) VALUES ('%s', %d)",
-            CostPasswd, cost);
+  int i, j, added = 0;
 
-    rc = SQLExecDirect(hstmt, sqlstr, SQL_NTS);
-    check_return(rc, henv, hdbc, hstmt);
-    if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
-      SQLCancel(hstmt);
+  if (!sasql_ready() || num <= 0)
+    return;
+  for (i = 0; i < num; i++) {
+    memset(CostPasswd, 0, sizeof(CostPasswd));
+    for (j = 0; j < 16; j++) {
+      CostPasswd[j] = rand() % 2 ? (rand() % 26) + 'A' : (rand() % 10) + '0';
     }
+    snprintf(sqlstr, sizeof(sqlstr),
+             "INSERT INTO OnlineCost (CostPasswd, CostVal, PayVal) "
+             "VALUES ('%s', %d, %d)",
+             CostPasswd, cost, point);
+    if (sasql_exec(sqlstr))
+      ++added;
   }
-  printf("成功添加%d条面值%d的充值卡\n", i, cost);
-  return;
+  printf("成功添加%d条面值%d的充值卡\n", added, cost);
 }
 #endif
+
+#ifdef _SQL_BUY_FUNC
+char *sasql_OnlineBuy(char *id, char *costpasswd) {
+  char sqlstr[512];
+  SQLCHAR coststr[256] = {0};
+  SQLCHAR used[16] = {0};
+  SQLINTEGER coststr_len = 0;
+  SQLINTEGER used_len = 0;
+  static char token[320];
+
+  if (!sasql_ready())
+    return "提货数据库功能未启用。";
+  if (!sasql_valid_value(id) || !sasql_valid_value(costpasswd))
+    return "提货失败，卡号格式不正确。";
+
+  snprintf(sqlstr, sizeof(sqlstr),
+           "select CostStr, [check] from OnlineBuy where CostPasswd='%s'",
+           costpasswd);
+  if (!sasql_exec(sqlstr) || SQLFetch(hstmt) != SQL_SUCCESS)
+    return "提货失败，找不到该提货卡。";
+  if (SQLGetData(hstmt, 1, SQL_C_CHAR, coststr, sizeof(coststr), &coststr_len) !=
+          SQL_SUCCESS ||
+      SQLGetData(hstmt, 2, SQL_C_CHAR, used, sizeof(used), &used_len) !=
+          SQL_SUCCESS)
+    return "提货失败，无法读取提货卡。";
+  if (atoi((char *)used) != 1)
+    return "该提货卡已使用，请勿重复使用。";
+
+#ifdef _SQL_BUY_FUNC_ONE_CDKEY
+  if (costpasswd[0] == '1') {
+    SQLCHAR count[32] = {0};
+    SQLINTEGER count_len = 0;
+    snprintf(sqlstr, sizeof(sqlstr),
+             "select count(*) from OnlineBuy where CostStr='%s' and cdkey='%s'",
+             (char *)coststr, id);
+    if (sasql_exec(sqlstr) && SQLFetch(hstmt) == SQL_SUCCESS &&
+        SQLGetData(hstmt, 1, SQL_C_CHAR, count, sizeof(count), &count_len) ==
+            SQL_SUCCESS &&
+        atoi((char *)count) > 0)
+      return "相同类型的道具卡每个账号只能领取一次。";
+  }
+#endif
+
+  snprintf(sqlstr, sizeof(sqlstr),
+           "update OnlineBuy set cdkey='%s', CostTime=CURRENT_TIMESTAMP, "
+           "[check]=0 where CostPasswd='%s'",
+           id, costpasswd);
+  if (!sasql_exec(sqlstr))
+    return "提货失败，请与管理员联系。";
+  snprintf(token, sizeof(token), "%c|%s", costpasswd[0], (char *)coststr);
+  return token;
+}
+
+void sasql_OnlineBuy_add(char *coststr, int type, int num) {
+  char sqlstr[512];
+  char password[32];
+  int i, j, added = 0;
+
+  if (!sasql_ready() || !sasql_valid_value(coststr) || num <= 0)
+    return;
+  for (i = 0; i < num; ++i) {
+    memset(password, 0, sizeof(password));
+    password[0] = (char)('0' + type);
+    for (j = 1; j < 16; ++j)
+      password[j] = rand() % 2 ? (rand() % 26) + 'A' : (rand() % 10) + '0';
+    snprintf(sqlstr, sizeof(sqlstr),
+             "INSERT INTO OnlineBuy (CostPasswd, CostStr) VALUES ('%s','%s')",
+             password, coststr);
+    if (sasql_exec(sqlstr))
+      ++added;
+  }
+  printf("成功添加%d条提货卡\n", added);
+}
+#endif
+
+#ifdef _OLDPS_TO_MD5PS
+void sasql_OldpsToMd5ps(void) {
+  if (!sasql_ready())
+    return;
+  logErr("Windows ODBC 模式不支持批量旧密码转换；请使用数据库维护工具执行。\n");
+}
+#endif
+
+void sasql_CleanCdkey(int date) {
+  (void)date;
+  if (sasql_ready())
+    logErr("Windows ODBC 模式不执行账号文件批量删除。\n");
+}
+
+void sasql_CleanLockCdkey(void) {
+  if (sasql_ready())
+    logErr("Windows ODBC 模式不执行锁定账号文件批量删除。\n");
+}
 
 #endif

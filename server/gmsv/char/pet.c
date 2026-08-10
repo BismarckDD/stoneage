@@ -56,7 +56,7 @@ static int _PET_dropPet(int char_index,   // 当前角色
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return FALSE;
   // 全局唯一的pet index.
-  const int petindex = CHAR_getCharPet(char_index, havepetindex);
+  petindex = CHAR_getCharPet(char_index, havepetindex);
   if (!CHAR_CHECKINDEX(petindex))
     return FALSE;
   if (!CHAR_CHECKINDEX(char_index))

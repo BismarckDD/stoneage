@@ -571,6 +571,7 @@ BOOL TRADE_Search(int fd, int meindex, char* message)
 	return FALSE;
 }
 
+#ifdef _COMFIRM_TRADE_REQUEST
 void TRADE_Will(int fd, int meindex, char* message)
 {
 	char msg[128], msgbuf[1024], mycharaname[256], tocharaname[256];
@@ -609,6 +610,7 @@ void TRADE_Will(int fd, int meindex, char* message)
 		}
 	}
 }
+#endif
 
 void TRADE_Close(int fd, int meindex, char* message)
 {
@@ -1541,9 +1543,8 @@ int TRADE_CheckItembuf(int fd, int meindex, int toindex, int tofd, char* mychara
 #endif
 
 	if(FreeTradeItem(meindex, item1) == 1
-		|| FreeTradeItem(meindex, item2) == 1 
-		|| FreeTradeItem(meindex, item3) == 1 
-		|| FreeTradeItem(meindex, item4) == 1 
+		|| FreeTradeItem(meindex, item2) == 1
+		|| FreeTradeItem(meindex, item4) == 1
 		|| FreeTradeItem(meindex, item5) == 1  ){
 		return -19;
 	}

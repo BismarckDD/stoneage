@@ -10,6 +10,7 @@
 #include "config_file.h"
 #include "encount.h"
 #include "enemy.h"
+#include <math.h>
 
 
 #ifdef _ADD_ENCOUNT // WON ADD 增加敌遭遇触发修件

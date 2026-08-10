@@ -13,18 +13,45 @@ typedef struct tagSTRING128 {
   char string[128];
 } STRING128;
 
-typedef struct tagRECT {
+/*
+ * Win32 already owns RECT, POINT, CHAR, SHORT, INT and DOUBLE in the
+ * ordinary C identifier namespace.  Keep the legacy source-level names on
+ * Windows, but map them to project-prefixed declarations after windows.h has
+ * been included by common.h.
+ */
+typedef struct tagSA_RECT {
   int x;
   int y;
   int width;
   int height;
-} RECT;
+} SA_RECT;
 
-typedef struct tagPOINT {
+typedef struct tagSA_POINT {
   int x;
   int y;
-} POINT;
+} SA_POINT;
 
-typedef enum { CHAR, SHORT, INT, DOUBLE } CTYPE;
+typedef enum {
+  CTYPE_CHAR,
+  CTYPE_SHORT,
+  CTYPE_INT,
+  CTYPE_DOUBLE
+} CTYPE;
+
+#ifdef _WIN32
+#define RECT SA_RECT
+#define POINT SA_POINT
+#define CHAR CTYPE_CHAR
+#define SHORT CTYPE_SHORT
+#define INT CTYPE_INT
+#define DOUBLE CTYPE_DOUBLE
+#else
+typedef SA_RECT RECT;
+typedef SA_POINT POINT;
+#define CHAR CTYPE_CHAR
+#define SHORT CTYPE_SHORT
+#define INT CTYPE_INT
+#define DOUBLE CTYPE_DOUBLE
+#endif
 
 #endif

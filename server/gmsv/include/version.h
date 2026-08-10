@@ -15,6 +15,24 @@
 #define UNIQUE_KEYCODEITEM 100
 #define UNIQUE_KEYCODEPET  "i"
 
+/*
+ * These values used to arrive through a private attestation header that is
+ * not part of this repository.  Keep both servers on the public/default
+ * layout: ten manors and one hundred members per family.
+ */
+#ifndef MANOR_MAX_NUM
+#define MANOR_MAX_NUM 10
+#endif
+#ifndef FAMILY_MAX_MEMBER
+#define FAMILY_MAX_MEMBER 100
+#endif
+#ifndef _DEFAULT_PKEY
+#define _DEFAULT_PKEY "shiqi"
+#endif
+#ifndef _RUNNING_KEY
+#define _RUNNING_KEY "shiqi.hk"
+#endif
+
 #define _FAMILY_MANORNUM_CHANGE   // CoolFish 用来修改装园数量(4.0)
 #ifdef _FAMILY_MANORNUM_CHANGE
 #define FAMILY_MAXHOME     MANOR_MAX_NUM        // (4.0) 家族据点

@@ -802,7 +802,7 @@ int readFamily(const char *dir) {
   {
     char tmp[256];
     snprintf(tmp, sizeof(tmp), "%s", dir);
-    if (mkdir(tmp, 0755) == 0)
+    if (sa_mkdir(tmp, 0755) == 0)
       logErr("create %s\n", tmp);
   }
   snprintf(dirname, sizeof(dirname), "%s", dir);
@@ -983,7 +983,7 @@ int readFMPoint(const char *dir) {
   {
     char tmp[256];
     snprintf(tmp, sizeof(tmp), "%s", dir);
-    if (mkdir(tmp, 0755) == 0)
+    if (sa_mkdir(tmp, 0755) == 0)
       logErr("create %s\n", tmp);
   }
   snprintf(dirname, sizeof(dirname), "%s", dir);
@@ -1095,7 +1095,7 @@ int readFMSMemo(const char *dir) {
   {
     char tmp[256];
     snprintf(tmp, sizeof(tmp), "%s", dir);
-    if (mkdir(tmp, 0755) == 0)
+    if (sa_mkdir(tmp, 0755) == 0)
       logErr("create %s\n", tmp);
   }
 
@@ -2767,7 +2767,7 @@ int ACFMCharLogout(int index, char *fmname, int fmindex, char *charname,
 }
 
 // 取得家族庄园图层
-int ACgetFMFloor(fmindex) {
+int ACgetFMFloor(int fmindex) {
   int i = 0;
   for (i = 0; i < MAX_FMPOINT; i++) {
     if (fmindex == fmpoint[i].hadfmindex)
@@ -3985,7 +3985,7 @@ void addFmPayPoint(int fmindex, char *fmname, int paypoint) {
   int index = -1;
   printf("家族[%s]充值积分为：%d\n", fmname, fmindex);
   if (CheckFM(&index, fmname, fmindex) < 0)
-    return -1;
+    return;
   printf("家族[%s]充值积分为：%d\n", fmname, index);
   family[index].fmpaypoint += paypoint;
   printf("家族[%s]充值积分为：%d\n", family[index].fmname,

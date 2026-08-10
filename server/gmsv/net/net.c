@@ -3358,13 +3358,17 @@ int CHAR_players() {
   return players;
 }
 void sigusr1(int i) {
+#ifndef _WIN32
   signal(SIGUSR1, sigusr1);
+#endif
   cono_check = (cono_check + 1) % 4;
   print("Cono Check is login:%d item:%d", cono_check & 1, cono_check & 2);
 }
 // Arminius 6.26
 void sigusr2(int i) {
+#ifndef _WIN32
   signal(SIGUSR2, sigusr2);
+#endif
   print("\nReceived Shutdown signal...\n\n");
   GmsvServer_Shutdown_recv(0, "hogehoge", 5); // 5������ά��
 }
@@ -3449,7 +3453,7 @@ void CONNECT_set_confirm(int fd, BOOL b) {
   Connect[fd].confirm_key = b;
 }
 
-int checkNu(fd) {
+int checkNu(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return -1;
   }
@@ -3463,19 +3467,19 @@ int checkNu(fd) {
 }
 
 // Nuke start 0626: For no enemy function
-void setNoenemy(fd) {
+void setNoenemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
   Connect[fd].noenemy = 6;
 }
-void clearNoenemy(fd) {
+void clearNoenemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
   Connect[fd].noenemy = 0;
 }
-int getNoenemy(fd) {
+int getNoenemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return 0;
   }

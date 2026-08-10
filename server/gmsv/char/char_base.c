@@ -4523,6 +4523,7 @@ int CHAR_getPlayerItemNum(int char_index, int itemid, BOOL IsContainEquip,
   return EmptyNum;
 }
 #endif
+#ifdef _NEW_RIDEPETS
 int CHAR_CheckLearnCode(int charindex, int ridno) {
   int i;
   int max = sizeof(RideCodeMode) / sizeof(tagRideCodeMode);
@@ -4549,6 +4550,7 @@ int CHAR_CheckLearnCode(int charindex, int ridno) {
   }
   return -1;
 }
+#endif
 
 #ifdef _NEW_TITLE
 void CHAR_SetNewTitleUse(int char_index, int id) {

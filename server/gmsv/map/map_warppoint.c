@@ -231,10 +231,10 @@ void callbackReadMapWarpPoint(int *warp_point_idx, const char *line) {
     return;
   }
   map_warp_point[*warp_point_idx].use = 1;
-  ++warp_point_idx;
+  ++(*warp_point_idx);
   // TODO: 修改后这里是有问题的，并不起作用.
   // 后面开发时应该通过返回值判断循环是否继续。
-  if (warp_point_idx >= MAX_MAP_WARP_POINT) {
+  if (*warp_point_idx >= MAX_MAP_WARP_POINT) {
     return;
   }
 }

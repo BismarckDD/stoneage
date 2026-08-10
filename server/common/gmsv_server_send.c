@@ -1482,7 +1482,7 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
       util_DiscardMessage();
       return -1;
     }
-    GmsvServer_upshopdata_recv(fd, shop[0]);
+    GmsvServer_upshopdata_recv(fd, shop);
     util_DiscardMessage();
     return 0;
   }

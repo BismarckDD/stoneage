@@ -311,7 +311,9 @@ static CorrespondStringAndFunctionTable correspondStringAndFunctionTable[] = {
 #ifdef _HALLOWEEN_EFFECT
     {{"ITEM_MapEffect"}, ITEM_MapEffect, 0},
 #endif
+#ifdef _ITEM_LUA
     {{"ITEM_USE_LUA"}, ITEM_Lua, 0},
+#endif
     {{"ITEM_changePetOwner"}, ITEM_changePetOwner, 0},
 
     {{"core_PetWatch"}, PET_Watchfunc, 0},

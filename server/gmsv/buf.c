@@ -140,7 +140,7 @@ void freeMemory(void *freepointer) {
   toppointer = mem[0].pointer;
   if (freepointer == NULL)
     return;
-  arrayindex = ((int)freepointer - (int)toppointer) / UNIT;
+  arrayindex = (int)(((uintptr_t)freepointer - (uintptr_t)toppointer) / UNIT);
   if (arrayindex < readblock) {
     readblock = arrayindex;
   }
@@ -149,7 +149,7 @@ void freeMemory(void *freepointer) {
   NowMemory -= mem[arrayindex].nsize;
 }
 
-void showMem(const char *buf) {
+void showMem(char *buf) {
   sprintf(buf, "NowMemory.remnants:%d%%",
           ((UNITNUMBER - NowMemory) * 100) / UNITNUMBER);
   printf("\n");

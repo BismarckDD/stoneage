@@ -625,7 +625,7 @@ int saveCharOne(char *id, int num, char *input) {
   fprintf(fp, "%s", input);
   fclose(fp);
   logErr("写入 %s 档案文件:%s\n", id, fn);
-  chmod(fn, 0777);
+  sa_chmod(fn, 0777);
   return 0;
 }
 

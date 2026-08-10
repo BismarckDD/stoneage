@@ -1780,8 +1780,8 @@ BOOL ITEM_initLottery(ITEM_Item *itm) {
 void ITEM_useLottery(int char_index, int toindex, int haveitem_index) {
   int i, j;
   int item_index = CHAR_getItemIndex(char_index, haveitem_index);
-  int count = ITEM_getInt(item_index, ITEM_VAR2);
-  int hit = ITEM_getInt(item_index, ITEM_VAR1);
+  int count;
+  int hit;
   char buff[1024];
   char num[6][3] = {{"A"}, {"B"}, {"C"}, {"D"}, {"E"}, {"F"}};
   char numbuff[128];
@@ -1789,6 +1789,10 @@ void ITEM_useLottery(int char_index, int toindex, int haveitem_index) {
   int result;
   BOOL flg;
   if (!ITEM_CHECKINDEX(item_index))
+    return;
+  count = ITEM_getInt(item_index, ITEM_VAR2);
+  hit = ITEM_getInt(item_index, ITEM_VAR1);
+  if (count < 0 || count > 6)
     return;
   if (count == 0) {
     ITEM_setChar(item_index, ITEM_EFFECTSTRING, "");
@@ -1800,6 +1804,8 @@ void ITEM_useLottery(int char_index, int toindex, int haveitem_index) {
   }
   n = ITEM_getChar(item_index, ITEM_ARGUMENT);
   result = (int)n[count] - 1;
+  if (result < 0 || result >= arraysizeof(num))
+    return;
 
   flg = FALSE;
   for (i = 0; i < count + 1 && flg == FALSE; i++) {
@@ -1811,7 +1817,17 @@ void ITEM_useLottery(int char_index, int toindex, int haveitem_index) {
       }
     }
   }
-  memcpy(numbuff, ITEM_getChar(item_index, ITEM_EFFECTSTRING), (count)*2);
+  memset(numbuff, 0, sizeof(numbuff));
+  {
+    const char *effect = ITEM_getChar(item_index, ITEM_EFFECTSTRING);
+    size_t copy_len = (size_t)count * 2;
+    size_t effect_len = strlen(effect);
+    if (copy_len > effect_len)
+      copy_len = effect_len;
+    if (copy_len >= sizeof(numbuff))
+      copy_len = sizeof(numbuff) - 1;
+    memcpy(numbuff, effect, copy_len);
+  }
   snprintf(buff, sizeof(buff), "%s%s", numbuff, num[result]);
   count++;
   ITEM_setInt(item_index, ITEM_VAR2, count);
@@ -1846,7 +1862,12 @@ void ITEM_useLottery(int char_index, int toindex, int haveitem_index) {
     char strbuff[1024];
     if (flg) {
       int spc = 16 + (6 - count) * 2;
-      char space[17];
+      char space[32];
+      if (spc < 0)
+        spc = 0;
+      if (spc >= (int)sizeof(space))
+        spc = (int)sizeof(space) - 1;
+      memset(space, ' ', (size_t)spc);
       space[spc] = '\0';
       snprintf(strbuff, sizeof(strbuff), "%s%s������", buff, space);
     } else {

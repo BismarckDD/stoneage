@@ -636,7 +636,7 @@ unsigned int MAP_getExFloor_XY(int floor, int *map_type) {
   }
   return 0;
 }
-BOOL CHECKFLOORID(id) {
+BOOL CHECKFLOORID(int id) {
   int i;
 
   if (id < 0)
@@ -1410,7 +1410,7 @@ int MAP_intPlayerMap(void) {
   DIR *pDir;
   pDir = opendir("playermap");
   if (pDir == NULL) {
-    mkdir("playermap", 0777);
+    sa_mkdir("playermap", 0777);
     return TRUE;
   }
   int i = 0;

@@ -1,6 +1,7 @@
 #include "version.h"
 //
 #include "util.h"
+#include "config_file.h"
 //
 #include "log.h"
 #include "char_base.h"
@@ -160,7 +161,7 @@ static BOOL readLogConfFile(const char *filename) {
         char dirname[256];
         snprintf(dirname, sizeof(dirname), "%s/%d", basedir, getServernumber());
         if (opendir(dirname) == NULL) {
-          if (mkdir(dirname, 0777) == 0) {
+          if (sa_mkdir(dirname, 0777) == 0) {
             printf("建立文件夹 %s\n", dirname);
           }
         }

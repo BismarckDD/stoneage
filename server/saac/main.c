@@ -49,6 +49,7 @@ void checkMissionTimelimit(void);
 
 // Arminius 7.20 memory unlock
 // 处理用户自定义信号的方法
+#ifndef _WIN32
 void sigusr1(int a) {
   int i;
   FILE *f;
@@ -98,6 +99,7 @@ void sigusr1(int a) {
     logErr(" sigusr1_over_2 ");
   }
 }
+#endif
 
 #if _ATTESTAION_ID == 1
 int login_game_server(const int ti, const int id, const char *server_name,
@@ -289,7 +291,11 @@ static void parse_opts(int argc, char **argv) {
       sasql_close();
       exit(0);
     case 'n':
+#ifdef _WIN32
+      sa_set_process_priority(atoi(optarg));
+#else
       nice(atoi(optarg));
+#endif
       break;
     default:
       logErr("不能读懂选项 %c\n", c);
@@ -299,6 +305,14 @@ static void parse_opts(int argc, char **argv) {
 }
 
 void dump_error() {
+#ifdef _WIN32
+  void *array[10];
+  USHORT size = CaptureStackBackTrace(0, arraysizeof(array), array, NULL);
+  USHORT i;
+  logOut("Obtained %u stack frames.\n", (unsigned)size);
+  for (i = 0; i < size; ++i)
+    logFileToday("  frame[%u] = %p\n", (unsigned)i, array[i]);
+#else
   void *array[10];
   size_t size;
   char **strings;
@@ -310,6 +324,7 @@ void dump_error() {
     logFileToday(strings[i]);
   }
   free(strings);
+#endif
 }
 
 void signal_shutdown(const int number) {
@@ -324,6 +339,7 @@ void signal_shutdown(const int number) {
   }
   // 确认结束后，忽略之后的信号SIG_IGN
   signal(SIGINT, SIG_IGN);
+#ifndef _WIN32
   signal(SIGQUIT, SIG_IGN);
   signal(SIGILL, SIG_IGN);
   signal(SIGTRAP, SIG_IGN);
@@ -333,6 +349,7 @@ void signal_shutdown(const int number) {
   signal(SIGKILL, SIG_IGN);
   signal(SIGSEGV, SIG_IGN);
   signal(SIGPIPE, SIG_IGN);
+#endif
   signal(SIGTERM, SIG_IGN);
   logErr("收到一个信号! 异常中断......\n");
   writeFamily(g_saac_config.familydir);
@@ -349,6 +366,7 @@ void signal_set(void) {
   // CoolFish: Test Signal 2001/10/26
   printf("\n开始获取信号..\n");
   printf("SIGINT:%d\n", SIGINT);
+#ifndef _WIN32
   printf("SIGQUIT:%d\n", SIGQUIT);
   printf("SIGFPE:%d\n", SIGILL);
   printf("SIGTRAP:%d\n", SIGTRAP);
@@ -358,9 +376,11 @@ void signal_set(void) {
   printf("SIGKILL:%d\n", SIGKILL);
   printf("SIGSEGV:%d\n", SIGSEGV);
   printf("SIGPIPE:%d\n", SIGPIPE);
+#endif
   printf("SIGTERM:%d\n", SIGTERM);
   // 测试中：可以使用 kill -[SIGNAL_NAME] [PROCESS_ID] 向进程发送信号
   signal(SIGINT, signal_shutdown);
+#ifndef _WIN32
   signal(SIGQUIT, signal_shutdown);
   signal(SIGILL, signal_shutdown);
   signal(SIGTRAP, signal_shutdown);
@@ -370,12 +390,21 @@ void signal_set(void) {
   signal(SIGKILL, signal_shutdown);
   signal(SIGSEGV, signal_shutdown);
   signal(SIGPIPE, SIG_IGN);
+#else
+  sa_install_console_handler(signal_shutdown);
+#endif
   signal(SIGTERM, signal_shutdown);
   // kill -SIGUSR1 [PROCESS_ID] 向进程发送SIGUSR1信号
   // signal(SIGUSR1, sigusr1);
 }
 
 int main(int argc, char **argv) {
+#ifdef _WIN32
+  if (sa_platform_init() != 0) {
+    fprintf(stderr, "WinSock initialization failed: %d\n", errno);
+    return 1;
+  }
+#endif
   /*
       #define cpuid(in,a,b,c,d)\
       asm("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
@@ -450,7 +479,11 @@ int main(int argc, char **argv) {
       break;
     }
     logErr("监听TCP端口失败, 错误代码: %d, 1s后重新尝试...\n", tcpr);
+#ifdef _WIN32
+    sa_sleep(1);
+#else
     sleep(1);
+#endif
   } while (1);
   printf("Init SAAC WorkSpace: %d %d\n", CHARDATASIZE,
          SAAC_SERVER_MAXLSRPCARGS);
@@ -1083,14 +1116,24 @@ void savezipfile(void) {
   y = ptm->tm_year + 1900;
   m = ptm->tm_mon + 1;
   d = ptm->tm_mday;
-  char command[256];
+  char command[768];
   sprintf(command, "%d-%d-%d.zip", y, m, d);
   if (access(command, W_OK) == 0)
     return; // 文件存在
-  sprintf(command,
-          "zip -q -r %d-%d-%d.zip char char_sleep data db "
-          "lock log mail pklist race&",
-          y, m, d);
+#ifdef _WIN32
+  snprintf(command, sizeof(command),
+           "powershell.exe -NoProfile -NonInteractive -Command \""
+           "$p=@('char','char_sleep','data','db','lock','log','mail','pklist',"
+           "'race') | Where-Object { Test-Path $_ }; "
+           "Compress-Archive -Path $p -DestinationPath '%d-%d-%d.zip' "
+           "-Force\"",
+           y, m, d);
+#else
+  snprintf(command, sizeof(command),
+           "zip -q -r %d-%d-%d.zip char char_sleep data db "
+           "lock log mail pklist race&",
+           y, m, d);
+#endif
   logErr("备份档案......");
   system(command); // 执行shell命令.
   logErr("成功!\n");

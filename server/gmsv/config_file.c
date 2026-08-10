@@ -21,13 +21,14 @@ extern struct MissionTable missiontable[MAXMISSIONTABLE];
 
 /* General Config of server. */
 typedef struct tagServerConfig {
-  char program_name[8];      /* program name. */
+  char program_name[32];     /* program name. */
   char config_filename[32];  /* usually as setup.cf */
   unsigned char debug_level; /* usually as 3 */
-  unsigned int memory_unit unsigned int memory_unit_num;
-  char as_name[32];                   /* */
+  unsigned int memory_unit;
+  unsigned int memory_unitnum;
+  char account_server_name[32];       /* */
   unsigned short account_server_port; /* Account Server Port*/
-  char acpasswd[32];                  /* Account Server Password */
+  char account_server_password[32];   /* Account Server Password */
   char game_server_name[32];          /* Game Server Name*/
   // Arminius 7.24 manor pk
   char game_server_id[32];     // game server chinese id
@@ -148,27 +149,27 @@ typedef struct tagServerConfig {
   char unregname[5][16];
 #endif
 #ifdef _TRANS_LEVEL_CF
-  int char_trans;
-  int pet_trans;
-  int yb_level;
-  int max_level;
+  int chartrans;
+  int pettrans;
+  int yblevel;
+  int maxlevel;
 #endif
 #ifdef _POINT
   int point;
-  int trans_point[8];
+  int transpoint[8];
 #endif
 #ifdef _VIP_SERVER
   int vip_point;
 #endif
 #ifdef _PET_AND_ITEM_UP
-  int pet_up;
-  int item_up;
+  int petup;
+  int itemup;
 #endif
 #ifdef _LOOP_ANNOUNCE
-  char loop_announce_path[32];
-  int loop_announce_time;
-  char loop_announce[10][1024];
-  int loop_announce_max;
+  char loopannouncepath[32];
+  int loopannouncetime;
+  char loopannounce[10][1024];
+  int loopannouncemax;
 #endif
 #ifdef _SKILLUPPOINT_CF
   int skup;
@@ -478,10 +479,10 @@ int NeedLevelUpTbls[200];
 
 typedef struct tagReadConf {
   char name[32];
-  char *char_value;
-  size_t char_size;
+  char *charvalue;
+  size_t charsize;
   void *value;
-  CTYPE value_type;
+  CTYPE valuetype;
 } ReadConf;
 
 ReadConf gReadConf[] = {
@@ -492,8 +493,8 @@ ReadConf gReadConf[] = {
      sizeof(gServerConfig.account_server_name), NULL, 0},
     {"account_server_port", NULL, 0, (void *)&gServerConfig.account_server_port,
      SHORT},
-    {"acpasswd", gServerConfig.acpasswd, sizeof(gServerConfig.acpasswd), NULL,
-     0},
+    {"acpasswd", gServerConfig.account_server_password,
+     sizeof(gServerConfig.account_server_password), NULL, 0},
     {"gameservname", gServerConfig.game_server_name,
      sizeof(gServerConfig.game_server_name), NULL, 0},
     // Arminius 7.24 manor pk
@@ -552,8 +553,8 @@ ReadConf gReadConf[] = {
      sizeof(gServerConfig.appearfile), NULL, 0},
     {"titlenamefile", gServerConfig.titlenamefile,
      sizeof(gServerConfig.titlenamefile), NULL, 0},
-    {"titlegServerConfigfile", gServerConfig.titlegServerConfigfile,
-     sizeof(gServerConfig.titlegServerConfigfile), NULL, 0},
+    {"titleconfigfile", gServerConfig.titleconfigfile,
+     sizeof(gServerConfig.titleconfigfile), NULL, 0},
     {"encountfile", gServerConfig.encountfile,
      sizeof(gServerConfig.encountfile), NULL, 0},
     {"enemyfile", gServerConfig.enemyfile, sizeof(gServerConfig.enemyfile),
@@ -1468,14 +1469,14 @@ void setConfigFilename(const char *config_filename) {
 unsigned getDebugLevel(void) { return gServerConfig.debug_level; }
 
 unsigned setDebugLevel(unsigned debug_level) {
-  int old_level = gServerConfig.debug_level;
-  gServerConfig.debug_level = newv;
-  return old;
+  unsigned old_level = gServerConfig.debug_level;
+  gServerConfig.debug_level = debug_level;
+  return old_level;
 }
 
-unsigned getMemoryUnitSize(void) { return gServerConfig.memory_unit_size; }
+unsigned getMemoryUnitSize(void) { return gServerConfig.memory_unit; }
 
-unsigned getMemoryUnitNum(void) { return gServerConfig.memory_unit_num; }
+unsigned getMemoryUnitNum(void) { return gServerConfig.memory_unitnum; }
 
 char *getAccountServerName(void) { return gServerConfig.account_server_name; }
 
@@ -1538,6 +1539,8 @@ void setBattleexp(int exp) {
   gServerConfig.battleexp = exp;
   return;
 }
+#else
+unsigned int getBattleexp(void) { return 1; }
 #endif
 
 char *getTopdir(void) { return gServerConfig.topdir; }
@@ -1558,7 +1561,7 @@ char *getEffectfile(void) { return gServerConfig.effectfile; }
 
 char *getTitleNamefile(void) { return gServerConfig.titlenamefile; }
 
-char *getTitleConfigfile(void) { return gServerConfig.titlegServerConfigfile; }
+char *getTitleConfigfile(void) { return gServerConfig.titleconfigfile; }
 
 char *getEncountfile(void) { return gServerConfig.encountfile; }
 
@@ -1697,13 +1700,18 @@ void setBattleDebugMsg(unsigned int num) { gServerConfig.battledebugmsg = num; }
 
 void defaultConfig(char *argv0) {
   char *program = rindex(argv0, '/');
+  char *windows_program = rindex(argv0, '\\');
+  if (windows_program != NULL &&
+      (program == NULL || windows_program > program))
+    program = windows_program;
   if (program == NULL)
     program = argv0;
   else
     program++;
-  strcpysafe(gServerConfig.progname, sizeof(gServerConfig.progname), program);
-  strcpysafe(gServerConfig.gServerConfigfilename,
-             sizeof(gServerConfig.gServerConfigfilename), "setup.cf");
+  strcpysafe(gServerConfig.program_name, sizeof(gServerConfig.program_name),
+             program);
+  strcpysafe(gServerConfig.config_filename,
+             sizeof(gServerConfig.config_filename), "setup.cf");
 }
 
 void lastConfig(void) {
@@ -2410,6 +2418,8 @@ int getSkup(void) { return (gServerConfig.skup > 0) ? gServerConfig.skup : 0; }
 #ifdef _RIDELEVEL
 int getRideLevel(void) { return gServerConfig.ridelevel; }
 int getRideTrans(void) { return gServerConfig.ridetrans; }
+#else
+int getRideTrans(void) { return 0; }
 #endif
 #ifdef _REVLEVEL
 char *getRevLevel(void) { return (gServerConfig.revlevel > 0) ? "��" : "��"; }
@@ -2517,6 +2527,8 @@ int getRideMode(void) {
     gServerConfig.ridemode = 0;
   return gServerConfig.ridemode;
 }
+#else
+int getRideMode(void) { return 0; }
 #endif
 #ifdef _FM_POINT_PK
 char *getFmPointPK(void) { return (gServerConfig.fmpointpk > 0) ? "��" : "��"; }

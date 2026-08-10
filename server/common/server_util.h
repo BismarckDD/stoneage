@@ -15,11 +15,11 @@
 
 void GetMessageInfo(int *id, char *function_name, const int max_len,
                     const char **token_list);
-void SplitString(const char *src, WorkSpace *ws);
+void SplitString(char *src, WorkSpace *ws);
 unsigned GetNewMessageID(void);
 void CreateHeader(char *out, const char *fname);
 void CreateHeaderID(char *out, const unsigned msg_id, const char *fname);
-void Send(const int fd, const char *msg, WorkSpace *ws);
-void DebugSend(const int fd, const char *msg, WorkSpace *ws);
+void Send(WorkSpace *ws, const int fd, char *msg);
+void DebugSend(WorkSpace *ws, const int fd, char *msg);
 
 #endif // __SERVER_UTIL_H__

@@ -12,6 +12,7 @@ int PET_dropPetFollow( int char_index, int havepetindex, int fl, int x, int y);
 int PET_dropPetFLXY( int char_index, int havepetindex, int fl, int x, int y);
 int PET_dropPetAbsolute( int petindex, int floor, int x, int y,BOOL net);
 int PET_createPetFromCharaIndex( int char_index, int enemy_index);
+#define PET_createPetFromchar_index PET_createPetFromCharaIndex
 BOOL PET_SelectBattleEntryPet( int char_index, int petarray);
 int PET_initCharOneArray(Char *ch);
 BOOL PET_isPutPoint( int fl,int x, int y);

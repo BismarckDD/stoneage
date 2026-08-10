@@ -44,7 +44,7 @@ typedef struct {
   char option[32];
   char defaultmsg[128];
 } NPC_AIR_MSG;
-NPC_AIR_MSG airmsg[] = {
+static NPC_AIR_MSG airmsg[] = {
     {"msg_gettingon", "PAON�������޷����;��������ࡣ��"
                       "�"},
     {"msg_notparty", "PAPAON�����޷����ŶӼ���ࡣ�"},

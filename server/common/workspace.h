@@ -9,8 +9,9 @@ char *cnv10to62(const int input, char *output, const int output_len);
 int cnv62to10(const char *input);
 char *common_ltoa(const long l);
 char *common_utoa(const unsigned long u);
-char *strcpysafe(char *des, const char *src, const int max_len);
+char *strcpysafe(char *des, const int max_len, const char *src);
 char *strcpysafe2(char *des, const int max_len, const char *src);
+char *strncpysafe2(char *des, const int max_len, const char *src);
 char *strcatsafe(char *des, const char *src, const int max_len);
 
 typedef struct tagWorkSpace {

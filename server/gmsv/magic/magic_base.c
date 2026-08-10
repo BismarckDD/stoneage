@@ -13,7 +13,7 @@ static int sMagicNum;
 
 #ifdef _ATTACK_MAGIC
 AttMagic *ATTMAGIC_magic;
-int ATTsMagicNum;
+int ATTMAGIC_magicnum;
 #endif
 
 typedef struct tagMagicFunctionTable {
@@ -269,14 +269,14 @@ BOOL ATTMAGIC_initMagic(char *filename) {
   FILE *file;
   // Open file
   if (NULL == (file = fopen(filename, "r"))) {
-    ATTsMagicNum = 0;
+    ATTMAGIC_magicnum = 0;
     ATTMAGIC_magic = NULL;
     return TRUE;
   }
   fseek(file, 0, SEEK_END);
   // Calculate the number of attack magics
-  ATTsMagicNum = ftell(file) / sizeof(struct tagAttMagic);
-  if (ATTsMagicNum % 2) {
+  ATTMAGIC_magicnum = ftell(file) / sizeof(struct tagAttMagic);
+  if (ATTMAGIC_magicnum % 2) {
     fprint("打开文件失败\n");
     fclose(file);
     return FALSE;
@@ -284,25 +284,28 @@ BOOL ATTMAGIC_initMagic(char *filename) {
   fseek(file, 0, SEEK_SET);
   // Allocate memory to attack magics
   ATTMAGIC_magic =
-      allocateMemory(sizeof(struct tagAttMagic) * ATTsMagicNum);
+      allocateMemory(sizeof(struct tagAttMagic) * ATTMAGIC_magicnum);
   if (NULL == ATTMAGIC_magic) {
-    fprint("无法分配内存 %d\n", sizeof(struct tagAttMagic) * ATTsMagicNum);
+    fprint("无法分配内存 %d\n",
+           sizeof(struct tagAttMagic) * ATTMAGIC_magicnum);
     fclose(file);
     return FALSE;
   }
   // Read attack magics information
-  memset(ATTMAGIC_magic, 0, sizeof(struct tagAttMagic) * ATTsMagicNum);
-  fread(ATTMAGIC_magic, 1, sizeof(struct tagAttMagic) * ATTsMagicNum,
+  memset(ATTMAGIC_magic, 0,
+         sizeof(struct tagAttMagic) * ATTMAGIC_magicnum);
+  fread(ATTMAGIC_magic, 1,
+        sizeof(struct tagAttMagic) * ATTMAGIC_magicnum,
         file);
   fclose(file);
-  ATTsMagicNum = ATTsMagicNum / 2;
-  print("有效的攻击魔法数 %d\n", ATTsMagicNum);
+  ATTMAGIC_magicnum = ATTMAGIC_magicnum / 2;
+  print("有效的攻击魔法数 %d\n", ATTMAGIC_magicnum);
   return TRUE;
 }
 
 BOOL ATTMAGIC_reinitMagic(void) {
   freeMemory(ATTMAGIC_magic);
-  ATTsMagicNum = 0;
+  ATTMAGIC_magicnum = 0;
   return ATTMAGIC_initMagic(getAttMagicfileName());
 }
 

@@ -6,7 +6,9 @@
 #include "util.h"
 #include <ctype.h>
 #include <math.h>
+#ifndef _WIN32
 #include <strings.h>
+#endif
 #include "char.h"
 #include "enemy.h"
 #include "family.h"

@@ -571,8 +571,8 @@ void GmsvServer_CharList_recv(int fd) {
       }
     }
   }
+  char mac[64] = "";
 #ifdef _NEWCLISETMAC
-  char mac[64];
   CONNECT_getMAC(fd, mac, sizeof(mac));
 #endif
 
@@ -2013,7 +2013,9 @@ void GmsvServer_FS_recv(int fd, int flg) {
   CHAR_setFlg(char_index, CHAR_ISWORLD, (flg & CHAR_FS_WORLD) ? TRUE : FALSE);
 #endif
 #endif
+#ifdef _CHANNEL_MODIFY
   CHAR_setFlg(char_index, CHAR_AI_MOD, (flg & CHAR_FS_AI) ? TRUE : FALSE);
+#endif
 
   CHAR_setFlg(char_index, CHAR_ISTRADE, (flg & CHAR_FS_TRADE) ? TRUE : FALSE);
   GmsvServer_FS_send(fd, flg);
@@ -2479,8 +2481,8 @@ void GmsvServer_LB_recv(int fd, int x, int y) {
   CHECKFDANDTIME;
   const int from_id = CONNECT_getCharaindex(fd);
   {
-    const ix = CHAR_getInt(from_id, CHAR_X);
-    const iy = CHAR_getInt(from_id, CHAR_Y);
+    const int ix = CHAR_getInt(from_id, CHAR_X);
+    const int iy = CHAR_getInt(from_id, CHAR_Y);
     if ((ix != x) || (iy != y)) {
       x = ix;
       y = iy;
@@ -2572,10 +2574,12 @@ void GmsvServer_SP_recv(int fd, int x, int y, int dir) {
 void GmsvServer_TD_recv(int fd, char *message) {
   CHECKFDANDTIME;
   const int char_index = CONNECT_getCharaindex(fd);
+#ifdef _STREET_VENDOR
   if (CHAR_getWorkInt(char_index, CHAR_WORKSTREETVENDOR) != -1) {
     CHAR_talkToCli(char_index, -1, "不在摆摊状态.", CHAR_COLORYELLOW);
     return;
   }
+#endif
   CHAR_Trade(fd, char_index, message);
 }
 

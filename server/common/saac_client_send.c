@@ -8,6 +8,17 @@
 extern WorkSpace gSaacWorkSpace;
 WorkSpace *ws = &gSaacWorkSpace;
 
+int SaacClient_InitClient(int (*write_func)(int, char *, int),
+                          int work_buffer_size, int fd) {
+  (void)fd;
+  if (ws->work != NULL) {
+    ws->write_func = write_func;
+    return 0;
+  }
+  return InitWorkSpace(ws, write_func, work_buffer_size,
+                       SAAC_CLIENT_MAXLSRPCARGS);
+}
+
 // AccountServeFD 定义在其他地方, 使用acfd的地方会有很多bug，这里要注意
 extern int acfd;
 
@@ -606,8 +617,8 @@ extern int lastfunctime;
 int SaacClient_ClientDispatchMessage(int fd, char *line) {
   int msgid;
   char funcname[255];
-  strcpysafe(ws->work, line, ws->work_buf_size);
-  splitString(ws->work);
+  strcpysafe(ws->work, ws->work_buf_size, line);
+  SplitString(ws->work, ws);
   GetMessageInfo(&msgid, funcname, sizeof(funcname), ws->token_list);
   strcpy(saacretfunc, funcname);
 #ifdef _ABSOLUTE_DEBUG

@@ -46,7 +46,7 @@ typedef struct {
 	char	option[32];
 	char	defaultmsg[128];
 }NPC_AIR_MSG;
-NPC_AIR_MSG		airmsg[] = {
+static NPC_AIR_MSG		airmsg[] = {
 	{ "msg_gettingon",	"PAON！（你无法於中途加入我们唷！）"},
 	{ "msg_notparty",	"PAPAON！！无法以团队加入唷！"},
 	{ "msg_overparty",	"PAON！！人数已满。"},
@@ -530,6 +530,9 @@ static BOOL npc_ShipCheckDeniedItem( int meindex, int char_index, char *argstr)
 #ifdef _NEW_ITEM_
 			int itemMax = CheckCharMaxItem(char_index);
 			for( j = 0; j < itemMax; j ++) {
+#else
+			int itemMax = CHAR_MAXITEMHAVE;
+			for( j = 0; j < itemMax; j ++) {
 #endif
 				int item_index = CHAR_getItemIndex( char_index, j);
 				if( ITEM_CHECKINDEX( item_index)) {
@@ -579,6 +582,9 @@ BOOL npc_ShipCheckAllowItem( int meindex, int char_index, BOOL pickupmode)
 #ifdef _NEW_ITEM_
 			int itemMax = CheckCharMaxItem(char_index);
 			for( j = 0; j < itemMax; j ++) {
+#else
+			int itemMax = CHAR_MAXITEMHAVE;
+			for( j = 0; j < itemMax; j ++) {
 #endif
 				int item_index = CHAR_getItemIndex( char_index, j);
 				if( ITEM_CHECKINDEX( item_index)) {
@@ -592,9 +598,7 @@ BOOL npc_ShipCheckAllowItem( int meindex, int char_index, BOOL pickupmode)
 					}
 				}
 			}
-#ifdef _NEW_ITEM_
 			if( j == itemMax) {
-#endif
 				found = FALSE;
 				break;
 			}

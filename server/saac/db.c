@@ -81,8 +81,8 @@ static int reallocDB(void) {
   dbsize = new_dbsize;
   gDBEntry = newbuf;
 
-  logErr("重新分配数据: 新数据大小:%d 旧地址: %x 新地址:%x\n", new_dbsize,
-      (unsigned int)previous, (unsigned int)newbuf);
+  logErr("重新分配数据: 新数据大小:%d 旧地址:%p 新地址:%p\n", new_dbsize,
+         (void *)previous, (void *)newbuf);
 
   return 0;
 }
@@ -164,8 +164,8 @@ static int reallocHash(int dbi) {
   dbt[dbi].hashsize = new_hashsize;
   dbt[dbi].hashtable = newbuf;
 
-  logErr("重新分配无用信息: 新无用信息大小:%d 旧地址: %x 新地址:%x\n",
-      new_hashsize, (unsigned int)previous, (unsigned int)newbuf);
+  logErr("重新分配无用信息: 新无用信息大小:%d 旧地址:%p 新地址:%p\n",
+         new_hashsize, (void *)previous, (void *)newbuf);
 
   return 0;
 }
@@ -613,11 +613,11 @@ int dbRead(const char *dir) {
 
   char tmp[1024];
   snprintf(tmp, sizeof(tmp), "%s/int", dir);
-  if (mkdir(tmp, 0755) == 0) {
+  if (sa_mkdir(tmp, 0755) == 0) {
     logErr("创建目录 %s\n", tmp);
   }
   snprintf(tmp, sizeof(tmp), "%s/string", dir);
-  if (mkdir(tmp, 0755) == 0) {
+  if (sa_mkdir(tmp, 0755) == 0) {
     logErr("创建目录 %s\n", tmp);
   }
   snprintf(dirname, sizeof(dirname), "%s/int", dir);

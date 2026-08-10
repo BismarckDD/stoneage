@@ -41,6 +41,7 @@ BOOL sasql_ItemPetLocked_Char(char *id, char *safepasswd);
 #endif
 #ifdef _ONLINE_COST
 char *sasql_OnlineCost(char *id, char *costpasswd, int fmindex, char *fmname);
+char *sasql_TransOnlineCost(void);
 void sasql_OnlineCost_add(int cost, int num, int point);
 #endif
 #ifdef _SQL_BUY_FUNC
@@ -51,15 +52,11 @@ void sasql_OnlineBuy_add(char *coststr, int type, int num);
 BOOL sasql_add_FormulateAutoPk(char *ID, int point);
 #endif
 #ifdef _OLDPS_TO_MD5PS
-void sasql_OldpsToMd5ps();
+void sasql_OldpsToMd5ps(void);
 #endif
 
-enum {
-  INSERT,
-  SELECT,
-  UPDATE,
-  DELETE,
-};
+void sasql_CleanCdkey(int date);
+void sasql_CleanLockCdkey(void);
 
 #endif // _SASQL
 

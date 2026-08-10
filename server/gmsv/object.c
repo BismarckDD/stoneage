@@ -12,8 +12,8 @@
 #include "pet.h"
 #include "readmap.h"
 
-static Object *s_object;
-static int s_object_num;
+static Object *obj;
+static int objnum;
 
 #ifdef _PET_ITEM
 static int Restored = FALSE;
@@ -21,20 +21,20 @@ static int Restored = FALSE;
 
 BOOL initObjectArray(const int object_num) {
   int i;
-  s_object_num = object_num;
-  object = allocateMemory(sizeof(Object) * object_num);
-  if (object == NULL)
+  objnum = object_num;
+  obj = allocateMemory(sizeof(Object) * object_num);
+  if (obj == NULL)
     return FALSE;
   for (i = 0; i < object_num; i++) {
-    memset(&object[i], 0, sizeof(Object));
-    object[i].type = OBJTYPE_NOUSE;
+    memset(&obj[i], 0, sizeof(Object));
+    obj[i].type = OBJTYPE_NOUSE;
   }
   print("Allocate %.2f MB memory...", sizeof(Object) * object_num / 1024.0 / 1024.0);
   return TRUE;
 }
 
 BOOL endObjectArray(void) {
-  freeMemory(s_object);
+  freeMemory(obj);
   return TRUE;
 }
 

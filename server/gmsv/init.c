@@ -80,17 +80,17 @@ BOOL parseCommandLine(int argc, char **argv) {
       break;
     case 'h':
       printUsage();
-      return FALSE;
+      exit(0);
       break;
     case 'c':
 #ifdef _CRYPTO_DATA
       if (opendir("allblues") == NULL) {
-        if (mkdir("allblues", 0777) == 0) {
+        if (sa_mkdir("allblues", 0777) == 0) {
           printf("mkdir allblues\n");
         }
       }
       if (opendir("allblues/data") == NULL) {
-        if (mkdir("allblues/data", 0777) == 0) {
+        if (sa_mkdir("allblues/data", 0777) == 0) {
           printf("mkdir allblues/data\n");
         }
       }
@@ -142,7 +142,13 @@ BOOL init(int argc, char **argv, char **env) {
   int i;
   char line[256];
 #endif
-  srand(getpid());
+  srand(
+#ifdef _WIN32
+      _getpid()
+#else
+      getpid()
+#endif
+  );
   print("This Program is compiled at %s %s by gcc %s\n", __DATE__, __TIME__,
         __VERSION__);
   defaultConfig(argv[0]);
@@ -167,7 +173,11 @@ BOOL init(int argc, char **argv, char **env) {
   print("Current Config File name: %s.\n", getConfigfilename());
   RETURN_FALSE_IF_FALSE(readconfigfile(getConfigfilename()));
 
+#ifdef _WIN32
+  sa_set_process_priority(getrunlevel());
+#else
   nice(getrunlevel());
+#endif
   {
     int iWork = setEncodeKey();
     if (iWork == 0) {
@@ -403,7 +413,11 @@ BOOL init(int argc, char **argv, char **env) {
     bindedfd = bindLocalhost(getPortNumber());
 #endif
     if (bindedfd == -1)
+#ifdef _WIN32
+      sa_sleep(10);
+#else
       sleep(10);
+#endif
     else
       break;
   }
@@ -629,10 +643,6 @@ BOOL init(int argc, char **argv, char **env) {
   else
     print("succeed.\n");
 #endif
-  print("Start to init NPC config......");
-  if (InitWorkSpace(gmsvWorkSpace, lsrpcClientWriteFunc, CHARDATASIZE, LSGENWORKINGBUFFER) < 0)
-    goto CLOSEBIND;
-  print("succeed.\n");
   print("Start to connect host...... ");
   acfd = connectHost(getAccountservername(), getAccountserverport());
   if (acfd == -1)
@@ -666,9 +676,10 @@ BOOL init(int argc, char **argv, char **env) {
 #ifdef _OTHER_SAAC_LINK
   OtherSaacConnect();
 #endif
-  if (IsExistFile(getLsgenlogfilename())) {
-    SetLogFiles(gmsvWorkSpace, getLsgenlogfilename(), getLsgenlogfilename());
-    SetLogFiles(saacWorkSpace, getLsgenlogfilename(), getLsgenlogfilename());
+  if (IsFileExist(getLsgenlogfilename())) {
+    extern WorkSpace gSaacWorkSpace;
+    SetLogFiles(&gSaacWorkSpace, getLsgenlogfilename(),
+                getLsgenlogfilename());
   }
   print("succeed to init lss && saac log files.\n");
 #ifdef _LOTTERY_SYSTEM
@@ -737,15 +748,15 @@ BOOL init(int argc, char **argv, char **env) {
   return TRUE;
 
 CLOSEAC:
-  LogOut("Close AC.\n");
+  logOut("Close AC.\n");
   close(acfd);
 CLOSEBIND:
-  LogOut("Close Bind.\n");
+  logOut("Close Bind.\n");
   close(bindedfd);
   // print("close binded fd.\n");
   endConnect();
   // print("End Close Bind.\n");
 MEMEND:
-  LogOut("Mem End.\n");
+  logOut("Mem End.\n");
   memEnd();
 }

@@ -68,7 +68,7 @@ void easyGetTokenFromString(const char *src, const int count, char *output,
 int CreateDir(const char *dirname, int mode) {
   // ret == 0 目录创建成功
   // ret == -1 且不是目录已存在, 则返回错误.
-  int ret = mkdir(dirname, mode);
+  int ret = sa_mkdir(dirname, mode);
   if (ret < 0 && errno != EEXIST) {
     printf("mkdir error:%d %s: %s\n", ret, strerror(errno), dirname);
     return -1;
@@ -194,7 +194,7 @@ char *dchop(char *src, const char *del_str) {
   const int src_len = strlen(src);
   const int del_len = strlen(del_str);
   if (src_len == 0 || del_len == 0)
-    return;
+    return src;
   for (i = 0; i < del_len; i++) {
     if (src[src_len - 1] == del_str[i]) {
       flag = 1;
@@ -211,7 +211,7 @@ char *pohcd(char *src, const char *del_str) {
   const int src_len = strlen(src);
   const int del_len = strlen(del_str);
   if (src_len == 0 || del_len == 0)
-    return;
+    return src;
   for (i = 0; i < del_len; i++) {
     if (src[0] == del_str[i]) {
       flag = 1;
@@ -309,7 +309,7 @@ BOOL GeneralSplitImpl(const char *src, const char *delim, const int index,
   for (i = 0; i < index; i++) {
     char *last;
     src += addlen;
-    if (delim_len == 0) {
+    if (delim_len == 1) {
       last = strstr_onebyte(src, delim[0]);
     } else {
       last = strstr(src, delim);

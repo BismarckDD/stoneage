@@ -571,7 +571,9 @@ int CHAR_getNewImagenumberFromEquip(int index, int base_image_number,
     }
 
   } else {
+#ifdef _ITEM_EQUITSPACE
     if (CHAR_getItemIndex(index, CHAR_EQBELT) == -1) {
+#endif
       int i;
       /*  ITEM_CATEGORY ��������  */
       if (category < 0 || category > arraysizeof(CHAR_eqimagetbl[0]))
@@ -580,9 +582,11 @@ int CHAR_getNewImagenumberFromEquip(int index, int base_image_number,
         if (CHAR_eqimagetbl[i][0] == base_image_number)
           return CHAR_eqimagetbl[i][category];
       }
+#ifdef _ITEM_EQUITSPACE
     } else {
       return CHAR_getInt(index, CHAR_BASEIMAGENUMBER);
     }
+#endif
   }
   return -1;
 }

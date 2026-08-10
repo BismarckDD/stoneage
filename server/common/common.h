@@ -3,17 +3,18 @@
 
 #include <assert.h>
 #include <errno.h>
-#include <error.h>
 #include <signal.h>
+#include <stdint.h>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <time.h>
 
-#ifdef WIN32
-#include <Windows.h>
+#ifdef _WIN32
+#include "windows_compat.h"
 #else
+#include <error.h>
 #include <dirent.h>
 #include <fcntl.h>
 #include <netdb.h>
@@ -27,6 +28,11 @@
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
+#endif
+
+#ifndef _WIN32
+#define sa_mkdir(path, mode) mkdir((path), (mode))
+#define sa_chmod(path, mode) chmod((path), (mode))
 #endif
 
 #define RETURN_FALSE_IF_FALSE(x)                                               \
@@ -67,7 +73,6 @@
 #define arraysizeof(x) (sizeof(x) / sizeof(x[0]))
 #define errorprint                                                             \
   {                                                                            \
-    extern int errno;                                                          \
     fprint("%s\n", strerror(errno));                                           \
   }
 
@@ -104,6 +109,10 @@
     logFile(filename, format, ##args);                                         \
   } while (0);
 #ifdef __GNUC__
+#define print(format, arg...) fprintf(stderr, format, ##arg)
+#define fprint(format, arg...)                                                \
+  fprintf(stderr, "%s:%d:", __FILE__, __LINE__),                            \
+      fprintf(stderr, format, ##arg)
 #define printErr(format, arg...) fprintf(stderr, format, ##arg)
 #define printErrX(format, arg...)                                              \
   fprintf(stderr, "%s:%d:", format, __FILE__, __LINE__, ##arg)
@@ -115,6 +124,9 @@
 #define SPACE ' '
 //
 #define SUCCESSFUL "successful"
+#ifdef FAILED
+#undef FAILED
+#endif
 #define FAILED "failed"
 #define LOCK 1
 #define UNLOCK 0

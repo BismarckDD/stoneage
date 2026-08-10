@@ -2,8 +2,10 @@
 //
 #include <signal.h>
 #include <errno.h>
+#ifndef _WIN32
 #include <unistd.h>
-#include <execinfo.h> 
+#include <execinfo.h>
+#endif
 //
 #include "buf.h"
 #include "net.h"
@@ -38,6 +40,18 @@ void logerr(char *token)
 
 void dump()
 {
+#ifdef _WIN32
+  void *array[10];
+  USHORT size = CaptureStackBackTrace(0, arraysizeof(array), array, NULL);
+  USHORT i;
+  char line[96];
+  printf("Obtained %u stack frames.\n", (unsigned)size);
+  for (i = 0; i < size; ++i) {
+    snprintf(line, sizeof(line), "  frame[%u] = %p\n", (unsigned)i,
+             array[i]);
+    logerr(line);
+  }
+#else
   void *array[10];
   size_t size;
   char **strings;
@@ -53,6 +67,7 @@ void dump()
 	}
 
   free (strings);
+#endif
 
 }
 
@@ -211,6 +226,7 @@ void sigshutdown( int number)
     allDataDump();
 
     signal(SIGINT , SIG_IGN );
+#ifndef _WIN32
     signal(SIGQUIT, SIG_IGN );
     signal(SIGILL,  SIG_IGN );
     signal(SIGTRAP, SIG_IGN );
@@ -220,6 +236,7 @@ void sigshutdown( int number)
     signal(SIGKILL, SIG_IGN );
     signal(SIGSEGV, SIG_IGN );
     signal(SIGPIPE, SIG_IGN );
+#endif
     signal(SIGTERM, SIG_IGN );
 
     shutdownProgram();
@@ -231,6 +248,7 @@ void signalset( void )
     // CoolFish: Test Signal 2001/10/26
     print("\n开始获取信号..\n");
 		print("SIGINT:%d\n",  SIGINT);
+#ifndef _WIN32
 		print("SIGQUIT:%d\n", SIGQUIT);
 		print("SIGFPE:%d\n",  SIGILL);
 		print("SIGTRAP:%d\n", SIGTRAP);
@@ -240,8 +258,10 @@ void signalset( void )
 		print("SIGKILL:%d\n", SIGKILL);
 		print("SIGSEGV:%d\n", SIGSEGV);
 		print("SIGPIPE:%d\n", SIGPIPE);
+#endif
 		print("SIGTERM:%d\n", SIGTERM);
     signal( SIGINT , sigshutdown );
+#ifndef _WIN32
     signal( SIGQUIT, sigshutdown );
     signal( SIGILL,  sigshutdown );
     signal( SIGTRAP, sigshutdown );
@@ -251,5 +271,8 @@ void signalset( void )
     signal( SIGKILL, sigshutdown );
     signal( SIGSEGV, sigshutdown );
     signal( SIGPIPE, SIG_IGN );
+#else
+    sa_install_console_handler(sigshutdown);
+#endif
     signal( SIGTERM, sigshutdown );
 }
