@@ -144,3 +144,18 @@ install(TARGETS gmsv saac RUNTIME DESTINATION bin)
 if(EXISTS "${MINGW_ZLIB_DLL}")
   install(FILES "${MINGW_ZLIB_DLL}" DESTINATION bin)
 endif()
+
+include(CTest)
+if(BUILD_TESTING)
+  add_executable(protocol_security_test
+    tests/protocol_security_test.c
+    common/server_util.c
+    common/workspace.c)
+  target_include_directories(protocol_security_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/common"
+    "${CMAKE_CURRENT_SOURCE_DIR}/common/utils")
+  target_compile_definitions(protocol_security_test PRIVATE
+    ${STONEAGE_WINDOWS_DEFINITIONS})
+  target_compile_options(protocol_security_test PRIVATE ${STONEAGE_GNU_OPTIONS})
+  add_test(NAME protocol_security_test COMMAND protocol_security_test)
+endif()

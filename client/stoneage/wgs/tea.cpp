@@ -1,14 +1,9 @@
-﻿#include "sdk/VMProtectSDK.h"
-
-unsigned long DELTA = 0x9e3779b9;
+﻿unsigned long DELTA = 0x9e3779b9;
 
 #define MX                                                                     \
   (z >> 5 ^ y << 2) + (y >> 3 ^ z << 4) ^ (sum ^ y) + (k[p & 3 ^ e] ^ z);
 
 long tea_encrypt(long *v, long n, long *k) {
-#ifdef _VMP_
-  VMProtectBegin("tea_encrypt");
-#endif
   unsigned long z, y, sum, e;
   z = v[n - 1];
   y = v[0];
@@ -24,9 +19,6 @@ long tea_encrypt(long *v, long n, long *k) {
     y = v[0];
     z = v[n - 1] += MX;
   }
-#ifdef _VMP_
-  VMProtectEnd();
-#endif
   return 0;
 }
 

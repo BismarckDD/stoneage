@@ -14,8 +14,6 @@
 #ifdef _MACADDRESSD
 #include "../GetMacAddress.h"
 #endif
-#include "sdk/VMProtectSDK.h"
-
 extern void char_title_update(char *data);
 
 
@@ -2728,5 +2726,4 @@ void lssproto_redMemoy_send(int fd,int index,char *str)
     util_SendMesg(fd, LSSPROTO_REDMEMOY_SEND, buffer);
 }
 #endif
-
 

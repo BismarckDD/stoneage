@@ -91,6 +91,35 @@
     <ClInclude Include="stoneage\tools\math2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="third_party\lua\lapi.c" />
+    <ClCompile Include="third_party\lua\lauxlib.c" />
+    <ClCompile Include="third_party\lua\lbaselib.c" />
+    <ClCompile Include="third_party\lua\lcode.c" />
+    <ClCompile Include="third_party\lua\ldblib.c" />
+    <ClCompile Include="third_party\lua\ldebug.c" />
+    <ClCompile Include="third_party\lua\ldo.c" />
+    <ClCompile Include="third_party\lua\ldump.c" />
+    <ClCompile Include="third_party\lua\lfunc.c" />
+    <ClCompile Include="third_party\lua\lgc.c" />
+    <ClCompile Include="third_party\lua\linit.c" />
+    <ClCompile Include="third_party\lua\liolib.c" />
+    <ClCompile Include="third_party\lua\llex.c" />
+    <ClCompile Include="third_party\lua\lmathlib.c" />
+    <ClCompile Include="third_party\lua\lmem.c" />
+    <ClCompile Include="third_party\lua\loadlib.c" />
+    <ClCompile Include="third_party\lua\lobject.c" />
+    <ClCompile Include="third_party\lua\lopcodes.c" />
+    <ClCompile Include="third_party\lua\loslib.c" />
+    <ClCompile Include="third_party\lua\lparser.c" />
+    <ClCompile Include="third_party\lua\lstate.c" />
+    <ClCompile Include="third_party\lua\lstring.c" />
+    <ClCompile Include="third_party\lua\lstrlib.c" />
+    <ClCompile Include="third_party\lua\ltable.c" />
+    <ClCompile Include="third_party\lua\ltablib.c" />
+    <ClCompile Include="third_party\lua\ltm.c" />
+    <ClCompile Include="third_party\lua\lundump.c" />
+    <ClCompile Include="third_party\lua\lvm.c" />
+    <ClCompile Include="third_party\lua\lzio.c" />
     <ClCompile Include="stoneage\char_title.cpp" />
     <ClCompile Include="stoneage\red_memoy.cpp" />
     <ClCompile Include="stoneage\mylua\data.cpp" />
@@ -225,6 +254,10 @@
     <OutDir>$(ProjectDir)..\build\$(Configuration)\</OutDir>
     <IntDir>$(ProjectDir)..\build\$(Configuration)\$(ProjectName)\</IntDir>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VER25_RELEASE|Win32'">
+    <OutDir>$(ProjectDir)..\build\$(Configuration)\</OutDir>
+    <IntDir>$(ProjectDir)..\build\$(Configuration)\$(ProjectName)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='VER25_DEBUG|Win32'">
     <ClCompile>
       <PrecompiledHeader>
@@ -250,9 +283,7 @@ ddraw.lib;dxguid.lib;
 dsound.lib;winmm.lib;imm32.lib;dinput.lib;
         wsock32.lib;
         caryIme.lib;
-        GetMacAddress.lib;lua51.lib;
-libeay32.lib;
-VMProtectSDK32.lib;
+        GetMacAddress.lib;
 %(AdditionalDependencies)
       </AdditionalDependencies>
       <ImageHasSafeExceptionHandlers>false</ImageHasSafeExceptionHandlers>
@@ -300,9 +331,6 @@ VMProtectSDK32.lib;
         wsock32.lib;
         caryIme.lib;
         GetMacAddress.lib;
-        lua51.lib;
-        libeay32.lib;
-        VMProtectSDK32.lib;
         dbghelp.lib;
         %(AdditionalDependencies)
       </AdditionalDependencies>

@@ -28,7 +28,6 @@
 #include <crtdbg.h>
 #endif
 
-#include "sdk/VMProtectSDK.h"
 #ifdef _SAHOOK  // Syu ADD Hook程式
 #include "../Sa_Hk.h"
 #include "../sahook.h"
@@ -585,7 +584,6 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #endif
 
 #ifdef _ANTI_DEBUG_
-    VMProtectBegin("jiance111");
     extern void 按键检测();
     按键检测();
     if (
@@ -608,7 +606,6 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if (检测WARE()){
         return FALSE;
     }
-    VMProtectEnd();
 #endif
     ansi_encoding = GetACP();
     if (ansi_encoding == 950)
@@ -656,9 +653,6 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
 #endif
 
 #ifdef _DEFENSETOOENNUM_
-#ifdef _VMP_
-    VMProtectBegin("xiankai");
-#endif
     FILE* tempfile=NULL;
     int ds=0;
     char strname[128];
@@ -698,16 +692,9 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine
     if(!checkclientflg) {
     //    sprintf_s(strname, "游戏限制%d开！", _DEFENSETOOENNUM_);
         sprintf_s(strname, "游戏限制2开！");
-#ifdef _VMP_
-        MessageBoxNew(NULL,VMProtectDecryptStringA(strname), DEF_APPNAME, MB_OK | MB_ICONSTOP);
-#else
         MessageBoxNew(NULL,strname, DEF_APPNAME, MB_OK | MB_ICONSTOP);
-#endif
         return FALSE;
     }
-#ifdef _VMP_
-    VMProtectEnd();
-#endif
 #endif
 
     if (!hPrevInstance){
@@ -860,16 +847,10 @@ void AnalyzeCmdLine(void)
 {
     char *addr;
 #ifdef _ZHENGSHIKAIFU_
-#ifdef _VMP_
-    VMProtectBegin("AnalyzeCmdLine");
-#endif
     if (!(addr = strstr(CmdLine, "OpenClient"))){
         MessageBoxNew(NULL, "请使用启动器登陆游戏", "确定", MB_OK | MB_ICONSTOP);
         exit(0);
     }
-#ifdef _VMP_
-    VMProtectEnd();
-#endif
 #endif
     if (addr = strstr(CmdLine, "realbin:"))
         sprintf_s(realBinName, "data/real_%d.bin", atoi(addr + strlen("realbin:")));
@@ -1629,4 +1610,3 @@ void SetResoMode(int Mode){
     viewOffsetY = SCREEN_HEIGHT_CENTER;
     PostMessage(hWnd, WM_MOVE, 0, 0L);
 }
-

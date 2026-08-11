@@ -16,6 +16,8 @@ SQLCHAR sid[16];
 SQLCHAR sps[16];
 SQLINTEGER err;
 
+#define SASQL_PASSWORD_MAX 32
+
 typedef struct tagConfig {
   char SQL_DSN[128];
   char SQL_USER[64];
@@ -111,8 +113,11 @@ BOOL sasql_init(void) {
   AUTOREG = 0;
   USEMSSQL = 0;
   readConfig("acserv.cf");
-  if (USEMSSQL == 0)
+  if (USEMSSQL == 0) {
+    logErr("WARNING: MSSQL authentication is disabled; all player logins "
+           "will be rejected.\n");
     return TRUE;
+  }
   char buf[257];
   char ODBC[257];
   short buflen;
@@ -188,30 +193,62 @@ void check_return(RETCODE rc, HENV henv, HDBC hdbc, HSTMT hstmt) {
 }
 
 int sasql_query(char *id, char *ps) {
-  if (USEMSSQL == 0)
-    return TRUE;
-  SQLCHAR sqlstr[128];
+  SQLCHAR sqlstr[160];
   SQLCHAR szPass[64] = {0};
-  SQLINTEGER cbPass;
+  SQLLEN cbPass = 0;
+  SQLLEN id_indicator = SQL_NTS;
+  size_t id_len;
+  size_t password_len;
+  int query_result = 0;
+  int sql_len;
+
+  if (!sasql_ready() || id == NULL || ps == NULL)
+    return 0;
+  id_len = strlen(id);
+  password_len = strlen(ps);
+  if (id_len == 0 || id_len >= USERID_MAX || password_len == 0 ||
+      password_len > SASQL_PASSWORD_MAX)
+    return 0;
+
+  sql_len = snprintf((char *)sqlstr, sizeof(sqlstr),
+                     "select PassWord from %s where Name=?",
+                     config.SQL_INFOTABLE);
+  if (sql_len < 0 || (size_t)sql_len >= sizeof(sqlstr))
+    return 0;
+
   SQLCancel(hstmt);
-  sprintf(sqlstr, "select PassWord from %s where Name='%s'",
-          config.SQL_INFOTABLE, id);
+  SQLFreeStmt(hstmt, SQL_CLOSE);
+  SQLFreeStmt(hstmt, SQL_RESET_PARAMS);
+  rc = SQLBindParameter(hstmt, 1, SQL_PARAM_INPUT, SQL_C_CHAR, SQL_VARCHAR,
+                        (SQLULEN)id_len, 0, (SQLPOINTER)id,
+                        (SQLLEN)(id_len + 1), &id_indicator);
+  if (rc != SQL_SUCCESS && rc != SQL_SUCCESS_WITH_INFO)
+    goto cleanup;
+
   rc = SQLExecDirect(hstmt, sqlstr, SQL_NTS);
   check_return(rc, henv, hdbc, hstmt);
   if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
-    while (SQL_SUCCESS == SQLFetch(hstmt)) {
-      if (SQLGetData(hstmt, 1, SQL_C_CHAR, szPass, 50, &cbPass) == SQL_SUCCESS)
-        if (strcmp(szPass, ps) == 0) {
-          return 1;
+    rc = SQLFetch(hstmt);
+    if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
+      rc = SQLGetData(hstmt, 1, SQL_C_CHAR, szPass, sizeof(szPass), &cbPass);
+      if (rc == SQL_SUCCESS || rc == SQL_SUCCESS_WITH_INFO) {
+        if (strcmp((char *)szPass, ps) == 0) {
+          query_result = 1;
         } else {
           printf("账号%s密码错误!\n", id);
-          return 2;
+          query_result = 2;
         }
+      }
+    } else if (rc == SQL_NO_DATA) {
+      printf("账号%s未注册!\n", id);
+      query_result = 3;
     }
-    printf("账号%s未注册!\n", id);
-    return 3;
   }
-  return 0;
+
+cleanup:
+  SQLFreeStmt(hstmt, SQL_CLOSE);
+  SQLFreeStmt(hstmt, SQL_RESET_PARAMS);
+  return query_result;
 }
 
 BOOL sasql_register(const char *id, const char *ps) {

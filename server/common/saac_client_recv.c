@@ -1256,35 +1256,22 @@ void SaacClient_ACCheckCharacterOnLine_recv(int acfd, int charaindex,
 }
 #endif
 
-void SaacClient_ACCharLogin_recv(int fd, int client_fd, int flag) {
-  // 告诉客户端SaacServer的返回情况.
-  GmsvServer_ClientLogin_send(client_fd, "ok");
-  char reason[128];
-  switch (flag) {
-  case 1:
-    snprintf(reason, sizeof(reason), "");
-    break;
-  case 2:
-    snprintf(reason, sizeof(reason), "");
-    break;
-  case 3:
-    snprintf(reason, sizeof(reason), "");
-    break;
-  case 4:
-    snprintf(reason, sizeof(reason), "");
-    break;
-  case 5:
-    snprintf(reason, sizeof(reason), "");
-    break;
-  case 6:
-    snprintf(reason, sizeof(reason), "");
-    break;
-  case 0:
-  default:
+void SaacClient_ACCharLogin_recv(int fd, int client_fdid, int flag) {
+  const int client_fd = getfdFromFdid(client_fdid);
+  (void)fd;
+
+  if (CONNECT_checkfd(client_fd) == FALSE ||
+      CONNECT_getState(client_fd) != WHILEAUTH)
     return;
+
+  if (flag == 0) {
+    CONNECT_setState(client_fd, NOTLOGIN);
+    GmsvServer_ClientLogin_send(client_fd, "ok");
+  } else {
+    /* Failed authentication must not enter character-select operations. */
+    CONNECT_setState(client_fd, NULLCONNECT);
+    GmsvServer_ClientLogin_send(client_fd, "no");
   }
-  GmsvServer_CharList_send(client_fd, FAILED, reason);
-  return;
 }
 
 #ifdef _NEW_VIP_SHOP

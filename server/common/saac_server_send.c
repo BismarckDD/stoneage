@@ -10,15 +10,38 @@ WorkSpace *ws = &gSaacWorkSpace;
 // Warning: fd is not a socket, but an index of thie connect structure.
 int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debugfun) {
   unsigned int msgid;
+  int token_count;
   char funcname[1024];
-  SplitString(encoded, ws);
+  if (debugfun != NULL)
+    debugfun[0] = '\0';
+  token_count = SplitString(encoded, ws);
+  if (token_count < 2) {
+    if (debugfun != NULL)
+      snprintf(debugfun, 256, "invalid or oversized SAAC message");
+    logout_game_server(fd);
+    return -1;
+  }
   GetMessageInfo(&msgid, funcname, sizeof(funcname), ws->token_list);
+
+  /* Authentication is a protocol invariant, not an individual RPC option. */
+  if (strcmp(funcname, "ACServerLogin") != 0 &&
+      !is_game_server_login(fd)) {
+    if (debugfun != NULL)
+      snprintf(debugfun, 256, "unauthenticated SAAC function: %.200s",
+               funcname);
+    logout_game_server(fd);
+    return -1;
+  }
 
   if (strcmp(funcname, "ACServerLogin") == 0) {
     char *servername;
     char *serverpass;
 #if _ATTESTAION_ID == 1
     int id;
+    if (token_count < 5) {
+      logout_game_server(fd);
+      return -1;
+    }
     id = demkstr_int(ws->token_list[2]);
     servername = strcpysafe2(ws->string_buffer[2], ws->work_buf_size,
                              demkstr_string(ws->token_list[3]));
@@ -27,6 +50,10 @@ int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debugfun) {
     SaacServer_ACServerLogin_recv(fd, id, servername, serverpass);
     return 0;
 #else
+    if (token_count < 4) {
+      logout_game_server(fd);
+      return -1;
+    }
     servername = strcpysafe2(ws->string_buffer[1], ws->work_buf_size,
                              demkstr_string(ws->token_list[2]));
     serverpass = strcpysafe2(ws->string_buffer[2], ws->work_buf_size,
@@ -66,7 +93,7 @@ int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debugfun) {
     int lock = demkstr_int(ws->token_list[5]);
     char *opt = strcpysafe2(ws->string_buffer[5], ws->work_buf_size,
                             demkstr_string(ws->token_list[6]));
-    char *msg_id = demkstr_int(ws->token_list[7]);
+    int msg_id = demkstr_int(ws->token_list[7]);
     SaacServer_ACCharLoad_recv(fd, id, pas, charname, lock, opt, msg_id);
     return 0;
   }

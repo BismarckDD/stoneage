@@ -20,6 +20,9 @@ extern int lastfunctime;
 #define DME() print("<DME(%d)%d:%d>", fd, __LINE__, func)
 extern int cliretfunc;
 int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
+  /* No client RPC is valid while the account server is authenticating it. */
+  if (CONNECT_getState(fd) == WHILEAUTH)
+    return -1;
 #ifdef _DEFEND_BIGBAO
   if (CONNECT_getState(fd) == NOTLOGIN) {
     if (strlen(encoded) > getBigBao()) {

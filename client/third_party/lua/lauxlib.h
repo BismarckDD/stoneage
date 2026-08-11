@@ -26,7 +26,11 @@ typedef struct luaL_Reg {
   lua_CFunction func;
 } luaL_Reg;
 
-LUALIB_API void (luaL_openlib) (lua_State *L, const char *libname,
+#if defined(LUA_COMPAT_OPENLIB)
+#define luaI_openlib luaL_openlib
+#endif
+
+LUALIB_API void (luaI_openlib) (lua_State *L, const char *libname,
                                 const luaL_Reg *l, int nup);
 LUALIB_API void (luaL_register) (lua_State *L, const char *libname,
                                 const luaL_Reg *l);

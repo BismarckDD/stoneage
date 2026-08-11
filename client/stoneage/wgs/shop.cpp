@@ -11,8 +11,6 @@
 #include "sdk/caryime.h"
 #include "systeminc/field.h"
 #include "wgs/tea.h"
-#include "sdk/VMProtectSDK.h"
-
 int getfilesize(FILE* fp)
 {
     if( fp == NULL) return 0;
@@ -749,11 +747,7 @@ void ShopClasssave(char * 路径, ShopClass *商城)
     memset(临时,0,34+length1);
     memcpy_s(临时,34,商城->MD5码,34);
     memcpy_s((临时+34),length,商城->商城数据,length);
-#ifdef _VMP_
-    tea_encrypt((long *)(临时+34),(long)(length1/4),(long*)VMProtectDecryptStringA(_KEY_));
-#else
     tea_encrypt((long *)(临时+34),(long)(length1/4),(long*)_KEY_);
-#endif
     fwrite(临时, length1+34, 1, fp);
     free(临时);
     fclose(fp);

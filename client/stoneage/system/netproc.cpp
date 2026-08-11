@@ -25,6 +25,7 @@
 #include "systeminc/t_music.h"
 #include "wgs/message.h"
 #include "wgs/descrypt.h"
+#include "other/md5_encrypt.h"
 #include "NewProto/autil.h"
 #ifdef _REMAKE_20
 #include "sdk/MMOGprotect.h"
@@ -37,19 +38,6 @@ extern Landed PcLanded;
 #ifdef _TALK_WINDOW
 #include "systeminc/TalkWindow.h"
 #endif
-#include "sdk/VMProtectSDK.h"
-#pragma comment(lib, "libeay32.lib")
-#pragma comment(lib, "ssleay32.lib")
-
-#ifdef __cplusplus
-extern "C" {
-#endif // __cplusplus 
-extern unsigned char *MD5(const unsigned char *d, size_t n, unsigned char *md);
-#ifdef __cplusplus
-}
-#endif // __cplusplus 
-
-
 #ifdef _STONDEBUG_
 extern int g_iMallocCount;
 #endif
@@ -417,11 +405,7 @@ int connectServer(void)
         short pt;
         unsigned long flg = 1;
         struct hostent *h;
-#ifdef _VMP_
-        lstrcpy(PersonalKey, VMProtectDecryptStringA(_DEFAULT_PKEY));
-#else
         lstrcpy(PersonalKey, _DEFAULT_PKEY);
-#endif
         //        lstrcpy(PersonalKey, "forever");
         start_time = TimeGetTime();
         if (getServerInfo(selectServerIndex, hostname, &pt) < 0)
@@ -613,10 +597,13 @@ int connectServer(void)
             ecb_crypt("f;encor1c", userPassword, 32, DES_DECRYPT);
 
             extern char 机器数据[];
-            unsigned char tmp[256];
+            unsigned char tmp[16];
             CHAR mac[64];
-            // TODO: 这里需要补充MD5的算法.
-            MD5( (const unsigned char*)机器数据, strlen(机器数据), tmp );
+            MD5_CTX_ENCRYPT md5Context;
+            MD5Init(&md5Context);
+            MD5Update(&md5Context, (unsigned char*)机器数据,
+                      (unsigned int)strlen(机器数据));
+            MD5Final(tmp, &md5Context);
             size_t leng = 0;
             for (int i = 0; i < 16; i ++)
             {
@@ -636,11 +623,7 @@ int connectServer(void)
             if ((bNewServer & 0xf000000) == 0xf000000)
             {
                 lstrcpy(PersonalKey, userId);
-#ifdef _VMP_
-                lstrcat(PersonalKey, VMProtectDecryptStringA(_RUNNING_KEY));
-#else
                 lstrcat(PersonalKey, _RUNNING_KEY);
-#endif
                 //                lstrcat(PersonalKey, "520999");
             }
             else
@@ -5059,5 +5042,3 @@ void lssproto_PetSkins_recv(char *data)
 }
 
 #endif
-
-

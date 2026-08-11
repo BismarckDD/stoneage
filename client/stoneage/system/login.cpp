@@ -15,7 +15,6 @@
 #include "systeminc/ime_sa.h"
 #include "systeminc/menu.h"
 #include "systeminc/t_music.h"
-#include "sdk/VMProtectSDK.h"
 #include "systeminc/netmain.h"
 #include "systeminc/map.h"
 #include "systeminc/lssproto_cli.h"

@@ -595,7 +595,6 @@ unsigned int TimeGetTime(void);
 #define _ANNOUNCEMENT_                // 公告系统
 //#define _EFFECT_MAP_                // 塔特效
 #ifndef _DEBUG__
-#define _VMP_                        //VMP功能开启
 // #define _ANTI_DEBUG_               // 反调试: 测试版本注释, 正式版本开启.
 #else
 #define _CMD_MODE                    // 调试模式
@@ -670,4 +669,3 @@ unsigned int TimeGetTime(void);
 #define EXPRESSION_NOID_NUM ( EXPRESSION_NOID_END - EXPRESSION_NOID_START )
 #define    _SUNDAY_STR_SEARCH       // SUNDAY字符串匹配算法, 比KMP速度更快的算法
 #endif
-

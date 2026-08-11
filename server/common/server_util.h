@@ -14,8 +14,9 @@
 #define GMSV_SERVER_MAXLSRPCARGS 14
 
 void GetMessageInfo(int *id, char *function_name, const int max_len,
-                    const char **token_list);
-void SplitString(char *src, WorkSpace *ws);
+                    char *const *token_list);
+/* Returns the token count, or -1 when the message exceeds the token limit. */
+int SplitString(char *src, WorkSpace *ws);
 unsigned GetNewMessageID(void);
 void CreateHeader(char *out, const char *fname);
 void CreateHeaderID(char *out, const unsigned msg_id, const char *fname);

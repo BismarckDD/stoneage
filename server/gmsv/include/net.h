@@ -28,6 +28,7 @@ typedef enum {
   WHILELOSTCHARDELETE,      /*  */
   WHILECLOSEALLSOCKETSSAVE, /* closeallsockets, 什么时候会有这个状态??? */
   WHILESAVEWAIT,            /* */
+  WHILEAUTH,                /* waiting for SAAC account authentication */
 } LoginType;
 
 typedef enum {

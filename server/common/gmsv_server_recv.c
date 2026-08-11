@@ -58,12 +58,16 @@ static int Callfromcli_Util_getTargetCharaindex(int fd, int to_index) {
 
 void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
                                  int servid, char *Newip) {
-  if (CONNECT_getState(fd) == NULLCONNECT) {
-    CONNECT_setState(fd, NOTLOGIN);
+  if (CONNECT_getState(fd) != NULLCONNECT) {
+    print("\n unexpected ClientLogin state fd=%d state=%d", fd,
+          CONNECT_getState(fd));
+    return;
   }
   // ttom avoid the restore 2001/01/09
-  if (CONNECT_isNOTLOGIN(fd) == FALSE) {
-    print("\n the Client had Logined fd=%d", fd);
+  if (cdkey == NULL || passwd == NULL || cdkey[0] == '\0' ||
+      passwd[0] == '\0' || strlen(cdkey) >= CDKEYLEN ||
+      strlen(passwd) >= PASSWDLEN) {
+    GmsvServer_ClientLogin_send(fd, "no");
     return;
   }
   if (checkStringErr(cdkey))
@@ -99,7 +103,7 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
     int res;
     if (strlen(cdkey) == 0 || strlen(passwd) == 0 || strlen(ip) == 0) {
       // print("Cannot login due to empty cdkey, passwd, ip.\n");
-      GmsvServer_ClientLogin_send(fd, NO);
+      GmsvServer_ClientLogin_send(fd, "no");
       CONNECT_endOne_debug(fd);
       return;
     }
@@ -149,9 +153,12 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
   }
 #endif
 #ifdef _NEWCLISETMAC
-  SaacClient_ACCharLogin_send(acfd, fd, cdkey, passwd, ip, mac);
+  CONNECT_setState(fd, WHILEAUTH);
+  SaacClient_ACCharLogin_send(acfd, CONNECT_getFdid(fd), cdkey, passwd, ip,
+                              mac);
 #else
-  SaacClient_ACCharLogin_send(acfd, fd, cdkey, passwd, ip);
+  CONNECT_setState(fd, WHILEAUTH);
+  SaacClient_ACCharLogin_send(acfd, CONNECT_getFdid(fd), cdkey, passwd, ip);
 #endif
 }
 

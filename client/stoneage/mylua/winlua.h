@@ -1,4 +1,3 @@
-﻿#pragma comment(lib, "lua51.lib")
 extern "C" {
 #include "lua/lua.h" 
 #include "lua/lauxlib.h"
@@ -42,4 +41,3 @@ LUALIB_API int luaopen_Data (lua_State *L);
 int FreeGetBattleMap(int floor);
 int CheckPlayOnLine(int index,char * account,char *mac);
 #endif
-

@@ -53,7 +53,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 
 若启用 MSSQL/ODBC，在 Windows 的“ODBC 数据源(64 位)”中创建 DSN，并在
 `acserv.cf` 中提供 `USEMSSQL`、`SQL_DSN` 等参数。不启用时设置
-`USEMSSQL 0`。
+`USEMSSQL 0`。该配置只允许 SAAC 在没有 ODBC 的情况下启动，账号认证会按
+fail-closed 策略拒绝所有玩家登录；需要玩家正常登录时必须启用并正确配置数据库。
 
 ## 4. 启动
 

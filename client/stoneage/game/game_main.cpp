@@ -24,7 +24,6 @@
 #include "NewProto/autil.h"
 #include "NewProto/protocol.h"
 #include "systeminc/field.h"
-#include "sdk/VMProtectSDK.h"
 #include <tlhelp32.h>
 #ifdef _OPTIMIZATIONFLIP_
 #include <thread> 
@@ -173,8 +172,6 @@ DWORD WINAPI TestThreadProc(PVOID pParam)
 
 DWORD WINAPI TestThreadProc1(PVOID pParam)
 {
-    if (VMProtectIsDebuggerPresent(true)) ExitProcess(NULL);
-    if (VMProtectIsVirtualMachinePresent()) ExitProcess(NULL);
     extern BOOL IsContainsProcess(char* strProName, BOOL 判断 = 1);
     if (IsContainsProcess("多窗口", 0) || IsContainsProcess("同步", 0) ||
         IsContainsProcess("SbieSvc.exe")||IsContainsProcess("SbieCtrl.exe"))  ExitProcess(NULL);
@@ -1449,4 +1446,3 @@ void InitConsoleWindow(void)
 }
 
 #endif
-

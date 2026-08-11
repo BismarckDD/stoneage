@@ -394,8 +394,6 @@ char *descape_string(WorkSpace *ws, const char *a) {
   return ws->escape_work;
 }
 
-#define TOKEN_LIST_LEN 32
-#define TOKEN_LEN 1024
 #define FREE(x) if (x != NULL) free(x);
 
 int InitWorkSpace(WorkSpace *ws, int (*write_func)(int, char*, int),
@@ -420,19 +418,11 @@ int InitWorkSpace(WorkSpace *ws, int (*write_func)(int, char*, int),
     }
     memset(ws->string_buffer[i], 0, ws->work_buf_size);
   }
-  ws->token_list = (char **)calloc(1, TOKEN_LIST_LEN * sizeof(char **));
+  /* One additional slot is reserved for the terminating NULL pointer. */
+  ws->token_list =
+      (char **)calloc(WORKSPACE_TOKEN_CAPACITY + 1, sizeof(*ws->token_list));
   if (ws->token_list == NULL)
     return -1;
-  for (i = 0; i < TOKEN_LIST_LEN; ++i) {
-    ws->token_list[i] = (char *)calloc(1, TOKEN_LEN);
-    if (ws->token_list[i] == NULL) {
-      for (j = 0; j < i; ++j) {
-        FREE(ws->token_list[j]);
-      }
-      return -1;
-    }
-    memset(ws->token_list[i], 0, TOKEN_LEN);
-  }
   ws->work = (char *)calloc(1, ws->work_buf_size);
   ws->array_work = (char *)calloc(1, ws->work_buf_size);
   ws->escape_work = (char *)calloc(1, ws->work_buf_size);
@@ -474,9 +464,6 @@ void FreeWorkSpace(WorkSpace *ws) {
   FREE(ws->array_work);
   FREE(ws->escape_work);
   FREE(ws->val_str);
-  for (i = 0; i < TOKEN_LIST_LEN; i++) {
-    FREE(ws->token_list[i]);
-  }
   FREE(ws->token_list);
   FREE(ws->crypt_work);
   FREE(ws->jencode_copy);

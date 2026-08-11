@@ -17,7 +17,7 @@ static void EncodeString(char *src, char *out, int maxoutlen);
 #endif
 
 void GetMessageInfo(int *id, char *function_name, const int len,
-                    const char **token_list) {
+                    char *const *token_list) {
   if (token_list[0] == NULL || token_list[1] == NULL) {
     *id = 0;
     strcpysafe(function_name, len, "");
@@ -28,23 +28,33 @@ void GetMessageInfo(int *id, char *function_name, const int len,
   return;
 }
 
-void SplitString(char *src, WorkSpace *ws) {
+int SplitString(char *src, WorkSpace *ws) {
   int i, c = 0;
   char *decoded;
+  if (src == NULL || ws == NULL || ws->token_list == NULL)
+    return -1;
 #ifdef SERVER_ENCRYPT
   decoded = ws->crypt_work;
   DecodeString(src, decoded);
 #else
   decoded = src;
 #endif
+  memset(ws->token_list, 0,
+         (WORKSPACE_TOKEN_CAPACITY + 1) * sizeof(*ws->token_list));
   // TODO: log decoded string.
   for (i = 0;; i++) {
     if (decoded[i] == '\0')
       break;
     if (i == 0) {
+      if (c >= WORKSPACE_TOKEN_CAPACITY)
+        return -1;
       ws->token_list[c++] = &(decoded[i]);
     }
     if (decoded[i] == ' ') {
+      if (c >= WORKSPACE_TOKEN_CAPACITY) {
+        ws->token_list[0] = NULL;
+        return -1;
+      }
       ws->token_list[c++] = &(decoded[i + 1]);
     }
   }
@@ -54,6 +64,7 @@ void SplitString(char *src, WorkSpace *ws) {
     decoded++;
   }
   ws->token_list[c] = (char *)NULL;
+  return c;
 }
 
 unsigned GetNewMessageID() {

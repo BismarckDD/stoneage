@@ -618,7 +618,10 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
   int msgid;
   char funcname[255];
   strcpysafe(ws->work, ws->work_buf_size, line);
-  SplitString(ws->work, ws);
+  if (SplitString(ws->work, ws) < 2) {
+    saacretfunc[0] = '\0';
+    return -1;
+  }
   GetMessageInfo(&msgid, funcname, sizeof(funcname), ws->token_list);
   strcpy(saacretfunc, funcname);
 #ifdef _ABSOLUTE_DEBUG

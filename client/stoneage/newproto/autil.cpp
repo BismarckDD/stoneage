@@ -12,7 +12,6 @@
 #include "autil.h"
 #include "systeminc/chat.h"
 #include "systeminc/font.h"
-#include "sdk/VMProtectSDK.h"
 #ifdef __STONEAGE
 #include "version.h"
 #include "systeminc/lssproto_util.h"
@@ -199,20 +198,10 @@ void stringtohexstr(char* dst, char* src,int len)
 
 void util_EncodeMessageTea(char *t2,char *t1)
 {
-#ifdef _VMP_
-    VMProtectBegin("util_EncodeMessageTea");
-#endif
     int len = strlen(t1);
     len = len%4?len/4+1:len/4;
-#ifdef _VMP_
-    tea_encrypt((long*)t1,len,(long *)VMProtectDecryptStringA(DENGLUKEY1));
-#else
     tea_encrypt((long*)t1,len,(long *)DENGLUKEY1);
-#endif
     stringtohexstr(t2,t1,len*4);
-#ifdef _VMP_
-    VMProtectEnd();
-#endif
 }
 #endif
 
@@ -222,9 +211,6 @@ void util_EncodeMessageTea(char *t2,char *t1)
 // arg: fd=socket fd   func=function ID   buffer=data to send
 void util_SendMesg(int fd, int func, char *buffer)
 {
-#ifdef _VMP_
-VMProtectBegin("util_SendMesg");
-#endif
   char t1[16384], t2[16384];
 
   sprintf_s(t1, sizeof(t1),"(&;%d%s;#;", func+13, buffer);
@@ -236,9 +222,6 @@ VMProtectBegin("util_SendMesg");
 
 #ifdef __STONEAGE
   lssproto_Send(fd, t2);
-#endif
-#ifdef _VMP_
-  VMProtectEnd();
 #endif
 }
 
@@ -958,4 +941,3 @@ void getStrSplitNew( char str[][256])
 }
 
 #endif
-

@@ -23,6 +23,9 @@ char result[CHARDATASIZE];
 
 // Spock +1 2000/11/1
 #define MAX_PROCESS 16777216
+#define SAAC_PASSWORD_MAX 32
+#define SAAC_IP_MAX 45
+#define SAAC_MAC_MAX 127
 #if _ATTESTAION_ID == 1
 void SaacServer_ACServerLogin_recv(const int ti, const int id,
                                    const char *servername,
@@ -1553,7 +1556,14 @@ void SaacServer_ACCharLogin_recv(int fd, int clifd, char *id, char *pas,
 ) {
   int res;
 #ifdef _SASQL
-  if (strlen(id) == 0 || strlen(pas) == 0 || strlen(ip) == 0) {
+  if (id == NULL || pas == NULL || ip == NULL || strlen(id) == 0 ||
+      strlen(id) >= USERID_MAX || strlen(pas) == 0 ||
+      strlen(pas) > SAAC_PASSWORD_MAX || strlen(ip) == 0 ||
+      strlen(ip) > SAAC_IP_MAX
+#ifdef _NEWCLISETMAC
+      || mac == NULL || strlen(mac) > SAAC_MAC_MAX
+#endif
+  ) {
     printf("登陆信息有错误！\n");
     SaacServer_ACCharLogin_send(fd, clifd, 1);
     return;

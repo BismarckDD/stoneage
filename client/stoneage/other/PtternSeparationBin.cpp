@@ -9,7 +9,6 @@
 #include "game/anim_tbl.h"
 #include "PtternSeparationBin.h"
 #include "wgs/tea.h"
-#include "sdk/VMProtectSDK.h"
 extern ADRNBIN adrnbuff[MAX_GRAPHICS];
 extern unsigned long bitmapnumbertable[MAX_GRAPHICS];
 extern SPRITEDATA SpriteData[mxSPRITE];
@@ -128,4 +127,3 @@ BOOL AdrnInit(LPCTSTR strAdrnFileName, LPCTSTR strRealFileName, int index)
 }
 
 #endif
-
