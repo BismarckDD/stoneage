@@ -285,7 +285,7 @@ void NPC_FMPKCallManWindowTalked( int meindex, int talkerindex,
 	  	{
 	  	   	GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE,
 	  	   		WINDOW_BUTTONTYPE_OK, -1, -1,
-	  	   		makeEscapeString("\n召唤中・・・请稍候！\n＠＃＄％↑＆＊・・・", buf, sizeof(buf)));
+	  	   		makeEscapeString("\n召唤中···请稍候！\n＠＃＄％↑＆＊···", buf, sizeof(buf)));
 	  		NPC_CallFMMember(meindex,
 	  			CHAR_getInt(talkerindex, CHAR_FLOOR),
 	  			CHAR_getInt(talkerindex, CHAR_FMINDEX),

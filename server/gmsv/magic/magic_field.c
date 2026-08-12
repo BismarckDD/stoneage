@@ -52,7 +52,7 @@ int MAGIC_Recovery_Field(int char_index, int magic_index) {
       }
     }
   }
-  snprintf(msgbuf, sizeof(msgbuf), "恢复生命%d",
+  snprintf(msgbuf, sizeof(msgbuf), "耐久力回复%d",
            min(workhp, CHAR_getWorkInt(char_index, CHAR_WORKMAXHP)) - prevhp);
   CHAR_talkToCli(char_index, -1, msgbuf, CHAR_COLORWHITE);
   return TRUE;
@@ -101,13 +101,13 @@ int MAGIC_OtherRecovery_Field(int from_char_index, int to_char_index,
   if (from_char_index != to_char_index) {
     // 施术者为其他玩家恢复生命
     snprintf(
-        msgbuf, sizeof(msgbuf), "%s恢复生命%d", CHAR_getUseName(to_char_index),
+        msgbuf, sizeof(msgbuf), "%s的耐久力回复%d", CHAR_getUseName(to_char_index),
         min(workhp, CHAR_getWorkInt(to_char_index, CHAR_WORKMAXHP)) - prevhp);
     CHAR_talkToCli(from_char_index, -1, msgbuf, CHAR_COLORWHITE);
 
     if (CHAR_getInt(to_char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
       // 受术者同样显示
-      snprintf(msgbuf, sizeof(msgbuf), "玩家%s为你恢复生命%d",
+      snprintf(msgbuf, sizeof(msgbuf), "藉由%s耐久力回复%d",
                CHAR_getUseName(from_char_index),
                min(workhp, CHAR_getWorkInt(to_char_index, CHAR_WORKMAXHP)) -
                    prevhp);
@@ -115,7 +115,7 @@ int MAGIC_OtherRecovery_Field(int from_char_index, int to_char_index,
     }
   } else {
     // 施术者为自身恢复生命
-    snprintf(msgbuf, sizeof(msgbuf), "恢复生命%d",
+    snprintf(msgbuf, sizeof(msgbuf), "耐久力回复%d",
              min(workhp, CHAR_getWorkInt(from_char_index, CHAR_WORKMAXHP)) -
                  prevhp);
     CHAR_talkToCli(from_char_index, -1, msgbuf, CHAR_COLORWHITE);

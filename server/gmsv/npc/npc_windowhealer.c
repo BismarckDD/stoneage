@@ -143,7 +143,7 @@ static void NPC_WindowHealer_selectWindow( int meindex, int toindex, int num)
 		sprintf(token," 　　　哎呀！你受伤了吗？　 \n\n "
 				  "　　　　　　 ＜ 耐久力回复＞　　　　　 \n"
 					" 　　　　　　＜  气力回复 ＞　　　　　 \n"
-					" 　　　　 ＜ 耐久力・气力回复 ＞　　 \n\n"
+					" 　　　　 ＜ 耐久力·气力回复 ＞　　 \n\n"
 				  " 　　　　　 ＜宠物回复(免费)＞　　　　 "
 			);
 

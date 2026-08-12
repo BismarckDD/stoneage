@@ -98,7 +98,7 @@ BOOL MAP_readMapConfFile(char *filename) {
     file = fopen(filename, "r");
   }
   if (file == NULL) {
-    fprint("�޷����ļ� %s\n", filename);
+    fprint("无法打开文件 %s\n", filename);
     return FALSE;
   }
   while (fgets(line, sizeof(line), file)) {
@@ -134,7 +134,7 @@ BOOL MAP_readMapConfFile(char *filename) {
   for (i = 0; i < arraysizeof(MAP_imgfilt); i++)
     MAP_imgfilt[i] = -1;
   if (fseek(file, 0, SEEK_SET) != 0) {
-    fprint("�޷����� SEEK_SET %s\n", strerror(errno));
+    fprint("无法查找 SEEK_SET %s\n", strerror(errno));
     return FALSE;
   }
   while (fgets(line, sizeof(line), file)) {
@@ -230,7 +230,7 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
     file = fopen(filename, "r");
   }
   if (file == NULL) {
-    fprint("�޷��� %s\n", filename);
+    fprint("无法打开 %s\n", filename);
     return FALSE;
   }
 
@@ -262,7 +262,7 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
       for (i = 0; i < iRet; i++) {
         BattleMapNo[i] = iPre[i];
         if (BattleMapNo[i] < 0) {
-          print("!!!!!���� ս����ͼ����Ϊ��ֵ (%s)( line %d )\n", filename, linenum);
+          print("!!!!!错误 战斗地图号码为负值 (%s)( line %d )\n", filename, linenum);
         }
       }
 
@@ -272,7 +272,7 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
       continue;
     }
     if (iWork < 0) {
-      print("!!!!!���� ��Ǯ����Ϊ��ֵ (%s)( line %d )\n", filename, linenum);
+      print("!!!!!错误 金钱号码为负值 (%s)( line %d )\n", filename, linenum);
       continue;
     }
     iFirst = iWork;
@@ -284,7 +284,7 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
         iLast = iWork;
       }
       if (iWork < 0) {
-        print("!!!!!���� ��Ǯ����Ϊ��ֵ (%s)( line %d )\n", filename, linenum);
+        print("!!!!!错误 金钱号码为负值 (%s)( line %d )\n", filename, linenum);
         continue;
       }
     } else {
@@ -293,12 +293,12 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
 
     for (i = iFirst; i <= iLast; i++) {
       if (MAP_getImageInt(i, MAP_SETED_BATTLEMAP) > 0) {
-        print("!!!!!���� ��ͬ��Ǯ�ظ��趨������(%s)( line %d )(%d)(%d & %d)\n",
+        print("!!!!!错误 相同金钱重复设定了两次(%s)( line %d )(%d)(%d & %d)\n",
               filename, linenum, i, MAP_getImageInt(i, MAP_BATTLEMAP),
               BattleMapNo[0]);
       }
 
-      //   �  į�����о���
+      //   飓  寞恳仄中井＂
       if (IsValidImagenumber(i) == FALSE) {
         continue;
       }
@@ -314,7 +314,7 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
     if (MAP_imgfilt[j] == -1)
       continue;
     if (MAP_getImageInt(j, MAP_SETED_BATTLEMAP) == 0) {
-      print("!!!!!���� ��Ǯ(%d)��δ�趨 (%s)\n", j, filename);
+      print("!!!!!错误 金钱(%d)尚未设定 (%s)\n", j, filename);
     }
   }
   return TRUE;
@@ -415,9 +415,9 @@ FCLOSERETURNTRUE:
 
 BOOL MAP_readMapOne(char *filename) {
   FILE *f;
-  char buf[16]; /*  Ѩ�����͹ϼ����  ����  */
-  short data[1024]; /*  �������  ������������  */
-  int ret;          /*  ߯Ի��������Ի��        */
+  char buf[16]; /*  穴斥永弁瓜件田□  心迕  */
+  short data[1024]; /*  扑亦□玄  心迕田永白央  */
+  int ret;          /*  忒曰袄熬仃潸曰迕        */
   int i;
   int mapindex;
   int id = 0, xsiz = 0, ysiz =  0;
@@ -425,13 +425,12 @@ BOOL MAP_readMapOne(char *filename) {
   unsigned short *tile = NULL;
   unsigned short *obj = NULL;
   MAP_Objlink **olink = NULL;
-  char showstring[32]; /*  Ѩ���󷸡���������ɡ  ����
-                        */
-  struct stat filestat; /*  ���������ñ�����    */
+  char showstring[32]; /*  穴永皿犯□正及域凛伞  桦赭  */
+  struct stat filestat; /*  民尼永弁迕卞银丹    */
   BOOL invaliddata = FALSE;
 
   if (MAP_mapnum_index >= MAP_mapnum) {
-    fprint("����û���㹻�ռ�װ�ص�ͼ����.\n");
+    fprint("这里没有足够空间装载地图数组.\n");
     return FALSE;
   }
   mapindex = MAP_mapnum_index;
@@ -483,7 +482,7 @@ BOOL MAP_readMapOne(char *filename) {
   ysiz = ntohs(data[0]);
   tile = allocateMemory(sizeof(unsigned short) * xsiz * ysiz);
   if (tile == NULL) {
-    fprint("�޷������ڴ����ͼ����:%s xsiz:%d "
+    fprint("无法为地图分配内存：%s xsiz:%d "
            "ysiz:%d\n",
            filename, xsiz, ysiz);
     goto FREEOBJHP;
@@ -491,13 +490,13 @@ BOOL MAP_readMapOne(char *filename) {
 
   obj = allocateMemory(sizeof(unsigned short) * xsiz * ysiz);
   if (obj == NULL) {
-    fprint("�޷������ڴ������\n");
+    fprint("无法分配内存给对象\n");
     goto FREETILE;
   }
 
   olink = allocateMemory(sizeof(MAP_Objlink *) * xsiz * ysiz);
   if (olink == NULL) {
-    fprint("�޷������ڴ������\n");
+    fprint("无法分配内存给链接\n");
     goto FREEOBJ;
   }
 
@@ -512,13 +511,13 @@ BOOL MAP_readMapOne(char *filename) {
     tile[i] = ntohs(tile[i]);
 
     if (!IsValidImagenumber(tile[i])) {
-      fprint("��ͼ��ͼƬ������:%d x:%d y:%d ����:%d\n", id, i % xsiz,
+      fprint("地图的图片有问题:%d x:%d y:%d 数量:%d\n", id, i % xsiz,
              (int)(i / xsiz), tile[i]);
       invaliddata = TRUE;
     }
     /*
     else{
-        fprint("��ͼ��ͼƬΪ:%d x:%d y:%d ����:%d\n",
+        fprint("地图的图片为:%d x:%d y:%d 数量:%d\n",
             id, i % xsiz, (int)(i / xsiz) , tile[i]);
 
     }
@@ -534,7 +533,7 @@ BOOL MAP_readMapOne(char *filename) {
   for (i = 0; i < xsiz * ysiz; i++) {
     obj[i] = ntohs(obj[i]);
     if (!IsValidImagenumber(obj[i])) {
-      fprint("��ͼ��ͼƬ������:%d x:%d y:%d ����:%d\n", id, i % xsiz,
+      fprint("地图的图片有问题:%d x:%d y:%d 数量:%d\n", id, i % xsiz,
              (int)(i / xsiz), obj[i]);
       invaliddata = TRUE;
     }
@@ -591,7 +590,7 @@ BOOL MAP_readMapOne(char *filename) {
       // Nuke 1204: Bug fix
       fclose(fp);
     } else {
-      print("\n **����** �Ҳ��� map_noexit.txt �ļ�!!!");
+      print("\n **错误** 找不到 map_noexit.txt 文件!!!");
     }
   }
 #endif
@@ -1143,12 +1142,12 @@ BOOL MAP_removeObj(int floor, int x, int y, int objindex) {
 
   mapindex = MAP_getfloorIndex(floor);
   if (mapindex == -1) {
-    print("%s:%d:����\n", __FILE__, __LINE__);
+    print("%s:%d:错误\n", __FILE__, __LINE__);
     return FALSE;
   }
   xsiz = MAP_map[mapindex].xsiz;
   if (0 > x || x >= xsiz || 0 > y || y >= MAP_map[mapindex].ysiz) {
-    print("%s:%d:���� ��ͼ��[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__, floor, x,
+    print("%s:%d:错误 地图号[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__, floor, x,
           y);
     return FALSE;
   }
@@ -1166,7 +1165,7 @@ BOOL MAP_removeObj(int floor, int x, int y, int objindex) {
     last = c;
     c = c->next;
   }
-  print("%s:%d:�����ͼ��[%d]\n", __FILE__, __LINE__, floor);
+  print("%s:%d:错误地图号[%d]\n", __FILE__, __LINE__, floor);
   return FALSE;
 }
 
@@ -1181,13 +1180,13 @@ BOOL _MAP_objmove(char *file, int line, int objindex, int ofloor, int ox,
 
   oldmapindex = MAP_getfloorIndex(ofloor);
   if (oldmapindex == -1) {
-    print("%s:%d:���� ��ͼ��[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__, ofloor,
+    print("%s:%d:错误 地图号[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__, ofloor,
           ox, oy);
     return FALSE;
   }
   oldxsiz = MAP_map[oldmapindex].xsiz;
   if (0 > ox || ox >= oldxsiz || 0 > oy || oy >= MAP_map[oldmapindex].ysiz) {
-    print("%s:%d:���� ��ͼ��[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__, ofloor,
+    print("%s:%d:错误 地图号[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__, ofloor,
           ox, oy);
     return FALSE;
   }
@@ -1208,7 +1207,7 @@ BOOL _MAP_objmove(char *file, int line, int objindex, int ofloor, int ox,
     c = c->next;
   }
   if (!pointer) {
-    //    print( "\n%s:%d:����( %d,%d,%d )->(%d,%d,%d)\n", __FILE__, __LINE__,
+    //    print( "\n%s:%d:错误( %d,%d,%d )->(%d,%d,%d)\n", __FILE__, __LINE__,
     //    ofloor, ox, oy, nfloor, nx, ny );
     return FALSE;
   }
@@ -1223,14 +1222,14 @@ BOOL _MAP_objmove(char *file, int line, int objindex, int ofloor, int ox,
     } else {
       newmapindex = MAP_getfloorIndex(nfloor);
       if (newmapindex == -1) {
-        print("%s:%d:���� ��ͼ��[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__,
+        print("%s:%d:错误 地图号[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__,
               nfloor, nx, ny);
         return FALSE;
       }
       newxsiz = MAP_map[newmapindex].xsiz;
     }
     if (0 > nx || nx >= newxsiz || 0 > ny || ny >= MAP_map[newmapindex].ysiz) {
-      print("%s:%d:���� ��ͼ��[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__, nfloor,
+      print("%s:%d:错误 地图号[%d] x:[%d] y:[%d]\n", __FILE__, __LINE__, nfloor,
             nx, ny);
       return FALSE;
     }
@@ -1249,7 +1248,7 @@ BOOL _MAP_objmove(char *file, int line, int objindex, int ofloor, int ox,
     c->next->next = NULL;
     return TRUE;
   }
-  print("%s:%d:����\n", __FILE__, __LINE__);
+  print("%s:%d:错误\n", __FILE__, __LINE__);
   return FALSE;
 }
 
@@ -1381,11 +1380,11 @@ void MAP_sendAroundMapdata(int fl, int fromx, int fromy) {
       }
     }
   } else {
-    print("��ͼ���ݴ��� %s:%d \n", __FILE__, __LINE__);
+    print("地图数据错误 %s:%d \n", __FILE__, __LINE__);
   }
 }
 
-#ifdef _STATUS_WATERWORD // ˮ����״̬
+#ifdef _STATUS_WATERWORD // 水世界状态
 int MAP_getMapFloorType(int floor) {
   int i = 0;
   int WaterWord[] = {8101, 8015, 8029, 8028, 8027, 817,
@@ -1484,8 +1483,7 @@ int MAP_savePlayerMap(int char_index, int ff, int fx, int fy, int tile,
       if (strcmp(CHAR_getChar(char_index, CHAR_CDKEY), PlayerDiyMap[i].cdkey) !=
           0) {
         CHAR_talkToCli(char_index, -1,
-                       "�õ�ͼ��������ģ����޷��ڴ�DIY.."
-                       ".",
+                       "该地图属于其他玩家，无法在此进行 DIY。",
                        CHAR_COLORRED);
       }
       if (tile != -1) {
@@ -1525,7 +1523,7 @@ int MAP_getfloorId(int index) {
 BOOL MAP_SetExWarp(int mapid, int fl, int x, int y, int type) {
   const int tomapindex = MAP_getfloorIndex(mapid);
   if (tomapindex == -1) {
-    print("�Ҳ���Ŀ���ͼ����ȷ�ϵ�ͼID�Ƿ���ȷ��\n");
+    print("找不到目标地图，请确认地图ID是否正确！\n");
     return FALSE;
   }
 
@@ -1538,49 +1536,49 @@ int MAP_makenew(int mapid, char *map_name) {
   int mymapid = -1;
   int tomapindex = -1, makemapindex = -1, i, j;
   if ((tomapindex = MAP_getfloorIndex(mapid)) == -1) {
-    print("�Ҳ���Ŀ���ͼ����ȷ�ϵ�ͼID�Ƿ���ȷ��\n");
+    print("找不到目标地图，请确认地图ID是否正确！\n");
     return -1;
   }
   int mapstartid = getCopymapstartingID();
-  for (j = mapstartid; j < mapstartid + 9999; j++) // ����һ����ͼID
+  for (j = mapstartid; j < mapstartid + 9999; j++) // 分配一个地图ID
   {
-    for (i = 0; i < MAP_mapnum_index; i++) // �������е�ͼ��ID
+    for (i = 0; i < MAP_mapnum_index; i++) // 遍历所有地图号ID
     {
       if (MAP_map[i].id == j)
-        break; // �����ͼID�Ա�ʹ��
+        break; //如果地图ID以被使用
     }
-    if (i == MAP_mapnum_index) { // û��ʹ�ù��ĵ�ͼID
+    if (i == MAP_mapnum_index) { // 没被使用过的地图ID
       mymapid = j;
       break;
     }
   }
   if (mymapid == -1) {
-    print("������ͼID�Ե������ޣ���ע�⼰ʱ�ͷ�һЩ����Ҫ�ĵ�ͼ\n");
+    print("副本地图ID以到达上限，请注意及时释放一些不必要的地图\n");
     return -1;
   }
   for (i = 0; i < MAP_mapnum_index; ++i)
     if (MAP_map[i].id == 0)
       break;
   makemapindex = i;
-  if (makemapindex >= MAP_mapnum) { // û���㹻�Ŀռ�װ���µĵ�ͼ������10���µĿռ���װ�µ�ͼ��
-    //    print( "û���㹻���ڴ棬���·����ڴ档\n");
-    MAP_Map *MAP_map2; // �������������
+  if (makemapindex >= MAP_mapnum) { // 没有足够的空间装载新的地图，开辟10个新的空间来装新地图。
+    //    print( "没有足够的内存，重新分配内存。\n");
+    MAP_Map *MAP_map2; // 用来保存旧数据
     MAP_map2 = allocateMemory(sizeof(MAP_Map) * MAP_mapnum);
     if (MAP_map2 == 0) {
-      print("�����ͼʧ�ܣ�\n");
+      print("缓存地图失败！\n");
       return -1;
     }
-    memcpy(MAP_map2, MAP_map, sizeof(MAP_Map) * MAP_mapnum); // ����֮ǰ������
-    freeMemory(MAP_map); // �ͷŵ�������
+    memcpy(MAP_map2, MAP_map, sizeof(MAP_Map) * MAP_mapnum); // 保存之前的数据
+    freeMemory(MAP_map); // 释放掉旧资料
     MAP_map = 0;
     MAP_mapnum += 100;
-    MAP_map = allocateMemory(sizeof(MAP_Map) * MAP_mapnum); // ���¸���ͼ�����ڴ�
+    MAP_map = allocateMemory(sizeof(MAP_Map) * MAP_mapnum); // 重新给地图分配内存
     if (MAP_map == 0) {
-      print("���·����ͼ�ڴ�ʧ�ܣ�\n");
+      print("重新分配地图内存失败！\n");
       return -1;
     }
     memcpy(MAP_map, MAP_map2,
-           sizeof(MAP_Map) * (MAP_mapnum - 100)); // ����֮ǰ������
+           sizeof(MAP_Map) * (MAP_mapnum - 100)); //保存之前的数据
     freeMemory(MAP_map2);
     MAP_map2 = 0;
   }
@@ -1589,9 +1587,9 @@ int MAP_makenew(int mapid, char *map_name) {
   MAP_Objlink **olink;
   int xy = MAP_map[tomapindex].xsiz * MAP_map[tomapindex].ysiz;
   tile = allocateMemory(sizeof(short) * MAP_map[tomapindex].xsiz *
-                        MAP_map[tomapindex].ysiz); // �����ͼ�ڴ�
+                        MAP_map[tomapindex].ysiz); //分配地图内存
   if (tile == NULL) {
-    print("�޷������ڴ����ͼͼ��\n");
+    print("无法分配内存给地图图层\n");
     return -1;
   }
 
@@ -1644,21 +1642,21 @@ int MAP_makenew(int mapid, char *map_name) {
 BOOL MAP_DelMap(int mapid) {
   int tomapindex = -1;
   if ((tomapindex = MAP_getfloorIndex(mapid)) == -1) {
-    print("�Ҳ���Ŀ���ͼ����ȷ�ϵ�ͼID�Ƿ���ȷ��\n");
+    print("找不到目标地图，请确认地图ID是否正确！\n");
     return FALSE;
   }
-  int mapstartid = getCopymapstartingID(); // ��ø�����ͼ��ʼID
+  int mapstartid = getCopymapstartingID(); // 获得副本地图起始ID
   if (mapid > mapstartid + 9999 || mapid < mapstartid) {
-    print("ֻ���ͷŸ�����ͼ(%d-%d)��\n", mapstartid, mapstartid + 9999);
+    print("只能释放副本地图(%d-%d)。\n", mapstartid, mapstartid + 9999);
     return FALSE;
   }
   MAP_map[tomapindex].id = 0;
   if (MAP_map[tomapindex].tile != 0)
-    freeMemory(MAP_map[tomapindex].tile); // �ͷŵ�������
+    freeMemory(MAP_map[tomapindex].tile); //释放掉旧资料
   if (MAP_map[tomapindex].obj != 0)
-    freeMemory(MAP_map[tomapindex].obj); // �ͷŵ�������
-  freeMemory(MAP_map[tomapindex].olink); // �ͷŵ�������
-  MAP_map[tomapindex].startpoint = -1; // �ͷ��˳���ͼ���͵�
+    freeMemory(MAP_map[tomapindex].obj); //释放掉旧资料
+  freeMemory(MAP_map[tomapindex].olink); // 释放掉旧资料
+  MAP_map[tomapindex].startpoint = -1; // 释放退出地图传送点
   MAP_map[tomapindex].MapType = 0;
   MAP_idjumptbl[mapid] = -1;
   return TRUE;

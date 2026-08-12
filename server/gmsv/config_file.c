@@ -33,14 +33,14 @@ typedef struct tagServerConfig {
   // Arminius 7.24 manor pk
   char game_server_id[32];     // game server chinese id
   unsigned short allowmanorpk; // is this server allow manor pk
-  unsigned short port; /* �ӡ��Ｐ���а���̡��� */
-  int servernumber;    /* �ء�ة�ӡ��Ｐ  į */
+  unsigned short port; /* 扔□田及谨切熬仃禾□玄 */
+  int servernumber;    /* 必□丞扔□田及  寞 */
   int reuse_addr;      /* Address already used... */
-  int do_nodelay;      /* TCP_NODELAY �����¾������� */
+  int do_nodelay;      /* TCP_NODELAY 卞允月井升丹井 */
   int log_write_time;  /* */
   int log_io_time;     /* I/O */
   int log_game_time;   /* */
-  int log_netloop_faster;    /* netloop_faster ����� */
+  int log_netloop_faster;    /* netloop_faster 及夫弘 */
   int saacwritenum;          /* */
   int saacreadnum;           /* */
   unsigned short fdnum;      /* fd num: < 65536, unsigned short is enough. */
@@ -59,24 +59,24 @@ typedef struct tagServerConfig {
   char battlemapfile[64];   /* data/map/ */
   char itemfile[64];        /* data/itemfile.txt */
   char invfile[64];         /* */
-  char appearfile[64];      /* ������  ɬ�ð����̻�  */
-  char titlenamefile[64];   /* ��į�����̻�   */
-  char titleconfigfile[64]; /* ��įɬ�ð����̻�   */
+  char appearfile[64];      /* 请蜇匏  涩烂白央奶伙  */
+  char titlenamefile[64];   /* 惫寞白央奶伙   */
+  char titleconfigfile[64]; /* 惫寞涩烂白央奶伙   */
   char encountfile[64];
   char enemybasefile[64]; /* pet base config file */
   char enemyfile[64];     /* pet base info file */
   char groupfile[64];     /* enemy group config file */
   char magicfile[64];     /* */
 #ifdef _ATTACK_MAGIC
-  char attmagicfile[64]; // ����������
+  char attmagicfile[64]; // 攻击性咒术
 #endif
-  char petskillfile[64]; /* ʸ����  ����ɬ�ð����̻�   */
-  char itematomfile[64]; /* ʧ��  ة����    �����̻� */
-  char effectfile[64];   /* ����ɬ�ð����̻�  */
-  char quizfile[64];     /* ������ɬ�ð����̻�  */
-  char lsgenlog[64]; /*�ӡ��Ｐlsgen ʧ���������������̻�  */
-  char storedir[64]; /*����ʧ��ū��������    */
-  char npcdir[64]; /*NPC��ɬ�ð����̻�ë  �ʷ�ū��������   */
+  char petskillfile[64]; /* 矢永玄  热诸涩烂白央奶伙   */
+  char itematomfile[64]; /* 失奶  丞及笺    白央奶伙 */
+  char effectfile[64];   /* 梢请涩烂白央奶伙  */
+  char quizfile[64];     /* 弁奶术涩烂白央奶伙  */
+  char lsgenlog[64]; /*扔□田及lsgen 失它玄皿永玄白央奶伙  */
+  char storedir[64]; /*旦玄失犯奴伊弁玄伉    */
+  char npcdir[64]; /*NPC及涩烂白央奶伙毛  仁犯奴伊弁玄伉   */
   char logdir[64];
   char logconfname[64];
   char chatmagicpasswd[64]; /**/
@@ -487,8 +487,8 @@ typedef struct tagReadConf {
 
 ReadConf gReadConf[] = {
     {"debug_level", NULL, 0, (void *)&gServerConfig.debug_level, CHAR},
-    {"memory_unit", NULL, 0, (void *)&gServerConfig.memory_unit, INT},
-    {"memory_unitnum", NULL, 0, (void *)&gServerConfig.memory_unitnum, INT},
+    {"usememoryunit", NULL, 0, (void *)&gServerConfig.memory_unit, INT},
+    {"usememoryunitnum", NULL, 0, (void *)&gServerConfig.memory_unitnum, INT},
     {"acserv", gServerConfig.account_server_name,
      sizeof(gServerConfig.account_server_name), NULL, 0},
     {"account_server_port", NULL, 0, (void *)&gServerConfig.account_server_port,
@@ -1104,7 +1104,7 @@ void AnnounceToPlayerWN(int fd) {
   struct tm *p;
   p = localtime(&lastleavetime);
 
-  sprintf(token, "���������ʱ�� %d��%d��%d�� %d:%d:%d\n\n%s", p->tm_year + 1900,
+  sprintf(token, "您最后离线时间 %d年%d月%d日 %d:%d:%d\n\n%s", p->tm_year + 1900,
           p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec,
           announcetext);
   GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_LOGINMESSAGE, WINDOW_BUTTONTYPE_OK,
@@ -1146,7 +1146,7 @@ void LoadPetTalk(void) {
     strcpy(pettalktext[i].DATA, "\0");
   }
 
-  print("\nװ�س���Ի��ļ�:%s...", fn);
+  print("\n装载宠物对话文件:%s...", fn);
 
 #ifdef _CRYPTO_DATA
   char realopfile[256];
@@ -1177,7 +1177,7 @@ void LoadPetTalk(void) {
     }
     fclose(fp);
   } else {
-    print("����:�Ҳ����ļ�!");
+    print("错误:找不到文件!");
   }
 
   talkNO = 1;
@@ -1231,7 +1231,7 @@ void LoadPetTalk(void) {
           maxid++;
           fclose(fp);
         } else {
-          print("����:[%s] �Ҳ���!", fn);
+          print("错误:[%s] 找不到!", fn);
           pettalktext[maxid].ID = -1;
         }
       } else {
@@ -1242,7 +1242,7 @@ void LoadPetTalk(void) {
     if (maxid >= PETTALK_MAXID)
       break;
   }
-  print("���ID=%d...", maxid);
+  print("最大ID=%d...", maxid);
   {
     int haveid = 0;
     for (i = 0; i < PETTALK_MAXID; i++) {
@@ -1250,7 +1250,7 @@ void LoadPetTalk(void) {
         haveid++;
       }
     }
-    print("��������=%d", haveid);
+    print("载入总数=%d", haveid);
   }
 }
 
@@ -1295,7 +1295,7 @@ void LoadPetTalk(void) {
     fclose(fp);
     print("\n %s", pettalktext);
   } else {
-    print("\n �����ҵ� pettalk.mem");
+    print("\n 不能找到 pettalk.mem");
   }
 }
 #endif
@@ -1312,7 +1312,7 @@ void Load_GambleBankItems(void) {
   int num, ID, type;
   int i = 0;
   sprintf(filename, "./data/gambleitems.txt");
-  print("\n���ضĲ���Ʒ�ļ� %s ...", filename);
+  print("\n加载赌博物品文件 %s ...", filename);
 #ifdef _CRYPTO_DATA
   char realopfile[256];
   BOOL crypto = FALSE;
@@ -1341,10 +1341,10 @@ void Load_GambleBankItems(void) {
       GB_ITEMS[i].type = type;
       i++;
     }
-    print("���ID: %d ", i);
+    print("最大ID: %d ", i);
     fclose(fp);
   } else {
-    print("���� �Ҳ����ļ� %s", filename);
+    print("错误 找不到文件 %s", filename);
   }
 }
 #endif
@@ -1360,7 +1360,7 @@ void Load_PetSkillCodes(void) {
   int num, ID;
   int i = 0;
   sprintf(filename, "./data/skillcode.txt");
-  print("\n���س��＼�ܱ����ļ�:%s...", filename);
+  print("\n加载宠物技能编码文件:%s...", filename);
 #ifdef _CRYPTO_DATA
   char realopfile[256];
   BOOL crypto = FALSE;
@@ -1391,9 +1391,9 @@ void Load_PetSkillCodes(void) {
     }
     fclose(fp);
   } else {
-    print("�򲻵��ļ� %s", filename);
+    print("打不到文件 %s", filename);
   }
-  print("���\n");
+  print("完成\n");
 }
 #endif
 
@@ -1415,7 +1415,7 @@ BOOL LoadGMSet(char *filename) {
     fp = fopen(filename, "r");
   }
   if (fp == NULL) {
-    print("�޷����ļ�\n");
+    print("无法打开文件\n");
     return FALSE;
   }
   for (i = 0; i < GMMAXNUM; i++) {
@@ -1651,10 +1651,10 @@ void setCDsendinterval_ms(unsigned int interval_ms) {
   gServerConfig.CDsendinterval_ms = interval_ms;
 }
 /*------------------------------------------------------------
- * Onelooptimeë  �£�
- * ¦��
- *  ئ��
- * ߯Ի��
+ * Onelooptime毛  月［
+ * 娄醒
+ *  卅仄
+ * 忒曰袄
  *  unsigned int
  ------------------------------------------------------------*/
 unsigned int getOnelooptime_ms(void) { return gServerConfig.Onelooptime_ms; }
@@ -1797,7 +1797,7 @@ BOOL luareadgServerConfigfile(char *data) {
   int i;
   for (i = 0; i < arraysizeof(gReadConf); i++) {
     if (strcmp(gReadConf[i].name, firstToken) == 0) {
-      char secondToken[256]; /*2    ��  ٯ  */
+      char secondToken[256]; /*2    及  侬  */
       ret = getStringFromIndexWithDelim(data, "=", 2, secondToken,
                                         sizeof(secondToken));
       if (ret == FALSE) {
@@ -2013,7 +2013,7 @@ int getWatchFloor(unsigned int index) {
     return -1;
 }
 char *getWatchFloorCF(void) {
-  return (gServerConfig.watchfloor[0] > 0) ? "��" : "��";
+  return (gServerConfig.watchfloor[0] > 0) ? "是" : "否";
 }
 #endif
 
@@ -2028,7 +2028,7 @@ int getBattleFloor(unsigned int index) {
     return -1;
 }
 char *getBattleFloorCF(void) {
-  return (gServerConfig.battlefloor > 0) ? "��" : "��";
+  return (gServerConfig.battlefloor > 0) ? "是" : "否";
 }
 #endif
 
@@ -2052,7 +2052,7 @@ BOOL LoadMissionList(void) {
     fp = fopen("./data/mission.txt", "r");
   }
   if (fp == NULL) {
-    print("�����ļ��򿪴���\n");
+    print("任务文件打开错误\n");
     return FALSE;
   }
 
@@ -2070,7 +2070,7 @@ BOOL LoadMissionList(void) {
     }
 #endif
     chop(line);
-    // ��#Ϊע��*******
+    // 以#为注解*******
     if (line[0] == '#')
       continue;
     for (i = 0; i < strlen(line); i++) {
@@ -2081,7 +2081,7 @@ BOOL LoadMissionList(void) {
     }
     //*************************************
 
-    // ��ʽ #������,��Ҫ�ȼ�,����˵��,��ƷID,����ʱ��(Сʱ)
+    // 格式 #任务编号,必要等级,任务说明,奖品ID,限制时间(小时)
 
     getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
     if (strcmp(token, "") == 0)
@@ -2135,7 +2135,7 @@ BOOL LoadMissionCleanList() {
     fp = fopen("./data/missionclean.txt", "r");
   }
   if (fp == NULL) {
-    print("��������ļ��򿪴���\n");
+    print("清除任务文件打开错误\n");
     return FALSE;
   }
   while (1) {
@@ -2216,7 +2216,7 @@ BOOL LoadJobdailyfile(void) {
     fp = fopen("./data/jobdaily.txt", "r");
   }
   if (fp == NULL) {
-    print("�ճ������ļ��򿪴���\n");
+    print("日常工作文件打开错误\n");
     return FALSE;
   }
 
@@ -2234,7 +2234,7 @@ BOOL LoadJobdailyfile(void) {
     // print("\n %s ", line);
     chop(line);
 
-    // #Ϊע��
+    // #为注解
     if (line[0] == '#')
       continue;
     for (i = 0; i < strlen(line); i++) {
@@ -2258,7 +2258,7 @@ BOOL LoadJobdailyfile(void) {
     if (strcmp(token, "") == 0)
       break;
     if (strlen(token) > 64) {
-      print("\n����˵������:%d\n", strlen(token));
+      print("\n任务说明过长:%d\n", strlen(token));
       return FALSE;
     }
     strcpy(dailyfile[listindex].explain, token);
@@ -2296,7 +2296,7 @@ BOOL LoadEXP(char *filename) {
     fp = fopen(filename, "r");
   }
   if (fp == NULL) {
-    print("�޷����ļ�\n");
+    print("无法打开文件\n");
     return FALSE;
   }
 
@@ -2361,13 +2361,13 @@ int getMaxLevel(void) { return gServerConfig.maxlevel; }
 #endif
 
 #ifdef _POINT
-char *getPoint(void) { return (gServerConfig.point > 0) ? "��" : "��"; }
+char *getPoint(void) { return (gServerConfig.point > 0) ? "是" : "否"; }
 int getTransPoint(int index) { return gServerConfig.transpoint[index]; }
 #endif
 
 #ifdef _PET_AND_ITEM_UP
-char *getPetup(void) { return (gServerConfig.petup > 0) ? "��" : "��"; }
-char *getItemup(void) { return (gServerConfig.itemup > 0) ? "��" : "��"; }
+char *getPetup(void) { return (gServerConfig.petup > 0) ? "是" : "否"; }
+char *getItemup(void) { return (gServerConfig.itemup > 0) ? "是" : "否"; }
 #endif
 #ifdef _LOOP_ANNOUNCE
 char *getLoopAnnouncePath(void) { return gServerConfig.loopannouncepath; }
@@ -2377,7 +2377,7 @@ int loadLoopAnnounce(void) {
   gServerConfig.loopannouncemax = 0;
   fp = fopen(gServerConfig.loopannouncepath, "r");
   if (fp == NULL) {
-    print("�޷����ļ�\n");
+    print("无法打开文件\n");
     return FALSE;
   }
   while (1) {
@@ -2422,18 +2422,18 @@ int getRideTrans(void) { return gServerConfig.ridetrans; }
 int getRideTrans(void) { return 0; }
 #endif
 #ifdef _REVLEVEL
-char *getRevLevel(void) { return (gServerConfig.revlevel > 0) ? "��" : "��"; }
+char *getRevLevel(void) { return (gServerConfig.revlevel > 0) ? "是" : "否"; }
 #endif
 #ifdef _NEW_PLAYER_RIDE
 char *getPlayerRide(void) {
   if (gServerConfig.npride > 2)
-    return "�����ͻ�����";
+    return "配套送虎加雷";
   else if (gServerConfig.npride == 2)
-    return "��������";
+    return "配套送雷";
   else if (gServerConfig.npride == 1)
-    return "�����ͻ�";
+    return "配套送虎";
   else
-    return "�����������";
+    return "不送配套骑宠";
 }
 #endif
 
@@ -2531,7 +2531,7 @@ int getRideMode(void) {
 int getRideMode(void) { return 0; }
 #endif
 #ifdef _FM_POINT_PK
-char *getFmPointPK(void) { return (gServerConfig.fmpointpk > 0) ? "��" : "��"; }
+char *getFmPointPK(void) { return (gServerConfig.fmpointpk > 0) ? "是" : "否"; }
 #endif
 #ifdef _ENEMY_ACTION
 int getEnemyAction(void) {
@@ -2931,7 +2931,7 @@ int getSkillCount(void) {
   return gServerConfig.skillcount;
 }
 
-// ��ü������ɵ�λ��
+// 获得技能生成的位置
 int getSkillPos(void) {
   if (gServerConfig.getskillpos < 1 || gServerConfig.getskillpos > 7)
     return 6;

@@ -111,7 +111,7 @@ int NPC_Lua_NLG_CreateBattle(lua_State *_NLL)
 	{
 		TM_Flg = (int)lua_tointeger(_NLL, 7);
 	}
-//这个要放在最后
+//新增
 	if(TM_Top >= 4)
 	{
 		TM_ArLen = luaL_getn(_NLL, 4);

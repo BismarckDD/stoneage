@@ -77,7 +77,7 @@ const int getCharBaseValue(lua_State *L, int narg, CharBase *charbase, int num)
 			}
 			
 			if(i == num){
-				print("\ncharbaseȱʧ�ֶ�[%s]\n",field);
+				print("\ncharbase缺失字段[%s]\n",field);
 				return -1;
 			}
 			line++;

@@ -729,7 +729,7 @@ void CHAR_CHAT_DEBUG_info(int charindex, char *message) {
 
   if (CHAR_getInt(index, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
     snprintf(line, sizeof(line),
-             "体:%d 力:%d 丈:%d 早:%d 耐:%d 攻:%d 守:%d 敏:%d 忠修:%d "
+             "体:%d 力:%d 丈:%d 早:%d 耐:%d 攻:%d 守:%d 魅:%d 运:%d "
              "忠变:%.2f 编码:%s",
              CHAR_getInt(index, CHAR_VITAL) / 100,
              CHAR_getInt(index, CHAR_STR) / 100,
@@ -5935,7 +5935,7 @@ void CHAR_CHAT_DEBUG_PlayerQuestion(int char_index, char *message) {
     int i;
     int playernum = CHAR_getPlayerMaxNum();
     char question[128];
-    sprintf(question, "[GM]在线问题――%s", PlayerQuestion.question);
+    sprintf(question, "[GM]在线问题——%s", PlayerQuestion.question);
     sprintf(token, "第一位回答正确者奖励%s %d", type[PlayerQuestion.type],
             PlayerQuestion.value);
 

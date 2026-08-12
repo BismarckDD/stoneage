@@ -52,7 +52,7 @@ void CHAR_allpostwalk( int index )
 BOOL CHAR_makeCADefaultString( int objindex,char* buf,int buflen, int act )
 {
 	char	objindexbuf[64];
-    /*  ��������    */
+    /*  民尼永弁    */
     if( CHECKOBJECT(objindex) == FALSE )    return FALSE;
     if( OBJECT_getType(objindex) != OBJTYPE_CHARA ) return FALSE;
     snprintf( buf,buflen,"%s|%d|%d|%d|%d",
@@ -259,8 +259,8 @@ void CHAR_sendWallDamage( int char_index,int x, int y, int damage )
 
 static struct ParamShow
 {
-    int     paramindex;     /*  �ɷ¶��������̼������͵�    */
-    char*   offmessage;     /*    �����ݼ�����������  ٯ      */
+    int     paramindex;     /*  由仿丢□正及奶件犯永弁旦    */
+    char*   offmessage;     /*    匀凶凛及丢永本□斥  侬      */
 }pShow[]={
     {CHAR_PARALYSIS,    CHAR_RECOVERPARALYSISSTRING},
     {CHAR_SLEEP,      CHAR_RECOVERSILENCESTRING},
@@ -512,9 +512,9 @@ void CHAR_playerTalkedfunc( int char_index, int talkindex,char* message, int col
     if( (channel>-1) && (fmindex>0) ){
 		if( channel == 0 ){
 #ifndef _CHANNEL_MODIFY
-			snprintf( lastbuf,sizeof(lastbuf),"P|[��]%s",
+			snprintf( lastbuf,sizeof(lastbuf),"P|[族]%s",
 #else
-			snprintf( lastbuf,sizeof(lastbuf),"P|F|[��]%s",
+			snprintf( lastbuf,sizeof(lastbuf),"P|F|[族]%s",
 #endif
 				makeEscapeString( CHAR_appendNameAndTitle(talkindex, message, mesgbuf,sizeof(mesgbuf)),
 				escapebuf,sizeof(escapebuf) ));
@@ -525,9 +525,9 @@ void CHAR_playerTalkedfunc( int char_index, int talkindex,char* message, int col
 		else if( channel == FAMILY_MAXCHANNEL && CHAR_getInt( talkindex, CHAR_FMLEADERFLAG ) == FMMEMBER_MEMBER ){
 #endif
 #ifndef _CHANNEL_MODIFY
-			snprintf( lastbuf,sizeof(lastbuf),"P|[�峤�㲥]%s",
+			snprintf( lastbuf,sizeof(lastbuf),"P|[族长广播]%s",
 #else
-			snprintf( lastbuf,sizeof(lastbuf),"P|F|[�峤�㲥]%s",
+			snprintf( lastbuf,sizeof(lastbuf),"P|F|[族长广播]%s",
 #endif
 				makeEscapeString(CHAR_appendNameAndTitle(talkindex, message,mesgbuf,sizeof(mesgbuf)),
 				escapebuf,sizeof(escapebuf) ));
@@ -539,7 +539,7 @@ void CHAR_playerTalkedfunc( int char_index, int talkindex,char* message, int col
 	}else{
 #ifdef _CHANNEL_MODIFY
 		if(CHAR_getFlg(talkindex,CHAR_ISPARTYCHAT) && (CHAR_getWorkInt(talkindex,CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE))
-				snprintf( lastbuf,sizeof(lastbuf),"P|T|[��]%s",
+				snprintf( lastbuf,sizeof(lastbuf),"P|T|[队]%s",
 				makeEscapeString(CHAR_appendNameAndTitle(talkindex, message,mesgbuf,sizeof(mesgbuf)),
 				escapebuf,sizeof(escapebuf) ));
 		else

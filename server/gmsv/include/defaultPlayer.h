@@ -23,10 +23,10 @@ static Char player = {
 
         0, /*  CHAR_CHARM  */
         0, /*  CHAR_LUCK  */
-        0, /* ��°�� */
-        0, /* ��°�� */
-        0, /* ��°�� */
-        0, /* ��°�� */
+        0, /* 孟掳拉 */
+        0, /* 垮掳拉 */
+        0, /* 残掳拉 */
+        0, /* 慎掳拉 */
 
         0,                   /* CHAR_SLOT*/
         0,                   /* CHAR_CRITIAL */
@@ -86,9 +86,9 @@ static Char player = {
         0, /*  CHAR_EVENT5 */
         0, /*  CHAR_EVENT6 */
 #endif
-#ifdef _ADD_NEWEVENT // WON �����������
+#ifdef _ADD_NEWEVENT // WON 多增任务旗标
         0,           /*  CHAR_EVENT7  */
-        0,           //  CHAR_EVENT8, 224~255 �����ٻ�ר��
+        0,           //  CHAR_EVENT8, 224~255 精灵召唤专用
 #endif
 #ifdef _ADD_NEWEVENT_1024
         0, /*  CHAR_EVENT9  */
@@ -124,11 +124,11 @@ static Char player = {
         0, /*  CHAR_NOWEVENT5 */
         0, /*  CHAR_NOWEVENT6 */
 #endif
-#ifdef _ADD_NEWEVENT // WON �����������
+#ifdef _ADD_NEWEVENT // WON 多增任务旗标
         0,           /*  CHAR_NOWEVENT7  */
-        0,           //  CHAR_NOWEVENT8, 224~255 �����ٻ�ר��
+        0,           //  CHAR_NOWEVENT8, 224~255 精灵召唤专用
 #endif
-#ifdef _ADD_NEWEVENT_1024 // WON �����������
+#ifdef _ADD_NEWEVENT_1024 // WON 多增任务旗标
         0,                /*  CHAR_NOWEVENT9 */
         0,                /*  CHAR_NOWEVENT10 */
         0,                /*  CHAR_NOWEVENT11 */
@@ -164,19 +164,19 @@ static Char player = {
         // #endif
 
         0, // CHAR_SILENT,        /* char shutup time */
-        0, //    CHAR_FMINDEX,        // �a�� index
+        0, //    CHAR_FMINDEX,        // 家族索引
         0, //    CHAR_FMLEADERFLAG,
-           /* �a�ڦ�������
-            * FMMEMBER_NONE  :�S���[�J����a��
-            * FMMEMBER_APPLY  :�ӽХ[�J�a�ڤ�
-            * FMMEMBER_LEADER  :�ڪ�
-            * FMMEMBER_MEMBER  :�@�릨��
-            * FMMEMBER_ELDER  :����
-            * FMMEMBER_INVITE  :���q      // �Ȯɤ���
-            * FMMEMBER_BAILEE  :�]�Ȫ�      // �Ȯɤ���
-            * FMMEMBER_VICELEADER  :�Ʊڪ�    // �Ȯɤ���
+           /* 家族成员身份：
+            * FMMEMBER_NONE       : 未加入家族
+            * FMMEMBER_APPLY      : 申请加入中
+            * FMMEMBER_LEADER     : 族长
+            * FMMEMBER_MEMBER     : 普通成员
+            * FMMEMBER_ELDER      : 长老
+            * FMMEMBER_INVITE     : 受邀者（临时状态）
+            * FMMEMBER_BAILEE     : 委托人（临时状态）
+            * FMMEMBER_VICELEADER : 副族长
             */
-        0, //    CHAR_FMSPRITE,    // �a�ڦu�@���F
+        0, //    CHAR_FMSPRITE,    // 家族守护精灵
 
         0, //    CHAR_BANKGOLD,
         0, //    CHAR_RIDEPET,
@@ -186,13 +186,13 @@ static Char player = {
 #endif
         0, //   CHAR_LIMITLEVEL,
 #ifdef _PET_FUSION
-        0, //  CHAR_FUSIONCODE,    //���ؽs�X
-        0, //  CHAR_FUSIONINDEX,    //����d���s��
-        0, //  CHAR_FUSIONRAISE,    //���i����
-        0, //  CHAR_FUSIONBEIT,    //�d�J�X��
-        0, //  CHAR_FUSIONTIMELIMIT,  //���i�ɶ�
+        0, //  CHAR_FUSIONCODE,       // 融合代码
+        0, //  CHAR_FUSIONINDEX,      // 融合宠物索引
+        0, //  CHAR_FUSIONRAISE,      // 培养次数
+        0, //  CHAR_FUSIONBEIT,       // 融合标记
+        0, //  CHAR_FUSIONTIMELIMIT,  // 培养时限
 #endif
-#ifdef _PERSONAL_FAME // Arminius 8.30: �a�ڭӤH�n��
+#ifdef _PERSONAL_FAME // Arminius 8.30: 家族个人声望
         0,            //    CHAR_FAME,
 #endif
 
@@ -201,35 +201,31 @@ static Char player = {
 #endif
 
 #ifdef _ATTACK_MAGIC
-        0, //    CHAR_EARTH_EXP,            // ���a���a�]�k���m��
-        0, //    CHAR_WATER_EXP,            // ���a�����]�k���m��
-        0, //    CHAR_FIRE_EXP,            // ���a�����]�k���m��
-        0, //    CHAR_WIND_EXP,            // ���a�����]�k���m��
-        0, //    CHAR_EARTH_RESIST,          // ���a���a�]�k�ܩ�
-        0, //    CHAR_WATER_RESIST,          // ���a�����]�k�ܩ�
-        0, //    CHAR_FIRE_RESIST,          // ���a�����]�k�ܩ�
-        0, //    CHAR_WIND_RESIST,          // ���a�����]�k�ܩ�
-        0, //    CHAR_EARTH_ATTMAGIC_EXP,      //
-           //    ���a���a�]�k���m�׸g���
-        0, //    CHAR_WATER_ATTMAGIC_EXP,      //
-           //    ���a�����]�k���m�׸g���
-        0, //    CHAR_FIRE_ATTMAGIC_EXP,        //
-           //    ���a�����]�k���m�׸g���
-        0, //    CHAR_WIND_ATTMAGIC_EXP,        //
-           //    ���a�����]�k���m�׸g���
-        0, //     CHAR_EARTH_DEFMAGIC_EXP,      // ���a���a�]�k�ܩʸg���
-        0, //    CHAR_WATER_DEFMAGIC_EXP,      // ���a�����]�k�ܩʸg���
-        0, //    CHAR_FIRE_DEFMAGIC_EXP,        // ���a�����]�k�ܩʸg���
-        0, //    CHAR_WIND_DEFMAGIC_EXP,        // ���a�����]�k�ܩʸg���
+        0, //    CHAR_EARTH_EXP,            // 地属性魔法熟练度
+        0, //    CHAR_WATER_EXP,            // 水属性魔法熟练度
+        0, //    CHAR_FIRE_EXP,             // 火属性魔法熟练度
+        0, //    CHAR_WIND_EXP,             // 风属性魔法熟练度
+        0, //    CHAR_EARTH_RESIST,         // 地属性魔法抗性
+        0, //    CHAR_WATER_RESIST,         // 水属性魔法抗性
+        0, //    CHAR_FIRE_RESIST,          // 火属性魔法抗性
+        0, //    CHAR_WIND_RESIST,          // 风属性魔法抗性
+        0, //    CHAR_EARTH_ATTMAGIC_EXP,   // 地属性攻击魔法经验
+        0, //    CHAR_WATER_ATTMAGIC_EXP,   // 水属性攻击魔法经验
+        0, //    CHAR_FIRE_ATTMAGIC_EXP,    // 火属性攻击魔法经验
+        0, //    CHAR_WIND_ATTMAGIC_EXP,    // 风属性攻击魔法经验
+        0, //    CHAR_EARTH_DEFMAGIC_EXP,   // 地属性抗性魔法经验
+        0, //    CHAR_WATER_DEFMAGIC_EXP,   // 水属性抗性魔法经验
+        0, //    CHAR_FIRE_DEFMAGIC_EXP,    // 火属性抗性魔法经验
+        0, //    CHAR_WIND_DEFMAGIC_EXP,    // 风属性抗性魔法经验
 #endif
 
 #ifdef _GAMBLE_BANK
-        0, //    CHAR_PERSONAGOLD,  //����ӤH�Ȧ�
+        0, //    CHAR_PERSONAGOLD,  // 个人赌金
 #endif
 #ifdef _DROPSTAKENEW
-        0, //    CHAR_GAMBLENUM,    //����n��
+        0, //    CHAR_GAMBLENUM,    // 赌博积分
 #endif
-#ifdef _ADD_ACTION // npc�ʧ@
+#ifdef _ADD_ACTION // NPC 动作
         0,         //    CHAR_ACTIONSTYLE,
 #endif
 #ifdef _PET_EVOLUTION
@@ -243,27 +239,27 @@ static Char player = {
         0, //    CHAR_FMTIMELIMIT,
 #endif
 
-#ifdef _CHAR_PROFESSION // WON ADD �H��¾�~
-        0,              //    PROFESSION_CLASS,      // ¾�~�O
-        0,              //    PROFESSION_LEVEL,      // ¾�~����
-        //    0,  //    PROFESSION_EXP,        // ¾�~�g���
-        0, //    PROFESSION_SKILL_POINT,    // �ޯ��I��
-        0, //    ATTACHPILE,          // �W�[���|
-        0, //    PROFESSION_FIRE_P,      // �����m��
-        0, //    PROFESSION_ICE_P,      // �B���m��
-        0, //    PROFESSION_THUNDER_P,    // �p���m��
-        0, //    PROFESSION_FIRE_R,      // ���ܩ�
-        0, //    PROFESSION_ICE_R,      // �B�ܩ�
-        0, //    PROFESSION_THUNDER_R,    // �p�ܩ�
+#ifdef _CHAR_PROFESSION // WON ADD 人物职业
+        0, //    PROFESSION_CLASS,        // 职业类别
+        0, //    PROFESSION_LEVEL,        // 职业等级
+        // 0, // PROFESSION_EXP,          // 职业经验
+        0, //    PROFESSION_SKILL_POINT,  // 技能点数
+        0, //    ATTACHPILE,              // 附加层数
+        0, //    PROFESSION_FIRE_P,       // 火熟练度
+        0, //    PROFESSION_ICE_P,        // 冰熟练度
+        0, //    PROFESSION_THUNDER_P,    // 雷熟练度
+        0, //    PROFESSION_FIRE_R,       // 火抗性
+        0, //    PROFESSION_ICE_R,        // 冰抗性
+        0, //    PROFESSION_THUNDER_R,    // 雷抗性
 #endif
-#ifdef _ALLDOMAN // (���i�}) Syu ADD �Ʀ�]NPC
+#ifdef _ALLDOMAN // （不可开启）Syu ADD 排行榜 NPC
         0,       //    CHAR_HEROFLOOR,
 #endif
 #ifdef _PETSKILL_BECOMEPIG
         -1,     //    CHAR_BECOMEPIG,
         100250, // CHAR_BECOMEPIG_BBI
 #endif
-        0, //    CHAR_LASTLEAVETIME, // Robin add �̫����u�ɶ�
+        0, //    CHAR_LASTLEAVETIME, // Robin add 最后离线时间
 
 #ifdef _NEW_MANOR_LAW
         0, //    CHAR_MOMENTUM,
@@ -275,21 +271,21 @@ static Char player = {
 #endif
 
 #ifdef _ANGEL_SUMMON
-        0, //    CHAR_HEROCNT, // �����i�̥��Ȫ�����
+        0, //    CHAR_HEROCNT, // 勇者任务计数
 #endif
 
 #ifdef _TEACHER_SYSTEM
-        0, // CHAR_TEACHER_FAME,  // ��ʦ�쵼����
+        0, // CHAR_TEACHER_FAME,  // 导师领导声望
 #endif
 
 #ifdef _GM_ITEM
-        0, // ���GM�������
+        0, // 玩家GM命令次数
 #endif
 #ifdef _VIP_SERVER
-        0, // �ػر���
+        0, // 重回币数
 #endif
 #ifdef _VIP_RIDE
-        0, // ��Ա��ڼ�
+        0, // 会员骑黑鸡
         0,
 #endif
 #ifdef _PET_BEATITUDE
@@ -409,19 +405,19 @@ static Char player = {
 #endif
 
 #ifdef _TEACHER_SYSTEM
-        {""}, // ��ʦ�ʺ�
-        {""}, // ��ʦ����
+        {""}, // 导师帐号
+        {""}, // 导师名字
 #endif
 #ifdef _ITEM_SETLOVER
-        {""}, // ����ж�
-        {""}, // �����ʺ�
-        {""}, // ��������
+        {""}, // 结婚判断
+        {""}, // 爱人帐号
+        {""}, // 爱人名字
 #endif
 
 #ifdef _GM_ITEM
-        {""}, // ���GM����
+        {""}, // 玩家GM命令
 #endif
-#ifdef _NEW_NAME // �Զ���ƺ�
+#ifdef _NEW_NAME // 自定义称号
         {""},
 #endif
 

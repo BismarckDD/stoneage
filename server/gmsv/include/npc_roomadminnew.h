@@ -20,11 +20,11 @@ typedef struct npc_roomadminnew_tag {
 }NPC_ROOMINFO;
 
 typedef struct npc_roomadminnew_ranking_tag {
-	int		gold;				/*   Ú¿àÅº° */
-	int		biddate;			/*   Ú¿ÁİÃŞ */
-	char	cdkey[CDKEYLEN];	/*   ÎçØÆĞ×ÚĞ¼°    Æ½¡õ */
-	char	charaname[32];		/*   ÎçØÆĞ×ÚĞ¼°  ó¡ */
-	char	owntitle[32];		/* ±¹Ä¯*/
+	int		gold;				/*   è¯³å—¯å–Š */
+	int		biddate;			/*   è¯³å‡›æ£‰ */
+	char	cdkey[CDKEYLEN];	/*   åˆä»„å‡¶è°›åŠ    å¹³â–¡ */
+	char	charaname[32];		/*   åˆä»„å‡¶è°›åŠ  èŸ† */
+	char	owntitle[32];		/* æƒ«å¯*/
 	
 }NPC_RANKING_INFO;
 

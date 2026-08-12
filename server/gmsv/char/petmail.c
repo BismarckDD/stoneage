@@ -21,10 +21,10 @@ extern int CheckCharMaxItem(int charindex);
 
 #define		PETMAIL_IDLE_RETURNOWNER	(60*30)
 //andy_edit
-//#define	PETMAIL_IDLEDISCARD	(60*60)  //Syu ĞŞÕı³èÓÊµÈ´ıÊ±¼äÎªÒ»Ğ¡Ê±
+//#define	PETMAIL_IDLEDISCARD	(60*60)  //Syu ä¿®æ­£å® é‚®ç­‰å¾…æ—¶é—´ä¸ºä¸€å°æ—¶
 #define	PETMAIL_IDLEDISCARD	(60*3)
 
-/* petmail ¿çĞÇÏµµÄµÈ´ıÊ±¼ä  shan add */
+/* petmail è·¨æ˜Ÿç³»çš„ç­‰å¾…æ—¶é—´  shan add */
 #define         PETMAIL_JS_TIMEOUT              (2*60)
 
 static int PETMAIL_getIdleTime( int index);
@@ -53,7 +53,7 @@ BOOL PETMAIL_sendPetMail( int cindex, int aindex,
 	int		item_index =-1;
 	int tochar_index,playernum,i;
 
-	//ÅĞ¶Ï ÈËÎï ³èÎï µÀ¾ß ¶ÔÏóÃûÆ¬
+	//åˆ¤æ–­ äººç‰© å® ç‰© é“å…· å¯¹è±¡åç‰‡
 	if( !CHAR_CHECKINDEX( cindex) )return FALSE;
 	if( haveitem_index != -1 ) {
 		item_index = CHAR_getItemIndex( cindex, haveitem_index);
@@ -71,30 +71,30 @@ BOOL PETMAIL_sendPetMail( int cindex, int aindex,
 	ae = CHAR_getAddressbookEntry( cindex , aindex );
 	if( ae == NULL )return FALSE;
 
-#ifdef _AVID_TRADETRYBUG  //³èÎïÓÊ¼ş
+#ifdef _AVID_TRADETRYBUG  //å® ç‰©é‚®ä»¶
 	if( CHAR_getWorkInt( cindex, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE ){
-		CHAR_talkToCli( cindex, -1, "½»Ò××´Ì¬ÖĞÎŞ·¨´«µİ³èÎïÓÊ¼ş¡£", CHAR_COLORYELLOW );
+		CHAR_talkToCli( cindex, -1, "äº¤æ˜“çŠ¶æ€ä¸­æ— æ³•ä¼ é€’å® ç‰©é‚®ä»¶ã€‚", CHAR_COLORYELLOW );
 		return FALSE;
 	}
 #endif
-	//Æï³Ë
+	//éª‘ä¹˜
     if (CHAR_getInt( cindex, CHAR_RIDEPET) == havepetindex ){
-    	CHAR_talkToCli(cindex, -1, "Æï³ËÖĞµÄ³èÎïÎŞ·¨´«µİ³èÎïÓÊ¼ş£¡", CHAR_COLORYELLOW);
+    	CHAR_talkToCli(cindex, -1, "éª‘ä¹˜ä¸­çš„å® ç‰©æ— æ³•ä¼ é€’å® ç‰©é‚®ä»¶ï¼", CHAR_COLORYELLOW);
     	return	FALSE;
     }
 	if( CHAR_getWorkInt( cindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE){
-		CHAR_talkToCli( cindex, -1, "Õ½¶·×´Ì¬ÖĞÎŞ·¨´«µİ³èÎïÓÊ¼ş¡£", CHAR_COLORYELLOW );
+		CHAR_talkToCli( cindex, -1, "æˆ˜æ–—çŠ¶æ€ä¸­æ— æ³•ä¼ é€’å® ç‰©é‚®ä»¶ã€‚", CHAR_COLORYELLOW );
 		return	FALSE;
 	}
     if (CHAR_getInt(petindex, CHAR_PETFAMILY) == 1){
-	   	CHAR_talkToCli(cindex, -1, "¼Ò×åÊØ»¤ÊŞÎŞ·¨´«µİÓÊ¼şà¸£¡", CHAR_COLORYELLOW);
+	   	CHAR_talkToCli(cindex, -1, "å®¶æ—å®ˆæŠ¤å…½æ— æ³•ä¼ é€’é‚®ä»¶å–”ï¼", CHAR_COLORYELLOW);
 	   	return	FALSE;
 	}
 #ifdef _LOCK_PET_ITEM
 {
 			char *petname = CHAR_getChar( petindex, CHAR_NAME);
 			if( petname[0] == '*' ){
-	   	CHAR_talkToCli(cindex, -1, "°ó¶¨³èÎïÎŞ·¨´«µİÓÊ¼ş£¡", CHAR_COLORYELLOW);
+	   	CHAR_talkToCli(cindex, -1, "ç»‘å®šå® ç‰©æ— æ³•ä¼ é€’é‚®ä»¶ï¼", CHAR_COLORYELLOW);
 	   	return	FALSE;
 					}
 }
@@ -109,7 +109,7 @@ if (getPetMailFlg()==1){
 		}
 	}
 	if (flg == 0) {
-		CHAR_talkToCli(cindex, -1, "¸Ã³èÎïÎŞ·¨¼ÄËÍ³èÎïÓÊ¼ş£¡", CHAR_COLORYELLOW);
+		CHAR_talkToCli(cindex, -1, "è¯¥å® ç‰©æ— æ³•å¯„é€å® ç‰©é‚®ä»¶ï¼", CHAR_COLORYELLOW);
 		return FALSE;
 	}
 }
@@ -117,13 +117,13 @@ if (getPetMailFlg()==1){
 #ifdef _LOCK_PET_ITEM
 			char *arg = ITEM_getChar(item_index, ITEM_NAME);
 			if(arg[0] == '*'){
-				CHAR_talkToCli( cindex, -1, "°ó¶¨ÎïÆ·ÎŞ·¨´«µİ", CHAR_COLORYELLOW );
+				CHAR_talkToCli( cindex, -1, "ç»‘å®šç‰©å“æ— æ³•ä¼ é€’", CHAR_COLORYELLOW );
 				return	FALSE;
 			}
 #endif
 // Terry add fix can send mail to offline character 2004/2/5
 	if(ae->online == 0){
-		CHAR_talkToCli(cindex, -1, "¸ÃÍæ¼Ò²»ÔÚÏßÉÏ£¡", CHAR_COLORYELLOW);
+		CHAR_talkToCli(cindex, -1, "è¯¥ç©å®¶ä¸åœ¨çº¿ä¸Šï¼", CHAR_COLORYELLOW);
    	return	FALSE;
 	}
 	playernum = CHAR_getPlayerMaxNum();
@@ -137,20 +137,20 @@ if (getPetMailFlg()==1){
 		}
 	}
 	if(i == playernum){
-		CHAR_talkToCli(cindex, -1, "¸ÃÍæ¼Ò²»ÔÚ´ËĞÇÇòÉÏ£¡", CHAR_COLORYELLOW);
+		CHAR_talkToCli(cindex, -1, "è¯¥ç©å®¶ä¸åœ¨æ­¤æ˜Ÿçƒä¸Šï¼", CHAR_COLORYELLOW);
    	return	FALSE;
 	}
 // end
 #ifdef _MAP_TIME
 	if((CHAR_getInt(cindex,CHAR_FLOOR) >= 30017 && CHAR_getInt(cindex,CHAR_FLOOR) <= 30021)){
 		char	msgbuf[512];
-		snprintf(msgbuf,sizeof(msgbuf),"´ËµØÇø²»µÃ¼ÄËÍµÀ¾ß£¡");
+		snprintf(msgbuf,sizeof(msgbuf),"æ­¤åœ°åŒºä¸å¾—å¯„é€é“å…·ï¼");
 		CHAR_talkToCli(cindex,-1,msgbuf,CHAR_COLORWHITE);
 		return FALSE;
 	}
 	if((CHAR_getInt(i,CHAR_FLOOR) >= 30017 && CHAR_getInt(i,CHAR_FLOOR) <= 30021)){
 		char	msgbuf[512];
-		snprintf(msgbuf,sizeof(msgbuf),"¶Ô·½ËùÔÚµØÇø²»µÃÊÕ¼ÄËÍµÀ¾ß£¡");
+		snprintf(msgbuf,sizeof(msgbuf),"å¯¹æ–¹æ‰€åœ¨åœ°åŒºä¸å¾—æ”¶å¯„é€é“å…·ï¼");
 		CHAR_talkToCli(cindex,-1,msgbuf,CHAR_COLORWHITE);
 		return FALSE;
 	}
@@ -160,7 +160,7 @@ if (getPetMailFlg()==1){
 	if( ( CHAR_getInt(cindex,CHAR_FLOOR) >= 8200 && CHAR_getInt(cindex,CHAR_FLOOR) <= 8213 ) ) 
 	{
 		char	msgbuf[512];
-		snprintf( msgbuf, sizeof( msgbuf), "Ó¢ĞÛÕ½³¡²»µÃ¼ÄËÍµÀ¾ß£¡");
+		snprintf( msgbuf, sizeof( msgbuf), "è‹±é›„æˆ˜åœºä¸å¾—å¯„é€é“å…·ï¼");
 		CHAR_talkToCli( cindex, -1, msgbuf, CHAR_COLORWHITE);
 		return FALSE;
 	}
@@ -171,40 +171,40 @@ if (getPetMailFlg()==1){
 			|| CHAR_getInt(recvindex,CHAR_FLOOR) == 4032) )
 	{
 		char	msgbuf[512];
-		snprintf( msgbuf, sizeof( msgbuf), "¶Ô·½ÔÚ×åÕ½Õ½³¡£¬²»µÃ¼ÄËÍµÀ¾ß£¡");
+		snprintf( msgbuf, sizeof( msgbuf), "å¯¹æ–¹åœ¨æ—æˆ˜æˆ˜åœºï¼Œä¸å¾—å¯„é€é“å…·ï¼");
 		CHAR_talkToCli( cindex, -1, msgbuf, CHAR_COLORRED);
 		return FALSE;
 	}
 
 #ifdef _PET_LIMITLEVEL
 		if( CHAR_getInt( petindex, CHAR_LIMITLEVEL) > 0 )	{
-			CHAR_talkToCli(cindex, -1, "ÌØÊâ³èÎï²»ÄÜ´«µİÓÊ¼şà¸£¡", CHAR_COLORYELLOW);
+			CHAR_talkToCli(cindex, -1, "ç‰¹æ®Šå® ç‰©ä¸èƒ½ä¼ é€’é‚®ä»¶å–”ï¼", CHAR_COLORYELLOW);
 			return FALSE;
 		}
 #endif
 
 #ifdef _PETMAIL_DEFNUMS
 		if( CHAR_getWorkInt( cindex, CHAR_PETMAILNUMS) > 6 ){
-			CHAR_talkToCli(cindex, -1, "ÓÊ¼şÖĞ³èÎï¹ı¶à£¬ÔİÊ±ÎŞ·¨´«µİ³èÎïÓÊ¼ş£¡", CHAR_COLORYELLOW);
+			CHAR_talkToCli(cindex, -1, "é‚®ä»¶ä¸­å® ç‰©è¿‡å¤šï¼Œæš‚æ—¶æ— æ³•ä¼ é€’å® ç‰©é‚®ä»¶ï¼", CHAR_COLORYELLOW);
 			return	FALSE;
 		}else if( PETMAIL_CheckIsMyOffmsg( cindex, ae->cdkey, ae->charname) > 5 ){
-			CHAR_talkToCli(cindex, -1, "ÊÕ¼şÕßÄ¿Ç°ÓÊ¼ş³èÎï³¬¹ı5·â£¬ÔİÊ±ÎŞ·¨´«µİ³èÎïÓÊ¼ş£¡", CHAR_COLORYELLOW);
+			CHAR_talkToCli(cindex, -1, "æ”¶ä»¶è€…ç›®å‰é‚®ä»¶å® ç‰©è¶…è¿‡5å°ï¼Œæš‚æ—¶æ— æ³•ä¼ é€’å® ç‰©é‚®ä»¶ï¼", CHAR_COLORYELLOW);
 			return	FALSE;
 		}else if( CHAR_getWorkInt( cindex, CHAR_PETMAILSENDTIME) > (int)time( NULL)){
 			char Mess1[256];
-			sprintf( Mess1,"ĞèµÈ´ı%dÃë²ÅÄÜÔÙ´Î¼ÄËÍ³èÎïÓÊ¼ş£¡",
+			sprintf( Mess1,"éœ€ç­‰å¾…%dç§’æ‰èƒ½å†æ¬¡å¯„é€å® ç‰©é‚®ä»¶ï¼",
 				(int)time( NULL) - CHAR_getWorkInt( cindex, CHAR_PETMAILSENDTIME));
 			CHAR_talkToCli( cindex, -1, Mess1, CHAR_COLORYELLOW);
 			return	FALSE;
 		}else if( PetMailTotalnums >= PETMAIL_DEFTOTALNUM ){
-			CHAR_talkToCli(cindex, -1, "Ä¿Ç°ÏµÍ³ÓÊ¼ş¹ı¶à£¬ÇëÉÔááÔÙ¼Ä¡£", CHAR_COLORYELLOW);
+			CHAR_talkToCli(cindex, -1, "ç›®å‰ç³»ç»Ÿé‚®ä»¶è¿‡å¤šï¼Œè¯·ç¨å¾Œå†å¯„ã€‚", CHAR_COLORYELLOW);
 			return	FALSE;
 		}
 #endif
 	{
-#ifdef _FIX_PETMAIL2        // WON ADD ĞŞÕı³èÓÊ2
+#ifdef _FIX_PETMAIL2        // WON ADD ä¿®æ­£å® é‚®2
 		if( !PET_dropPetFLXY( cindex, havepetindex, PETMAIL_SPOOLFLOOR, PETMAIL_SPOOLX,PETMAIL_SPOOLY) ){
-			CHAR_talkToCli( cindex, -1, "³èÎïÓÊ¼şÊ§°Ü", CHAR_COLORYELLOW);
+			CHAR_talkToCli( cindex, -1, "å® ç‰©é‚®ä»¶å¤±è´¥", CHAR_COLORYELLOW);
 			return FALSE;
 		}
 #endif
@@ -236,13 +236,13 @@ if (getPetMailFlg()==1){
 		CHAR_setInt( petindex, CHAR_PETMAILFROMX, CHAR_getInt( cindex, CHAR_X));
 		CHAR_setInt( petindex, CHAR_PETMAILFROMY,CHAR_getInt( cindex, CHAR_Y));		
 
-#ifdef _WON_PET_MAIL_LOG   // WON ADD Ôö¼Ó¼Ä³èÓÊµÄ LOG
+#ifdef _WON_PET_MAIL_LOG   // WON ADD å¢åŠ å¯„å® é‚®çš„ LOG
 		LogPet(
 			CHAR_getChar( cindex, CHAR_NAME ), 
 			CHAR_getChar( cindex, CHAR_CDKEY ),
 			CHAR_getChar( petindex, CHAR_NAME),
 			CHAR_getInt( petindex, CHAR_LV),
-			"Pet_Send_Mail(¼Ä³èÓÊ)",
+			"Pet_Send_Mail(å¯„å® é‚®)",
 			CHAR_getInt( cindex,CHAR_FLOOR),
 			CHAR_getInt( cindex,CHAR_X ),
 			CHAR_getInt( cindex,CHAR_Y ),
@@ -257,7 +257,7 @@ if (getPetMailFlg()==1){
 				CHAR_getChar( cindex, CHAR_NAME ),
 				CHAR_getChar( cindex, CHAR_CDKEY ),
 				item_index,
-				"pm_have(³èÓÊ->¼ÄËÍµÄµÀ¾ß)",
+				"pm_have(å® é‚®->å¯„é€çš„é“å…·)",
 				CHAR_getInt( cindex,CHAR_FLOOR),
 				CHAR_getInt( cindex,CHAR_X ),
 	 			CHAR_getInt( cindex,CHAR_Y ),
@@ -269,14 +269,14 @@ if (getPetMailFlg()==1){
 
 #ifdef _SAMETHING_SAVEPOINT
 			if(CHAR_charSaveFromConnect(cindex, FALSE)){
-				CHAR_talkToCli(cindex, -1, "ÏµÍ³×Ô¶¯ÎªÄú´æµµ!", CHAR_COLORRED);
+				CHAR_talkToCli(cindex, -1, "ç³»ç»Ÿè‡ªåŠ¨ä¸ºæ‚¨å­˜æ¡£!", CHAR_COLORRED);
 			}
 #endif
 		}
 		{
 			char token[256];
 			tochar_index = PETMAIL_CheckPlayerExist( petindex, 0);
-			sprintf( token, "¼ÄËÍ³èÎïÓÊ¼ş(%s)¸ø%s¡£",
+			sprintf( token, "å¯„é€å® ç‰©é‚®ä»¶(%s)ç»™%sã€‚",
 				CHAR_getUseName( petindex), CHAR_getUseName( tochar_index) );
 			CHAR_talkToCli( cindex, -1, token, CHAR_COLORYELLOW);
 		}
@@ -443,7 +443,7 @@ BOOL storePetmail( void)
 	char	escapebuf1[ 64],escapebuf2[ 64];
 	int		i;
 
-    /*  °×ÑëÄÌ»ï  Ã«·Æ»§ÔÂ  */
+    /*  ç™½å¤®å¥¶ä¼™  æ¯›è²æˆ·æœˆ  */
     snprintf( filename ,sizeof( filename ) ,"%s/%s" ,
     				getStoredir(), PETMAILOFFMSGFILE);
     fp = fopen( filename , "wt" );
@@ -505,16 +505,16 @@ void PETMAIL_Loopfunc( int index)
 	  case CHAR_PETMAIL_IDLE2:
 		PETMAIL_IdleProc2( index);
 		break;
-	  case CHAR_PETMAIL_RETURNWAIT://»ØÀ´µÈ´ı
+	  case CHAR_PETMAIL_RETURNWAIT://å›æ¥ç­‰å¾…
 	  	PETMAIL_ReturnWait( index);
 	  	break;
 	  case CHAR_PETMAIL_IDLE3:
 		PETMAIL_IdleProc3( index);
 		break;
-	  case CHAR_PETMAIL_IDLE4://Ñ°ÕÒÖ÷ÈË
+	  case CHAR_PETMAIL_IDLE4://å¯»æ‰¾ä¸»äºº
 		PETMAIL_IdleProc4( index);
 	  	break;
-	  case CHAR_PETMAIL_IDLE5: //³¬¹ıÊ±¼äÎŞ·¨ÕÒµ½Ö÷ÈË
+	  case CHAR_PETMAIL_IDLE5: //è¶…è¿‡æ—¶é—´æ— æ³•æ‰¾åˆ°ä¸»äºº
 		PETMAIL_IdleProc5( index);
 	  	break;
 	  default:
@@ -524,9 +524,9 @@ void PETMAIL_Loopfunc( int index)
 
 static int PETMAIL_getIdleTime( int index)
 {
-#define		PETMAIL_DIVRANGE		25		//	ÛĞà«ÔÊÔÂr
-#define		PETMAIL_IDLELEVELRANGE	10		//	ÛĞà«ÔÊÔÂ?Çø
-#define		PETMAIL_IDLEUNITTIME	3		//	ÃŞØÊ
+#define		PETMAIL_DIVRANGE		25		//	åŒå–ƒå…æœˆæŸ
+#define		PETMAIL_IDLELEVELRANGE	10		//	åŒå–ƒå…æœˆ?åŒº
+#define		PETMAIL_IDLEUNITTIME	3		//	æ£‰å¥
 	int		d;
 #ifdef	_PETMAIL_TIME
 	int		dex;
@@ -562,8 +562,8 @@ static void PETMAIL_sendPetmail( int index, int tochar_index)
 		char	msgbuf[512];
 
 		snprintf( msgbuf, sizeof( msgbuf), 
-					"%sµÄ%s ÖÕì¶À´ÁË£¡"
-					"ÓÉì¶¶Ô·½Ã»ÓĞÄúµÄÃûÆ¬£¬ËùÒÔĞÅ¼ş±»ÍË»ØÁË¡£",
+					"%sçš„%s ç»ˆæ–¼æ¥äº†ï¼"
+					"ç”±æ–¼å¯¹æ–¹æ²¡æœ‰æ‚¨çš„åç‰‡ï¼Œæ‰€ä»¥ä¿¡ä»¶è¢«é€€å›äº†ã€‚",
 					CHAR_getChar( index, CHAR_OWNERCHARANAME),
 					CHAR_getUseName( index));
 		CHAR_talkToCli( tochar_index, -1, msgbuf, CHAR_COLORWHITE);
@@ -573,7 +573,7 @@ static void PETMAIL_sendPetmail( int index, int tochar_index)
 		CHAR_getInt(tochar_index,CHAR_FLOOR) <= 8213 ){
 		char	msgbuf[512];
 		snprintf( msgbuf, sizeof( msgbuf), 					
-					"Ó¢ĞÛÕ½³¡²»µÃ¼ÄËÍµÀ¾ß£¡" );
+					"è‹±é›„æˆ˜åœºä¸å¾—å¯„é€é“å…·ï¼" );
 		CHAR_talkToCli( tochar_index, -1, msgbuf, CHAR_COLORWHITE);
 	}
 	else {
@@ -596,7 +596,7 @@ static void PETMAIL_sendPetmail( int index, int tochar_index)
 				CHAR_getChar( tochar_index, CHAR_NAME ), 
 				CHAR_getChar( tochar_index, CHAR_CDKEY ),
 				item_index,
-				"pm_putground(³èÓÊ->µÀ¾ßÀ¸ÒÑÂú£¬·ÅÖÃµØÉÏ)",
+				"pm_putground(å® é‚®->é“å…·æ å·²æ»¡ï¼Œæ”¾ç½®åœ°ä¸Š)",
 				CHAR_getInt( index,CHAR_FLOOR),
 				CHAR_getInt( index,CHAR_X ),
 	 			CHAR_getInt( index,CHAR_Y ),
@@ -613,7 +613,7 @@ static void PETMAIL_sendPetmail( int index, int tochar_index)
 				CHAR_getChar( tochar_index, CHAR_NAME ),
 				CHAR_getChar( tochar_index, CHAR_CDKEY ),
 				item_index,
-				"pm_getitem(³èÓÊ->ÊÕµ½µÄµÀ¾ß)",
+				"pm_getitem(å® é‚®->æ”¶åˆ°çš„é“å…·)",
 				CHAR_getInt( index,CHAR_FLOOR),
 				CHAR_getInt( index,CHAR_X ),
 	 			CHAR_getInt( index,CHAR_Y ),
@@ -661,9 +661,9 @@ static void PETMAIL_IdleProc1( int index)
 	if( !CHAR_CHECKINDEX( tochar_index) ) {
 		warp = TRUE;
 	}else {
-		if( CHAR_getInt( tochar_index, CHAR_FLOOR) == 8215 ){//¿Í·ş»î¶¯ andy
+		if( CHAR_getInt( tochar_index, CHAR_FLOOR) == 8215 ){//å®¢æœæ´»åŠ¨ andy
 			warp = TRUE;
-		}else if( CHAR_getWorkInt( tochar_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE ){//½»Ò×ÖĞ²»ÊÕÓÊ¼ş
+		}else if( CHAR_getWorkInt( tochar_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE ){//äº¤æ˜“ä¸­ä¸æ”¶é‚®ä»¶
 			warp = TRUE;
 		}else if( CHAR_getWorkInt( tochar_index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE ){		
 			int battleindex = CHAR_getWorkInt( tochar_index, CHAR_WORKBATTLEINDEX );
@@ -722,8 +722,8 @@ static void PETMAIL_IdleProc2( int index)
 		int		cnt;
 		tochar_index = PETMAIL_CheckPlayerExist( index, 0);
 		if( tochar_index != -1 ) {
-			if( CHAR_getInt( tochar_index, CHAR_FLOOR) == 8215 ){//¿Í·ş»î¶¯ andy
-			}else if( CHAR_getWorkInt( tochar_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE ){//½»Ò×ÖĞ²»ÊÕÓÊ¼ş
+			if( CHAR_getInt( tochar_index, CHAR_FLOOR) == 8215 ){//å®¢æœæ´»åŠ¨ andy
+			}else if( CHAR_getWorkInt( tochar_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE ){//äº¤æ˜“ä¸­ä¸æ”¶é‚®ä»¶
 			}else if( CHAR_getWorkInt( tochar_index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE){
 			}else {
 				int		fl, x, y, ch_x, ch_y;
@@ -831,12 +831,12 @@ static void PETMAIL_IdleProc4( int index)
 	{
 		int		tochar_index;
 		int		cnt;
-		tochar_index = PETMAIL_CheckPlayerExist( index, 1);//Ñ°ÕÒÖ÷ÈË
+		tochar_index = PETMAIL_CheckPlayerExist( index, 1);//å¯»æ‰¾ä¸»äºº
 		if( tochar_index != -1 ) {
 			if( CHAR_getWorkInt( tochar_index, CHAR_WORKBATTLEMODE) == BATTLE_CHARMODE_NONE &&
 				CHAR_getWorkInt( tochar_index, CHAR_WORKTRADEMODE) == CHAR_TRADE_FREE ){
 
-				int		fl, x, y, ch_x, ch_y;//»Øµ½Ö÷ÈËÉí±ß
+				int		fl, x, y, ch_x, ch_y;//å›åˆ°ä¸»äººèº«è¾¹
 				
 				fl = CHAR_getInt( tochar_index, CHAR_FLOOR);
 				ch_x = CHAR_getInt( tochar_index, CHAR_X);
@@ -857,20 +857,20 @@ static void PETMAIL_IdleProc4( int index)
 				PETMAIL_returnMail( index, tochar_index);
 			}
 		}else {
-			if( NowTime.tv_sec > t + PETMAIL_IDLE_RETURNOWNER ) {//¼ì²éµÈ´ıÖ÷ÈËÊ±¼ä
+			if( NowTime.tv_sec > t + PETMAIL_IDLE_RETURNOWNER ) {//æ£€æŸ¥ç­‰å¾…ä¸»äººæ—¶é—´
 				int item_index;
-				CHAR_warpToSpecificPoint( index, //»Øµ½Ô­ÏÈÖ÷ÈËËùÔÚ×ù±ê
+				CHAR_warpToSpecificPoint( index, //å›åˆ°åŸå…ˆä¸»äººæ‰€åœ¨åº§æ ‡
 									CHAR_getInt( index, CHAR_PETMAILFROMFLOOR),
 									CHAR_getInt( index, CHAR_PETMAILFROMX),
 									CHAR_getInt( index, CHAR_PETMAILFROMY));
 									
-				CHAR_setInt( index, CHAR_MAILMODE, CHAR_PETMAIL_IDLE5);//¸Ä±ä³èÓÊ×´Ì¬
+				CHAR_setInt( index, CHAR_MAILMODE, CHAR_PETMAIL_IDLE5);//æ”¹å˜å® é‚®çŠ¶æ€
 				CHAR_setInt( index,	CHAR_LOOPINTERVAL, PETMAIL_LOOPINTERVAL2);
 				CHAR_setInt( index, CHAR_PETMAILIDLETIME, NowTime.tv_sec);
 				if( CHAR_getInt( index, CHAR_PETMAILIDLETIME) != -1 ) {
 					PETMAIL_deleteOffmsg( CHAR_getInt( index, CHAR_PETMAILBUFINDEX));
 				}
-				item_index = CHAR_getItemIndex( index, CHAR_STARTITEMARRAY);//É¾³ı¸½´øµÀ¾ß
+				item_index = CHAR_getItemIndex( index, CHAR_STARTITEMARRAY);//åˆ é™¤é™„å¸¦é“å…·
 				if( ITEM_CHECKINDEX( item_index ) ) {
 					CHAR_DropItem( index, CHAR_STARTITEMARRAY);
 
@@ -878,7 +878,7 @@ static void PETMAIL_IdleProc4( int index)
 						CHAR_getChar( index, CHAR_OWNERCHARANAME ),
 						CHAR_getChar( index, CHAR_OWNERCDKEY ),
 						item_index,
-						"pm_returntimeout(³èÓÊ->ÓâÊ±É¾³ıµÀ¾ß)",
+						"pm_returntimeout(å® é‚®->é€¾æ—¶åˆ é™¤é“å…·)",
 						CHAR_getInt( index,CHAR_FLOOR),
 						CHAR_getInt( index,CHAR_X ),
 			 			CHAR_getInt( index,CHAR_Y ),
@@ -901,11 +901,11 @@ static void PETMAIL_IdleProc5( int index)
 		CHAR_setInt( index, CHAR_MAILMODE, CHAR_PETMAIL_NONE);
 		CHAR_setInt( index, CHAR_PETMAILIDLETIME, 0);
 
-#ifdef _FIX_PETMAIL         // WON ADD ĞŞÕı³èÓÊ
+#ifdef _FIX_PETMAIL         // WON ADD ä¿®æ­£å® é‚®
 		CHAR_setInt( index, CHAR_PUTPETTIME, NowTime.tv_sec );
 #endif
 #ifdef _PETMAIL_DEFNUMS
-		PETMAIL_delPetMailTotalnums( 1); //M PET ±ä×ÔÓÉ³è
+		PETMAIL_delPetMailTotalnums( 1); //M PET å˜è‡ªç”±å® 
 		if( PetMailTotalnums < 0 ) PetMailTotalnums = 0;
 #endif
 	    ch  = CHAR_getCharPointer( index);
@@ -917,17 +917,17 @@ static void PETMAIL_IdleProc5( int index)
 #ifdef _PET_LOSTPET
 		CHAR_CharSaveLostPet( index, 2);
 		LogPet(
-			"ÏµÍ³",
+			"ç³»ç»Ÿ",
 			"Watchfunc",
 			CHAR_getChar( index, CHAR_NAME),
 			CHAR_getInt( index, CHAR_LV),
-			"timeout_lost(ÏµÍ³¿ÛÁô-³èÓÊ×ÔÓÉ³è)",
+			"timeout_lost(ç³»ç»Ÿæ‰£ç•™-å® é‚®è‡ªç”±å® )",
 			CHAR_getInt( index, CHAR_FLOOR),
 			CHAR_getInt( index,CHAR_X ),
 			CHAR_getInt( index,CHAR_Y ),
 			CHAR_getChar( index, CHAR_UNIQUECODE)   // shan 2001/12/14
 		);
-		print("ÏµÍ³¿ÛÁô-³èÓÊ×ÔÓÉ³è:%s\n", CHAR_getUseName( index));
+		print("ç³»ç»Ÿæ‰£ç•™-å® é‚®è‡ªç”±å® :%s\n", CHAR_getUseName( index));
 		CHAR_CharaDelete( index);
 #else
 		LogPet(
@@ -935,7 +935,7 @@ static void PETMAIL_IdleProc5( int index)
 			CHAR_getChar( index, CHAR_OWNERCDKEY ),
 			CHAR_getChar( index, CHAR_NAME),
 			CHAR_getInt( index, CHAR_LV),
-			"FreePet(³èÓÊ±ä»Ø×ÔÓÉ³è)",
+			"FreePet(å® é‚®å˜å›è‡ªç”±å® )",
 			CHAR_getInt( index,CHAR_FLOOR),
 			CHAR_getInt( index,CHAR_X ),
 			CHAR_getInt( index,CHAR_Y ),
@@ -988,7 +988,7 @@ static void PETMAIL_returnMail( int index, int tochar_index)
 				CHAR_getChar( tochar_index, CHAR_NAME ), 
 				CHAR_getChar( tochar_index, CHAR_CDKEY ),
 				item_index,
-				"pm_returnputground(³èÓÊ->µÀ¾ßÒÑÂú½«µÀ¾ß·ÅÖÃµØÉÏ)",
+				"pm_returnputground(å® é‚®->é“å…·å·²æ»¡å°†é“å…·æ”¾ç½®åœ°ä¸Š)",
 				CHAR_getInt( index,CHAR_FLOOR),
 				CHAR_getInt( index,CHAR_X ),
 	 			CHAR_getInt( index,CHAR_Y ),
@@ -1012,14 +1012,14 @@ static void PETMAIL_returnMail( int index, int tochar_index)
 #endif
 	if( CHAR_getInt( index, CHAR_PETMAILBUFINDEX) != -1 ) {
 		snprintf( msgbuf, sizeof( msgbuf), 
-					"%s »ØÀ´ÁË£¡"
-					"ËÆºõÎŞ·¨¼ÄËÍĞÅ¼ş¡£",
+					"%s å›æ¥äº†ï¼"
+					"ä¼¼ä¹æ— æ³•å¯„é€ä¿¡ä»¶ã€‚",
 					CHAR_getUseName( index));
 		CHAR_talkToCli( tochar_index, -1, msgbuf, CHAR_COLORWHITE);
 		PETMAIL_deleteOffmsg( CHAR_getInt( index, CHAR_PETMAILBUFINDEX));
 	}else {
 		snprintf( msgbuf, sizeof( msgbuf), 
-					"%s »ØÀ´ÁË£¡", CHAR_getUseName( index));
+					"%s å›æ¥äº†ï¼", CHAR_getUseName( index));
 		CHAR_talkToCli( tochar_index, -1, msgbuf, CHAR_COLORWHITE);		
 	}
 
@@ -1038,9 +1038,9 @@ void CHAR_AutoPickupMailPet( int char_index, int petindex )
 	char category[3];
 	Char 	*ch;
 	if( !CHAR_CHECKINDEX( char_index ) ) return;
-#ifdef _AVID_TRADETRYBUG //¶ª³ö³èÎï
+#ifdef _AVID_TRADETRYBUG //ä¸¢å‡ºå® ç‰©
 	if( CHAR_getWorkInt( char_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE ){
-		CHAR_talkToCli( char_index, -1, "½»Ò××´Ì¬ÖĞÎŞ·¨×Ô¶¯Ê°»ØÓÊ¼ş³èÎï£¡", CHAR_COLORYELLOW );
+		CHAR_talkToCli( char_index, -1, "äº¤æ˜“çŠ¶æ€ä¸­æ— æ³•è‡ªåŠ¨æ‹¾å›é‚®ä»¶å® ç‰©ï¼", CHAR_COLORYELLOW );
 		return;
 	}
 #endif
@@ -1048,14 +1048,14 @@ void CHAR_AutoPickupMailPet( int char_index, int petindex )
 	havepetindex = CHAR_getCharPetElement( char_index);
 	if( havepetindex == -1 ) {
 
-		CHAR_talkToCli(char_index,-1,"³èÎïÀ¸ÒÑÂú£¡ÎŞ·¨×Ô¶¯Ê°»ØÓÊ¼ş³èÎï£¡",CHAR_COLORYELLOW);
+		CHAR_talkToCli(char_index,-1,"å® ç‰©æ å·²æ»¡ï¼æ— æ³•è‡ªåŠ¨æ‹¾å›é‚®ä»¶å® ç‰©ï¼",CHAR_COLORYELLOW);
 		// WON ADD
 		LogPet(
 			CHAR_getChar( char_index, CHAR_NAME ), 
 			CHAR_getChar( char_index, CHAR_CDKEY ),
 			CHAR_getChar( petindex, CHAR_NAME),
 			CHAR_getInt( petindex, CHAR_LV),
-			"Pet_Full(³èÎïÀ¸ÒÑÂú£¬ÎŞ·¨Ê°Æğ³èÎï)",
+			"Pet_Full(å® ç‰©æ å·²æ»¡ï¼Œæ— æ³•æ‹¾èµ·å® ç‰©)",
 			CHAR_getInt( char_index,CHAR_FLOOR),
 			CHAR_getInt( char_index,CHAR_X ),
 			CHAR_getInt( char_index,CHAR_Y ),
@@ -1082,7 +1082,7 @@ void CHAR_AutoPickupMailPet( int char_index, int petindex )
 	CHAR_setInt( petindex, CHAR_PUTPETTIME, 0);
 	CHAR_setWorkInt( petindex, CHAR_WORKOBJINDEX, -1);
 	CHAR_setInt( petindex, CHAR_MAILMODE, CHAR_PETMAIL_NONE);
-	PETMAIL_delPetMailTotalnums( 1); // M PET ×Ô¶¯¼ñÆğ
+	PETMAIL_delPetMailTotalnums( 1); // M PET è‡ªåŠ¨æ¡èµ·
 
 	strcpysafe( ch->charfunctable[CHAR_LOOPFUNC].string,
 				sizeof( ch->charfunctable[CHAR_LOOPFUNC]),"");
@@ -1098,7 +1098,7 @@ void CHAR_AutoPickupMailPet( int char_index, int petindex )
 		if( strlen( p) == 0 ) {
 			p = CHAR_getChar( petindex, CHAR_NAME);
 		}
-		snprintf( mesg,sizeof(mesg), "Ê°»ØÓÊ¼ş³èÎï %s", p);
+		snprintf( mesg,sizeof(mesg), "æ‹¾å›é‚®ä»¶å® ç‰© %s", p);
 		CHAR_talkToCli(char_index,-1,mesg,CHAR_COLORYELLOW);
 	}
 	LogPet(
@@ -1106,7 +1106,7 @@ void CHAR_AutoPickupMailPet( int char_index, int petindex )
 		CHAR_getChar( char_index, CHAR_CDKEY ),
 		CHAR_getChar( petindex, CHAR_NAME),
 		CHAR_getInt( petindex, CHAR_LV),
-		"PickupMailPet(×Ô¶¯ÊÕ»ØÓÊ³è)",
+		"PickupMailPet(è‡ªåŠ¨æ”¶å›é‚®å® )",
 		CHAR_getInt( char_index,CHAR_FLOOR),
 		CHAR_getInt( char_index,CHAR_X ),
 		CHAR_getInt( char_index,CHAR_Y ),

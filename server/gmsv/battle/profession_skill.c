@@ -24,82 +24,82 @@ static ProfressionSkillFunctionTable sProfessionSkillFunctionTable[] = {
     {"PROFESSION_VOLCANO_SPRINGS", PROFESSION_volcano_springs, 0},
     {"PROFESSION_FIRE_BALL", PROFESSION_fire_ball, 0},
     {"PROFESSION_FIRE_SPEAR", PROFESSION_fire_spear, 0},
-    {"PROFESSION_SUMMON_THUNDER", PROFESSION_summon_thunder, 0}, // ������
-    {"PROFESSION_CURRENT", PROFESSION_current, 0},               // ������
-    {"PROFESSION_STORM", PROFESSION_storm, 0},                   // ������
-    {"PROFESSION_ICE_ARROW", PROFESSION_ice_arrow, 0},           // ������
-    {"PROFESSION_ICE_CRACK", PROFESSION_ice_crack, 0},           // ������
-    {"PROFESSION_ICE_MIRROR", PROFESSION_ice_mirror, 0},         // ������
-    {"PROFESSION_DOOM", PROFESSION_doom, 0},                     // ����ĩ��
-    {"PROFESSION_BLOOD", PROFESSION_blood, 0},                   // ��Ѫ����
-    {"PROFESSION_BLOOD_WORMS", PROFESSION_blood_worms, 0},       // ��Ѫ��
-    {"PROFESSION_SIGN", PROFESSION_sign, 0},                     // һ���Ѫ
-    {"PROFESSION_FIRE_ENCLOSE", PROFESSION_fire_enclose, 0},     // ����
-    {"PROFESSION_ICE_ENCLOSE", PROFESSION_ice_eclose, 0},        // ������
+    {"PROFESSION_SUMMON_THUNDER", PROFESSION_summon_thunder, 0}, // 召雷术
+    {"PROFESSION_CURRENT", PROFESSION_current, 0},               // 电流术
+    {"PROFESSION_STORM", PROFESSION_storm, 0},                   // 暴风雨
+    {"PROFESSION_ICE_ARROW", PROFESSION_ice_arrow, 0},           // 冰箭术
+    {"PROFESSION_ICE_CRACK", PROFESSION_ice_crack, 0},           // 冰爆术
+    {"PROFESSION_ICE_MIRROR", PROFESSION_ice_mirror, 0},         // 冰镜术
+    {"PROFESSION_DOOM", PROFESSION_doom, 0},                     // 世界末日
+    {"PROFESSION_BLOOD", PROFESSION_blood, 0},                   // 嗜血成性
+    {"PROFESSION_BLOOD_WORMS", PROFESSION_blood_worms, 0},       // 嗜血蛊
+    {"PROFESSION_SIGN", PROFESSION_sign, 0},                     // 一针见血
+    {"PROFESSION_FIRE_ENCLOSE", PROFESSION_fire_enclose, 0},     // 火附体
+    {"PROFESSION_ICE_ENCLOSE", PROFESSION_ice_eclose, 0},        // 冰附体
     {"PROFESSION_THUNDER_ENCLOSE", PROFESSION_thunder_enclose, 0},
-    {"PROFESSION_FIRE_PRACTICE", PROFESSION_fire_practice, 0},   // ��ħ��������
-    {"PROFESSION_ICE_PRACTICE", PROFESSION_ice_practice, 0},     // ��ħ��������
+    {"PROFESSION_FIRE_PRACTICE", PROFESSION_fire_practice, 0},   // 火魔法熟练度
+    {"PROFESSION_ICE_PRACTICE", PROFESSION_ice_practice, 0},     // 冰魔法熟练度
     {"PROFESSION_THUNDER_PRACTICE", PROFESSION_thunder_practice, 0},
-    {"PROFESSION_ENCLOSE", PROFESSION_enclose, 0},     // ������
-    {"PROFESSION_TRANSPOSE", PROFESSION_transpose, 0}, // ���λ�λ
+    {"PROFESSION_ENCLOSE", PROFESSION_enclose, 0},     // 附身术
+    {"PROFESSION_TRANSPOSE", PROFESSION_transpose, 0}, // 移形换位
     // {"PROFESSION_ALCHEMY",	PROFESSION_alchemy, 0},
-    {"PROFESSION_CHAIN_ATK", PROFESSION_chain_atk, 0}, // ��������
-    {"PROFESSION_AVOID", PROFESSION_avoid, 0},         // �ر�
-    {"PROFESSION_WEAPON_FOCUS", PROFESSION_weapon_focus, 0}, // ����ר��
-    {"PROFESSION_REBACK", PROFESSION_reback, 0},             // ״̬�ظ�
-    {"PROFESSION_BRUST", PROFESSION_brust, 0},               // ����
-    {"PROFESSION_CHAIN_ATK_2", PROFESSION_chain_atk_2, 0}, // ˫�ع���
-    {"PROFESSION_SCAPEGOAT", PROFESSION_scapegoat, 0}, // ����Ϊ��
-    {"PROFESSION_ENRAGE", PROFESSION_enrage, 0}, // ��������
-    {"PROFESSION_ENERGY_COLLECT", PROFESSION_energy_collect, 0}, // �����ۼ�
-    {"PROFESSION_FOCUS", PROFESSION_focus, 0},                   // רעս��
-    {"PROFESSION_SHIELD_ATTACK", PROFESSION_shield_attack, 0}, // �ܻ�
-    {"PROFESSION_DUAL_WEAPON", PROFESSION_dual_weapon, 0}, // ������
-    {"PROFESSION_DEFLECT", PROFESSION_deflect, 0},         // ��
-    {"PROFESSION_THROUGH_ATTACK", PROFESSION_through_attack, 0}, // �ᴩ����
-    {"PROFESSION_CAVALRY", PROFESSION_cavalry, 0},         // ���﹥��
-    {"PROFESSION_DEAD_ATTACK", PROFESSION_dead_attack, 0}, // ��������
-    {"PROFESSION_CONVOLUTE", PROFESSION_convolute, 0}, // ��������
-    {"PROFESSION_CHAOS", PROFESSION_chaos, 0},         // ���ҹ���
+    {"PROFESSION_CHAIN_ATK", PROFESSION_chain_atk, 0}, // 连环攻击
+    {"PROFESSION_AVOID", PROFESSION_avoid, 0},         // 回避
+    {"PROFESSION_WEAPON_FOCUS", PROFESSION_weapon_focus, 0}, // 武器专精
+    {"PROFESSION_REBACK", PROFESSION_reback, 0},             // 状态回复
+    {"PROFESSION_BRUST", PROFESSION_brust, 0},               // 爆击
+    {"PROFESSION_CHAIN_ATK_2", PROFESSION_chain_atk_2, 0}, // 双重攻击
+    {"PROFESSION_SCAPEGOAT", PROFESSION_scapegoat, 0}, // 舍已为友
+    {"PROFESSION_ENRAGE", PROFESSION_enrage, 0}, // 激化攻击
+    {"PROFESSION_ENERGY_COLLECT", PROFESSION_energy_collect, 0}, // 能量聚集
+    {"PROFESSION_FOCUS", PROFESSION_focus, 0},                   // 专注战斗
+    {"PROFESSION_SHIELD_ATTACK", PROFESSION_shield_attack, 0}, // 盾击
+    {"PROFESSION_DUAL_WEAPON", PROFESSION_dual_weapon, 0}, // 二刀流
+    {"PROFESSION_DEFLECT", PROFESSION_deflect, 0},         // 格档
+    {"PROFESSION_THROUGH_ATTACK", PROFESSION_through_attack, 0}, // 贯穿攻击
+    {"PROFESSION_CAVALRY", PROFESSION_cavalry, 0},         // 座骑攻击
+    {"PROFESSION_DEAD_ATTACK", PROFESSION_dead_attack, 0}, // 濒死攻击
+    {"PROFESSION_CONVOLUTE", PROFESSION_convolute, 0}, // 回旋攻击
+    {"PROFESSION_CHAOS", PROFESSION_chaos, 0},         // 混乱攻击
 
-    // ����
-    {"PROFESSION_TRACK", PROFESSION_track, 0},           // ׷Ѱ����
-    {"PROFESSION_ESCAPE", PROFESSION_escape, 0},         // �ر�ս��
-    {"PROFESSION_DOCILE", PROFESSION_docile, 0},         // ѱ������
-    {"PROFESSION_TRAP", PROFESSION_trap, 0},             // ����
-    {"PROFESSION_ENRAGE_PET", PROFESSION_enrage_pet, 0}, // ��ŭ����
-    {"PROFESSION_DRAGNET", PROFESSION_dragnet, 0},       // ���޵���
-    {"PROFESSION_ENTWINE", PROFESSION_entwine, 0}, // ��������
-    {"PROFESSION_AUTARKY", PROFESSION_autarky, 0}, // �Ը�����
-    {"PROFESSION_PLUNDER", PROFESSION_plunder, 0}, // �����Ӷ�
-    {"PROFESSION_TOXIN_WEAPON", PROFESSION_toxin_weapon, 0}, // ��������
-    {"PROFESSION_RESIST_FIRE", PROFESSION_resist_fire, 0}, // ����
-    {"PROFESSION_RESIST_ICE", PROFESSION_resist_ice, 0},   // ������
+    // 猎人
+    {"PROFESSION_TRACK", PROFESSION_track, 0},           // 追寻敌踪
+    {"PROFESSION_ESCAPE", PROFESSION_escape, 0},         // 回避战斗
+    {"PROFESSION_DOCILE", PROFESSION_docile, 0},         // 驯伏宠物
+    {"PROFESSION_TRAP", PROFESSION_trap, 0},             // 陷阱
+    {"PROFESSION_ENRAGE_PET", PROFESSION_enrage_pet, 0}, // 激怒宠物
+    {"PROFESSION_DRAGNET", PROFESSION_dragnet, 0},       // 天罗地网
+    {"PROFESSION_ENTWINE", PROFESSION_entwine, 0}, // 树根缠绕
+    {"PROFESSION_AUTARKY", PROFESSION_autarky, 0}, // 自给自足
+    {"PROFESSION_PLUNDER", PROFESSION_plunder, 0}, // 屍体掠夺
+    {"PROFESSION_TOXIN_WEAPON", PROFESSION_toxin_weapon, 0}, // 毒素武器
+    {"PROFESSION_RESIST_FIRE", PROFESSION_resist_fire, 0}, // 火抗性
+    {"PROFESSION_RESIST_ICE", PROFESSION_resist_ice, 0},   // 冰抗性
     {"PROFESSION_RESIST_THUNDER", PROFESSION_resist_thunder,
-     0}, // �׿���
+     0}, // 雷抗性
 #ifdef _PROFESSION_ADDSKILL
-    {"PROFESSION_RESIST_F_I_T", PROFESSION_resist_f_i_t, 0}, // ��Ȼ����
-    {"PROFESSION_CALL_NATURE", PROFESSION_call_nature, 0}, // ������Ȼ
-    {"PROFESSION_BOUNDARY", PROFESSION_boundary, 0}, // �����Խ��
+    {"PROFESSION_RESIST_F_I_T", PROFESSION_resist_f_i_t, 0}, // 自然威能
+    {"PROFESSION_CALL_NATURE", PROFESSION_call_nature, 0}, // 号召自然
+    {"PROFESSION_BOUNDARY", PROFESSION_boundary, 0}, // 四属性结界
 #endif
-    {"PROFESSION_G_RESIST_FIRE", PROFESSION_g_resist_fire, 0}, // �������
-    {"PROFESSION_G_RESIST_ICE", PROFESSION_g_resist_ice, 0}, // ���������
+    {"PROFESSION_G_RESIST_FIRE", PROFESSION_g_resist_fire, 0}, // 团体火抗性
+    {"PROFESSION_G_RESIST_ICE", PROFESSION_g_resist_ice, 0}, // 团体冰抗性
     {"PROFESSION_G_RESIST_THUNDER", PROFESSION_g_resist_thunder,
-     0}, // �����׿���
-    {"PROFESSION_ATTACK_WEAK", PROFESSION_attack_weak, 0}, // ���㹥��
-    {"PROFESSION_INSTIGATE", PROFESSION_instigate, 0},     // ����
-    {"PROFESSION_OBLIVION", PROFESSION_oblivion, 0},       // ����
+     0}, // 团体雷抗性
+    {"PROFESSION_ATTACK_WEAK", PROFESSION_attack_weak, 0}, // 弱点攻击
+    {"PROFESSION_INSTIGATE", PROFESSION_instigate, 0},     // 挑拨
+    {"PROFESSION_OBLIVION", PROFESSION_oblivion, 0},       // 遗忘
 
-    // ��ͬ����
-    {"PROFESSION_FULL_MP", PROFESSION_full_mp, 0}, // ��������
-    {"PROFESSION_STRONG_BACK", PROFESSION_strong_back, 0}, // ��������
-    {"PROFESSION_STRENGTHEN", PROFESSION_strengthen, 0}, // ����ǿ��
+    // 共同技能
+    {"PROFESSION_FULL_MP", PROFESSION_full_mp, 0}, // 气力充沛
+    {"PROFESSION_STRONG_BACK", PROFESSION_strong_back, 0}, // 负重增加
+    {"PROFESSION_STRENGTHEN", PROFESSION_strengthen, 0}, // 自我强化
 
 };
 
-static int profession_skill_num; // ְҵ��������
+static int profession_skill_num; // 职业技能总数
 
-// �� profession.txt ����
+// 将 profession.txt 载入
 BOOL PROFESSION_initSkill(char *filename) {
 
   FILE *f;
@@ -159,14 +159,14 @@ BOOL PROFESSION_initSkill(char *filename) {
 
 #ifdef _PROSKILL_OPTIMUM
   profession_skill_num = max_skillid + 1;
-  print("���ְ��ID = %d ...", max_skillid);
+  print("最大职技ID = %d ...", max_skillid);
 #endif
 
   PROFESSION_skill = allocateMemory(
       sizeof(struct tagProfessionkill) * profession_skill_num + 1);
 
   if (PROFESSION_skill == NULL) {
-    fprint("�޷������ڴ� %d\n",
+    fprint("无法分配内存 %d\n",
            sizeof(struct tagProfessionkill) * profession_skill_num);
     fclose(f);
     return FALSE;
@@ -215,7 +215,7 @@ BOOL PROFESSION_initSkill(char *filename) {
       char token[256];
       int ret;
 
-#ifdef _PROSKILL_OPTIMUM // ��ȡ����ְ����ID, ֱ����ְ��ID��Table index
+#ifdef _PROSKILL_OPTIMUM // 读取本行职技的ID, 直接以职技ID当Table index
       ret = getStringFromIndexWithDelim(
           line, ",", PROFESSION_SKILL_DATACHARNUM + PROFESSION_SKILL_ID + 1,
           token, sizeof(token));
@@ -242,7 +242,7 @@ BOOL PROFESSION_initSkill(char *filename) {
                                           token, sizeof(token));
 
         if (ret == FALSE) {
-          fprint("�ļ��﷨����:%s ��%d��\n", filename,
+          fprint("文件语法错误:%s 第%d行\n", filename,
                  linenum);
           break;
         }
@@ -265,7 +265,7 @@ BOOL PROFESSION_initSkill(char *filename) {
   return TRUE;
 }
 
-// �������� profession.txt
+// 重新载入 profession.txt
 void rePROFESSION_initSkill() {
   freeMemory(PROFESSION_skill);
   PROFESSION_initSkill(getProfession());
@@ -331,7 +331,7 @@ int PROFESSION_SKILL_getskillArray(int skillid) {
     return PROFESSION_skill[skillid].data[PROFESSION_SKILL_ID];
 #else
   int i;
-  for (i = 0; i <= profession_skill_num; i++) { // ���Ż�
+  for (i = 0; i <= profession_skill_num; i++) { // 待优化
     if (PROFESSION_skill[i].data[PROFESSION_SKILL_ID] == skillid)
       return i;
   }
@@ -368,7 +368,7 @@ int PROFESSION_SKILL_Use(int char_index, int skill, int toNo, char *data) {
     return -1;
 #ifdef _DISABLE_PROFESSION_SKILL
   if (getDisableProfessionSkill(CHAR_getInt(char_index, CHAR_FLOOR)) == TRUE) {
-    CHAR_talkToCli(char_index, -1, "职业技能禁止在当前区域释放!",
+    CHAR_talkToCli(char_index, -1, "该地图已禁止使用职业技能!",
                    CHAR_COLORYELLOW);
     return -1;
   }
@@ -385,7 +385,7 @@ int PROFESSION_SKILL_Use(int char_index, int skill, int toNo, char *data) {
     return ret;
   }
 
-#ifdef _PROSKILL_OPTIMUM // Robin fix ���ְҵ�Ƿ����
+#ifdef _PROSKILL_OPTIMUM // Robin fix 检查职业是否相符
   char_pskill = CHAR_getInt(char_index, PROFESSION_CLASS);
   profession_skill =
       PROFESSION_SKILL_getInt(Pskillid, PROFESSION_SKILL_PROFESSION_CLASS);
@@ -537,7 +537,7 @@ void PROFESSION_SKILL_WEAPON_FOCUS_LVEVEL_UP(int char_index, char *name) {
     sprintf(diff, "弓");
     break;
   case ITEM_BOOMERANG:
-    sprintf(diff, "��");
+    sprintf(diff, "镖");
     break;
   case ITEM_BOUNDTHROW:
     sprintf(diff, "Ͷ");
@@ -546,7 +546,7 @@ void PROFESSION_SKILL_WEAPON_FOCUS_LVEVEL_UP(int char_index, char *name) {
     sprintf(diff, "ʯ");
     break;
   default:
-    sprintf(diff, "��");
+    sprintf(diff, "无");
     break;
   }
 
@@ -586,7 +586,7 @@ void PROFESSION_SKILL_WEAPON_FOCUS_LVEVEL_UP(int char_index, char *name) {
   return;
 }
 
-// ���� MP
+// 耗损 MP
 int PROFESSION_SKILL_DEC_COST_MP(int char_index, int skill, int Pskillid,
                                  int skill_level) {
 
@@ -594,21 +594,21 @@ int PROFESSION_SKILL_DEC_COST_MP(int char_index, int skill, int Pskillid,
     int dec_mp;
     int old_mp = CHAR_getInt(char_index, CHAR_MP);
     int mp = 0;
-    // ȡ������ MP
+    // 取出耗损 MP
     if ((dec_mp = PROFESSION_MAGIC_COST_MP(char_index, skill)) == -1)
       dec_mp = PROFESSION_SKILL_getInt(Pskillid, PROFESSION_SKILL_COST_MP);
-    // ��� MP��
+    // 检查 MP量
     if (old_mp < dec_mp)
       return -1;
-    // ��Ѫ����
+    // 嗜血成性
     if (Pskillid != 11
 #ifdef _PROFESSION_ADDSKILL
-    //	&& Pskillid != 2 //������Բ��� MP
+    //	&& Pskillid != 2 //针针相对不扣 MP
 #endif
     )
       if (dec_mp <= 0)
         return -1;
-    // �۵����� MP
+    // 扣掉人物 MP
     mp = old_mp - dec_mp;
     if (mp < 0)
       mp = 0;
@@ -638,7 +638,7 @@ void PROFESSION_NORMAL_SKILL_LEVLE_UP(Skill *skill, int Pskillid,
 
     if ((skill_level % 100) == 0) {
       char msg[256];
-      sprintf(msg, "%s��������������Ϊ%d",
+      sprintf(msg, "%s技能熟练度上升为%d",
               PROFESSION_SKILL_getChar(Pskillid, PROFESSION_SKILL_NAME),
               skill_level / 100);
       CHAR_talkToCli(char_index, -1, msg, CHAR_COLORYELLOW);
@@ -655,7 +655,7 @@ void PROFESSION_LEVEL_CHECK_UP(int char_index) {
   int next_level_need_point = 9999999;
   CHAR_HaveSkill *hskill;
 
-  // ��һ��ְҵ��������
+  // 下一级职业升级点数
   next_level_need_point = old_level * 70 * 100;
 
   for (i = 0; i < CHAR_SKILLMAXHAVE; i++) {
@@ -685,7 +685,7 @@ void PROFESSION_LEVEL_CHECK_UP(int char_index) {
     CHAR_sendCToArroundCharacter(
         CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
 
-    sprintf(msg, "ְҵ�ȼ�����Ϊ%d�������ܵ�����������", old_level + 1);
+    sprintf(msg, "职业等级上升为%d级，技能点数上升１点", old_level + 1);
     CHAR_talkToCli(char_index, -1, msg, CHAR_COLORYELLOW);
   }
 }
@@ -818,7 +818,7 @@ int PROFESSION_ice_arrow(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-������
+// 巫师技能-火星球
 int PROFESSION_ice_crack(int char_index, int toNo, int array, char *data,
                          int skill_level) {
   if (toNo > 19)
@@ -828,7 +828,7 @@ int PROFESSION_ice_crack(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-������
+// 巫师技能-火龙枪
 int PROFESSION_ice_mirror(int char_index, int toNo, int array, char *data,
                           int skill_level) {
   if (toNo > 19)
@@ -838,7 +838,7 @@ int PROFESSION_ice_mirror(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-����ĩ��
+// 巫师技能-召雷术
 int PROFESSION_doom(int char_index, int toNo, int array, char *data,
                     int skill_level) {
   if (toNo != 20 && toNo != 21)
@@ -848,7 +848,7 @@ int PROFESSION_doom(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-��Ѫ����
+// 巫师技能-电流术
 int PROFESSION_blood(int char_index, int toNo, int array, char *data,
                      int skill_level) {
   if (toNo > 19)
@@ -858,7 +858,7 @@ int PROFESSION_blood(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-��Ѫ��
+// 巫师技能-暴风雨
 int PROFESSION_blood_worms(int char_index, int toNo, int array, char *data,
                            int skill_level) {
   if (toNo > 19)
@@ -868,7 +868,7 @@ int PROFESSION_blood_worms(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-һ���Ѫ
+// 巫师技能-冰箭术
 int PROFESSION_sign(int char_index, int toNo, int array, char *data,
                     int skill_level) {
   if (toNo != 20 && toNo != 21)
@@ -878,7 +878,7 @@ int PROFESSION_sign(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-����
+// 巫师技能-冰爆术
 int PROFESSION_fire_enclose(int char_index, int toNo, int array, char *data,
                             int skill_level) {
   if (toNo > 19)
@@ -888,7 +888,7 @@ int PROFESSION_fire_enclose(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-������
+// 巫师技能-冰镜术
 int PROFESSION_ice_eclose(int char_index, int toNo, int array, char *data,
                           int skill_level) {
   if (toNo > 19)
@@ -898,7 +898,7 @@ int PROFESSION_ice_eclose(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-�׸���
+// 巫师技能-世界末日
 int PROFESSION_thunder_enclose(int char_index, int toNo, int array, char *data,
                                int skill_level) {
   if (toNo > 19)
@@ -908,25 +908,25 @@ int PROFESSION_thunder_enclose(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-��ħ��������
+// 巫师技能-嗜血成性
 int PROFESSION_fire_practice(int char_index, int toNo, int array, char *data,
                              int skill_level) {
   return TRUE;
 }
 
-// ��ʦ����-��ħ��������
+// 巫师技能-嗜血蛊
 int PROFESSION_ice_practice(int char_index, int toNo, int array, char *data,
                             int skill_level) {
   return TRUE;
 }
 
-// ��ʦ����-��ħ��������
+// 巫师技能-一针见血
 int PROFESSION_thunder_practice(int char_index, int toNo, int array, char *data,
                                 int skill_level) {
   return TRUE;
 }
 
-// ��ʦ����-������
+// 巫师技能-火附体
 int PROFESSION_enclose(int char_index, int toNo, int array, char *data,
                        int skill_level) {
   if (toNo > 19)
@@ -936,7 +936,7 @@ int PROFESSION_enclose(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʦ����-���λ�λ
+// 巫师技能-冰附体
 int PROFESSION_transpose(int char_index, int toNo, int array, char *data,
                          int skill_level) {
   if (toNo > 19)
@@ -948,7 +948,7 @@ int PROFESSION_transpose(int char_index, int toNo, int array, char *data,
 
 /*----------------------------------------------------------------------*/
 
-// ��ʿ����-����
+// 猎人技能-陷阱
 int PROFESSION_brust(int char_index, int toNo, int array, char *data,
                      int skill_level) {
   if (toNo > 19)
@@ -958,7 +958,7 @@ int PROFESSION_brust(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-��������
+// 猎人技能-驯伏宠物
 int PROFESSION_chain_atk(int char_index, int toNo, int array, char *data,
                          int skill_level) {
   if (toNo > 19)
@@ -968,7 +968,7 @@ int PROFESSION_chain_atk(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-�ر�
+// 猎人技能-激怒宠物
 int PROFESSION_avoid(int char_index, int toNo, int array, char *data,
                      int skill_level) {
   if (toNo > 19)
@@ -978,7 +978,7 @@ int PROFESSION_avoid(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-��Ѫ
+// 猎人技能-天罗地网
 int PROFESSION_recovery(int char_index, int toNo, int array, char *data,
                         int skill_level) {
   if (toNo > 19)
@@ -988,13 +988,13 @@ int PROFESSION_recovery(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-����ר��
+// 猎人技能-树根缠绕
 int PROFESSION_weapon_focus(int char_index, int toNo, int array, char *data,
                             int skill_level) {
   return TRUE;
 }
 
-// ��ʿ����-״̬�ظ�
+// 猎人技能-自给自足
 int PROFESSION_reback(int char_index, int toNo, int array, char *data,
                       int skill_level) {
   if (toNo > 19)
@@ -1004,7 +1004,7 @@ int PROFESSION_reback(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-˫�ع���
+// 猎人技能-屍体掠夺
 int PROFESSION_chain_atk_2(int char_index, int toNo, int array, char *data,
                            int skill_level) {
   if (toNo > 19)
@@ -1014,7 +1014,7 @@ int PROFESSION_chain_atk_2(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-����Ϊ��
+// 猎人技能-毒素武器
 int PROFESSION_scapegoat(int char_index, int toNo, int array, char *data,
                          int skill_level) {
   if (toNo > 19)
@@ -1024,7 +1024,7 @@ int PROFESSION_scapegoat(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-��������
+// 猎人技能-火抗性提升
 int PROFESSION_enrage(int char_index, int toNo, int array, char *data,
                       int skill_level) {
   if (toNo > 19)
@@ -1034,7 +1034,7 @@ int PROFESSION_enrage(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-�����ۼ�
+// 猎人技能-冰抗性提升
 int PROFESSION_energy_collect(int char_index, int toNo, int array, char *data,
                               int skill_level) {
   if (toNo > 19)
@@ -1044,7 +1044,7 @@ int PROFESSION_energy_collect(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-רעս��
+// 猎人技能-雷抗性提升
 int PROFESSION_focus(int char_index, int toNo, int array, char *data,
                      int skill_level) {
   if (toNo > 19)
@@ -1054,7 +1054,7 @@ int PROFESSION_focus(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-�ܻ�
+// 勇士技能-盾击
 int PROFESSION_shield_attack(int char_index, int toNo, int array, char *data,
                              int skill_level) {
   if (toNo > 19)
@@ -1064,13 +1064,13 @@ int PROFESSION_shield_attack(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-������
+// 勇士技能-二刀流
 int PROFESSION_dual_weapon(int char_index, int toNo, int array, char *data,
                            int skill_level) {
   return TRUE;
 }
 
-// ��ʿ����-��
+// 勇士技能-格档
 int PROFESSION_deflect(int char_index, int toNo, int array, char *data,
                        int skill_level) {
   if (toNo > 19)
@@ -1080,7 +1080,7 @@ int PROFESSION_deflect(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-�ᴩ����
+// 勇士技能-贯穿攻击
 int PROFESSION_through_attack(int char_index, int toNo, int array, char *data,
                               int skill_level) {
   if (toNo > 19)
@@ -1090,7 +1090,7 @@ int PROFESSION_through_attack(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-���﹥��
+// 勇士技能-座骑攻击
 int PROFESSION_cavalry(int char_index, int toNo, int array, char *data,
                        int skill_level) {
   if (toNo > 19)
@@ -1100,7 +1100,7 @@ int PROFESSION_cavalry(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-��������
+// 勇士技能-濒死攻击
 int PROFESSION_dead_attack(int char_index, int toNo, int array, char *data,
                            int skill_level) {
   if (toNo > 19)
@@ -1110,7 +1110,7 @@ int PROFESSION_dead_attack(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-��������
+// 勇士技能-回旋攻击
 int PROFESSION_convolute(int char_index, int toNo, int array, char *data,
                          int skill_level) {
   if (toNo < 21)
@@ -1120,7 +1120,7 @@ int PROFESSION_convolute(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ��ʿ����-���ҹ���
+// 勇士技能-混乱攻击
 int PROFESSION_chaos(int char_index, int toNo, int array, char *data,
                      int skill_level) {
   if (toNo > 19)
@@ -1132,7 +1132,7 @@ int PROFESSION_chaos(int char_index, int toNo, int array, char *data,
 
 /*----------------------------------------------------------------------*/
 
-// ���˼���-����
+// 猎人技能-陷阱
 int PROFESSION_trap(int char_index, int toNo, int array, char *data,
                     int skill_level) {
   if (toNo > 19)
@@ -1142,7 +1142,7 @@ int PROFESSION_trap(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ���˼���-ѱ������
+// 猎人技能-驯伏宠物
 int PROFESSION_docile(int char_index, int toNo, int array, char *data,
                       int skill_level) {
   if (toNo > 19)
@@ -1152,7 +1152,7 @@ int PROFESSION_docile(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ���˼���-��ŭ����
+// 猎人技能-激怒宠物
 int PROFESSION_enrage_pet(int char_index, int toNo, int array, char *data,
                           int skill_level) {
   if (toNo > 19)
@@ -1162,7 +1162,7 @@ int PROFESSION_enrage_pet(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ���˼���-���޵���
+// 猎人技能-天罗地网
 int PROFESSION_dragnet(int char_index, int toNo, int array, char *data,
                        int skill_level) {
   if (toNo > 19)
@@ -1172,7 +1172,7 @@ int PROFESSION_dragnet(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ���˼���-��������
+// 猎人技能-树根缠绕
 int PROFESSION_entwine(int char_index, int toNo, int array, char *data,
                        int skill_level) {
   if (toNo > 19)
@@ -1182,7 +1182,7 @@ int PROFESSION_entwine(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ���˼���-�Ը�����
+// 猎人技能-自给自足
 int PROFESSION_autarky(int char_index, int toNo, int array, char *data,
                        int skill_level) {
   return TRUE;
@@ -1224,7 +1224,7 @@ int PROFESSION_resist_ice(int char_index, int toNo, int array, char *data,
   return TRUE;
 }
 
-// ���˼���-�׿�������
+// 猎人技能-雷抗性提升
 int PROFESSION_resist_thunder(int char_index, int toNo, int array, char *data,
                               int skill_level) {
   if (toNo > 19)
@@ -1235,7 +1235,7 @@ int PROFESSION_resist_thunder(int char_index, int toNo, int array, char *data,
 }
 
 #ifdef _PROFESSION_ADDSKILL
-// ���˼���-��Ȼ����
+// 猎人技能-自然威能
 int PROFESSION_resist_f_i_t(int char_index, int toNo, int array, char *data,
                             int skill_level) {
   if (toNo > 19)
@@ -1244,7 +1244,7 @@ int PROFESSION_resist_f_i_t(int char_index, int toNo, int array, char *data,
                         BATTLE_COM_S_RESIST_F_I_T);
   return TRUE;
 }
-// ���˼���-������Ȼ
+// 猎人技能-号召自然
 int PROFESSION_call_nature(int char_index, int toNo, int array, char *data,
                            int skill_level) {
   if (toNo != 20 && toNo != 21)
@@ -1253,7 +1253,7 @@ int PROFESSION_call_nature(int char_index, int toNo, int array, char *data,
                         BATTLE_COM_S_CALL_NATURE);
   return TRUE;
 }
-// ���˼���-�����Խ��
+// 猎人技能-四属性结界
 int PROFESSION_boundary(int char_index, int toNo, int array, char *data,
                         int skill_level) {
   if (toNo != 20 && toNo != 21)
@@ -1330,14 +1330,14 @@ int PROFESSION_track(int char_index, int toNo, int array, char *data,
 
   pszOption = PROFESSION_SKILL_getChar(array, PROFESSION_SKILL_OPTION);
 
-  if ((pszP = strstr(pszOption, "��%")) != NULL)
+  if ((pszP = strstr(pszOption, "倍%")) != NULL)
     sscanf(pszP + 3, "%d", &rate);
   per = skill_level * rate;
 
   img1 = PROFESSION_SKILL_getInt(array, PROFESSION_SKILL_IMG_1);
 
   CHAR_setWorkInt(char_index, CHAR_ENCOUNT_FIX, per);
-  CHAR_talkToCli(char_index, -1, "����������", CHAR_COLORRED);
+  CHAR_talkToCli(char_index, -1, "遇敌率上升", CHAR_COLORRED);
   CHAR_setWorkInt(char_index, CHAR_ENCOUNT_NUM, (int)time(NULL) + (60 * 3));
 
   sprintf(msg, "%d", img1);
@@ -1356,13 +1356,13 @@ int PROFESSION_escape(int char_index, int toNo, int array, char *data,
     ret = -1;
   }
   pszOption = PROFESSION_SKILL_getChar(array, PROFESSION_SKILL_OPTION);
-  if ((pszP = strstr(pszOption, "��%")) != NULL)
+  if ((pszP = strstr(pszOption, "倍%")) != NULL)
     sscanf(pszP + 3, "%d", &rate);
   per = skill_level * rate;
   img1 = PROFESSION_SKILL_getInt(array, PROFESSION_SKILL_IMG_1);
 
   CHAR_setWorkInt(char_index, CHAR_ENCOUNT_FIX, (-1) * per);
-  CHAR_talkToCli(char_index, -1, "�������½�", CHAR_COLORGREEN);
+  CHAR_talkToCli(char_index, -1, "遇敌率下降", CHAR_COLORGREEN);
 
   CHAR_setWorkInt(char_index, CHAR_ENCOUNT_NUM, (int)time(NULL) + (60 * 3));
 

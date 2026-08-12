@@ -41,7 +41,7 @@ int BATTLE_ai_all(int battleindex, int side, int turn) {
     mode = CHAR_getWorkInt(char_index, CHAR_WORKTACTICS);
     if (mode < 0 || mode >= arraysizeof(functbl)) {
       print(
-          "BATTLE_ai_all ��,ս���߼�ģʽ�����(%s)(%d)\n",
+          "BATTLE_ai_all 中,战斗逻辑模式很奇怪(%s)(%d)\n",
           CHAR_getUseName(char_index), mode);
       mode = 1;
     }
@@ -114,7 +114,7 @@ int BATTLE_ai_one(int char_index, int battleindex, int side, int turn) {
   struct B_AI_RESULT result;
   int mode;
 
-  /* �ɷ¶������������� */
+  /* 由仿丢□正民尼永弁 */
   if (BATTLE_CHECKINDEX(battleindex) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
   if (BATTLE_CHECKSIDE(side) == FALSE)
@@ -203,11 +203,11 @@ typedef enum {
 
 static int BATTLE_ai_normal(int turn, int char_index, BATTLE_ENTRY *pEntry,
                             struct B_AI_RESULT *result) {
-  int at[B_AI_NORMAL_ATTACKSUBOPTIONNUM] = {0, 0, 0}; /*   ����������� */
-  int gu[B_AI_NORMAL_GUARDSUBOPTIONNUM] = {0}; /* ��������� */
-  int ma[B_AI_NORMAL_MAGICSUBOPTIONNUM] = {0}; /* ��������� */
-  int es[B_AI_NORMAL_ESCAPESUBOPTIONNUM] = {0}; /* ��������� */
-  int wa[B_AI_NORMAL_WAZASUBOPTIONNUM] = {0, 0, 0, 0, 0, 0, 0}; /* ��������� */
+  int at[B_AI_NORMAL_ATTACKSUBOPTIONNUM] = {0, 0, 0}; /*   猾左皿扑亦件 */
+  int gu[B_AI_NORMAL_GUARDSUBOPTIONNUM] = {0}; /* 左皿扑亦件 */
+  int ma[B_AI_NORMAL_MAGICSUBOPTIONNUM] = {0}; /* 左皿扑亦件 */
+  int es[B_AI_NORMAL_ESCAPESUBOPTIONNUM] = {0}; /* 左皿扑亦件 */
+  int wa[B_AI_NORMAL_WAZASUBOPTIONNUM] = {0, 0, 0, 0, 0, 0, 0}; /* 左皿扑亦件 */
 #ifdef _ENEMY_ATTACK_AI
   int rn[B_AI_NORMAL_RANDOMOPTIONNUM] = {1};
 #endif
@@ -221,7 +221,7 @@ static int BATTLE_ai_normal(int turn, int char_index, BATTLE_ENTRY *pEntry,
   char buff2[256];
 
   if (turn == 1) {
-    print("Ӧ��û����¡�\n");
+    print("应该没这回事。\n");
     return FALSE;
   }
   if (NPC_Util_GetStrFromStrWithDelim(
@@ -326,7 +326,7 @@ static int BATTLE_ai_normal(int turn, int char_index, BATTLE_ENTRY *pEntry,
         break;
     }
     if (i >= B_AI_NORMAL_WAZASUBOPTIONNUM) {
-      print("��ָ���κεĹ�����ʽ��\n");
+      print("无指定任何的攻击方式。\n");
       return FALSE;
     }
   }

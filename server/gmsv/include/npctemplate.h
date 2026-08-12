@@ -22,10 +22,10 @@ typedef struct tagNPC_haveItem
 
 typedef enum
 {
-    NPC_TEMPLATENAME,           /*    ¼þÃóÒÁ¡õÐþ¼°  ó¡  */
-    NPC_TEMPLATECHARNAME,       /*    ó¡    */
+    NPC_TEMPLATENAME,           /*    ä»¶çš¿ä¼Šâ–¡çŽ„åŠ  èŸ†  */
+    NPC_TEMPLATECHARNAME,       /*    èŸ†    */
 
-    NPC_TEMPLATEINITFUNC,       /*  CHAR_INITFUNC±åµæÈÊ */
+    NPC_TEMPLATEINITFUNC,       /*  CHAR_INITFUNCåžåž«ä» */
     NPC_TEMPLATEWALKPREFUNC,    /*  CHAR_WALKPREFUNC    */
     NPC_TEMPLATEWALKPOSTFUNC,   /*  CHAR_WALKPOSTFUNC   */
     NPC_TEMPLATEPREOVERFUNC,    /*  CHAR_PREOVERFUNC    */
@@ -54,17 +54,17 @@ typedef enum
 
 typedef enum
 {
-  NPC_TEMPLATEMAKEATNOBODY,           /* ²¾ÊÖÖÐØ¦ÖÐÁÝ±åÊÖ×ÛÔÂ¾®Éýµ¤¾® */
-  NPC_TEMPLATEMAKEATNOSEE,            /* Î­ÒüØ¦ÖÐô÷Æ¥×ÛÔÂ¾®Éýµ¤¾®    */
-  NPC_TEMPLATEIMAGENUMBER,            /*   ì«  Ä¯    */
-  NPC_TEMPLATETYPE,                   /*     è£»§ÔÂÁÝ±åè£»§ÔÂ        */
+  NPC_TEMPLATEMAKEATNOBODY,           /* ç°¿æ‰‹ä¸­å…ä¸­å‡›åžæ‰‹ç»¼æœˆäº•å‡ä¸¹äº• */
+  NPC_TEMPLATEMAKEATNOSEE,            /* è‹‡å°¹å…ä¸­èµ­åŒ¹ç»¼æœˆäº•å‡ä¸¹äº•    */
+  NPC_TEMPLATEIMAGENUMBER,            /*   é£“  å¯ž    */
+  NPC_TEMPLATETYPE,                   /*     ç‘æˆ·æœˆå‡›åžç‘æˆ·æœˆ        */
 
   NPC_TEMPLATEMINHP,                  /* HP   */
   NPC_TEMPLATEMINMP,                  /* MP   */
   NPC_TEMPLATEMINSTR,                 /* STR  */
   NPC_TEMPLATEMINTOUGH,               /* TOUGH    */
-  NPC_TEMPLATEISFLYING,               /*  ÊÏÆ¥ÔÂ¾®Éýµ¤¾®  */
-  NPC_TEMPLATEITEMNUM,                /*   ÇÐµ¤ÔÂÊ§ÄÌ  Ø©¼°    ÐÑ    */
+  NPC_TEMPLATEISFLYING,               /*  æ°åŒ¹æœˆäº•å‡ä¸¹äº•  */
+  NPC_TEMPLATEITEMNUM,                /*   åˆ‡ä¸¹æœˆå¤±å¥¶  ä¸žåŠ    é†’    */
   NPC_TEMPLATELOOPFUNCTIME,
   NPC_TEMPLATEFUNCTIONINDEX,
   NPC_TEMPLATEINTNUM,

@@ -107,7 +107,7 @@ int SERVSTATE_getDsptime(void);
 void SERVSTATE_setDsptime(int a);
 void SERVSTATE_setLimittime(int a);
 
-/* �����þ� */
+/* 公及幻井 */
 void outputNetProcLog(int fd, int mode);
 void chardatasavecheck(void);
 void closeAllConnectionandSaveData(void);
@@ -167,10 +167,10 @@ void CONNECT_setJoinpartychar_index(int fd, int i, int a);
 int CONNECT_getJoinpartychar_index(int fd, int i);
 void CONNECT_setTradecardchar_index(int fd, int i, int a);
 int CONNECT_getTradecardchar_index(int fd, int i);
-/* MT����������Ѩ�ͷ� */
+/* MT犯田永弘迕穴弁夫 */
 #define CONNECT_endOne_debug(a) CONNECT_endOne((a), __LINE__)
 
-/* ��������������(��������ľ������ɱ��) */
+/* 犯□正丑综楮醒(引月切允木匀升覆杀迕) */
 void CONNECT_setCDKEY(int sockfd, char *cd);
 void CONNECT_getCDKEY(int sockfd, char *out, int outlen);
 void CONNECT_setState(int fd, int s);
@@ -280,9 +280,9 @@ BOOL OtherSaacConnect(void);
 
 #ifdef _EPOLL_ET_MODE
 int doSocketAccept();
-// ����
+// 接收
 void doSocketRecv(struct epoll_event ev);
-// ����
+// 发送
 void doSocketSend(struct epoll_event ev);
 // void doSocketSend();
 BOOL CONNECT_checkthreadflag(int fd, int flag);

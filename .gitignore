@@ -18,3 +18,5 @@ csa
 test
 server/saac/acserv.cf
 .DS_Store
+docs/
+script/

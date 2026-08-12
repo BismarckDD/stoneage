@@ -124,7 +124,7 @@ int MAPPOINT_getMPointEVType(int warp_point_idx) {
 
 int MAPPOINT_setMapWarpFrom(int warp_point_idx, char *line) {
   if (MAPPOINT_CHECKINDEX(warp_point_idx)) {
-    print("设置传送点入口 :%s!!\n", line);
+    print("放置传送点获得 :%s!!\n", line);
     return -1;
   }
   if (GetPoint(line, &map_warp_point[warp_point_idx].ofloor,
@@ -137,7 +137,7 @@ int MAPPOINT_setMapWarpFrom(int warp_point_idx, char *line) {
 
 int MAPPOINT_setMapWarpGoal(int warp_point_idx, char *line) {
   if (MAPPOINT_CHECKINDEX(warp_point_idx)) {
-    print("设置传送点出口 :%s!!\n", line);
+    print("放置传送点获得 :%s!!\n", line);
     return -1;
   }
   if (GetPoint(line, &map_warp_point[warp_point_idx].ofloor,

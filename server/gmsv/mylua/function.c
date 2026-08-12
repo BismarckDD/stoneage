@@ -132,7 +132,7 @@ char *GetCharNewTitleName(int char_index, int id) {
     return TRUE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, id);
 
@@ -220,7 +220,7 @@ int FreeCharDelet(int fd, char *cdkey, char *passwd) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, fd);
   lua_pushstring(lua, cdkey);
   lua_pushstring(lua, passwd);
@@ -253,7 +253,7 @@ BOOL BattleCommand(int char_index, int battleindex) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, battleindex);
   docall(lua, 2, 1);
@@ -276,7 +276,7 @@ BOOL FreeSelectBattlePet(int char_index, int petarray) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η���2������
+  // 依次放入2个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, petarray);
   if (lua_pcall(lua, 2, 1, 0) != 0)
@@ -311,7 +311,7 @@ int FreeItemInslay(int char_index, int inslayindex, int item_index) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, inslayindex);
   lua_pushnumber(lua, item_index);
@@ -345,7 +345,7 @@ int FreeCtrlTransDevelop(int petindex, int type) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, petindex);
   lua_pushnumber(lua, type);
 
@@ -377,7 +377,7 @@ int FreeFmPk() {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   if (lua_pcall(lua, 0, 1, 0) != 0)
     luaL_error(lua, "error running function `f': %s", lua_tostring(lua, -1));
 
@@ -406,7 +406,7 @@ int FreeStreetVendorPet(int char_index, int petindex) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, petindex);
 
@@ -438,7 +438,7 @@ int FreeStreetVendorItem(int char_index, int item_index) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -470,7 +470,7 @@ int FreeTradePet(int char_index, int petindex) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, petindex);
 
@@ -502,7 +502,7 @@ int FreeTradeItem(int char_index, int item_index) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -535,7 +535,7 @@ int FreeDropItem(int char_index, int item_index) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -568,7 +568,7 @@ int FreeLockPetSave(int char_index, int petindex) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, petindex);
 
@@ -600,7 +600,7 @@ void FreeAddFMAdv(int char_index, int shiftbit) {
     lua_pop(lua, 1);
     return;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, shiftbit);
   docall(lua, 2, 1);
@@ -621,7 +621,7 @@ void FreeFirstLockPet(int char_index, int petindex) {
     lua_pop(lua, 1);
     return;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, petindex);
 
@@ -642,7 +642,7 @@ void FreeFirstLockItem(int char_index, int item_index) {
     lua_pop(lua, 1);
     return;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -665,7 +665,7 @@ void FreeCharExpSave(int charindex, int exp) {
     lua_pop(lua, 1);
     return;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, charindex);
   lua_pushnumber(lua, exp);
 
@@ -687,7 +687,7 @@ int FreeFusionTableForBase(int MainIndex, int Subindex1, int Subindex2) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, MainIndex);
   lua_pushnumber(lua, Subindex1);
   lua_pushnumber(lua, Subindex2);
@@ -719,7 +719,7 @@ BOOL FreeFusionSkill(int petskill) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η���һ������
+  // 依次放入一个参数
   lua_pushnumber(lua, petskill);
   if (lua_pcall(lua, 1, 1, 0) != 0)
     luaL_error(lua, "error running function `f': %s", lua_tostring(lua, -1));
@@ -774,7 +774,7 @@ int FreeModeExp(int charindex, int getexp, int modexp) {
     lua_pop(lua, 1);
     return 1;
   }
-  // ���η���һ������
+  // 依次放入一个参数
   lua_pushnumber(lua, charindex);
   lua_pushnumber(lua, getexp);
   lua_pushnumber(lua, modexp);
@@ -806,7 +806,7 @@ BOOL FreePlayerExp(int char_index) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η���һ������
+  // 依次放入一个参数
   lua_pushnumber(lua, char_index);
 
   if (lua_pcall(lua, 1, 1, 0) != 0)
@@ -883,7 +883,7 @@ BOOL FreeFameFeatures(int char_index, int kind, int flg) {
     lua_pop(lua, 1);
     return FALSE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, kind);
   lua_pushnumber(lua, flg);
@@ -908,7 +908,7 @@ BOOL FreeComplianceParameter(int char_index) {
     lua_pop(lua, 1);
     return FALSE;
   }
-  // ���η���һ������
+  // 依次放入一个参数
   lua_pushnumber(lua, char_index);
 
   docall(lua, 1, 1);
@@ -931,7 +931,7 @@ BOOL FreeLoginCheck(int fd) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η���һ������
+  // 依次放入一个参数
   lua_pushnumber(lua, fd);
 
   if (lua_pcall(lua, 1, 1, 0) != 0)
@@ -962,7 +962,7 @@ BOOL FreeCharLogout(int char_index) {
     lua_pop(lua, 1);
     return FALSE;
   }
-  // ���η���һ������
+  // 依次放入一个参数
   lua_pushnumber(lua, char_index);
   docall(lua, 1, 1);
 
@@ -985,7 +985,7 @@ BOOL EquipEffectFunction(int char_index, int id) {
     return TRUE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, id);
 
@@ -1016,7 +1016,7 @@ BOOL EquipChangeFunction(int char_index, int id) {
     return TRUE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, id);
 
@@ -1073,7 +1073,7 @@ BOOL ItemOverlapFunction(int charindex, int fromitem_index, int toitem_index) {
       mylua = mylua->next;
       continue;
     }
-    // ���η����������
+    // 依次放入二个参数
     lua_pushnumber(mylua->lua, charindex);
     lua_pushnumber(mylua->lua, fromitem_index);
     lua_pushnumber(mylua->lua, toitem_index);
@@ -1105,7 +1105,7 @@ BOOL ItemOverlapedFunction(int charindex, int fromitem_index, int fromid,
       mylua = mylua->next;
       continue;
     }
-    // ���η����������
+    // 依次放入二个参数
     lua_pushnumber(mylua->lua, charindex);
     lua_pushnumber(mylua->lua, fromitem_index);
     lua_pushnumber(mylua->lua, fromid);
@@ -1136,7 +1136,7 @@ BOOL BattleFinishPvEFunction(int battleindex, int char_index) {
     return TRUE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, battleindex);
   lua_pushnumber(lua, char_index);
 
@@ -1162,7 +1162,7 @@ BOOL BattleFinishFunction(int char_index, int battletime, int battleturn,
     return TRUE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, battletime);
   lua_pushnumber(lua, battleturn);
@@ -1190,7 +1190,7 @@ BOOL BattleStartFunction(int battleindex) {
     return TRUE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, battleindex);
 
   docall(lua, 1, 1);
@@ -1205,7 +1205,7 @@ BOOL SetBattleEnmeyFunction(int meindex, int enemy_index, int id) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, meindex);
   lua_pushnumber(lua, enemy_index);
   lua_pushnumber(lua, id);
@@ -1227,7 +1227,7 @@ BOOL CaptureOkFunction(int attackindex, int defindex) {
       mylua = mylua->next;
       continue;
     }
-    // ���η����������
+    // 依次放入二个参数
     lua_pushnumber(mylua->lua, attackindex);
     lua_pushnumber(mylua->lua, defindex);
 
@@ -1254,7 +1254,7 @@ BOOL CaptureCheckFunction(int attackindex, int defindex) {
     return TRUE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, attackindex);
   lua_pushnumber(lua, defindex);
 
@@ -1321,7 +1321,7 @@ BOOL CharTalkFunction(int char_index, char *message, int color) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushstring(lua, message);
   lua_pushnumber(lua, color);
@@ -1353,7 +1353,7 @@ BOOL FamilyRideFunction(int meindex, int petindex, int petid) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, meindex);
   lua_pushnumber(lua, petindex);
   lua_pushnumber(lua, petid);
@@ -1403,7 +1403,7 @@ BOOL FreeCharCreate(int char_index) {
     lua_pop(lua, 1);
     return FALSE;
   }
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
 
   docall(lua, 1, 1);
@@ -1455,7 +1455,7 @@ BOOL FreeVsPlayer(int char_index, int toindex) {
     lua_pop(lua, 1);
     return FALSE;
   }
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, toindex);
 
@@ -1480,7 +1480,7 @@ BOOL FreePartyJoin(int char_index, int toindex) {
       mylua = mylua->next;
       continue;
     }
-    // ���η����������
+    // 依次放入二个参数
     lua_pushnumber(mylua->lua, char_index);
     lua_pushnumber(mylua->lua, toindex);
 
@@ -1512,7 +1512,7 @@ BOOL RunCharLogOutEvent(int char_index) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
 
   docall(lua, 1, 1);
@@ -1526,7 +1526,7 @@ BOOL BattleFinish(int battleindex, int char_index) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
 
   docall(lua, 1, 1);
@@ -1540,7 +1540,7 @@ BOOL BattleEscape(int battleindex, int char_index) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
 
   docall(lua, 1, 1);
@@ -1565,7 +1565,7 @@ BOOL OffLineCommand(int battleindex, int char_index, int side) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, battleindex);
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, side);
@@ -1590,7 +1590,7 @@ void ABNPC_Lua_NEWSHOP_Recv(int char_index) {
     lua_pop(lua, 1);
     return;
   }
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   docall(lua, 1, 1);
 
@@ -1613,7 +1613,7 @@ BOOL FreePetSkillShop(int talkerindex, int petindex, int oldSkillID,
   if (!lua_isfunction(lua, -1)) {
     return TRUE;
   }
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, talkerindex);
   lua_pushnumber(lua, petindex);
   lua_pushnumber(lua, oldSkillID);
@@ -1636,7 +1636,7 @@ BOOL RunUseChatMagic(int char_index, char *data, lua_State *lua) {
   if (lua == NULL)
     return FALSE;
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushstring(lua, data);
 
@@ -1652,7 +1652,7 @@ BOOL RunItemUseEvent(int item_index, int char_index, int toindex,
     return FALSE;
   }
 
-  // ���η����ĸ�����
+  // 依次放入四个参数
   lua_pushnumber(lua, item_index);
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, toindex);
@@ -1669,7 +1669,7 @@ BOOL RunItemDieReLifeEvent(int char_index, int item_index, int haveitem_index) {
     return FALSE;
   }
 
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
   lua_pushnumber(lua, haveitem_index);
@@ -1685,7 +1685,7 @@ BOOL RunItemDetachEvent(int char_index, int item_index) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -1700,7 +1700,7 @@ BOOL RunItemAttachEvent(int char_index, int item_index) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -1715,7 +1715,7 @@ BOOL RunItemPickupEvent(int char_index, int item_index) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -1729,7 +1729,7 @@ BOOL RunItemPostOverEvent(int item_index, int char_index) {
   if (lua == NULL) {
     return FALSE;
   }
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -1743,7 +1743,7 @@ BOOL RunItemPreOverEvent(int item_index, int char_index) {
   if (lua == NULL) {
     return FALSE;
   }
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -1758,7 +1758,7 @@ BOOL RunItemDropEvent(int char_index, int item_index) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, item_index);
 
@@ -1776,7 +1776,7 @@ BOOL RunCharTalkedEvent(int meindex, int toindex, char *messageeraseescape,
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入五个参数
   lua_pushnumber(lua, meindex);
   lua_pushnumber(lua, toindex);
   lua_pushstring(lua, messageeraseescape);
@@ -1794,7 +1794,7 @@ BOOL RunCharLoopEvent(int meindex) {
     return FALSE;
   }
 
-  // ���η���һ������
+  // 依次放入一个参数
   lua_pushnumber(lua, meindex);
   docall(lua, 1, 1);
 
@@ -1807,7 +1807,7 @@ BOOL RunCharOverlapEvent(int meindex, int toindex) {
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, meindex);
   lua_pushnumber(lua, toindex);
   docall(lua, 2, 1);
@@ -1821,7 +1821,7 @@ BOOL RunCharBattleOverEvent(int meindex, int battleindex, int iswin) {
     return FALSE;
   }
 
-  // ���η�����������
+  // 依次放入三个参数
   lua_pushnumber(lua, meindex);
   lua_pushnumber(lua, battleindex);
   lua_pushnumber(lua, iswin);
@@ -1837,7 +1837,7 @@ BOOL RunCharWindowTalked(int meindex, int talkerindex, int seqno, int select,
     return FALSE;
   }
 
-  // ���η����������
+  // 依次放入五个参数
   lua_pushnumber(lua, meindex);
   lua_pushnumber(lua, talkerindex);
   lua_pushnumber(lua, seqno);
@@ -1861,7 +1861,7 @@ void FreeVisualBeatitude(int char_index, int petindex, int type) {
   if (!lua_isfunction(lua, -1)) {
     return;
   }
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, petindex);
   lua_pushnumber(lua, type);
@@ -1913,7 +1913,7 @@ void FreeRideQuery(int char_index) {
   if (!lua_isfunction(lua, -1)) {
     return;
   }
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   docall(lua, 1, 1);
   return;
@@ -1935,7 +1935,7 @@ BOOL RedMoneyFunction(int char_index, char *data) {
     lua_pop(lua, 1);
     return TRUE;
   }
-  // ���η����������
+  // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushstring(lua, data);
   docall(lua, 2, 1);

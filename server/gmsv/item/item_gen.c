@@ -192,7 +192,7 @@ int ITEM_initItemIngCache(void) {
             ITEM_gTable[ITEM_gIndex[i].index].item.data[ITEM_CANMERGETO] ==
                 TRUE) { // new
           print(
-              "ID%d (%s)��δ�趨�ɷ�\n",
+              "ID%d (%s)尚未设定成分\n",
               ITEM_gTable[ITEM_gIndex[i].index].item.data[ITEM_ID],             // new
               ITEM_gTable[ITEM_gIndex[i].index].item.string[ITEM_NAME].string); // new
         }
@@ -507,7 +507,7 @@ static int ITEM_merge_with_retry(ITEM_Item *items, int itemsnum,
     int match = 0;
     if (extractcnt >= ideal)
       break;
-    // ����ϳɵ��ߵı��������
+    // 计算合成道具的必须材料数
     for (extractnum = 0; extractnum < ideal; extractnum++) {
       if (r >= idel_num[ideal - 1][extractnum]) {
         break;
@@ -520,23 +520,23 @@ static int ITEM_merge_with_retry(ITEM_Item *items, int itemsnum,
     extractnum = ideal - (extractnum);
 
     if (first) {
-      for (i = 0; i < icache_num; i++) {             //  ��Ѱȫ��ITEM
-        if (icache[i].use && icache[i].canmergeto) { // ����ǿɺϳɵ�ITEM
+      for (i = 0; i < icache_num; i++) {             //  搜寻全部ITEM
+        if (icache[i].use && icache[i].canmergeto) { // 如果是可合成的ITEM
           icache[i].hitnum = 0;
-          for (j = 0; j < icache[i].inguse; j++) { // ���ITEM�Ĳ�����
-            for (k = 0; k < ingnum; k++) {         // �ϳɵĲ�����
-              if (icache[i].ingind[j] == ingindtable[k]) { // ���Ϸ���
-                if (searchtable == 0) { // ���ߺϳɵĻ�
-                  int tablenum = ITEM_getTableNum(ingtable[k]); // ���ϵȼ�
+          for (j = 0; j < icache[i].inguse; j++) { // 这个ITEM的材料数
+            for (k = 0; k < ingnum; k++) {         // 合成的材料数
+              if (icache[i].ingind[j] == ingindtable[k]) { // 材料符合
+                if (searchtable == 0) { // 道具合成的话
+                  int tablenum = ITEM_getTableNum(ingtable[k]); // 材料等级
                   // shan begin
                   if (petindex != -1) {
                     if (CHAR_getInt(petindex, CHAR_PETFAMILY) ==
-                        1) { // ������ػ��޵Ļ�
+                        1) { // 如果是守护兽的话
                       int ownerindex =
                           CHAR_getWorkInt(petindex, CHAR_WORKPLAYERINDEX);
                       int familyLevel = getFmLv(ownerindex);
                       if (!CHAR_CHECKINDEX(ownerindex)) {
-                        print("������������!\n");
+                        print("主人索引错误!\n");
                         return -1;
                       }
 #ifdef _FMVER21
@@ -546,10 +546,10 @@ static int ITEM_merge_with_retry(ITEM_Item *items, int itemsnum,
                       if (CHAR_getInt(ownerindex, CHAR_FMLEADERFLAG) !=
                           FMMEMBER_MEMBER) {
 #endif
-                        print("\n ����������������");
+                        print("\n 宠物主人索引错误");
                         return -1;
                       }
-                      // �����������
+                      // 需符合上下限
                       if (icache[i].ingval[j] <=
                               ingtable[k] *
                                   ItemRandTableForItem[tablenum].rate &&
@@ -561,12 +561,12 @@ static int ITEM_merge_with_retry(ITEM_Item *items, int itemsnum,
                         icache[i].hitnum++;
                         break;
                       }
-                    } else { // ���ػ��޵Ļ�
+                    } else { // 非守护兽的话
                       float toplimit =
                           ingtable[k] * ItemRandTableForItem[tablenum].rate;
                       if (toplimit > 2500)
                         toplimit = 2500;
-                      // �����������
+                      // 需符合上下限
                       if (icache[i].ingval[j] <= toplimit &&
                           icache[i].ingval[j] >=
                               ingtable[k] *
@@ -577,14 +577,14 @@ static int ITEM_merge_with_retry(ITEM_Item *items, int itemsnum,
                     }
                   }
                   // shan end
-                } else { // ʳ��ϳɵĻ�
+                } else { // 食物合成的话
                   // shan begin
                   if (CHAR_getInt(petindex, CHAR_PETFAMILY) == 1) {
                     int ownerindex =
                         CHAR_getWorkInt(petindex, CHAR_WORKPLAYERINDEX);
                     int familyLevel = getFmLv(ownerindex);
                     if (!CHAR_CHECKINDEX(ownerindex)) {
-                      print("������������!\n");
+                      print("主人索引错误!\n");
                       return -1;
                     }
 #ifdef _FMVER21
@@ -594,7 +594,7 @@ static int ITEM_merge_with_retry(ITEM_Item *items, int itemsnum,
                     if (CHAR_getInt(ownerindex, CHAR_FMLEADERFLAG) !=
                         FMMEMBER_MEMBER) {
 #endif
-                      print("\n ����������������");
+                      print("\n 宠物主人索引错误");
                       return -1;
                     }
                     if (ingtable[k] >
@@ -627,7 +627,7 @@ static int ITEM_merge_with_retry(ITEM_Item *items, int itemsnum,
               }
             }
           }
-          // ���ϵĲ�����������ͬ
+          // 符合的材料数必须相同
           if (icache[i].hitnum == icache[i].inguse &&
               icache[i].hitnum == extractnum) {
             if (ITEM_merge_checkitem(items, itemsnum, i)) {
@@ -662,10 +662,10 @@ extern struct FM_POINTLIST fmpointlist;
 #endif
 
 #ifdef _COMPOUND_EXP
-char mergech[][16] = {"ʯ",   "ľ",    "��",   "��",  "Ƥ",   "����", "��",
-                      "צ",   "��",   "Ҷ",    "��",  "���", "��",   "��",
-                      "ʯ��", "����", "����", "˯��", "�ظ�", "����", "ˮ��",
-                      "��",  "ˮ",    "��",   "��"};
+char mergech[][16] = {"ʯ",   "ľ",    "骨",   "牙",  "Ƥ",   "贝壳", "壳",
+                      "צ",   "花",   "Ҷ",    "线",  "黏土", "鳞",   "毒",
+                      "石化", "混乱", "酒醉", "睡眠", "回复", "复活", "水晶",
+                      "地",  "ˮ",    "火",   "风"};
 #endif
 
 int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
@@ -690,7 +690,7 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
     CHAR_setWorkInt(char_index, CHAR_WORKLASTMERGETIME, nowtime);
     CHAR_talkToCli(char_index, -1, "合成料理过于频繁，休息一下比较好哟。",
                    CHAR_COLORRED);
-    // print(" �ϳ�Ƶ�� ");
+    // print(" 合成频繁 ");
     return items[RAND(0, (num - 1))].data[ITEM_ID];
   }
   // #endif
@@ -812,7 +812,7 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
             fixedmin = 0;
           if (fixedmax < 0)
             fixedmax = 0;
-          if (searchtable == 0) { // �ϳ�
+          if (searchtable == 0) { // 合成
             sortedingtable[i] =
                 ITEM_randRange(sortedingtable[i] + pet_baseup[j],
                                (((1 / ItemRandTableForItem[tablenum].rate) *
@@ -823,7 +823,7 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
                                  ITEM_MERGE_RANGEWIDTH_FORMAX) *
                                 (fixedmax / (double)ITEM_RANDRANGEDOM)) *
                                    ITEM_RANDRANGEDOM);
-          } else { // ����
+          } else { // 料理
             sortedingtable[i] =
                 ITEM_randRange(sortedingtable[i] + pet_baseup[j],
                                ItemRandTable[searchtable].randmin *
@@ -834,7 +834,7 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
           break;
         }
       }
-      if (j == pet_fixuse) { // ����زĳɷ���������Բ���
+      if (j == pet_fixuse) { // 如该素材成分与宠物特性不符
         if (searchtable == 0) {
           sortedingtable[i] = ITEM_randRange(
               sortedingtable[i],
@@ -945,7 +945,7 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
                      ITEMTBL_getInt(created, ITEM_INGVALUE3) +
                      ITEMTBL_getInt(created, ITEM_INGVALUE4);
 #ifndef _NEW_MANOR_LAW
-#ifdef _PERSONAL_FAME // Arminius: �����������
+#ifdef _PERSONAL_FAME // Arminius: 家族个人声望
             fooddp = sqrt(fooddp) * pow(2, kind_num - 2) * RAND(0, 6) / 200;
 #else
             fooddp = sqrt(fooddp) * pow(2, kind_num - 2) * RAND(0, 6) / 100;
@@ -954,7 +954,7 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
             // print("FoodDP: num->%d sumdp->%d", kind_num, fooddp);
             sprintf(buf, "%d", fooddp);
 
-#ifdef _PERSONAL_FAME // Arminius 8.30: �����������
+#ifdef _PERSONAL_FAME // Arminius 8.30: 家族个人声望
             CHAR_earnFame(ownerindex, fooddp);
 #endif
 
@@ -991,7 +991,7 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
                     ITEMTBL_getInt(created, ITEM_INGVALUE3) +
                     ITEMTBL_getInt(created, ITEM_INGVALUE4);
 #ifndef _NEW_MANOR_LAW
-#ifdef _PERSONAL_FAME // Arminius: �����������
+#ifdef _PERSONAL_FAME // Arminius: 家族个人声望
             syndp = syndp / 400;
 #else
             syndp = syndp / 200;
@@ -1000,7 +1000,7 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
 
             sprintf(buf, "%d", syndp);
 
-#ifdef _PERSONAL_FAME // Arminius 8.30: �����������
+#ifdef _PERSONAL_FAME // Arminius 8.30: 家族个人声望
             CHAR_earnFame(ownerindex, syndp);
 #endif
 
@@ -1038,7 +1038,7 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
 #ifdef _MAX_MERGE_LEVEL
         if (ITEMTBL_getInt(created, ITEM_LEVEL) >= getMaxMergeLevel()) {
           CHAR_talkToCli(char_index, -1,
-                         "�޷��ϳɳ�Խ�趨��װ��Ŷ��",
+                         "无法合成超越设定的装备哦。",
                          CHAR_COLORRED);
           return items[RAND(0, (num - 1))].data[ITEM_ID];
         } else {
@@ -1055,8 +1055,8 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
 }
 
 int ITEM_canDigest(ITEM_Item *item) {
-  /* 1��  ����  ��
-     󡻥ɬ�ý�ľ��������1�� ����ƥئ��ئ��0 */
+  /* 1蜊  及笺  及  蟆互涩烂今木化中凶日1｝
+	   公丹匹卅中卅日0 */
   if (item->string[ITEM_INGNAME0].string[0])
     return 1;
   else
@@ -1122,7 +1122,7 @@ int ITEM_mergeItem_merge(int char_index, int petid, char *data, int petindex,
         if ((code = ITEM_getChar(item_index, ITEM_TYPECODE)) == "\0") {
           if (strcmp(code, "\0")) {
             char token[256];
-            snprintf(token, sizeof(token), "�ƺ���%sû����Ȥ��",
+            snprintf(token, sizeof(token), "似乎对%s没有兴趣。",
                      ITEM_getChar(item_index, ITEM_NAME));
             CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
             return FALSE;
@@ -1130,7 +1130,7 @@ int ITEM_mergeItem_merge(int char_index, int petid, char *data, int petindex,
         }
 #endif
         if (ITEM_getmergeItemFromFromITEMtabl(
-                ITEM_getInt(item_index, ITEM_ID)) == TRUE) { // ����Ƿ�ɺϳ�
+                ITEM_getInt(item_index, ITEM_ID)) == TRUE) { //检查是否可合成
           ITEM_Item *item;
           item = ITEM_getItemPointer(item_index);
           if (item != NULL) {
@@ -1149,7 +1149,7 @@ int ITEM_mergeItem_merge(int char_index, int petid, char *data, int petindex,
           }
         } else {
           char msgbuf[128];
-          snprintf(msgbuf, sizeof(msgbuf), "�ƺ���%sû����Ȥ��",
+          snprintf(msgbuf, sizeof(msgbuf), "似乎对%s没有兴趣。",
                    ITEM_getChar(item_index, ITEM_NAME));
           CHAR_talkToCli(char_index, -1, msgbuf, CHAR_COLORWHITE);
         }
@@ -1185,14 +1185,14 @@ int ITEM_mergeItem_merge(int char_index, int petid, char *data, int petindex,
 #endif
         CHAR_setItemIndex(char_index, haveitem_indexs[i], -1);
         CHAR_sendItemDataOne(char_index, haveitem_indexs[i]);
-        LogItem(CHAR_getChar(char_index, CHAR_NAME), /* ƽ�ҷ�   */
+        LogItem(CHAR_getChar(char_index, CHAR_NAME), /* 平乓仿   */
                 CHAR_getChar(char_index, CHAR_CDKEY),
-#ifdef _add_item_log_name // WON ADD ��item��log������item����
+#ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
                 item_indexs[i],
 #else
-               ITEM_getInt(item_indexs[i], ITEM_ID), /* ʧ��  ة  į */
+               ITEM_getInt(item_indexs[i], ITEM_ID), /* 失奶  丞  寞 */
 #endif
-                "mergedel(�ϳ���ɾ���ĵ���)", CHAR_getInt(char_index, CHAR_FLOOR),
+                "mergedel(合成所删除的道具)", CHAR_getInt(char_index, CHAR_FLOOR),
                 CHAR_getInt(char_index, CHAR_X),
                 CHAR_getInt(char_index, CHAR_Y),
                 ITEM_getChar(item_indexs[i], ITEM_UNIQUECODE),
@@ -1232,25 +1232,25 @@ int ITEM_mergeItem_merge(int char_index, int petid, char *data, int petindex,
               int arg1 = 0, arg2 = 0;
               if (ITEM_getInt(createitem_index, ITEM_TYPE) == 20) {
                 if ((p = strstr(ITEM_getChar(createitem_index, ITEM_ARGUMENT),
-                                "��"))) {
+                                "气"))) {
                   strcpy(argbuf, (p + 2));
                   arg1 = atoi(argbuf);
                   arg1 = arg1 * FOOD_MP_RATE / 100;
                 }
                 if ((p = strstr(ITEM_getChar(createitem_index, ITEM_ARGUMENT),
-                                "��"))) {
+                                "体"))) {
                   strcpy(argbuf, (p + 2));
                   arg2 = atoi(argbuf);
                   arg2 = arg2 * FOOD_HP_RATE / 100;
                 }
                 if (arg1 != 0 && arg2 != 0) {
-                  sprintf(charbuf1, "��%d��%d", arg1, arg2);
+                  sprintf(charbuf1, "气%d体%d", arg1, arg2);
                 } else if (arg1 != 0) {
-                  sprintf(charbuf1, "��%d", arg1);
+                  sprintf(charbuf1, "气%d", arg1);
                 } else if (arg2 != 0) {
-                  sprintf(charbuf1, "��%d", arg2);
+                  sprintf(charbuf1, "体%d", arg2);
                 }
-                sprintf(charbuf, "(��������)");
+                sprintf(charbuf, "(家族料理)");
                 strcpy(charbuf2,
                        ITEM_getChar(createitem_index, ITEM_EFFECTSTRING));
                 strncat(charbuf2, charbuf, 10);
@@ -1269,12 +1269,12 @@ int ITEM_mergeItem_merge(int char_index, int petid, char *data, int petindex,
           CHAR_sendItemDataOne(char_index, rc);
           LogItem(CHAR_getChar(char_index, CHAR_NAME),
                   CHAR_getChar(char_index, CHAR_CDKEY),
-#ifdef _add_item_log_name // WON ADD ��item��log������item����
+#ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
                   createitem_index,
 #else
                    ITEM_getInt(createitem_index, ITEM_ID),
 #endif
-                  "mergeadd(�ϳɳ����ĵ���)", CHAR_getInt(char_index, CHAR_FLOOR),
+                  "mergeadd(合成出来的道具)", CHAR_getInt(char_index, CHAR_FLOOR),
                   CHAR_getInt(char_index, CHAR_X),
                   CHAR_getInt(char_index, CHAR_Y),
                   ITEM_getChar(createitem_index, ITEM_UNIQUECODE),
@@ -1319,8 +1319,8 @@ int PETSKILL_ITEM_inslay(int charindex, int inslayindex, int item_index)
                          "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL",
                          "NULL", "NULL", "NULL", "NULL", "NULL", "NULL", "NULL",
                          "NULL", "NULL", "NULL", "NULL"};
-  char TypeName[][256] = {"��",   "��", "��", "HP",   "MP",
-                          "����", "��", "��", "ħ��ID"};
+  char TypeName[][256] = {"攻",   "防", "敏", "HP",   "MP",
+                          "幸运", "伤", "吸", "魔法ID"};
   int worktyp[] = {ITEM_MODIFYATTACK, ITEM_MODIFYDEFENCE, ITEM_MODIFYQUICK,
                    ITEM_MODIFYHP,     ITEM_MODIFYMP,      ITEM_MODIFYLUCK,
                    ITEM_OTHERDAMAGE,  ITEM_OTHERDEFC,     ITEM_MAGICID};
@@ -1371,7 +1371,7 @@ int PETSKILL_ITEM_inslay(int charindex, int inslayindex, int item_index)
   }
   if (i == MAXCANINSLAY) {
     char token[256];
-    sprintf(token, "����������Ѿ�����%d�Ż�%d�����ϡ�", MAXCANINSLAY,
+    sprintf(token, "武器或防具已经镶满%d颗或%d颗以上。", MAXCANINSLAY,
             MAXCANINSLAY);
 
     CHAR_talkToCli(charindex, -1, token, CHAR_COLORYELLOW);
@@ -1406,7 +1406,7 @@ int PETSKILL_ITEM_inslay(int charindex, int inslayindex, int item_index)
     char *funstr; // ITEM_MAGICID
     char *magicname;
 
-    if (ITEM_getInt(item_index, ITEM_MAGICID) > 0) { // ħ�� ID
+    if (ITEM_getInt(item_index, ITEM_MAGICID) > 0) { //魔法 ID
       int magicid, mp;
       magicid = ITEM_getInt(item_index, ITEM_MAGICID);
       ITEM_setInt(inslayindex, ITEM_MAGICID, magicid);
@@ -1420,13 +1420,13 @@ int PETSKILL_ITEM_inslay(int charindex, int inslayindex, int item_index)
       }
     }
 
-    if ((funstr = ITEM_getChar(item_index, ITEM_ARGUMENT)) != NULL) { // ����
+    if ((funstr = ITEM_getChar(item_index, ITEM_ARGUMENT)) != NULL) { //参数
       ITEM_setChar(inslayindex, ITEM_ARGUMENT, "\0");
       ITEM_setChar(inslayindex, ITEM_ARGUMENT, funstr);
     }
 
     memset(Mname, 0, sizeof(Mname));
-    if (ITEM_getInt(inslayindex, ITEM_MAGICID) > 0) { // ȡ��ħ������
+    if (ITEM_getInt(inslayindex, ITEM_MAGICID) > 0) { // 取得魔法名称
       int marray = MAGIC_getMagicArray(ITEM_getInt(inslayindex, ITEM_MAGICID));
       if (marray != -1) {
         if ((magicname = MAGIC_getChar(marray, MAGIC_NAME)) != NULL) {
@@ -1500,13 +1500,13 @@ int PETSKILL_ITEM_FixItem(int charindex, int fixindex, int *item_index) {
   maxcrushes = ITEM_getInt(fixindex, ITEM_MAXDAMAGECRUSHE);
   if (crushes >= (maxcrushes * 0.80)) {
     char buff[256];
-    sprintf(buff, "%s并没有损坏到需要修复", ITEM_getChar(fixindex, ITEM_NAME));
+    sprintf(buff, "%s并没有损坏到需要修复。", ITEM_getChar(fixindex, ITEM_NAME));
     CHAR_talkToCli(charindex, -1, buff, CHAR_COLORYELLOW);
     return FALSE;
   } else {
     char *buf1;
     if (maxcrushes < 500) {
-      CHAR_talkToCli(charindex, -1, "此物品不能修复", CHAR_COLORYELLOW);
+      CHAR_talkToCli(charindex, -1, "此物品已不能修复", CHAR_COLORYELLOW);
       return FALSE;
     }
     if (crushes <= 0)

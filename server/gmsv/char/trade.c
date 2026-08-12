@@ -24,12 +24,12 @@
 
 extern int CheckCharMaxItem(int charindex);
 #endif
-#define TRADE_WAIT		"请稍候，连络%s中・・・"
+#define TRADE_WAIT		"请稍候，连络%s中···"
 #define TRADE_REFUSE   "%s拒绝了你的交易请求！"
 #define TRADE_NONE		"前方什麽人也没有！"
 #define	TRADE_OVERPLAYER	"前方不只一位玩家喔！"
 #define	TRADE_NOWILL		"真是抱歉，对方不愿意跟你交易！"
-#define	TRADE_TRADING		"%s正在与其他人交易・・・"
+#define	TRADE_TRADING		"%s正在与其他人交易···"
 #define	TRADE_VANISHITEM	"丢在地上会消失的物品无法交易！"
 #define TRADE_PETFULL		"%s宠物栏已满，交易取消！"
 #define	TRADE_ITEMFULL		"%s物品栏已满，请整理後再交易～"
@@ -38,7 +38,7 @@ extern int CheckCharMaxItem(int charindex);
 #define	TRADE_RICH		"%s金钱交易请勿超过一百万！"
 #define TRADE_TOORICH		"%s金钱将会超过一百万！"
 #define TRADE_POORLV		"%s等级不够，无法照顾交易後的宠物！"
-#define	TRADE_LOCK		"交易锁定・・・"
+#define	TRADE_LOCK		"交易锁定···"
 #define	TRADE_SUCCESS		"交易ＯＫ！"
 #define	TRADE_FAILED		"交易失败！"
 #define TRADE_FMPET		"家族守护兽无法交易！"

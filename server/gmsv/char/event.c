@@ -15,8 +15,8 @@ static int EVENY_npcEncount(int char1, int char2, int fl, int x, int y);
 typedef int (*func_pointer)(int char1, int char2, int fl, int x, int y);
 static func_pointer func_tbl[] = {
     NULL,
-    NULL,             /* ����NPC */
-    EVENY_npcEncount, /* ���óľ޼��������� */
+    NULL,             /* 裔烂NPC */
+    EVENY_npcEncount, /* 裔烂衬巨件市它件玄 */
     EVENT_onWarpNPC,  /* warp */
     NULL,             /* normal NPC */
     NULL,             /* normal NPC */

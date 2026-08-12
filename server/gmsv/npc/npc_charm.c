@@ -24,9 +24,9 @@ void NPC_CharmTalked(int meindex, int talkerindex, char *szMes, int color) {
     return;
   }
 
-  /*--  �������¾���������--*/
+  /*--  及蟆卞中月井升丹井＂--*/
   if (NPC_Util_isFaceToFace(meindex, talkerindex, 2) == FALSE) {
-    /* ���������  ���� */
+    /* ㄠ弘伉永玉动  及心 */
     if (NPC_Util_isFaceToChara(talkerindex, meindex, 1) == FALSE)
       return;
   }
@@ -45,17 +45,17 @@ static void NPC_Charm_selectWindow(int meindex, int toindex, int num) {
   int cost = 0;
   int chartype;
 
-  /*--���̼������������������⻥�����м�ƥ�Ʊ�ɬ��--*/
+  /*--它奶件玉它正奶皿丢永本□斥互云云中及匹燮卞涩烂--*/
   windowtype = WINDOW_MESSAGETYPE_MESSAGE;
 
   switch (num) {
   case 0:
-    /*--��      --*/
-    sprintf(token, "4\n ������       ����ʦ     "
-                   "\n\n ����ӭ���٣�����Ҫ��ʲ���أ�"
+    /*--蓟      --*/
+    sprintf(token, "4\n 　　　       美容师     "
+                   "\n\n 　欢迎光临，今天要做什麽呢？"
                    "\n "
-                   "\n\n������������������������ "
-                   "\n\n���������� ʲ��Ҳ���� �� ");
+                   "\n\n　　　　《　给我魅力　》 "
+                   "\n\n　　　　《 什麽也不做 》 ");
 
     buttontype = WINDOW_BUTTONTYPE_NONE;
     windowtype = WINDOW_MESSAGETYPE_SELECT;
@@ -65,17 +65,17 @@ static void NPC_Charm_selectWindow(int meindex, int toindex, int num) {
   case 1:
     cost = NPC_CharmCost(meindex, toindex);
     if (cost == -1) {
-      sprintf(token, "��������         ����ʦ      "
-                     "\n\n�����������������������"
-                     "\n\n����������Զ�����������ࡡ�");
+      sprintf(token, "　　　　         美容师      "
+                     "\n\n　　　　你的魅力真是完美"
+                     "\n\n　　　　已经无法再提升魅力了。");
       buttontype = WINDOW_BUTTONTYPE_OK;
     } else {
       sprintf(token,
-              "��������         ����ʦ       "
-              "\n������,ǧ���ػݼ�ʵʩ��??"
-              "\n\n Ҫ����������������Ļ�"
-              "\n����������Ҫ%6d��stoneࡣ�"
-              "\n\n��������ʹ����Ҳ������",
+              "　　　　         美容师       "
+              "\n　现在,千禧特惠价实施中??"
+              "\n\n 要将你的魅力上升五点的话"
+              "\n　　　　需要%6d的stone唷！"
+              "\n\n　　　　即使后悔也无法恢复唷！",
               cost);
       buttontype = WINDOW_BUTTONTYPE_YESNO;
     }
@@ -89,44 +89,44 @@ static void NPC_Charm_selectWindow(int meindex, int toindex, int num) {
     chartype = CHAR_getInt(toindex, CHAR_IMAGETYPE);
 
     if (cost > CHAR_getInt(toindex, CHAR_GOLD)) {
-      sprintf(token, "��������         ����ʦ      "
-                     "\n\n���� ��ѽ!���Ǯ����ࡣ�"
-                     "\n����    ��ȥ���Ǯ�´������ɣ�");
+      sprintf(token, "　　　　         美容师      "
+                     "\n\n　　 哎呀!你的钱不够唷！"
+                     "\n　　    先去存好钱下次再来吧！");
 
     } else {
       NPC_CharmUp(meindex, toindex);
 
-      /*--ƽ�ҷ¼�������巽�Ȼ�����������ë  ��������--*/
+      /*--平乓仿及正奶皿卞方匀化丢永本□斥毛  尹化心凶--*/
       switch (chartype) {
       case CHAR_IMAGETYPE_GIRL:
-        sprintf(token, "��������         ����ʦ       "
-                       "\n\n ����,������������������ޣ�"
-                       "\n\n�������������ɰ����أ�");
+        sprintf(token, "　　　　         美容师       "
+                       "\n\n 　嗯,这样你的魅力就上升罗！"
+                       "\n\n　　　愈来愈可爱了呢！");
 
         break;
       case CHAR_IMAGETYPE_BOY:
-        sprintf(token, "��������         ����ʦ     "
-                       "\n\n ����,������������������ޣ�"
-                       "\n\n�����ǲ��Ǳȸղ�Ҫ˧�����أ�");
+        sprintf(token, "　　　　         美容师     "
+                       "\n\n 　嗯,这样你的魅力就上升罗！"
+                       "\n\n　　是不是比刚才要帅多了呢？");
         break;
 
       case CHAR_IMAGETYPE_CHILDBOY:
       case CHAR_IMAGETYPE_CHILDGIRL:
-        sprintf(token, "��������         ����ʦ      "
-                       "\n\n ����,������������������ޣ�"
-                       "\n\n����  ��ı�úÿɰ�ࡣ�");
+        sprintf(token, "　　　　         美容师      "
+                       "\n\n 　嗯,这样你的魅力就上升罗！"
+                       "\n\n　　  真的变得好可爱唷！");
         break;
 
       case CHAR_IMAGETYPE_MAN:
-        sprintf(token, "��������         ����ʦ       "
-                       "\n\n ����,������������������ޣ�"
-                       "\n\n ��������ø������أ�");
+        sprintf(token, "　　　　         美容师       "
+                       "\n\n 　嗯,这样你的魅力就上升罗！"
+                       "\n\n 　　　变得更酷了呢！");
         break;
 
       case CHAR_IMAGETYPE_WOMAN:
-        sprintf(token, "��������         ����ʦ      "
-                       "\n\n ����,������������������ޣ�"
-                       "\n\n    �����Ǳ�������������أ�");
+        sprintf(token, "　　　　         美容师      "
+                       "\n\n 　嗯,这样你的魅力就上升罗！"
+                       "\n\n    可真是变得愈来愈美了呢！");
         break;
       }
     }
@@ -138,13 +138,13 @@ static void NPC_Charm_selectWindow(int meindex, int toindex, int num) {
   }
 
   makeEscapeString(token, escapedname, sizeof(escapedname));
-  /*-���ƥ˪������--*/
+  /*-仇仇匹霜耨允月--*/
   GmsvServer_WN_send(fd, windowtype, buttontype, windowno,
                    CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), escapedname);
 }
 
 /*-----------------------------------------
-�ͷ���ʧ��������߯�Ȼ������ݱ���̫���ľ�£�
+弁仿奶失件玄井日忒匀化五凶凛卞裟太请今木月［
 -------------------------------------------*/
 void NPC_CharmWindowTalked(int meindex, int talkerindex, int seqno, int select,
                            char *data) {
@@ -215,7 +215,7 @@ int NPC_CharmCost(int meindex, int talker) {
   if (charm <= 1)
     charm = WARU;
 
-  /*-- ��ңֿ --*/
+  /*-- 煌遥挚 --*/
   cost = level * RATE * (charm / WARU) * (trans + 1);
 
   return cost;

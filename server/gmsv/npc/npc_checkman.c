@@ -4,7 +4,7 @@
 #include "npcutil.h"
 #include "object.h"
 
-// �ػ�������ƥ���°׷º뼰��
+// 蜇箕及银迕匹五月白仿弘及醒
 #define MAXEVENTFLG 96
 
 static void NPC_CheckMan_selectWindow(int meindex, int toindex, int num);
@@ -60,22 +60,12 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
     CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 0);
     CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, 0);
 
-    /*--��      --*/
-    sprintf(token, "3\n ����������������������Ѩ�������� "
-                   "\n�������ػ����׷º���������ë������"
-                   "�"
-                   "�"
-                   "\n"
-                   "\n�������� "
-                   "�գ�NOW�׷º��������ͣ��� "
-                   "\n�������� "
-                   "�գ�END�׷º��������ͣ��� "
-                   "\n\n���� �գ�NOW�׷º���������  ��� "
-                   " "
-                   "�� "
-                   "\n���� �գ�END�׷º���������  ��� "
-                   " "
-                   "�� ");
+    /* 事件标志检查菜单 */
+    sprintf(token, "3\n        ＞＞ 事件标志检查 ＞＞"
+                   "\n\n        查看当前已生效的事件标志"
+                   "\n        查看已经结束的事件标志"
+                   "\n\n        Ｕ 当前事件标志 Ｖ"
+                   "\n        Ｕ 已结束事件标志 Ｖ");
 
     buttontype = WINDOW_BUTTONTYPE_CANCEL;
     windowtype = WINDOW_MESSAGETYPE_SELECT;
@@ -83,7 +73,7 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
     break;
   case 1:
     nowindex = NPC_NowFlgCheck(meindex, talker, now);
-    // ��ʸ����  ��
+    // 窒矢□斥  井
     page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
     if (page == 0 || page == 1) {
       i = 0;
@@ -95,15 +85,15 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
       strcat(work2, work);
     }
     sprintf(token,
-            "������������������������Ѩ�������� "
-            "\n�����ػ�����  ��  �Ȼ����� NOW��ì����"
+            "｛｛｛｛｛＞＞｛民尼永弁穴件｛＞＞ "
+            "\n｛｛蜇箕及筑  及  匀化中月 NOW奶矛件玄"
             "\n%s",
             work2);
 
     if (page != 2 && nowindex > 83) {
-      // ƹ����
+      // 乒□玉
       CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 1);
-      // ʸ����
+      // 矢□斥
       CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, 2);
 
       buttontype = WINDOW_BUTTONTYPE_NEXT;
@@ -117,12 +107,12 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
 
     break;
 
-    // END�׷º뼰��ǩ  ��
+    // END白仿弘及棵签  憎
   case 2:
-    // ��  �׷º뼰��������
+    // 蔽  白仿弘及民尼永弁
     nowindex = NPC_EndFlgCheck(meindex, talker, now);
 
-    // ��ʸ����  ��
+    // 窒矢□斥  井
     page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
 
     if (page == 0 || page == 1) {
@@ -132,21 +122,21 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
     }
     work2[0] = 0;
 
-    // ʸ����
+    // 矢□斥
     for (; i < nowindex; i++) {
       sprintf(work, "%d,", now[i]);
       strcat(work2, work);
     }
     sprintf(token,
-            "������������������������Ѩ�������� "
-            "\n�����ػ�����  ��  �Ȼ����� END��ì����"
+            "｛｛｛｛｛＞＞｛民尼永弁穴件｛＞＞ "
+            "\n｛｛蜇箕及筑  及  匀化中月 END奶矛件玄"
             "\n%s",
             work2);
 
     if (page != 2 && nowindex > 83) {
-      // ƹ����
+      // 乒□玉
       CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 2);
-      // ʸ����
+      // 矢□斥
       CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, 2);
 
       buttontype = WINDOW_BUTTONTYPE_NEXT;
@@ -160,10 +150,10 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
 
     break;
 
-    // NOW�׷º뼰���  ��
+    // NOW白仿弘及择称  憎
   case 4: {
 
-    // NOW�׷º���������
+    // NOW白仿弘民尼永弁
     nowindex = NPC_NowFlgCheck(meindex, talker, now);
 
     if (NPC_FlgCheckMain(meindex, talker, nowindex, now, work2) == FALSE) {
@@ -171,8 +161,8 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
     }
 
     sprintf(token,
-            "������������������������Ѩ�������� "
-            "\n�����ػ�����  ��  �Ȼ����� NOW��ì����"
+            "｛｛｛｛｛＞＞｛民尼永弁穴件｛＞＞ "
+            "\n｛｛蜇箕及筑  及  匀化中月 NOW奶矛件玄"
             "\n%s",
             work2);
 
@@ -180,9 +170,9 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
     nowindex = (nowindex / ((6 * page) + 1));
 
     if (page != 16 && nowindex != 0) {
-      // ƹ����
+      // 乒□玉
       CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 4);
-      // ʸ����
+      // 矢□斥
       page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
       page++;
       CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, page);
@@ -197,9 +187,9 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
 
   } break;
 
-    // END�׷º뼰���  ��
+    // END白仿弘及择称  憎
   case 5: {
-    // END�׷º뼰��������
+    // END白仿弘及民尼永弁
     nowindex = NPC_EndFlgCheck(meindex, talker, now);
 
     if (NPC_FlgCheckMain(meindex, talker, nowindex, now, work2) == FALSE) {
@@ -207,8 +197,8 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
     }
 
     sprintf(token,
-            "������������������������Ѩ�������� "
-            "\n�����ػ�����  ��  �Ȼ����� END��ì����"
+            "｛｛｛｛｛＞＞｛民尼永弁穴件｛＞＞ "
+            "\n｛｛蜇箕及筑  及  匀化中月 END奶矛件玄"
             "\n%s",
             work2);
 
@@ -217,9 +207,9 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
     nowindex = (nowindex / ((6 * page) + 1));
 
     if (page != 16 && nowindex != 0) {
-      // ƹ����
+      // 乒□玉
       CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 5);
-      // ʸ����
+      // 矢□斥
       page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
       page++;
       CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, page);
@@ -235,13 +225,13 @@ static void NPC_CheckMan_selectWindow(int meindex, int talker, int num) {
   }
 
   makeEscapeString(token, escapedname, sizeof(escapedname));
-  /*-���ƥ˪������--*/
+  /*-仇仇匹霜耨允月--*/
   GmsvServer_WN_send(fd, windowtype, buttontype, windowno,
                    CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), escapedname);
 }
 
 /*-----------------------------------------
-�ͷ���ʧ��������߯�Ȼ������ݱ���̫���ľ�£�
+弁仿奶失件玄井日忒匀化五凶凛卞裟太请今木月［
 -------------------------------------------*/
 void NPC_CheckManWindowTalked(int meindex, int talkerindex, int seqno,
                               int select, char *data) {
@@ -304,7 +294,7 @@ void NPC_CheckManWindowTalked(int meindex, int talkerindex, int seqno,
 }
 
 /*
- *����ì����  �׷º�ë������������
+ *｛奶矛件玄  白仿弘毛民尼永弁允月
  */
 int NPC_NowFlgCheck(int meindex, int talker, int nowflg[MAXEVENTFLG]) {
   int i = 0;
@@ -320,10 +310,7 @@ int NPC_NowFlgCheck(int meindex, int talker, int nowflg[MAXEVENTFLG]) {
   return j;
 }
 
-/*
- *����ì������
- *�׷º�ë������������
- */
+/* 收集已经结束的事件标志。 */
 int NPC_EndFlgCheck(int meindex, int talker, int nowflg[MAXEVENTFLG]) {
   int i = 0;
   int j = 0;
@@ -340,7 +327,7 @@ int NPC_EndFlgCheck(int meindex, int talker, int nowflg[MAXEVENTFLG]) {
 }
 
 /*
- * ���
+ * 择称
  *
  */
 BOOL NPC_FlgCheckMain(int meindex, int talker, int nowindex,
@@ -355,7 +342,7 @@ BOOL NPC_FlgCheckMain(int meindex, int talker, int nowindex,
   char buf[40];
   char buf2[42];
 
-  // ��ʸ����  ��
+  // 窒矢□斥  井
   page = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC);
 
   if (page == 0) {
@@ -382,7 +369,7 @@ BOOL NPC_FlgCheckMain(int meindex, int talker, int nowindex,
     }
   }
 
-  // ��ì��������ƻ�̤��ľ�����°����̻�ë  �ĳ��
+  // 奶矛件玄及择称互踏井木化中月白央奶伙毛  心仇戈
   if (NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr)) == NULL) {
     print("NPC_CheckMan:GetArgStrErr");
     return FALSE;
@@ -391,7 +378,7 @@ BOOL NPC_FlgCheckMain(int meindex, int talker, int nowindex,
   work[0] = 0;
   work2[0] = 0;
 
-  // ʸ����
+  // 矢□斥
   for (; i < max; i++) {
     sprintf(work, "#%d:", now[i]);
     j = 1;

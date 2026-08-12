@@ -43,17 +43,17 @@ void NPC_magiccard_specialcard( int meindex , int bkid );
 int NPC_magiccard_sort( const void *card1, const void *card2 );
 
 enum {
-	NPC_WORK_BANKER = CHAR_NPCWORKINT1,		// ¼ÇÂ¼¸úÄÄÒ»¸ö×¯¼ÒÍæ
-	NPC_WORK_GIVEGOLD = CHAR_NPCWORKINT2,   // ¼ÍÂ¼ÌôÕ½ÕßÊÇ·ñÊÇ¸¶±£Ö¤½ğµÄ
-	//NPC_WORK_ABANDON = CHAR_NPCWORKINT2,	// ÌôÕ½ÕßÊÇ·ñ·ÅÆú³öÅÆ
-	//NPC_WORK_TURN = CHAR_NPCWORKINT3,		// ¼ÇÂ¼»ØºÏÊı
-	NPC_WORK_HAND = CHAR_NPCWORKINT4,		// ¼ÇÂ¼ÌôÕ½ÕßÊÖÉÏµÄÅÆ
-	NPC_WORK_SELECT = CHAR_NPCWORKINT5,		// ¼ÇÂ¼ÌôÕ½ÕßÑ¡Ôñ³öµÚ¼¸ÕÅÅÆ
-	NPC_WORK_ACTION = CHAR_NPCWORKINT6,		// ¼ÇÂ¼ÌôÕ½ÕßÑ¡Ôñ¹¥»÷»¹ÊÇ·ÀÓù
-	NPC_WORK_HISTORY = CHAR_NPCWORKINT7,	// ¼ÇÂ¼ÌôÕ½Õß³ö¹ıµÄÅÆ
-	NPC_WORK_DAMAGE = CHAR_NPCWORKINT8,		// ¼ÇÂ¼ÌôÕ½ÕßÊÜµÄÉËº¦
-	//NPC_WORK_LOCATION = CHAR_NPCWORKINT9,	// ¼ÇÂ¼ÌôÕ½ÕßµÄÎ»ÖÃ
-	//NPC_WORK_ = CHAR_NPCWORKINT10,		// ¼ÇÂ¼×¯¼ÒµÄindex	
+	NPC_WORK_BANKER = CHAR_NPCWORKINT1,		// è®°å½•è·Ÿå“ªä¸€ä¸ªåº„å®¶ç©
+	NPC_WORK_GIVEGOLD = CHAR_NPCWORKINT2,   // çºªå½•æŒ‘æˆ˜è€…æ˜¯å¦æ˜¯ä»˜ä¿è¯é‡‘çš„
+	//NPC_WORK_ABANDON = CHAR_NPCWORKINT2,	// æŒ‘æˆ˜è€…æ˜¯å¦æ”¾å¼ƒå‡ºç‰Œ
+	//NPC_WORK_TURN = CHAR_NPCWORKINT3,		// è®°å½•å›åˆæ•°
+	NPC_WORK_HAND = CHAR_NPCWORKINT4,		// è®°å½•æŒ‘æˆ˜è€…æ‰‹ä¸Šçš„ç‰Œ
+	NPC_WORK_SELECT = CHAR_NPCWORKINT5,		// è®°å½•æŒ‘æˆ˜è€…é€‰æ‹©å‡ºç¬¬å‡ å¼ ç‰Œ
+	NPC_WORK_ACTION = CHAR_NPCWORKINT6,		// è®°å½•æŒ‘æˆ˜è€…é€‰æ‹©æ”»å‡»è¿˜æ˜¯é˜²å¾¡
+	NPC_WORK_HISTORY = CHAR_NPCWORKINT7,	// è®°å½•æŒ‘æˆ˜è€…å‡ºè¿‡çš„ç‰Œ
+	NPC_WORK_DAMAGE = CHAR_NPCWORKINT8,		// è®°å½•æŒ‘æˆ˜è€…å—çš„ä¼¤å®³
+	//NPC_WORK_LOCATION = CHAR_NPCWORKINT9,	// è®°å½•æŒ‘æˆ˜è€…çš„ä½ç½®
+	//NPC_WORK_ = CHAR_NPCWORKINT10,		// è®°å½•åº„å®¶çš„index	
 };
 
 enum {	
@@ -71,8 +71,8 @@ enum {
 };
 
 
-#define LOOPTIME			100 // 0.1Ãë
-#define SHOWCARDLOOPTIME	800//1000  //1Ãë  
+#define LOOPTIME			100 // 0.1ç§’
+#define SHOWCARDLOOPTIME	800//1000  //1ç§’  
 #define FIGHTLOOPTIME		800//1000//2000 
 #define TURNOVERTIME		1300//1500//4000
 #define GAMEOVERTIME        4800//5000
@@ -81,9 +81,9 @@ enum {
 #define MAXGUY				6
 #define BANKERID            6
 
-#define SHIFTBASE			1	//ÓÃÀ´×óÒÆµÄ»ù×¼Öµ
-//#define MAGIC_MOVE_SCREEN_XY			(18 << 16) | 10		// Ó«Ä»ÒªÒÆ¶¯µ½µÄXY×ù±ê
-//#define MAGIC_MOVE_SCREEN_XY			(14 << 16) | 13		// Ó«Ä»ÒªÒÆ¶¯µ½µÄXY×ù±ê
+#define SHIFTBASE			1	//ç”¨æ¥å·¦ç§»çš„åŸºå‡†å€¼
+//#define MAGIC_MOVE_SCREEN_XY			(18 << 16) | 10		// è§å¹•è¦ç§»åŠ¨åˆ°çš„XYåº§æ ‡
+//#define MAGIC_MOVE_SCREEN_XY			(14 << 16) | 13		// è§å¹•è¦ç§»åŠ¨åˆ°çš„XYåº§æ ‡
 
 struct BANKER banker[BANKERTOTAL];  
 
@@ -91,7 +91,7 @@ int  Bettotal[BANKERTOTAL];
 int  Wintotal[BANKERTOTAL];
 int  tickettotal[BANKERTOTAL];
 
-//Î»ÖÃ×ÊÁÏ
+//ä½ç½®èµ„æ–™
 typedef struct Posstruct
 {
 	int humanX;
@@ -104,24 +104,24 @@ typedef struct Posstruct
 }Position;
 static Position Positiontable[]=
 {
-	{19,12,17,12,15,13,6},	//0 ÌôÕ½Õß
-	{18,17,16,15,15,14,7},	//1 ÌôÕ½Õß
-	{13,18,13,16,14,14,0},	//2 ÌôÕ½Õß
-	{ 9,14,11,14,13,13,2},	//3 ÌôÕ½Õß
-	{10, 9,12,11,13,12,3},	//4 ÌôÕ½Õß
-	{15, 8,15,10,14,12,4},	//5 ÌôÕ½Õß
-	{15,12,14,13,14,13,5},	//6 ×¯¼Ò
-	{24,18, 0, 0,0,0,6},	//7 ËÀµô	
+	{19,12,17,12,15,13,6},	//0 æŒ‘æˆ˜è€…
+	{18,17,16,15,15,14,7},	//1 æŒ‘æˆ˜è€…
+	{13,18,13,16,14,14,0},	//2 æŒ‘æˆ˜è€…
+	{ 9,14,11,14,13,13,2},	//3 æŒ‘æˆ˜è€…
+	{10, 9,12,11,13,12,3},	//4 æŒ‘æˆ˜è€…
+	{15, 8,15,10,14,12,4},	//5 æŒ‘æˆ˜è€…
+	{15,12,14,13,14,13,5},	//6 åº„å®¶
+	{24,18, 0, 0,0,0,6},	//7 æ­»æ‰	
 	
 /*
-	{23, 9,21, 9,6},	//0 ÌôÕ½Õß
-	{22,14,20,12,7},	//1 ÌôÕ½Õß
-	{17,15,17,13,0},	//2 ÌôÕ½Õß
-	{13,11,15,11,2},	//3 ÌôÕ½Õß
-	{14, 6,16, 8,3},	//4 ÌôÕ½Õß
-	{19, 5,19, 7,4},	//5 ÌôÕ½Õß
-	{18,18,18,10,5},	//6 ×¯¼Ò
-	{15,13, 0, 0,6},	//7 ËÀµô
+	{23, 9,21, 9,6},	//0 æŒ‘æˆ˜è€…
+	{22,14,20,12,7},	//1 æŒ‘æˆ˜è€…
+	{17,15,17,13,0},	//2 æŒ‘æˆ˜è€…
+	{13,11,15,11,2},	//3 æŒ‘æˆ˜è€…
+	{14, 6,16, 8,3},	//4 æŒ‘æˆ˜è€…
+	{19, 5,19, 7,4},	//5 æŒ‘æˆ˜è€…
+	{18,18,18,10,5},	//6 åº„å®¶
+	{15,13, 0, 0,6},	//7 æ­»æ‰
 */
 };
 
@@ -132,7 +132,7 @@ typedef struct st_cardbox
 }CardBoxType;
 static CardBoxType Cardbox[BANKERTOTAL*7][30];
 
-//Ä§·¨ÅÆ
+//é­”æ³•ç‰Œ
 typedef struct Cardstruct
 {
     STRING64    name;
@@ -144,36 +144,36 @@ typedef struct Cardstruct
 }Cardfunction;
 static Cardfunction Cardfunctiontable[]=
 {
-	{{"³èÎïÅÆ1:	 µÔ±´Àï¶÷    ¹¥ 13 ·À 1"}               ,2565 ,13 , 1 , 101437,NULL},
-	{{"³èÎïÅÆ2:	 ÄáĞŞ¿¦      ¹¥ 13 ·À 1"}               ,0    ,13 , 1 , 101962,NULL},
-	{{"³èÎïÅÆ3:	 ·ÆÆæÑÇ      ¹¥ 13 ·À 1"}               ,2571 ,13 , 1 , 101616,NULL},
-	{{"³èÎïÅÆ4:	 ÃÀÀ­        ¹¥ 1 ·À 13"}               ,2563 , 1 ,13 , 101760,NULL},
-	{{"³èÎïÅÆ5:	 ÂåµÒÀ×Åµ    ¹¥ 1 ·À 13"}               ,0    , 1 ,13 , 101946,NULL},
-	{{"³èÎïÅÆ6:	 ÒÁÑÇÅ·À³    ¹¥ 1 ·À 13"}               ,0    , 1 ,13 , 101485,NULL},
-	{{"³èÎïÅÆ7:  ¿­¶÷        ¹¥ 8 ·À 8"}                ,0    , 8 , 8 , 101180,NULL},
-	{{"³èÎïÅÆ8:  ÅåÂ¶ÏÄ      ¹¥ 8 ·À 8"}                ,0    , 8 , 8 , 100872,NULL},
-	{{"³èÎïÅÆ9:	 À×Åµ·ò      ¹¥ 8 ·À 7"}                ,0    , 8 , 7 , 101952,NULL},	
-	{{"³èÎïÅÆ10: »³ÎÖ·ò      ¹¥ 8 ·À 6"}                ,0    , 8 , 6 , 101875,NULL},
-	{{"³èÎïÅÆ11: ±ÈË¹¼ª      ¹¥ 7 ·À 7"}                ,0    , 7 , 7 , 101914,NULL},	
-	{{"³èÎïÅÆ12: ÌûÒÁÅµË¹    ¹¥ 7 ·À 7"}                ,2456 , 7 , 7 , 101819,NULL},	
-	{{"³èÎïÅÆ13: À×µÛË¹Âå    ¹¥ 7 ·À 8"}                ,0    , 7 , 8 , 101501,NULL},	
-	{{"³èÎïÅÆ14: °²¹ÅÁ¦      ¹¥ 7 ·À 6"}                ,0    , 7 , 6 , 101922,NULL},	
-	{{"³èÎïÅÆ15: À­·ğÂåË¹    ¹¥ 6 ·À 6"}                ,0    , 6 , 6 , 101464,NULL},	
-	{{"³èÎïÅÆ16: ËşËşÀ­      ¹¥ 6 ·À 6"}                ,0    , 6 , 6 , 101928,NULL},		
-	{{"³èÎïÅÆ17: ·ÆË¹Âê      ¹¥ 6 ·À 8"}                ,0    , 6 , 8 , 101446,NULL},	
-	{{"³èÎïÅÆ18: °¢ÒÁÈø      ¹¥ 6 ·À 7"}                ,0    , 6 , 7 , 100390,NULL},	//	
-	{{"³èÎïÅÆ19: ÆæË¹¹ÅµÂ    ¹¥ 3 ·À 3"}                ,0    , 3 , 3 , 101954,NULL},	
-	{{"³èÎïÅÆ20: ¿²ÆÕÂåË¾    ¹¥ 3 ·À 3"}                ,0    , 3 , 3 , 101957,NULL},	
-	{{"³èÎïÅÆ21: Ê·±ÈÌØ      ¹¥ 3 ·À 3"}                ,0    , 3 , 3 , 101556,NULL},	
-	{{"³èÎïÅÆ22: °îË¹¿¨      ¹¥ 3 ·À 2"}                ,0    , 3 , 2 , 101933,NULL},	
-	{{"³èÎïÅÆ23: ¿É¿É¶÷      ¹¥ 2 ·À 3"}                ,2570 , 2 , 3 , 100898,NULL},	
-	{{"³èÎïÅÆ24: °ÍÌØ        ¹¥ 2 ·À 2"}                ,0    , 2 , 2 , 101870,NULL},	
-	{{"³èÎïÅÆ25: °¬¶÷¿Ë      ¹¥ 2 ·À 2"}                ,0    , 2 , 2 , 101918,NULL},	
-	{{"Ä§·¨ÅÆ1: »Ã¾µÊõ¡¶½«¶Ô·½µÄ¹¥»÷·´µ¯»ØÈ¥¡·"}       ,2604 , 0 , 0 , 101652,NULL},
-	{{"Ä§·¨ÅÆ2: »ÃÓ°Êõ¡¶²»ÊÜµ½¶Ô·½ÈÎºÎ¹¥»÷¡·"}		   ,2605 , 0 , 0 , 101695,NULL},
-	{{"Ä§·¨ÅÆ3: ·âÓ¡Êõ¡¶½«¶Ô·½ÔİÍ£Ò»»ØºÏ¡·"}           ,2606 , 0 , 0 , 101120,NULL},
-	{{"Ä§·¨ÅÆ4: ÕÙÁéÊõ¡¶»Ø¸´HP->ÂúÑªÁ¿50%¡·"}          ,2607 , 0 , 0 , 101828,NULL},
-	{{"Ä§·¨ÅÆ5: ÕÙÀ×Êõ¡¶Ëæ»ú¹¥»÷  ¹¥ 20¡·"}            ,2608 , 20 , 0 , 101628,NULL},	
+	{{"å® ç‰©ç‰Œ1:	 ç¿Ÿè´é‡Œæ©    æ”» 13 é˜² 1"}               ,2565 ,13 , 1 , 101437,NULL},
+	{{"å® ç‰©ç‰Œ2:	 å°¼ä¿®å–€      æ”» 13 é˜² 1"}               ,0    ,13 , 1 , 101962,NULL},
+	{{"å® ç‰©ç‰Œ3:	 è²å¥‡äºš      æ”» 13 é˜² 1"}               ,2571 ,13 , 1 , 101616,NULL},
+	{{"å® ç‰©ç‰Œ4:	 ç¾æ‹‰        æ”» 1 é˜² 13"}               ,2563 , 1 ,13 , 101760,NULL},
+	{{"å® ç‰©ç‰Œ5:	 æ´›ç‹„é›·è¯º    æ”» 1 é˜² 13"}               ,0    , 1 ,13 , 101946,NULL},
+	{{"å® ç‰©ç‰Œ6:	 ä¼Šäºšæ¬§è±    æ”» 1 é˜² 13"}               ,0    , 1 ,13 , 101485,NULL},
+	{{"å® ç‰©ç‰Œ7:  å‡¯æ©        æ”» 8 é˜² 8"}                ,0    , 8 , 8 , 101180,NULL},
+	{{"å® ç‰©ç‰Œ8:  ä½©éœ²å¤      æ”» 8 é˜² 8"}                ,0    , 8 , 8 , 100872,NULL},
+	{{"å® ç‰©ç‰Œ9:	 é›·è¯ºå¤«      æ”» 8 é˜² 7"}                ,0    , 8 , 7 , 101952,NULL},	
+	{{"å® ç‰©ç‰Œ10: æ€€æ²ƒå¤«      æ”» 8 é˜² 6"}                ,0    , 8 , 6 , 101875,NULL},
+	{{"å® ç‰©ç‰Œ11: æ¯”æ–¯å‰      æ”» 7 é˜² 7"}                ,0    , 7 , 7 , 101914,NULL},	
+	{{"å® ç‰©ç‰Œ12: å¸–ä¼Šè¯ºæ–¯    æ”» 7 é˜² 7"}                ,2456 , 7 , 7 , 101819,NULL},	
+	{{"å® ç‰©ç‰Œ13: é›·å¸æ–¯æ´›    æ”» 7 é˜² 8"}                ,0    , 7 , 8 , 101501,NULL},	
+	{{"å® ç‰©ç‰Œ14: å®‰å¤åŠ›      æ”» 7 é˜² 6"}                ,0    , 7 , 6 , 101922,NULL},	
+	{{"å® ç‰©ç‰Œ15: æ‹‰ä½›æ´›æ–¯    æ”» 6 é˜² 6"}                ,0    , 6 , 6 , 101464,NULL},	
+	{{"å® ç‰©ç‰Œ16: å¡”å¡”æ‹‰      æ”» 6 é˜² 6"}                ,0    , 6 , 6 , 101928,NULL},		
+	{{"å® ç‰©ç‰Œ17: è²æ–¯ç›      æ”» 6 é˜² 8"}                ,0    , 6 , 8 , 101446,NULL},	
+	{{"å® ç‰©ç‰Œ18: é˜¿ä¼Šè¨      æ”» 6 é˜² 7"}                ,0    , 6 , 7 , 100390,NULL},	//	
+	{{"å® ç‰©ç‰Œ19: å¥‡æ–¯å¤å¾·    æ”» 3 é˜² 3"}                ,0    , 3 , 3 , 101954,NULL},	
+	{{"å® ç‰©ç‰Œ20: åæ™®æ´›å¸    æ”» 3 é˜² 3"}                ,0    , 3 , 3 , 101957,NULL},	
+	{{"å® ç‰©ç‰Œ21: å²æ¯”ç‰¹      æ”» 3 é˜² 3"}                ,0    , 3 , 3 , 101556,NULL},	
+	{{"å® ç‰©ç‰Œ22: é‚¦æ–¯å¡      æ”» 3 é˜² 2"}                ,0    , 3 , 2 , 101933,NULL},	
+	{{"å® ç‰©ç‰Œ23: å¯å¯æ©      æ”» 2 é˜² 3"}                ,2570 , 2 , 3 , 100898,NULL},	
+	{{"å® ç‰©ç‰Œ24: å·´ç‰¹        æ”» 2 é˜² 2"}                ,0    , 2 , 2 , 101870,NULL},	
+	{{"å® ç‰©ç‰Œ25: è‰¾æ©å…‹      æ”» 2 é˜² 2"}                ,0    , 2 , 2 , 101918,NULL},	
+	{{"é­”æ³•ç‰Œ1: å¹»é•œæœ¯ã€Šå°†å¯¹æ–¹çš„æ”»å‡»åå¼¹å›å»ã€‹"}       ,2604 , 0 , 0 , 101652,NULL},
+	{{"é­”æ³•ç‰Œ2: å¹»å½±æœ¯ã€Šä¸å—åˆ°å¯¹æ–¹ä»»ä½•æ”»å‡»ã€‹"}		   ,2605 , 0 , 0 , 101695,NULL},
+	{{"é­”æ³•ç‰Œ3: å°å°æœ¯ã€Šå°†å¯¹æ–¹æš‚åœä¸€å›åˆã€‹"}           ,2606 , 0 , 0 , 101120,NULL},
+	{{"é­”æ³•ç‰Œ4: å¬çµæœ¯ã€Šå›å¤HP->æ»¡è¡€é‡50%ã€‹"}          ,2607 , 0 , 0 , 101828,NULL},
+	{{"é­”æ³•ç‰Œ5: å¬é›·æœ¯ã€Šéšæœºæ”»å‡»  æ”» 20ã€‹"}            ,2608 , 20 , 0 , 101628,NULL},	
 
 };
 
@@ -203,7 +203,7 @@ BOOL NPC_Magiccard_Init( int meindex )
 
 	NPC_Util_GetStrFromStrWithDelim( argstr , "ID", buf, sizeof( buf));
 
-	CHAR_setInt( meindex, CHAR_LV, atoi(buf));  // ×¯¼ÒµÄid¼ÍÂ¼ÔÚCHAR_LV
+	CHAR_setInt( meindex, CHAR_LV, atoi(buf));  // åº„å®¶çš„idçºªå½•åœ¨CHAR_LV
 	print("\n ------------bankerid= %d ------------------- ",atoi(buf));
 	return TRUE;
 }
@@ -246,7 +246,7 @@ void NPC_Magiccard_selectWindow(int meindex,int toindex,int num,int select)
 
 	switch(num) 
 	{
-	case START:  //Ò»ÇĞµÄ¿ªÊ¼
+	case START:  //ä¸€åˆ‡çš„å¼€å§‹
 		i = 1;
 		strcpy( token, "\0");
 		sprintf( buf2,"%s%d", "menu_msg0", i);
@@ -292,11 +292,11 @@ void NPC_Magiccard_selectWindow(int meindex,int toindex,int num,int select)
 		}
 		break;
 	case INGAME:
-		//warpÌôÕ½Õßµ½Õ½¶·Î»ÖÃÉÏ ¿ªÊ¼ÍæÅÆ
-		if( NPC_magiccard_checkplace( meindex , toindex , token ) == TRUE ){ //¼ì²éÓĞÃ»ÓĞ¿ÕÎ»
+		//warpæŒ‘æˆ˜è€…åˆ°æˆ˜æ–—ä½ç½®ä¸Š å¼€å§‹ç©ç‰Œ
+		if( NPC_magiccard_checkplace( meindex , toindex , token ) == TRUE ){ //æ£€æŸ¥æœ‰æ²¡æœ‰ç©ºä½
 			return; 
 		}else{
-			//²»ÄÜ²Î¼Ó
+			//ä¸èƒ½å‚åŠ 
 			buttontype = WINDOW_BUTTONTYPE_OK;
 			windowno = CHAR_WINDOWTYPE_MAGIC_NORMAL;
 		}
@@ -306,7 +306,7 @@ void NPC_Magiccard_selectWindow(int meindex,int toindex,int num,int select)
 			int  G_num = CHAR_getInt( toindex, CHAR_GAMBLENUM );
 
 			if( G_num < 0 ) G_num = 0;
-			sprintf( token,"ÄãµÄÓÎÀÖ³¡»ı·ÖÎª%d¡£", G_num );
+			sprintf( token,"ä½ çš„æ¸¸ä¹åœºç§¯åˆ†ä¸º%dã€‚", G_num );
 			buttontype = WINDOW_BUTTONTYPE_OK;
 			windowno = CHAR_WINDOWTYPE_MAGIC_NORMAL;
 		}
@@ -332,14 +332,14 @@ void NPC_Magiccard_WindowTalked( int meindex, int talkerindex, int seqno, int se
 	{
 	case CHAR_WINDOWTYPE_MAGIC_START:
 		pagenum = atoi( data );
-		if( pagenum == 4 ){				// Àë¿ª
+		if( pagenum == 4 ){				// ç¦»å¼€
 			NPC_Magiccard_selectWindow( meindex, talkerindex, END , -1 );
 		}else	{
-			if( pagenum == 3 ){			// ¸öÈË»ı·Ö
+			if( pagenum == 3 ){			// ä¸ªäººç§¯åˆ†
 				NPC_Magiccard_selectWindow( meindex, talkerindex, SCORE , -1 );
-			}else if( pagenum == 2 ){	// ²Î¼ÓÓÎÏ·				
+			}else if( pagenum == 2 ){	// å‚åŠ æ¸¸æˆ				
 				NPC_Magiccard_selectWindow( meindex, talkerindex, INGAME , -1 );
-			}else{						// ÓÎÏ·¹æÔò
+			}else{						// æ¸¸æˆè§„åˆ™
 				NPC_Magiccard_selectWindow( meindex, talkerindex, RULES, 1 );
 			}
 		}
@@ -370,7 +370,7 @@ void NPC_Magiccard_WindowTalked( int meindex, int talkerindex, int seqno, int se
 	}	
 }
 
-void NPC_Magiccard_Loop( int meindex )  //×¯¼ÒÅÜ×Ô¼ºµÄLOOP
+void NPC_Magiccard_Loop( int meindex )  //åº„å®¶è·‘è‡ªå·±çš„LOOP
 {
 	int j,playertotal,bkid;
 	char buf[256];
@@ -383,47 +383,47 @@ void NPC_Magiccard_Loop( int meindex )  //×¯¼ÒÅÜ×Ô¼ºµÄLOOP
 		if( NPC_magiccard_checkExist( meindex , bkid , j ) != -1 )
 			playertotal++;
 	}
-	if( playertotal == 0 ) NPC_magiccard_resetbanker( meindex , bkid );  //Õâ¸ö×¯¼ÒÒÑ¾­Ã»ÓĞÌôÕ½ÕßÔÚÁË
+	if( playertotal == 0 ) NPC_magiccard_resetbanker( meindex , bkid );  //è¿™ä¸ªåº„å®¶å·²ç»æ²¡æœ‰æŒ‘æˆ˜è€…åœ¨äº†
 	else banker[bkid].playertotal = playertotal ;
 
-	switch( banker[bkid].state )  //ÓÉ×¯¼ÒÀ´¿ØÖÆÁ÷³Ì
+	switch( banker[bkid].state )  //ç”±åº„å®¶æ¥æ§åˆ¶æµç¨‹
 	{ 
-	case 0: //µÈ´ıÌôÕ½Õß
+	case 0: //ç­‰å¾…æŒ‘æˆ˜è€…
 		if( banker[bkid].waittime < NowTime.tv_sec ){		
 			NPC_magiccard_gameinit( meindex , bkid);
 		}else{
 			if((long)banker[bkid].waittime - NowTime.tv_sec != banker[bkid].turntime ){
 				banker[bkid].turntime = (long)banker[bkid].waittime - NowTime.tv_sec;
 				if( banker[bkid].turntime < 6 ){
-					sprintf( buf ,"ÓÎÏ·½«ÔÚ¡´ %dÃë ¡µºó¿ªÊ¼", banker[bkid].turntime );
+					sprintf( buf ,"æ¸¸æˆå°†åœ¨ã€ˆ %dç§’ ã€‰åå¼€å§‹", banker[bkid].turntime );
 					showString( meindex, buf , 0);
 				}
 			}
 		}
 		break;
-	case 1: //ÒªÇó³öÅÆ
+	case 1: //è¦æ±‚å‡ºç‰Œ
 		NPC_magiccard_selectcard( meindex , bkid);			
 		break;
-	case 2: //µÈ´ı³öÅÆ
+	case 2: //ç­‰å¾…å‡ºç‰Œ
 		if( (long)banker[bkid].turntime - NowTime.tv_sec != banker[bkid].waittime ){
 			banker[bkid].waittime = (long)banker[bkid].turntime - NowTime.tv_sec;
 			if(banker[bkid].waittime < 4 && banker[bkid].waittime >= 0 ){
-				sprintf( buf ,"³öÅÆÊ±¼äÊ£ÏÂ%dÃë", banker[bkid].waittime );
+				sprintf( buf ,"å‡ºç‰Œæ—¶é—´å‰©ä¸‹%dç§’", banker[bkid].waittime );
 				showString( meindex, buf , 0);
 			}
 		}
 		NPC_magiccard_waitselect( meindex , bkid);
 		break;
-	case 3: //¼ÆËãÉËº¦ºÍĞã¶¯»­
+	case 3: //è®¡ç®—ä¼¤å®³å’Œç§€åŠ¨ç”»
 		NPC_magiccard_checkdamage( meindex,bkid);
 		break;
-	case 4: //ÌØÊâÅÆ
+	case 4: //ç‰¹æ®Šç‰Œ
 		NPC_magiccard_specialcard( meindex , bkid);
 		break;
-	case 5: //»ØºÏ½áÊø
+	case 5: //å›åˆç»“æŸ
 		NPC_magiccard_turnover( meindex , bkid);
 		break;
-	case 9: //±ÈÈü½áÊø¿´ÊäÓ®
+	case 9: //æ¯”èµ›ç»“æŸçœ‹è¾“èµ¢
 		NPC_magiccard_gameover( meindex , bkid);
 		break;
 	default:
@@ -451,30 +451,30 @@ int NPC_magiccard_checkplace( int meindex , int toindex , char *token )
     
 	if( CHAR_getWorkInt( toindex, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE )
 	{
-		strcpy(token,"×é¶ÓÖĞ²»ÄÜ²Î¼Ó!!!");
+		strcpy(token,"ç»„é˜Ÿä¸­ä¸èƒ½å‚åŠ !!!");
 		return FALSE;
 	}
 
-	//ÅĞ¶ÏÓĞÃ»ÓĞ×Ê¸ñ²ÎÈü
+	//åˆ¤æ–­æœ‰æ²¡æœ‰èµ„æ ¼å‚èµ›
 	if( CHAR_getInt( toindex , CHAR_GAMBLENUM) < 6 && CHAR_getInt( toindex , CHAR_GOLD) < 15000 ){
-		strcpy(token,"ÄúÃ»ÓĞ×ã¹»µÄÇ®¸¶±£Ö¤½ğºÍÃÅÆ±à¸£¬ºÜ±§Ç¸²»ÄÜ²Î¼Ó!!!");
+		strcpy(token,"æ‚¨æ²¡æœ‰è¶³å¤Ÿçš„é’±ä»˜ä¿è¯é‡‘å’Œé—¨ç¥¨å–”ï¼Œå¾ˆæŠ±æ­‰ä¸èƒ½å‚åŠ !!!");
 		return FALSE;			
 	}else if( CHAR_getInt( toindex , CHAR_GOLD) < 5000 ){
-		strcpy(token,"ÄúÃ»ÓĞ×ã¹»µÄÊ¯±Ò¸¶ÃÅÆ±à¸£¬ºÜ±§Ç¸²»ÄÜ²Î¼Ó!!!");
+		strcpy(token,"æ‚¨æ²¡æœ‰è¶³å¤Ÿçš„çŸ³å¸ä»˜é—¨ç¥¨å–”ï¼Œå¾ˆæŠ±æ­‰ä¸èƒ½å‚åŠ !!!");
 		return FALSE;			
 	}
 
 	i = CHAR_getInt( meindex, CHAR_LV );
-	if( banker[i].state > 0 || banker[i].playertotal >= MAXGUY ){ //continue; //ÂúÁË»òÓÎÏ·½øĞĞÖĞ
-		strcpy(token,"±ÈÈüÒÑ¾­¶îÂúÁË»òÊÇ½øĞĞÖĞ£¬ÇëµÈºòÏÂÒ»³¡Ğ»Ğ»");
+	if( banker[i].state > 0 || banker[i].playertotal >= MAXGUY ){ //continue; //æ»¡äº†æˆ–æ¸¸æˆè¿›è¡Œä¸­
+		strcpy(token,"æ¯”èµ›å·²ç»é¢æ»¡äº†æˆ–æ˜¯è¿›è¡Œä¸­ï¼Œè¯·ç­‰å€™ä¸‹ä¸€åœºè°¢è°¢");
 		return FALSE;	
 	}
 
-	if( banker[i].playertotal == 0 ){  //µÚÒ»Î»ÌôÕ½Õß		
+	if( banker[i].playertotal == 0 ){  //ç¬¬ä¸€ä½æŒ‘æˆ˜è€…		
 		banker[i].waittime = NowTime.tv_sec + 15 ; //30 
-		banker[i].state = 0 ;		//½øÈëµÈ´ıloop
+		banker[i].state = 0 ;		//è¿›å…¥ç­‰å¾…loop
 	}else
-		banker[i].waittime = NowTime.tv_sec + 10 ;  //Ö»ÒªÓĞÌôÕ½Õß½øÀ´¾ÍÔÙ¼Ó10Ãë
+		banker[i].waittime = NowTime.tv_sec + 10 ;  //åªè¦æœ‰æŒ‘æˆ˜è€…è¿›æ¥å°±å†åŠ 10ç§’
 		
 	sprintf( banker[i].cdkey[banker[i].playertotal] , "%s" , CHAR_getChar( toindex , CHAR_CDKEY ));
 	sprintf( banker[i].name[banker[i].playertotal] , "%s" , CHAR_getChar( toindex , CHAR_NAME ));			
@@ -482,13 +482,13 @@ int NPC_magiccard_checkplace( int meindex , int toindex , char *token )
 	if(CHAR_getInt( toindex , CHAR_GAMBLENUM) < 6){
 		CHAR_setInt( toindex , CHAR_GOLD, CHAR_getInt( toindex , CHAR_GOLD)-15000 ); 
 		CHAR_setWorkInt( toindex , NPC_WORK_GIVEGOLD , 1 );
-		sprintf( buf,"ÒÑ½É½»ÃÅÆ±5000£ÓºÍ±£Ö¤½ğ10000£Ó" ); 
+		sprintf( buf,"å·²ç¼´äº¤é—¨ç¥¨5000ï¼³å’Œä¿è¯é‡‘10000ï¼³" ); 
 		CHAR_talkToCli( toindex , -1 , buf,  CHAR_COLORYELLOW);
 	}else{
 		CHAR_setInt( toindex , CHAR_GOLD, CHAR_getInt( toindex , CHAR_GOLD)-5000 ); 
 		CHAR_setInt( toindex , CHAR_GAMBLENUM, CHAR_getInt( toindex , CHAR_GAMBLENUM) - 6 );		
 		CHAR_setWorkInt( toindex , NPC_WORK_GIVEGOLD , 0 );
-		sprintf( buf,"ÒÑ½É½»ÃÅÆ±5000£Ó" ); 
+		sprintf( buf,"å·²ç¼´äº¤é—¨ç¥¨5000ï¼³" ); 
 		CHAR_talkToCli( toindex , -1 , buf,  CHAR_COLORYELLOW);
 	}
 
@@ -497,21 +497,21 @@ int NPC_magiccard_checkplace( int meindex , int toindex , char *token )
 	
 	CHAR_setInt( toindex , CHAR_DIR , Positiontable[banker[i].playertotal].direct );
 	CHAR_setWorkInt( toindex , NPC_WORK_BANKER , i );
-	//¼ÍÂ¼´ËÏîÓÃÀ´È·ÈÏÊÇ·ñÊÇÖĞÍ¾Àë¿ª	
+	//çºªå½•æ­¤é¡¹ç”¨æ¥ç¡®è®¤æ˜¯å¦æ˜¯ä¸­é€”ç¦»å¼€	
 	CHAR_setWorkInt(toindex, CHAR_WORK_TEMP_FLOOR, CHAR_getInt(meindex, CHAR_FLOOR));	
 
-	//sprintf( buf ,"¼ÍÂ¼µÄµØÍ¼Îª%d", CHAR_getWorkInt(toindex, CHAR_WORK_TEMP_FLOOR ));
+	//sprintf( buf ,"çºªå½•çš„åœ°å›¾ä¸º%d", CHAR_getWorkInt(toindex, CHAR_WORK_TEMP_FLOOR ));
 	//showString( meindex, buf , 0);
 
 	CHAR_warpToSpecificPoint( toindex, CHAR_getInt( meindex, CHAR_FLOOR), 
 		Positiontable[banker[i].playertotal].humanX + offsetx ,
 		Positiontable[banker[i].playertotal].humanY + offsety );
-	//ÒÆ¶¯¸ÃÌôÕ½ÕßµÄÊÓ½Ç	
+	//ç§»åŠ¨è¯¥æŒ‘æˆ˜è€…çš„è§†è§’	
 	movescreenXY = ((Positiontable[banker[i].playertotal].humanX + offsetx) << 16) | ( Positiontable[banker[i].playertotal].humanY + offsety)	;
 	GmsvServer_MoveScreen_send(getfdFromCharaIndex(toindex), TRUE, movescreenXY);	
-	banker[i].playertotal += 1;		//¼ÓÈëÒ»¸öÌôÕ½Õß
+	banker[i].playertotal += 1;		//åŠ å…¥ä¸€ä¸ªæŒ‘æˆ˜è€…
 
-	//À×¶û±äÉí
+	//é›·å°”å˜èº«
 	object = MAP_getTopObj(CHAR_getInt(meindex, CHAR_FLOOR), Positiontable[BANKERID].humanX + offsetx, Positiontable[BANKERID].humanY + offsety );
 	if( object ){
 		objindex = GET_OBJINDEX( object);
@@ -551,10 +551,10 @@ void NPC_magiccard_gameinit( int meindex , int bkid )
 	banker[bkid].history = 0;
 	banker[bkid].turntime = NowTime.tv_sec + 20 ;
 	banker[bkid].process = 0;	
-	sprintf( buf,"µÚÒ»»ØºÏ¿ªÊ¼ Õ½¶·" );
+	sprintf( buf,"ç¬¬ä¸€å›åˆå¼€å§‹ æˆ˜æ–—" );
 	showString( meindex, buf , 0);
 	
-	//×¯¼ÒµÄÅÆ
+	//åº„å®¶çš„ç‰Œ
 	while(j<5){
 		if( tickettotal[bkid] > 5000 && flag == FALSE ){
 			i = rand()%100;
@@ -564,7 +564,7 @@ void NPC_magiccard_gameinit( int meindex , int bkid )
 			flag = TRUE;
 		}else{
 			k = rand()%(30-j);
-			if( Cardbox[6+7*bkid][k].cardindex == 28 && flag == FALSE && rand()%100 > 50){	//½µµÍÕÙÁé³öÏÖ»úÂÊ
+			if( Cardbox[6+7*bkid][k].cardindex == 28 && flag == FALSE && rand()%100 > 50){	//é™ä½å¬çµå‡ºç°æœºç‡
 				flag = TRUE;
 				continue;
 			}
@@ -577,22 +577,22 @@ void NPC_magiccard_gameinit( int meindex , int bkid )
 	}
 	flag = FALSE;
 	for( i=0;i<MAXGUY;i++){
-		//¼ì²éÌôÕ½Õß»¹ÔÚ²»ÔÚ 
+		//æ£€æŸ¥æŒ‘æˆ˜è€…è¿˜åœ¨ä¸åœ¨ 
 		charindex = NPC_magiccard_checkExist(meindex,bkid,i);
 		if( charindex == -1 ) continue;
 		
 		banker[bkid].starttotal += 1;
 		
 		CHAR_setWorkInt( charindex , NPC_WORK_DAMAGE , 0 );		
-		banker[bkid].hp[i] = MAXHP ;							//¸øÑªÁ¿
-		CHAR_setWorkInt( charindex , NPC_WORK_HAND , 0 );		//ÖØĞÂÄÃÅÆ
-		CHAR_setWorkInt( charindex , NPC_WORK_HISTORY , 0 );	//¼ÇÂ¼Çå³ı
-		CHAR_setWorkInt( charindex , NPC_WORK_SELECT , -1 );		//Ñ¡ÔñÇå³ı
-		CHAR_setWorkInt( charindex , NPC_WORK_ACTION , 0 );		//¶¯×÷Çå³ı
+		banker[bkid].hp[i] = MAXHP ;							//ç»™è¡€é‡
+		CHAR_setWorkInt( charindex , NPC_WORK_HAND , 0 );		//é‡æ–°æ‹¿ç‰Œ
+		CHAR_setWorkInt( charindex , NPC_WORK_HISTORY , 0 );	//è®°å½•æ¸…é™¤
+		CHAR_setWorkInt( charindex , NPC_WORK_SELECT , -1 );		//é€‰æ‹©æ¸…é™¤
+		CHAR_setWorkInt( charindex , NPC_WORK_ACTION , 0 );		//åŠ¨ä½œæ¸…é™¤
 		j=0;
 		while(j<5){
 			k = rand()%(30-j);
-			if( Cardbox[i+7*bkid][k].cardindex == 28 && flag == FALSE && rand()%100 > 50){	//½µµÍÕÙÁé³öÏÖ»úÂÊ
+			if( Cardbox[i+7*bkid][k].cardindex == 28 && flag == FALSE && rand()%100 > 50){	//é™ä½å¬çµå‡ºç°æœºç‡
 				flag = TRUE;
 				continue;
 			}
@@ -619,7 +619,7 @@ void NPC_magiccard_gameinit( int meindex , int bkid )
 		showString( meindex, buf , 0);
 		*/
 
-		//ÒÆ¶¯¸ÃÌôÕ½ÕßµÄÊÓ½Ç	
+		//ç§»åŠ¨è¯¥æŒ‘æˆ˜è€…çš„è§†è§’	
 		movescreenXY = ((14+offsetx) << 16) | (13+offsety)	;
 		GmsvServer_MoveScreen_send(getfdFromCharaIndex(charindex), TRUE, movescreenXY);	
 
@@ -629,7 +629,7 @@ void NPC_magiccard_gameinit( int meindex , int bkid )
 	banker[bkid].state = 1;
 }
 
-//ÈÃÌôÕ½ÕßÑ¡Ôñ³öÊ²Ã´ÅÆ
+//è®©æŒ‘æˆ˜è€…é€‰æ‹©å‡ºä»€ä¹ˆç‰Œ
 void NPC_magiccard_selectcard( int meindex , int bkid )
 {
 	int i,j,fd,allhp=0,charindex;
@@ -643,13 +643,13 @@ void NPC_magiccard_selectcard( int meindex , int bkid )
 		if( charindex == -1 ) continue;
 ////////////
 		if( banker[bkid].pauseflag[i] == TRUE ){	
-			sprintf( token,"%dºÅÌôÕ½Õß%s±»·âÓ¡ÁË£¬ÔİÍ£Ò»»ØºÏ",i+1,CHAR_getChar( charindex, CHAR_NAME) );
+			sprintf( token,"%då·æŒ‘æˆ˜è€…%sè¢«å°å°äº†ï¼Œæš‚åœä¸€å›åˆ",i+1,CHAR_getChar( charindex, CHAR_NAME) );
 			showString( meindex, token , 0);
 			continue;
 		}
 ////////////
 		fd = getfdFromCharaIndex( charindex );		
-		sprintf( token, "Ä§ÍõHP%d ÌôÕ½ÕßHP%d¡¾ÄãµÄHP%d¡¿\n",banker[bkid].hp[BANKERID],allhp,banker[bkid].hp[i]);
+		sprintf( token, "é­”ç‹HP%d æŒ‘æˆ˜è€…HP%dã€ä½ çš„HP%dã€‘\n",banker[bkid].hp[BANKERID],allhp,banker[bkid].hp[i]);
 		for( j=0;j<30;j++){
 			if( (card<<j) & (unsigned int)CHAR_getWorkInt( charindex , NPC_WORK_HAND ) ){
 				strcat( token , Cardfunctiontable[j].name.string );
@@ -666,7 +666,7 @@ void NPC_magiccard_selectcard( int meindex , int bkid )
 	banker[bkid].state = 2;
 }
 
-//¼ì²éÊÇÊ²Ã´ÅÆ 
+//æ£€æŸ¥æ˜¯ä»€ä¹ˆç‰Œ 
 void NPC_magiccard_checkselect( int meindex , int toindex ,int choise )
 {
 	int fd,i,j=0;
@@ -675,19 +675,19 @@ void NPC_magiccard_checkselect( int meindex , int toindex ,int choise )
 	int buttontype;
 
     fd = getfdFromCharaIndex( toindex );
-    if( fd == -1 )  return;//Òª¼ì²éÌôÕ½Õß»¹ÔÚ²»ÔÚ Ä¿Ç°»¹Ã»¼ì²é
+    if( fd == -1 )  return;//è¦æ£€æŸ¥æŒ‘æˆ˜è€…è¿˜åœ¨ä¸åœ¨ ç›®å‰è¿˜æ²¡æ£€æŸ¥
 		
 	for( i=0;i<30;i++){
 		if( (card<<i) & (unsigned int)CHAR_getWorkInt( toindex , NPC_WORK_HAND) ){
 			j++;
 			if( j == choise ){ 
-				CHAR_setWorkInt( toindex , NPC_WORK_SELECT , i ); //¼ÇÂ¼ÌôÕ½ÕßÑ¡Ôñ³öµÄÅÆ0~29
+				CHAR_setWorkInt( toindex , NPC_WORK_SELECT , i ); //è®°å½•æŒ‘æˆ˜è€…é€‰æ‹©å‡ºçš„ç‰Œ0~29
 				sprintf( token, "%s\n",Cardfunctiontable[i].name.string);
 				//if( Cardfunctiontable[i].attack > 0 || Cardfunctiontable[i].defence > 0 ){
 				if( i < 25 ){
-					//È·¶¨ÊÇ³èÎïÅÆ				
-					strcat( token , "\n¹¥»÷\n" );				
-					strcat( token , "\n·ÀÓù");
+					//ç¡®å®šæ˜¯å® ç‰©ç‰Œ				
+					strcat( token , "\næ”»å‡»\n" );				
+					strcat( token , "\né˜²å¾¡");
 					buttontype = WINDOW_BUTTONTYPE_CANCEL;
 				}else{
 					buttontype = WINDOW_BUTTONTYPE_OK|WINDOW_BUTTONTYPE_CANCEL;
@@ -702,7 +702,7 @@ void NPC_magiccard_checkselect( int meindex , int toindex ,int choise )
 	}
 }
 
-//·´»ÚÏëÒªÖØÑ¡Ê±
+//åæ‚”æƒ³è¦é‡é€‰æ—¶
 void NPC_magiccard_selectback( int meindex , int toindex )
 {
 	unsigned int handcard;
@@ -722,7 +722,7 @@ void NPC_magiccard_selectback( int meindex , int toindex )
 	fd = getfdFromCharaIndex( toindex );
 	if( fd == -1 )  return;
 
-	sprintf( token, "Ä§ÍõHP%d ÌôÕ½ÕßHP%d¡¾ÄãµÄHP%d¡¿\n",banker[bkid].hp[BANKERID],allhp,banker[bkid].hp[i]); 
+	sprintf( token, "é­”ç‹HP%d æŒ‘æˆ˜è€…HP%dã€ä½ çš„HP%dã€‘\n",banker[bkid].hp[BANKERID],allhp,banker[bkid].hp[i]); 
 	for( j=0;j<30;j++){
 		if( (SHIFTBASE<<j) & handcard ){
 			strcat( token , Cardfunctiontable[j].name.string );
@@ -737,7 +737,7 @@ void NPC_magiccard_selectback( int meindex , int toindex )
 
 }
 
-//¼ì²éÌôÕ½ÕßÊÇ·ñ¶¼Ñ¡ÔñºÃÁË
+//æ£€æŸ¥æŒ‘æˆ˜è€…æ˜¯å¦éƒ½é€‰æ‹©å¥½äº†
 void NPC_magiccard_waitselect( int meindex , int bkid )
 {
 	int i,charindex,select=0;
@@ -749,19 +749,19 @@ void NPC_magiccard_waitselect( int meindex , int bkid )
 		if( charindex == -1 ) continue;
 		if( //CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) != -1 &&
 			CHAR_getWorkInt( charindex , NPC_WORK_ACTION ) != 0 || banker[bkid].pauseflag[i] == TRUE ){	
-			select++;  //Ñ¡ºÃÁË
+			select++;  //é€‰å¥½äº†
 		}else if( banker[bkid].turntime < NowTime.tv_sec ){
 			CHAR_setWorkInt( charindex , NPC_WORK_SELECT , -1 );
 			CHAR_setWorkInt( charindex , NPC_WORK_ACTION , 0 );
-			//È¡ÏûÑ¡Ôñ			
+			//å–æ¶ˆé€‰æ‹©			
 			GmsvServer_MagiccardDamage_send(getfdFromCharaIndex(charindex), 10 , 0 ,0 ,0 );
-			sprintf(buf,"³öÅÆÊ±¼äµ½£¬%dºÅÌôÕ½Õß·ÅÆú³öÅÆ",i+1);	
+			sprintf(buf,"å‡ºç‰Œæ—¶é—´åˆ°ï¼Œ%då·æŒ‘æˆ˜è€…æ”¾å¼ƒå‡ºç‰Œ",i+1);	
 			showString( meindex, buf , 0);
-			select++;  //²»µÈÁË²»ÈÃÄãÑ¡ÁË 
+			select++;  //ä¸ç­‰äº†ä¸è®©ä½ é€‰äº† 
 		}
 	}	 
-	if( select >= banker[bkid].playertotal )  okflag = TRUE;	//´ó¼Ò¶¼Ñ¡ºÃÁË
-	//sprintf(buf,"Ê£Óà%dÌôÕ½Õß  ÒÑÑ¡ÔñÌôÕ½ÕßÓĞ%d ",banker[bkid].playertotal,select);	
+	if( select >= banker[bkid].playertotal )  okflag = TRUE;	//å¤§å®¶éƒ½é€‰å¥½äº†
+	//sprintf(buf,"å‰©ä½™%dæŒ‘æˆ˜è€…  å·²é€‰æ‹©æŒ‘æˆ˜è€…æœ‰%d ",banker[bkid].playertotal,select);	
 	//showString( meindex, buf , 0);
 	if( okflag == TRUE ) {
 		banker[bkid].state = 3;
@@ -793,7 +793,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 		cardnum[i]=0;
 		if(banker[bkid].pauseflag[i] == TRUE){
 			banker[bkid].pauseflag[i] = FALSE;
-			checkflag = TRUE;  //ÓĞÈË±»·âÓ¡ ¾ø²»Ëæ»ú
+			checkflag = TRUE;  //æœ‰äººè¢«å°å° ç»ä¸éšæœº
 		}
 	}
 	allattack=0;
@@ -804,7 +804,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 	if( banker[bkid].pauseflag[BANKERID] == TRUE )
 	{
 		banker[bkid].pauseflag[BANKERID] = FALSE;
-		sprintf( buf,"Ä§Íõ±»·âÓ¡ÁË ÔİÍ£Ò»»ØºÏ" );
+		sprintf( buf,"é­”ç‹è¢«å°å°äº† æš‚åœä¸€å›åˆ" );
 		showString( meindex, buf , 0);
 		return;
 	}
@@ -821,30 +821,30 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 				allattack += Cardfunctiontable[CHAR_getWorkInt(charindex,NPC_WORK_SELECT)].attack ;
 			}else if( CHAR_getWorkInt( charindex , NPC_WORK_ACTION ) == DEFENCE ){
 				alldefence += Cardfunctiontable[CHAR_getWorkInt(charindex,NPC_WORK_SELECT)].defence ;
-			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 25 ){ //»Ã¾µ
+			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 25 ){ //å¹»é•œ
 				if( rand()%100 > 40 + 5 * banker[bkid].playertotal ){
 					allattack += rand()%10;						
 					alldefence += rand()%10;
 				}else{
-					alldefence += Cardfunctiontable[0].attack ;		//¿ÉµÖµ²×îÇ¿µÄ¹¥»÷-->´ú±í²Âµ½
+					alldefence += Cardfunctiontable[0].attack ;		//å¯æŠµæŒ¡æœ€å¼ºçš„æ”»å‡»-->ä»£è¡¨çŒœåˆ°
 					card25++;
 				}
-			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 26 ){ //»ÃÓ°
+			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 26 ){ //å¹»å½±
 				if( rand()%100 > 40 + 5 * banker[bkid].playertotal )
 					alldefence += rand()%10;		
 				else
 					alldefence += Cardfunctiontable[0].attack ;		
-			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 27 ){ //·âÓ¡
+			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 27 ){ //å°å°
 				if( rand()%100 > 30 + 5 * banker[bkid].playertotal ){
 					allattack += rand()%5;						
 					alldefence += rand()%5;
 				}
-			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 28 ){ //ÕÙÁé
+			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 28 ){ //å¬çµ
 				if( rand()%100 > 70 + 5 * banker[bkid].playertotal ){
 					allattack += rand()%5;						
 					alldefence += rand()%5;
 				}
-			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 29 ){ //ÕÙÀ×		
+			}else if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 29 ){ //å¬é›·		
 				if( rand()%100 > 30 + 5 * banker[bkid].playertotal ){
 					allattack += rand()%5;						
 					alldefence += rand()%5;
@@ -854,12 +854,12 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 		//sprintf( buf,"allA=%d   allD=%d",allattack,alldefence );
 		//showString( meindex, buf , 0);
 
-		//¼ÍÂ¼Ã¿Ò»ÕÅÅÆµÄ½á¹û Ã»ÓĞ¸øÖµ±íÊ¾ÊÇ0
+		//çºªå½•æ¯ä¸€å¼ ç‰Œçš„ç»“æœ æ²¡æœ‰ç»™å€¼è¡¨ç¤ºæ˜¯0
 		j=0;
 		for( k=0;k<30;k++){
 			if((SHIFTBASE<<k) & banker[bkid].hand ){
 				if( k < 25 ){
-					//¹¥»÷
+					//æ”»å‡»
 					if( 1 ){ //Cardfunctiontable[k].attack * enemy > alldefence ){
 						givedamage =  Cardfunctiontable[k].attack * enemy - alldefence ;
 						if( allhp > banker[bkid].hp[BANKERID] )
@@ -868,22 +868,22 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 							getdamage = allattack ;				
 						attacklist[j] = givedamage - getdamage;
 					}
-					//·ÀÊØ
+					//é˜²å®ˆ
 					if( Cardfunctiontable[k].defence * enemy < allattack ){
 						defencelist[j] = Cardfunctiontable[k].defence * enemy - allattack;
 					}
-				}else{ //Ä§·¨ÅÆ
-					attacklist[j] -= allattack;	//ÈÃÏÂÃæÅĞ¶Ï³èÅÆ²»ÓÃ¿¼ÂÇµ½Ä§·¨ÅÆ
+				}else{ //é­”æ³•ç‰Œ
+					attacklist[j] -= allattack;	//è®©ä¸‹é¢åˆ¤æ–­å® ç‰Œä¸ç”¨è€ƒè™‘åˆ°é­”æ³•ç‰Œ
 					defencelist[j] -= allattack; 
 				}
 				cardnum[j]=k;
 				j++;	
 			}
 		}
-		//sprintf( buf,"¶Á³öµÄÊÖÅÆÊÇ %d %d %d %d %d",cardnum[0],cardnum[1],cardnum[2],cardnum[3],cardnum[4]);
+		//sprintf( buf,"è¯»å‡ºçš„æ‰‹ç‰Œæ˜¯ %d %d %d %d %d",cardnum[0],cardnum[1],cardnum[2],cardnum[3],cardnum[4]);
 		//showString( meindex, buf , 0);
 
-//ÕÙÁéÊõ---------------------------------------------------------------------
+//å¬çµæœ¯---------------------------------------------------------------------
 		for( i=0;i<5;i++){
 			if( cardnum[i] == 28 ){	
 				if( banker[bkid].turn == 10 )
@@ -917,7 +917,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 				}
 			}
 		}
-//·âÓ¡Êõ----------------------------------------------------------------	
+//å°å°æœ¯----------------------------------------------------------------	
 		for( i=0;i<5;i++){
 			if( cardnum[i]== 27 && banker[bkid].turn != 10 && banker[bkid].hp[BANKERID] >= banker[bkid].playertotal * 13){  
 				switch( banker[bkid].playertotal ){
@@ -952,7 +952,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 				}
 			}
 		}
-//Èç¹ûÓĞ»ÃÓ°ÊõÅĞ¶ÏÒª²»ÒªÊ¹ÓÃ-----------------------------------------------------------------
+//å¦‚æœæœ‰å¹»å½±æœ¯åˆ¤æ–­è¦ä¸è¦ä½¿ç”¨-----------------------------------------------------------------
 		for( i=0;i<5;i++){
 			if( cardnum[i] == 26 && checkflag == FALSE ){
 				if( banker[bkid].turn == 10 && allhp <= banker[bkid].hp[BANKERID] ){
@@ -1001,7 +1001,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 				}
 			}
 		}
-//Èç¹ûÓĞÕÙÀ×ÊõÅĞ¶ÏÒª²»ÒªÊ¹ÓÃ-----------------------------------------------------------------		 
+//å¦‚æœæœ‰å¬é›·æœ¯åˆ¤æ–­è¦ä¸è¦ä½¿ç”¨-----------------------------------------------------------------		 
 		for( i=0;i<5;i++){
 			if( cardnum[i] == 29 && checkflag == FALSE){
 				switch(banker[bkid].playertotal){
@@ -1028,7 +1028,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 				}
 			}	
 		}
-//±ù¾µÊõ---------------------------------------------------------------------------------		
+//å†°é•œæœ¯---------------------------------------------------------------------------------		
 		for( i=0;i<5;i++){
 			if( cardnum[i] == 25 && checkflag == FALSE ){
 				if( banker[bkid].turn == 10 ){
@@ -1061,7 +1061,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 				}
 			}	
 		}
-//×îºóÒ»»ØºÏ»¹ÊäÒ»¶¨ÓÃ×îÇ¿µÄ¹¥»÷----------------------------------------------------
+//æœ€åä¸€å›åˆè¿˜è¾“ä¸€å®šç”¨æœ€å¼ºçš„æ”»å‡»----------------------------------------------------
 		if( ( banker[bkid].turn == 10 && allhp > banker[bkid].hp[BANKERID] ) || checkflag == TRUE ){
 			bestattack = 0;
 			for( i=0;i<5;i++){
@@ -1073,7 +1073,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 				}
 			}			
 		}
-//Èç¹ûÄ¿Ç°ÊÇÓ®µÄ×´Ì¬ Í¬Ê±Èç¹û·¢ÏÖ³¡ÉÏÓĞÈË¿ìÃ»ÑªÁË  ¾ÍÓÃÇ¿¹¥ÅÆ------------------------
+//å¦‚æœç›®å‰æ˜¯èµ¢çš„çŠ¶æ€ åŒæ—¶å¦‚æœå‘ç°åœºä¸Šæœ‰äººå¿«æ²¡è¡€äº†  å°±ç”¨å¼ºæ”»ç‰Œ------------------------
 		if( banker[bkid].action == 0 ){
 			if( allhp < banker[bkid].hp[BANKERID] ){
 				for( j=0;j<BANKERID;j++){
@@ -1095,10 +1095,10 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 		bestattack = 0;	
 		bestdefence = 0;
 		if( banker[bkid].action == 0 ){	
-			if( allhp >= banker[bkid].hp[BANKERID] || rand()%100 > 50 ){	//ÎÈÓ®¹¥»÷
+			if( allhp >= banker[bkid].hp[BANKERID] || rand()%100 > 50 ){	//ç¨³èµ¢æ”»å‡»
 				for( i=0;i<5;i++){
 					if( cardnum[i] >= 25) continue;	
-					if( banker[bkid].hp[BANKERID] < banker[bkid].playertotal * 13 ) break; //¿ìÃ»ÑªÁË
+					if( banker[bkid].hp[BANKERID] < banker[bkid].playertotal * 13 ) break; //å¿«æ²¡è¡€äº†
 					if( attacklist[i] > bestattack ){
 						bestattack = attacklist[i];
 						banker[bkid].select = cardnum[i];
@@ -1109,10 +1109,10 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 		}
 		if( banker[bkid].action == 0 ){
 			if( rand()%100 > 50 + banker[bkid].playertotal * 3 ){
-				//·ÀÊØ
+				//é˜²å®ˆ
 				if( rand()%100 > 50 ){	
 					bestdefence = defencelist[4] ; 
-					for( i=4;i>=0;i--){	//ÈİÒ×ÓÃºÃÅÆ
+					for( i=4;i>=0;i--){	//å®¹æ˜“ç”¨å¥½ç‰Œ
 						if( cardnum[i] >= 25 ) continue;		
 						if( defencelist[i] > bestdefence ){
 							bestdefence = defencelist[i] ; 
@@ -1122,7 +1122,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 					}
 				}else{
 					bestdefence = defencelist[0] ; 
-					for( i=0;i<5;i++){	//ÈİÒ×ÓÃÈõÅÆ
+					for( i=0;i<5;i++){	//å®¹æ˜“ç”¨å¼±ç‰Œ
 						if( cardnum[i] >= 25 ) continue;	
 						if( defencelist[i] > bestdefence ){
 							bestdefence = defencelist[i] ; 
@@ -1132,10 +1132,10 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 					}
 				}
 			}else{
-				//¹¥»÷
+				//æ”»å‡»
 				if( rand()%100 > 50 ){	
 					bestattack = attacklist[4] ; 
-					for( i=4;i>=0;i--){	//ÈİÒ×ÓÃ±È½ÏºÃµÄÅÆ
+					for( i=4;i>=0;i--){	//å®¹æ˜“ç”¨æ¯”è¾ƒå¥½çš„ç‰Œ
 						if( cardnum[i] >= 25 ) continue;	
 						if( attacklist[i] > bestattack ){
 							bestattack = attacklist[i] ; 
@@ -1145,7 +1145,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 					}
 				}else{
 					bestattack = attacklist[0] ; 
-					for( i=0;i<5;i++){	//ÈİÒ×ÓÃ±È½Ï²îµÄÅÆ
+					for( i=0;i<5;i++){	//å®¹æ˜“ç”¨æ¯”è¾ƒå·®çš„ç‰Œ
 						if( cardnum[i] >= 25 ) continue;	
 						if( attacklist[i] > bestattack ){
 							bestattack = attacklist[i] ; 
@@ -1158,7 +1158,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 		}
 	}
 
-	//Èç¹ûÃ»ÓĞÑ¡Ôñ¾ÍËæ»ú³ö³èÎïÅÆ 
+	//å¦‚æœæ²¡æœ‰é€‰æ‹©å°±éšæœºå‡ºå® ç‰©ç‰Œ 
 	if( banker[bkid].action == 0 )
 	{	
 		j=0;
@@ -1168,7 +1168,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 				j++;
 			}
 		}
-		//sprintf( buf,"Ëæ»ú¶Á³öµÄÊÖÅÆÊÇ %d %d %d %d %d",cardnum[0],cardnum[1],cardnum[2],cardnum[3],cardnum[4]);
+		//sprintf( buf,"éšæœºè¯»å‡ºçš„æ‰‹ç‰Œæ˜¯ %d %d %d %d %d",cardnum[0],cardnum[1],cardnum[2],cardnum[3],cardnum[4]);
 		//showString( meindex, buf , 0);
 
 		if( j==0 ) j = 1; 
@@ -1179,7 +1179,7 @@ void NPC_magiccard_aiselect( int meindex , int bkid )
 			banker[bkid].action = DEFENCE;
 	}
 
-	//×îÖÕ¼ì²é
+	//æœ€ç»ˆæ£€æŸ¥
 	if( banker[bkid].select < 25 ){	
 		if( Cardfunctiontable[banker[bkid].select].attack == 13 )
 			banker[bkid].action = ATTACK;
@@ -1203,15 +1203,15 @@ void NPC_magiccard_checkdamage( int meindex , int bkid )
 		CHAR_setWorkInt( charindex , NPC_WORK_DAMAGE , 0 );
 		select = CHAR_getWorkInt( charindex , NPC_WORK_SELECT );	
 
-		if( select == 28 ){ //ÌôÕ½ÕßÓÃÕĞÁéÊõ
+		if( select == 28 ){ //æŒ‘æˆ˜è€…ç”¨æ‹›çµæœ¯
 			CHAR_setWorkInt( charindex , NPC_WORK_DAMAGE , -MAXHP/2);
 			playerdamage += -MAXHP/2;
-			//sprintf( buf,"%dºÅÌôÕ½Õß%sÊ¹ÓÃÕÙÁéÊõ",i+1,CHAR_getChar( charindex, CHAR_NAME));
+			//sprintf( buf,"%då·æŒ‘æˆ˜è€…%sä½¿ç”¨å¬çµæœ¯",i+1,CHAR_getChar( charindex, CHAR_NAME));
 			//showString( meindex, buf , 0);
 		}
 		if( CHAR_getWorkInt( charindex , NPC_WORK_ACTION ) == ATTACK && banker[bkid].select != 26 )
 		{
-			if( banker[bkid].select == 25 ){ //»Ã¾µÊõ
+			if( banker[bkid].select == 25 ){ //å¹»é•œæœ¯
 				CHAR_setWorkInt( charindex , NPC_WORK_DAMAGE , Cardfunctiontable[select].attack );
 				playerdamage += Cardfunctiontable[select].attack;
 			}else if( banker[bkid].action == DEFENCE ){
@@ -1236,15 +1236,15 @@ void NPC_magiccard_checkdamage( int meindex , int bkid )
 					CHAR_getWorkInt( charindex , NPC_WORK_DAMAGE ) + Cardfunctiontable[banker[bkid].select].attack );	
 			}		
 		}
-		//sprintf( buf,"ÌôÕ½Õß%d select=%d ÉËº¦%d",i,select,CHAR_getWorkInt( charindex , NPC_WORK_DAMAGE ) );
+		//sprintf( buf,"æŒ‘æˆ˜è€…%d select=%d ä¼¤å®³%d",i,select,CHAR_getWorkInt( charindex , NPC_WORK_DAMAGE ) );
 		//showString( meindex, buf , 0);		
 	}
-	//sprintf( buf,"×¯¼Ò×ÜÉËº¦%d  ÌôÕ½Õß×ÜÉËº¦%d",bankerdamage,playerdamage);
+	//sprintf( buf,"åº„å®¶æ€»ä¼¤å®³%d  æŒ‘æˆ˜è€…æ€»ä¼¤å®³%d",bankerdamage,playerdamage);
 	//showString( meindex, buf , 0);
 	
-	//Ğã¶¯»­
+	//ç§€åŠ¨ç”»
 	if( banker[bkid].select != 29 &&  banker[bkid].select != 27 ){
-		//sprintf( buf,"-----------------Ä§ÍõÑ¡Ôñ³ö µÚ%dÕÅ------------------",banker[bkid].select);
+		//sprintf( buf,"-----------------é­”ç‹é€‰æ‹©å‡º ç¬¬%då¼ ------------------",banker[bkid].select);
 		//showString( meindex, buf , 0);
 		NPC_magiccard_action2( meindex , meindex , BANKERID , banker[bkid].select , banker[bkid].action );
 	}
@@ -1252,10 +1252,10 @@ void NPC_magiccard_checkdamage( int meindex , int bkid )
 	for( i=0;i<MAXGUY;i++ ){
 		charindex = NPC_magiccard_checkExist( meindex , bkid , i );
 		if( charindex == -1 ) continue;	 
-		//ÌôÕ½Õß¿ÛÑª
+		//æŒ‘æˆ˜è€…æ‰£è¡€
 		banker[bkid].hp[i] -= CHAR_getWorkInt( charindex , NPC_WORK_DAMAGE ) ;
 		NPC_magiccard_showdamage( meindex , charindex , i , CHAR_getWorkInt( charindex , NPC_WORK_DAMAGE ) );
-		//if( CHAR_getWorkInt( charindex , NPC_WORK_ACTION ) == 0 ) continue; //·ÅÆú³öÅÆ
+		//if( CHAR_getWorkInt( charindex , NPC_WORK_ACTION ) == 0 ) continue; //æ”¾å¼ƒå‡ºç‰Œ
 		//sprintf( buf,"i=%d Action=%d",i,CHAR_getWorkInt( charindex , NPC_WORK_ACTION ));
 		//showString( meindex, buf , 0);
 		if( banker[bkid].hp[i] > MAXHP ) banker[bkid].hp[i] = MAXHP;
@@ -1264,10 +1264,10 @@ void NPC_magiccard_checkdamage( int meindex , int bkid )
 			NPC_magiccard_action2( meindex , charindex , i , CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) , CHAR_getWorkInt( charindex , NPC_WORK_ACTION ) );	
 	}
 
-	//×¯¼Ò¿ÛÑª
-	if( banker[bkid].select == 28 ){ //×¯¼ÒÓÃÕÙÁéÊõ
+	//åº„å®¶æ‰£è¡€
+	if( banker[bkid].select == 28 ){ //åº„å®¶ç”¨å¬çµæœ¯
 		bankerdamage = bankerdamage - banker[bkid].starttotal*MAXHP/2;	
-		//sprintf( buf,"Ä§ÍõµÄÕĞÁé¼ÆËã  bankdamage=%d ×Ô¼º=%d",bankerdamage,banker[bkid].starttotal*MAXHP/2);
+		//sprintf( buf,"é­”ç‹çš„æ‹›çµè®¡ç®—  bankdamage=%d è‡ªå·±=%d",bankerdamage,banker[bkid].starttotal*MAXHP/2);
 		//showString( meindex, buf , 0);
 
 	}
@@ -1285,25 +1285,25 @@ void NPC_magiccard_specialcard( int meindex , int bkid )
 	int i,j,k,target,targetarray[6],charindex,damage=0;
 	char buf[256],buf1[256],buf2[256];	
 
-	//¼ÆËãÓĞ¼¸¸öÈËÊ¹ÓÃÂäÀ×Êõ
+	//è®¡ç®—æœ‰å‡ ä¸ªäººä½¿ç”¨è½é›·æœ¯
 	for( i=0;i<MAXGUY;i++)
 	{
 		charindex = NPC_magiccard_checkExist( meindex , bkid , i );
 		if( charindex == -1 ) continue;	 
 		if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 29 ){
 			thunder++;
-			sprintf( buf,"%dºÅÌôÕ½ÕßÊ¹ÓÃÕÙÀ×Êõ",i+1);				
+			sprintf( buf,"%då·æŒ‘æˆ˜è€…ä½¿ç”¨å¬é›·æœ¯",i+1);				
 			showString( meindex, buf , 0);
 		}
 		allhp += banker[bkid].hp[i];
 	}
 	if( banker[bkid].select == 29 ){
 		thunder++;	
-		sprintf( buf,"Ä§ÍõÊ¹ÓÃÕÙÀ×Êõ");				
+		sprintf( buf,"é­”ç‹ä½¿ç”¨å¬é›·æœ¯");				
 		showString( meindex, buf , 0);
 	}
 	
-	//sprintf( buf,"ÂäÀ×Êı%d",thunder);
+	//sprintf( buf,"è½é›·æ•°%d",thunder);
 	//showString( meindex, buf , 0);
 	i=0;
 	while(thunder){	
@@ -1318,11 +1318,11 @@ void NPC_magiccard_specialcard( int meindex , int bkid )
 				targetarray[k] = j;
 				k++;
 			}
-			if( k == 0 )  target = BANKERID;  //Ã»ÓĞÍæ¼ÒÔÚ³¡ÁË
+			if( k == 0 )  target = BANKERID;  //æ²¡æœ‰ç©å®¶åœ¨åœºäº†
 			else  target = targetarray[rand()%k];
 		}
 	
-		if(target == BANKERID ) //ÖĞ×¯¼Ò
+		if(target == BANKERID ) //ä¸­åº„å®¶
 		{
 			charindex = meindex;
 			if( banker[bkid].select != 26 )	damage = Cardfunctiontable[29].attack;
@@ -1331,9 +1331,9 @@ void NPC_magiccard_specialcard( int meindex , int bkid )
 			banker[bkid].hp[target] -= damage;
 			i++;
 			if( damage == 0 ){
-				sprintf( buf,"Ä§Íõ±»µÚ%d·¢ÂäÀ×»÷ÖĞ£¬Òò»ÃÓ°Êõ¶øÃ»ÊÂ",i);		
+				sprintf( buf,"é­”ç‹è¢«ç¬¬%då‘è½é›·å‡»ä¸­ï¼Œå› å¹»å½±æœ¯è€Œæ²¡äº‹",i);		
 			}else{
-				sprintf( buf,"Ä§Íõ±»µÚ%d·¢ÂäÀ×»÷ÖĞ",i);				
+				sprintf( buf,"é­”ç‹è¢«ç¬¬%då‘è½é›·å‡»ä¸­",i);				
 			}
 			showString( meindex, buf , 0);
 		}else{
@@ -1347,9 +1347,9 @@ void NPC_magiccard_specialcard( int meindex , int bkid )
 			allhp -= damage;
 			i++;	
 			if( damage == 0 ){
-				sprintf( buf,"%dºÅÌôÕ½Õß±»µÚ%d·¢ÂäÀ×»÷ÖĞ£¬Òò»ÃÓ°Êõ¶øÃ»ÊÂ",target+1,i);		
+				sprintf( buf,"%då·æŒ‘æˆ˜è€…è¢«ç¬¬%då‘è½é›·å‡»ä¸­ï¼Œå› å¹»å½±æœ¯è€Œæ²¡äº‹",target+1,i);		
 			}else{
-				sprintf( buf,"%dºÅÌôÕ½Õß±»µÚ%d·¢ÂäÀ×»÷ÖĞ",target+1,i);				
+				sprintf( buf,"%då·æŒ‘æˆ˜è€…è¢«ç¬¬%då‘è½é›·å‡»ä¸­",target+1,i);				
 			}
 			showString( meindex, buf , 0);
 		}
@@ -1360,10 +1360,10 @@ void NPC_magiccard_specialcard( int meindex , int bkid )
 
 	buf1[0] ='\0';
 	buf2[0] ='\0';	
-	//´¦Àí·âÓ¡Êõ
+	//å¤„ç†å°å°æœ¯
 	if( banker[bkid].select == 27 )
 	{
-		sprintf( buf,"Ä§ÍõÊ¹ÓÃ·âÓ¡Êõ");				
+		sprintf( buf,"é­”ç‹ä½¿ç”¨å°å°æœ¯");				
 		showString( meindex, buf , 0);
 
 		for( i=0;i<MAXGUY;i++ ){
@@ -1375,7 +1375,7 @@ void NPC_magiccard_specialcard( int meindex , int bkid )
 				CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) != 26 ){				
 				banker[bkid].pauseflag[i] = TRUE;
 				NPC_magiccard_showdamage(meindex , meindex , i , 1111 );
-				sprintf(buf2,"%dºÅÍæ¼Ò ",i+1);
+				sprintf(buf2,"%då·ç©å®¶ ",i+1);
 				strcat( buf1,buf2);
 			}else 
 				NPC_magiccard_showdamage(meindex , meindex , i , 2222 );		
@@ -1387,44 +1387,44 @@ void NPC_magiccard_specialcard( int meindex , int bkid )
 		if( charindex == -1 ) continue;	 
 		if( CHAR_getWorkInt( charindex , NPC_WORK_SELECT ) == 27 ){
 		
-			sprintf( buf,"%dºÅÌôÕ½ÕßÊ¹ÓÃ·âÓ¡Êõ",i+1);					
+			sprintf( buf,"%då·æŒ‘æˆ˜è€…ä½¿ç”¨å°å°æœ¯",i+1);					
 			NPC_magiccard_action2( meindex , charindex , BANKERID , 27 , MAGIC );
 			if( banker[bkid].select == 26 )
 			{
 				NPC_magiccard_showdamage(meindex , meindex , BANKERID , 2222 );
-				strcat(buf," ÒòÄ§ÍõÊ¹ÓÃ»ÃÓ°ÊõÊ§°Ü");
+				strcat(buf," å› é­”ç‹ä½¿ç”¨å¹»å½±æœ¯å¤±è´¥");
 			}else if( rand()%100 > ( 50 + 5 * banker[bkid].playertotal ) ){	
 				banker[bkid].pauseflag[BANKERID] = TRUE;
-				sprintf( buf2,"Ä§Íõ ");
+				sprintf( buf2,"é­”ç‹ ");
 				strcat( buf1,buf2);
 				NPC_magiccard_showdamage( meindex , meindex , BANKERID , 1111 );
-				strcat(buf," ÃüÖĞ");	
+				strcat(buf," å‘½ä¸­");	
 			}else{
 				NPC_magiccard_showdamage(meindex , meindex , BANKERID , 2222 ); 								
-				strcat(buf," Ê§°Ü");
+				strcat(buf," å¤±è´¥");
 			}
 			showString( meindex, buf , 0);
 		}	
 	}
 	
 	if(strcmp( buf1 , "" ) !=0 ){
-		strcat( buf1,"±»·âÓ¡ÁË");
+		strcat( buf1,"è¢«å°å°äº†");
 	}
 
-	//²¥±¨»ØºÏ¶ÔÕ½½á¹û	
+	//æ’­æŠ¥å›åˆå¯¹æˆ˜ç»“æœ	
 	if( allhp > banker[bkid].hp[BANKERID] )
-		sprintf( buf,"µÚ%d»ØºÏ½áÊø¡¾ÌôÕ½ÕßHP%d¡¿ÁìÏÈ¡¾Ä§ÍõHP%d¡¿%s",banker[bkid].turn,allhp,banker[bkid].hp[BANKERID],buf1);
+		sprintf( buf,"ç¬¬%då›åˆç»“æŸã€æŒ‘æˆ˜è€…HP%dã€‘é¢†å…ˆã€é­”ç‹HP%dã€‘%s",banker[bkid].turn,allhp,banker[bkid].hp[BANKERID],buf1);
 	else if( allhp < banker[bkid].hp[BANKERID] )
-		sprintf( buf,"µÚ%d»ØºÏ½áÊø¡¾Ä§ÍõHP%d¡¿ÁìÏÈ¡¾ÌôÕ½ÕßHP%d¡¿%s",banker[bkid].turn,banker[bkid].hp[BANKERID],allhp,buf1);
+		sprintf( buf,"ç¬¬%då›åˆç»“æŸã€é­”ç‹HP%dã€‘é¢†å…ˆã€æŒ‘æˆ˜è€…HP%dã€‘%s",banker[bkid].turn,banker[bkid].hp[BANKERID],allhp,buf1);
 	else
-		sprintf( buf,"µÚ%d»ØºÏ½áÊø£¬Ë«·½¡¾HP%d¡¿Æ½ÊÖ %s",banker[bkid].turn,allhp,buf1);
+		sprintf( buf,"ç¬¬%då›åˆç»“æŸï¼ŒåŒæ–¹ã€HP%dã€‘å¹³æ‰‹ %s",banker[bkid].turn,allhp,buf1);
 	showString( meindex, buf , 0);
 
 	banker[bkid].state = 5;
 	CHAR_setInt( meindex, CHAR_LOOPINTERVAL, TURNOVERTIME );
 }
 
-// ĞÂµÄĞãÍ¼Á÷³Ì
+// æ–°çš„ç§€å›¾æµç¨‹
 void NPC_magiccard_action2(int meindex , int charindex , int user , int card , int action )
 {
 	int x,y,floor;
@@ -1450,7 +1450,7 @@ void NPC_magiccard_action2(int meindex , int charindex , int user , int card , i
 	dir = Positiontable[user].direct;
 	animno = Cardfunctiontable[card].effect;
 
-	//ÓÃÍ¸Ã÷ÈËnpc
+	//ç”¨é€æ˜äººnpc
 	if( ( card == 27 || card == 29 ) && user <= BANKERID ){
 		object=MAP_getTopObj(floor, Positiontable[user].npcX + offsetx, Positiontable[user].npcY + offsety );
 		if(object){ 
@@ -1535,7 +1535,7 @@ void NPC_magiccard_showdamage(int meindex , int charindex , int position , int d
 
 }
 
-//ÄÄ¸öÌôÕ½Õß³ö¾Ö
+//å“ªä¸ªæŒ‘æˆ˜è€…å‡ºå±€
 void NPC_magiccard_out( int meindex , int bkid , int player )
 {
 	int gift=0,charindex,allhp=0,i;
@@ -1559,10 +1559,10 @@ void NPC_magiccard_out( int meindex , int bkid , int player )
 
 	if(banker[bkid].hp[player]<=0||banker[bkid].hp[BANKERID]>=allhp ){
 		if( CHAR_getWorkInt( charindex , NPC_WORK_GIVEGOLD ) == 1 ){
-			sprintf(buf,"Ä¿Ç°×Ü»ı·ÖÎª%d£¬Ğ»Ğ»¹âÁÙ",CHAR_getInt( charindex , CHAR_GAMBLENUM));
+			sprintf(buf,"ç›®å‰æ€»ç§¯åˆ†ä¸º%dï¼Œè°¢è°¢å…‰ä¸´",CHAR_getInt( charindex , CHAR_GAMBLENUM));
 			CHAR_talkToCli( charindex , -1 , buf,  CHAR_COLORYELLOW);
 		}else{
-			sprintf(buf,"ºÜ±§Ç¸ÄãÊäÁË¿Û 6 µã»ı·Ö£¬Ä¿Ç°×Ü»ı·ÖÎª%d£¬Ğ»Ğ»¹âÁÙ",CHAR_getInt( charindex , CHAR_GAMBLENUM));
+			sprintf(buf,"å¾ˆæŠ±æ­‰ä½ è¾“äº†æ‰£ 6 ç‚¹ç§¯åˆ†ï¼Œç›®å‰æ€»ç§¯åˆ†ä¸º%dï¼Œè°¢è°¢å…‰ä¸´",CHAR_getInt( charindex , CHAR_GAMBLENUM));
 			CHAR_talkToCli( charindex , -1 , buf,  CHAR_COLORYELLOW);
 		}
 	}else{		
@@ -1574,12 +1574,12 @@ void NPC_magiccard_out( int meindex , int bkid , int player )
 		if( CHAR_getWorkInt( charindex , NPC_WORK_GIVEGOLD ) == 1 ){
 			CHAR_setInt( charindex , CHAR_GOLD, CHAR_getInt( charindex , CHAR_GOLD)+10000 );
 			CHAR_setInt( charindex , CHAR_GAMBLENUM, CHAR_getInt( charindex , CHAR_GAMBLENUM)+gift );
-			sprintf(buf,"ÒÑÄÃ»Ø±£Ö¤½ğ10000£Ó");
+			sprintf(buf,"å·²æ‹¿å›ä¿è¯é‡‘10000ï¼³");
 			CHAR_talkToCli( charindex , -1 , buf,  CHAR_COLORYELLOW);
 		}else{
 			CHAR_setInt( charindex , CHAR_GAMBLENUM, CHAR_getInt( charindex , CHAR_GAMBLENUM)+gift+6 );
 		}
-		sprintf(buf,"¹§Ï²ÄúµÃµ½ %d µã»ı·Ö£¬Ä¿Ç°×Ü»ı·ÖÎª%d£¬Ğ»Ğ»¹âÁÙ",gift,CHAR_getInt( charindex , CHAR_GAMBLENUM));
+		sprintf(buf,"æ­å–œæ‚¨å¾—åˆ° %d ç‚¹ç§¯åˆ†ï¼Œç›®å‰æ€»ç§¯åˆ†ä¸º%dï¼Œè°¢è°¢å…‰ä¸´",gift,CHAR_getInt( charindex , CHAR_GAMBLENUM));
 		CHAR_talkToCli( charindex , -1 , buf,  CHAR_COLORYELLOW);
 		Bettotal[bkid] -= 6;
 		Wintotal[bkid] += gift;
@@ -1588,7 +1588,7 @@ void NPC_magiccard_out( int meindex , int bkid , int player )
 	}
 		
 	CHAR_setWorkInt( charindex , CHAR_WORK_TEMP_FLOOR, 0);
-	// Ó«Ä»¹éÎ»
+	// è§å¹•å½’ä½
 	GmsvServer_MoveScreen_send(getfdFromCharaIndex(charindex), FALSE, 0);
 
 	CHAR_warpToSpecificPoint( charindex , CHAR_getInt( meindex, CHAR_FLOOR) 
@@ -1596,7 +1596,7 @@ void NPC_magiccard_out( int meindex , int bkid , int player )
 	//banker[bkid].playertotal -= 1; 
 }
 
-//Ò»»ØºÏ½áÊøÖØĞÂ³éÅÆ
+//ä¸€å›åˆç»“æŸé‡æ–°æŠ½ç‰Œ
 void NPC_magiccard_turnover( int meindex , int bkid	)
 {
 	char buf[256];
@@ -1617,29 +1617,29 @@ void NPC_magiccard_turnover( int meindex , int bkid	)
 	offsety = atoi(buf);
 
 
-	//Çå³ıÊÖÅÆ ºÍ ³éÅÆ
+	//æ¸…é™¤æ‰‹ç‰Œ å’Œ æŠ½ç‰Œ
 	for( i=0;i<MAXGUY;i++)
 	{
 		charindex = NPC_magiccard_checkExist( meindex , bkid , i );
 		if( charindex == -1 ) continue;
 
-		//¼ì²é»¹ÓĞÃ»ÓĞ×Ê¸ñ»îÏÂÀ´
+		//æ£€æŸ¥è¿˜æœ‰æ²¡æœ‰èµ„æ ¼æ´»ä¸‹æ¥
 		if( banker[bkid].hp[i] <= 0 ) {
-			sprintf( buf,"%dºÅÌôÕ½Õß³ö¾ÖÁË",i+1);
+			sprintf( buf,"%då·æŒ‘æˆ˜è€…å‡ºå±€äº†",i+1);
 			showString( meindex, buf , 0);	
 			NPC_magiccard_out( meindex , bkid , i );
 			continue;
 		}
-		goflag = TRUE; //´ú±í»¹ÓĞÍæ¼Ò¿ÉÒÔ½øÈëÏÂ»ØºÏ
-		if( CHAR_getWorkInt( charindex , NPC_WORK_ACTION ) == 0 ) continue;	//·ÅÆú³öÅÆµÄÈË
-		//Çå³ı³ö¹ıµÄÅÆ
+		goflag = TRUE; //ä»£è¡¨è¿˜æœ‰ç©å®¶å¯ä»¥è¿›å…¥ä¸‹å›åˆ
+		if( CHAR_getWorkInt( charindex , NPC_WORK_ACTION ) == 0 ) continue;	//æ”¾å¼ƒå‡ºç‰Œçš„äºº
+		//æ¸…é™¤å‡ºè¿‡çš„ç‰Œ
 		card = SHIFTBASE << CHAR_getWorkInt( charindex , NPC_WORK_SELECT );
 		CHAR_setWorkInt( charindex , NPC_WORK_HISTORY , (unsigned int)CHAR_getWorkInt( charindex , NPC_WORK_HISTORY ) | card ); 
 		card = ~card;
 		CHAR_setWorkInt( charindex , NPC_WORK_HAND , (unsigned int)CHAR_getWorkInt( charindex , NPC_WORK_HAND ) & card );	
-		//³éÅÆ
+		//æŠ½ç‰Œ
 		k = rand()%(26-banker[bkid].turn);
-		if( Cardbox[i+7*bkid][k].cardindex == 28 && rand()%100 > 50 ) k = rand()%(26-banker[bkid].turn); //½µµÍÕÙÁé³öÏÖ»úÂÊ
+		if( Cardbox[i+7*bkid][k].cardindex == 28 && rand()%100 > 50 ) k = rand()%(26-banker[bkid].turn); //é™ä½å¬çµå‡ºç°æœºç‡
 
 		Cardbox[i+7*bkid][k].use = 1;
 		card = SHIFTBASE << Cardbox[i+7*bkid][k].cardindex ; 
@@ -1647,23 +1647,23 @@ void NPC_magiccard_turnover( int meindex , int bkid	)
 			(unsigned int)CHAR_getWorkInt( charindex , NPC_WORK_HAND )|card );			
 		qsort( &Cardbox[i+7*bkid] , 30 , sizeof(CardBoxType) , &NPC_magiccard_sort );
 
-		CHAR_setWorkInt( charindex , NPC_WORK_SELECT , -1 );  //Ñ¡ÔñÇå³ı
-		CHAR_setWorkInt( charindex , NPC_WORK_ACTION , 0 );	//¶¯×÷Çå³ı
-		CHAR_setWorkInt( charindex , NPC_WORK_DAMAGE , 0 ); //ÉËº¦Çå³ı
+		CHAR_setWorkInt( charindex , NPC_WORK_SELECT , -1 );  //é€‰æ‹©æ¸…é™¤
+		CHAR_setWorkInt( charindex , NPC_WORK_ACTION , 0 );	//åŠ¨ä½œæ¸…é™¤
+		CHAR_setWorkInt( charindex , NPC_WORK_DAMAGE , 0 ); //ä¼¤å®³æ¸…é™¤
 
 	}
 
-	if( banker[bkid].action != 0 )  //Ã»ÓĞ±»·âÓ¡
+	if( banker[bkid].action != 0 )  //æ²¡æœ‰è¢«å°å°
 	{
-		//°Ñ×¯¼Ò³ö¹ıµÄÅÆÄÃµô 
+		//æŠŠåº„å®¶å‡ºè¿‡çš„ç‰Œæ‹¿æ‰ 
 		card = SHIFTBASE << banker[bkid].select ;	
 		banker[bkid].history |= card;
 		card = ~card;
 		banker[bkid].hand &= card;
 
-		//×¯¼Ò³éÅÆ
+		//åº„å®¶æŠ½ç‰Œ
 		k = rand()%(26-banker[bkid].turn);
-		if( Cardbox[6+7*bkid][k].cardindex == 28 && rand()%100 > 50 ) k = rand()%(26-banker[bkid].turn); //½µµÍÕÙÁé³öÏÖ»úÂÊ
+		if( Cardbox[6+7*bkid][k].cardindex == 28 && rand()%100 > 50 ) k = rand()%(26-banker[bkid].turn); //é™ä½å¬çµå‡ºç°æœºç‡
 		Cardbox[6+7*bkid][k].use = 1;
 		card = SHIFTBASE << Cardbox[6+7*bkid][k].cardindex ; 
 		banker[bkid].hand |= card;
@@ -1671,14 +1671,14 @@ void NPC_magiccard_turnover( int meindex , int bkid	)
 	}
 
 	if( banker[bkid].turn == 10 || banker[bkid].hp[BANKERID] <= 0 || goflag == FALSE ){
-		//±ÈÈü½áÊø	
+		//æ¯”èµ›ç»“æŸ	
 		if( banker[bkid].hp[BANKERID] <= 0 && goflag == TRUE )
 		{
 			object = MAP_getTopObj(CHAR_getInt(meindex, CHAR_FLOOR), Positiontable[BANKERID].humanX + offsetx, Positiontable[BANKERID].humanY + offsety );
 			if( object ){
 				objindex = GET_OBJINDEX( object);
 				bossindex = OBJECT_getIndex(objindex);
-				CHAR_sendAction( bossindex , 2 , FALSE);	//ÔÎµ¹	
+				CHAR_sendAction( bossindex , 2 , FALSE);	//æ™•å€’	
 			}
 		}
 		CHAR_setInt( meindex, CHAR_LOOPINTERVAL, GAMEOVERTIME );
@@ -1686,9 +1686,9 @@ void NPC_magiccard_turnover( int meindex , int bkid	)
 	}else{
 		banker[bkid].turn += 1;
 		if( banker[bkid].turn == 10 ){
-			sprintf(buf,"µÚ10»ØºÏ ×îºóÒ»»ØºÏ†ª Õ½¶·");
+			sprintf(buf,"ç¬¬10å›åˆ æœ€åä¸€å›åˆå•° æˆ˜æ–—");
 		}else{
-			sprintf(buf,"µÚ%d»ØºÏ Õ½¶·",banker[bkid].turn);
+			sprintf(buf,"ç¬¬%då›åˆ æˆ˜æ–—",banker[bkid].turn);
 		}
 		showString( meindex, buf , 0);
 		banker[bkid].turntime = NowTime.tv_sec + 20 ;
@@ -1708,15 +1708,15 @@ void NPC_magiccard_gameover( int meindex , int bkid )
 	
 	for( i=0;i<MAXGUY;i++) allhp += banker[bkid].hp[i];	
 
-	sprintf(buf,"Õ½¶·½áÊø¡¾´óÄ§ÍõHP%d¡¿vs¡¾ÌôÕ½Õß×ÜºÏHP%d¡¿",banker[bkid].hp[MAXGUY],allhp);
+	sprintf(buf,"æˆ˜æ–—ç»“æŸã€å¤§é­”ç‹HP%dã€‘vsã€æŒ‘æˆ˜è€…æ€»åˆHP%dã€‘",banker[bkid].hp[MAXGUY],allhp);
 	if( banker[bkid].hp[MAXGUY] >= allhp ){
-		strcat(buf,"´óÄ§Íõ»ñÊ¤");
+		strcat(buf,"å¤§é­”ç‹è·èƒœ");
 	}else{
-		strcat(buf,"¹§Ï²ÌôÕ½Õß»ñÊ¤");
+		strcat(buf,"æ­å–œæŒ‘æˆ˜è€…è·èƒœ");
 	}
 	showString( meindex, buf , 0);
 
-	for( i=0;i<MAXGUY;i++) NPC_magiccard_out(  meindex , bkid , i );	//ËùÓĞÌôÕ½Õß³ö³¡
+	for( i=0;i<MAXGUY;i++) NPC_magiccard_out(  meindex , bkid , i );	//æ‰€æœ‰æŒ‘æˆ˜è€…å‡ºåœº
 	NPC_magiccard_resetbanker(meindex,bkid);	
 }
 
@@ -1748,7 +1748,7 @@ void NPC_magiccard_resetbanker( int meindex , int bkid )
 	banker[bkid].state = -1;
 	CHAR_setInt( meindex, CHAR_LOOPINTERVAL, LOOPTIME );
 	
-	//À×¶û±äÉí
+	//é›·å°”å˜èº«
 	object = MAP_getTopObj(CHAR_getInt(meindex, CHAR_FLOOR), Positiontable[BANKERID].humanX + offsetx, Positiontable[BANKERID].humanY + offsety );
 	if( object ){
 		objindex = GET_OBJINDEX( object);
@@ -1787,7 +1787,7 @@ int NPC_magiccard_checkExist( int meindex , int bkid , int player )
 			break;
 		}
 	}
-	if( i == playernum ) return -1;		//Ã»ÓĞÕÒµ½ÌôÕ½Õß
+	if( i == playernum ) return -1;		//æ²¡æœ‰æ‰¾åˆ°æŒ‘æˆ˜è€…
 	floor = CHAR_getInt( meindex , CHAR_FLOOR);
 	object = MAP_getTopObj( floor, Positiontable[player].humanX + offsetx , Positiontable[player].humanY + offsety );
 	if( object ){  
@@ -1795,7 +1795,7 @@ int NPC_magiccard_checkExist( int meindex , int bkid , int player )
 		int objindex = GET_OBJINDEX(object);
 		findex = OBJECT_getIndex( objindex);
 		if( findex == i ) 
-			return i;		//ÓĞÕÒµ½
+			return i;		//æœ‰æ‰¾åˆ°
 	}
 	return -1;	
 }

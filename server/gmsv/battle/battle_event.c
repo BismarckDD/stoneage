@@ -18,7 +18,7 @@
 #include "pet_skill.h"
 #include <math.h>
 #include "util.h"
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
 #include "item.h"
 #include "profession_skill.h"
 #include "skill.h"
@@ -64,7 +64,7 @@ int MagicTbl[] = {-1,
                   CHAR_MAGICTHUNDER,
                   CHAR_MAGICICE};
 #else
-char MagicStatus[MAXSTATUSTYPE][36] = {"NULL", "法术防御", "法术暴击"};
+char MagicStatus[MAXSTATUSTYPE][36] = {"NULL", "魔抗", "铁壁"};
 int MagicTbl[] = {-1, CHAR_DEFMAGICSTATUS, CHAR_MAGICSUPERWALL};
 #endif //_MAGICSTAUTS_RESIST
 #endif
@@ -88,27 +88,27 @@ char *aszStatus[] = {"NULL",
                      ,
                      "眩晕",
                      "缠绕",
-                     "��",
-                     "��",
-                     "��",
-                     "��",
-                     "��",
-                     "��",
-                     "��",
-                     "��",
+                     "罗",
+                     "爆",
+                     "忘",
+                     "箭",
+                     "蛊",
+                     "针",
+                     "挑",
+                     "烧",
                      "˪",
-                     "��",
+                     "电",
                      "ר",
-                     "��",
-                     "��",
-                     "��",
-                     "��",
-                     "��",
-                     "��"
+                     "火",
+                     "冰",
+                     "雷",
+                     "炎",
+                     "冻",
+                     "击"
 #endif
 #ifdef _PROFESSION_ADDSKILL
                      ,
-                     "��"
+                     "抗"
 #endif
 };
 
@@ -178,11 +178,11 @@ int RegTbl[] = {-1,
                 CHAR_WORKMODDEEPPOISON,
                 CHAR_WORKMODBARRIER,
                 CHAR_WORKMODNOCAST
-#ifdef _PET_SKILL_SARS // WON ADD ��ɷ����
+#ifdef _PET_SKILL_SARS // WON ADD 毒煞蔓延
                 ,
                 CHAR_WORKMODSARS
 #endif
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
                 ,
                 CHAR_WORKMODDIZZY,
                 CHAR_WORKMODENTWINE,
@@ -210,7 +210,7 @@ char *aszMagicDef[] = {"NULL",
                        "法术吸收",
                        "法术反射",
                        "法术消退"
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
                        ,
                        "陷阱"
 #endif
@@ -224,7 +224,7 @@ int MagicDefTbl[] = {-1,
                      CHAR_WORKDAMAGEABSROB,
                      CHAR_WORKDAMAGEREFLEC,
                      CHAR_WORKDAMAGEVANISH
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
                      ,
                      CHAR_WORKTRAP
 #endif
@@ -269,7 +269,7 @@ int BATTLE_getRidePet(int char_index) {
   return petindex;
 }
 
-// ȡ�����ʱ����Χ  ������
+// 取得骑宠时的三围  正常版
 float BATTLE_adjustRidePet3A(int char_index, int petindex, int workindex,
                              int action) {
   float ret = CHAR_getWorkInt(char_index, workindex);
@@ -277,23 +277,23 @@ float BATTLE_adjustRidePet3A(int char_index, int petindex, int workindex,
       BATTLE_IsThrowWepon(CHAR_getItemIndex(char_index, CHAR_ARM));
 
   switch (workindex) {
-  case CHAR_WORKATTACKPOWER: // ������
-    if (throwweapon)         // Ͷ��
+  case CHAR_WORKATTACKPOWER: // 攻击力
+    if (throwweapon)         // 投掷
       ret = CHAR_getWorkInt(char_index, CHAR_WORKATTACKPOWER)
 #ifdef _BATTLE_NEWPOWER // andy 1/24 reEdit
             + CHAR_getWorkInt(petindex, CHAR_WORKATTACKPOWER) * 0.4;
 #else
             + CHAR_getWorkInt(petindex, CHAR_WORKATTACKPOWER) * 0.2;
 #endif
-    else // ��ս
+    else // 近战
       ret = CHAR_getWorkInt(char_index, CHAR_WORKATTACKPOWER) * 0.8 +
             CHAR_getWorkInt(petindex, CHAR_WORKATTACKPOWER) * 0.8;
     break;
-  case CHAR_WORKDEFENCEPOWER: // ������
+  case CHAR_WORKDEFENCEPOWER: // 防御力
     ret = CHAR_getWorkInt(char_index, CHAR_WORKDEFENCEPOWER) * 0.7 +
           CHAR_getWorkInt(petindex, CHAR_WORKDEFENCEPOWER) * 0.7;
     break;
-  case CHAR_WORKQUICK: // ������
+  case CHAR_WORKQUICK: // 敏捷力
     if (action == ATTACKSIDE) {
       if (throwweapon) {
         ret = CHAR_getWorkInt(char_index, CHAR_WORKQUICK) * 0.8 +
@@ -319,7 +319,7 @@ float BATTLE_adjustRidePet3A(int char_index, int petindex, int workindex,
   return ret;
 }
 
-// Robin 0727 ride Pet ������ͼ
+// Robin 0727 ride Pet 落马改图
 void BATTLE_changeRideImage(int index) {
   int item_index = CHAR_getItemIndex(index, CHAR_ARM);
   int category;
@@ -433,22 +433,22 @@ int BATTLE_ItemCrushCheck(int char_index) {
 }
 #endif
 
-#define BREAK_NAME_WEPON "����"
-#define BREAK_NAME_AROMER "����"
-#define BREAK_BRACELET "����"
-#define BREAK_MUSIC "����"
-#define BREAK_NECKLACE "ͷ��"
-#define BREAK_RING "��ָ"
-#define BREAK_BELT "Ƥ��"
-#define BREAK_EARRING "����"
-#define BREAK_NOSERING "�ǻ�"
-#define BREAK_AMULET "������"
-#define BREAK_OTHER "����"
+#define BREAK_NAME_WEPON "武器"
+#define BREAK_NAME_AROMER "防具"
+#define BREAK_BRACELET "护腕"
+#define BREAK_MUSIC "乐器"
+#define BREAK_NECKLACE "头饰"
+#define BREAK_RING "戒指"
+#define BREAK_BELT "皮带"
+#define BREAK_EARRING "耳饰"
+#define BREAK_NOSERING "鼻环"
+#define BREAK_AMULET "护身符"
+#define BREAK_OTHER "道具"
 
 #ifdef _TAKE_ITEMDAMAGE
-static char *aszCrushTbl[] = {"���", "����", "�ٻ�", "����ʹ��", "��Ƭ"};
+static char *aszCrushTbl[] = {"完好", "受损", "毁坏", "不堪使用", "碎片"};
 #else
-static char *aszCrushTbl[] = {"����", "�ٻ�"};
+static char *aszCrushTbl[] = {"受损", "毁坏"};
 #endif
 
 #ifdef _TAKE_ITEMDAMAGE
@@ -485,20 +485,20 @@ int BATTLE_ItemCrush(int char_index, int ItemEquip, int Damages, int flg) {
   crushenum = crushenum - RAND(breadnums, (breadnums * 1.4));
   ITEM_setInt(item_index, ITEM_DAMAGECRUSHE, crushenum);
 
-  if (crushenum <= 0) { // ����ʧ
+  if (crushenum <= 0) { // 损坏消失
     crushenum = 0;
-    sprintf(szBuffer, "%s������𻵶���ʧ��\n",
+    sprintf(szBuffer, "%s因过度损坏而消失。\n",
             ITEM_getChar(item_index, ITEM_NAME));
     CHAR_talkToCli(char_index, -1, szBuffer, CHAR_COLORYELLOW);
 
     LogItem(CHAR_getChar(char_index, CHAR_NAME),
             CHAR_getChar(char_index, CHAR_CDKEY),
-#ifdef _add_item_log_name // WON ADD ��item��log������item����
+#ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
             item_index,
 #else
             ITEM_getInt(item_index, ITEM_ID),
 #endif
-            "������𻵶���ʧ",
+            "因过度损坏而消失",
             CHAR_getInt(char_index, CHAR_FLOOR),
             CHAR_getInt(char_index, CHAR_X), CHAR_getInt(char_index, CHAR_Y),
             ITEM_getChar(item_index, ITEM_UNIQUECODE),
@@ -506,7 +506,7 @@ int BATTLE_ItemCrush(int char_index, int ItemEquip, int Damages, int flg) {
             ITEM_getInt(item_index, ITEM_ID));
     CHAR_DelItem(char_index, ItemEquip);
     crushlevel = 4;
-  } else { // �𻵿�ֵ
+  } else { // 损坏扣值
     int defs, level = 0;
 
     defs = (crushenum * 100) / maxcrushenum;
@@ -523,7 +523,7 @@ int BATTLE_ItemCrush(int char_index, int ItemEquip, int Damages, int flg) {
 
     if (level != crushlevel && defs < 70) {
       ITEM_setInt(item_index, ITEM_CRUSHLEVEL, level);
-      sprintf(szBuffer, "%s��%s�ġ�", ITEM_getChar(item_index, ITEM_NAME),
+      sprintf(szBuffer, "%s是%s的。", ITEM_getChar(item_index, ITEM_NAME),
               aszCrushTbl[level]);
       CHAR_talkToCli(char_index, -1, szBuffer, CHAR_COLORRED);
     }
@@ -565,13 +565,13 @@ int BATTLE_ItemCrush(int char_index) {
     return FALSE;
   {
     if (crushlevel == 1) {
-      sprintf(szBuffer, "CrushLv2(�ٻ�����Lv2)");
+      sprintf(szBuffer, "CrushLv2(毁坏道具Lv2)");
     } else {
-      sprintf(szBuffer, "CrushLv1(�ٻ�����Lv1)");
+      sprintf(szBuffer, "CrushLv1(毁坏道具Lv1)");
     }
     LogItem(CHAR_getChar(char_index, CHAR_NAME),
             CHAR_getChar(char_index, CHAR_CDKEY),
-#ifdef _add_item_log_name // WON ADD ��item��log������item����
+#ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
             item_index,
 #else
             ITEM_getInt(item_index, ITEM_ID),
@@ -701,7 +701,7 @@ static int BATTLE_ItemCrushSeq(int char_index) {
 
   if (BATTLE_ItemCrushCheck(char_index) == TRUE) {
     if (BATTLE_ItemCrush(char_index) == TRUE) {
-      sprintf(szWork, "BK|%s��\tװ���ܵ����ˡ�|", CHAR_getUseName(char_index));
+      sprintf(szWork, "BK|%s的\t装备受到损伤。|", CHAR_getUseName(char_index));
       strcat(szBadStatusString, szWork);
       iRet = TRUE;
     }
@@ -739,7 +739,7 @@ static BOOL BATTLE_ArrangeCheck(int attackindex, int defindex) {
 }
 #endif
 
-// �ر��ж�
+// 回避判定
 static BOOL BATTLE_DuckCheck(int attackindex, int defindex) {
   int flg = FALSE;
 
@@ -762,7 +762,7 @@ static BOOL BATTLE_DuckCheck(int attackindex, int defindex) {
   if (BATTLE_CanMoveCheck(defindex) == FALSE) {
 #ifdef _PROFESSION_ADDSKILL
     if (CHAR_getWorkInt(defindex, CHAR_DOOMTIME) <=
-        0) // ����ʱ������(����û�д�����޵����Ͷܻ���״̬)
+        0) //集气时可闪避(并且没有处於天罗地网和盾击的状态)
       return FALSE;
     else {
       if (CHAR_getWorkInt(defindex, CHAR_WORKDRAGNET) == 0 &&
@@ -863,21 +863,21 @@ static BOOL BATTLE_DuckCheck(int attackindex, int defindex) {
   }
 #endif
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   per = BATTLE_check_profession_duck(defindex, per);
 #endif
 
 #ifdef _PROFESSION_ADDSKILL
   if (CHAR_getWorkInt(attackindex, CHAR_WORKBATTLECOM1) ==
-      BATTLE_COM_S_CHAOS) { // ���ҹ���ʱ���н���
+      BATTLE_COM_S_CHAOS) { //混乱攻击时命中降低
     per += (per * 0.4);
   }
 #endif
 
   if (RAND(1, 10000) <= per) {
     flg = TRUE;
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
-    // �رܼ�������
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
+    // 回避技能升级
     if ((CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER)) {
       PROFESSION_SKILL_LVEVEL_UP(defindex, "PROFESSION_AVOID");
     }
@@ -982,7 +982,7 @@ float BATTLE_FieldAttAdjust(int battleindex, int pAt_Fire, int pAt_Water,
 }
 
 static int BATTLE_AttrAdjust(int attackindex, int defindex, int damage) {
-  int At_pow[5] = {0, 0, 0, 0, 0}; // ��ˮ���
+  int At_pow[5] = {0, 0, 0, 0, 0}; // 地水火风
   int Dt_pow[5] = {0, 0, 0, 0, 0};
   int i;
   float At_FieldPow, Df_FieldPow;
@@ -1108,14 +1108,14 @@ int BATTLE_DamageCalc(int attackindex, int defindex) {
 #endif
   }
 
-#ifdef _MAGIC_SUPERWALL // ���ڷ���
+#ifdef _MAGIC_SUPERWALL // 铁壁防御
   if (CHAR_getWorkInt(defindex, CHAR_MAGICSUPERWALL) > 0) {
     float def = (float)(CHAR_getWorkInt(defindex, CHAR_OTHERSTATUSNUMS));
     def = (def + rand() % 20) / 100;
     defense += defense * def;
   }
 #endif
-#ifdef _NPCENEMY_ADDPOWER // �޸Ĺ��������ֵ
+#ifdef _NPCENEMY_ADDPOWER // 修改怪物的能力值
   if (CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEENEMY) {
     defense += (defense * (rand() % 10) + 2) / 100;
   }
@@ -1127,14 +1127,14 @@ int BATTLE_DamageCalc(int attackindex, int defindex) {
     defense *= 2.0;
 
 #ifdef _PETSKILL_REGRET
-  // ��װ������
+  // 无装备防御
   if (CHAR_getWorkInt(attackindex, CHAR_WORKBATTLECOM1) ==
           BATTLE_COM_S_REGRET ||
       CHAR_getWorkInt(attackindex, CHAR_WORKBATTLECOM1) == BATTLE_COM_S_REGRET2)
     defense = CHAR_getWorkInt(defindex, CHAR_WORKFIXTOUGH);
 #endif
 
-#ifdef _EQUIT_NEGLECTGUARD // ����Ŀ�������%
+#ifdef _EQUIT_NEGLECTGUARD // 忽视目标防御力%
   if (CHAR_getWorkInt(attackindex, CHAR_WORKNEGLECTGUARD) > 1) {
     float defp = (float)CHAR_getWorkInt(attackindex, CHAR_WORKNEGLECTGUARD);
     defp = 1 - (defp / 100);
@@ -1152,12 +1152,12 @@ int BATTLE_DamageCalc(int attackindex, int defindex) {
     damage = (int)(((attack - defense) * DAMAGE_RATE) + K0);
   }
 
-  // ������
+  // 四属性
   damage = BATTLE_AttrAdjust(attackindex, defindex, damage);
 
 #ifdef _PROFESSION_ADDSKILL
   {
-    // �������
+    // 四属结界
     if (((CHAR_getWorkInt(defindex, CHAR_WORKFIXEARTHAT_BOUNDARY) >> 16) &
          0x0000ffff) > 0) {
       if (CHAR_getWorkInt(attackindex, CHAR_WORKFIXEARTHAT) > 0)
@@ -1274,7 +1274,7 @@ static int BATTLE_CriticalCheckPlayer(int attackindex, int defindex) {
   if (per > 10000)
     per = 10000;
 #ifdef _PETSKILL_LER
-  // �׶����ܱ����
+  // 雷尔不能被打飞
   if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
       CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
     per = 0;
@@ -1368,7 +1368,7 @@ static int BATTLE_GuardianCheck(int attackindex, int defindex) {
   }
 
   Guardian = BattleArray[battleindex].Side[DefSide].Entry[i].guardian;
-  // Terry add fix ʹ������Ϊ�˼���ʱ,������ʹ�ô˼��ܵ���client�ᵱ
+  // Terry add fix 使用舍已为人技能时,若攻击使用此技能的人client会当
   if (Guardian == DefNo)
     return -1;
   // end
@@ -1392,14 +1392,14 @@ static int BATTLE_GuardianCheck(int attackindex, int defindex) {
       CHAR_getWorkInt(GuardianIndex, CHAR_WORKSTONE) > 0 ||
       CHAR_getWorkInt(GuardianIndex, CHAR_WORKBARRIER) > 0 ||
       GuardianIndex == attackindex
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
-      || CHAR_getWorkInt(GuardianIndex, CHAR_WORKDIZZY) > 0 // ��ѣ
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
+      || CHAR_getWorkInt(GuardianIndex, CHAR_WORKDIZZY) > 0 // 晕眩
       || CHAR_getWorkInt(GuardianIndex, CHAR_WORKDRAGNET) >
-             0 // ���޵���
-      || CHAR_getWorkInt(GuardianIndex, CHAR_WORKINSTIGATE) > 0 // ����
+             0 // 天罗地网
+      || CHAR_getWorkInt(GuardianIndex, CHAR_WORKINSTIGATE) > 0 // 挑拨
 #endif
 #ifdef _PROFESSION_ADDSKILL
-      || CHAR_getWorkInt(GuardianIndex, CHAR_DOOMTIME) > 0 // ����ĩ�ռ���
+      || CHAR_getWorkInt(GuardianIndex, CHAR_DOOMTIME) > 0 // 世界末日集气
 #endif
   ) {
     return -1;
@@ -1439,7 +1439,7 @@ static int BATTLE_AttackSeq(int attackindex, int defindex, int *pDamage,
       BattleArray[battleindex].norisk == 0 &&
       BattleArray[battleindex].type == BATTLE_TYPE_P_vs_E) {
     if (CHAR_getWorkInt(defindex, CHAR_WORKPLAYERINDEX) == attackindex) {
-      CHAR_PetAddVariableAi(defindex, AI_FIX_SEKKAN); // �����ҳ϶�
+      CHAR_PetAddVariableAi(defindex, AI_FIX_SEKKAN); // 修正忠诚度
     }
   }
   if (opt != BATTLE_COM_COMBO) {
@@ -1465,7 +1465,7 @@ static int BATTLE_AttackSeq(int attackindex, int defindex, int *pDamage,
 
 #ifdef _PETSKILL_DAMAGETOHP
   if (opt == BATTLE_COM_S_DAMAGETOHP2) {
-    perCri = perCri + (perCri * 0.3); // ����һ������30%
+    perCri = perCri + (perCri * 0.3); // 会心一击上升30%
     CHAR_setWorkInt(attackindex, CHAR_WORKATTACKPOWER,
                     CHAR_getWorkInt(attackindex, CHAR_WORKFIXSTR) +
                         CHAR_getWorkInt(attackindex, CHAR_WORKFIXSTR) * 0.2);
@@ -1501,7 +1501,7 @@ static int BATTLE_AttackSeq(int attackindex, int defindex, int *pDamage,
 
   if (opt == BATTLE_COM_S_GBREAK) {
   } else
-#ifdef _SKILL_GUARDBREAK2 // �Ƴ�����2 vincent add 2002/05/20
+#ifdef _SKILL_GUARDBREAK2 // 破除防御2 vincent add 2002/05/20
     if (opt == BATTLE_COM_S_GBREAK2) {
       if (CHAR_getWorkInt(defindex, CHAR_WORKBATTLECOM1) == BATTLE_COM_GUARD) {
         (*pDamage) = (*pDamage) * 1.3;
@@ -1516,8 +1516,8 @@ static int BATTLE_AttackSeq(int attackindex, int defindex, int *pDamage,
       (*pDamage) = (*pDamage) * 0.8;
     } else
 #endif
-#ifdef _SONIC_ATTACK                    // WON ADD ��������
-      if (opt == BATTLE_COM_S_SONIC2) { // �����˺�����
+#ifdef _SONIC_ATTACK                    // WON ADD 音波攻击
+      if (opt == BATTLE_COM_S_SONIC2) { // 人物伤害减半
         (*pDamage) = (*pDamage) * 0.5;
       } else
 #endif
@@ -1535,23 +1535,23 @@ static int BATTLE_AttackSeq(int attackindex, int defindex, int *pDamage,
     int myside = CHAR_getWorkInt(defindex, CHAR_WORKBATTLESIDE); // attackindex
     if (myside == CHAR_getWorkInt(attackindex, CHAR_WORKBATTLESIDE)) {
       if (CHAR_getWorkInt(attackindex, CHAR_WORKCONFUSION) > 0
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
-          || CHAR_getWorkInt(attackindex, CHAR_WORKINSTIGATE) > 0 // ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
+          || CHAR_getWorkInt(attackindex, CHAR_WORKINSTIGATE) > 0 // 挑拨
 #endif
 #ifdef _PROFESSION_ADDSKILL
-          || CHAR_getWorkInt(attackindex, CHAR_WORKANNEX) > 0 // ����
+          || CHAR_getWorkInt(attackindex, CHAR_WORKANNEX) > 0 // 附身
 #endif
-      ) { // �������쳣����
+      ) { // 攻击方异常混乱
 #ifdef _PETSKILL_TEMPTATION
       } else if (CHAR_getWorkInt(attackindex, CHAR_WORKTEMPTATION) >
-                 0) { // ˮ���ջ�
+                 0) { //水漾诱惑
 #endif
       } else if (CHAR_getInt(attackindex, CHAR_WHICHTYPE) == CHAR_TYPEPET &&
                  CHAR_getWorkInt(attackindex, CHAR_WORKBATTLEFLG) &
-                     CHAR_BATTLEFLG_AIBAD) { // nono��
+                     CHAR_BATTLEFLG_AIBAD) { //nono宠
       } else if (CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEPET &&
                  CHAR_getWorkInt(defindex, CHAR_WORKPLAYERINDEX) ==
-                     attackindex) { // ���ѳ���
+                     attackindex) { // 自已宠物
       } else {
         int myhp, mymaxhp;
         mymaxhp = CHAR_getWorkInt(defindex, CHAR_WORKMAXHP);
@@ -1632,13 +1632,13 @@ int BATTLE_GetDamageReact(int char_index) {
     return BATTLE_MD_REFLEC;
   }
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (CHAR_getWorkInt(char_index, CHAR_WORKTRAP) > 0) {
     return BATTLE_MD_TRAP;
   }
 #endif
 #ifdef _PETSKILL_ACUPUNCTURE
-  if (CHAR_getWorkInt(char_index, CHAR_WORKACUPUNCTURE) > 0) { // �����Ƥ
+  if (CHAR_getWorkInt(char_index, CHAR_WORKACUPUNCTURE) > 0) { //针刺外皮
     return BATTLE_MD_ACUPUNCTURE;
   }
 #endif
@@ -1694,7 +1694,7 @@ int BATTLE_DamageSub(int attackindex, int defindex, int *pDamage,
   } else {
   }
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (react == BATTLE_MD_TRAP) {
     if (BATTLE_IsThrowWepon(CHAR_getItemIndex(attackindex, CHAR_ARM)) == FALSE)
       *pRefrect = BATTLE_MD_TRAP;
@@ -1760,8 +1760,8 @@ int BATTLE_DamageSub(int attackindex, int defindex, int *pDamage,
       defpet = attackpet;
     }
   } else
-#ifdef _PROFESSION_SKILL               // WON ADD ����ְҵ����
-    if (*pRefrect == BATTLE_MD_TRAP) { // ����
+#ifdef _PROFESSION_SKILL               // WON ADD 人物职业技能
+    if (*pRefrect == BATTLE_MD_TRAP) { // 陷阱
 #ifdef _PETSKILL_BATTLE_MODEL
       if (CHAR_getWorkInt(defindex, CHAR_NPCWORKINT1) ==
           BATTLE_COM_S_BATTLE_MODEL) {
@@ -1803,13 +1803,13 @@ int BATTLE_DamageSub(int attackindex, int defindex, int *pDamage,
     } else
 #endif
 #ifdef _PETSKILL_ACUPUNCTURE
-        if (*pRefrect == BATTLE_MD_ACUPUNCTURE) { // �����Ƥ
+        if (*pRefrect == BATTLE_MD_ACUPUNCTURE) { // 针刺外皮
 
       if (damage % 2 != 0)
         damage += 1;
       playerdamage = damage;
 
-      // �ȿ۱���������Ѫ,��Ϊ֮��Ķ������ǶԹ���������
+      // 先扣被攻击方的血,因为之後的动作都是对攻击方做的
       hp = CHAR_getInt(defindex, CHAR_HP);
       if (attackpet == -1) {
         hp -= damage;
@@ -1853,7 +1853,7 @@ int BATTLE_DamageSub(int attackindex, int defindex, int *pDamage,
         int defNo = BATTLE_Index2No(battleindex, defindex);
         CHAR_setWorkInt(defindex, CHAR_WORKULTIMATE, 0);
 
-        // �����ĳ����Ϊ��Ϣ
+        // 死亡的宠物改为休息
         if (defNo >= SIDE_OFFSET) {
           i = defNo - SIDE_OFFSET;
           DefSide = 1;
@@ -1865,10 +1865,10 @@ int BATTLE_DamageSub(int attackindex, int defindex, int *pDamage,
             BENT_FLG_ULTIMATE;
       }
 
-      // �����Ƥ���ܻغ�����Ϊ0
+      // 针刺外皮技能回合数设为0
       CHAR_setWorkInt(defindex, CHAR_WORKACUPUNCTURE, 0);
       // if( CHAR_getWorkInt( defindex, CHAR_WORKSLEEP ) > 0
-      // )//������޻�˯
+      // 历史注释的原始编码已损坏，无法可靠恢复。
       //    CHAR_setWorkInt( defindex, CHAR_WORKSLEEP, 0);
 
 #ifdef _PETSKILL_BATTLE_MODEL
@@ -1876,7 +1876,7 @@ int BATTLE_DamageSub(int attackindex, int defindex, int *pDamage,
           BATTLE_COM_S_BATTLE_MODEL)
 #endif
       {
-        // �۹�������Ѫ
+        // 扣攻击方的血
         hp = CHAR_getInt(attackindex, CHAR_HP);
         if (attackpet == -1) {
           hp -= damage / 2;
@@ -1970,7 +1970,7 @@ int BATTLE_DamageSub(int attackindex, int defindex, int *pDamage,
   if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
   }
 #ifdef _PETSKILL_LER
-  // �׶����ܱ����
+  // 雷尔不能被打飞
   if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
       CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
     IsUltimate = 0;
@@ -1989,7 +1989,7 @@ int BATTLE_DamageSub(int attackindex, int defindex, int *pDamage,
   return IsUltimate;
 }
 
-#ifdef _PETSKILL_FIREKILL // ������ɱר��
+#ifdef _PETSKILL_FIREKILL // 火线猎杀专用
 int BATTLE_DamageSub_FIREKILL(int attackindex, int defindex, int *pDamage,
                               int *pPetDamage, int *pRefrect) {
 
@@ -2031,7 +2031,7 @@ int BATTLE_DamageSub_FIREKILL(int attackindex, int defindex, int *pDamage,
   } else {
   }
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (react == BATTLE_MD_TRAP) {
     if (BATTLE_IsThrowWepon(CHAR_getItemIndex(attackindex, CHAR_ARM)) == FALSE)
       *pRefrect = BATTLE_MD_TRAP;
@@ -2087,8 +2087,8 @@ int BATTLE_DamageSub_FIREKILL(int attackindex, int defindex, int *pDamage,
     defpet = attackpet;
 
   } else
-#ifdef _PROFESSION_SKILL               // WON ADD ����ְҵ����
-    if (*pRefrect == BATTLE_MD_TRAP) { // ����
+#ifdef _PROFESSION_SKILL               // WON ADD 人物职业技能
+    if (*pRefrect == BATTLE_MD_TRAP) { // 陷阱
       int value = 0;
       value = CHAR_getWorkInt(defindex, CHAR_WORKMODTRAP);
       damage = value;
@@ -2120,13 +2120,13 @@ int BATTLE_DamageSub_FIREKILL(int attackindex, int defindex, int *pDamage,
     } else
 #endif
 #ifdef _PETSKILL_ACUPUNCTURE
-        if (*pRefrect == BATTLE_MD_ACUPUNCTURE) { // �����Ƥ
+        if (*pRefrect == BATTLE_MD_ACUPUNCTURE) { // 针刺外皮
 
       if (damage % 2 != 0)
         damage += 1;
       playerdamage = damage;
 
-      // �ȿ۱���������Ѫ,��Ϊ֮��Ķ������ǶԹ���������
+      // 先扣被攻击方的血,因为之後的动作都是对攻击方做的
       hp = CHAR_getInt(defindex, CHAR_HP);
       if (attackpet == -1) {
         hp -= damage;
@@ -2170,7 +2170,7 @@ int BATTLE_DamageSub_FIREKILL(int attackindex, int defindex, int *pDamage,
         int defNo = BATTLE_Index2No(battleindex, defindex);
         CHAR_setWorkInt(defindex, CHAR_WORKULTIMATE, 0);
 
-        // �����ĳ����Ϊ��Ϣ
+        // 死亡的宠物改为休息
         if (defNo >= SIDE_OFFSET) {
           i = defNo - SIDE_OFFSET;
           DefSide = 1;
@@ -2182,13 +2182,13 @@ int BATTLE_DamageSub_FIREKILL(int attackindex, int defindex, int *pDamage,
             BENT_FLG_ULTIMATE;
       }
 
-      // �����Ƥ���ܻغ�����Ϊ0
+      // 针刺外皮技能回合数设为0
       CHAR_setWorkInt(defindex, CHAR_WORKACUPUNCTURE, 0);
       // if( CHAR_getWorkInt( defindex, CHAR_WORKSLEEP ) > 0
-      // )//������޻�˯
+      // 历史注释的原始编码已损坏，无法可靠恢复。
       //    CHAR_setWorkInt( defindex, CHAR_WORKSLEEP, 0);
 
-      // �۹�������Ѫ
+      // 扣攻击方的血
       hp = CHAR_getInt(attackindex, CHAR_HP);
       if (attackpet == -1) {
         hp -= damage / 2;
@@ -2283,7 +2283,7 @@ int BATTLE_DamageSub_FIREKILL(int attackindex, int defindex, int *pDamage,
   }
 
 #ifdef _PETSKILL_LER
-  // �׶����ܱ����
+  // 雷尔不能被打飞
   if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
       CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
     IsUltimate = 0;
@@ -2337,7 +2337,7 @@ int BATTLE_DamageSub2(int attackindex, int defindex, int *pDamage,
     }
   }
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (react == BATTLE_MD_TRAP) {
     if (BATTLE_IsThrowWepon(CHAR_getItemIndex(attackindex, CHAR_ARM)) == FALSE)
       *pRefrect = BATTLE_MD_TRAP;
@@ -2378,8 +2378,8 @@ int BATTLE_DamageSub2(int attackindex, int defindex, int *pDamage,
     defpet = attackpet;
 
   } else
-#ifdef _PROFESSION_SKILL               // WON ADD ����ְҵ����
-    if (*pRefrect == BATTLE_MD_TRAP) { // ����
+#ifdef _PROFESSION_SKILL               // WON ADD 人物职业技能
+    if (*pRefrect == BATTLE_MD_TRAP) { // 陷阱
 
       hp = CHAR_getInt(attackindex, CHAR_HP);
       hp -= playerdamage;
@@ -2461,7 +2461,7 @@ int BATTLE_DamageSub2(int attackindex, int defindex, int *pDamage,
   if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
   }
 #ifdef _PETSKILL_LER
-  // �׶����ܱ����
+  // 雷尔不能被打飞
   if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
       CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
     IsUltimate = 0;
@@ -2518,7 +2518,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
       react = 0, statusDefNo, opt = 0;
   int flg = 0, iWork, par, perStatus, i, DefSide = 0, Guardian = -1;
   BOOL iRet = TRUE;
-  int suitpoison = 30; // �����ж�%
+  int suitpoison = 30; // 基本中毒%
 
   attackindex = BATTLE_No2Index(battleindex, attackNo);
   defindex = toindex = BATTLE_No2Index(battleindex, defNo);
@@ -2545,13 +2545,13 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
   if (CHAR_getInt(attackindex, CHAR_HP) <= 0)
     return FALSE;
 
-  // �⡢������
+  // 光、镜、守
   if (BATTLE_GetDamageReact(attackindex) > 0)
     iRet = FALSE;
   else if (BATTLE_GetDamageReact(defindex) > 0)
     iRet = FALSE;
 
-  // ����ģʽ
+  // 攻击模式
   iWork = BATTLE_AttackSeq(attackindex, toindex, &damage, &Guardian, opt);
 
   if (Guardian >= 0)
@@ -2569,7 +2569,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
   ultimate =
       BATTLE_DamageSub(attackindex, defindex, &damage, &petdamage, &react);
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (react == BATTLE_MD_TRAP) {
     defindex = attackindex;
     statusDefNo = attackNo;
@@ -2594,13 +2594,13 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
 
 #ifdef _PETSKILL_ACUPUNCTURE
   if (react ==
-      BATTLE_MD_ACUPUNCTURE) { // �����Ƥʱ���޷�����������򷽵�״̬,���԰�index������
+      BATTLE_MD_ACUPUNCTURE) { //针刺外皮时会无法正常解除被打方的状态,所以把index换回来
     defindex = toindex = BATTLE_No2Index(battleindex, defNo);
     statusDefNo = defNo;
   }
 #endif
 
-  // ��˯ʱ,��������״̬(Ҳ��������״̬)
+  // 昏睡时,在这里解除状态(也有其它的状态)
   if (damage > 0 && (react != BATTLE_MD_ABSROB) &&
       (react != BATTLE_MD_VANISH)) {
     BATTLE_DamageWakeUp(battleindex, defindex);
@@ -2616,7 +2616,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
   switch (iWork) {
   case BATTLE_RET_ALLGUARD:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)����(%s)����,���׵ر��㿪��",
+    //	"(%s)朝向(%s)攻击,轻易地被躲开。",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex )
     //);
@@ -2627,7 +2627,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
     break;
   case BATTLE_RET_MISS:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)����(%s)����,û���С�",
+    //	"(%s)朝向(%s)攻击,没击中。",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex )
     //);
@@ -2637,7 +2637,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
     break;
   case BATTLE_RET_DODGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)������(%s)�㿪��(%.2f%%)",
+    //	"(%s)攻击了(%s)躲开了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -2649,7 +2649,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
     break;
   case BATTLE_RET_NORMAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)�ܵ�(%s)�Ĺ���(%d)��������(%d:%d:%d%%)",
+    //	"(%s)受到(%s)的攻击(%d)遭受损伤(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	damage,
@@ -2663,7 +2663,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
     break;
   case BATTLE_RET_CRITICAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //"(%s)��(%s)CRITICAL(%d%%)(%d)������(%d:%d:%d%%)",
+    //"(%s)向(%s)CRITICAL(%d%%)(%d)不可以(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	(int)(gCriper*0.01),
@@ -2680,7 +2680,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
 #ifdef _EQUIT_ARRANGE
   case BATTLE_RET_ARRANGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)������(%s)������(%.2f%%)",
+    //	"(%s)攻击了(%s)挡掉了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -2726,8 +2726,8 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
       int toid;
       int item_index;
       int lj;
-      char item[8][32] = {"ͷ��",    "����", "����", "������",
-                          "������", "����", "��",   "Ь��"};
+      char item[8][32] = {"头盔",    "铠甲", "武器", "首饰左",
+                          "首饰右", "腰带", "盾",   "鞋子"};
 
       getStringFromIndexWithDelim(skillarg, "|", 1, buf, sizeof(buf));
       fromid = min(atoi(buf), 7);
@@ -2741,26 +2741,26 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
       item_index = CHAR_getItemIndex(defindex, fromid);
 
       if (CHAR_CHECKITEMINDEX(defindex, item_index) == FALSE) {
-        sprintf(token, "BK|%s δװ�� %s |", CHAR_getUseName(defindex),
+        sprintf(token, "BK|%s 未装备 %s |", CHAR_getUseName(defindex),
                 item[fromid]);
       } else {
 
         if (toid == -1) {
-          sprintf(token, "BK|%s�޿�λж��%s|",
+          sprintf(token, "BK|%s无空位卸下%s|",
                   CHAR_getUseName(defindex), item[fromid]);
         } else {
           if (rand() % 100 <= lj) {
-            sprintf(token, "BK|%s��%s��ж��|", CHAR_getUseName(defindex),
+            sprintf(token, "BK|%s的%s已卸下|", CHAR_getUseName(defindex),
                     item[fromid]);
             CHAR_moveEquipItem(defindex, fromid, toid);
           } else {
-            sprintf(token, "BK|%s��%s��㱻ж��|", CHAR_getUseName(attackindex),
+            sprintf(token, "BK|%s的%s差点被卸下|", CHAR_getUseName(attackindex),
                     item[fromid]);
           }
         }
       }
     } else {
-      sprintf(token, "BK|�������޷�ж��|");
+      sprintf(token, "BK|非人物无法卸下|");
     }
     strcat(szBadStatusString, token);
   }
@@ -2776,7 +2776,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
     }
 
 #ifdef _PETSKILL_LER
-    // �׶����ܱ����
+    // 雷尔不能被打飞
     if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
         CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
       ultimate = 0;
@@ -2798,16 +2798,16 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
   //	(attackNo >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
 
 #ifdef _PETSKILL_ACUPUNCTURE
-  if (react == BATTLE_MD_ACUPUNCTURE) { // �����Ƥ���ᷴ������״̬,����Ҫ�Ļ���
+  if (react == BATTLE_MD_ACUPUNCTURE) { // 针刺外皮不会反射特殊状态,所以要改回来
     defindex = toindex = BATTLE_No2Index(battleindex, defNo);
     statusDefNo = defNo;
   }
-  // ע��:֮��Ҫ��Ҫ�ٸĻ�ԭ������.......????
+  // 注意:之後要不要再改回原本反射.......????
 #endif
 
 #ifdef _SUIT_ADDPART4
   if (gBattleStausChange == -1 &&
-      CHAR_getWorkInt(attackindex, CHAR_SUITPOISON) > 0) // ����װ��
+      CHAR_getWorkInt(attackindex, CHAR_SUITPOISON) > 0) //带毒装备
     gBattleStausChange = 1, gBattleStausTurn = 3,
     suitpoison = CHAR_getWorkInt(attackindex, CHAR_SUITPOISON);
 #endif
@@ -2823,7 +2823,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
                         CHAR_getWorkInt(defindex, CHAR_WORKDRUNK) / 2);
       }
 
-#ifdef _PET_SKILL_SARS // WON ADD ��ɷ����
+#ifdef _PET_SKILL_SARS // WON ADD 毒煞蔓延
       if (gBattleStausChange == BATTLE_ST_SARS) {
         CHAR_setWorkInt(defindex, CHAR_WORKMODSARS, 1);
       }
@@ -2857,11 +2857,11 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
     }
   }
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (damage > 0 &&
       (CHAR_getInt(attackindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER)) {
     int i;
-    // ���𡢱����׸���
+    // 检查火、冰、雷附体
     for (i = 0; i < 3; i++) {
       int turn = 0, status = -1;
 
@@ -2872,10 +2872,10 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
         int perStatus = 0, j = 0;
         int skill_level =
             CHAR_getWorkInt(attackindex, CHAR_WORKMOD_F_ENCLOSE_2 + i);
-        char pszP[3][10] = {"��", "˪", "��"};
+        char pszP[3][10] = {"烧", "霜", "电"};
         int img1 = 101697, img2 = 101698 + i;
 
-        // ״̬
+        // 状态
         for (j = 1; j < BATTLE_ST_END; j++) {
           if (strncmp(pszP[i], aszStatus[j], 2) == 0) {
             status = j;
@@ -2883,10 +2883,10 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
           }
         }
 
-        // ������
+        // 命中率
         perStatus = 20 + skill_level * 2;
 
-        // �غ���
+        // 回合数
         if (skill_level >= 10)
           turn = 3;
         else if (skill_level >= 5)
@@ -2894,12 +2894,12 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
         else
           turn = 1;
 
-        // �׸���һ�غ���
+        // 雷附体一回合数
         if (i == 2)
           turn = 1;
 
-        // �𡢱����׸��帽�ӹ���
-        // Terry add fix ��Ȯbug
+        // 火、冰、雷附体附加攻击
+        // Terry add fix 忠犬bug
         if (Guardian >= 0)
           iRet = BATTLE_PROFESSION_RANG_ATTACK_DAMAGE(
               attackindex, attackNo, Guardian, skill_type, status, turn,
@@ -2925,7 +2925,7 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
              damage, petdamage);
   }
 #ifdef _ATTACK_EFFECT
-  // ����������Ч
+  // 攻击后有特效
   if (CHAR_getInt(attackindex, CHAR_ATTACK_EFFECT) > 0) {
     sprintf(szBuffer, "s%X|", CHAR_getInt(attackindex, CHAR_ATTACK_EFFECT));
     strcat(szCommand, szBuffer);
@@ -2983,11 +2983,11 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
   if (CHAR_getInt(attackindex, CHAR_HP) <= 0)
     return FALSE;
 
-  // �⡢������
+  // 光、镜、守
   //	if( BATTLE_GetDamageReact( attackindex ) > 0 )		iRet = FALSE;
   //	else if( BATTLE_GetDamageReact( defindex ) > 0 )	iRet = FALSE;
 
-  // ����ģʽ
+  // 攻击模式
   iWork = BATTLE_AttackSeq(attackindex, toindex, &damage, &Guardian, opt);
 
   if (Guardian >= 0)
@@ -3005,7 +3005,7 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
   ultimate = BATTLE_DamageSub_FIREKILL(attackindex, defindex, &damage,
                                        &petdamage, &react);
 
-  // #ifdef _PROFESSION_SKILL			// WON ADD ����ְҵ����
+  // #ifdef _PROFESSION_SKILL			// WON ADD 人物职业技能
   //	if( react == BATTLE_MD_TRAP ){
   //		defindex = attackindex;
   //		statusDefNo = attackNo;
@@ -3030,13 +3030,13 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
 
   // #ifdef _PETSKILL_ACUPUNCTURE
   //     if( react == BATTLE_MD_ACUPUNCTURE ){
-  //     //�����Ƥʱ���޷�����������򷽵�״̬,���԰�index������
+  // 历史注释的原始编码已损坏，无法可靠恢复。
   //	    defindex = toindex = BATTLE_No2Index( battleindex, defNo );
   //         statusDefNo = defNo;
   //	}
   // #endif
 
-  // ��˯ʱ,��������״̬(Ҳ��������״̬)
+  // 昏睡时,在这里解除状态(也有其它的状态)
   if (damage > 0 && (react != BATTLE_MD_ABSROB) &&
       (react != BATTLE_MD_VANISH)) {
     BATTLE_DamageWakeUp(battleindex, defindex);
@@ -3052,7 +3052,7 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
   switch (iWork) {
   case BATTLE_RET_ALLGUARD:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)����(%s)����,���׵ر��㿪��",
+    //	"(%s)朝向(%s)攻击,轻易地被躲开。",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex )
     //);
@@ -3060,14 +3060,14 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
     break;
   case BATTLE_RET_MISS:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)����(%s)����,û���С�",
+    //	"(%s)朝向(%s)攻击,没击中。",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex )
     //);
     break;
   case BATTLE_RET_DODGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)������(%s)�㿪��(%.2f%%)",
+    //	"(%s)攻击了(%s)躲开了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -3079,7 +3079,7 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
     break;
   case BATTLE_RET_NORMAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)�ܵ�(%s)�Ĺ���(%d)��������(%d:%d:%d%%)",
+    //	"(%s)受到(%s)的攻击(%d)遭受损伤(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	damage,
@@ -3093,7 +3093,7 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
     break;
   case BATTLE_RET_CRITICAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //"(%s)��(%s)CRITICAL(%d%%)(%d)������(%d:%d:%d%%)",
+    //"(%s)向(%s)CRITICAL(%d%%)(%d)不可以(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	(int)(gCriper*0.01),
@@ -3110,7 +3110,7 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
 #ifdef _EQUIT_ARRANGE
   case BATTLE_RET_ARRANGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)������(%s)������(%.2f%%)",
+    //	"(%s)攻击了(%s)挡掉了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -3137,7 +3137,7 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
       }
     }
 #ifdef _PETSKILL_LER
-    // �׶����ܱ����
+    // 雷尔不能被打飞
     if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
         CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
       ultimate = 0;
@@ -3166,7 +3166,7 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
                         CHAR_getWorkInt(defindex, CHAR_WORKDRUNK) / 2);
       }
 
-#ifdef _PET_SKILL_SARS // WON ADD ��ɷ����
+#ifdef _PET_SKILL_SARS // WON ADD 毒煞蔓延
       if (gBattleStausChange == BATTLE_ST_SARS) {
         CHAR_setWorkInt(defindex, CHAR_WORKMODSARS, 1);
       }
@@ -3201,7 +3201,7 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
     }
   }
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (damage > 0 &&
       (CHAR_getInt(attackindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER)) {
     int i;
@@ -3215,7 +3215,7 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
         int perStatus = 0, j = 0;
         int skill_level =
             CHAR_getWorkInt(attackindex, CHAR_WORKMOD_F_ENCLOSE_2 + i);
-        char pszP[3][10] = {"��", "˪", "��"};
+        char pszP[3][10] = {"烧", "霜", "电"};
         int img1 = 101697, img2 = 101698 + i;
         for (j = 1; j < BATTLE_ST_END; j++) {
           if (strncmp(pszP[i], aszStatus[j], 2) == 0) {
@@ -3432,7 +3432,7 @@ static BOOL BATTLE_CounterCheckPet(int attackindex, int defindex, int *pPer) {
 }
 
 static BOOL BATTLE_CounterCheck(int attackindex, int defindex, int *pPar) {
-#ifdef _SHOOTCHESTNUT // Syu ADD �輼��������
+#ifdef _SHOOTCHESTNUT // Syu ADD 宠技：丢栗子
   if (CHAR_getWorkInt(attackindex, CHAR_WORKBATTLECOM1) ==
           BATTLE_COM_S_ATTSHOOT ||
       CHAR_getWorkInt(defindex, CHAR_WORKBATTLECOM1) == BATTLE_COM_S_ATTSHOOT) {
@@ -3446,7 +3446,7 @@ static BOOL BATTLE_CounterCheck(int attackindex, int defindex, int *pPar) {
   }
 }
 
-// �����ж�
+// 反击判定
 BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
   if (!BATTLE_CHECKINDEX(battleindex))
     return FALSE;
@@ -3464,7 +3464,7 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
     return FALSE;
   if (!CHAR_CHECKINDEX(defindex))
     return FALSE;
-#ifdef _SHOOTCHESTNUT // Syu ADD �輼��������
+#ifdef _SHOOTCHESTNUT // Syu ADD 宠技：丢栗子
   if (CHAR_getWorkInt(attackindex, CHAR_WORKBATTLECOM1) ==
       BATTLE_COM_S_ATTSHOOT) {
     return FALSE;
@@ -3485,15 +3485,15 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
     return FALSE;
   }
 
-  // nono��
+  // nono宠
   if (CHAR_getWorkInt(attackindex, CHAR_WORKBATTLEFLG) & CHAR_BATTLEFLG_ABIO)
     return FALSE;
 
-  // ��������
+  // 反击条件
   if (BATTLE_CounterCheck(attackindex, defindex, &per) == FALSE)
     return FALSE;
 
-  // �⡢������
+  // 光、镜、守
   if (BATTLE_GetDamageReact(attackindex) > 0)
     iRet = FALSE;
   else if (BATTLE_GetDamageReact(defindex) > 0)
@@ -3519,7 +3519,7 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
   if (react == BATTLE_MD_REFLEC)
     defindex = attackindex;
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (react == BATTLE_MD_TRAP)
     defindex = attackindex;
 #endif
@@ -3538,7 +3538,7 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
   case BATTLE_RET_MISS:
     /*
                     snprintf( szBuffer, sizeof(szBuffer),
-                            "(%s)����(%s)����,û���С�",
+                            "(%s)朝向(%s)反击,没击中。",
                             CHAR_getUseName( attackindex ),
                             CHAR_getUseName( defindex )
                     );
@@ -3547,7 +3547,7 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
 
   case BATTLE_RET_DODGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)���⹥��(%d%%)!����(%s)������(%.2f%%)",
+    //	"(%s)意外攻击(%d%%)!但是(%s)闪开了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	per,
     //	CHAR_getUseName( defindex ),
@@ -3558,7 +3558,7 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
 
   case BATTLE_RET_NORMAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //"(%s)�ķ���!(%d%%)(%d)���� (%d:%d:%d%%)",
+    //"(%s)的反击!(%d%%)(%d)损伤 (%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	per,
     //	damage,
@@ -3572,7 +3572,7 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
 
   case BATTLE_RET_CRITICAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //"(%s)��CRITICAL��(%d%%)(%d)���� (%d:%d:%d%%)",
+    //"(%s)的CRITICAL！(%d%%)(%d)损伤 (%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	per,
     //	damage,
@@ -3588,7 +3588,7 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
 #ifdef _EQUIT_ARRANGE
   case BATTLE_RET_ARRANGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)������(%s)������(%.2f%%)",
+    //	"(%s)攻击了(%s)挡掉了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -3610,7 +3610,7 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
       }
     }
 #ifdef _PETSKILL_LER
-    // �׶����ܱ����
+    // 雷尔不能被打飞
     if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
         CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
       ultimate = 0;
@@ -3647,7 +3647,7 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
 #endif
 
 #ifdef _ATTACK_EFFECT
-  // ����������Ч
+  // 攻击后有特效
   if (CHAR_getInt(attackindex, CHAR_ATTACK_EFFECT) > 0) {
     sprintf(szBuffer, "s%X|", CHAR_getInt(attackindex, CHAR_ATTACK_EFFECT));
     strcat(szCommand, szBuffer);
@@ -3737,7 +3737,7 @@ typedef struct _NeedItemEnemy {
 NEEDITEMENEMY NeedEnemy[] = {
     {524, {2456, -1, -1, -1, -1, -1, -1, -1, -1, -1}},
 #ifndef _DEL_NOT_25_NEED_ITEM
-    // ��������
+    // 伊甸任务
     {961, {20219, -1, -1, -1, -1, -1, -1, -1, -1, -1}},
     {953, {20223, -1, -1, -1, -1, -1, -1, -1, -1, -1}},
     {962, {20222, -1, -1, -1, -1, -1, -1, -1, -1, -1}},
@@ -3748,7 +3748,7 @@ NEEDITEMENEMY NeedEnemy[] = {
 
     {1105, {1690, 1691, 1692, -1, -1, -1, -1, -1, -1, -1}},
     {8, {1810, -1, -1, -1, -1, -1, -1, -1, -1, -1}},
-#ifdef _WOLF_TAKE_AXE // WON ADD ץ˫ͷ�ǵ�����
+#ifdef _WOLF_TAKE_AXE // WON ADD 抓双头狼的限制
     {145, {2236, -1, -1, -1, -1, -1, -1, -1, -1, -1}},
     {146, {2236, -1, -1, -1, -1, -1, -1, -1, -1, -1}},
 #endif
@@ -3771,7 +3771,7 @@ int need_item_eneny_init() {
     fp = fopen("data/needitemeneny.txt", "r");
   }
   if (fp == NULL) {
-    print("�޷����ļ�\n");
+    print("无法打开文件\n");
     return FALSE;
   }
   while (1) {
@@ -3810,7 +3810,7 @@ typedef struct _NeedItemEnemy {
 NEEDITEMENEMY NeedEnemy[] = {
     {524, 2456},
 #ifndef _DEL_NOT_25_NEED_ITEM
-    // ��������
+    // 伊甸任务
     {961, 20219},
     {953, 20223},
     {962, 20222},
@@ -3865,7 +3865,7 @@ BOOL BATTLE_CaptureItemCheck(int attackindex, int defindex) {
 #endif
       break;
     }
-    // û�ҵ�
+    // 没找到
     if (j >= CheckCharMaxItem(attackindex))
       return FALSE;
   }
@@ -3904,12 +3904,12 @@ BOOL BATTLE_CaptureItemDelAll(int attackindex, int defindex) {
         LogItem(
             CHAR_getChar(attackindex, CHAR_NAME),
             CHAR_getChar(attackindex, CHAR_CDKEY),
-#ifdef _add_item_log_name // WON ADD ��item��log������item����
+#ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
             item_index,
 #else
             ITEM_getInt(item_index, ITEM_ID),
 #endif
-            "PetEaten(ʹ���������߲������)", CHAR_getInt(attackindex, CHAR_FLOOR),
+            "PetEaten(使用条件道具捕获宠物)", CHAR_getInt(attackindex, CHAR_FLOOR),
             CHAR_getInt(attackindex, CHAR_X), CHAR_getInt(attackindex, CHAR_Y),
             ITEM_getChar(item_index, ITEM_UNIQUECODE),
             ITEM_getChar(item_index, ITEM_NAME),
@@ -3925,7 +3925,7 @@ BOOL BATTLE_CaptureItemDelAll(int attackindex, int defindex) {
         }
         CHAR_DelItem(attackindex, j);
         CHAR_complianceParameter(attackindex);
-        // break;//Change fix ץ��һֻ��ֻɾ��һ������(���ỹ�Ǿ���ȫɾ)
+        // break;//Change fix 抓到一只宠只删除一个道具(最後还是决定全删)
       }
     }
   }
@@ -3957,13 +3957,13 @@ BOOL BATTLE_Capture(int battleindex, int attackNo, int defNo) {
     pindex = PET_createPetFromchar_index(attackindex, defindex);
     if (pindex == -1) {
       // snprintf( szBuffer, sizeof(szBuffer),
-      // "(%s)�����޷������״̬��", 	CHAR_getUseName(
+      // 历史注释的原始编码已损坏，无法可靠恢复。
       // attackindex ) );
       flg = 0;
     } else {
       int ai;
       CHAR_setInt(pindex, CHAR_PETGETLV, CHAR_getInt(pindex, CHAR_LV));
-      // snprintf( szBuffer, sizeof(szBuffer), "(%s)������(%s)(%.2f%%)",
+      // snprintf( szBuffer, sizeof(szBuffer), "(%s)捕获了(%s)(%.2f%%)",
       //	CHAR_getUseName( attackindex ),
       //	CHAR_getUseName( defindex ),
       //	per
@@ -3972,7 +3972,7 @@ BOOL BATTLE_Capture(int battleindex, int attackNo, int defNo) {
 
       LogPet(CHAR_getUseName(attackindex), CHAR_getUseID(attackindex),
              CHAR_getChar(defindex, CHAR_NAME), CHAR_getInt(defindex, CHAR_LV),
-             "Get(�������)", CHAR_getInt(attackindex, CHAR_FLOOR),
+             "Get(捕获宠物)", CHAR_getInt(attackindex, CHAR_FLOOR),
              CHAR_getInt(attackindex, CHAR_X), CHAR_getInt(attackindex, CHAR_Y),
              CHAR_getChar(defindex, CHAR_UNIQUECODE) // shan 2001/12/14
       );
@@ -3990,12 +3990,12 @@ BOOL BATTLE_Capture(int battleindex, int attackNo, int defNo) {
               char token[256];
               LogItem(CHAR_getChar(attackindex, CHAR_NAME),
                       CHAR_getChar(attackindex, CHAR_CDKEY),
-#ifdef _add_item_log_name // WON ADD ��item��log������item����
+#ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
                       item_index,
 #else
                       ITEM_getInt(item_index, ITEM_ID),
 #endif
-                      "PetEaten(ʹ�������������)",
+                      "PetEaten(使用料理捕获宠物)",
                       CHAR_getInt(attackindex, CHAR_FLOOR),
                       CHAR_getInt(attackindex, CHAR_X),
                       CHAR_getInt(attackindex, CHAR_Y),
@@ -4042,7 +4042,7 @@ void BATTLE_Guard(int battleindex, int attackNo) {
   /*attackindex = BATTLE_No2Index( battleindex, attackNo );
   {
           char szBuffer[256]="";
-          //snprintf( szBuffer, sizeof(szBuffer), "(%s)��ס��������ȫ��",
+          //snprintf( szBuffer, sizeof(szBuffer), "(%s)保住了自身安全。",
           //	CHAR_getUseName( attackindex )
           //);
           //BATTLE_BroadCast( battleindex, szBuffer,
@@ -4252,7 +4252,7 @@ int BATTLE_NoAction(int battleindex, int attackNo) {
   sprintf(szCommand, "bn|%x|", attackNo);
   BATTLESTR_ADD(szCommand);
 
-  // snprintf( szBuffer, sizeof(szBuffer), "(%s)ʲ��Ҳ��������",
+  // snprintf( szBuffer, sizeof(szBuffer), "(%s)什麽也不能做。",
   //	CHAR_getUseName( attackindex )
   //);
   // BATTLE_BroadCast( battleindex, szBuffer,
@@ -4269,7 +4269,7 @@ int BATTLE_PetIn(int battleindex, int attackNo) {
   attackindex = BATTLE_No2Index(battleindex, attackNo);
   petindex = CHAR_getInt(attackindex, CHAR_DEFAULTPET);
   petindex = CHAR_getCharPet(attackindex, petindex);
-#ifdef _FIXWOLF // Syu ADD �������˱���Bug
+#ifdef _FIXWOLF // Syu ADD 修正狼人变身Bug
   if (CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER) == 101428) {
     CHAR_setInt(petindex, CHAR_BASEIMAGENUMBER,
                 CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
@@ -4279,9 +4279,9 @@ int BATTLE_PetIn(int battleindex, int attackNo) {
                     CHAR_getWorkInt(petindex, CHAR_WORKFIXDEX));
   }
 #endif
-#ifdef _PETSKILL_BECOMEFOX // �������Ļ����ջ����ٷų���ʱҪ�ָ�����״̬
+#ifdef _PETSKILL_BECOMEFOX // 宠物中媚惑术收回後再放出来时要恢复正常状态
   if (CHAR_getWorkInt(petindex, CHAR_WORKFOXROUND) != -1 ||
-      CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER) == 101749) { // ���Ǳ���Ϊ��
+      CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER) == 101749) { //若是变身为狸
     CHAR_setInt(petindex, CHAR_BASEIMAGENUMBER,
                 CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
     CHAR_setWorkInt(petindex, CHAR_WORKATTACKPOWER,
@@ -4292,7 +4292,7 @@ int BATTLE_PetIn(int battleindex, int attackNo) {
   }
 #endif
   if (CHAR_getWorkInt(petindex, CHAR_WORKBATTLEFLG) & CHAR_BATTLEFLG_NORETURN) {
-    // snprintf( szBuffer, sizeof(szBuffer), "(%s)�޷��ظ���(%s)",
+    // snprintf( szBuffer, sizeof(szBuffer), "(%s)无法回复成(%s)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( petindex )
     //);
@@ -4302,7 +4302,7 @@ int BATTLE_PetIn(int battleindex, int attackNo) {
   BATTLE_PetDefaultExit(attackindex, battleindex);
   CHAR_setInt(attackindex, CHAR_DEFAULTPET, -1);
 
-  // snprintf( szBuffer, sizeof(szBuffer), "(%s)�ظ���(%s)",
+  // snprintf( szBuffer, sizeof(szBuffer), "(%s)回复成(%s)",
   //	CHAR_getUseName( attackindex ),
   //	CHAR_getUseName( petindex )
   //);
@@ -4332,11 +4332,11 @@ int BATTLE_PetOut(int battleindex, int attackNo) {
                              CHAR_getWorkInt(attackindex, CHAR_WORKBATTLESIDE));
 
   if (iRet < 0) {
-    // snprintf( szBuffer, sizeof(szBuffer), "(%s)��������,����û�г������ټ���",
+    // snprintf( szBuffer, sizeof(szBuffer), "(%s)呼唤宠物,可是没有出现其踪迹。",
     //	CHAR_getUseName( attackindex )
     //);
   } else if (CHAR_getInt(attackindex, CHAR_DEFAULTPET) < 0) {
-    // snprintf( szBuffer, sizeof(szBuffer), "(%s)��������,����û�г������ټ���",
+    // snprintf( szBuffer, sizeof(szBuffer), "(%s)呼唤宠物,可是没有出现其踪迹。",
     //	CHAR_getUseName( attackindex )
     //);
   } else {
@@ -4346,7 +4346,7 @@ int BATTLE_PetOut(int battleindex, int attackNo) {
 
     CHAR_setWorkInt(petindex, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_C_OK);
 
-    // snprintf( szBuffer, sizeof(szBuffer), "(%s)����(%s)",
+    // snprintf( szBuffer, sizeof(szBuffer), "(%s)呼唤(%s)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( petindex )
     //);
@@ -4384,7 +4384,7 @@ int BATTLE_S_PetOut(int battleindex, int attackNo, int petNo) {
                              CHAR_getWorkInt(attackindex, CHAR_WORKBATTLESIDE));
 
   if (iRet < 0) {
-    // snprintf( szBuffer, sizeof(szBuffer), "(%s)��������,����û�г������ټ���",
+    // snprintf( szBuffer, sizeof(szBuffer), "(%s)呼唤宠物,可是没有出现其踪迹。",
     //	CHAR_getUseName( attackindex )
     //);
   } else {
@@ -4418,7 +4418,7 @@ int BATTLE_Magic(int battleindex, int attackNo) {
   return 0;
 }
 
-// �б𹥻��Ƿ�����
+// 判别攻击是否命中
 int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
   char szBuffer[512] = "";
   char szCommand[1024];
@@ -4444,7 +4444,7 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
         BATTLE_DamageSub(attackindex, defindex, &damage, &petdamage, &react);
     if (react == BATTLE_MD_REFLEC)
       defindex = attackindex;
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
     if (react == BATTLE_MD_TRAP)
       defindex = attackindex;
 #endif
@@ -4454,7 +4454,7 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
 #endif
 
   } else {
-    // ���зǷ�����damageΪ0
+    // 若敌非防御则damage为0
     damage = 0;
     iWork = BATTLE_RET_MISS;
   }
@@ -4470,7 +4470,7 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
   case BATTLE_RET_ALLGUARD:
   case BATTLE_RET_MISS:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)����(%s)��������,û���С�",
+    //	"(%s)朝向(%s)发动绝技,没击中。",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex )
     //);
@@ -4479,7 +4479,7 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
 
   case BATTLE_RET_DODGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)չ����������(%s)�㿪��(%.2f%%)",
+    //	"(%s)展开防御攻击(%s)躲开了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -4490,7 +4490,7 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
 
   case BATTLE_RET_NORMAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)�ܵ�(%s)�ľ�������(%d)����(%d:%d:%d%%)",
+    //	"(%s)受到(%s)的绝技攻击(%d)损伤(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	damage,
@@ -4506,7 +4506,7 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
 
   case BATTLE_RET_CRITICAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //"(%s)�ܵ�(%s)�ľ���CRITICAL(%d)����(%d:%d:%d%%)",
+    //"(%s)受到(%s)的绝技CRITICAL(%d)损伤(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	damage,
@@ -4522,7 +4522,7 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
 #ifdef _EQUIT_ARRANGE
   case BATTLE_RET_ARRANGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)������(%s)������(%.2f%%)",
+    //	"(%s)攻击了(%s)挡掉了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -4550,7 +4550,7 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
       }
     }
 #ifdef _PETSKILL_LER
-    // �׶����ܱ����
+    // 雷尔不能被打飞
     if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
         CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
       ultimate = 0;
@@ -4599,7 +4599,7 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
   return iRet;
 }
 
-#ifdef _SKILL_SACRIFICE // ��Ԯ vincent add 2002/05/30
+#ifdef _SKILL_SACRIFICE // 救援 vincent add 2002/05/30
 int BATTLE_S_Sacrifice(int battleindex, int attackNo, int defNo) {
   int attackindex, defindex = 0;
   int DefSide, Damage = 0;
@@ -4613,7 +4613,7 @@ int BATTLE_S_Sacrifice(int battleindex, int attackNo, int defNo) {
     DefSide = 1;
   }
 
-  // ����HP
+  // 修正HP
   CHAR_setInt(attackindex, CHAR_HP, (CHAR_getInt(attackindex, CHAR_HP) * 0.5));
   CHAR_setInt(
       defindex, CHAR_HP,
@@ -4621,9 +4621,9 @@ int BATTLE_S_Sacrifice(int battleindex, int attackNo, int defNo) {
           CHAR_getWorkInt(defindex, CHAR_WORKMAXHP)));
   Damage = CHAR_getInt(attackindex, CHAR_HP);
 
-  // ħ������
+  // 魔法动画
   BATTLE_MultiList(battleindex, defNo, ToList);
-  // ��hp�ı���ֵ
+  // 秀hp改变数值
   BATTLE_MagicEffect(battleindex, attackNo, ToList, MAGIC_EFFECT_USER,
                      SPR_heal2);
   snprintf(szCommand, sizeof(szCommand), "BD|r%X|%X|%X|d%X|p%X|", attackNo,
@@ -4672,7 +4672,7 @@ int BATTLE_S_Refresh(int battleindex, int attackNo, int defNo, int marray) {
 }
 #endif
 
-#ifdef _SKILL_ROAR // vincent�輼:���
+#ifdef _SKILL_ROAR // vincent宠技:大吼
 int BATTLE_S_Roar(int battleindex, int attackNo, int defNo, int marray) {
   int masteridx = -1, index2, char_index;
   BOOL iRet = FALSE;
@@ -4686,21 +4686,21 @@ int BATTLE_S_Roar(int battleindex, int attackNo, int defNo, int marray) {
 
   char_index = BATTLE_No2Index(battleindex, attackNo);
 
-  index2 = BATTLE_No2Index(battleindex, defNo); // ������Ŀ��֮index
+  index2 = BATTLE_No2Index(battleindex, defNo); // 被击中目标之index
 
   if (!CHAR_CHECKINDEX(index2))
     return iRet;
-  if (BATTLE_Index2No(battleindex, char_index) == defNo) { // ��������
+  if (BATTLE_Index2No(battleindex, char_index) == defNo) { //用在自身
     return iRet;
   }
 
   if (CHAR_getInt(index2, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-    petid = -1; // ����������
+    petid = -1; // 作用在人物
   } else if (CHAR_getInt(index2, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
-    masteridx = BATTLE_No2Index(battleindex, defNo - 5); // �����ڳ���
+    masteridx = BATTLE_No2Index(battleindex, defNo - 5); // 作用在宠物
     if (!CHAR_CHECKINDEX(masteridx))
       return iRet;
-    petid = CHAR_getInt(index2, CHAR_PETID); // ����id
+    petid = CHAR_getInt(index2, CHAR_PETID); // 宠物id
   } else if (CHAR_getInt(index2, CHAR_WHICHTYPE) == CHAR_TYPEENEMY) {
     petid = CHAR_getInt(index2, CHAR_PETID);
   }
@@ -4708,24 +4708,24 @@ int BATTLE_S_Roar(int battleindex, int attackNo, int defNo, int marray) {
   magicarg = PETSKILL_getChar(marray, PETSKILL_OPTION);
   while (getStringFromIndexWithDelim(magicarg, "|", i, buf1, sizeof(buf1)) !=
          FALSE) {
-    if (petid == atoi(buf1)) { // �����б�
+    if (petid == atoi(buf1)) { // 年兽判别
       FINDPET = TRUE;
       break;
     }
     i++;
   }
 
-  // ��ѶϢ�����
-  if (FINDPET == TRUE) { // ��Ϊ����
+  // 送讯息至玩家
+  if (FINDPET == TRUE) { // 若为年兽
     char buf4[255];
-    sprintf(buf4, "%s�����������ˣ�", CHAR_getChar(index2, CHAR_NAME));
-    BATTLE_Exit(index2, battleindex); // �뿪ս��
+    sprintf(buf4, "%s被吼声吓跑了！", CHAR_getChar(index2, CHAR_NAME));
+    BATTLE_Exit(index2, battleindex); // 离开战斗
     if (CHAR_CHECKINDEX(masteridx)) {
-      CHAR_setInt(masteridx, CHAR_DEFAULTPET, -1); // �޲�ս��
+      CHAR_setInt(masteridx, CHAR_DEFAULTPET, -1); // 无参战宠
       CHAR_talkToCli(masteridx, -1, buf4, CHAR_COLORYELLOW);
     }
 
-    // ǰ������
+    // 前攻动画
     flg |= BCF_ROAR;
     sprintf(szWork, "BH|a%X|", attackNo);
     BATTLESTR_ADD(szWork);
@@ -4733,7 +4733,7 @@ int BATTLE_S_Roar(int battleindex, int attackNo, int defNo, int marray) {
 
     BATTLESTR_ADD(szWork);
     BATTLESTR_ADD("FF|");
-    sprintf(szWork, "BQ|e%X|", defNo); // ���ܶ���
+    sprintf(szWork, "BQ|e%X|", defNo); // 逃跑动画
     BATTLESTR_ADD(szWork);
     CHAR_talkToCli(CHAR_getWorkInt(char_index, CHAR_WORKPLAYERINDEX), -1, buf4,
                    CHAR_COLORYELLOW);
@@ -4743,7 +4743,7 @@ int BATTLE_S_Roar(int battleindex, int attackNo, int defNo, int marray) {
 }
 #endif
 
-#ifdef _SKILL_GUARDBREAK2 // �Ƴ�����2 vincent add 2002/05/20
+#ifdef _SKILL_GUARDBREAK2 // 破除防御2 vincent add 2002/05/20
 int BATTLE_S_GBreak2(int battleindex, int attackNo, int defNo) {
   char szBuffer[512] = "";
   char szCommand[1024];
@@ -4767,7 +4767,7 @@ int BATTLE_S_GBreak2(int battleindex, int attackNo, int defNo) {
   if (react == BATTLE_MD_REFLEC)
     defindex = attackindex;
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (react == BATTLE_MD_TRAP)
     defindex = attackindex;
 #endif
@@ -4787,7 +4787,7 @@ int BATTLE_S_GBreak2(int battleindex, int attackNo, int defNo) {
   case BATTLE_RET_ALLGUARD:
   case BATTLE_RET_MISS:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)����(%s)��������,û���С�",
+    //	"(%s)朝向(%s)发动绝技,没击中。",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex )
     //);
@@ -4796,7 +4796,7 @@ int BATTLE_S_GBreak2(int battleindex, int attackNo, int defNo) {
 
   case BATTLE_RET_DODGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)չ����������(%s)�㿪��(%.2f%%)",
+    //	"(%s)展开防御攻击(%s)躲开了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -4807,7 +4807,7 @@ int BATTLE_S_GBreak2(int battleindex, int attackNo, int defNo) {
 
   case BATTLE_RET_NORMAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)�ܵ�(%s)�ľ�������(%d)����(%d:%d:%d%%)",
+    //	"(%s)受到(%s)的绝技攻击(%d)损伤(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	damage,
@@ -4823,7 +4823,7 @@ int BATTLE_S_GBreak2(int battleindex, int attackNo, int defNo) {
 
   case BATTLE_RET_CRITICAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //"(%s)�ܵ�(%s)�ľ���CRITICAL(%d)����(%d:%d:%d%%)",
+    //"(%s)受到(%s)的绝技CRITICAL(%d)损伤(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	damage,
@@ -4839,7 +4839,7 @@ int BATTLE_S_GBreak2(int battleindex, int attackNo, int defNo) {
 #ifdef _EQUIT_ARRANGE
   case BATTLE_RET_ARRANGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)������(%s)������(%.2f%%)",
+    //	"(%s)攻击了(%s)挡掉了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -4867,7 +4867,7 @@ int BATTLE_S_GBreak2(int battleindex, int attackNo, int defNo) {
       }
     }
 #ifdef _PETSKILL_LER
-    // �׶����ܱ����
+    // 雷尔不能被打飞
     if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
         CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
       ultimate = 0;
@@ -4939,7 +4939,7 @@ int BATTLE_Charge(int battleindex, int attackNo) {
 
     CHAR_SETWORKINT_LOW(attackindex, CHAR_WORKBATTLECOM3, iWork - 1);
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)���������С�",
+    //	"(%s)保持体力中。",
     //	CHAR_getUseName( attackindex )
     //);
     // BATTLE_BroadCast( battleindex, szBuffer,
@@ -4951,7 +4951,7 @@ int BATTLE_Charge(int battleindex, int attackNo) {
   }
 }
 
-// ״̬���������ж�
+// 状态攻击命中判定
 int BATTLE_StatusAttackCheck(int attackindex, int defindex, int status,
                              int PerOffset, int Range, float Bai, int *pPer) {
 
@@ -4959,7 +4959,7 @@ int BATTLE_StatusAttackCheck(int attackindex, int defindex, int status,
   int battleindex;
   if (status >= BATTLE_ST_END || status <= 0)
     return FALSE;
-  for (i = 1; i < BATTLE_ST_END; i++) { // �������쳣״̬��return
+  for (i = 1; i < BATTLE_ST_END; i++) { // 若已有异常状态则return
     if (CHAR_getWorkInt(defindex, StatusTbl[i]) > 0)
       return FALSE;
   }
@@ -5059,7 +5059,7 @@ int BATTLE_StatusAttackCheck(int attackindex, int defindex, int status,
   }
 }
 
-// ְҵ����״̬���������ж�
+// 职业技能状态攻击命中判定
 int PROFESSION_BATTLE_StatusAttackCheck(int char_index, int toindex, int status,
                                         int Success) {
   int rand_num = RAND(1, 100);
@@ -5073,7 +5073,7 @@ int PROFESSION_BATTLE_StatusAttackCheck(int char_index, int toindex, int status,
     return 0;
 
 #ifdef _PROFESSION_ADDSKILL
-  if (status == BATTLE_ST_RESIST_F_I_T) { // ��Ȼ����
+  if (status == BATTLE_ST_RESIST_F_I_T) { // 自然威能
     if (CHAR_getWorkInt(toindex, StatusTbl[BATTLE_ST_RESIST_F]) > 0)
       return 0;
     if (CHAR_getWorkInt(toindex, StatusTbl[BATTLE_ST_RESIST_I]) > 0)
@@ -5098,7 +5098,7 @@ int PROFESSION_BATTLE_StatusAttackCheck(int char_index, int toindex, int status,
 */
 #endif
 
-  for (i = 1; i < BATTLE_ST_END; i++) { // �������쳣״̬��return
+  for (i = 1; i < BATTLE_ST_END; i++) { // 若已有异常状态则return
     if (CHAR_getWorkInt(toindex, StatusTbl[i]) > 0)
       return 0;
   }
@@ -5120,7 +5120,7 @@ int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
 
   defindex = toindex = BATTLE_No2Index(battleindex, defNo);
 
-  // BATTLE_BroadCast( battleindex, "������ɱ������",
+  // BATTLE_BroadCast( battleindex, "发动必杀技！！",
   //	(pAttackList[0] >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
 
   for (i = 0; pAttackList[i] != -1 && i < BATTLE_ENTRY_MAX; i++) {
@@ -5151,7 +5151,7 @@ int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
 
     react = BATTLE_GetDamageReact(defindex);
     if ((react == BATTLE_MD_REFLEC
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
          || react == BATTLE_MD_TRAP
 #endif
 #ifdef _PETSKILL_ACUPUNCTURE
@@ -5181,7 +5181,7 @@ int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
     if (react == BATTLE_MD_REFLEC) {
       defindex = attackindex;
     }
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
     if (react == BATTLE_MD_TRAP)
       defindex = attackindex;
 #endif
@@ -5201,7 +5201,7 @@ int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
     case BATTLE_RET_ALLGUARD:
     case BATTLE_RET_NORMAL:
       // snprintf( szBuffer, sizeof(szBuffer),
-      //	"(%s)�ܵ�(%s)�Ĺ���(%d)��������(%d:%d:%d%%)",
+      //	"(%s)受到(%s)的攻击(%d)遭受损伤(%d:%d:%d%%)",
       //	CHAR_getUseName( attackindex ),
       //	CHAR_getUseName( defindex ),
       //	damage,
@@ -5217,7 +5217,7 @@ int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
 
     case BATTLE_RET_CRITICAL:
       // snprintf( szBuffer, sizeof(szBuffer),
-      //"(%s)��(%s)CRITICAL(%d%%)(%d)������(%d:%d:%d%%)",
+      //"(%s)向(%s)CRITICAL(%d%%)(%d)不可以(%d:%d:%d%%)",
       //	CHAR_getUseName( attackindex ),
       //	CHAR_getUseName( defindex ),
       //	(int)(gCriper*0.01),
@@ -5253,7 +5253,7 @@ int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
         }
       }
 #ifdef _PETSKILL_LER
-      // �׶����ܱ����
+      // 雷尔不能被打飞
       if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
           CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
         ultimate = 0;
@@ -5339,7 +5339,7 @@ int BATTLE_EarthRoundHide(int battleindex, int attackNo) {
   BATTLESTR_ADD(szCommand);
 
   // snprintf( szBuffer, sizeof(szBuffer),
-  //	"(%s)�Ƶ�����ȥ��",
+  //	"(%s)绕到背後去。",
   //	CHAR_getUseName( attackindex )
   //);
 
@@ -5374,7 +5374,7 @@ BOOL BATTLE_LostEscape(int battleindex, int attackNo) {
   if (pno < 0)
     return FALSE;
 
-  //	print(" nono�����Ϣ ");
+  //	print(" nono宠改休息 ");
 
   BATTLE_Exit(attackindex, battleindex);
 
@@ -5386,14 +5386,14 @@ BOOL BATTLE_LostEscape(int battleindex, int attackNo) {
          CHAR_getChar(attackindex, CHAR_NAME),
          CHAR_getInt(attackindex, CHAR_LV),
 
-         "EscapeLost(ս�����߲�����)",
+         "EscapeLost(战斗逃走并回收)",
 
          CHAR_getInt(oyaindex, CHAR_FLOOR), CHAR_getInt(oyaindex, CHAR_X),
          CHAR_getInt(oyaindex, CHAR_Y),
          CHAR_getChar(attackindex, CHAR_UNIQUECODE) // shan 2001/12/14
   );
 
-  // snprintf( szBuffer, sizeof(szBuffer), "(%s)�ߵ��ˡ�",
+  // snprintf( szBuffer, sizeof(szBuffer), "(%s)走掉了。",
   //	CHAR_getUseName( attackindex )
   //);
   // if( getBattleDebugMsg( ) != 0 ){
@@ -5429,7 +5429,7 @@ BOOL BATTLE_Abduct(int battleindex, int attackNo, int defNo, int array) {
   if (CHAR_CHECKINDEX(defindex) == FALSE)
     return iRet;
 #ifdef _BATTLE_ABDUCTII
-  // ȡ�ó��＼������
+  // 取得宠物技能命令
   pszP = PETSKILL_getChar(array, PETSKILL_OPTION);
   if (pszP == "\0")
     return iRet;
@@ -5460,7 +5460,7 @@ BOOL BATTLE_Abduct(int battleindex, int attackNo, int defNo, int array) {
   if (Deftype != CHAR_TYPEPLAYER) {
 #ifdef _BATTLE_ABDUCTII
     int AiPer = 0;
-    // ȡ�ó��＼������
+    // 取得宠物技能命令
     AiPer = atoi(pszP);
     if (AiPer <= 0 || Deftype != CHAR_TYPEPET) {
 #endif
@@ -5537,9 +5537,9 @@ void BATTLE_StealMoney(int battleindex, int attackNo, int defNo) {
       safeSide = 1;
     }
     if (defNo >= safeSide * SIDE_OFFSET &&
-        defNo < ((safeSide * SIDE_OFFSET) + SIDE_OFFSET)) { // ͬ��
+        defNo < ((safeSide * SIDE_OFFSET) + SIDE_OFFSET)) { //同边
       per = 0;
-    } else { // ��ͬ��
+    } else { // 不同边
       per = 50;
       per = (((per + LV) / 4) + 10) >> 1;
     }
@@ -5570,7 +5570,7 @@ void BATTLE_StealMoney(int battleindex, int attackNo, int defNo) {
       S_FLG = 0;
     } else {
       // snprintf( szBuffer, sizeof(szBuffer),
-      //		"(%s)��(%s)�����(%d)STONE(%d%%)",
+      //		"(%s)从(%s)获得了(%d)STONE(%d%%)",
       //		CHAR_getUseName( attackindex ),
       //		CHAR_getUseName( defindex ),
       //		GOLD,
@@ -5584,15 +5584,15 @@ void BATTLE_StealMoney(int battleindex, int attackNo, int defNo) {
     }
   } else {
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)û��(%s)��ö���(%d%%)",
+    //	"(%s)没从(%s)获得东西(%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	per
     //);
   }
-  sprintf(buf1, "��͵��һЩʯ��");
+  sprintf(buf1, "被偷了一些石币");
   if (S_FLG) {
-    sprintf(szBuffer, "BK|%s%s��|", CHAR_getUseName(defindex), buf1);
+    sprintf(szBuffer, "BK|%s%s。|", CHAR_getUseName(defindex), buf1);
     strcat(szBadStatusString, szBuffer);
     if (CHAR_getInt(attackindex, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
       int attackoyaindex = CHAR_getWorkInt(attackindex, CHAR_WORKPLAYERINDEX);
@@ -5672,7 +5672,7 @@ void BATTLE_Steal(int battleindex, int attackNo, int defNo) {
         i = RAND(0, j - 1);
         if (i >= 0) {
           if (0 <= itemtbl[i] && itemtbl[i] < CHAR_STARTITEMARRAY) {
-            fprint("err:Ҫ��ȡװ��Ʒ(%d)\n", itemtbl[i]);
+            fprint("err:要盗取装备品(%d)\n", itemtbl[i]);
           } else {
             item_index = CHAR_getItemIndex(defindex, itemtbl[i]);
           }
@@ -5686,12 +5686,12 @@ void BATTLE_Steal(int battleindex, int attackNo, int defNo) {
         {
           LogItem(CHAR_getChar(defindex, CHAR_NAME),
                   CHAR_getChar(defindex, CHAR_CDKEY),
-#ifdef _add_item_log_name // WON ADD ��item��log������item����
+#ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
                   item_index,
 #else
                   ITEM_getInt(item_index, ITEM_ID),
 #endif
-                  "Stealed(͵�Եĵ���)", CHAR_getInt(defindex, CHAR_FLOOR),
+                  "Stealed(偷窃的道具)", CHAR_getInt(defindex, CHAR_FLOOR),
                   CHAR_getInt(defindex, CHAR_X), CHAR_getInt(defindex, CHAR_Y),
                   ITEM_getChar(item_index, ITEM_UNIQUECODE),
                   ITEM_getChar(item_index, ITEM_NAME),
@@ -5702,11 +5702,11 @@ void BATTLE_Steal(int battleindex, int attackNo, int defNo) {
     }
   } else {
     flg = 0;
-    // snprintf( szBuffer, sizeof(szBuffer), "(%s)û��(%s)��ö���(%d%%)",
+    // snprintf( szBuffer, sizeof(szBuffer), "(%s)没从(%s)获得东西(%d%%)",
     //	CHAR_getUseName( attackindex ),	CHAR_getUseName( defindex ), per );
   }
   if (flg == 1) {
-    sprintf(szBuffer, "BK|%s��͵��һЩ������|", CHAR_getUseName(defindex));
+    sprintf(szBuffer, "BK|%s被偷了一些东西。|", CHAR_getUseName(defindex));
     strcat(szBadStatusString, szBuffer);
     if (CHAR_getInt(attackindex, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
       int attackoyaindex = CHAR_getWorkInt(attackindex, CHAR_WORKPLAYERINDEX);
@@ -5800,7 +5800,7 @@ int BATTLE_S_FallGround(int battleindex, int attackNo, int defNo,
 #ifdef _PREVENT_TEAMATTACK
       && BATTLE_CheckSameSide(attackindex, defNo) == 0
 #endif
-  ) { // ����
+  ) { // 落马
     int fallflg = RAND(0, 100);
     if (
 #ifdef _EQUIT_RESIST
@@ -5810,7 +5810,7 @@ int BATTLE_S_FallGround(int battleindex, int attackNo, int defNo,
 #endif
     ) {
       if (CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-#ifdef _FIXPETFALL // Syu ADD ����������
+#ifdef _FIXPETFALL // Syu ADD 修正落马术
         if (CHAR_getInt(defindex, CHAR_RIDEPET) >= 0) {
 #else
         if (CHAR_getInt(defindex, CHAR_RIDEPET) > 0) {
@@ -5856,7 +5856,7 @@ int BATTLE_S_FallGround(int battleindex, int attackNo, int defNo,
       }
     }
 #ifdef _PETSKILL_LER
-    // �׶����ܱ����
+    // 雷尔不能被打飞
     if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
         CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
       ultimate = 0;
@@ -5903,16 +5903,16 @@ int BATTLE_S_Explode(int battleindex, int attackNo, int defNo, int skill_type) {
   int damage = 0, petdamage = 0, i = 0, iWork, Guardian = -1;
   int flg = 0, DefSide = 0, par, ultimate = 0, react = 0;
   BOOL iRet = FALSE;
-  attackindex = BATTLE_No2Index(battleindex, attackNo); // ����index
-  defindex = BATTLE_No2Index(battleindex, defNo);       // �ط�index
+  attackindex = BATTLE_No2Index(battleindex, attackNo); // 攻方index
+  defindex = BATTLE_No2Index(battleindex, defNo);       // 守方index
 
   if (defNo >= SIDE_OFFSET) {
     i = defNo - SIDE_OFFSET;
     DefSide = 1;
   }
   react = 0;
-  react = BATTLE_GetDamageReact(defindex); // �й⾵��
-  // ȡ�ù�����״̬
+  react = BATTLE_GetDamageReact(defindex); // 有光镜守
+  // 取得攻击後状态
   iWork = BATTLE_AttackSeq(attackindex, defindex, &damage, &Guardian,
                            BATTLE_COM_S_EXPLODE);
 
@@ -5927,7 +5927,7 @@ int BATTLE_S_Explode(int battleindex, int attackNo, int defNo, int skill_type) {
   if (react == BATTLE_MD_REFLEC)
     defindex = attackindex;
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (react == BATTLE_MD_TRAP)
     defindex = attackindex;
 #endif
@@ -5977,7 +5977,7 @@ int BATTLE_S_Explode(int battleindex, int attackNo, int defNo, int skill_type) {
 #ifdef _PREVENT_TEAMATTACK
       && BATTLE_CheckSameSide(attackindex, defNo) == 0
 #endif
-  ) {                  // ����
+  ) {                  // 落马
     int fallflg = 100; //= RAND( 0, 100);
     if (
 #ifdef _EQUIT_RESIST
@@ -5987,7 +5987,7 @@ int BATTLE_S_Explode(int battleindex, int attackNo, int defNo, int skill_type) {
 #endif
     ) {
       if (CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-#ifdef _FIXPETFALL // Syu ADD ����������
+#ifdef _FIXPETFALL // Syu ADD 修正落马术
         if (CHAR_getInt(defindex, CHAR_RIDEPET) >= 0) {
 #else
         if (CHAR_getInt(defindex, CHAR_RIDEPET) > 0) {
@@ -6033,7 +6033,7 @@ int BATTLE_S_Explode(int battleindex, int attackNo, int defNo, int skill_type) {
       }
     }
 #ifdef _PETSKILL_LER
-    // �׶����ܱ����
+    // 雷尔不能被打飞
     if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
         CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
       ultimate = 0;
@@ -6229,7 +6229,7 @@ int BATTLE_E_ENEMYHELP(int battleindex, int attackNo, int defNo,
   if (BATTLE_NewEntry(enindex, battleindex, Side)) {
     // CHAR_setWorkInt( enindex, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_RESCUE );
     CHAR_setWorkInt(enindex, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_C_OK);
-    // snprintf( szBuffer, sizeof( szBuffer ), "(%s)������ս��",
+    // snprintf( szBuffer, sizeof( szBuffer ), "(%s)加入作战。",
     //	CHAR_getUseName( enindex ) );
     // BATTLE_BroadCast( battleindex, szBuffer, CHAR_COLORYELLOW );
   } else {
@@ -6250,7 +6250,7 @@ int BATTLE_DefineAttack(int attackindex, int defindex, int iWork,
   case BATTLE_RET_ALLGUARD:
   case BATTLE_RET_MISS:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)����(%s)��������,û���С�",
+    //	"(%s)朝向(%s)发动绝技,没击中。",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex )
     //);
@@ -6258,7 +6258,7 @@ int BATTLE_DefineAttack(int attackindex, int defindex, int iWork,
     break;
   case BATTLE_RET_DODGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)չ����������(%s)�㿪��(%.2f%%)",
+    //	"(%s)展开防御攻击(%s)躲开了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -6268,7 +6268,7 @@ int BATTLE_DefineAttack(int attackindex, int defindex, int iWork,
     break;
   case BATTLE_RET_NORMAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)�ܵ�(%s)�ľ�������(%d)����(%d:%d:%d%%)",
+    //	"(%s)受到(%s)的绝技攻击(%d)损伤(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	damage,
@@ -6283,7 +6283,7 @@ int BATTLE_DefineAttack(int attackindex, int defindex, int iWork,
     break;
   case BATTLE_RET_CRITICAL:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //"(%s)�ܵ�(%s)�ľ���CRITICAL(%d)����(%d:%d:%d%%)",
+    //"(%s)受到(%s)的绝技CRITICAL(%d)损伤(%d:%d:%d%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	damage,
@@ -6298,7 +6298,7 @@ int BATTLE_DefineAttack(int attackindex, int defindex, int iWork,
 #ifdef _EQUIT_ARRANGE
   case BATTLE_RET_ARRANGE:
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)������(%s)������(%.2f%%)",
+    //	"(%s)攻击了(%s)挡掉了(%.2f%%)",
     //	CHAR_getUseName( attackindex ),
     //	CHAR_getUseName( defindex ),
     //	gDuckPer
@@ -6330,7 +6330,7 @@ int BATTLE_DefDieType(int defindex, int iRet, int *ultimate, int *flg,
     }
 
 #ifdef _PETSKILL_LER
-    // �׶����ܱ����
+    // 雷尔不能被打飞
     if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
         CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
       *ultimate = 0;
@@ -6358,7 +6358,7 @@ int BATTLE_S_DamageToHp(int battleindex, int attackindex, int defindex,
   float def = 0.00;
   if (Damage < 1)
     return A_HP;
-  if (BATTLE_GetDamageReact(defindex) > 0) // �й⾵��
+  if (BATTLE_GetDamageReact(defindex) > 0) // 有光镜守
     return A_HP;
 
   pszOption = PETSKILL_getChar(skill, PETSKILL_OPTION);
@@ -6395,7 +6395,7 @@ int BATTLE_S_DamageToHp2(int battleindex, int attackindex, int defindex,
   float def = 0.00;
   if (Damage < 1)
     return A_HP;
-  if (BATTLE_GetDamageReact(defindex) > 0) // �й⾵��
+  if (BATTLE_GetDamageReact(defindex) > 0) // 有光镜守
     return A_HP;
 
   pszOption = PETSKILL_getChar(skill, PETSKILL_OPTION);
@@ -6414,7 +6414,7 @@ int BATTLE_S_DamageToHp2(int battleindex, int attackindex, int defindex,
     A_HP = CHAR_getWorkInt(attackindex, CHAR_WORKMAXHP) -
            CHAR_getInt(attackindex, CHAR_HP);
   }
-  // print("\n��:%d ��Ѫ:%d",Damage,A_HP);
+  // print("\n伤:%d 回血:%d",Damage,A_HP);
   pHP = CHAR_getInt(attackindex, CHAR_HP) + A_HP;
   CHAR_setInt(attackindex, CHAR_HP,
               min(pHP, CHAR_getWorkInt(attackindex, CHAR_WORKMAXHP)));
@@ -6432,7 +6432,7 @@ int BATTLE_S_MpDamage(int battleindex, int attackindex, int defindex,
   float def = 0.00;
   if (damage < 1)
     return D_MP;
-  if (BATTLE_GetDamageReact(defindex) > 0) // �й⾵��
+  if (BATTLE_GetDamageReact(defindex) > 0) // 有光镜守
     return D_MP;
   if (CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEENEMY ||
       CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEPET)
@@ -6459,7 +6459,7 @@ int BATTLE_S_MpDamage(int battleindex, int attackindex, int defindex,
 void BATTLE_S_ToothCrushe(int battleindex, int attackindex, int defindex,
                           int damage, int skill) {
 
-  // char *strCrushTbl[] = { "���", "����", "�ٻ�" , "����ʹ��" , "��Ƭ" };
+  // char *strCrushTbl[] = { "完好", "受损", "毁坏" , "不堪使用" , "碎片" };
   if (CHAR_getInt(defindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER
 #ifdef _TAKE_ITEMDAMAGE_FOR_PET
       && CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEPET
@@ -6496,18 +6496,18 @@ void BATTLE_S_ToothCrushe(int battleindex, int attackindex, int defindex,
 
     if (crushenum <= 0) {
       char buf2[256];
-      sprintf(buf2, "%s������𻵶���ʧ��\n",
+      sprintf(buf2, "%s因过度损坏而消失。\n",
               ITEM_getChar(item_index, ITEM_NAME));
       CHAR_talkToCli(defindex, -1, buf2, CHAR_COLORYELLOW);
 
       LogItem(CHAR_getChar(defindex, CHAR_NAME),
               CHAR_getChar(defindex, CHAR_CDKEY),
-#ifdef _add_item_log_name // WON ADD ��item��log������item����
+#ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
               item_index,
 #else
                ITEM_getInt(item_index, ITEM_ID),
 #endif
-              "������𻵶���ʧ",
+              "因过度损坏而消失",
               CHAR_getInt(defindex, CHAR_FLOOR), CHAR_getInt(defindex, CHAR_X),
               CHAR_getInt(defindex, CHAR_Y),
               ITEM_getChar(item_index, ITEM_UNIQUECODE),
@@ -6519,10 +6519,10 @@ void BATTLE_S_ToothCrushe(int battleindex, int attackindex, int defindex,
 
     } else {
       char buf2[256];
-      sprintf(buf2, "%s��%s�ġ�", ITEM_getChar(item_index, ITEM_NAME),
+      sprintf(buf2, "%s是%s的。", ITEM_getChar(item_index, ITEM_NAME),
               aszCrushTbl[level]);
       CHAR_talkToCli(defindex, -1, buf2, CHAR_COLORYELLOW);
-      // ���ĵ���˵��
+      // 更改道具说明
       //			buf1 = ITEM_getChar( item_index,
       // ITEM_SECRETNAME); 			if( strstr( buf1, "(") != 0 )
       // { 				char buf5[256];
@@ -6599,7 +6599,7 @@ int BATTLE_S_PetSkillProperty(int battleindex, int attackNo, int skill_type,
   if (pszP == "\0")
     return iRet;
 
-  attackindex = BATTLE_No2Index(battleindex, attackNo); // ����index
+  attackindex = BATTLE_No2Index(battleindex, attackNo); // 攻方index
   if (!CHAR_CHECKINDEX(attackindex))
     return iRet;
   switch (skill_type) {
@@ -6609,7 +6609,7 @@ int BATTLE_S_PetSkillProperty(int battleindex, int attackNo, int skill_type,
     if (ch == NULL)
       return iRet;
     strcpysafe(ch->charfunctable[CHAR_BATTLEPROPERTY].string,
-               sizeof(ch->charfunctable[CHAR_BATTLEPROPERTY]), pszP); // ս��
+               sizeof(ch->charfunctable[CHAR_BATTLEPROPERTY]), pszP); // 战斗
     CHAR_constructFunctable(attackindex);
     iRet = TRUE;
   } break;
@@ -6635,9 +6635,9 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
     return iRet;
 
   react = 0;
-  attackindex = BATTLE_No2Index(battleindex, attackNo);    // ����index
-  defindex = BATTLE_No2Index(battleindex, defNo);          // �ط�index
-  if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // �й⾵��
+  attackindex = BATTLE_No2Index(battleindex, attackNo);    // 攻方index
+  defindex = BATTLE_No2Index(battleindex, defNo);          // 守方index
+  if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // 有光镜守
     react = ReactType;
 #ifdef _BATTLE_LIGHTTAKE
     if (skill_type == BATTLE_COM_S_LIGHTTAKE) {
@@ -6666,7 +6666,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
     DefSide = 1;
   }
 
-  // ȡ�ù�����״̬
+  // 取得攻击後状态
   iWork =
       BATTLE_AttackSeq(attackindex, defindex, &damage, &Guardian, skill_type);
 
@@ -6710,7 +6710,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
   if (react == BATTLE_MD_REFLEC)
     defindex = attackindex;
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (react == BATTLE_MD_TRAP)
     defindex = attackindex;
 #endif
@@ -6729,7 +6729,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
   if (CHAR_getInt(defindex, CHAR_HP) <= 0)
     iRet = BATTLE_DefDieType(defindex, iRet, &ultimate, &flg, szBuffer);
 #ifdef _PETSKILL_ANTINTER
-  // ǿ�ƽ������ĳ���
+  // 强制将死掉的宠打飞
   if (CHAR_getWorkInt(attackindex, CHAR_WORKBATTLECOM1) ==
           BATTLE_COM_S_ANTINTER &&
       CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
@@ -6738,7 +6738,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
     flg |= BCF_DEATH;
     flg |= BCF_ULTIMATE_2;
     CHAR_setWorkInt(defindex, CHAR_WORKULTIMATE, 0);
-    damage = 1; // ���������ж��� damage<=0 �� skill_type=-1 ��������damage��Ϊ1
+    damage = 1; // 因後面有判断若 damage<=0 则 skill_type=-1 所以这里damage设为1
   }
 #endif
 
@@ -6753,7 +6753,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
   }
 
   if (damage <= 0) {
-#ifdef _SONIC_ATTACK // WON ADD ��������
+#ifdef _SONIC_ATTACK // WON ADD 音波攻击
     if (skill_type != BATTLE_COM_S_SONIC && skill_type != BATTLE_COM_S_SONIC2
 #ifdef _PETSKILL_REGRET
         && skill_type != BATTLE_COM_S_REGRET &&
@@ -6811,7 +6811,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
 #endif
 
 #ifdef _SKILL_TOOTH
-  case BATTLE_COM_S_TOOTHCRUSHE: // �ܳ��� tooth
+  case BATTLE_COM_S_TOOTHCRUSHE: // 囓齿术 tooth
     flg |= BCF_TOOTH;
     BATTLE_S_ToothCrushe(battleindex, attackindex, defindex, damage, skill);
     snprintf(szCommand, sizeof(szCommand), "BH|a%X|r%X|f%X|d%X|p%X|FF|",
@@ -6843,7 +6843,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
     snprintf(szCommand, sizeof(szCommand), "BH|a%X|r%X|f%X|d%X|p%X|FF|",
              attackNo, defNo, flg, damage, petdamage);
     BATTLESTR_ADD(szCommand);
-    if (timid < 15 && damage > 1) { // ��ս
+    if (timid < 15 && damage > 1) { // 怯战
       BATTLE_NoAction(battleindex, defNo);
       sprintf(szCommand, "BE|e%X|", defNo);
       BATTLESTR_ADD(szCommand);
@@ -6865,7 +6865,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
 
       } else {
         BATTLE_Exit(defindex, battleindex);
-        CHAR_DischargePartyNoMsg(defindex); // ��ɢ�Ŷ�
+        CHAR_DischargePartyNoMsg(defindex); // 解散团队
       }
     }
   } break;
@@ -6875,7 +6875,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
     int timid = 0;
     char *timidc = NULL;
     pszP = PETSKILL_getChar(skill, PETSKILL_OPTION);
-    if ((timidc = strstr(pszP, "��%")) != NULL)
+    if ((timidc = strstr(pszP, "命%")) != NULL)
       sscanf(timidc + 3, "%d", &timid);
     snprintf(szCommand, sizeof(szCommand), "BH|a%X|r%X|f%X|d%X|p%X|FF|",
              attackNo, defNo, flg, damage, petdamage);
@@ -6916,9 +6916,9 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
     BATTLESTR_ADD(szCommand);
     if (CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
       int defkoyaindex = CHAR_getWorkInt(defindex, CHAR_WORKPLAYERINDEX);
-      BATTLE_PetDefaultExit(defkoyaindex, battleindex); // �����뿪ս��
+      BATTLE_PetDefaultExit(defkoyaindex, battleindex); // 宠物离开战场
       CHAR_setInt(defkoyaindex, CHAR_DEFAULTPET,
-                  -1); // �趨�޲�ս����
+                  -1); //设定无参战宠物
     }
   } break;
 #endif
@@ -6949,8 +6949,8 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
   } break;
 #endif
 
-#ifdef _SONIC_ATTACK // WON ADD ��������
-  // �����˺�
+#ifdef _SONIC_ATTACK // WON ADD 音波攻击
+  // 宠物伤害
   case BATTLE_COM_S_SONIC: {
     int img2 = 0;
     if (defNo >= 10)
@@ -6958,7 +6958,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
     else
       img2 = 101704;
 
-    flg |= BCF_B_SKILLACT; // ��������ͼ
+    flg |= BCF_B_SKILLACT; // 击中後秀图
 
     snprintf(szCommand, sizeof(szCommand), "B+|a%X|r%X|f%X|d%X|e%X|s%X|h%X|FF|",
              attackNo, defNo, flg, damage, 0, 0, img2);
@@ -6966,7 +6966,7 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
 
     break;
   }
-  // �����˺�
+  // 人物伤害
   case BATTLE_COM_S_SONIC2: {
     sprintf(szCommand, "BD|r%X|0|0|d%X|p%X|", defNo, damage, petdamage);
     BATTLESTR_ADD(szCommand);
@@ -6975,18 +6975,18 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
   }
 #endif
 #ifdef _PETSKILL_REGRET
-  // �����˺�
+  // 宠物伤害
   case BATTLE_COM_S_REGRET: {
     int img2 = 0, Success = 0;
     char *psz = NULL;
-    if ((psz = strstr(pszP, "��%")) != NULL)
+    if ((psz = strstr(pszP, "命%")) != NULL)
       sscanf(psz + 3, "%d", &Success);
     if ((PROFESSION_BATTLE_StatusAttackCheck(attackindex, defindex, 12,
                                              Success) == 0) ||
         (CHAR_getInt(defindex, CHAR_HP) <= 0)) {
 
     } else {
-      CHAR_setWorkInt(defindex, StatusTbl[12], 2); // ��ѣ1�غ�
+      CHAR_setWorkInt(defindex, StatusTbl[12], 2); // 晕眩1回合
       CHAR_setWorkInt(defindex, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
       BATTLE_BadStatusString(defNo, 12);
     }
@@ -6996,24 +6996,24 @@ int BATTLE_S_AttackDamage(int battleindex, int attackNo, int defNo,
     else
       img2 = 101418; // 101704;
 
-    flg |= BCF_B_SKILLACT; // ��������ͼ
+    flg |= BCF_B_SKILLACT; // 击中後秀图
     snprintf(szCommand, sizeof(szCommand), "B+|a%X|r%X|f%X|d%X|e%X|s%X|h%X|FF|",
              attackNo, defNo, flg, damage, 0, 0, img2);
     BATTLESTR_ADD(szCommand);
     break;
   }
-  // �����˺�
+  // 人物伤害
   case BATTLE_COM_S_REGRET2: {
     int Success;
     char *psz = NULL;
-    if ((psz = strstr(pszP, "��%")) != NULL)
+    if ((psz = strstr(pszP, "命%")) != NULL)
       sscanf(psz + 3, "%d", &Success);
     if ((PROFESSION_BATTLE_StatusAttackCheck(attackindex, defindex, 12,
                                              Success) == 0) ||
         (CHAR_getInt(defindex, CHAR_HP) <= 0)) {
 
     } else {
-      CHAR_setWorkInt(defindex, StatusTbl[12], 2); // ��ѣ1�غ�
+      CHAR_setWorkInt(defindex, StatusTbl[12], 2); // 晕眩1回合
       CHAR_setWorkInt(defindex, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
       BATTLE_BadStatusString(defNo, 12);
     }
@@ -7047,7 +7047,7 @@ int PETSKILL_MagicStatusChange_Battle(int battleindex, int attackNo, int toNo,
   int status = -1, i, turn = 3, nums = 0;
   int ReceveEffect, char_index = -1;
   char buf1[256];
-  char_index = BATTLE_No2Index(battleindex, attackNo); // ����index
+  char_index = BATTLE_No2Index(battleindex, attackNo); //攻方index
   if (!CHAR_CHECKINDEX(char_index))
     return FALSE;
   magicarg = PETSKILL_getChar(marray, PETSKILL_OPTION);
@@ -7073,13 +7073,13 @@ int PETSKILL_MagicStatusChange_Battle(int battleindex, int attackNo, int toNo,
   if (getStringFromIndexWithDelim(magicarg, "|", 4, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
-  if (strstr(buf1, "��") != 0) {
+  if (strstr(buf1, "单") != 0) {
     if (toNo >= 20)
       return FALSE;
   }
   battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
   // attackNo = BATTLE_Index2No( battleindex, char_index );
-  /*  //����ͼ�ž���
+  /*  //动画图号决定
           if( status == BATTLE_ST_NONE ){
                   ReceveEffect = SPR_tyusya;
           }else{
@@ -7102,7 +7102,7 @@ int PETSKILL_SetDuckChange_Battle(int battleindex, int attackNo, int toNo,
   int char_index = -1;
   char buf1[256];
 
-  char_index = BATTLE_No2Index(battleindex, attackNo); // ����index
+  char_index = BATTLE_No2Index(battleindex, attackNo); //攻方index
   if (!CHAR_CHECKINDEX(char_index))
     return FALSE;
   if (BATTLE_No2Index(battleindex, toNo) != char_index)
@@ -7150,7 +7150,7 @@ int PETSKILL_SetMagicPet_Battle(int battleindex, int attackNo, int toNo,
   int turn = 3, nums = 0;
   int char_index = -1;
   char buf1[256];
-  char_index = BATTLE_No2Index(battleindex, attackNo); // ����index
+  char_index = BATTLE_No2Index(battleindex, attackNo); //攻方index
   if (!CHAR_CHECKINDEX(char_index))
     return FALSE;
 
@@ -7225,7 +7225,7 @@ int PETSKILL_SetStrength_Battle(int battleindex, int attackNo, int toNo,
 
   if (BATTLE_CHECKINDEX(battleindex) == FALSE)
     return FALSE;
-  char_index = BATTLE_No2Index(battleindex, attackNo); // ����index
+  char_index = BATTLE_No2Index(battleindex, attackNo); //攻方index
   if (!CHAR_CHECKINDEX(char_index))
     return FALSE;
 
@@ -7259,7 +7259,7 @@ int OFFLINE_MultiRessurect(int battleindex, int attackNo, int toNo, int HP,
 
   if (BATTLE_CHECKINDEX(battleindex) == FALSE)
     return FALSE;
-  char_index = BATTLE_No2Index(battleindex, attackNo); // ����index
+  char_index = BATTLE_No2Index(battleindex, attackNo); //攻方index
   if (!CHAR_CHECKINDEX(char_index))
     return FALSE;
 
@@ -7277,7 +7277,7 @@ int OFFLINE_MultiRessurect(int battleindex, int attackNo, int toNo, int HP,
 }
 #endif
 
-#ifdef _SKILL_WEAKEN // vincent�輼:����
+#ifdef _SKILL_WEAKEN // vincent宠技:虚弱
 int BATTLE_S_Weaken(int battleindex, int attackNo, int defNo, int marray) {
   BOOL iRet = FALSE;
   char *magicarg;
@@ -7285,7 +7285,7 @@ int BATTLE_S_Weaken(int battleindex, int attackNo, int defNo, int marray) {
   int ReceveEffect, Success = 0;
   char *pszP;
   char szTurn[] = "turn";
-  char szSuccess[] = "��";
+  char szSuccess[] = "成";
   magicarg = PETSKILL_getChar(marray, PETSKILL_OPTION);
   if (magicarg == "\0") {
     print("\n magicarg == NULL ");
@@ -7350,9 +7350,9 @@ BOOL BATTLE_S_Temptation(int battleindex, int attackNo, int defNo, int skill) {
   if (CHAR_getInt(defindex, CHAR_WHICHTYPE) != CHAR_TYPEPET)
     return iRet;
   if (CHAR_getWorkInt(defindex, CHAR_WORKFIXAI) <= atoi(magicarg)) {
-    // ���ܹ���
+    // 技能攻击
     CHAR_setWorkInt(defindex, CHAR_WORKTEMPTATION,
-                    1); // ����������Լ���1��Ѫ������
+                    1); //用来解除打自己方1滴血的限制
     defside = CHAR_getWorkInt(defindex, CHAR_WORKBATTLESIDE);
     target = CHAR_getWorkInt(defindex, CHAR_WORKBATTLECOM2);
 
@@ -7363,10 +7363,10 @@ BOOL BATTLE_S_Temptation(int battleindex, int attackNo, int defNo, int skill) {
       CHAR_setWorkInt(defindex, CHAR_WORKBATTLECOM2,
                       BATTLE_DefaultAttacker(battleindex, defside));
     }
-    img1 = 101505; // ���鶯��101637; //׼���ڶ���
-    img2 = 101502; // ���鶯��101645; //�����ᶯ��
+    img1 = 101505; // 珠珠动画101637; //准备期动画
+    img2 = 101502; // 珠珠动画101645; //击中後动画
     flg |= BCF_NO_DAMAGE;
-    flg |= BCF_B_SKILLACT; // ��������ͼ
+    flg |= BCF_B_SKILLACT; // 击中後秀图
     snprintf(szWork, sizeof(szWork), "B+|a%X|r%X|f%X|d%X|p%X|e%X|s%X|h%X|FF|",
              attackNo, defNo, flg, 0, 0, 1, img1, img2);
     BATTLESTR_ADD(szWork);
@@ -7376,7 +7376,7 @@ BOOL BATTLE_S_Temptation(int battleindex, int attackNo, int defNo, int skill) {
 }
 #endif
 
-#ifdef _SKILL_DEEPPOISON // vincent�輼:�綾
+#ifdef _SKILL_DEEPPOISON // vincent宠技:剧毒
 int BATTLE_S_Deeppoison(int battleindex, int attackNo, int defNo, int marray) {
   BOOL iRet = FALSE;
   char *magicarg;
@@ -7384,7 +7384,7 @@ int BATTLE_S_Deeppoison(int battleindex, int attackNo, int defNo, int marray) {
   int ReceveEffect, Success = 0;
   char *pszP;
   char szTurn[] = "turn";
-  char szSuccess[] = "��";
+  char szSuccess[] = "成";
   magicarg = PETSKILL_getChar(marray, PETSKILL_OPTION);
   if (magicarg == "\0") {
     print("\n magicarg == NULL ");
@@ -7428,7 +7428,7 @@ int BATTLE_S_Deeppoison(int battleindex, int attackNo, int defNo, int marray) {
 }
 #endif
 
-#ifdef _SKILL_BARRIER // vincent�輼:ħ��
+#ifdef _SKILL_BARRIER // vincent宠技:魔障
 int BATTLE_S_Barrier(int battleindex, int attackNo, int defNo, int marray) {
   BOOL iRet = FALSE;
   int battlemode;
@@ -7437,9 +7437,9 @@ int BATTLE_S_Barrier(int battleindex, int attackNo, int defNo, int marray) {
   char *magicarg;
   int Success = 0;
   char szTurn[] = "turn";
-  char szSuccess[] = "��";
+  char szSuccess[] = "成";
   char *pszP;
-  char_index = BATTLE_No2Index(battleindex, attackNo); // ����index
+  char_index = BATTLE_No2Index(battleindex, attackNo); //攻方index
   // check index
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return FALSE;
@@ -7458,12 +7458,12 @@ int BATTLE_S_Barrier(int battleindex, int attackNo, int defNo, int marray) {
 
   pszP = magicarg;
 
-  // ��ȡ���ûغ���
+  // 读取作用回合数
   if ((pszP = strstr(pszP, szTurn)) != NULL) {
     pszP += sizeof(szTurn);
     sscanf(pszP, "%d", &turn);
   }
-  // ������
+  // 命中率
   if ((pszP = strstr(pszP, szSuccess)) != NULL) {
     pszP += sizeof(szSuccess);
     sscanf(pszP, "%d", &Success);
@@ -7471,11 +7471,11 @@ int BATTLE_S_Barrier(int battleindex, int attackNo, int defNo, int marray) {
 
   BATTLE_MultiList(battleindex, defNo, ToList);
 
-  // ʩħ������Ч��
+  // 施魔法动画效果
   BATTLE_MagicEffect(battleindex, attackNo, ToList, MAGIC_EFFECT_USER,
                      SPR_hoshi);
 
-  // check�Ƿ�ս����
+  // check是否战斗中
   if (IsBATTLING(char_index) == TRUE) {
 
     for (i = 0; ToList[i] != -1; i++) {
@@ -7490,7 +7490,7 @@ int BATTLE_S_Barrier(int battleindex, int attackNo, int defNo, int marray) {
 }
 #endif
 
-#ifdef _SKILL_NOCAST // vincent�輼:��Ĭ
+#ifdef _SKILL_NOCAST // vincent宠技:沉默
 int BATTLE_S_Nocast(int battleindex, int attackNo, int defNo, int marray) {
   BOOL iRet = FALSE;
   int battlemode;
@@ -7499,9 +7499,9 @@ int BATTLE_S_Nocast(int battleindex, int attackNo, int defNo, int marray) {
   char *magicarg;
   int Success = 0;
   char szTurn[] = "turn";
-  char szSuccess[] = "��";
+  char szSuccess[] = "成";
   char *pszP;
-  char_index = BATTLE_No2Index(battleindex, attackNo); // ����index
+  char_index = BATTLE_No2Index(battleindex, attackNo); //攻方index
   // check index
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return FALSE;
@@ -7561,7 +7561,7 @@ int BATTLE_getReactFlg(int index, int react) {
     flg |= BCF_SUPERWALL;
   }
 #endif
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (react == BATTLE_MD_TRAP)
     flg |= BCF_TRAP;
 #endif
@@ -7585,12 +7585,12 @@ int BATTLE_CheckSameSide(int char_index, int toNo) {
   MySide = CHAR_getWorkInt(char_index, CHAR_WORKBATTLESIDE);
 
   // toindex = BATTLE_No2Index( battleindex, ToList[i] );
-  if (toNo < 20) { // ��һĿ��
+  if (toNo < 20) { // 单一目标
     toindex = BATTLE_No2Index(battleindex, toNo);
     if (!CHAR_CHECKINDEX(toindex))
       return 0;
     if (CHAR_getWorkInt(toindex, CHAR_WORKBATTLESIDE) == MySide)
-      return 1; // ͬ��
+      return 1; //同边
   } else if (toNo) {
 
     BATTLE_MultiList(battleindex, toNo, ToList);
@@ -7600,7 +7600,7 @@ int BATTLE_CheckSameSide(int char_index, int toNo) {
         continue;
 
       if (CHAR_getWorkInt(toindex, CHAR_WORKBATTLESIDE) == MySide)
-        return 1; // ͬ��
+        return 1; //同边
     }
   }
   return 0;
@@ -7636,7 +7636,7 @@ int CHAR_BattleStayLoop(int char_index) {
     if (ch == NULL)
       return 0;
     strcpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
-               sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]), ""); // ս��
+               sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]), ""); // 战斗
     CHAR_setInt(char_index, CHAR_LOOPINTERVAL, 0);
     CHAR_constructFunctable(char_index);
   }
@@ -7656,7 +7656,7 @@ int PET_PetskillPropertyEvent(int Myindex, int defindex, int *damage,
     return 0;
   BATTLE_GetAttr(defindex, My_Pow);
 
-  // ��������ת������
+  // 被攻击方转变属性
   for (i = 0; i < 4; i++) {
     int nums = (i + 3) % 4;
     if (My_Pow[i] != 0) {
@@ -7671,9 +7671,9 @@ int PET_PetskillPropertyEvent(int Myindex, int defindex, int *damage,
 }
 #endif
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
 
-// ֱ�ӹ�����ʽ
+// 直接攻击函式
 int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
                                  int char_index) {
   char szBuffer[512] = "";
@@ -7690,47 +7690,47 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
   skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
   skill_type = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
 
-  // ����index
+  // 攻方index
   attackindex = BATTLE_No2Index(battleindex, attackNo);
   if (CHAR_CHECKINDEX(attackindex) == FALSE)
     return iRet;
 
-  // �ط�index
+  // 守方index
   defindex = BATTLE_No2Index(battleindex, defNo);
   if (CHAR_CHECKINDEX(defindex) == FALSE) {
     return iRet;
   }
 
-  // �����Ӷ�
+  // 屍体掠夺
   if ((CHAR_getInt(defindex, CHAR_HP) <= 0) &&
       (skill_type != BATTLE_COM_S_PLUNDER)) {
     return iRet;
   }
 
-  // ��ս��ʹ�ü���
+  // 非战斗使用技能
   if (!PROFESSION_SKILL_getInt(skill, PROFESSION_SKILL_USE_FLAG))
     return iRet;
 
-  // ȡ�ü��ܲ���
+  // 取得技能参数
   pszOption = PROFESSION_SKILL_getChar(skill, PROFESSION_SKILL_OPTION);
   if (pszOption == "\0")
     return iRet;
 
-  // ���ܵȼ�
+  // 技能等级
   skill_level = CHAR_GETWORKINT_HIGH(char_index, CHAR_WORKBATTLECOM3);
   skill_level = PROFESSION_CHANGE_SKILL_LEVEL_A(skill_level);
 
-  // ������ʽ 0ԭ���㶯�� 1�����ƶ��㶯��
+  // 动画方式 0原地秀动画 1人物移动秀动画
   if ((pszP = strstr(pszOption, "Ч%")) != NULL)
     sscanf(pszP + 3, "%d", &effect);
 
-  // ׼���ڵĶ���
+  // 准备期的动画
   img1 = PROFESSION_SKILL_getInt(skill, PROFESSION_SKILL_IMG_1);
 
-  // ������Ķ���
+  // 击中後的动画
   img2 = PROFESSION_SKILL_getInt(skill, PROFESSION_SKILL_IMG_2);
 
-  // Ŀ�����һ�ܣ�������
+  // 目标地球一周，不动作
   if (defNo >= 0 && defNo <= 19) {
     if (CHAR_getWorkInt(defindex, CHAR_WORKBATTLECOM1) ==
         BATTLE_COM_S_EARTHROUND0) {
@@ -7738,13 +7738,13 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
     }
   }
 
-  // ȡ�������ܲ���
+  // 取出各技能参数
   switch (skill_type) {
-  case BATTLE_COM_S_BRUST: // ����
+  case BATTLE_COM_S_BRUST: // 爆击
   {
     int str = 0, old_str = 0;
 
-    // ���ӹ�����
+    // 增加攻击力
     old_str = CHAR_getWorkInt(char_index, CHAR_WORKFIXSTR);
     str = old_str * (skill_level * 3 + 100) / 100;
 
@@ -7752,10 +7752,10 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
 
     break;
   }
-  case BATTLE_COM_S_CHAOS: // ���ҹ���
+  case BATTLE_COM_S_CHAOS: // 混乱攻击
   {
     int atk = 0;
-    // ��30%������
+    // 减30%攻击力
     atk = CHAR_getWorkInt(char_index, CHAR_WORKATTACKPOWER);
     atk = atk * 70 / 100;
     CHAR_setWorkInt(char_index, CHAR_WORKATTACKPOWER, atk);
@@ -7769,7 +7769,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
 
     break;
   }
-  case BATTLE_COM_S_CHAIN_ATK: // ��������
+  case BATTLE_COM_S_CHAIN_ATK: // 连环攻击
   {
     int rand_num = RAND(1, 100);
     int hit;
@@ -7779,45 +7779,45 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
     hit = skill_level * 5 + 15;
 
     if (rand_num <= hit)
-      atk_num = 2; // ��������
+      atk_num = 2; // 攻击二次
     else
       atk_num = 0;
 
     break;
   }
-  case BATTLE_COM_S_ENRAGE_PET: // ��ŭ����
+  case BATTLE_COM_S_ENRAGE_PET: // 激怒宠物
   {
 #ifdef _PREVENT_TEAMATTACK
-    // �ж��Ƿ�ͬ��
+    // 判断是否同队
     if (BATTLE_CheckSameSide(char_index, defNo) != 1)
       return iRet;
 
     defNo = attackNo;
 
-    // ������ 1
+    // 攻击力 1
     CHAR_setWorkInt(char_index, CHAR_WORKATTACKPOWER, 0);
 #endif
     break;
   }
-  case BATTLE_COM_S_CHAIN_ATK_2: // ˫�ع���
+  case BATTLE_COM_S_CHAIN_ATK_2: // 双重攻击
   {
     int atkpower = 0;
-    int absrob_num = CHAR_getWorkInt(defindex, CHAR_WORKDAMAGEABSROB); // ��
+    int absrob_num = CHAR_getWorkInt(defindex, CHAR_WORKDAMAGEABSROB); // 光
     // int reflec_num  = CHAR_getWorkInt( defindex, CHAR_WORKDAMAGEREFLEC );
-    // // ��
-    int evanish_num = CHAR_getWorkInt(defindex, CHAR_WORKDAMAGEVANISH); // ��
-    int trap_num = CHAR_getWorkInt(defindex, CHAR_WORKTRAP); // ����
+    // 历史注释的原始编码已损坏，无法可靠恢复。
+    int evanish_num = CHAR_getWorkInt(defindex, CHAR_WORKDAMAGEVANISH); // 守
+    int trap_num = CHAR_getWorkInt(defindex, CHAR_WORKTRAP); // 陷阱
 
     if (absrob_num > 0)
       CHAR_setWorkInt(defindex, CHAR_WORKDAMAGEABSROB, max(absrob_num - 1, 0));
     // if( reflec_num > 0 )	CHAR_setWorkInt( defindex,
-    // CHAR_WORKDAMAGEREFLEC, max(reflec_num - 1, 0)  );//�þ���Ч,����Ҫ�õ�
+    // 历史注释的原始编码已损坏，无法可靠恢复。
     if (evanish_num > 0)
       CHAR_setWorkInt(defindex, CHAR_WORKDAMAGEVANISH, max(evanish_num - 1, 0));
     if (trap_num > 0)
       CHAR_setWorkInt(defindex, CHAR_WORKTRAP, 0);
 
-    // ��һ�¹����� 0
+    // 第一下攻击力 0
     CHAR_setWorkInt(char_index, CHAR_WORKATTACKPOWER, 0);
 
     snprintf(szCommand, sizeof(szCommand),
@@ -7825,7 +7825,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
              BCF_NO_DAMAGE, 0, 0, effect, img1, img2);
     BATTLESTR_ADD(szCommand);
 
-    // ���ӹ�����
+    // 增加攻击力
     atkpower = (int)(CHAR_getWorkInt(char_index, CHAR_WORKFIXSTR) *
                      (skill_level * 2 + 100) / 100);
 
@@ -7841,7 +7841,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
 
     return iRet;
   }
-  case BATTLE_COM_S_DEAD_ATTACK: // ��������
+  case BATTLE_COM_S_DEAD_ATTACK: // 濒死攻击
   {
     int hit = 0, hp = 0, old_hp = 0, rate = 0;
 
@@ -7850,7 +7850,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
     hp = old_hp * rate / 100;
 
     if (old_hp <= 10) {
-      CHAR_talkToCli(char_index, -1, "HP���㣬�޷�ʹ�ü���",
+      CHAR_talkToCli(char_index, -1, "HP不足，无法使用技能",
                      CHAR_COLORYELLOW);
       return iRet;
     }
@@ -7861,7 +7861,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
                     CHAR_getWorkInt(char_index, CHAR_WORKHITRIGHT) + hit);
     CHAR_setWorkInt(char_index, CHAR_MYSKILLHIT, 1);
     CHAR_setWorkInt(char_index, CHAR_MYSKILLHIT_NUM, hit);
-    CHAR_talkToCli(char_index, -1, "����������", CHAR_COLORYELLOW);
+    CHAR_talkToCli(char_index, -1, "命中率上升", CHAR_COLORYELLOW);
 
     sprintf(szCommand, "BD|r%X|0|1|%X|", attackNo, (-1) * (old_hp - hp));
     BATTLESTR_ADD(szCommand);
@@ -7869,14 +7869,14 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
     CHAR_setInt(char_index, CHAR_HP, hp);
     break;
   }
-  case BATTLE_COM_S_ATTACK_WEAK: // ���㹥��
+  case BATTLE_COM_S_ATTACK_WEAK: // 弱点攻击
   {
     float str = 0.0, dex = 0.0;
     int whichtype;
 
     whichtype = CHAR_getInt(defindex, CHAR_WHICHTYPE);
 
-    // Ŀ��Ϊ����ʱ����
+    // 目标为宠物时升攻
     if ((whichtype == CHAR_TYPEPET) || (whichtype == CHAR_TYPEENEMY)) {
       str = skill_level * 2 + 10 + 100;
       CHAR_setWorkInt(char_index, CHAR_WORKATTACKPOWER,
@@ -7884,7 +7884,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
                           (str / 100));
     }
 
-    // ����
+    // 降敏
     dex = 100 - (skill_level + 10);
     CHAR_setWorkInt(char_index, CHAR_WORKQUICK,
                     CHAR_getWorkInt(char_index, CHAR_WORKFIXDEX) * (dex / 100));
@@ -7893,14 +7893,14 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
 
     break;
   }
-  case BATTLE_COM_S_PLUNDER: // �����Ӷ�
+  case BATTLE_COM_S_PLUNDER: // 屍体掠夺
   {
     char pBidList[BATTLE_ENTRY_MAX * 2 + 1];
     int item, start = 0;
     memset(pBidList, -1, sizeof(pBidList));
     pBidList[0] = defNo;
 
-    // �Ӷ��Ŀ��
+    // 掠夺的目标
     defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
     defindex = BATTLE_No2Index(battleindex, defNo);
     if (CHAR_getInt(defindex, CHAR_WHICHTYPE) != CHAR_TYPEENEMY)
@@ -7935,7 +7935,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
 
           item_name = ITEM_getChar(item_index, ITEM_NAME);
 
-          sprintf(msg, "�õ�%s", item_name);
+          sprintf(msg, "得到%s", item_name);
           CHAR_talkToCli(char_index, -1, msg, CHAR_COLORYELLOW);
 
           CHAR_setItemIndex(enemy_index, item, -1);
@@ -7956,7 +7956,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
   }
 
   react = 0;
-  if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // �й⾵��
+  if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // 有光镜守
     react = ReactType;
     if (skill_type != BATTLE_COM_S_CHAIN_ATK) {
       react = 0;
@@ -7969,15 +7969,15 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
     DefSide = 1;
   }
 
-  // ȡ�ù�����״̬
+  // 取得攻击後状态
   iWork =
       BATTLE_AttackSeq(attackindex, defindex, &damage, &Guardian, skill_type);
-  if (skill_type == BATTLE_COM_S_ENRAGE_PET) { // �ü�ŭ���＼�ܲ�Ҫ��Ĵ�������
+  if (skill_type == BATTLE_COM_S_ENRAGE_PET) { // 让激怒宠物技能不要真的打死宠物
     if (CHAR_getInt(defindex, CHAR_HP) <= damage) {
       damage = 0;
     }
   }
-  if (skill_type == BATTLE_COM_S_CAVALRY) // ���﹥��
+  if (skill_type == BATTLE_COM_S_CAVALRY) // 座骑攻击
     ultimate = BATTLE_PROFESSION_ATK_PET_DamageSub(
         attackindex, defindex, &damage, &petdamage, &react, skill_level);
   else
@@ -8000,13 +8000,13 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
   iRet = BATTLE_DefineAttack(attackindex, defindex, iWork, szBuffer, damage,
                              react, &flg);
 
-  // �� NORMAL �� CRITICAL �� flg �ĳ� ְҵ��flg
+  // 将 NORMAL 及 CRITICAL 的 flg 改成 职业的flg
   if (img2 != 0) {
     if (flg == BCF_NORMAL || flg == BCF_KAISHIN) {
-      if ((pszP = strstr(pszOption, "ǰ")) != NULL)
-        flg |= BCF_F_SKILLACT; // ����ǰ��ͼ
+      if ((pszP = strstr(pszOption, "前")) != NULL)
+        flg |= BCF_F_SKILLACT; // 击中前秀图
       else
-        flg |= BCF_B_SKILLACT; // ��������
+        flg |= BCF_B_SKILLACT; // 击中後秀
     }
   }
 
@@ -8021,10 +8021,10 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
 
   memset(szCommand, 0, sizeof(szCommand));
   switch (skill_type) {
-  case BATTLE_COM_S_BRUST:       // ����
-  case BATTLE_COM_S_DEAD_ATTACK: // ��������
-  case BATTLE_COM_S_ATTACK_WEAK: // ���㹥��
-  case BATTLE_COM_S_CAVALRY:     // ���﹥��
+  case BATTLE_COM_S_BRUST:       // 爆击
+  case BATTLE_COM_S_DEAD_ATTACK: // 濒死攻击
+  case BATTLE_COM_S_ATTACK_WEAK: // 弱点攻击
+  case BATTLE_COM_S_CAVALRY:     // 座骑攻击
   {
     snprintf(szCommand, sizeof(szCommand),
              "B+|a%X|r%X|f%X|d%X|p%X|e%X|s%X|h%X|FF|", attackNo, defNo, flg,
@@ -8032,20 +8032,20 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
     BATTLESTR_ADD(szCommand);
     break;
   }
-  case BATTLE_COM_S_ENRAGE_PET: // ��ŭ����
+  case BATTLE_COM_S_ENRAGE_PET: // 激怒宠物
   {
     int str = 0;
     int turn = 0;
     int pindex = -1;
 
     flg |= BCF_NO_DAMAGE;
-    flg |= BCF_B_SKILLACT; // ��������ͼ
+    flg |= BCF_B_SKILLACT; // 击中後秀图
 
     defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
 
     pindex = BATTLE_No2Index(battleindex, defNo);
 
-    // ����Ƿ�Ϊ����
+    // 检查是否为宠物
     if (CHAR_getInt(pindex, CHAR_WHICHTYPE) != CHAR_TYPEPET)
       break;
 
@@ -8059,7 +8059,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
        "BH|a%X|r%X|0|d%X|FF|", attackNo, defNo, damage); BATTLESTR_ADD(
        szCommand );
     */
-    // �ӹ�
+    // 加攻
     str = skill_level * 2 + 10;
     sprintf(szCommand, "BD|r%X|0|4|%X|", defNo, str);
     BATTLESTR_ADD(szCommand);
@@ -8076,7 +8076,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
 
     break;
   }
-  case BATTLE_COM_S_CHAOS: // ���ҹ���
+  case BATTLE_COM_S_CHAOS: // 混乱攻击
   {
     int i = 0, j = 0, k = 0, f_num = 0;
     int temp[10], chose_temp[10];
@@ -8095,12 +8095,12 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
     else
       f_num = 0;
 
-    // ��30%������
+    // 减30%攻击力
     CHAR_setWorkInt(char_index, CHAR_WORKATTACKPOWER,
                     CHAR_getWorkInt(char_index, CHAR_WORKATTACKPOWER) * 70 /
                         100);
 
-    // ����client��������Ч��
+    // 传给client减攻击力效果
     sprintf(szCommand, "BD|r%X|0|4|%X|", attackNo, -30);
     BATTLESTR_ADD(szCommand);
 
@@ -8109,7 +8109,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
              damage, petdamage, effect, img1, img2);
     BATTLESTR_ADD(szCommand);
 
-    // ȡ��ս���ϴ�����
+    // 取出战场上存活的人
     for (i = f_num; i < f_num + 10; i++) {
       if (BATTLE_TargetCheck(battleindex, i) != FALSE) {
         if (CHAR_getInt(BATTLE_No2Index(battleindex, i), CHAR_WHICHTYPE) !=
@@ -8128,14 +8128,14 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
       break;
     }
 
-    // ����ȡ������Ŀ��
+    // 乱数取攻击的目标
     for (i = 0; i < atk_num - 1; i++) {
       chose_temp[i] = temp[RAND(0, j - 1)];
     }
 
     k = 0;
     j = 0;
-    // ������ѡ����
+    // 攻击中选的人
     while (atk_num - 1 > 0) {
       int atk_to_index = -1;
       atk_to_index = BATTLE_No2Index(battleindex, chose_temp[k]);
@@ -8160,7 +8160,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
         j = 0;
         k = 0;
 
-        // ȡ��ս���ϴ�����
+        // 取出战场上存活的人
         for (i = f_num; i < f_num + 10; i++) {
           if (BATTLE_TargetCheck(battleindex, i) != FALSE) {
             if (CHAR_getInt(BATTLE_No2Index(battleindex, i), CHAR_WHICHTYPE) !=
@@ -8175,7 +8175,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
         if (j == 0)
           break;
 
-        // ����ȡ������Ŀ��
+        // 乱数取攻击的目标
         for (i = 0; i < atk_num - 1; i++) {
           chose_temp[i] = temp[RAND(0, j - 1)];
         }
@@ -8189,7 +8189,7 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
 
     break;
   }
-  case BATTLE_COM_S_CHAIN_ATK: // ��������
+  case BATTLE_COM_S_CHAIN_ATK: // 连环攻击
   {
     snprintf(szCommand, sizeof(szCommand),
              "B+|a%X|r%X|f%X|d%X|p%X|e%X|s%X|h%X|", attackNo, defNo, flg,
@@ -8219,29 +8219,29 @@ int battle_profession_attack_fun(int battleindex, int attackNo, int defNo,
   return iRet;
 }
 
-// ħ��������ʽ
+// 魔法攻击函式
 int battle_profession_attack_magic_fun(int battleindex, int attackNo, int defNo,
                                        int char_index) {
   int attr = -1, attIdx = 0, skill = -1, toindex;
 
-  // ȡ����ID
+  // 取技能ID
   skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
 
-  // ����Ŀ��
+  // 攻击目标
   // Robin fix
   // toindex = CHAR_getWorkInt( char_index, CHAR_WORKBATTLECOM2 );
   toindex = defNo;
 
-  // ������Χ 0���� 1���� 2һ��ȫ��
-  if (toindex < 20) { // ����
+  // 攻击范围 0单体 1单排 2一方全体
+  if (toindex < 20) { // 单体
     attIdx = 0;
-  } else if (toindex >= 23 && toindex <= 26) { // ����
+  } else if (toindex >= 23 && toindex <= 26) { // 单排
     attIdx = 1;
-  } else if (toindex == 20 || toindex == 21) { // һ��ȫ��
+  } else if (toindex == 20 || toindex == 21) { // 一方全体
     attIdx = 2;
   }
 
-  // Robin fix ����ս����������
+  // Robin fix 增加战场属性优势
   attr = BattleArray[battleindex].field_att - 1;
 
   PROFESSION_MAGIC_ATTAIC(battleindex, attackNo, toindex, attIdx, attr, skill);
@@ -8249,7 +8249,7 @@ int battle_profession_attack_magic_fun(int battleindex, int attackNo, int defNo,
   return TRUE;
 }
 
-// ������������ϵ��ʽ
+// 提升自已能力系函式
 int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
                                  int char_index) {
   int i, skill, skill_type, skill_level, img1, img2, turn = 1;
@@ -8260,32 +8260,32 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
   skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
   skill_type = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
 
-  // ��ս��ʹ�ü���
+  // 非战斗使用技能
   if (!PROFESSION_SKILL_getInt(skill, PROFESSION_SKILL_USE_FLAG))
     return iRet;
 
-  // ���ܵĲ���
+  // 技能的参数
   pszOption = PROFESSION_SKILL_getChar(skill, PROFESSION_SKILL_OPTION);
   if (pszOption == "\0")
     return iRet;
 
-  // ���ܵȼ�
+  // 技能等级
   skill_level = CHAR_GETWORKINT_HIGH(char_index, CHAR_WORKBATTLECOM3);
 
-  // ׼���ڵĶ���
+  // 准备期的动画
   img1 = PROFESSION_SKILL_getInt(skill, PROFESSION_SKILL_IMG_1);
 
-  // ������Ķ���
+  // 击中後的动画
   img2 = PROFESSION_SKILL_getInt(skill, PROFESSION_SKILL_IMG_2);
 
-  // ʹ�ûغ���
-  if ((pszP = strstr(pszOption, "��%")) != NULL)
+  // 使用回合数
+  if ((pszP = strstr(pszOption, "回%")) != NULL)
     sscanf(pszP + 3, "%d", &turn);
   if (turn < 1)
     turn = 1;
 
   switch (skill_type) {
-  case BATTLE_COM_S_TRANSPOSE: // ���λ�λ
+  case BATTLE_COM_S_TRANSPOSE: // 移形换位
   {
     int defNo2 = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
     skill_level = PROFESSION_CHANGE_SKILL_LEVEL_M(skill_level);
@@ -8302,7 +8302,7 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
       if (char_index != toindex)
         continue;
 
-      // �ر���
+      // 回避率
       if (skill_level >= 10)
         avoid = 70;
       else if (skill_level >= 9)
@@ -8335,7 +8335,7 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
     }
     break;
   }
-  case BATTLE_COM_S_SCAPEGOAT: // ����Ϊ��
+  case BATTLE_COM_S_SCAPEGOAT: // 舍已为友
   {
     int tgh = 0, old_tgh = 0, flg = 0, rate = 0;
     int pos = 0, side = 0, ownerpos = 0;
@@ -8344,17 +8344,17 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
     pos = BATTLE_Index2No(battleindex, char_index);
     side = CHAR_getWorkInt(char_index, CHAR_WORKBATTLESIDE);
 
-    if (skill_level >= 10) { // �ҷ�ȫ��
+    if (skill_level >= 10) { // 我方全体
       for (i = 0; i < 10; i++) {
         if (pos != i)
           BattleArray[battleindex].Side[side].Entry[i].guardian = pos;
       }
-    } else if (skill_level >= 5) { // �ҷ����г���
+    } else if (skill_level >= 5) { // 我方所有宠物
       for (i = 5; i < 10; i++) {
         if (pos != i)
           BattleArray[battleindex].Side[side].Entry[i].guardian = pos;
       }
-    } else { // ����֮����
+    } else { // 人物之宠物
       ownerpos = pos + 5;
       if (ownerpos >= 10)
         ownerpos -= 10;
@@ -8382,7 +8382,7 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
 
     break;
   }
-  case BATTLE_COM_S_ENRAGE: // ��������
+  case BATTLE_COM_S_ENRAGE: // 激化攻击
   {
     int str = 0, tgh = 0;
     skill_level = PROFESSION_CHANGE_SKILL_LEVEL_A(skill_level);
@@ -8391,14 +8391,14 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
     BATTLE_MultiList(battleindex, attackNo, ToList);
     BATTLE_MagicEffect(battleindex, attackNo, ToList, img1, img2);
 
-    // ����
+    // 减防
     tgh = skill_level * 2 + 10;
     sprintf(szCommand, "BD|r%X|0|5|%X|", attackNo, (-1) * tgh);
     BATTLESTR_ADD(szCommand);
 
     CHAR_setWorkInt(char_index, CHAR_MYSKILLTGHPOWER, (-1) * tgh);
 
-    // �ӹ�
+    // 加攻
     str = skill_level * 2 + 20;
     sprintf(szCommand, "BD|r%X|0|4|%X|", attackNo, str);
     BATTLESTR_ADD(szCommand);
@@ -8418,7 +8418,7 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
     iRet = TRUE;
     break;
   }
-  case BATTLE_COM_S_COLLECT: // �����ۼ�
+  case BATTLE_COM_S_COLLECT: // 能量聚集
   {
     int dex = 0, tgh = 0;
     skill_level = PROFESSION_CHANGE_SKILL_LEVEL_A(skill_level);
@@ -8427,13 +8427,13 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
     BATTLE_MultiList(battleindex, attackNo, ToList);
     BATTLE_MagicEffect(battleindex, attackNo, ToList, img1, img2);
 
-    // ����
+    // 减敏
     dex = (skill_level * 2) + 10;
     sprintf(szCommand, "BD|r%X|0|6|%X|", attackNo, (-1) * dex);
     BATTLESTR_ADD(szCommand);
     CHAR_setWorkInt(char_index, CHAR_MYSKILLDEXPOWER, dex);
 
-    // �ӷ�
+    // 加防
     tgh = (skill_level * 2) + 20;
     sprintf(szCommand, "BD|r%X|0|5|%X|", attackNo, tgh);
     BATTLESTR_ADD(szCommand);
@@ -8452,7 +8452,7 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
     iRet = TRUE;
     break;
   }
-  case BATTLE_COM_S_FOCUS: // רעս��
+  case BATTLE_COM_S_FOCUS: // 专注战斗
   {
     int ToList[SIDE_OFFSET * 2 + 1];
     skill_level = PROFESSION_CHANGE_SKILL_LEVEL_A(skill_level);
@@ -8464,12 +8464,12 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
     CHAR_setWorkInt(char_index, CHAR_MYSKILLHIT, 2);
     CHAR_setWorkInt(char_index, CHAR_MYSKILLHIT_NUM, 100);
 
-    CHAR_talkToCli(char_index, -1, "����������", CHAR_COLORYELLOW);
+    CHAR_talkToCli(char_index, -1, "命中率上升", CHAR_COLORYELLOW);
 
     iRet = TRUE;
     break;
   }
-  case BATTLE_COM_S_TRAP: // ����
+  case BATTLE_COM_S_TRAP: // 陷阱
   {
     int value;
     int ToList[SIDE_OFFSET * 2 + 1];
@@ -8494,7 +8494,7 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
     iRet = TRUE;
     break;
   }
-  case BATTLE_COM_S_DOCILE: // ѱ������
+  case BATTLE_COM_S_DOCILE: // 驯伏宠物
   {
     int rate = 0;
     skill_level = PROFESSION_CHANGE_SKILL_LEVEL_A(skill_level);
@@ -8507,13 +8507,13 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
     break;
   }
 #ifdef _PROFESSION_ADDSKILL
-  case BATTLE_COM_S_CALL_NATURE: // ������Ȼ
+  case BATTLE_COM_S_CALL_NATURE: // 号召自然
   {
     int ridepet = 0, count = 0, addhp = 0, toindex = -1;
     int ToList[SIDE_OFFSET * 2 + 1];
     BATTLE_MultiList(battleindex, defNo, ToList);
 
-    if (defNo == 20 || defNo == 25 || defNo == 26) // �ҷ�
+    if (defNo == 20 || defNo == 25 || defNo == 26) // 右方
       img1 = 101772;
     for (i = 0; ToList[i] != -1; i++) {
       toindex = BATTLE_No2Index(battleindex, ToList[i]);
@@ -8599,7 +8599,7 @@ int battle_profession_assist_fun(int battleindex, int attackNo, int defNo,
 extern unsigned int GET_PROFESSION_magic_array(int idx);
 #endif
 
-// ���иı�״̬ϵ��ʽ
+// 击中改变状态系函式
 extern void BATTLE_TargetListSet(int char_index, int attackNo, int *pList);
 extern int BoomerangVsTbl[4][5];
 int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
@@ -8616,40 +8616,40 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
   skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
   skill_type = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
 
-  // ��ս��ʹ�ü���
+  // 非战斗使用技能
   if (!PROFESSION_SKILL_getInt(skill, PROFESSION_SKILL_USE_FLAG))
     return iRet;
 
-  // ���ܵĲ���
+  // 技能的参数
   pszOption = PROFESSION_SKILL_getChar(skill, PROFESSION_SKILL_OPTION);
   if (pszOption == "\0")
     return iRet;
 
-  // ���ܵȼ�
+  // 技能等级
   skill_level = CHAR_GETWORKINT_HIGH(char_index, CHAR_WORKBATTLECOM3);
   skill_level = PROFESSION_CHANGE_SKILL_LEVEL_A(skill_level);
 
-  // ���ܵȼ� rate
-  if ((pszP = strstr(pszOption, "��%")) != NULL)
+  // 技能等级 rate
+  if ((pszP = strstr(pszOption, "倍%")) != NULL)
     sscanf(pszP + 3, "%f", &rate);
 
-  // ׼���ڵĶ���
+  // 准备期的动画
   img1 = PROFESSION_SKILL_getInt(skill, PROFESSION_SKILL_IMG_1);
 
-  // ������Ķ���
+  // 击中後的动画
   img2 = PROFESSION_SKILL_getInt(skill, PROFESSION_SKILL_IMG_2);
 
-  // ʹ�ûغ���
-  if ((pszP = strstr(pszOption, "��%")) != NULL)
+  // 使用回合数
+  if ((pszP = strstr(pszOption, "回%")) != NULL)
     sscanf(pszP + 3, "%d", &turn);
   if (turn < 1)
     turn = 1;
 
-  // ������ʽ 0ԭ���㶯�� 1�����ƶ��㶯��
+  // 动画方式 0原地秀动画 1人物移动秀动画
   if ((pszP = strstr(pszOption, "Ч%")) != NULL)
     sscanf(pszP + 3, "%d", &effect);
 
-  // Ŀ�����һ�ܣ�������
+  // 目标地球一周，不动作
   if (defNo >= 0 && defNo <= 19) {
     defindex = BATTLE_No2Index(battleindex, defNo);
     if (CHAR_CHECKINDEX(defindex) == FALSE)
@@ -8661,32 +8661,32 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
   }
 
   switch (skill_type) {
-  // ���ƶ���
-  case BATTLE_COM_S_ENTWINE:        // ��������
-  case BATTLE_COM_S_DRAGNET:        // ���޵���
-  case BATTLE_COM_S_INSTIGATE:      // ����
-  case BATTLE_COM_S_OBLIVION:       // ����
-  case BATTLE_COM_S_RESIST_FIRE:    // ��������
-  case BATTLE_COM_S_RESIST_ICE:     // ����������
-  case BATTLE_COM_S_RESIST_THUNDER: // �׿�������
+  // 不移动型
+  case BATTLE_COM_S_ENTWINE:        // 树根缠绕
+  case BATTLE_COM_S_DRAGNET:        // 天罗地网
+  case BATTLE_COM_S_INSTIGATE:      // 挑拨
+  case BATTLE_COM_S_OBLIVION:       // 遗忘
+  case BATTLE_COM_S_RESIST_FIRE:    // 火抗性提升
+  case BATTLE_COM_S_RESIST_ICE:     // 冰抗性提升
+  case BATTLE_COM_S_RESIST_THUNDER: // 雷抗性提升
 #ifdef _PROFESSION_ADDSKILL
-  case BATTLE_COM_S_RESIST_F_I_T: // ��Ȼ����
+  case BATTLE_COM_S_RESIST_F_I_T: // 自然威能
 #endif
-  case BATTLE_COM_S_FIRE_ENCLOSE:    // ����
-  case BATTLE_COM_S_ICE_ENCLOSE:     // ������
-  case BATTLE_COM_S_THUNDER_ENCLOSE: // �׸���
+  case BATTLE_COM_S_FIRE_ENCLOSE:    // 火附体
+  case BATTLE_COM_S_ICE_ENCLOSE:     // 冰附体
+  case BATTLE_COM_S_THUNDER_ENCLOSE: // 雷附体
   {
     int perStatus = 0, toindex = -1, status = -1, Success = 0, dex = 0, old_dex;
     // char szBuffer[256]="";
     int ToList[SIDE_OFFSET * 2 + 1];
     int defNo2 = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
 
-    // ʹ�ö���
-    if (skill_type == BATTLE_COM_S_RESIST_FIRE || // ��������
-        skill_type == BATTLE_COM_S_RESIST_ICE || // ����������
-        skill_type == BATTLE_COM_S_RESIST_THUNDER // �׿�������
+    // 使用对象
+    if (skill_type == BATTLE_COM_S_RESIST_FIRE || // 火抗性提升
+        skill_type == BATTLE_COM_S_RESIST_ICE || // 冰抗性提升
+        skill_type == BATTLE_COM_S_RESIST_THUNDER // 雷抗性提升
 #ifdef _PROFESSION_ADDSKILL
-        || skill_type == BATTLE_COM_S_RESIST_F_I_T // ��Ȼ����
+        || skill_type == BATTLE_COM_S_RESIST_F_I_T // 自然威能
 #endif
     ) {
 #ifdef _PROFESSION_ADDSKILL
@@ -8715,19 +8715,19 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
     if (CHAR_CHECKINDEX(char_index) == FALSE)
       return iRet;
 
-    // �ı�״̬
-    if (((pszP = strstr(pszOption, "��")) != NULL) ||
-        ((pszP = strstr(pszOption, "��")) != NULL) ||
-        ((pszP = strstr(pszOption, "��")) != NULL) ||
-        ((pszP = strstr(pszOption, "��")) != NULL) ||
-        ((pszP = strstr(pszOption, "��")) != NULL) ||
-        ((pszP = strstr(pszOption, "��")) != NULL) ||
-        ((pszP = strstr(pszOption, "��")) != NULL) ||
-        ((pszP = strstr(pszOption, "��")) != NULL) ||
-        ((pszP = strstr(pszOption, "��")) != NULL) ||
-        ((pszP = strstr(pszOption, "��")) != NULL)
+    // 改变状态
+    if (((pszP = strstr(pszOption, "缠")) != NULL) ||
+        ((pszP = strstr(pszOption, "挑")) != NULL) ||
+        ((pszP = strstr(pszOption, "忘")) != NULL) ||
+        ((pszP = strstr(pszOption, "火")) != NULL) ||
+        ((pszP = strstr(pszOption, "冰")) != NULL) ||
+        ((pszP = strstr(pszOption, "雷")) != NULL) ||
+        ((pszP = strstr(pszOption, "罗")) != NULL) ||
+        ((pszP = strstr(pszOption, "击")) != NULL) ||
+        ((pszP = strstr(pszOption, "冻")) != NULL) ||
+        ((pszP = strstr(pszOption, "炎")) != NULL)
 #ifdef _PROFESSION_ADDSKILL
-        || ((pszP = strstr(pszOption, "��")) != NULL)
+        || ((pszP = strstr(pszOption, "抗")) != NULL)
 #endif
     ) {
       for (i = 1; i < BATTLE_ST_END; i++) {
@@ -8738,16 +8738,16 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
       }
     }
 
-    // �ɹ���
-    if ((pszP = strstr(pszOption, "��%")) != NULL)
+    // 成功率
+    if ((pszP = strstr(pszOption, "成%")) != NULL)
       sscanf(pszP + 3, "%d", &Success);
     Success = Success + skill_level * 5;
     if (skill_type == BATTLE_COM_S_DRAGNET) {
       int DRAGNET = 0, dragnet_idx = -1;
       int PLAYER = 0;
-      // �ҳ���������һ�ߵ�
-      if (attackNo > 9) { // ���
-        for (i = 0; i < 10; i++) { // �����ұ��ж�����������
+      // 找出攻方是那一边的
+      if (attackNo > 9) { // 左边
+        for (i = 0; i < 10; i++) { // 计算右边有多少人中天罗
           dragnet_idx = BATTLE_No2Index(battleindex, i);
           if (CHAR_CHECKINDEX(dragnet_idx)) {
             PLAYER++;
@@ -8756,8 +8756,8 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
             }
           }
         }
-      } else {                      // ��
-        for (i = 10; i < 20; i++) { // ��������ж�����������
+      } else {                      //右
+        for (i = 10; i < 20; i++) { // 计算左边有多少人中天罗
           dragnet_idx = BATTLE_No2Index(battleindex, i);
           if (CHAR_CHECKINDEX(dragnet_idx)) {
             PLAYER++;
@@ -8778,13 +8778,13 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
 
     perStatus = Success;
 
-    // �غ���
-    if ((skill_type == BATTLE_COM_S_INSTIGATE) && (skill_level == 10)) { // ����
+    // 回合数
+    if ((skill_type == BATTLE_COM_S_INSTIGATE) && (skill_level == 10)) { // 挑拨
       turn = 4;
-    } else if ((skill_type == BATTLE_COM_S_RESIST_FIRE) || // ��������
-               (skill_type == BATTLE_COM_S_RESIST_ICE) || // ����������
+    } else if ((skill_type == BATTLE_COM_S_RESIST_FIRE) || // 火抗性提升
+               (skill_type == BATTLE_COM_S_RESIST_ICE) || // 冰抗性提升
                (skill_type ==
-                BATTLE_COM_S_RESIST_THUNDER)) { // �׿�������
+                BATTLE_COM_S_RESIST_THUNDER)) { // 雷抗性提升
 
       if (skill_level >= 10)
         turn = 5;
@@ -8792,7 +8792,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
         turn = 4;
       else
         turn = 3;
-    } else if (skill_type == BATTLE_COM_S_OBLIVION) { // ����
+    } else if (skill_type == BATTLE_COM_S_OBLIVION) { // 遗忘
       if (skill_level >= 10) {
         turn = 4;
       } else if (skill_level >= 5) {
@@ -8802,7 +8802,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
       }
     }
 #ifdef _PROFESSION_ADDSKILL
-    else if (skill_type == BATTLE_COM_S_RESIST_F_I_T) { // ��Ȼ����
+    else if (skill_type == BATTLE_COM_S_RESIST_F_I_T) { // 自然威能
       skill_level = CHAR_GETWORKINT_HIGH(char_index, CHAR_WORKBATTLECOM3);
       if (skill_level >= 100)
         turn = 5;
@@ -8815,18 +8815,18 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
 
     switch (skill_type) {
     case BATTLE_COM_S_RESIST_FIRE:
-      CHAR_talkToCli(char_index, -1, "��������", CHAR_COLORYELLOW);
+      CHAR_talkToCli(char_index, -1, "火抗性提升", CHAR_COLORYELLOW);
       break;
     case BATTLE_COM_S_RESIST_ICE:
-      CHAR_talkToCli(char_index, -1, "����������", CHAR_COLORYELLOW);
+      CHAR_talkToCli(char_index, -1, "冰抗性提升", CHAR_COLORYELLOW);
       break;
     case BATTLE_COM_S_RESIST_THUNDER:
-      CHAR_talkToCli(char_index, -1, "�׿�������",
+      CHAR_talkToCli(char_index, -1, "雷抗性提升",
                      CHAR_COLORYELLOW);
       break;
 #ifdef _PROFESSION_ADDSKILL
     case BATTLE_COM_S_RESIST_F_I_T:
-      CHAR_talkToCli(char_index, -1, "����׿�������",
+      CHAR_talkToCli(char_index, -1, "火冰雷抗性提升",
                      CHAR_COLORYELLOW);
       break;
 #endif
@@ -8839,7 +8839,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
 
       if (skill_type == BATTLE_COM_S_INSTIGATE) {
         if (CHAR_getInt(toindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-          CHAR_talkToCli(char_index, -1, "����ʩ���������", CHAR_COLORYELLOW);
+          CHAR_talkToCli(char_index, -1, "不可施於人物身上", CHAR_COLORYELLOW);
           break;
         }
       }
@@ -8849,7 +8849,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
           (CHAR_getInt(toindex, CHAR_HP) <= 0)) {
       } else {
 #ifdef _PROFESSION_ADDSKILL
-        if (status == BATTLE_ST_RESIST_F_I_T) { // ��Ȼ����
+        if (status == BATTLE_ST_RESIST_F_I_T) { // 自然威能
           CHAR_setWorkInt(toindex, StatusTbl[BATTLE_ST_RESIST_F], turn + 1);
           CHAR_setWorkInt(toindex, StatusTbl[BATTLE_ST_RESIST_I], turn + 1);
           CHAR_setWorkInt(toindex, StatusTbl[BATTLE_ST_RESIST_T], turn + 1);
@@ -8864,50 +8864,50 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
             status == BATTLE_ST_ICEARROW) {
           CHAR_setWorkInt(toindex, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
         }
-        if (status == BATTLE_ST_DRAGNET) {            // ���޵���
-          CHAR_setWorkInt(toindex, CHAR_DOOMTIME, 0); // ����ĩ�ռ���
+        if (status == BATTLE_ST_DRAGNET) {            // 天罗地网
+          CHAR_setWorkInt(toindex, CHAR_DOOMTIME, 0); // 世界末日集气
           CHAR_setWorkInt(toindex, CHAR_WORK_com1, 0);
           CHAR_setWorkInt(toindex, CHAR_WORK_toNo, 0);
           CHAR_setWorkInt(toindex, CHAR_WORK_mode, 0);
           CHAR_setWorkInt(toindex, CHAR_WORK_skill_level, 0);
           CHAR_setWorkInt(toindex, CHAR_WORK_array, 0);
         }
-        if (skill_type == BATTLE_COM_S_FIRE_ENCLOSE) { // ����
+        if (skill_type == BATTLE_COM_S_FIRE_ENCLOSE) { // 火附体
           CHAR_setWorkInt(toindex, CHAR_WORKMOD_F_ENCLOSE_2, skill_level);
-          // �ӻ������Ⱦ���ֵ
+          // 加火熟练度经验值
           PROFESSION_SKILL_LVEVEL_UP(char_index, "PROFESSION_FIRE_PRACTICE");
-        } else if (skill_type == BATTLE_COM_S_ICE_ENCLOSE) { // ������
+        } else if (skill_type == BATTLE_COM_S_ICE_ENCLOSE) { // 冰附体
           CHAR_setWorkInt(toindex, CHAR_WORKMOD_I_ENCLOSE_2, skill_level);
-          // �ӱ������Ⱦ���ֵ
+          // 加冰熟练度经验值
           PROFESSION_SKILL_LVEVEL_UP(char_index, "PROFESSION_ICE_PRACTICE");
         } else if (skill_type ==
-                   BATTLE_COM_S_THUNDER_ENCLOSE) { // �׸���
+                   BATTLE_COM_S_THUNDER_ENCLOSE) { // 雷附体
           CHAR_setWorkInt(toindex, CHAR_WORKMOD_T_ENCLOSE_2, skill_level);
-          // ���������Ⱦ���ֵ
+          // 加雷熟练度经验值
           PROFESSION_SKILL_LVEVEL_UP(char_index, "PROFESSION_THUNDER_PRACTICE");
         }
 
-        // ���� ������������
+        // 遗忘 宠物遗忘技能
         if (skill_type == BATTLE_COM_S_OBLIVION) {
           int toNo = -1, toNoindex = -1, pet_no = -1, num = 0;
           char msg[20];
 
           memset(msg, -1, sizeof(msg));
 
-          // ����index
+          // 主人index
           toNo = ToList[i] - 5;
           toNoindex = BATTLE_No2Index(battleindex, toNo);
 
-          // ������
+          // 宠物编号
           pet_no = CHAR_getInt(toNoindex, CHAR_DEFAULTPET);
 
-          // �����輼����
+          // 遗忘宠技数量
           num = skill_level / 2;
           if (num < 1)
             num = 1;
           CHAR_setWorkInt(toindex, CHAR_WORKMODOBLIVION, num);
 
-          // ���� client ��������
+          // 传给 client 遗忘技能
           if (toNoindex != -1) {
             sprintf(msg, "W%d", pet_no);
             CHAR_sendStatusString(toNoindex, msg);
@@ -8917,7 +8917,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
           }
         }
 
-        // ���� ������
+        // 挑拨 降属性
         if (skill_type == BATTLE_COM_S_INSTIGATE) {
           int rate = 0;
           rate = skill_level * 1 + 10;
@@ -8931,9 +8931,9 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
           BATTLESTR_ADD(szCommand);
         }
 
-        // �������� ����
+        // 树根缠绕 降敏
         if (skill_type == BATTLE_COM_S_ENTWINE) {
-          if ((pszP = strstr(pszOption, "��%")) != NULL)
+          if ((pszP = strstr(pszOption, "敏%")) != NULL)
             sscanf(pszP + 3, "%d", &dex);
           dex = skill_level * 4 + dex;
           old_dex = CHAR_getWorkInt(toindex, CHAR_WORKFIXDEX);
@@ -8943,7 +8943,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
           BATTLESTR_ADD(szCommand);
         }
 
-        // ��������
+        // 火抗性提升
         if (skill_type == BATTLE_COM_S_RESIST_FIRE) {
           int old_value = CHAR_getWorkInt(toindex, CHAR_WORK_F_RESIST);
           int up_value = skill_level + 10;
@@ -8951,7 +8951,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
           CHAR_setWorkInt(toindex, CHAR_WORK_F_RESIST, old_value + up_value);
 
         } else
-          // ����������
+          // 冰抗性提升
           if (skill_type == BATTLE_COM_S_RESIST_ICE) {
             int old_value = CHAR_getWorkInt(toindex, CHAR_WORK_I_RESIST);
             int up_value = skill_level + 10;
@@ -8959,7 +8959,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
             CHAR_setWorkInt(toindex, CHAR_WORK_I_RESIST, old_value + up_value);
 
           } else
-            // �׿�������
+            // 雷抗性提升
             if (skill_type == BATTLE_COM_S_RESIST_THUNDER) {
               int old_value = CHAR_getWorkInt(toindex, CHAR_WORK_T_RESIST);
               int up_value = skill_level + 10;
@@ -8970,10 +8970,10 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
             }
 #ifdef _PROFESSION_ADDSKILL
             else
-              // ��Ȼ����
+              // 自然威能
               if (skill_type == BATTLE_COM_S_RESIST_F_I_T) {
                 int old_value = CHAR_getWorkInt(toindex, CHAR_WORK_F_RESIST);
-                int up_value = 2; // ����ֵ
+                int up_value = 2; // 抗性值
 
                 if (skill_level >= 10)
                   up_value = 20;
@@ -9017,8 +9017,8 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
     }
     break;
   }
-  // �ƶ���
-  case BATTLE_COM_S_SHIELD_ATTACK: // �ܻ�
+  // 移动型
+  case BATTLE_COM_S_SHIELD_ATTACK: // 盾击
   {
     int itmid = -1;
     int perStatus, status = -1, Success = -1;
@@ -9030,13 +9030,13 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
 
     if ((itmid < 0) || ITEM_WSHIELD != ITEM_getInt(itmid, ITEM_TYPE)) {
       CHAR_talkToCli(char_index, -1,
-                     "δװ�����ƣ��޷�ʹ�ô˼���",
+                     "未装备盾牌，无法使用此技能",
                      CHAR_COLORYELLOW);
       iRet = FALSE;
       break;
     }
 
-    // ����������
+    // 攻击力减半
     if (skill_level != 10)
       CHAR_setWorkInt(
           char_index, CHAR_WORKATTACKPOWER,
@@ -9045,8 +9045,8 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
     memset(ToList, -1, sizeof(ToList));
     BATTLE_MultiList(battleindex, defNo2, ToList);
 
-    // �ı�״̬
-    if ((pszP = strstr(pszOption, "��")) != NULL) {
+    // 改变状态
+    if ((pszP = strstr(pszOption, "晕")) != NULL) {
       for (i = 1; i < BATTLE_ST_END; i++) {
         if (strncmp(pszP, aszStatus[i], 2) == 0) {
           status = i;
@@ -9055,8 +9055,8 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
       }
     }
 
-    // �ɹ���
-    if ((pszP = strstr(pszOption, "��%")) != NULL)
+    // 成功率
+    if ((pszP = strstr(pszOption, "成%")) != NULL)
       sscanf(pszP + 3, "%d", &Success);
     Success += skill_level * 4;
     perStatus = Success;
@@ -9070,16 +9070,16 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
       int hit = -1;
       react = 0;
 
-      defindex = BATTLE_No2Index(battleindex, ToList[i]); // �ط�index
+      defindex = BATTLE_No2Index(battleindex, ToList[i]); // 守方index
       if (CHAR_CHECKINDEX(defindex) == FALSE)
         continue;
 
-      if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // �й⾵��
+      if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // 有光镜守
         react = ReactType;
         skill_type = -1;
       }
 
-      // ȡ�ù�����״̬
+      // 取得攻击後状态
       iWork = BATTLE_AttackSeq(char_index, defindex, &damage, &Guardian,
                                skill_type);
 
@@ -9094,14 +9094,14 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
       iRet = BATTLE_DefineAttack(char_index, defindex, iWork, szBuffer, damage,
                                  react, &flg);
 
-      // �� NORMAL �� CRITICAL �� flg �ĳ� ְҵ��flg
+      // 将 NORMAL 及 CRITICAL 的 flg 改成 职业的flg
       if (img2 != 0) {
         if (flg == BCF_NORMAL || flg == BCF_KAISHIN) {
           hit = 1;
-          if ((pszP = strstr(pszOption, "ǰ")) != NULL) {
-            flg |= BCF_F_SKILLACT; // ����ǰ��ͼ
+          if ((pszP = strstr(pszOption, "前")) != NULL) {
+            flg |= BCF_F_SKILLACT; // 击中前秀图
           } else {
-            flg |= BCF_B_SKILLACT; // ��������ͼ
+            flg |= BCF_B_SKILLACT; // 击中後秀图
           }
         }
       }
@@ -9152,7 +9152,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
     }
     break;
   }
-  case BATTLE_COM_S_TOXIN_WEAPON: // ��������
+  case BATTLE_COM_S_TOXIN_WEAPON: // 毒素武器
   {
     int perStatus, status = -1, Success = -1;
     int defNo2 = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
@@ -9161,8 +9161,8 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
     if (CHAR_CHECKINDEX(char_index) == FALSE)
       return iRet;
 
-    // �ı�״̬
-    if (((pszP = strstr(pszOption, "��")) != NULL)) {
+    // 改变状态
+    if (((pszP = strstr(pszOption, "毒")) != NULL)) {
 
       for (i = 1; i < BATTLE_ST_END; i++) {
         if (strncmp(pszP, aszStatus[i], 2) == 0) {
@@ -9172,8 +9172,8 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
       }
     }
 
-    // �ɹ���
-    if ((pszP = strstr(pszOption, "��%")) != NULL)
+    // 成功率
+    if ((pszP = strstr(pszOption, "成%")) != NULL)
       sscanf(pszP + 3, "%d", &Success);
     Success += skill_level * 2;
     perStatus = Success;
@@ -9195,7 +9195,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
 
       memset(szCommand, -1, sizeof(szCommand));
 
-      // ���ޱ���
+      // 有无变身
 #ifdef _PETSKILL_BECOMEPIG
       if (CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) > 0 ||
           CHAR_getWorkInt(char_index, CHAR_BECOMEPIG) > 0)
@@ -9205,7 +9205,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
         bChange = TRUE;
 #endif
       if (!bChange) {
-        // ����ΪԶ������
+        // 武器为远程武器
         if (gWeponType == ITEM_BOW) {
           sprintf(szCommand, "BB|a%X|w0|", attackNo);
           BATTLESTR_ADD(szCommand);
@@ -9238,18 +9238,18 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
 
         // memset( szBuffer, 0, sizeof( szBuffer ) );
 
-        defindex = BATTLE_No2Index(battleindex, ToList[i]); // �ط�index
+        defindex = BATTLE_No2Index(battleindex, ToList[i]); // 守方index
         if (CHAR_CHECKINDEX(defindex) == FALSE)
           continue;
         if (CHAR_getInt(defindex, CHAR_HP) <= 0)
           continue;
 
-        if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // �й⾵��
+        if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // 有光镜守
           react = ReactType;
           skill_type = -1;
         }
 
-        // ȡ�ù�����״̬
+        // 取得攻击後状态
         iWork = BATTLE_AttackSeq(char_index, defindex, &damage, &Guardian,
                                  skill_type);
         if (Guardian >= 0)
@@ -9315,7 +9315,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
         iRet = TRUE;
       }
 
-      // ����ΪԶ������ʱ
+      // 武器为远程武器时
       if (((gWeponType == ITEM_BOW) || (gWeponType == ITEM_BOUNDTHROW) ||
            (gWeponType == ITEM_BREAKTHROW) || (gWeponType == ITEM_BOOMERANG)) &&
           !bChange) {
@@ -9328,7 +9328,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
     break;
   }
 #ifdef _PROFESSION_ADDSKILL
-  case BATTLE_COM_S_BOUNDARY: // �����Խ��
+  case BATTLE_COM_S_BOUNDARY: // 四属性结界
   {
     int ToList[SIDE_OFFSET * 2 + 1], status = -1, power = 20, toindex = -1,
                                      loop = 1;
@@ -9367,15 +9367,15 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
     else
       power = 20;
 
-    if (((pszP = strstr(pszOption, "�ؽ��")) != NULL))
+    if (((pszP = strstr(pszOption, "地结界")) != NULL))
       status = CHAR_WORKFIXEARTHAT_BOUNDARY;
-    else if (((pszP = strstr(pszOption, "ˮ���")) != NULL))
+    else if (((pszP = strstr(pszOption, "水结界")) != NULL))
       status = CHAR_WORKFIXWATERAT_BOUNDARY;
-    else if (((pszP = strstr(pszOption, "����")) != NULL))
+    else if (((pszP = strstr(pszOption, "火结界")) != NULL))
       status = CHAR_WORKFIXFIREAT_BOUNDARY;
-    else if (((pszP = strstr(pszOption, "����")) != NULL)) {
+    else if (((pszP = strstr(pszOption, "风结界")) != NULL)) {
       status = CHAR_WORKFIXWINDAT_BOUNDARY;
-    } else { // �ƽ��
+    } else { //破结界
       status = CHAR_WORKFIXEARTHAT_BOUNDARY;
 
       if (skill_level >= 100)
@@ -9396,7 +9396,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
         loop = 0;
     }
 
-    if (((pszP = strstr(pszOption, "�ƽ��")) != NULL)) {
+    if (((pszP = strstr(pszOption, "破结界")) != NULL)) {
       if (defNo2 < 10)
         defNo2 = 20;
       else
@@ -9406,7 +9406,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
     memset(ToList, -1, sizeof(ToList));
     BATTLE_MultiList(battleindex, defNo2, ToList);
 
-    if (((pszP = strstr(pszOption, "�ƽ��")) == NULL)) { // �Ȱ����н�����
+    if (((pszP = strstr(pszOption, "破结界")) == NULL)) { // 先把所有结界清除
       for (j = CHAR_WORKFIXEARTHAT_BOUNDARY;
            j < CHAR_WORKFIXEARTHAT_BOUNDARY + 4; j++) {
         for (i = 0; ToList[i] != -1; i++) {
@@ -9426,7 +9426,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
       }
     }
 
-    // ��ħ���������붯��
+    // 将魔法参数代入动画
     analysis_profession_parameter(
         2, CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3), defNo2,
         char_index);
@@ -9435,7 +9435,7 @@ int battle_profession_status_chang_fun(int battleindex, int attackNo, int defNo,
     BATTLESTR_ADD(szCommand);
 
     if (power == 0) {
-      if (defNo2 == 20 || defNo2 == 25 || defNo2 == 26) // �ҷ�
+      if (defNo2 == 20 || defNo2 == 25 || defNo2 == 26) // 右方
         snprintf(szCommand, sizeof(szCommand), "Ba|%X|%X|", 0, 1);
       else
         snprintf(szCommand, sizeof(szCommand), "Ba|%X|%X|", 0, 0);
@@ -9544,7 +9544,7 @@ int BATTLE_PROFESSION_ATK_PET_DamageSub(int attackindex, int defindex,
     defindex = attackindex;
     defpet = attackpet;
 
-  } else if (*pRefrect == BATTLE_MD_TRAP) { // ����
+  } else if (*pRefrect == BATTLE_MD_TRAP) { //陷阱
     int value = 0;
     value = CHAR_getWorkInt(defindex, CHAR_WORKMODTRAP);
     damage = value;
@@ -9654,7 +9654,7 @@ int BATTLE_PROFESSION_ATK_PET_DamageSub(int attackindex, int defindex,
   if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
   }
 #ifdef _PETSKILL_LER
-  // �׶����ܱ����
+  // 雷尔不能被打飞
   if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
       CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
     IsUltimate = 0;
@@ -9672,12 +9672,12 @@ int BATTLE_PROFESSION_ATK_PET_DamageSub(int attackindex, int defindex,
   return IsUltimate;
 }
 
-// ȡ�û��������˺�
+// 取得回旋攻击伤害
 int BATTLE_PROFESSION_CONVOLUTE_GET_DAMAGE(int attackindex, int defindex,
                                            int skill_level) {
   int damage = 0, old_atk = 0, atk = 0;
   int rand_num = RAND(1, 10000);
-  // ����һ��
+  // 会心一击
   int perCri = BATTLE_CriticalCheck(attackindex, defindex);
 
   old_atk = CHAR_getWorkInt(attackindex, CHAR_WORKATTACKPOWER);
@@ -9696,11 +9696,11 @@ int BATTLE_PROFESSION_CONVOLUTE_GET_DAMAGE(int attackindex, int defindex,
   return damage;
 }
 
-// ȡ�ùᴩ�����˺�
+// 取得贯穿攻击伤害
 int BATTLE_PROFESSION_THROUGH_ATTACK_GET_DAMAGE(int attackindex, int defindex) {
   int damage = 0;
   int rand_num = RAND(1, 10000);
-  // ����һ��
+  // 会心一击
   int perCri = BATTLE_CriticalCheck(attackindex, defindex);
 
   if (rand_num < perCri) {
@@ -9715,7 +9715,7 @@ int BATTLE_PROFESSION_THROUGH_ATTACK_GET_DAMAGE(int attackindex, int defindex) {
   return damage;
 }
 
-// �𡢱����׸��帽�ӹ���
+// 火、冰、雷附体附加攻击
 int BATTLE_PROFESSION_RANG_ATTACK_DAMAGE(int char_index, int attackNo,
                                          int defNo, int skill_type, int status,
                                          int turn, int perStatus, int effect,
@@ -9726,11 +9726,11 @@ int BATTLE_PROFESSION_RANG_ATTACK_DAMAGE(int char_index, int attackNo,
 
   // memset( szBuffer, 0, sizeof( szBuffer ) );
 
-  defindex = BATTLE_No2Index(battleindex, defNo); // �ط�index
+  defindex = BATTLE_No2Index(battleindex, defNo); // 守方index
   if (defindex == -1)
     return iRet;
 
-  if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // �й⾵��
+  if ((ReactType = BATTLE_GetDamageReact(defindex)) > 0) { // 有光镜守
     react = ReactType;
     skill_type = -1;
   }
@@ -9762,7 +9762,7 @@ int BATTLE_PROFESSION_RANG_ATTACK_DAMAGE(int char_index, int attackNo,
 
 #ifdef _PETSKILL_LER
 extern ToCallMagic PROFESSION_magic[3];
-// �׶��� - Ⱥ���Ĵ�
+// 雷尔技 - 群蝠四窜
 void BATTLE_BatFly(int battleindex, int attackNo, int myside) {
   int ToList[SIDE_OFFSET * 2 + 1], i, toindex;
   int petidx, addhp = 0, charhp, pethp, char_index;
@@ -9774,21 +9774,21 @@ void BATTLE_BatFly(int battleindex, int attackNo, int myside) {
 
   memset(ToList, -1, sizeof(ToList));
   if (myside)
-    BATTLE_MultiList(battleindex, TARGET_SIDE_0, ToList); // ������
+    BATTLE_MultiList(battleindex, TARGET_SIDE_0, ToList); // 打右上
   else
-    BATTLE_MultiList(battleindex, TARGET_SIDE_1, ToList); // ������
+    BATTLE_MultiList(battleindex, TARGET_SIDE_1, ToList); // 打左下
 #ifdef _FIX_LER_IMG
   PROFESSION_magic[2].uiSpriteNum = myside ? 101859 : 101860;
   PROFESSION_magic[2].siSx = 320;
   PROFESSION_magic[2].siSy = 240;
-  PROFESSION_magic[2].uiPrevMagicNum = myside ? 101861 : 101862; // ǰ�ö���
+  PROFESSION_magic[2].uiPrevMagicNum = myside ? 101861 : 101862; // 前置动画
 #else
   PROFESSION_magic[2].uiSpriteNum = myside ? 101806 : 101807;
   PROFESSION_magic[2].siSx = 320;
   PROFESSION_magic[2].siSy = 240;
-  PROFESSION_magic[2].uiPrevMagicNum = myside ? 101808 : 101809; // ǰ�ö���
+  PROFESSION_magic[2].uiPrevMagicNum = myside ? 101808 : 101809; // 前置动画
 #endif
-  PROFESSION_magic[2].uiPostMagicNum = 0xffffffff; // �����ö���
+  PROFESSION_magic[2].uiPostMagicNum = 0xffffffff; // 无後置动画
   PROFESSION_magic[2].uiShowType = 1;
   PROFESSION_magic[2].uiShowBehindChar = 1;
   PROFESSION_magic[2].siPrevMagicSx = 0;
@@ -9803,14 +9803,14 @@ void BATTLE_BatFly(int battleindex, int attackNo, int myside) {
     if (!CHAR_CHECKINDEX(toindex))
       continue;
     charhp = CHAR_getInt(toindex, CHAR_HP);
-    // û�����
+    // 没骑宠物
     if (-1 == petidx || CHAR_getInt(petidx, CHAR_HP) <= 0) {
-      // ʣ�²���10��Ѫ
+      // 剩下不到10滴血
       if ((charhp / 10) == 0) {
         CHAR_setInt(toindex, CHAR_HP, charhp - 1);
         charhp = 1;
       }
-      // ��10%��HP
+      // 扣10%的HP
       else {
         CHAR_setInt(toindex, CHAR_HP, charhp - (charhp / 10));
         charhp /= 10;
@@ -9818,19 +9818,19 @@ void BATTLE_BatFly(int battleindex, int attackNo, int myside) {
       addhp += charhp;
       sprintf(szCommand, "BD|r%X|%X|0|d%X|p0|", ToList[i], BD_KIND_HP, charhp);
     } else {
-      // ʣ�²���20��Ѫ
+      // 剩下不到20滴血
       if ((charhp / 20) == 0) {
         CHAR_setInt(toindex, CHAR_HP, charhp - 1);
         charhp = 1;
       }
-      // �˺ͳ����5%HP
+      // 人和宠各扣5%HP
       else {
         CHAR_setInt(toindex, CHAR_HP, charhp - (charhp / 20));
         charhp /= 20;
       }
       addhp += charhp;
       pethp = CHAR_getInt(petidx, CHAR_HP);
-      // ʣ�²���20��Ѫ
+      // 剩下不到20滴血
       if ((pethp / 20) == 0) {
         CHAR_setInt(petidx, CHAR_HP, pethp - 1);
         pethp = 1;
@@ -9860,7 +9860,7 @@ void BATTLE_BatFly(int battleindex, int attackNo, int myside) {
   BATTLESTR_ADD(szCommand);
 }
 
-// �׶��� - ��������
+// 雷尔技 - 分身地裂
 void BATTLE_DivideAttack(int battleindex, int attackNo, int myside) {
   int ToList[SIDE_OFFSET * 2 + 1], i, toindex;
   int petidx, charhp, charmp, pethp, char_index;
@@ -9872,15 +9872,15 @@ void BATTLE_DivideAttack(int battleindex, int attackNo, int myside) {
 
   memset(ToList, -1, sizeof(ToList));
   if (myside)
-    BATTLE_MultiList(battleindex, TARGET_SIDE_0, ToList); // ������
+    BATTLE_MultiList(battleindex, TARGET_SIDE_0, ToList); // 打左上
   else
-    BATTLE_MultiList(battleindex, TARGET_SIDE_1, ToList); // ������
+    BATTLE_MultiList(battleindex, TARGET_SIDE_1, ToList); // 打右下
 
   PROFESSION_magic[2].uiSpriteNum = myside ? 101798 : 101800;
   PROFESSION_magic[2].siSx = 320;
   PROFESSION_magic[2].siSy = 240;
-  PROFESSION_magic[2].uiPrevMagicNum = myside ? 101808 : 101809; // ǰ�ö���
-  PROFESSION_magic[2].uiPostMagicNum = 0xffffffff; // �����ö���
+  PROFESSION_magic[2].uiPrevMagicNum = myside ? 101808 : 101809; // 前置动画
+  PROFESSION_magic[2].uiPostMagicNum = 0xffffffff; // 无後置动画
   PROFESSION_magic[2].uiShowType = 1;
   PROFESSION_magic[2].uiShowBehindChar = 0;
   PROFESSION_magic[2].siPrevMagicSx = 0;
@@ -9889,15 +9889,15 @@ void BATTLE_DivideAttack(int battleindex, int attackNo, int myside) {
   sprintf(szCommand, "%X|", 0x5711438);
   BATTLESTR_ADD(szCommand);
 
-  // ����ɿ�MP�Ķ���
+  // 先完成扣MP的动作
   for (i = 0; i < SIDE_OFFSET; i++) {
     toindex = BATTLE_No2Index(battleindex, ToList[i]);
     if (!CHAR_CHECKINDEX(toindex))
       continue;
-    // �������
+    // 若是玩家
     if (CHAR_getInt(toindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
       charmp = CHAR_getInt(toindex, CHAR_MP);
-      // �˿�1/2MP
+      // 人扣1/2MP
       CHAR_setInt(toindex, CHAR_MP, charmp - (charmp >> 1));
       charmp >>= 1;
       sprintf(szCommand, "BD|r%X|%X|0|d%X|", ToList[i], BD_KIND_MP, charmp);
@@ -9911,9 +9911,9 @@ void BATTLE_DivideAttack(int battleindex, int attackNo, int myside) {
       continue;
 
     charhp = CHAR_getInt(toindex, CHAR_HP);
-    // û�����
+    // 没骑宠物
     if (-1 == petidx || CHAR_getInt(petidx, CHAR_HP) <= 0) {
-      // ��20%HP
+      // 扣20%HP
       if ((charhp / 5) == 0) {
         CHAR_setInt(toindex, CHAR_HP, charhp - 1);
         charhp = 1;
@@ -9923,7 +9923,7 @@ void BATTLE_DivideAttack(int battleindex, int attackNo, int myside) {
       }
       sprintf(szCommand, "BD|r%X|%X|0|d%X|p0|", ToList[i], BD_KIND_HP, charhp);
     } else {
-      // �˺ͳ����10%HP
+      // 人和宠各扣10%HP
       if ((charhp / 10) == 0) {
         CHAR_setInt(toindex, CHAR_HP, charhp - 1);
         charhp = 1;
@@ -9951,7 +9951,7 @@ void BATTLE_DivideAttack(int battleindex, int attackNo, int myside) {
   }
 }
 
-// �׶�����,����
+// 雷尔死亡,变身
 void BATTLE_LerChange(int battleindex, int char_index, int no) {
   int array = -1, newindex = -1;
   BATTLE *pBattle;
@@ -9994,11 +9994,11 @@ void BATTLE_LerChange(int battleindex, int char_index, int no) {
 
 #ifdef _PETSKILL_BATTLE_MODEL
 typedef struct _tsAttackObject {
-  int index;        // ����������
-  int target;       // Ŀ����
-  int actionNumber; // �������ͼ��
+  int index;        // 攻击物件编号
+  int target;       // 目标编号
+  int actionNumber; // 攻击物件图号
 } AttackObject;
-// BATTLE_BattleModel �õĹ�����ʽ
+// BATTLE_BattleModel 用的攻击函式
 void BATTLE_BattleModel_ATTACK(int battleindex, int char_index,
                                AttackObject *pAAttackObject, int iEffect,
                                int iTurn, int iEffectHit, int iType) {
@@ -10043,7 +10043,7 @@ void BATTLE_BattleModel_ATTACK(int battleindex, int char_index,
     }
   }
   iFlg = 0;
-  // �ش�״̬���
+  // 回传状态检查
   switch (iDefState) {
   case BATTLE_RET_ALLGUARD:
     iFlg |= BCF_GUARD;
@@ -10070,11 +10070,11 @@ void BATTLE_BattleModel_ATTACK(int battleindex, int char_index,
 #endif
   }
 
-  // ��˯ʱ,��������״̬(Ҳ��������״̬)
+  // 昏睡时,在这里解除状态(也有其它的状态)
   if (iDamage > 0 && (iTemp != BATTLE_MD_ABSROB) && (iTemp != BATTLE_MD_VANISH))
     BATTLE_DamageWakeUp(battleindex, iDefindex);
 
-  // Ŀ���Ƿ�����
+  // 目标是否死亡
   if (CHAR_getInt(iDefindex, CHAR_HP) <= 0) {
     if (CHAR_getWorkInt(iDefindex, CHAR_WORKBATTLEFLG) & CHAR_BATTLEFLG_ABIO)
       iUltimate = 1;
@@ -10084,7 +10084,7 @@ void BATTLE_BattleModel_ATTACK(int battleindex, int char_index,
         iUltimate = 1;
     }
 #ifdef _PETSKILL_LER
-    // �׶����ܱ����
+    // 雷尔不能被打飞
     if (CHAR_getInt(iDefindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
         CHAR_getInt(iDefindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
       iUltimate = 0;
@@ -10101,24 +10101,24 @@ void BATTLE_BattleModel_ATTACK(int battleindex, int char_index,
     if (BATTLE_ItemCrushSeq(iDefindex) == TRUE)
 #endif
       iFlg |= BCF_CRUSH;
-    // ״̬�����ж�
+    // 状态命中判定
     if (iDamage > 0 && BATTLE_StatusAttackCheck(char_index, iDefindex, iEffect,
                                                 iEffectHit, 30, 1.0, &iTemp)) {
       CHAR_setWorkInt(iDefindex, StatusTbl[iEffect], iTurn);
       if (iEffect == BATTLE_ST_DRUNK)
         CHAR_setWorkInt(iDefindex, CHAR_WORKDRUNK,
                         CHAR_getWorkInt(iDefindex, CHAR_WORKDRUNK) >> 1);
-      // ������״̬��Ŀ��ûغ�֮�᲻���ж�
+      // 中以下状态的目标该回合之後不能行动
       if (iEffect == BATTLE_ST_PARALYSIS || iEffect == BATTLE_ST_SLEEP ||
           iEffect == BATTLE_ST_STONE || iEffect == BATTLE_ST_BARRIER)
         CHAR_setWorkInt(iDefindex, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
-      // �ش�client��һ��Ŀ��Ҫִ��״̬�ı�
+      // 回传client那一个目标要执行状态改变
       if (iGuardian >= 0)
         BATTLE_BadStatusString(
             iGuardian,
-            iEffect); // iGuardian ��춵�� 0 ��ʾ��Ŀ��ʹ������Ȯ,��Ŀ��״̬�ı�
+            iEffect); // iGuardian 大於等於 0 表示有目标使用了忠犬,该目标状态改变
       else
-        BATTLE_BadStatusString(pAAttackObject->target, iEffect); // ����ԭĿ��״̬�ı�
+        BATTLE_BadStatusString(pAAttackObject->target, iEffect); // 否则原目标状态改变
     }
   }
   if (iGuardian >= 0) {
@@ -10131,12 +10131,12 @@ void BATTLE_BattleModel_ATTACK(int battleindex, int char_index,
              pAAttackObject->target, pAAttackObject->index, iFlg, iDamage,
              iPetDamage, pAAttackObject->actionNumber);
 
-  // ���������봫��client��buffer
+  // 把命令送入传给client的buffer
   BATTLESTR_ADD(szCommand);
 
   iTemp = BATTLE_Index2No(battleindex, iDefindex);
 
-  // iFlg ��û����,�����������;
+  // iFlg 已没作用,拿来作别的用途
   iFlg = 0;
   if (iTemp >= SIDE_OFFSET)
     iFlg = 1;
@@ -10169,7 +10169,7 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
     return;
   }
 
-  // ȡ��Ч��
+  // 取得效果
   if (getStringFromIndexWithDelim(pszOption, "|", 3, szData, sizeof(szData)) !=
       FALSE) {
     for (i = 1; i < BATTLE_ST_END; i++) {
@@ -10179,23 +10179,23 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
       }
     }
   }
-  // ��Ч��
+  // 有效果
   if (iEffect != -1) {
-    // ȡ�ûغ���
+    // 取得回合数
     if (getStringFromIndexWithDelim(pszOption, "|", 4, szData,
                                     sizeof(szData)) == FALSE)
-      // �غ���ȡ��ʧ��
+      // 回合数取得失败
       printf("BATTLE_BattleModel: has setting effect but no turn "
              "number!!(file:%s,line:%d)\n",
              __FILE__, __LINE__);
     else
       iTurn = atoi(szData);
-    // �лغ���
+    // 有回合数
     if (iTurn != -1) {
-      // ȡ�����л���
+      // 取得命中机率
       if (getStringFromIndexWithDelim(pszOption, "|", 5, szData,
                                       sizeof(szData)) == FALSE)
-        // ���л���ȡ��ʧ��
+        // 命中机率取得失败
         printf("BATTLE_BattleModel: has setting turn number but no hit "
                "probability!!(file:%s,line:%d)\n",
                __FILE__, __LINE__);
@@ -10204,17 +10204,17 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
     }
   }
 
-  // ȡ��ͼ��(����Ҫ��һ��)
+  // 取得图号(至少要有一个)
   if (getStringFromIndexWithDelim(pszOption, "|", 7, szData, sizeof(szData)) ==
       FALSE) {
-    // ͼ��ȡ��ʧ��,������
+    // 图号取得失败,不动作
     printf("BATTLE_BattleModel: no picture number!!(file:%s,line:%d)\n",
            __FILE__, __LINE__);
     BATTLE_NoAction(battleindex, attackNo);
     return;
   } else {
     for (i = 0; i < 4; i++) {
-      // ȡ��ͼ��
+      // 取得图号
       if (getStringFromIndexWithDelim(szData, " ", i + 1, szData2,
                                       sizeof(szData2)) != FALSE)
         iActionNumber[i] = atoi(szData2);
@@ -10227,16 +10227,16 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
   memset(iToList, -1, sizeof(iToList));
   memset(AAttackObject, -1, sizeof(AAttackObject));
   if (myside)
-    BATTLE_MultiList(battleindex, TARGET_SIDE_0, iToList); // ������
+    BATTLE_MultiList(battleindex, TARGET_SIDE_0, iToList); // 打左上
   else
-    BATTLE_MultiList(battleindex, TARGET_SIDE_1, iToList); // ������
+    BATTLE_MultiList(battleindex, TARGET_SIDE_1, iToList); // 打右下
 
-  iType = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM2); // ȡ�ù�������
+  iType = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM2); // 取得攻击类型
   iObjectNum =
-      CHAR_GETWORKINT_HIGH(char_index, CHAR_WORKBATTLECOM2); // ȡ�ù����������
+      CHAR_GETWORKINT_HIGH(char_index, CHAR_WORKBATTLECOM2); // 取得攻击物件数量
 
   i1 = 0;
-  // ��ʼ�� AAttackObject
+  // 初始化 AAttackObject
   for (i = 0; i < iObjectNum; i++) {
     AAttackObject[i].index = i;
     AAttackObject[i].actionNumber = iActionNumber[i1];
@@ -10263,9 +10263,9 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
                                   iEffect, iTurn, iEffectHit, iType);
       }
     }
-    // ���й������û��Ŀ����Թ���,�������Ŀ�깥��
+    // 还有攻击物件没有目标可以攻击,进行随机目标攻击
     for (; i < iObjectNum; i++) {
-      // �趨����Ŀ������
+      // 设定攻击目标内容
       if (AAttackObject[i].index != -1) {
         AAttackObject[i].target = iToList[RAND(0, i0 - 1)];
         BATTLE_BattleModel_ATTACK(battleindex, char_index, &AAttackObject[i],
@@ -10282,16 +10282,16 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
       }
     }
     if (iType & 0x00000001) {
-      for (i1 = 0; i1 < i0 - iObjectNum; i1++) { // ����ʣ����Ŀ��û��
-        for (i2 = 0; i2 < iObjectNum; i2++) { // �����������
+      for (i1 = 0; i1 < i0 - iObjectNum; i1++) { // 计算剩几个目标没打
+        for (i2 = 0; i2 < iObjectNum; i2++) { // 攻击物件计数
           if (iToList[i] == -1)
-            break; // ����� i ������̬ 2 �������ֵ
+            break; // 这里的 i 保留型态 2 打完後的值
           if (AAttackObject[i2].index != -1) {
             AAttackObject[i2].target = iToList[i];
             BATTLE_BattleModel_ATTACK(battleindex, char_index,
                                       &AAttackObject[i2], iEffect, iTurn,
                                       iEffectHit, iType);
-            i++; // ����һ��Ŀ��
+            i++; // 换下一个目标
           }
         }
       }

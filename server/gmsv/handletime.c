@@ -21,8 +21,8 @@ BOOL setNewTime(void) {
 }
 static long era = (long)912766409 + 5400;
 void RealTimeToLSTime(long t, LSTIME *lstime) {
-  long lsseconds = t - era; /* LS��  ���ռ�  �� */
-  long lsdays;              /* LS��  ���ռ�  �� */
+  long lsseconds = t - era; /* LS葭  井日及  醒 */
+  long lsdays;              /* LS葭  井日及  醒 */
 
   lstime->year =
       (int)(lsseconds / (LSTIME_SECONDS_PER_DAY * LSTIME_DAYS_PER_YEAR));

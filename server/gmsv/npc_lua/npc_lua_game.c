@@ -36,7 +36,7 @@ int NPC_Lua_Game_FMPOINT_GetData(lua_State *_NLL)
 			LRetErrNull(_NLL, "传入的标志是错误的。");
 		}
 	}
-	LRetErrNull(_NLL, "传入的标志是错误的。");
+	LRetErrNull(_NLL, "传入的索引是无效的。");
 }
 
 int NPC_Lua_Game_FMPOINT_ACSetFMPoint(lua_State *_NLL)

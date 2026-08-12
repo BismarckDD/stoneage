@@ -10,14 +10,14 @@ typedef enum {
 } MAGIC_FIELDTYPE;
 
 typedef enum {
-  MAGIC_TARGET_MYSELF,              /* 玩家自己 */
+  MAGIC_TARGET_MYSELF,              /* 愤坌及心 */
   MAGIC_TARGET_OTHER,               /* 其他玩家 */
-  MAGIC_TARGET_ALLMYSIDE,           /* 我放全体 */
-  MAGIC_TARGET_ALLOTHERSIDE,        /* 敌方全体 */
-  MAGIC_TARGET_ALL,                 /* 战场全体 */
+  MAGIC_TARGET_ALLMYSIDE,           /* 蝈 */
+  MAGIC_TARGET_ALLOTHERSIDE,        /* 锹澎础蝈 */
+  MAGIC_TARGET_ALL,                 /* 蝈化 */
   MAGIC_TARGET_NONE,                /* 不作用于任何人：例如战场属性？ */
   MAGIC_TARGET_OTHERWITHOUTMYSELF,  /* 和其他玩家有什么区别? */
-  MAGIC_TARGET_WITHOUTMYSELFANDPET, /* 不作用于玩家自己及宠物 */
+  MAGIC_TARGET_WITHOUTMYSELFANDPET, /* 愤坌午矢永玄动陆 */
   MAGIC_TARGET_WHOLEOTHERSIDE,      /* 和敌方全体有什么区别? */
 #ifdef _ATTACK_MAGIC
   MAGIC_TARGET_SINGLE,   // 针对敌方的某一人
@@ -38,10 +38,10 @@ typedef enum {
 } MAGIC_DATAINT;
 
 typedef enum {
-  MAGIC_NAME,         /* 魔法名称 */
-  MAGIC_COMMENT,      /* 魔法描述 */
-  MAGIC_FUNCNAME,     /* 魔法调用函数名称 */
-  MAGIC_OPTION,       /* 魔法选项 */
+  MAGIC_NAME,         /* 热诸 */
+  MAGIC_COMMENT,      /* 戊丢件玄 */
+  MAGIC_FUNCNAME,     /* 楮醒 */
+  MAGIC_OPTION,       /* 左皿扑亦件 */
   MAGIC_DATACHARNUM,  /* 魔法字符串数据数量 */
 } MAGIC_DATACHAR;
 

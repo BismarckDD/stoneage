@@ -45,7 +45,7 @@ time_t AngelNextTime;
 void AngelReadyProc();
 #endif
 
-// 跃迁日志
+// 启动封包处理线程
 void warplog_proc();
 
 

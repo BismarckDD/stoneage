@@ -28,7 +28,7 @@ typedef enum
 #endif
 }LUAITEM_FUNC;
 
-//获取数据的接口
+//新增
 int NPC_Lua_Item_GetData(lua_State *_NLL)
 {
 	CheckEx(_NLL, 2);

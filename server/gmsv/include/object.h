@@ -4,7 +4,7 @@
 #include "common.h"
 
 typedef enum {
-  OBJTYPE_NOUSE,         /* 描述一个未使用的对象 */
+  OBJTYPE_NOUSE,         /* 仇及奶件犯永弁旦反银匀化中卅中午中丹仪毛憎允 */
   OBJTYPE_CHARA,         /* 描述一个玩家 */
   OBJTYPE_ITEM,          /* 描述一个物品 */
   OBJTYPE_GOLD,          /* 描述一个金币 */

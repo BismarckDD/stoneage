@@ -19,7 +19,7 @@ extern char hanzibuf[5000][8];
 #ifdef _JZ_NEWSCRIPT_LUA
 
 //////////////////////////////////////////////////////////////////////////////
-//设置数据的接口
+//通过帐号查询人物索引
 int NPC_Lua_Char_ClrEvtEnd(lua_State *_NLL)
 {
 	CheckEx2(_NLL, 2, LUA_MINSTACK);

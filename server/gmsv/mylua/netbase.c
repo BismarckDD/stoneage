@@ -14,7 +14,7 @@ static int endOne(lua_State *L)
 	char charname[32];
 	CONNECT_getCharname(sockfd,charname,32);
 	CONNECT_getCdkey(sockfd,cdkey,16);
-	LogCharOut(charname,cdkey,__FILE__,__FUNCTION__,__LINE__,"ABLUA������");
+	LogCharOut(charname,cdkey,__FILE__,__FUNCTION__,__LINE__,"ABLUA踢下线");
 #endif
 	CONNECT_endOne_debug(sockfd);
 

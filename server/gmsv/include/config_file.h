@@ -520,10 +520,10 @@ int getPetEnemyDevelopUp();
 #endif
 #ifdef _PETSKILL_NEW_PASSIVE
 int getAutoGetSkill(void);
-int getSkillFusion(void); // ���������Ƿ�����Ŵ�
-int getSkillCount(void);  // ������������
-int getSkillPos(void);    // ��������ϰ��λ��
-int getRandSkill(void);   // �����ü���
+int getSkillFusion(void); // 被动技能是否可以遗传
+int getSkillCount(void);  // 被动技能数量
+int getSkillPos(void);    // 被动技能习得位置
+int getRandSkill(void);   // 随机获得技能
 int getFusionRange(int start);
 int isFusionPet(int petId);
 int getSkillProb(int skillLevel);

@@ -102,6 +102,10 @@ static BOOL CALLBACK sa_start_winsock(PINIT_ONCE once, PVOID parameter,
 }
 
 int sa_platform_init(void) {
+  /* Source strings are UTF-8; make the Windows console decode them as UTF-8. */
+  SetConsoleOutputCP(CP_UTF8);
+  SetConsoleCP(CP_UTF8);
+
   InitOnceExecuteOnce(&g_winsock_once, sa_start_winsock, NULL, NULL);
   if (g_winsock_error != 0) {
     sa_set_socket_errno(g_winsock_error);

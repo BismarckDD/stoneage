@@ -1,1 +1,1 @@
-mysql -uroot -psamysql -h211.93.18.51 -P13306 < database.sql
+mysql -uroot -psamysql -h127.0.0.1 -P3306 < database.sql

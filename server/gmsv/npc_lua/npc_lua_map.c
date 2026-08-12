@@ -52,7 +52,7 @@ int NPC_ABLua_map_getfloorY(lua_State *_NLL)
 #endif
 
 
-int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL)           //���ĳ���Ƿ��ڵ�ͼ��Χ�ڡ�
+int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL)           //检测某点是否在地图范围内。
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);
@@ -64,7 +64,7 @@ int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL)           //���ĳ���
 }
 
 
-int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL)           //����ͼ�Ƿ�֧�ֵǳ�
+int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL)           //检测地图是否支持登出
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -74,8 +74,8 @@ int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL)           //����ͼ�Ƿ�
 	unsigned int point;
 	point = MAP_getExFloor_XY( map , &map_type);
 	if( point > 0 )	{
-		if( map_type >= 0 )	{	// map_type >= 0 ���Ȼؼ�¼��
-			if( map == map_type && map >= 0 )	{//�ؼ�¼��
+		if( map_type >= 0 )	{	// map_type >= 0 优先回纪录点
+			if( map == map_type && map >= 0 )	{//回纪录点
 			}else	{
 				maparray[0] = (point>>16)&0xffffff;
 				maparray[1] = (point>>8)&0xff;
@@ -104,7 +104,7 @@ int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL)           //����ͼ�Ƿ�
 	LRetArray(_NLL,maparray,arraysizeof(maparray));
 }
 
-int NPC_Lua_Map_GetfloorX(lua_State *_NLL)           //��ȡ��ͼX����
+int NPC_Lua_Map_GetfloorX(lua_State *_NLL)           //获取地图X长度
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -114,7 +114,7 @@ int NPC_Lua_Map_GetfloorX(lua_State *_NLL)           //��ȡ��ͼX���
 	LRetInt(_NLL, x);
 }
 
-int NPC_Lua_Map_GetfloorY(lua_State *_NLL)           //��ȡ��ͼY����
+int NPC_Lua_Map_GetfloorY(lua_State *_NLL)           //获取地图Y长度
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -124,7 +124,7 @@ int NPC_Lua_Map_GetfloorY(lua_State *_NLL)           //��ȡ��ͼY���
 	LRetInt(_NLL, y);
 }
 
-int NPC_Lua_Map_GetTileAndObjId(lua_State *_NLL)          //��ȡ��ͼĳ��ĵذ��װ�β�
+int NPC_Lua_Map_GetTileAndObjId(lua_State *_NLL)          //获取地图某点的地板和装饰层
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);
@@ -139,7 +139,7 @@ int NPC_Lua_Map_GetTileAndObjId(lua_State *_NLL)          //��ȡ��ͼĳ�
 	LRetArray(_NLL,maparray,arraysizeof(maparray));
 }
 
-int NPC_Lua_Map_SetTileAndObjId(lua_State *_NLL)           //���õ�ͼĳ��ĵذ��װ�β�
+int NPC_Lua_Map_SetTileAndObjId(lua_State *_NLL)           //设置地图某点的地板和装饰层
 {
 	CheckEx(_NLL, 5);
 	CheckIndexNull(_NLL, 1);
@@ -152,7 +152,7 @@ int NPC_Lua_Map_SetTileAndObjId(lua_State *_NLL)           //���õ�ͼĳ�
 	LRetInt(_NLL, -1);
 }
 
-int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *_NLL)           //��ȡĳ���Ƿ��������
+int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *_NLL)           //获取某点是否可以行走
 {
 	CheckEx2(_NLL, 3,4);
 	CheckIndexNull(_NLL, 1);
@@ -168,7 +168,7 @@ int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *_NLL)           //��ȡĳ��
 	LRetBool(_NLL, IsFly);
 }
 
-int NPC_Lua_Map_GetImageData(lua_State *_NLL)          //��ȡͼƬ����
+int NPC_Lua_Map_GetImageData(lua_State *_NLL)          //获取图片数据
 {
 	CheckEx(_NLL, 2);
 	CheckIndexNull(_NLL, 1);
@@ -183,9 +183,9 @@ int NPC_Lua_Map_GetImageData(lua_State *_NLL)          //��ȡͼƬ����
 			LRetInt(_NLL, TM_RetInt);
 		}
 	}
-	LRetErrNull(_NLL, "����ı�־�Ǵ���ġ�");
+	LRetErrNull(_NLL, "传入的标志是错误的。");
 }
-int NPC_Lua_Map_SetImageData(lua_State *_NLL)           //����ͼƬ����
+int NPC_Lua_Map_SetImageData(lua_State *_NLL)           //设置图片数据
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);
@@ -201,10 +201,10 @@ int NPC_Lua_Map_SetImageData(lua_State *_NLL)           //����ͼƬ��
 			LRetBool(_NLL, TM_RetBool);
 		}
 	}
-	LRetErrNull(_NLL, "����ı�־�Ǵ���ġ�");
+	LRetErrNull(_NLL, "传入的标志是错误的。");
 }
 static OBJECT TM_Object = NULL;
-int NPC_Lua_Map_GetTopObj(lua_State *_NLL)           //������ȡ��ͼĳ���϶���
+int NPC_Lua_Map_GetTopObj(lua_State *_NLL)           //用来获取地图某点上对象
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);
@@ -215,7 +215,7 @@ int NPC_Lua_Map_GetTopObj(lua_State *_NLL)           //������ȡ��
 	LRetBool(_NLL, TRUE);
 }
 
-int NPC_Lua_Map_GetNextObj(lua_State *_NLL)           //��ȡ��һ����������
+int NPC_Lua_Map_GetNextObj(lua_State *_NLL)           //获取下一个对象索引
 {
 	CheckEx(_NLL, 0);
 	int TM_ObjIndex = GET_OBJINDEX(TM_Object);
@@ -228,7 +228,7 @@ int NPC_Lua_Map_GetNextObj(lua_State *_NLL)           //��ȡ��һ���
 	LRetInt(_NLL, TM_ObjIndex);
 }
 
-int NPC_Lua_Map_CheckImageIndex(lua_State *_NLL)           //���ĳ��ͼ��ͼƬ�Ƿ����
+int NPC_Lua_Map_CheckImageIndex(lua_State *_NLL)           //检测某地图号图片是否存在
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -237,7 +237,7 @@ int NPC_Lua_Map_CheckImageIndex(lua_State *_NLL)           //���ĳ��ͼ
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_CheckIndex(lua_State *_NLL)          //���ĳ��ͼ�ŵ�ͼ�Ƿ����
+int NPC_Lua_Map_CheckIndex(lua_State *_NLL)          //检测某地图号地图是否存在
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -246,7 +246,7 @@ int NPC_Lua_Map_CheckIndex(lua_State *_NLL)          //���ĳ��ͼ�ŵ�
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_MakeNewMap(lua_State *_NLL)          //����һ��������ͼ���������µ�ͼ��
+int NPC_Lua_Map_MakeNewMap(lua_State *_NLL)          //制造一个副本地图，并返回新地图号
 {
 	CheckEx2(_NLL, 1, 2);
 	CheckIndexNull(_NLL, 1);
@@ -262,7 +262,7 @@ int NPC_Lua_Map_MakeNewMap(lua_State *_NLL)          //����һ����
 	LRetInt(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_DelNewMap(lua_State *_NLL)          //ɾ��һ��������ͼ
+int NPC_Lua_Map_DelNewMap(lua_State *_NLL)          //删除一个副本地图
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -271,7 +271,7 @@ int NPC_Lua_Map_DelNewMap(lua_State *_NLL)          //ɾ��һ������
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_SetExWarp(lua_State *_NLL)          //����һ����ͼ���˳����͵�
+int NPC_Lua_Map_SetExWarp(lua_State *_NLL)          //设置一个地图的退出传送点
 {
 	CheckEx(_NLL, 5);
 	CheckIndexNull(_NLL, 1);
@@ -279,12 +279,12 @@ int NPC_Lua_Map_SetExWarp(lua_State *_NLL)          //����һ����
 	int exfl = (int)lua_tointeger(_NLL, 2);
 	int exx = (int)lua_tointeger(_NLL, 3);
 	int exy = (int)lua_tointeger(_NLL, 4);
-	int type = (int)lua_tointeger(_NLL, 4);//��ͼ����
+	int type = (int)lua_tointeger(_NLL, 4);//地图类型
 	BOOL TM_Ret = MAP_SetExWarp( map, exfl,exx,exy,type) ;
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_SetMapPoint(lua_State *_NLL)          //����һ����ͼ���͵� ����һ�����͵�����
+int NPC_Lua_Map_SetMapPoint(lua_State *_NLL)          //设置一个地图传送点 返回一个传送点索引
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -293,7 +293,7 @@ int NPC_Lua_Map_SetMapPoint(lua_State *_NLL)          //����һ����
 	LRetInt(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_DelMapPoint(lua_State *_NLL)          //ɾ��һ�����͵�
+int NPC_Lua_Map_DelMapPoint(lua_State *_NLL)          //删除一个传送点
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -302,7 +302,7 @@ int NPC_Lua_Map_DelMapPoint(lua_State *_NLL)          //ɾ��һ�����
 	LRetBool(_NLL, TM_Ret);
 }
 
-int NPC_Lua_Map_getFloorName(lua_State *_NLL)          //����һ����ͼ��
+int NPC_Lua_Map_getFloorName(lua_State *_NLL)          //返回一个地图名
 {
 	CheckEx(_NLL, 1);
 	CheckIndexNull(_NLL, 1);
@@ -311,7 +311,7 @@ int NPC_Lua_Map_getFloorName(lua_State *_NLL)          //����һ���
 	LRetMsg(_NLL, MapName);
 }
 /*
-int NPC_Lua_Map_Upmap(lua_State *_NLL)          //���µ�ͼ
+int NPC_Lua_Map_Upmap(lua_State *_NLL)          //更新地图
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);

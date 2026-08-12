@@ -78,14 +78,13 @@ CREATE TABLE IF NOT EXISTS `counter` (
 -- 表的结构 `CSAinfo`
 CREATE TABLE IF NOT EXISTS `CSAinfo` (
   `cdkey` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
-  `saveindex` int(11) NOT NULL,
-  `name` varchar(32) CHARACTER SET utf8mb4 NOT NULL,
+  `saveindex` tinyint(1) NOT NULL DEFAULT 0 COMMENT '1个账号可以建2个人物.',
+  `name` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL COMMENT '角色名称',
   `famename` varchar(32) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
-  `CE` int(16) NOT NULL DEFAULT '0',
-  `level` int(11) NOT NULL,
-  `trans` int(11) NOT NULL,
-  `alive` int(11) NOT NULL,
-  `cameo` int(11) NOT NULL,
+  `level` int(11) NOT NULL DEFAULT 1 COMMENT '',
+  `trans` int(11) NOT NULL DEFAULT 0 COMMENT '',
+  `alive` int(11) NOT NULL DEFAULT 0 COMMENT '',
+  `cameo` int(11) NOT NULL DEFAULT 0 COMMENT '石器币数量',
   `fame` int(11) NOT NULL,
   `TITLE_LV` int(11) NOT NULL,
   `DUELBATTLECOUNT` int(11) NOT NULL,
@@ -126,7 +125,6 @@ CREATE TABLE IF NOT EXISTS `CSAlogin` (
   `OnlineName2` varchar(32) CHARACTER SET utf8mb4 DEFAULT NULL,
   `Online` tinyint(4) DEFAULT '0',
   `Path` varchar(16) DEFAULT '',
-  `CE` int(16) NOT NULL DEFAULT '0',
   `VipPoint` int(11) DEFAULT '0',
   `PayPoint` int(11) NOT NULL,
   `GamblePoint` int(11) NOT NULL,
@@ -390,4 +388,3 @@ CREATE TABLE IF NOT EXISTS `yuxiaxielog` (
   `sumfame` int(11) NOT NULL,
   `fixtime` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-

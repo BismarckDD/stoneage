@@ -51,7 +51,6 @@ lua_const M_Lua_RegConstList[] = {
   {"对像_CR%", sizeof("对像_CR%"), LUA_DATALINE0 + CHAR_COUNTER},
   {"对像_珍稀%", sizeof("对像_珍稀%"), LUA_DATALINE0 + CHAR_RARE},
   {"对像_RH%", sizeof("对像_RH%"), LUA_DATALINE0 + CHAR_RADARSTRENGTH},
-  {"对像_CE%", sizeof("对像_CE%"), LUA_DATALINE0 + CHAR_CHATVOLUME},
   {"对像_ML%", sizeof("对像_ML%"), LUA_DATALINE0 + CHAR_MERCHANTLEVEL},
   {"对像_记录%", sizeof("对像_记录%"), LUA_DATALINE0 + CHAR_SAVEPOINT},
   {"对像_DM%", sizeof("对像_DM%"), LUA_DATALINE0 + CHAR_DETERMINEITEM},

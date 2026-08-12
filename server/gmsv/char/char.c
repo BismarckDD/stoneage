@@ -96,7 +96,7 @@ void CHAR_RedMemoy_WindowResult(int char_index, char *data);
  *  ch (char*):
  *  option (char*): opetion for analyze ch
  * Return Value:
- *  成功    TRUE
+ *  喇根    TRUE
  *  失败    FALSE */
 #ifdef _FAMILYBADGE_
 extern int getFamilyBadge(int index);
@@ -123,10 +123,7 @@ static BOOL CHAR_makeCharFromOptionAtCreate(Char *ch, int vital, int str,
 #define MAXPARAMETER 20
 #define PKMAXPARAMETER 300
   parasum = 0;
-  /*
-   * すべてのデ〖タの面に - はあってはならないし
-   * 峰あふれの祸を雇えておいて呵络の猛も亩えない
-   */
+  /* 所有能力值必须非负且不超过上限。 */
 
   for (i = 0; i < arraysizeof(para); i++) {
     if (para[i] < 0 || para[i] > MAXPARAMETER)
@@ -146,7 +143,7 @@ static BOOL CHAR_makeCharFromOptionAtCreate(Char *ch, int vital, int str,
 #define MAXATTRIBUTE 10
   cnt = 0;
   attrsum = 0;
-  /* 掳拉のチェックをする */
+  /* 检查四种属性点。 */
   for (i = 0; i < arraysizeof(para); i++) {
     if (attr[i] < 0 || attr[i] > MAXATTRIBUTE)
       return FALSE;
@@ -154,15 +151,15 @@ static BOOL CHAR_makeCharFromOptionAtCreate(Char *ch, int vital, int str,
     if (attr[i] > 0)
       cnt++;
   }
-  /* 圭纷猛は10 */
+  /* 属性点合计必须为 10。 */
   if (attrsum != MAXATTRIBUTE)
     return FALSE;
 
-  /* 2つより驴く充り碰てられていたら绿誊 */
+  /* 最多只能分配两种属性。 */
   if (cnt > 2)
     return FALSE;
 
-  /* 嫡掳拉は充り碰てられない */
+  /* 相反属性不能同时分配：地/火、水/风。 */
   if (attr[0] > 0 && attr[2] > 0)
     return FALSE;
   if (attr[1] > 0 && attr[3] > 0)
@@ -1763,7 +1760,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
         GmsvServer_WN_send(clifd, WINDOW_MESSAGETYPE_ANGELMESSAGE,
                          WINDOW_BUTTONTYPE_YESNO, CHAR_WINDOWTYPE_ANGEL_ASK, -1,
                          "目前魔族肆虐，精灵们需要你的帮忙，前往寻找勇者来消灭"
-                         "这些魔族，你是否愿意帮忙？");
+                         "目前魔族肆虐，精灵们需要你的帮忙，前往寻找勇者来消灭这些魔族，你是否愿意帮忙？");
       }
     }
   }
@@ -10089,7 +10086,7 @@ CHAR_COLORRED); break;
 #endif
               sprintf(token, "扣除个人积分：%d", iPrice);
               CHAR_talkToCli(char_index, -1, token, CHAR_COLORRED);
-              sprintf(token, "税收：%d, 增加个人积分：%d", tax, (iPrice - tax));
+              sprintf(token, "税收：%d, 增加个人气势：%d", tax, (iPrice - tax));
               CHAR_talkToCli(toindex, -1, token, CHAR_COLORRED);
             }
 #endif

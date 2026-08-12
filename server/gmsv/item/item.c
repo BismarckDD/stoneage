@@ -707,7 +707,7 @@ INLINE lua_State *ITEM_getLUAFunction(int item_index, int functype) {
   if (!ITEM_CHECKINDEX(item_index))
     return NULL;
   if (functype < ITEM_FIRSTFUNCTION || functype >= ITEM_LASTFUNCTION) {
-    print("���ʹ���2:%d\n", functype);
+    print("类型错误2:%d\n", functype);
     return NULL;
   }
   if (ITEM_gExists[item_index].item.lua[functype - ITEM_FIRSTFUNCTION] ==
@@ -1210,7 +1210,7 @@ CHAR_EquipPlace ITEM_getEquipPlace(int char_index, int itemid) {
   case ITEM_BREAKTHROW:
   case ITEM_BOUNDTHROW:
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   {
     int i = 0;
     for (i = 0; i < CHAR_SKILLMAXHAVE; i++) {
@@ -1366,7 +1366,7 @@ char *ITEM_makeItemStatusString(int haveitem_index, int item_index) {
   strcpy(INGNAME0, ITEM_getChar(item_index, ITEM_INGNAME0));
   strcpy(INGNAME1, ITEM_getChar(item_index, ITEM_INGNAME1));
   if ((INGNAME0[0] != '\0' && INGNAME1[0] != '\0') || (INGNAME0[0] == '\0')) {
-    strcpy(INGNAME0, "��");
+    strcpy(INGNAME0, "杂");
   }
 #endif
   if (haveitem_index == -1) {
@@ -1377,7 +1377,7 @@ char *ITEM_makeItemStatusString(int haveitem_index, int item_index) {
     if (crushe < 1)
       crushe = 1;
     if (maxcrushe < 1) {
-      sprintf(buff1, "������");
+      sprintf(buff1, "不会损坏");
     } else {
       maxcrushe = maxcrushe / 1000;
       crushe = crushe / 1000;
@@ -1428,7 +1428,7 @@ char *ITEM_makeItemStatusString(int haveitem_index, int item_index) {
     if (crushe < 1)
       crushe = 1;
     if (maxcrushe < 1) {
-      sprintf(buff1, "������");
+      sprintf(buff1, "不会损坏");
     } else {
       maxcrushe = maxcrushe / 1000;
       crushe = crushe / 1000;
@@ -1478,7 +1478,7 @@ char *ITEM_makeItemStatusString(int haveitem_index, int item_index) {
 
 char *ITEM_makeItemFalseString(void) {
 
-#ifdef _ADD_SHOW_ITEMDAMAGE // WON ADD ��ʾ��Ʒ�;ö�
+#ifdef _ADD_SHOW_ITEMDAMAGE // WON ADD 显示物品耐久度
   strcpysafe(ITEM_itemStatusStringBuffer, sizeof(ITEM_itemStatusStringBuffer),
 #ifdef _ITEM_PILENUMS
 #ifdef _ALCHEMIST
@@ -1499,7 +1499,7 @@ char *ITEM_makeItemFalseString(void) {
 }
 
 char *ITEM_makeItemFalseStringWithNum(int haveitem_index) {
-#ifdef _ADD_SHOW_ITEMDAMAGE // WON ADD ��ʾ��Ʒ�;ö�
+#ifdef _ADD_SHOW_ITEMDAMAGE // WON ADD 显示物品耐久度
   snprintf(ITEM_itemStatusStringBuffer, sizeof(ITEM_itemStatusStringBuffer),
 
 #ifdef _ITEM_PILENUMS
@@ -1565,7 +1565,7 @@ void ITEM_equipEffect(int index) {
       {ITEM_MODIFYDEFENCE, CHAR_WORKDEFENCEPOWER, -100, 0, EQUIP_FIX_MAX, 0},
       {ITEM_MODIFYQUICK, CHAR_WORKQUICK, -100, 0, EQUIP_FIX_MAX, 0},
       {ITEM_MODIFYHP, CHAR_WORKMAXHP, 0, 0, EQUIP_FIX_MAX, 0},
-      {ITEM_MODIFYMP, CHAR_WORKMAXMP, 0, 0, 1000, 0}, // MP ��100��ƥ
+      {ITEM_MODIFYMP, CHAR_WORKMAXMP, 0, 0, 1000, 0}, // MP 反100引匹
       {ITEM_MODIFYLUCK, CHAR_WORKFIXLUCK, 0, 1, 5, 0},
       {ITEM_MODIFYCHARM, CHAR_WORKFIXCHARM, 0, 0, 100, 0},
       {ITEM_MODIFYAVOID, CHAR_WORKFIXAVOID, 0, 0, EQUIP_FIX_MAX, 0},
@@ -1614,20 +1614,20 @@ void ITEM_equipEffect(int index) {
       int j;
       int attrib = 0;
       char *arg = ITEM_getChar(id, ITEM_ARGUMENT);
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
       if (i == CHAR_ARM)
         CHAR_sendStatusString(index, "S");
 #endif
       for (j = 0; j < arraysizeof(itemEffect); j++) {
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
         if (i == CHAR_EQSHIELD &&
             CHAR_getInt(index, CHAR_WHICHTYPE) != CHAR_TYPEPET) {
           int item_type = ITEM_FIST;
           item_type = ITEM_getInt(id, ITEM_TYPE);
-          // ������װ��������ʱ��
+          // 当左手装备武器的时候
           if (item_type != ITEM_WSHIELD) {
             int k;
-            // ��ʿְҵ���ܶ�����
+            // 勇士职业技能二刀流
             for (k = 0; k < CHAR_SKILLMAXHAVE; k++) {
               char *skill_name = "\0";
               // SKILL ID
@@ -1660,21 +1660,21 @@ void ITEM_equipEffect(int index) {
 #endif
 #ifdef _ITEM_PERCENTAGE
             if ((ITEM_MODIFYATTACK == itemEffect[j].itemdataintindex &&
-                 strstr(arg, "��") != NULL) ||
+                 strstr(arg, "攻") != NULL) ||
                 (ITEM_MODIFYDEFENCE == itemEffect[j].itemdataintindex &&
-                 strstr(arg, "��") != NULL) ||
+                 strstr(arg, "防") != NULL) ||
                 (ITEM_MODIFYQUICK == itemEffect[j].itemdataintindex &&
-                 strstr(arg, "��") != NULL) ||
+                 strstr(arg, "敏") != NULL) ||
                 (ITEM_MODIFYHP == itemEffect[j].itemdataintindex &&
-                 strstr(arg, "��") != NULL) ||
+                 strstr(arg, "体") != NULL) ||
                 (ITEM_MODIFYMP == itemEffect[j].itemdataintindex &&
-                 strstr(arg, "��") != NULL) ||
+                 strstr(arg, "气") != NULL) ||
                 (ITEM_MODIFYLUCK == itemEffect[j].itemdataintindex &&
-                 strstr(arg, "��") != NULL) ||
+                 strstr(arg, "运") != NULL) ||
                 (ITEM_MODIFYCHARM == itemEffect[j].itemdataintindex &&
-                 strstr(arg, "��") != NULL) ||
+                 strstr(arg, "魅") != NULL) ||
                 (ITEM_MODIFYAVOID == itemEffect[j].itemdataintindex &&
-                 strstr(arg, "��") != NULL)) {
+                 strstr(arg, "回") != NULL)) {
 
           itemEffect[j].accumulation +=
               CHAR_getWorkInt(index, itemEffect[j].charmodifyparamindex) *
@@ -1800,13 +1800,13 @@ void ITEM_equipEffect(int index) {
   if (angelmode == TRUE && angelequip == FALSE) {
     CHAR_setWorkInt(index, CHAR_WORKANGELMODE, FALSE);
     CHAR_sendAngelMark(CHAR_getWorkInt(index, CHAR_WORKOBJINDEX), 0);
-    print(" ж��ʹ������ ");
+    print(" 卸下使者信物 ");
   }
   if (angelmode == FALSE && angelequip == TRUE) {
     CHAR_setWorkInt(index, CHAR_WORKANGELMODE, TRUE);
     CHAR_sendAngelMark(CHAR_getWorkInt(index, CHAR_WORKOBJINDEX), 1);
-    CHAR_talkToCli(index, -1, "���ܵ��˾��鱣�������ᱻ���˹�����", CHAR_COLORYELLOW);
-    print(" װ��ʹ������ ");
+    CHAR_talkToCli(index, -1, "你受到了精灵保护，不会被敌人攻击。", CHAR_COLORYELLOW);
+    print(" 装备使者信物 ");
   }
 #endif
 
@@ -1916,7 +1916,7 @@ void Other_DefcharWorkInt(int index) {
 #endif
 #endif //_SUIT_ITEM
 
-#ifdef _MAGIC_RESIST_EQUIT // WON ADD ְҵ����װ��
+#ifdef _MAGIC_RESIST_EQUIT // WON ADD 职业抗性装备
                            /*{
                                    int f_res = -1, i_res = -1, t_res = -1;
                                    f_res = CHAR_getWorkInt( index, CHAR_WORK_F_RESIST );
@@ -1933,7 +1933,7 @@ void Other_DefcharWorkInt(int index) {
 
 #ifdef _PETSKILL_SETDUCK
   // profession fix
-  // ʹ�ûر���ʽʱ,�Ὣ��ֵ��ȥ30%Ȼ���趨�ɻر�ֵ,��ֵ��趨,Ҳ���ԭ���趨�Ļر�ֵ��û��һ��,�����(Change)�Ȱ������õ�
+  // 使用回避招式时,会将防值减去30%然後设定成回避值,奇怪的设定,也造成原本设定的回避值跟没设一样,因此我(Change)先把整段拿掉
   /*if( CHAR_getWorkInt( index, CHAR_MYSKILLDUCK) > 0 ){
           int mtgh = CHAR_getWorkInt( index, CHAR_WORKFIXTOUGH);
           mtgh -= (mtgh*30)/100;
@@ -1971,7 +1971,7 @@ void Other_DefcharWorkInt(int index) {
   }
 #endif
 
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   if (CHAR_getWorkInt(index, CHAR_MYSKILLHIT) > 0) {
     int mpower, mdef;
     mpower = CHAR_getWorkInt(index, CHAR_MYSKILLHIT);
@@ -1981,7 +1981,7 @@ void Other_DefcharWorkInt(int index) {
       mtgh = 0;
     CHAR_setWorkInt(index, CHAR_MYSKILLHIT, mpower);
   }
-  if (CHAR_getWorkInt(index, CHAR_WORK_WEAPON) > 0) { // ����ר��
+  if (CHAR_getWorkInt(index, CHAR_WORK_WEAPON) > 0) { // 武器专精
     int mpower, mdef;
     mpower = CHAR_getWorkInt(index, CHAR_WORKFIXSTR);
     mdef = CHAR_getWorkInt(index, CHAR_WORKMOD_WEAPON);
@@ -2039,7 +2039,7 @@ void Other_DefcharWorkInt(int index) {
                     CHAR_getWorkInt(index, CHAR_WORKWEAKEN) - 1);
   }
 #endif
-#ifdef _MAGIC_BARRIER // vincent  ����:ħ��
+#ifdef _MAGIC_BARRIER // vincent  精灵:魔障
   if (CHAR_getWorkInt(index, CHAR_WORKBARRIER) > 0) {
     CHAR_setWorkInt(index, CHAR_WORKBARRIER,
                     CHAR_getWorkInt(index, CHAR_WORKBARRIER) - 1);
@@ -2144,7 +2144,7 @@ int ITEM_isTargetValid(int char_index, int item_index, int toindex) {
   if ((toindex >= 0x0) && (toindex <= 0x13))
     return 0;
 
-  if (toindex == 0x14) { // 20 ����ȫ 0
+  if (toindex == 0x14) { // 20 右下全 0
     if (itemtarget == ITEM_TARGET_ALLMYSIDE) {
       if (Myside == 0)
         return 0;
@@ -2152,7 +2152,7 @@ int ITEM_isTargetValid(int char_index, int item_index, int toindex) {
       if (Myside == 1)
         return 0;
     }
-  } else if (toindex == 0x15) { // 21 ����ȫ 1
+  } else if (toindex == 0x15) { // 21 左上全 1
     if (itemtarget == ITEM_TARGET_ALLMYSIDE) {
       if (Myside == 1)
         return 0;
@@ -2181,7 +2181,7 @@ BOOL CHAR_CheckInItemForWares(int char_index, int flg) {
       if (flg == 0) {
         return FALSE;
       }
-      sprintf(token, "����%s", ITEM_getChar(item_index, ITEM_NAME));
+      sprintf(token, "交出%s", ITEM_getChar(item_index, ITEM_NAME));
       CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
 
       CHAR_setItemIndex(char_index, i, -1);
@@ -2302,7 +2302,7 @@ char *ITEM_petmakeItemStatusString(int petindex, int itemid) {
   int crushe = ITEM_getInt(item_index, ITEM_DAMAGECRUSHE);
   int maxcrushe = ITEM_getInt(item_index, ITEM_MAXDAMAGECRUSHE);
   if (maxcrushe < 1) {
-    sprintf(buff1, "������");
+    sprintf(buff1, "不会损坏");
   } else {
     maxcrushe = maxcrushe / 1000;
     crushe = crushe / 1000;

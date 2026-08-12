@@ -683,7 +683,7 @@ int ENEMY_getRank(int array, int tarray) {
 }
 
 static int EnemyGymSkill[] = {
-    PETSKILL_GUARDBREAK,          // 破除防御(3)
+    PETSKILL_GUARDBREAK,          // ㄢ“布□玉旰仄(3)
     PETSKILL_CONTINUATIONATTACK1, // 连续攻击1(10)
     PETSKILL_CONTINUATIONATTACK2, // 连续攻击2(11)
     PETSKILL_CONTINUATIONATTACK3, // 连续攻击3(12)
@@ -700,9 +700,9 @@ static int EnemyGymSkill[] = {
     PETSKILL_CONFUSION_ATTACK,    // 混乱攻击(90)
     PETSKILL_DRUNK_ATTACK,        // 醉酒攻击(100)
     PETSKILL_SLEEP_ATTACK,        // 睡眠攻击(110)
-    PETSKILL_NOGUARD1,            // 不防守战法一(150)
-    PETSKILL_NOGUARD2,            // 不防守战法二(151)
-    PETSKILL_NOGUARD3,            // 不防守战法三(152)
+    PETSKILL_NOGUARD1,            // ㄠㄤㄟ“用□布□玉ㄠ(150)
+    PETSKILL_NOGUARD2,            // ㄠㄤㄠ“用□布□玉ㄡ(151)
+    PETSKILL_NOGUARD3,            // ㄠㄤㄡ“用□布□玉ㄢ(152)
 #ifdef _PSKILL_FALLGROUND
     PETSKILL_FALLGROUND, // 落马术
 #endif

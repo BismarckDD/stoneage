@@ -1,20 +1,17 @@
-﻿##############################
-#MYSQL基本配置
-#ifdef _SASQL
-#sql服务器IP
-sql_IP          127.0.0.1
-#sql服务器端口
-sql_Port        3306
-#sql服务器账号
-sql_ID          root
-#sql服务器密码
-sql_PS          admin
-#sql数据库名
-sql_DataBase    sa
-#sql人物信息表名
-sql_Table       sa_char
-#sql用户名字段
-sql_NAME        username
-#sql密码字段名
-sql_PASS        password
-#endif
+﻿# SAAC只需要配置SQL
+# SQL服务器HOST
+sql_host        127.0.0.1
+# SQL服务器PORT
+sql_port        3306
+# SQL服务器账号
+sql_username    root
+# SQL服务器密码
+sql_password    samysql
+# SQL使用的数据库名
+sql_database    sa
+# SQL使用的表名
+sql_table       sa_char
+# SQL用户名字段
+sql_name        username
+# SQL用户密码字段
+sql_pass        password

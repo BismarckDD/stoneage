@@ -57,7 +57,7 @@ INLINE int _initObjectOne(char *file, int line, Object *ob) {
         return i;
       } else {
         allocobjnum = (i + 1 >= objnum) ? 0 : i + 1;
-        print("%d ��ͼ������\n", ob->floor);
+        print("%d 地图不存在\n", ob->floor);
         return -1;
       }
     } else {
@@ -148,20 +148,20 @@ INLINE int OBJECT_setTime(int index, int newvalue) {
 #endif
 
 /*------------------------------------------------------------
- * index ë  ��
- * ¦��
- *  index      int     �̼������͵�
- * ߯Ի��
+ * index 毛  月
+ * 娄醒
+ *  index      int     奶件犯永弁旦
+ * 忒曰袄
  *  int
  ------------------------------------------------------------*/
 INLINE int OBJECT_getIndex(int index) { return obj[index].index; }
 /*------------------------------------------------------------
- * y ëɬ������
- * ¦��
- *  index      int     �̼������͵�
- *  newvalue    int     ޥ���а�
- * ߯Ի��
- *  int �ɼ���
+ * y 毛涩烂允月
+ * 娄醒
+ *  index      int     奶件犯永弁旦
+ *  newvalue    int     蕙仄中袄
+ * 忒曰袄
+ *  int 樯及袄
  ------------------------------------------------------------*/
 INLINE int OBJECT_setIndex(int index, int newvalue) {
   int old;
@@ -171,26 +171,26 @@ INLINE int OBJECT_setIndex(int index, int newvalue) {
 }
 
 /*------------------------------------------------------------
- * ��Ƥ����������    ��ë�ƻ���
- * ¦��
- *  ئ��
- * ߯Ի��
+ * 左皮斥尼弁玄及    醒毛菲户月
+ * 娄醒
+ *  卅仄
+ * 忒曰袄
  *  int
  ------------------------------------------------------------*/
 INLINE int OBJECT_getNum(void) { return objnum; }
 
 /*------------------------------------------------------------
- *  ��Ƥ����������հ  ��������ë��  ¦�ѱ�  �Ȼ�
- *  ��Ƥ����������հ  ë��Ի���ƻ����  ���£�
+ *  左皮斥尼弁玄厌瞻  及丢件田毛蝈  娄醒卞  匀化
+ *  左皮斥尼弁玄厌瞻  毛综曰请仄化｝瓒  允月［
  *
- * ¦��
- *  type    OBJTYPE     ��Ƥ����������������
- *  index   int         ��ľ��ľ��    ƥ��index
- *  x       int         x��
- *  y       int         y��
+ * 娄醒
+ *  type    OBJTYPE     左皮斥尼弁玄及正奶皿
+ *  index   int         公木冗木及    匹及index
+ *  x       int         x甄
+ *  y       int         y甄
  *  floor   int         floorid
- * ߯Ի��
- *   int  �Ի񲻯ľ��index, ��  ���ݷ��� -1
+ * 忒曰袄
+ *   int  喃曰癫化木凶index, 撩  及凛反｝ -1
  ------------------------------------------------------------*/
 int initObjectFromObjectMember(OBJTYPE type, int index, int x, int y,
                                int floor) {
@@ -270,15 +270,15 @@ BOOL storeObjects(char *dirname) {
   } else {
     snprintf(igfilename, sizeof(igfilename), "%s/%s_extra", dirname,
              ITEMGOLDSTOREFILENAME);
-    print("\n---- ���ݱ����У����ر�GMSV ----- \n");
+    print("\n---- 数据保存中，请别关闭GMSV ----- \n");
   }
   igfile = fopen(igfilename, "w");
   if (igfile == NULL) {
-    print("\n\n---- ���ܴ� (%s) ������Ʒ�ļ�. ----- \n\n", igfilename);
+    print("\n\n---- 不能打开 (%s) 备份物品文件. ----- \n\n", igfilename);
     return FALSE;
   }
 
-  print("�������ݱ���...");
+  print("在线数据保存...");
   for (i = 0; i < objnum; i++) {
     switch (obj[i].type) {
     case OBJTYPE_ITEM: {
@@ -308,8 +308,8 @@ BOOL storeObjects(char *dirname) {
     }
   }
   fclose(igfile);
-  print("���\n");
-  print("���ݱ������\n");
+  print("完成\n");
+  print("数据保存结束\n");
   return TRUE;
 }
 #endif
@@ -384,7 +384,7 @@ BOOL restoreObjects(char *dirname) {
         int objindex;
         int petindex = PET_initCharOneArray(&ch);
         if (petindex < 0) {
-          print("��������ʧ�ܡ�\n");
+          print("宠物制作失败。\n");
         }
         object.type = OBJTYPE_CHARA;
         object.index = petindex;

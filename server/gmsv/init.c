@@ -33,7 +33,7 @@
 #include "longzoro/luckstar.h"
 #endif
 #include "autil.h"
-#ifdef _PROFESSION_SKILL // WON ADD ����ְҵ����
+#ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
 #include "profession_skill.h"
 #endif
 #ifdef _ONLINE_SHOP
@@ -102,15 +102,15 @@ BOOL parseCommandLine(int argc, char **argv) {
 #ifdef _CRYPTO_LUA
     case 'l': {
       int flg = 0, id = 0;
-      printf("������Ҫ���ܻ��ǽ��ܣ�(0Ϊ����, 1Ϊ����):");
+      printf("请问需要加密还是解密？(0为解密, 1为加密):");
       scanf("%d", &flg);
-      printf("����ID�Ƕ���:");
+      printf("请问ID是多少:");
       scanf("%d", &id);
       CryptoAllbluesLUA("allblues", flg, id);
       if (flg == 0) {
-        printf("����ɽ��ܹ���\n");
+        printf("已完成解密工作\n");
       } else {
-        printf("����ɼ��ܹ���\n");
+        printf("已完成加密工作\n");
       }
       return FALSE;
     } break;
@@ -193,7 +193,7 @@ BOOL init(int argc, char **argv, char **env) {
     int iWork = setAcWBSize();
     if (iWork == 0) {
       printf("----------------------------------------\n");
-      printf("-------------[AC����] �޷����� %s\n",
+      printf("-------------[AC缓冲] 无法设置 %s\n",
              getConfigfilename());
       printf("----------------------------------------\n");
       exit(1);
@@ -262,15 +262,15 @@ BOOL init(int argc, char **argv, char **env) {
     print("CA Send Interval: %d\n", getCAsendinterval_ms());
     print("CD Send Interval: %d\n", getCDsendinterval_ms());
     print("ִOne Loop Time: %d\n", getOnelooptime_ms());
-    print("宠物丢出后消失的时间: %d\n", getPetdeletetime());
-    print("物品丢出后消失的时间: %d\n", getItemdeletetime());
+    print("宠物清除时间: %d\n", getPetdeletetime());
+    print("道具清除时间: %d\n", getItemdeletetime());
 #ifdef _DEL_DROP_GOLD
-    print("金币消失时间: %d\n", getGolddeletetime());
+    print("石器清除时间: %d\n", getGolddeletetime());
 #endif
-    print("角色存储消息间隔: %d\n", getCharSavesendinterval());
-    print("通信录离线消息数量: %d\n", getAddressbookoffmsgnum());
-    print("通信协议读取频率: %d\n", getProtocolreadfrequency());
-    print("程序中允许出错的数量: %d\n", getAllowerrornum());
+    print("数据保存间隔: %d\n", getCharSavesendinterval());
+    print("名片最大数目: %d\n", getAddressbookoffmsgnum());
+    print("读取频率协议: %d\n", getProtocolreadfrequency());
+    print("连接错误上限: %d\n", getAllowerrornum());
 #ifdef _GET_BATTLE_EXP
     print("BattleEXP?: %d\n", getBattleexp());
 #endif
@@ -303,7 +303,7 @@ BOOL init(int argc, char **argv, char **env) {
           getNewplayergiveitem(14));
 #endif
 #ifdef _UNREG_NEMA
-    print("��ֹ��������: ����1:%s ����2:%s ����3:%s ����4:%s ����5:%s\n",
+    print("禁止人物名称: 名字1:%s 名字2:%s 名字3:%s 名字4:%s 名字5:%s\n",
           getUnregname(0), getUnregname(1), getUnregname(2), getUnregname(3),
           getUnregname(4));
 #endif
@@ -327,23 +327,23 @@ BOOL init(int argc, char **argv, char **env) {
     print("Pet Trans Num: %d\n", getPettrans());
 #endif
 #ifdef _POINT
-    print("��ֹ��������: %s\n", getPoint());
-    if (strcmp(getPoint(), "��"))
-      print("ÿת��������: 0ת:%d 1ת:%d 2ת:%d 3ת:%d 4ת:%d 5ת:%d 6ת:%d\n",
+    print("禁止点数上限: %s\n", getPoint());
+    if (strcmp(getPoint(), "是"))
+      print("每转点数上限: 0转:%d 1转:%d 2转:%d 3转:%d 4转:%d 5转:%d 6转:%d\n",
             getTransPoint(0), getTransPoint(1), getTransPoint(2),
             getTransPoint(3), getTransPoint(4), getTransPoint(5),
             getTransPoint(6));
 #endif
 #ifdef _PET_AND_ITEM_UP
-    print("丢出的宠物是否可以给其他玩家捡获: %s\n", getPetup());
-    print("丢出的道具是否可以给其他玩家捡获: %s\n", getItemup());
+    print("宠物能否捡获: %s\n", getPetup());
+    print("道具能否捡获: %s\n", getItemup());
 #endif
 #ifdef _LOOP_ANNOUNCE
     print("循环公告的文件路径: %s.\n", getLoopAnnouncePath());
     print("循环公告的间隔时间: %d.\n", getLoopAnnounceTime());
 #endif
 #ifdef _SKILLUPPOINT_CF
-    print("ÿ����������: %d\n", getSkup());
+    print("每级升级点数: %d\n", getSkup());
 #endif
 
 #ifdef _RIDELEVEL
@@ -386,27 +386,31 @@ BOOL init(int argc, char **argv, char **env) {
 #endif
   }
   { // andy_add 2003/05/05 check GameServer Name
-    char *GameServerName;
-    GameServerName = getGameserverID();
+    char *GameServerName = getGameserverID();
     if (GameServerName == NULL || strlen(GameServerName) <= 0) {
       return FALSE;
-      print("\nGameServerName ID: %s\n", GameServerName);
     }
+    print("\nGameServerName: %s\n", GameServerName);
   }
-  print("Start to init Resource.\n");
+  print("开始初始化内存设置......");
+  if (!configmem(getMemoryunit(), getMemoryunitnum())) {
+    print("\n内存配置无效：usememoryunit=%u, usememoryunitnum=%u。\n",
+          getMemoryunit(), getMemoryunitnum());
+    return FALSE;
+  }
+  if (!memInit()) {
+    print("\n内存池初始化失败。请检查可用内存及 usememoryunit 配置。\n");
+    return FALSE;
+  }
+  print("内存初始化完毕.\n");
 
-  // #define DEBUG1( arg... ) if( getDebuglevel()>1 ){##arg}
-  print("start to init memory......");
-  RETURN_FALSE_IF_FALSE(configmem(getMemoryunit(), getMemoryunitnum()));
-  RETURN_FALSE_IF_FALSE(memInit());
-  print("memory inited.\n");
-
-  print("Start to init Connect.");
-  if (!initConnect(getFdnum()))
+  print("开始初始化网络设置......");
+  if (!initConnect(getFdnum())) {
+    print("开始初始化网络设置......");
     goto MEMEND;
-  print("succeed.\n");
+  }
   while (1) {
-    print("start to listen port: %d......", getPortNumber());
+    print("开始监听端口: %d......", getPortNumber());
 #ifdef _EPOLL_ET_MODE
     bindedfd = epoll_bind(getPortNumber());
 #else
@@ -422,10 +426,10 @@ BOOL init(int argc, char **argv, char **env) {
       break;
   }
   print("succeed.\n");
-  print("Start to init object array......");
+  print("开始初始化物品列表......");
   if (!initObjectArray(getObjnum()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("初始化物品列表完毕.\n");
   print("Start to init char arry......");
 #ifdef _OFFLINE_SYSTEM
   if (!CHAR_initCharArray(getPlayercharnum(), getPetcharnum(),

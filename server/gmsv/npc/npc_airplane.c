@@ -7,16 +7,16 @@
 #include "object.h"
 
 /*
- * �������� (Made from Bus)
+ * 加美航空 (Made from Bus)
  */
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
 enum {
-  NPC_WORK_ROUTETOX = CHAR_NPCWORKINT1,   /* ����ߣ�  ��   */
-  NPC_WORK_ROUTETOY = CHAR_NPCWORKINT2,   /* ����ߣ�  ��   */
-  NPC_WORK_ROUTEPOINT = CHAR_NPCWORKINT3, /* ����    �� */
-  NPC_WORK_ROUNDTRIP = CHAR_NPCWORKINT4, /* ���微��Ի��  �ߡ����� �ࡰ��Ի  */
+  NPC_WORK_ROUTETOX = CHAR_NPCWORKINT1,   /* 升仇尺＂  甄   */
+  NPC_WORK_ROUTETOY = CHAR_NPCWORKINT2,   /* 升仇尺＂  甄   */
+  NPC_WORK_ROUTEPOINT = CHAR_NPCWORKINT3, /* 漆窒    井 */
+  NPC_WORK_ROUNDTRIP = CHAR_NPCWORKINT4, /* 垫五井窖曰井  ㄟ“垫五 ㄠ“窖曰  */
   NPC_WORK_MODE = CHAR_NPCWORKINT5,
   NPC_WORK_CURRENTROUTE = CHAR_NPCWORKINT6,
   NPC_WORK_ROUTEMAX = CHAR_NPCWORKINT7,
@@ -27,7 +27,7 @@ enum {
   NPC_WORK_RUNWAVE = CHAR_NPCWORKINT13,
 };
 
-/* ��  ���������⼰enum */
+/* 蛐  丢永本□斥及enum */
 enum {
   NPC_AIR_MSG_GETTINGON,
   NPC_AIR_MSG_NOTPARTY,
@@ -45,17 +45,16 @@ typedef struct {
   char defaultmsg[128];
 } NPC_AIR_MSG;
 static NPC_AIR_MSG airmsg[] = {
-    {"msg_gettingon", "PAON�������޷����;��������ࡣ��"
-                      "�"},
-    {"msg_notparty", "PAPAON�����޷����ŶӼ���ࡣ�"},
-    {"msg_overparty", "PAON��������������"},
-    {"msg_denieditem", "PAPAON�����ҿɲ�Ҫ������ߣ�"},
-    {"msg_allowitem", "���~(��Ҫ�Ǹ����߰�!)"},
-    {"msg_level", "PAPAON������ĵȼ�������ࡣ�"},
-    {"msg_stone", "PAPAON������Ǯ����ࡣ�"},
-    {"msg_event", "PAON�������޷�����ࡣ�"},
-    {"msg_start", "���~(��������)"},
-    {"msg_end", "���~(����)"}};
+    {"msg_gettingon", "PAON！（你无法于中途加入我们唷！）"},
+    {"msg_notparty", "PAPAON！！无法以团队加入唷！"},
+    {"msg_overparty", "PAON！！人数已满。"},
+    {"msg_denieditem", "PAPAON！！我可不要这个道具！"},
+    {"msg_allowitem", "哇喔~(想要那个道具啊!)"},
+    {"msg_level", "PAPAON！！你的等级还不够唷！"},
+    {"msg_stone", "PAPAON！！金钱不足唷！"},
+    {"msg_event", "PAON！！你无法加入唷！"},
+    {"msg_start", "哇喔~(出发进行)"},
+    {"msg_end", "哇喔~(到罗)"}};
 
 static int NPC_AirSetPoint(int meindex, char *argstr);
 static void NPC_AirSetDestPoint(int meindex, char *argstr);
@@ -71,7 +70,7 @@ static void NPC_Air_walk(int meindex);
 #define NPC_AIR_WAITINGMODE_WAITTIME 5000
 
 /*********************************
- * ������
+ * 赓渝质
  *********************************/
 BOOL NPC_AirInit(int meindex) {
   char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
@@ -84,7 +83,7 @@ BOOL NPC_AirInit(int meindex) {
 
   NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr));
 
-  /* ئ��ľ������ئ��¦�Ѽ��������� */
+  /* 卅仃木壬中仃卅中娄醒及民尼永弁 */
   routenum = NPC_Util_GetNumFromStrWithDelim(argstr, "routenum");
   if (routenum == -1) {
     print("npcair:nothing routenum \n");
@@ -132,34 +131,34 @@ BOOL NPC_AirInit(int meindex) {
 
   CHAR_setInt(meindex, CHAR_LOOPINTERVAL, NPC_AIR_WAITINGMODE_WAITTIME);
 
-  /* �ػ�������ë������ */
+  /* 蜇箕及凛棉毛本永玄 */
   CHAR_setWorkInt(meindex, NPC_WORK_CURRENTTIME, NowTime.tv_sec);
 
   for (i = 0; i < getPartyNum(meindex); i++) {
     CHAR_setWorkInt(meindex, CHAR_WORKPARTYINDEX1 + i, -1);
   }
 
-  /* ������������ */
+  /* 伙□玄瑁烂允月 */
   {
     int rev;
     int r = CHAR_getWorkInt(meindex, NPC_WORK_ROUTEMAX);
     CHAR_setWorkInt(meindex, NPC_WORK_CURRENTROUTE, RAND(1, r));
     // print( "route:%d\n",CHAR_getWorkInt( meindex, NPC_WORK_CURRENTROUTE));
 
-    /*   Ƿ�������� */
+    /*   欠旦正□玄 */
     rev = NPC_Util_GetNumFromStrWithDelim(argstr, "reverse");
     if (rev == 1) {
       int num = NPC_AirGetRoutePointNum(meindex, argstr);
       if (num <= 0) {
-        print("npcairplane:����֣�\n");
+        print("npcairplane:真奇怪！\n");
         return FALSE;
       }
       CHAR_setWorkInt(meindex, NPC_WORK_ROUTEPOINT, num - 1);
       CHAR_setWorkInt(meindex, NPC_WORK_ROUNDTRIP, 1);
     }
-    /* �����ë���������� */
+    /* 伙□玄毛本永玄允月 */
     NPC_AirSetPoint(meindex, argstr);
-    /* ������ë  ������ */
+    /* 垫五燮毛  憎允月 */
     NPC_AirSetDestPoint(meindex, argstr);
   }
 
@@ -167,18 +166,18 @@ BOOL NPC_AirInit(int meindex) {
 }
 
 /*********************************
- *   �ƾ�����ľ���ݼ���
+ *   仄井仃日木凶凛及质
  *********************************/
 void NPC_AirTalked(int meindex, int talkerindex, char *szMes, int color) {
   int i;
   int partyflg = FALSE;
   int npc_wave = CHAR_getWorkInt(meindex, NPC_WORK_RUNWAVE);
 
-  /* �����������帲�ƻ�����  ɱ���� */
+  /* 皿伊奶乩□卞覆仄化分仃  杀允月 */
   if (CHAR_getInt(talkerindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER) {
     return;
   }
-  /* ���м��ɡ�  ū  ���  ��������Ʃ���� */
+  /* 愤坌及由□  奴  昙菸  井升丹井譬屯月 */
   for (i = 0; i < getPartyNum(meindex); i++) {
     int index = CHAR_getWorkInt(meindex, CHAR_WORKPARTYINDEX1 + i);
     if (CHAR_CHECKINDEX(index)) {
@@ -193,21 +192,21 @@ void NPC_AirTalked(int meindex, int talkerindex, char *szMes, int color) {
     if (CHAR_getWorkInt(meindex, NPC_WORK_MODE) == 0) {
       int i;
       //		#define NPC_AIR_DEBUGROUTINTG	"routingtable:"
-      if (strstr(szMes, "����") || strstr(szMes, "����") ||
+      if (strstr(szMes, "出发") || strstr(szMes, "出发") ||
           strstr(szMes, "Go") || strstr(szMes, "go")) {
         CHAR_setWorkInt(meindex, NPC_WORK_MODE, 1);
 
-        /* ��������Ѽ�������ë���ʻ�պ������ */
+        /* 伙□皿楮醒及裟请仄毛汹仁簧蘸卞允月 */
         CHAR_setInt(meindex, CHAR_LOOPINTERVAL, NPC_AIR_LOOPTIME);
 
-        /* SE   ����  Ѩ��ƹ������̫   */
+        /* SE   日允  穴件乒旦及陲太   */
         if (CHAR_getWorkInt(meindex, NPC_WORK_SEFLG)) {
           // andy_reEdit	NPC_WORK_RUNWAVE
           CHAR_sendSEoArroundCharacter(
               CHAR_getInt(meindex, CHAR_FLOOR), CHAR_getInt(meindex, CHAR_X),
               CHAR_getInt(meindex, CHAR_Y), npc_wave, TRUE);
         }
-        /* ��  �����ݼ�����������*/
+        /* 请  允月凛及丢永本□斥*/
         for (i = 1; i < getPartyNum(meindex); i++) {
           int partyindex = CHAR_getWorkInt(meindex, CHAR_WORKPARTYINDEX1 + i);
           if (CHAR_CHECKINDEX(partyindex)) {
@@ -219,26 +218,26 @@ void NPC_AirTalked(int meindex, int talkerindex, char *szMes, int color) {
   }
 }
 /**************************************
- * ���������
+ * 伙□皿楮醒
  **************************************/
 void NPC_AirLoop(int meindex) {
   int i;
   int npc_wave = CHAR_getWorkInt(meindex, NPC_WORK_RUNWAVE);
   switch (CHAR_getWorkInt(meindex, NPC_WORK_MODE)) {
   case 0:
-    /* ����ƹ�����ݣ�����ë������������ */
-    /* ���޻������׼�ƥ����  ���� */
+    /* 谨切乒□玉及凛］凛棉毛民尼永弁允月 */
+    /* 凛棉互烦匀凶及匹］请  允月 */
     if (CHAR_getWorkInt(meindex, NPC_WORK_CURRENTTIME) +
             CHAR_getWorkInt(meindex, NPC_WORK_WAITTIME) <
         NowTime.tv_sec) {
-      /* SE   ����  Ѩ��ƹ������̫   */
+      /* SE   日允  穴件乒旦及陲太   */
       if (CHAR_getWorkInt(meindex, NPC_WORK_SEFLG)) {
         // ANDY_reEdit
         CHAR_sendSEoArroundCharacter(
             CHAR_getInt(meindex, CHAR_FLOOR), CHAR_getInt(meindex, CHAR_X),
             CHAR_getInt(meindex, CHAR_Y), npc_wave, TRUE);
       }
-      /* ��  �����ݼ�����������*/
+      /* 请  允月凛及丢永本□斥*/
       for (i = 1; i < getPartyNum(meindex); i++) {
         int partyindex = CHAR_getWorkInt(meindex, CHAR_WORKPARTYINDEX1 + i);
         if (CHAR_CHECKINDEX(partyindex)) {
@@ -247,27 +246,27 @@ void NPC_AirLoop(int meindex) {
       }
 
       CHAR_setWorkInt(meindex, NPC_WORK_MODE, 1);
-      /* ��������Ѽ�������ë���ʻ�պ������ */
+      /* 伙□皿楮醒及裟请仄毛汹仁簧蘸卞允月 */
       CHAR_setInt(meindex, CHAR_LOOPINTERVAL, NPC_AIR_LOOPTIME);
     }
     return;
   case 1:
-    /* ���� */
+    /* 汹仁 */
     NPC_Air_walk(meindex);
   case 2:
-    /* �����Ȼ�����ƹ���� */
-    /* ���޻������׼�ƥ����  ���� */
+    /* 鞅引匀化中月乒□玉 */
+    /* 凛棉互烦匀凶及匹］请  允月 */
     if (CHAR_getWorkInt(meindex, NPC_WORK_CURRENTTIME) +
             (CHAR_getWorkInt(meindex, NPC_WORK_WAITTIME) / 3) <
         NowTime.tv_sec) {
       CHAR_setWorkInt(meindex, NPC_WORK_MODE, 1);
-      /* ��������Ѽ�������ë���ʻ�պ������ */
+      /* 伙□皿楮醒及裟请仄毛汹仁簧蘸卞允月 */
       CHAR_setInt(meindex, CHAR_LOOPINTERVAL, NPC_AIR_LOOPTIME);
     }
     return;
   case 3:
-    /* �����ƻ��֣��ͷ���ʧ������  �����м��б��
-     * ���Ƴ��ƥ��������ë��ľ��֧��
+    /* 谗邋仄化手］弁仿奶失件玄及  樟谨切及啃卞］
+     * 剂仄仇仇匹它尼奶玄毛中木化支月
      */
     if (CHAR_getWorkInt(meindex, NPC_WORK_CURRENTTIME) + 3 < NowTime.tv_sec) {
       char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
@@ -303,7 +302,7 @@ void NPC_AirLoop(int meindex) {
   }
 }
 /**************************************
- * ���ʣ�
+ * 汹仁［
  **************************************/
 static void NPC_Air_walk(int meindex) {
   POINT start, end;
@@ -312,14 +311,14 @@ static void NPC_Air_walk(int meindex) {
   int i;
   int npc_wave = CHAR_getWorkInt(meindex, NPC_WORK_RUNWAVE);
 
-  /* �������� */
-  /* ���������ݼ���   */
+  /* 汹仁楮溢 */
+  /* 谗邋仄凶凛及质   */
   start.x = CHAR_getInt(meindex, CHAR_X);
   start.y = CHAR_getInt(meindex, CHAR_Y);
   end.x = CHAR_getWorkInt(meindex, NPC_WORK_ROUTETOX);
   end.y = CHAR_getWorkInt(meindex, NPC_WORK_ROUTETOY);
 
-  /* �������׼�ƥ�ݼ����̼����� */
+  /* 谗邋仄凶及匹戚及禾奶件玄卞 */
   if (start.x == end.x && start.y == end.y) {
     int add = 1;
     char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
@@ -332,25 +331,25 @@ static void NPC_Air_walk(int meindex) {
     CHAR_setWorkInt(meindex, NPC_WORK_ROUTEPOINT,
                     CHAR_getWorkInt(meindex, NPC_WORK_ROUTEPOINT) + add);
     if (NPC_AirSetPoint(meindex, argstr) == FALSE) {
-      /*     �����*/
-      /* ����ƹ��������� */
+      /*     卞谗邋*/
+      /* 谨切乒□玉卞允月 */
       CHAR_setWorkInt(meindex, NPC_WORK_MODE, 3);
 
-      /* SE   ����  Ѩ��ƹ������̫   */
+      /* SE   日允  穴件乒旦及陲太   */
       if (CHAR_getWorkInt(meindex, NPC_WORK_SEFLG)) {
         // ANDY_reEdit
         CHAR_sendSEoArroundCharacter(
             CHAR_getInt(meindex, CHAR_FLOOR), CHAR_getInt(meindex, CHAR_X),
             CHAR_getInt(meindex, CHAR_Y), npc_wave, TRUE);
       }
-      /* �������ݼ�����������*/
+      /* 邋中凶凛及丢永本□斥*/
       for (i = 1; i < getPartyNum(meindex); i++) {
         int partyindex = CHAR_getWorkInt(meindex, CHAR_WORKPARTYINDEX1 + i);
         if (CHAR_CHECKINDEX(partyindex)) {
           NPC_AirSendMsg(meindex, partyindex, NPC_AIR_MSG_END);
         }
       }
-      /* �ػ�������ë������ */
+      /* 蜇箕及凛棉毛本永玄 */
       CHAR_setWorkInt(meindex, NPC_WORK_CURRENTTIME, NowTime.tv_sec);
       return;
     } else {
@@ -358,21 +357,21 @@ static void NPC_Air_walk(int meindex) {
     }
   }
   /*-------------------------------------------------------*/
-  /* �ھ�������   */
+  /* 汹井六月质   */
 
-  /*   ��ë�ƻ��� */
+  /*   轾毛菲户月 */
   dir = NPC_Util_getDirFromTwoPoint(&start, &end);
 
-  /* ��������������    �ɡ�  ū����ƥ����   */
+  /* 漆中月桦赭及谨    由□  奴汹五匹银丹   */
   end.x = CHAR_getInt(meindex, CHAR_X);
   end.y = CHAR_getInt(meindex, CHAR_Y);
 
   if (dir >= 0 && dir <= 7) {
-    /* ���� */
+    /* 汹仁 */
     ret = CHAR_walk(meindex, dir, 0);
 
     if (ret == CHAR_WALKSUCCESSED) {
-      /* ���л���ئ������ë�ھ����� */
+      /* 愤坌互褪卅日醮棉毛汹井六月 */
       int i;
       int mefl = CHAR_getInt(meindex, CHAR_FLOOR);
       //		print("airmax=%d",getPartyNum(meindex  ));
@@ -390,16 +389,12 @@ static void NPC_Air_walk(int meindex) {
         if (CHAR_CHECKINDEX(toindex) && (mefl == fl) &&
             (abs(xx - end.x) + abs(yy - end.y) < 20)) {
           int parent_dir;
-          /* �Ҽ���  ����ʼ�����󡼰��  ����  ��ë�ƻ���
-           */
-          /* ���� */
+          /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+          /* 汹仁 */
           start.x = xx;
           start.y = yy;
           parent_dir = NPC_Util_getDirFromTwoPoint(&start, &end);
-          /* ��·�ū�����������������ë  �����¿б��
-           * �ݼ��ҷ�󡼰�Ҽ�
-           * ëܰ������������
-           */
+          /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
           end = start;
           //		print("\n i=%d parent_dir=%d",i,parent_dir);
           if (parent_dir != -1) {
@@ -411,7 +406,7 @@ static void NPC_Air_walk(int meindex) {
   }
 }
 /**************************************
- * �ݼ�����ë����������
+ * 戚及桦赭毛本永玄允月
  **************************************/
 static int NPC_AirSetPoint(int meindex, char *argstr) {
   char buf[4096];
@@ -472,8 +467,8 @@ static int NPC_AirSetPoint(int meindex, char *argstr) {
   return TRUE;
 }
 /**************************************
- * route  į���գ�  󡻥ؤ�����չ�ľë
- * ��į�����屾�������£�
+ * route  寞井日］  蟆互丐匀凶日公木毛
+ * 惫寞及午仇卞本永玄允月［
  **************************************/
 static void NPC_AirSetDestPoint(int meindex, char *argstr) {
   char buf[256];
@@ -489,8 +484,8 @@ static void NPC_AirSetDestPoint(int meindex, char *argstr) {
   }
 }
 /**************************************
- * ϶�ý�ľ��ʧ��  ةë  �Ȼ����¾�������������
- *   �Ȼ������շֻ�
+ * 隙烂今木凶失奶  丞毛  匀化中月井民尼永弁允月
+ *   匀化中凶日分户
  **************************************/
 static BOOL NPC_AirCheckDeniedItem(int meindex, int char_index, char *argstr) {
   char buf[1024];
@@ -522,8 +517,8 @@ static BOOL NPC_AirCheckDeniedItem(int meindex, int char_index, char *argstr) {
   return found;
 }
 /**************************************
- * ϶�ý�ľ��ʧ��  ةë  �Ȼ����¾�������������
- *   �Ȼ���ئ����ֻ�
+ * 隙烂今木凶失奶  丞毛  匀化中月井民尼永弁允月
+ *   匀化中卅中午分户
  **************************************/
 BOOL NPC_AirCheckAllowItem(int meindex, int char_index, BOOL pickupmode) {
   char buf[1024];
@@ -555,7 +550,7 @@ BOOL NPC_AirCheckAllowItem(int meindex, int char_index, BOOL pickupmode) {
         int item_index = CHAR_getItemIndex(char_index, j);
         if (ITEM_CHECKINDEX(item_index)) {
           if (ITEM_getInt(item_index, ITEM_ID) == itemid) {
-            /* ���������Ȼ����¾��գݹ���ʧ��  ةë���� */
+            /* 椭瘀互缭匀化中月井日］公及失奶  丞毛潸月 */
             if (pickupmode && pickup && !getflg) {
               CHAR_DelItem(char_index, j);
               getflg = TRUE;
@@ -574,12 +569,12 @@ BOOL NPC_AirCheckAllowItem(int meindex, int char_index, BOOL pickupmode) {
 }
 
 /**************************************
- * ϶�ý�ľ����ì�ﶯ����������������
+ * 隙烂今木凶伊矛伙动晓井民尼永弁允月
  **************************************/
 static BOOL NPC_AirCheckLevel(int meindex, int char_index, char *argstr) {
   int level;
 
-  /* ئ��ľ������ئ��¦�Ѽ��������� */
+  /* 卅仃木壬中仃卅中娄醒及民尼永弁 */
   level = NPC_Util_GetNumFromStrWithDelim(argstr, "needlevel");
   if (level == -1) {
     return TRUE;
@@ -591,13 +586,13 @@ static BOOL NPC_AirCheckLevel(int meindex, int char_index, char *argstr) {
 }
 
 /**************************************
- * ����ë������������
- * -1 ��   0������    �ݾ���  ۢStone
+ * 豢嗯毛民尼永弁允月
+ * -1 蛲   0动晓”    ］井勾  邰Stone
  **************************************/
 static int NPC_AirCheckStone(int meindex, int char_index, char *argstr) {
   int gold;
 
-  /* ئ��ľ������ئ��¦�Ѽ��������� */
+  /* 卅仃木壬中仃卅中娄醒及民尼永弁 */
   gold = NPC_Util_GetNumFromStrWithDelim(argstr, "needstone");
   if (gold == -1) {
     return 0;
@@ -608,8 +603,8 @@ static int NPC_AirCheckStone(int meindex, int char_index, char *argstr) {
   return -1;
 }
 /**************************************
- * ����������ë˪��
- * ¦�Ѽ����������⻥ئ��ľ�ɷ����ɻ�������������ë˪��
+ * 丢永本□斥毛霜月
+ * 娄醒及丢永本□斥互卅仃木壬犯白巧伙玄丢永本□斥毛霜月
  **************************************/
 static void NPC_AirSendMsg(int meindex, int talkerindex, int tablenum) {
   char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
@@ -629,7 +624,7 @@ static void NPC_AirSendMsg(int meindex, int talkerindex, int tablenum) {
   CHAR_talkToCli(talkerindex, meindex, msg, CHAR_COLORYELLOW);
 }
 /**************************************
- * �����  ��Ƥ�Ｐ���̼�������ë��  ����
+ * 伙□玄  □皮伙及禾奶件玄及醒毛潸  允月
  **************************************/
 static int NPC_AirGetRoutePointNum(int meindex, char *argstr) {
   int i;
@@ -659,28 +654,28 @@ BOOL NPC_AirCheckJoinParty(int meindex, int char_index, BOOL msgflg) {
   int ret;
   NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr));
 
-  /* ���������  ���� */
+  /* ㄠ弘伉永玉动  及心 */
   if (!NPC_Util_charIsInFrontOfChar(char_index, meindex, 1))
     return FALSE;
-  /*     ��ַ���  ���� */
+  /*     昙乐反蛐  允月 */
   if (CHAR_getWorkInt(meindex, NPC_WORK_MODE) != 0) {
     if (msgflg)
       NPC_AirSendMsg(meindex, char_index, NPC_AIR_MSG_GETTINGON);
     return FALSE;
   }
-  /* ��������������շֻ� */
+  /* 天□化不分匀凶日分户 */
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE) {
     if (msgflg)
       NPC_AirSendMsg(meindex, char_index, NPC_AIR_MSG_NOTPARTY);
     return FALSE;
   }
-  /* �ɡ�  ū������ë������������ */
+  /* 由□  奴及谛醒毛民尼永弁允月 */
   if (CHAR_getEmptyPartyArray(meindex) == -1) {
     if (msgflg)
       NPC_AirSendMsg(meindex, char_index, NPC_AIR_MSG_OVERPARTY);
     return FALSE;
   }
-  /* ʧ��  ة����������ë����(���ʧ��  ة) */
+  /* 失奶  丞及民尼永弁毛允月(嗟鞅失奶  丞) */
   if (!NPC_AirCheckDeniedItem(meindex, char_index, argstr)) {
     if (msgflg)
       NPC_AirSendMsg(meindex, char_index, NPC_AIR_MSG_DENIEDITEM);
@@ -688,25 +683,25 @@ BOOL NPC_AirCheckJoinParty(int meindex, int char_index, BOOL msgflg) {
   }
 #ifdef _ITEM_CHECKWARES
   if (CHAR_CheckInItemForWares(char_index, 0) == FALSE) {
-    CHAR_talkToCli(char_index, -1, "�޷�Я�������ϻ���",
+    CHAR_talkToCli(char_index, -1, "无法携带货物上机。",
                    CHAR_COLORYELLOW);
     return FALSE;
   }
 #endif
 
-  /* ʧ��  ة����������ë����(  ۢʧ��  ة) */
+  /* 失奶  丞及民尼永弁毛允月(  邰失奶  丞) */
   if (!NPC_AirCheckAllowItem(meindex, char_index, FALSE)) {
     if (msgflg)
       NPC_AirSendMsg(meindex, char_index, NPC_AIR_MSG_ALLOWITEM);
     return FALSE;
   }
-  /* ��ì�Ｐ��������ë���� */
+  /* 伊矛伙及民尼永弁毛允月 */
   if (!NPC_AirCheckLevel(meindex, char_index, argstr)) {
     if (msgflg)
       NPC_AirSendMsg(meindex, char_index, NPC_AIR_MSG_LEVEL);
     return FALSE;
   }
-  /* ��ì����  �������������� */
+  /* 奶矛件玄  井民尼永弁允月 */
   //	if( CHAR_getInt( char_index, CHAR_NOWEVENT) != 0 ||
   //		CHAR_getInt( char_index, CHAR_NOWEVENT2) != 0 ||
   //		CHAR_getInt( char_index, CHAR_NOWEVENT3) != 0 )
@@ -714,7 +709,7 @@ BOOL NPC_AirCheckJoinParty(int meindex, int char_index, BOOL msgflg) {
   //		if( msgflg) NPC_AirSendMsg( meindex, char_index,
   //NPC_AIR_MSG_EVENT); 		return FALSE;
   //	}
-  /* ���ż���������ë����  ����ë���¼�ƥ��  ���������ͱ����³����   */
+  /* 豢嗯及民尼永弁毛允月  云嗯毛潸月及匹］  蔽民尼永弁卞允月仇午″   */
   ret = NPC_AirCheckStone(meindex, char_index, argstr);
   if (ret == -1) {
     if (msgflg)
@@ -723,15 +718,15 @@ BOOL NPC_AirCheckJoinParty(int meindex, int char_index, BOOL msgflg) {
   }
   if (ret != 0) {
     char msgbuf[128];
-    /* ����ë���� */
+    /* 豢嗯毛午月 */
     CHAR_setInt(char_index, CHAR_GOLD,
                 CHAR_getInt(char_index, CHAR_GOLD) - ret);
-    /* ˪�� */
+    /* 霜耨 */
     CHAR_send_P_StatusString(char_index, CHAR_P_STRING_GOLD);
-    snprintf(msgbuf, sizeof(msgbuf), "֧����%d Stone��", ret);
+    snprintf(msgbuf, sizeof(msgbuf), "支付了%d Stone！", ret);
     CHAR_talkToCli(char_index, -1, msgbuf, CHAR_COLORYELLOW);
   }
-  /* �ɡ�  ū��  �� */
+  /* 由□  奴卞  月 */
   // CHAR_JoinParty_Main( char_index, meindex);
 
   // fd = getfdFromCharaIndex( char_index );

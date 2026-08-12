@@ -109,8 +109,8 @@ typedef struct tagServerState {
   BOOL acceptmore;
   unsigned int fdid; /* fd */
   unsigned int closeallsocketnum;
-  int shutdown;  /*  �ӡ���ëshutdown����ƹ���� */
-  int dsptime;   /* shutdown ƹ���񼰷�����  ��*/
+  int shutdown;  /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+  int dsptime;   /* shutdown 乒□玉及伐□弁  醒*/
   int limittime;
 } ServerState;
 
@@ -163,26 +163,23 @@ typedef struct tagCONNECT {
   int check_rb_oneline_b;
   int check_rb_time;
   pthread_mutex_t mutex;
-  struct sockaddr_in sin; /* �����Ƽ�ʧ������ */
-  ConnectType ctype;      /* ��������������˒� */
+  struct sockaddr_in sin; /* 涛粮燮及失玉伊旦 */
+  ConnectType ctype;      /* 戊生弁扑亦件及潘挀 */
   char cdkey[CDKEYLEN];   /* CDKEY */
-  char passwd[PASSWDLEN]; /* �ɵ������� */
-  LoginType state;        /* �ػ�������̼����� */
+  char passwd[PASSWDLEN]; /* 由旦伐□玉 */
+  LoginType state;        /* 蜇箕及夫弘奶件橇谪 */
   int nstatecount;
-  char charname[CHARNAMELEN]; /* ����̼��w��ƽ�ҷo */
-  int char_index; /* char?�d�߼��̼������͵��z
-                   * ����̼�ԉ�����ɬ�ý�ľ�©z-1�������ɻ���
-                   * ?�d��ئ���ݩz
-                   */
-  char CAbuf[2048]; /*  CA() ë�������¿м��������� */
-  int CAbufsiz; /*  CAbuf ��������  */
-  struct timeval lastCAsendtime; /*��ԉ��CAë˪�������� */
-  char CDbuf[2048]; /*  CD() ë�������¿м��������� */
-  int CDbufsiz; /*  CDbuf ��������  */
-  struct timeval lastCDsendtime; /*��ԉ��CDë˪�������� */
-  struct timeval lastCharSaveTime; /* ��ԉ��ƽ�ҷ·�����ë����Ƥ�������� */
-  struct timeval lastprocesstime; /* ��ԉ����������ë�ʆA��������*/
-  struct timeval lastreadtime; /* ��ԉ��read�������ީz���練�л���*/
+  char charname[CHARNAMELEN]; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+  int char_index; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+  char CAbuf[2048]; /*  CA() 毛做谅允月啃及田永白央 */
+  int CAbufsiz; /*  CAbuf 及扔奶术  */
+  struct timeval lastCAsendtime; /*瘉詨卞CA毛霜匀凶凛棉 */
+  char CDbuf[2048]; /*  CD() 毛做谅允月啃及田永白央 */
+  int CDbufsiz; /*  CDbuf 及扔奶术  */
+  struct timeval lastCDsendtime; /*瘉詨卞CD毛霜匀凶凛棉 */
+  struct timeval lastCharSaveTime; /* 瘉詨卞平乓仿犯□正毛本□皮仄凶凛棉 */
+  struct timeval lastprocesstime; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+  struct timeval lastreadtime; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
 
 // Nuke start 08/27 : For acceleration avoidance
 // WALK_TOLERANCE: Permit n W messages in a second (3: is the most restricted)
@@ -215,7 +212,7 @@ typedef struct tagCONNECT {
   int toxication;
 #endif
 
-#ifdef _ITEM_ADDEXP // vincent ������N
+#ifdef _ITEM_ADDEXP // 历史注释的原始编码已损坏，无法可靠恢复。
   int EDTime;
 #endif
   // unsigned int BEO;
@@ -554,7 +551,7 @@ SINGLETHREAD int lsrpcClientWriteFunc(int fd, char *buf, int size) {
     CONNECT_getCharname(fd, charname, 32);
     CONNECT_getCdkey(fd, cdkey, 16);
     char token[128];
-    sprintf(token, "appendWB����  r=%d    Connect[ fd ].wbuse + size=%d", r,
+    sprintf(token, "appendWB错误  r=%d    Connect[ fd ].wbuse + size=%d", r,
             Connect[fd].wbuse + size);
     LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
@@ -644,7 +641,7 @@ ANY_THREAD BOOL initConnectOne(int sockfd, struct sockaddr_in *sin, int len) {
   Connect[sockfd].wbuse = 0;
   Connect[sockfd].check_rb_oneline_b = 0;
   Connect[sockfd].check_rb_time = 0;
-  Connect[sockfd].close_request = 0; /* �Ӭۢ�ư׷º� */
+  Connect[sockfd].close_request = 0; /* 濠蝇邰菲白仿弘 */
   // Nuke 08/27 For acceleration avoidance
   Connect[sockfd].Walktime = 0;
   Connect[sockfd].lastWalktime = 0;
@@ -664,7 +661,7 @@ ANY_THREAD BOOL initConnectOne(int sockfd, struct sockaddr_in *sin, int len) {
 #ifdef _TYPE_TOXICATION
   Connect[sockfd].toxication = 0;
 #endif
-#ifdef _ITEM_ADDEXP // vincent ��������
+#ifdef _ITEM_ADDEXP //vincent 经验提升
   Connect[sockfd].EDTime = 0;
 #endif
   //      Connect[sockfd].BEO = 0;
@@ -883,7 +880,7 @@ SINGLETHREAD BOOL initConnect(int size) {
     memset(Connect[i].wb, 0, WBSIZE);
   }
 
-  print("ԤԼ %d ����...���� %.2f MB �ռ�...", size,
+  print("预约 %d 接连...分配 %.2f MB 空间...", size,
         (sizeof(CONNECT) * size + RBSIZE * size + WBSIZE * size) / 1024.0 /
             1024.0);
 
@@ -992,7 +989,7 @@ ANY_THREAD BOOL CONNECT_appendCAbuf(int fd, char *data, int size) {
   }
 #endif
   CONNECT_LOCK(fd);
-  /*  �Ǹ�Υǥ�ߥ��� ',' ��ʬ¿�����ݤ��ʤ������������   */
+  /* 为最后一个分隔符 ',' 预留空间。 */
   if ((Connect[fd].CAbufsiz + size) >= sizeof(Connect[fd].CAbuf)) {
     CONNECT_UNLOCK(fd);
     return FALSE;
@@ -1130,7 +1127,7 @@ ANY_THREAD void CONNECT_checkStatecount(int a) {
         CONNECT_getCharname(CONNECT_getCharaindex(i), charname, 32);
         CONNECT_getCdkey(CONNECT_getCharaindex(i), cdkey, 16);
         char token[128];
-        sprintf(token, "CONNECT_checkStatecount  T�� ");
+        sprintf(token, "CONNECT_checkStatecount  T人 ");
         LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
 
@@ -1561,13 +1558,7 @@ ANY_THREAD BOOL CONNECT_appendCDbuf(int fd, char *data, int size) {
   return TRUE;
 }
 
-/*------------------------------------------------------------
- * CDcheck �ʤɤ˻Ȥ���ؿ����ºݤ����롣
- * ����
- *  fd      int     �ե�����ǥ�������ץ�
- * �֤���
- *  �ʤ�
- ------------------------------------------------------------*/
+/* 发送 CDcheck 等流程累积的数据。fd 为文件描述符。 */
 ANY_THREAD void CDsend(int fd) {
   char buf[sizeof(Connect[0].CAbuf)];
   int bufuse = 0;
@@ -1580,9 +1571,7 @@ ANY_THREAD void CDsend(int fd) {
   CONNECT_setCDbufsiz(fd, 0);
 }
 
-/*------------------------------------------------------------
- * CD�����롣
- ------------------------------------------------------------*/
+/* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
 ANY_THREAD void CDcheck(void) {
   int i;
   unsigned int interval_us = getCDsendinterval_ms() * 1000;
@@ -1646,10 +1635,10 @@ void chardatasavecheck(void) {
 }
 
 /*------------------------------------------------------------
- * fd �� valid ئ�ּ���������ëƩ����
- * ¦��
+ * fd 互 valid 卅手及井升丹井毛譬屯月
+ * 娄醒
  *  fd          int         fd
- * ߯Ի��
+ * 忒曰袄
  *  valid   TRUE(1)
  *  invalid FALSE(0)
  ------------------------------------------------------------*/
@@ -1817,9 +1806,9 @@ ANY_THREAD BOOL CONNECT_isLOGIN(const int fd) {
 void closeAllConnectionandSaveData(void) {
   int i;
   int num;
-  /*  ����ʾ� accept ���ʤ��褦�ˤ���    */
+  /* 停止接受新的连接。 */
   SERVSTATE_setCloseallsocketnum(0);
-  /*  �����������    */
+  /* 保存并关闭全部连接。 */
   for (i = 0; i < ConnectLen; i++) {
     if (CONNECT_getUse_debug(i, 1413) == TRUE) {
       BOOL clilogin = FALSE;
@@ -1844,7 +1833,7 @@ void closeAllConnectionandSaveData(void) {
   } else {
     SERVSTATE_SetAcceptMore(0);
   }
-  print("\n��������������Ŀ:%d\n", num);
+  print("\n发送人物数据数目:%d\n", num);
 }
 
 // andy_add 2003/02/12
@@ -1857,7 +1846,7 @@ void CONNECT_SysEvent_Loop(void) {
   if (checkT != NowTimes && (checkT + 10) <= NowTimes) {
     int i;
     checkT = time(NULL);
-    chikulatime++; // ÿ10��
+    chikulatime++; //每10秒
 
     if (chikulatime > 10000)
       chikulatime = 0;
@@ -1888,38 +1877,38 @@ void CONNECT_SysEvent_Loop(void) {
         if (CHAR_getWorkInt(char_index, CHAR_WORK_STREET_VENDOR_TIME) <
             time(NULL) - 90) {
           int toindex = CHAR_getWorkInt(char_index, CHAR_WORKSTREETVENDOR_WHO);
-          // �����趨Ϊ��̯,�����״̬
+          // 卖方设定为摆摊,清除买方状态
           CHAR_setWorkInt(char_index, CHAR_WORKSTREETVENDOR, -1);
           CHAR_setWorkInt(toindex, CHAR_WORKSTREETVENDOR, 1);
-          // �������ͼʾ
+          // 清除交易图示
           CHAR_sendTradeEffect(char_index, 0);
           CHAR_sendTradeEffect(toindex, 0);
           CHAR_setWorkInt(toindex, CHAR_WORKSTREETVENDOR_WHO, -1);
           CHAR_setWorkInt(char_index, CHAR_WORKSTREETVENDOR_WHO, -1);
           GmsvServer_STREET_VENDOR_send(char_index, "C|");
-          CHAR_talkToCli(char_index, -1, "�鿴��̯ʱ�����,�����Զ�ȡ����Ĳ鿴",
+          CHAR_talkToCli(char_index, -1, "查看摆摊时间过长,卖家自动取消你的查看",
                          CHAR_COLORYELLOW);
         }
       }
 #endif
-      if (chikulatime % 6 == 0) { // ÿ60��
+      if (chikulatime % 6 == 0) { // 每60秒
 
 #ifdef _PETSKILL_BECOMEPIG
-        if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > -1) { // ���������״̬
+        if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > -1) { //处於乌力化状态
 
           if ((CHAR_getInt(char_index, CHAR_BECOMEPIG) - 1) <=
-              0) { // ����ʱ�������
+              0) { //乌力时间结束了
             CHAR_setInt(char_index, CHAR_BECOMEPIG, 0);
 
             if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
-                BATTLE_CHARMODE_NONE) { // ������ս��״̬��
-              CHAR_setInt(char_index, CHAR_BECOMEPIG, -1); // ��������״̬
+                BATTLE_CHARMODE_NONE) { //不是在战斗状态下
+              CHAR_setInt(char_index, CHAR_BECOMEPIG, -1); //结束乌力状态
               CHAR_complianceParameter(char_index);
               CHAR_sendCToArroundCharacter(
                   CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
               CHAR_send_P_StatusString(char_index,
                                        CHAR_P_STRING_BASEBASEIMAGENUMBER);
-              CHAR_talkToCli(char_index, -1, "������ʧЧ�ˡ�", CHAR_COLORWHITE);
+              CHAR_talkToCli(char_index, -1, "乌力化失效了。", CHAR_COLORWHITE);
             }
           } else {
             CHAR_setInt(char_index, CHAR_BECOMEPIG,
@@ -1947,7 +1936,7 @@ void CONNECT_SysEvent_Loop(void) {
             CHAR_warpToSpecificPoint(char_index, fl, x, y);
 
             CHAR_talkToCli(char_index, -1,
-                           "���������Ȩʱ���ѵ������԰����ͻؼ�¼�"
+                           "由于你的特权时间已到，所以把您送回记录点！"
                            "㣡",
                            CHAR_COLORYELLOW);
           }
@@ -1955,9 +1944,9 @@ void CONNECT_SysEvent_Loop(void) {
         }
       }
 
-      if (chikulatime % 30 == 0) { // ÿ300��
+      if (chikulatime % 30 == 0) { // 每300秒
 
-#ifdef _ITEM_ADDEXP // vincent ��������
+#ifdef _ITEM_ADDEXP //vincent 经验提升
 #ifdef _PET_ADD_EXP
         if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
           int exptime;
@@ -1968,15 +1957,15 @@ void CONNECT_SysEvent_Loop(void) {
             if (exptime <= 0) {
               CHAR_setWorkInt(char_index, CHAR_WORKITEM_ADDEXP, 0);
               CHAR_setWorkInt(char_index, CHAR_WORKITEM_ADDEXPTIME, 0);
-              CHAR_talkToCli(char_index, -1, "����ѧϰ�����������ʧ��!",
+              CHAR_talkToCli(char_index, -1, "提升学习经验的能力消失了!",
                              CHAR_COLORYELLOW);
             } else {
               CHAR_setWorkInt(char_index, CHAR_WORKITEM_ADDEXPTIME, exptime);
-              // print("\n ���ADDEXPTIME %d ", exptime);
+              //print("\n 检查ADDEXPTIME %d ", exptime);
 
               if ((exptime % (60 * 60)) < 300 && exptime >= (60 * 60)) {
                 char msg[1024];
-                sprintf(msg, "��������ѧϰ���������ʣ��Լ %d Сʱ��",
+                sprintf(msg, "您的提升学习经验的能力剩大约 %d 小时。",
                         (int)(exptime / (60 * 60)));
                 CHAR_talkToCli(char_index, -1, msg, CHAR_COLORYELLOW);
               }
@@ -1994,15 +1983,15 @@ void CONNECT_SysEvent_Loop(void) {
               if (exptime <= 0) {
                 CHAR_setWorkInt(petindex, CHAR_WORKITEM_ADDEXP, 0);
                 CHAR_setWorkInt(petindex, CHAR_WORKITEM_ADDEXPTIME, 0);
-                CHAR_talkToCli(char_index, -1, "����ѧϰ�����������ʧ��!",
+                CHAR_talkToCli(char_index, -1, "提升学习经验的能力消失了!",
                                CHAR_COLORYELLOW);
               } else {
                 CHAR_setWorkInt(petindex, CHAR_WORKITEM_ADDEXPTIME, exptime);
-                // print("\n ���ADDEXPTIME %d ", exptime);
+                //print("\n 检查ADDEXPTIME %d ", exptime);
 
                 if ((exptime % (60 * 60)) < 300 && exptime >= (60 * 60)) {
                   char msg[1024];
-                  sprintf(msg, "����%s����ѧϰ���������ʣ��Լ %d Сʱ��",
+                  sprintf(msg, "宠物%s提升学习经验的能力剩大约 %d 小时。",
                           CHAR_getChar(petindex, CHAR_NAME),
                           (int)(exptime / (60 * 60)));
                   CHAR_talkToCli(char_index, -1, msg, CHAR_COLORYELLOW);
@@ -2020,17 +2009,17 @@ void CONNECT_SysEvent_Loop(void) {
           if (exptime <= 0) {
             CHAR_setWorkInt(char_index, CHAR_WORKITEM_ADDEXP, 0);
             CHAR_setWorkInt(char_index, CHAR_WORKITEM_ADDEXPTIME, 0);
-            CHAR_talkToCli(char_index, -1, "����ѧϰ�����������ʧ��!",
+            CHAR_talkToCli(char_index, -1, "提升学习经验的能力消失了!",
                            CHAR_COLORYELLOW);
           } else {
             CHAR_setWorkInt(char_index, CHAR_WORKITEM_ADDEXPTIME, exptime);
-            // print("\n ���ADDEXPTIME %d ", exptime);
+            //print("\n 检查ADDEXPTIME %d ", exptime);
 
             if ((exptime % (60 * 60)) < 300 && exptime >= (60 * 60)) {
               char msg[1024];
-              sprintf(msg, "����ѧϰ���������ʣ��Լ %d Сʱ��",
+              sprintf(msg, "提升学习经验的能力剩大约 %d 小时。",
                       (int)(exptime / (60 * 60)));
-              // sprintf( msg, "����ѧϰ���������ʣ��Լ %d �֡�", (int)(exptime/(60))
+              // 历史注释的原始编码已损坏，无法可靠恢复。
               // );
               CHAR_talkToCli(char_index, -1, msg, CHAR_COLORYELLOW);
             }
@@ -2048,19 +2037,19 @@ void CONNECT_SysEvent_Loop(void) {
             CHAR_getWorkInt(char_index, CHAR_WORKITEMMETAMO) != 0) {
           CHAR_setWorkInt(char_index, CHAR_WORKITEMMETAMO, 0);
           CHAR_setWorkInt(char_index, CHAR_WORKNPCMETAMO,
-                          0); // ��npc�Ի���ı���ҲҪ�����
+                          0); //与npc对话後的变身也要变回来
           CHAR_complianceParameter(char_index);
           CHAR_sendCToArroundCharacter(
               CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
           CHAR_send_P_StatusString(char_index,
                                    CHAR_P_STRING_BASEBASEIMAGENUMBER);
-          CHAR_talkToCli(char_index, -1, "����ʧЧ�ˡ�", CHAR_COLORWHITE);
+          CHAR_talkToCli(char_index, -1, "变身失效了。", CHAR_COLORWHITE);
         }
 
 #endif
 #ifdef _ITEM_TIME_LIMIT
         ITEM_TimeLimit(
-            char_index); // (�ɿ���) shan time limit of item. code:shan
+            char_index); // (可开放) shan time limit of item. code:shan
 
 #endif
 
@@ -2068,20 +2057,20 @@ void CONNECT_SysEvent_Loop(void) {
 
 #ifdef _PETSKILL_BECOMEPIG
       if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
-          BATTLE_CHARMODE_NONE) { // ������ս��״̬��
+          BATTLE_CHARMODE_NONE) { //不是在战斗状态下
 
-        if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > -1) { // ���������״̬
+        if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > -1) { //处於乌力化状态
           char temp[256];
           CHAR_setInt(char_index, CHAR_BECOMEPIG,
                       CHAR_getInt(char_index, CHAR_BECOMEPIG) - 1);
-          sprintf(temp, "����ʱ��:%d��",
+          sprintf(temp, "乌力时间:%d秒",
                   CHAR_getInt(char_index, CHAR_BECOMEPIG));
           CHAR_talkToCli(char_index, -1, temp, CHAR_COLORWHITE);
         }
       }
 
 #endif
-      // 10��
+      //10秒
 #ifdef _MAP_TIME
       if (CHAR_getWorkInt(char_index, CHAR_WORK_MAP_TIME) > 0 &&
           CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
@@ -2090,8 +2079,8 @@ void CONNECT_SysEvent_Loop(void) {
                         CHAR_getWorkInt(char_index, CHAR_WORK_MAP_TIME) - 10);
 
         if (CHAR_getWorkInt(char_index, CHAR_WORK_MAP_TIME) <= 0) {
-          // ʱ�䵽��,�������
-          CHAR_talkToCli(char_index, -1, "����Ϊ�ܲ��˸��ȶ������������ѷ���ڡ�",
+          // 时间到了,传回入口
+          CHAR_talkToCli(char_index, -1, "你因为受不了高热而热死！传回裂缝入口。",
                          CHAR_COLORRED);
           CHAR_warpToSpecificPoint(char_index, 30008, 39, 38);
           CHAR_setInt(char_index, CHAR_HP, 1);
@@ -2100,7 +2089,7 @@ void CONNECT_SysEvent_Loop(void) {
           CHAR_send_P_StatusString(char_index, CHAR_P_STRING_CHARM);
         } else {
           char szMsg[64];
-          sprintf(szMsg, "������ȵĻ�������ֻ���ٴ� %d �롣",
+          sprintf(szMsg, "在这高热的环境下你只能再待 %d 秒。",
                   CHAR_getWorkInt(char_index, CHAR_WORK_MAP_TIME));
           CHAR_talkToCli(char_index, -1, szMsg, CHAR_COLORRED);
         }
@@ -2127,7 +2116,7 @@ void CONNECT_SysEvent_Loop(void) {
               struct tm *p;
               time_t timep;
               time(&timep);
-              p = localtime(&timep); /*ȡ�õ���ʱ��*/
+              p = localtime(&timep); /*取得当地时间*/
 
               if (getBAward() == FALSE) {
                 if ((getAutoPkTime() == p->tm_hour) && (p->tm_min == 0)) {
@@ -2141,7 +2130,7 @@ void CONNECT_SysEvent_Loop(void) {
 #endif
 
 #ifndef _USER_CHARLOOPS
-        // here ԭ������
+        //here 原地遇敌
         if (Connect[i].stayencount) {
           if (Connect[i].BDTime < time(NULL)) {
             if (CHAR_getWorkInt(Connect[i].char_index, CHAR_WORKBATTLEMODE) ==
@@ -2155,13 +2144,13 @@ void CONNECT_SysEvent_Loop(void) {
 
 #endif
 #ifdef _CHIKULA_STONE
-        if (chikulatime % 3 == 0 && getChiStone(i) > 0) { // �Զ���Ѫ
+        if (chikulatime % 3 == 0 && getChiStone(i) > 0) { //自动补血
           CHAR_AutoChikulaStone(Connect[i].char_index, getChiStone(i));
         }
 
 #endif
 
-        if (chikulatime % 6 == 0) { // ˮ����״̬
+        if (chikulatime % 6 == 0) { //水世界状态
 
 #ifdef _STATUS_WATERWORD
           CHAR_CheckWaterStatus(Connect[i].char_index);
@@ -2172,14 +2161,14 @@ void CONNECT_SysEvent_Loop(void) {
             Connect[i].noenemy--;
 
             if (Connect[i].noenemy == 0) {
-              CHAR_talkToCli(CONNECT_getCharaindex(i), -1, "�ػ���ʧ�ˡ�",
+              CHAR_talkToCli(CONNECT_getCharaindex(i), -1, "守护消失了。",
                              CHAR_COLORWHITE);
             }
           }
         }
 
-        // ÿ10��
-#ifdef _TYPE_TOXICATION // �ж�
+        //每10秒
+#ifdef _TYPE_TOXICATION //中毒
         if (Connect[i].toxication > 0) {
           CHAR_ComToxicationHp(Connect[i].char_index);
         }
@@ -2197,7 +2186,7 @@ void CONNECT_SysEvent_Loop(void) {
             CONNECT_getCharname(CONNECT_getCharaindex(i), charname, 32);
             CONNECT_getCdkey(CONNECT_getCharaindex(i), cdkey, 16);
             char token[128];
-            sprintf(token, "���û�е�½��Ϸ����T�� ");
+            sprintf(token, "玩家没有登陆游戏导致T人 ");
             LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
                        token);
 #endif
@@ -2339,12 +2328,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
       }
       if (cono_check & CONO_CHECK_ITEM)
         if (total_item_use >= MAX_item_use) {
-          print("��ʹ����Ʒ������!!");
+          print("可使用物品数已满!!");
           cono = 0;
         }
       if (cono_check & CONO_CHECK_PET)
         if (petcnt >= CHAR_getPetMaxNum()) {
-          print("��ʹ�ó���������!!");
+          print("可使用宠物数已满!!");
           cono = 0;
         }
 
@@ -2364,7 +2353,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 
       if ((cono == 0) || (acceptmore <= 0) || isThereThisIP(sinip)) {
         // Nuke +2 Errormessage
-        char mess[64] = "E�ŷ���æ���У����Ժ����ԡ�";
+        char mess[64] = "E伺服器忙线中，请稍候再试。";
         if (!from_acsv)
           write(sockfd, mess, strlen(mess) + 1);
         print("accept but drop[cono:%d,acceptmore:%d]\n", cono, acceptmore);
@@ -2373,7 +2362,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #ifdef _SAME_IP_ONLINE_NUM
       else if (SameIpOnlineNum(sinip) == 1) {
         char mess[64];
-        sprintf(mess, "E����IP����%d�������ˣ����������½���Ծ�ά����Ϸƽ�⣡\n",
+        sprintf(mess, "E您的IP已有%d个在线了，请勿过量登陆，自觉维护游戏平衡！\n",
                 getSameIpOnlineNum());
         write(sockfd, mess, strlen(mess) + 1);
         close(sockfd);
@@ -2395,7 +2384,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         } else
           mess[0] = '$';
 
-        // char mess[1024]="E�ŷ���æ���У����Ժ����ԡ�";
+        //char mess[1024]="E伺服器忙线中，请稍候再试。";
         if (!from_acsv) {
 #ifdef _NO_FULLPLAYER_ATT
           if (sockfd - player_online >= getNoFullPlayer()) {
@@ -2467,7 +2456,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
             continue;
           if (Connect[i].char_index != -1)
             continue;
-          char mess[64] = "E�ŷ�����æ�����Ժ����ԡ�";
+          char mess[64] = "E伺服器繁忙，请稍候再试。";
           if (!from_acsv)
             write(i, mess, strlen(mess) + 1);
           close(i);
@@ -2488,7 +2477,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
     static int i_timeNu = 0;
 
     gettimeofday(&et, NULL);
-    if (time_diff_us(et, st) >= looptime_us) // ִ��ÿ����0.1����Ҫ���ĵĹ���
+    if (time_diff_us(et, st) >= looptime_us) //执行每超过0.1秒资要做的的工作
     {
 #define LOOP_NUM_ADD_CREDIT 5
 #define CREDIT_SPOOL 3
@@ -2503,16 +2492,16 @@ SINGLETHREAD BOOL netloop_faster(void) {
         if (!b_first_shutdown) {
           b_first_shutdown = TRUE;
           i_shutdown_time = SERVSTATE_getLimittime();
-          print("\n �رշ�����ʱ��=%d", i_shutdown_time);
+          print("\n 关闭服务器时间=%d", i_shutdown_time);
         }
         break;
       default: {
         static int i_counter = 0;
-        // Syu ADD ��ʱ��ȡAnnounce
+        // Syu ADD 定时读取Announce
         static int j_counter = 0;
-        // Syu ADD ÿСʱ���¸���Ӣ��ս�����а�����
+        // Syu ADD 每小时重新更新英雄战厂排行榜资料
         static int h_counter = 0;
-        // �������ļ�ʱ��
+        // 不会归零的计时器
         static long total_count = 0;
 
 #ifdef _AUTO_PK
@@ -2558,7 +2547,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
             memset(buff1, 0, sizeof(buff1));
             CHAR_getCharOnArrayPercentage(1, &max, &min, &petcnt);
             sprintf(buff1,
-                    "\n�������=%d �������=%d ����=%d ��Ʒ=%d �ʼ�:%d ս��:%d %s",
+                    "\n在线玩家=%d 离线玩家=%d 宠物=%d 物品=%d 邮件:%d 战斗:%d %s",
                     player_online, luaplayernum, petcnt, total_item_use,
                     PETMAIL_getPetMailTotalnums(), Battle_getTotalBattleNum(),
                     szBuff1);
@@ -2569,9 +2558,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
             gettimeofday(&speedet, NULL);
             float speedtime = time_diff_us(speedet, speedst) / 1000000.0;
             sprintf(buff1,
-                    "�ϴ�:[%2.3f K]ƽ��[%2.3f K]"
-                    "����:[%2.3f K]ƽ��[%2.3f K]"
-                    "��ʱ%2.3f��\n",
+                    "上传:[%2.3f K]平均[%2.3f K]"
+                    "下载:[%2.3f K]平均[%2.3f K]"
+                    "消时%2.3f秒\n",
                     sendspeed / 1024.0, sendspeed / speedtime / 1024.0,
                     recvspeed / 1024.0, recvspeed / speedtime / 1024.0,
                     speedtime);
@@ -2620,7 +2609,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
           for (i = 0; i < playernum; i++) {
             if (CHAR_getCharUse(i) != FALSE) {
               char buff[36];
-              snprintf(buff, sizeof(buff), "%s���档", getGameservername());
+              snprintf(buff, sizeof(buff), "%s公告。", getGameservername());
               CHAR_talkToCli(i, -1, buff, CHAR_COLORYELLOW);
               CHAR_talkToCli(i, -1,
                              getLoopAnnounce(index % getLoopAnnounceMax()),
@@ -2641,29 +2630,19 @@ SINGLETHREAD BOOL netloop_faster(void) {
         }
 #endif
 
-        // Syu ADD ��ʱ��ȡAnnounce
-        if (j_counter > 60 * 60) { // 6000 Լ 600��=10����
+        // Syu ADD 定时读取Announce
+        if (j_counter > 60 * 60) { //6000 约 600秒=10分钟
           j_counter = 0;
-          print("\n��ʱ��ȡ����");
+          print("\n定时读取公告");
           LoadAnnounce();
         }
 
-        /*
-        #ifdef _ALLDOMAN     // Syu ADD ���а�NPC
-        // Syu ADD ÿСʱ���¸���Ӣ��ս�����а�����
-        if ( h_counter > 60*60 ){//36000 Լ 3600��=60����
-        h_counter=0;
-        print("\nSyu log LoadHerolist");
-        SaacClient_UpdataStele_send ( acfd , "FirstLoad", "LoadHerolist" , "����"
-        , 0 , 0 , 0 , 999 ) ;
-        }
-        #endif
-        */
-        if (i_timeNu != time(NULL)) // ÿ����ִ��һ��
+        /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+        if (i_timeNu != time(NULL)) // 每整秒执行一次
         {
           i_timeNu = time(NULL);
 #ifdef _PLAYER_DIY_MAP
-          if (total_count % 60 == 0) { // ÿ����ִ��
+          if (total_count % 60 == 0) { //每分钟执行
             int i;
             for (i = 0; i < Player_Diy_Map_NUM; i++) {
               if (PlayerDiyMap[i].exp > 0) {
@@ -2684,7 +2663,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
                       int UpLevel;
                       char token[256];
                       CHAR_AddMaxExp(j, PlayerDiyMap[i].exp * playernum);
-                      sprintf(token, "��ϲ���� %d ����!\n",
+                      sprintf(token, "恭喜你获得 %d 经验!\n",
                               PlayerDiyMap[i].exp * playernum);
                       CHAR_talkToCli(j, -1, token, CHAR_COLORGREEN);
                       CHAR_send_P_StatusString(j, CHAR_P_STRING_EXP);
@@ -2713,7 +2692,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #ifndef _NET_REDUCESEND
                         CHAR_send_DpDBUpdate_AddressBook(j, TRUE);
 #endif
-                        sprintf(token, "�����ڵȼ�Ϊ %d ��!\n",
+                        sprintf(token, "你现在等级为 %d 级!\n",
                                 CHAR_getInt(j, CHAR_LV));
                         CHAR_talkToCli(j, -1, token, CHAR_COLORGREEN);
                       }
@@ -2733,7 +2712,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
                             CHAR_PetLevelUp(petindex);
                             CHAR_PetAddVariableAi(petindex, AI_FIX_PETLEVELUP);
                           }
-                          sprintf(token, "��ĳ��� %s %d ��!\n",
+                          sprintf(token, "你的宠物 %s %d 级!\n",
                                   CHAR_getChar(petindex, CHAR_NAME),
                                   CHAR_getInt(petindex, CHAR_LV));
                           CHAR_talkToCli(j, -1, token, CHAR_COLORGREEN);
@@ -2750,18 +2729,18 @@ SINGLETHREAD BOOL netloop_faster(void) {
           }
 #endif
 #ifdef _DEL_DROP_GOLD
-          if (total_count % 60 == 0) { // ÿ����ִ��
+          if (total_count % 60 == 0) { //每分钟执行
             GOLD_DeleteTimeCheckLoop();
           }
 #endif
 #ifdef _ALLBLUES_LUA_1_5
-          if (total_count % 60 == 0) { // ÿ����ִ��
+          if (total_count % 60 == 0) { //每分钟执行
             NetLoopFunction();
           }
 #endif
 
 #ifdef _DEL_DROP_PET
-          if (total_count % 60 == 0) { // ÿ����ִ��
+          if (total_count % 60 == 0) { //每分钟执行
             int objindex;
             int objmaxnum = OBJECT_getNum();
 
@@ -2788,10 +2767,10 @@ SINGLETHREAD BOOL netloop_faster(void) {
           }
 #endif
 
-          // if( total_count % 60*10 == 0 ) { //ÿ10����ִ��
+          //if( total_count % 60*10 == 0 ) { //每10分钟执行
           // }
 
-          // if( total_count % 60*60 == 0 ) { //ÿ60����ִ��
+          //if( total_count % 60*60 == 0 ) { //每60分钟执行
           // }
 
 #ifdef _AUTO_PK
@@ -2799,9 +2778,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
             h_autopk++;
 #endif
           i_counter++;
-          // Syu ADD ��ʱ��ȡAnnounce
+          // Syu ADD 定时读取Announce
           j_counter++;
-          // Syu ADD ÿСʱ���¸���Ӣ��ս�����а�����
+          // Syu ADD 每小时重新更新英雄战厂排行榜资料
           h_counter++;
 
           total_count++;
@@ -2887,7 +2866,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
             CONNECT_getCharname(fdremember, charname, 32);
             CONNECT_getCdkey(fdremember, cdkey, 16);
             char token[128];
-            sprintf(token, "û�е�½����һֱ�ȴ�T��");
+            sprintf(token, "没有登陆人物一直等待T人");
             LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
                        token);
 #endif
@@ -2924,12 +2903,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
 
       if (ret > 0 && sizeof(buf) <= ret) {
 #ifdef _OTHER_SAAC_LINK
-        print("��ȡ(%s)���峤��:%d - %d !!\n",
-              (CONNECT_getCtype(fdremember) == AC) ? "SAAC" : "����", ret,
+        print("读取(%s)缓冲长度:%d - %d !!\n",
+              (CONNECT_getCtype(fdremember) == AC) ? "SAAC" : "其它", ret,
               sizeof(buf));
 #else
-        print("��ȡ(%s)���峤��:%d - %d !!\n",
-              (fdremember == acfd) ? "SAAC" : "����", ret, sizeof(buf));
+        print("读取(%s)缓冲长度:%d - %d !!\n",
+              (fdremember == acfd) ? "SAAC" : "其它", ret, sizeof(buf));
 #endif
       }
 
@@ -2940,21 +2919,21 @@ SINGLETHREAD BOOL netloop_faster(void) {
         if (fdremember == acfd)
 #endif
         {
-          print("��ȡ����:%d %s\n", ret, strerror(errno));
-          print("gmsv��acsvʧȥ����! �쳣��ֹ...\n");
+          print("读取返回:%d %s\n", ret, strerror(errno));
+          print("gmsv与acsv失去连接! 异常终止...\n");
           sigshutdown(-1);
           exit(1);
         }
 #ifdef _OTHER_SAAC_LINK
         else if (CONNECT_getCtype(fdremember) == SQL) {
-          print("����������ʧȥ����...\n");
+          print("与点卷服务器失去连接...\n");
           CONNECT_endOne_debug(fdremember);
           osfd = -1;
         }
 #endif
         else {
           if (ret == -1) {
-            //      print( "��ȡ����: %d %d %s \n", ret, errno, strerror(
+            // 历史注释的原始编码已损坏，无法可靠恢复。
             //      errno));
           }
 #ifdef _NETLOG_
@@ -2963,7 +2942,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
           CONNECT_getCharname(fdremember, charname, 32);
           CONNECT_getCdkey(fdremember, cdkey, 16);
           char token[128];
-          sprintf(token, "read��ȡ����: %d %d %s \n", ret, errno,
+          sprintf(token, "read读取返回: %d %d %s \n", ret, errno,
                   strerror(errno));
           LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
@@ -2979,7 +2958,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
           CONNECT_getCharname(fdremember, charname, 32);
           CONNECT_getCdkey(fdremember, cdkey, 16);
           char token[128];
-          sprintf(token, "appendRB����");
+          sprintf(token, "appendRB错误");
           LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
 
@@ -3008,7 +2987,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       if (fdremember != acfd)
 #endif
       {
-        //  print( "\n��ȡ���Ӵ���:%d %s\n", errno, strerror( errno ));
+        //  print( "\n读取连接错误:%d %s\n", errno, strerror( errno ));
         continue;
       }
     }
@@ -3028,19 +3007,19 @@ SINGLETHREAD BOOL netloop_faster(void) {
         {
 
 #ifdef _DEBUG
-          printf("��ȡSAAC����:%s\n", rbmess);
+          printf("读取SAAC数据:%s\n", rbmess);
 #endif
           if (SaacClient_ClientDispatchMessage(fdremember, rbmess) < 0) {
-            print("\nSAAC���������ݳ���!!!\n");
+            print("\nSAAC服务器数据出错!!!\n");
           }
         }
 #ifdef _OTHER_SAAC_LINK
         else if (CONNECT_getCtype(fdremember) == SQL) {
 #ifdef _DEBUG
-          printf("��ȡ�������:%s\n", rbmess);
+          printf("读取点卷数据:%s\n", rbmess);
 #endif
           if (SaacClient_ClientDispatchMessage(fdremember, rbmess) < 0) {
-            print("\n������������ݳ���!!!\n");
+            print("\n点卷服务器数据出错!!!\n");
           }
         }
 #endif
@@ -3060,7 +3039,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       }
     }
     if (Connect[fdremember].errornum > allowerrornum) {
-      print("�û�:%s����̫������ˣ�����ǿ�ƹر�\n",
+      print("用户:%s发生太多错误了，所以强制关闭\n",
             inet_ntoa(Connect[fdremember].sin.sin_addr));
 
 #ifdef _NETLOG_
@@ -3069,7 +3048,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       CONNECT_getCharname(fdremember, charname, 32);
       CONNECT_getCdkey(fdremember, cdkey, 16);
       char token[128];
-      sprintf(token, "�û�:%s����̫������ˣ�����ǿ�ƹر�\n",
+      sprintf(token, "用户:%s发生太多错误了，所以强制关闭\n",
               inet_ntoa(Connect[fdremember].sin.sin_addr));
       LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
@@ -3080,7 +3059,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #ifdef _NEW_FUNC_DECRYPT
 
     if (Connect[fdremember].newerrnum > getAllowerrornum2()) {
-      print("�û�:%s����̫������ˣ�����(��IP)�Ͽ�����\n",
+      print("用户:%s发生太多错误了，所以(封IP)断开连接\n",
             inet_ntoa(Connect[fdremember].sin.sin_addr));
 
 #ifdef _NETLOG_
@@ -3089,7 +3068,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       CONNECT_getCharname(fdremember, charname, 32);
       CONNECT_getCdkey(fdremember, cdkey, 16);
       char token[128];
-      sprintf(token, "�û�:%s����̫������ˣ�����(��IP)�Ͽ�����\n",
+      sprintf(token, "用户:%s发生太多错误了，所以(封IP)断开连接\n",
               inet_ntoa(Connect[fdremember].sin.sin_addr));
       LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
@@ -3133,7 +3112,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #endif
         {
 #ifdef _DEBUG
-          printf("����SAAC����:%s\n", Connect[fdremember].wb);
+          printf("发送SAAC内容:%s\n", Connect[fdremember].wb);
 #endif
           ret = write(fdremember, Connect[fdremember].wb,
                       (Connect[fdremember].wbuse < acwritesize)
@@ -3156,7 +3135,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
           CONNECT_getCharname(fdremember, charname, 32);
           CONNECT_getCdkey(fdremember, cdkey, 16);
           char token[128];
-          sprintf(token, "���ͷ��д�뷵��:%d %s\n", errno, strerror(errno));
+          sprintf(token, "发送封包写入返回:%d %s\n", errno, strerror(errno));
           LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
           CONNECT_endOne_debug(fdremember);
@@ -3171,13 +3150,13 @@ SINGLETHREAD BOOL netloop_faster(void) {
         CONNECT_getCharname(fdremember, charname, 32);
         CONNECT_getCdkey(fdremember, cdkey, 16);
         char token[128];
-        sprintf(token, "���ͷ��д�����Ӵ���:%d %s\n", errno, strerror(errno));
+        sprintf(token, "发送封包写入连接错误:%d %s\n", errno, strerror(errno));
         LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
         CONNECT_endOne_debug(fdremember);
       }
     }
-    /* �����ॢ���Ȥν��� */
+    /* 处理连接超时。 */
 #ifdef _OTHER_SAAC_LINK
     if (CONNECT_getCtype(fdremember) == AC)
 #else
@@ -3187,7 +3166,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 
     // ttom start : because of the second have this
     if (Connect[fdremember].close_request) {
-      //      print( "ǿ�ȹر�:%s \n",inet_ntoa(Connect[fdremember].sin.sin_addr
+      // 历史注释的原始编码已损坏，无法可靠恢复。
       //      ));
       CONNECT_endOne_debug(fdremember);
       continue;
@@ -3370,7 +3349,7 @@ void sigusr2(int i) {
   signal(SIGUSR2, sigusr2);
 #endif
   print("\nReceived Shutdown signal...\n\n");
-  GmsvServer_Shutdown_recv(0, "hogehoge", 5); // 5������ά��
+  GmsvServer_Shutdown_recv(0, "hogehoge", 5); // 5分钟後维修
 }
 
 unsigned long CONNECT_get_userip(int fd) {
@@ -3613,7 +3592,7 @@ void RescueEntryBTime(int char_index, int fd, unsigned int lowTime,
 
 BOOL CheckDefBTime(int char_index, int fd, unsigned int lowTime,
                    unsigned int battletime,
-                   unsigned int addTime) // lowTime�ӳ�ʱ��
+                   unsigned int addTime) //lowTime延迟时间
 {
   if (fd < 0 || fd >= ConnectLen) {
     return TRUE;
@@ -3658,10 +3637,10 @@ BOOL OtherSaacConnect(void) {
     osfd = connectHost(servername, 18888);
 #endif
     if (osfd == -1) {
-      print("ʧ��\n");
+      print("失败\n");
       return FALSE;
     } else {
-      print("���\n");
+      print("完成\n");
       initConnectOne(osfd, NULL, 0);
       if (!CONNECT_acfdInitRB(osfd) || !CONNECT_acfdInitWB(osfd) ||
           SaacClient_InitClient(lsrpcClientWriteFunc, LSGENWORKINGBUFFER, osfd) <
@@ -3700,7 +3679,7 @@ void saveforsaac() {
       // Nuke start 0907: Protect gmsv
 
 #ifdef _DEBUG
-      printf("����SAAC����:%s\n", Connect[acfd].wb);
+      printf("发送SAAC内容:%s\n", Connect[acfd].wb);
 #endif
       ret = write(acfd, Connect[acfd].wb,
                   (Connect[acfd].wbuse < acwritesize) ? Connect[acfd].wbuse
@@ -3709,7 +3688,7 @@ void saveforsaac() {
       if (ret == -1 && errno != EINTR) {
 #ifdef _NETLOG_
         char log[512];
-        sprintf(log, "д�뷵��: %d %s \n", errno, strerror(errno));
+        sprintf(log, "写入返回: %d %s \n", errno, strerror(errno));
         LogCharOut("", "", __FILE__, __FUNCTION__, __LINE__, log);
 #endif
         CONNECT_endOne_debug(acfd);
@@ -3720,7 +3699,7 @@ void saveforsaac() {
     } else if (ret < 0 && errno != EINTR) {
 #ifdef _NETLOG_
       char log[512];
-      sprintf(log, "saveforsaac д�����Ӵ���:%d %s", errno, strerror(errno));
+      sprintf(log, "saveforsaac 写入连接错误:%d %s", errno, strerror(errno));
       LogCharOut("", "", __FILE__, __FUNCTION__, __LINE__, log);
 #endif
       CONNECT_endOne_debug(acfd);
@@ -3730,10 +3709,10 @@ void saveforsaac() {
 
 #ifdef _EPOLL
 void initEpoll() {
-  print("��ʼ������ģ��... ");
+  print("初始化网络模型... ");
   epollfd = epoll_create(getFdnum() + 1);
   eventsEpoll = allocateMemory(sizeof(evEpoll) * (getFdnum() + 1));
-  print("���\n");
+  print("完成\n");
   initList();
 }
 
@@ -3768,7 +3747,7 @@ void quick(int a[][2], int i, int j) {
   int k;
   m = i;
   n = j;
-  k = a[(i + j) / 2][0]; /*ѡȡ�Ĳ���*/
+  k = a[(i + j) / 2][0]; /*选取的参照*/
   do {
     while (a[m][0] < k && m < j)
       m++;
@@ -3834,7 +3813,7 @@ int SendsizeList(Node *pHead) {
     size++;
     pHead = pHead->next;
   }
-  return size; // ������ʵ�ʳ���
+  return size; //链表的实际长度
 }
 
 void insertSendPlayDataLastList(Node **pNode, int fd) {
@@ -3849,13 +3828,13 @@ void insertSendPlayDataLastList(Node **pNode, int fd) {
     Node *pTmp;
     pHead = *pNode;
     pTmp = pHead;
-    pInsert = (Node *)malloc(sizeof(Node)); // ����һ���½ڵ�
+    pInsert = (Node *)malloc(sizeof(Node)); //申请一个新节点
     memset(pInsert, 0, sizeof(Node));
     pInsert->fd = fd;
     while (pHead->next != NULL) {
       pHead = pHead->next;
     }
-    pHead->next = pInsert; // ������ĩβ�ڵ����һ���ָ�������ӵĽڵ�
+    pHead->next = pInsert; //将链表末尾节点的下一结点指向新添加的节点
     *pNode = pTmp;
   }
 }
@@ -3947,7 +3926,7 @@ void procAcceptEpoll() {
     if (Connect[sockfd].use)
       return;
     if (lianjielog)
-      printf("���뵽������A    sockfd=%d   Connect[ sockfd ].use=%d\n", sockfd,
+      printf("进入到了连接A    sockfd=%d   Connect[ sockfd ].use=%d\n", sockfd,
              Connect[sockfd].use);
     if (fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0) {
       close(sockfd);
@@ -3955,7 +3934,7 @@ void procAcceptEpoll() {
     }
     if (strlen(keepupnologin) > 0) {
       char mess[64];
-      sprintf(mess, "E��Ϸά���С���������");
+      sprintf(mess, "E游戏维护中。。。。。");
       mess[strlen(mess)] = 0;
       write(sockfd, mess, strlen(mess) + 1);
       close(sockfd);
@@ -3972,36 +3951,36 @@ void procAcceptEpoll() {
     }
     if (cono_check & CONO_CHECK_ITEM) {
       if ((total_item_use) >= MAX_item_use) {
-        print("��ʹ����Ʒ������!!");
+        print("可使用物品数已满!!");
         cono = 0;
       }
     }
     if (cono_check & CONO_CHECK_PET) {
       if ((petcnt) >= CHAR_getPetMaxNum()) {
-        print("��ʹ�ó���������!!");
+        print("可使用宠物数已满!!");
         cono = 0;
       }
     }
     float fs = 0.0;
     if ((fs = ((float)Connect[acfd].rbuse / AC_RBSIZE)) > 0.6) {
-      print("SAAC�������ռ�Σ��: %3.2f [%4d]\n", fs, Connect[acfd].rbuse);
+      print("SAAC缓存区空间危险: %3.2f [%4d]\n", fs, Connect[acfd].rbuse);
       if (fs > 0.78)
         cono = 0;
     }
     if ((cono == 0) || (acceptmore <= 0)) {
-      char mess[64] = "E�ŷ���æ���У����Ժ����ԡ�";
+      char mess[64] = "E伺服器忙线中，请稍候再试。";
       write(sockfd, mess, strlen(mess) + 1);
       close(sockfd);
       return;
     } else if (sockfd < ConnectLen) {
       if (lianjielog)
-        printf("�ɹ�������A    sockfd=%d\n", sockfd);
+        printf("成功连接了A    sockfd=%d\n", sockfd);
       char mess[2] = {};
       strcpy(mess, getSaVersion());
       send(sockfd, mess, strlen(mess) + 1, 0);
       initConnectOne(sockfd, &sin, addrlen);
       if (lianjielog)
-        printf("�ɹ�������B    sockfd=%d     %d\n", sockfd, Connect[sockfd].use);
+        printf("成功连接了B    sockfd=%d     %d\n", sockfd, Connect[sockfd].use);
       AddEpoll(sockfd);
       return;
     } else {
@@ -4015,11 +3994,11 @@ void procAcceptEpoll() {
           continue;
         if (Connect[i].char_index != -1)
           continue;
-        char mess[64] = "E�ŷ�����æ�����Ժ����ԡ�";
+        char mess[64] = "E伺服器繁忙，请稍候再试。";
         write(i, mess, strlen(mess) + 1);
         close(i);
       }
-      char mess[64] = "E�ŷ����������������Ժ����ԡ�";
+      char mess[64] = "E伺服器人数已满，请稍候再试。";
       write(sockfd, mess, strlen(mess) + 1);
       close(sockfd);
       return;
@@ -4034,8 +4013,8 @@ BOOL procRecvEpoll(int sockfd) {
   if (ret == -1) {
     if (errno != EAGAIN && errno != EINTR) {
       if (sockfd == acfd) {
-        print("��ȡ����:%d %s\n", ret, strerror(errno));
-        print("gmsv��acsvʧȥ����! �쳣��ֹ...\n");
+        print("读取返回:%d %s\n", ret, strerror(errno));
+        print("gmsv与acsv失去连接! 异常终止...\n");
         sigshutdown(-1);
         exit(1);
       } else {
@@ -4044,7 +4023,7 @@ BOOL procRecvEpoll(int sockfd) {
         CONNECT_getCharname(sockfd, charname, 32);
         CONNECT_getCdkey(sockfd, cdkey, 16);
         char yuanyin[128];
-        snprintf(yuanyin, 128, "���recv���� error=%d  %s", errno,
+        snprintf(yuanyin, 128, "封包recv出错 error=%d  %s", errno,
                  strerror(errno));
         LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, yuanyin);
         CONNECT_endOne_debug(sockfd);
@@ -4063,7 +4042,7 @@ BOOL procRecvEpoll(int sockfd) {
     char charname[32];
     CONNECT_getCharname(sockfd, charname, 32);
     CONNECT_getCdkey(sockfd, cdkey, 16);
-    LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, "���ʹ�÷Ƿ��ֶ�");
+    LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, "玩家使用非法手段");
     CONNECT_endOne_debug(sockfd);
     CONNECT_RecvUNLOCK(sockfd);
     return FALSE;
@@ -4131,18 +4110,18 @@ void procSelectEpoll() {
       for (n = 0; n < nfds; ++n) {
         // printf("socdfd=%d     events=%d   EPOLLIN=%d
         // EPOLLOUT=%d\n",eventsEpoll[n].data.fd,eventsEpoll[n].events,EPOLLIN,EPOLLOUT);
-        if (eventsEpoll[n].data.fd == bindedfd) { // ���յ�������
+        if (eventsEpoll[n].data.fd == bindedfd) { //接收到新连接
           if (lianjielog)
             printf("socdfd=%d     events=%d   EPOLLIN=%d   EPOLLOUT=%d\n",
                    eventsEpoll[n].data.fd, eventsEpoll[n].events, EPOLLIN,
                    EPOLLOUT);
           procAcceptEpoll();
           continue;
-        } else if (eventsEpoll[n].events & EPOLLIN) { // ���ܵ���Ϣ
+        } else if (eventsEpoll[n].events & EPOLLIN) { //接受到信息
           if (CONNECT_getUse(eventsEpoll[n].data.fd))
             if (!procRecvEpoll(eventsEpoll[n].data.fd))
               continue;
-        } else if (eventsEpoll[n].events & EPOLLOUT) { // ������Ϣ
+        } else if (eventsEpoll[n].events & EPOLLOUT) { //发送消息
           int sockfd = eventsEpoll[n].data.fd;
           if (CONNECT_getUse(sockfd)) {
             if (Connect[sockfd].CAbufsiz > 0 &&

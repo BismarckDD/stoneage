@@ -263,24 +263,19 @@ PKMAP=10,20,30,40
 PKMAPCOST=10
 
 ###################################危险选项#####################################
-
-
 #非开BT服千万别设置这里，若BT服，请自行设置
 #宠物每项成长增长数值？
 BTPET=1
 #道具数值(攻防敏)翻几倍？
 BTITEM=1
-
 #删除指定ID的宠物(可定义30)
 AUTODELPET=-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
 #删除指定ID的道具(可定义30)
 AUTODELITEM=-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1
-
 #特殊地图(四张地图)
 SPECIALMAP=-1,-1,-1,-1
-
+#
 ###################################系统相关#####################################
-
 #玩家上线提示
 #0登陆公告与会员上线提示不使用
 #1使用登陆公告和会员上线提示
@@ -399,7 +394,7 @@ NAME4=
 NAME5= 
 
 #禁止使用以下人物名称(支持32个，逗号分隔)
-ILLEGALNAME=GM,客服,官方,技术
+ILLEGALNAME=GM,客服,官方,技术,中国
 
 #自定义升级经验等级
 USEREXP=data/exp.txt
@@ -742,25 +737,6 @@ acwritesize=1048576
 acwbsize=1048576
 # 如果发现玩家使用非法手段 比如说改封包跳NPC判断 或者点数异常 则关进监狱
 erruser_down=1
-#   //ttom end
-====================================================================
-#以下可省略
-#ifdef _AUCTIONEER
-#   { "auctiondir" , config.auctiondir, sizeof(config.auctiondir),NULL,0},
-#endif
-#ifdef _BLACK_MARKET
-#      { "blackmarketfile", config.blackmarketfile, sizeof(config.blackmarketfile), NULL, 0},
-#endif
-#ifdef _M_SERVER
-#   { "msname",            config.msname,sizeof(config.msname) ,NULL , 0},
-#   { "msport",            NULL ,0 , (void*)&config.msport   ,SHORT},
-#endif
-#ifdef _NPCSERVER_NEW
-#   { "npcaddress",            config.nsaddress, sizeof(config.nsaddress) ,NULL , 0},
-#   { "nsport",            NULL, 0 , (void*)&config.nsport   ,SHORT},
-#endif
-
-====================================================================
 
 #人物职业技能
 profession=./data/profession.txt
@@ -768,10 +744,6 @@ profession=./data/profession.txt
 
 #退出团队的道具
 itemquitparty=./data/itemquitparty.txt
-#endif
-
-#ifdef _MUSEUM
-#   { "museum",            NULL , 0 , (void*)&config.museum ,            INT},
 #endif
 
 #LNS配置

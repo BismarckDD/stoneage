@@ -183,7 +183,7 @@ void BATTLE_ImprecateRecovery(int battleindex, int attackNo, int toNo, int kind,
     case BD_KIND_CURSE:
       if (CHAR_getWorkInt(toindex, CHAR_WORKIMPRECATENUM1) <= 0 &&
           CHAR_getInt(toindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-        CHAR_setWorkInt(toindex, CHAR_WORKHURTMP, powers); // �˺� MP
+        CHAR_setWorkInt(toindex, CHAR_WORKHURTMP, powers); // 伤害 MP
         CHAR_setWorkInt(toindex, CHAR_WORKIMPRECATENUM1, rounds);
       }
       break;
@@ -193,14 +193,14 @@ void BATTLE_ImprecateRecovery(int battleindex, int attackNo, int toNo, int kind,
         if (CHAR_CanCureFlg(toindex, "HP") == FALSE)
           break;
 #endif
-        CHAR_setWorkInt(toindex, CHAR_WORKWISHESHP, powers); // ף�� hp
+        CHAR_setWorkInt(toindex, CHAR_WORKWISHESHP, powers); // 祝福 hp
         CHAR_setWorkInt(toindex, CHAR_WORKIMPRECATENUM2, rounds);
       }
       break;
     case BD_KIND_WISHES:
       if (CHAR_getWorkInt(toindex, CHAR_WORKIMPRECATENUM3) <= 0 &&
           CHAR_getInt(toindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-        CHAR_setWorkInt(toindex, CHAR_WORKWISHESMP, powers); // ף�� MP
+        CHAR_setWorkInt(toindex, CHAR_WORKWISHESMP, powers); // 祝福 MP
         CHAR_setWorkInt(toindex, CHAR_WORKIMPRECATENUM3, rounds);
       }
       break;
@@ -245,7 +245,7 @@ void BATTLE_MultiRecovery(int battleindex, int attackNo, int toNo, int kind,
         CHAR_sendCToArroundCharacter(
             CHAR_getWorkInt(toindex, CHAR_WORKOBJINDEX));
         CHAR_send_P_StatusString(toindex, CHAR_P_STRING_BASEBASEIMAGENUMBER);
-        CHAR_talkToCli(toindex, -1, "������ʧЧ�ˡ�", CHAR_COLORWHITE);
+        CHAR_talkToCli(toindex, -1, "乌力化失效了。", CHAR_COLORWHITE);
       }
       break;
 #endif
@@ -299,7 +299,7 @@ void BATTLE_MultiRecovery(int battleindex, int attackNo, int toNo, int kind,
               CHAR_setInt(toindex, CHAR_EARTHAT,
                           CHAR_getInt(toindex, CHAR_EARTHAT) + 10);
       }
-      if (power == 2) { // ��ת���� ��ת
+      if (power == 2) { // 旋转属性 反转
         if (CHAR_getInt(toindex, CHAR_EARTHAT) == 100)
           CHAR_setInt(toindex, CHAR_EARTHAT,
                       CHAR_getInt(toindex, CHAR_EARTHAT) - 10),
@@ -713,7 +713,7 @@ int BATTLE_AttrCalc(int My_Fire,   // 施法玩家火属性
                     int My_Earth,  // 施法玩家土属性
                     int My_Wind,   // 施法玩家风属性
                     int My_None,   // 施法玩家无属性
-                    int Vs_Fire,   // 目标玩家火属性
+                    int Vs_Fire,   // 锹澎础
                     int Vs_Water,  // 目标玩家水属性
                     int Vs_Earth,  // 目标玩家土属性
                     int Vs_Wind,   // 目标玩家风属性
@@ -820,7 +820,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
   int lv_up_exp, DefFieldAttr = 0;
   float temp = 0.0f;
   char msgbuf[64];
-  char kind[4][3] = {"��", "ˮ", "��", "��"};
+  char kind[4][3] = {"地", "水", "火", "风"};
 #else
   BOOL TrueMagic = FALSE;
 #endif
@@ -841,7 +841,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
   memset(def_is_player, -1, sizeof(def_is_player));
   memset(def_be_hit, -1, sizeof(def_be_hit));
 
-  // ���˹���
+  // 单人攻击
   if (toNo < 20) {
     toNo = list[0];
     basex = CharTableIdx[toNo][1];
@@ -874,7 +874,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
         }
       }
     }
-  } else if (21 == toNo) { // ����ȫ��
+  } else if (21 == toNo) { // 左上全体
     for (i = 0; i < 2; i++) {
       for (j = 0; j < 5; j++) {
         if (ATTMAGIC_magic[magicattidx].siField[i][j] &&
@@ -885,7 +885,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
       }
     }
   }
-  // ���ϵ�һ�� , ���ϵڶ��� , ���µ�һ�� , ���µڶ���
+  // 左上第一列 , 左上第二列 , 右下第一列 , 右下第二列
   else if (23 == toNo || 24 == toNo || 25 == toNo || 26 == toNo) {
     basey = toNo - 23;
 
@@ -895,7 +895,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
       else if ((23 == toNo || 24 == toNo) && (j < 0 || j > 1))
         continue;
 
-      // ������Щ����Ҫ�����嵥
+      // 计算那些人需要加入清单
       for (k = 0; k < 5; k++) {
         if (ATTMAGIC_magic[magicattidx].siField[i][k] &&
             TRUE == BATTLE_TargetCheck(battleindex, CharTable[j][k])) {
@@ -906,7 +906,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
     }
   }
 
-  qsort(list, listidx, sizeof(list[0]), (FUNC)SortLoc); // ����λ��
+  qsort(list, listidx, sizeof(list[0]), (FUNC)SortLoc); // 排序位置
   {
     int attType =
         CHAR_getInt(BATTLE_No2Index(battleindex, attackNo), CHAR_WHICHTYPE);
@@ -914,7 +914,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
     AttIsPlayer = 0;
     if (attType == CHAR_TYPEPLAYER) {
       AttIsPlayer = 1;
-      for (i = 0; i < 4; i++) { // att_magic_lv[i]: i = 0:�� 1:ˮ 2:�� 3:��
+      for (i = 0; i < 4; i++) { // att_magic_lv[i]: i = 0:地 1:水 2:火 3:风
         att_magic_lv[i] = CHAR_getInt(BATTLE_No2Index(battleindex, attackNo),
                                       CHAR_EARTH_EXP + i);
       }
@@ -959,7 +959,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
       if (defType == CHAR_TYPEPLAYER) {
         DefIsPlayer = 1;
         for (j = 0; j < DEF_MAGIC_NUM;
-             j++) { // def_magic_resist[i]: i = 0:�� 1:ˮ 2:�� 3:��
+             j++) { // def_magic_resist[i]: i = 0:地 1:水 2:火 3:风
           def_magic_resist[j] = CHAR_getInt(charaidx, CHAR_EARTH_RESIST + j);
 #ifdef _EQUIT_DEFMAGIC
           def_magic_resist[j] +=
@@ -998,16 +998,16 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
 #endif
     }
     pet_def_lv = CHAR_getInt(charaidx, CHAR_LV);
-    if (BATTLE_MagicDodge(charaidx, DefIsPlayer, FieldAttr)) { // ����������
+    if (BATTLE_MagicDodge(charaidx, DefIsPlayer, FieldAttr)) { // 计算闪避率
       attvalue = pethp = 0;
-      if (0 == ATTMAGIC_magic[magicattidx].uiAttackType) { // ���˹���
+      if (0 == ATTMAGIC_magic[magicattidx].uiAttackType) { // 单人攻击
         sprintf(szcommand, "%X|%X|%X|%X|", toNo, list[i], attvalue, pethp);
-      } else { // ���˹���
+      } else { // 多人攻击
         sprintf(szcommand, "%X|%X|%X|%X|", list[i], list[i], attvalue, pethp);
       }
       BATTLESTR_ADD(szcommand);
       continue;
-    } else { // û����,���㹥����
+    } else { // 没闪过,计算攻击力
 #ifdef _FIX_MAGICDAMAGE
       float Kmagic = ((float)att_magic_lv[FieldAttr] * 1.4 -
                       (float)def_magic_resist[FieldAttr]);
@@ -1028,7 +1028,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
       // print( "ANDY Magic Power:%d Amagic:%f APower:%d \n", Power, Amagic,
       // APower);
 
-      def_be_hit[getexp++] = charaidx; // ���±�����˵�index
+      def_be_hit[getexp++] = charaidx; // 记下被打的人的index
       attvalue =
           BATTLE_getMagicAdjustInt(BATTLE_No2Index(battleindex, attackNo),
                                    charaidx, MagicLv, FieldAttr, APower);
@@ -1036,20 +1036,20 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
       // andy_log
       //				print("attvalue:%d \n", attvalue);
 
-      if (TrueMagic == FALSE) { // ʹ��ʧ��
+      if (TrueMagic == FALSE) { // 使用失败
         attvalue *= 0.7;
       }
       if (DefIsPlayer) {
         Magic_ComputeDefExp(charaidx, FieldAttr, MagicLv, attvalue);
       }
 #else
-      def_be_hit[getexp++] = charaidx; // ���±�����˵�index
-      // �����������
+      def_be_hit[getexp++] = charaidx; // 记下被打的人的index
+      // 计算属性相克
       attvalue = BATTLE_AttrAdjust(BATTLE_No2Index(battleindex, attackNo),
                                    charaidx, Power);
-      if (DefIsPlayer) { // ����������
+      if (DefIsPlayer) { // 被打的是玩家
         def_is_player[z++] = list[i];
-        if (AttIsPlayer) { // ����������ħ������
+        if (AttIsPlayer) { // 如果是玩家用魔法攻击
           temp = ((float)att_magic_lv[FieldAttr] -
                   (float)def_magic_resist[FieldAttr]) /
                  (float)def_magic_resist[FieldAttr] / 100;
@@ -1059,8 +1059,8 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
                  (float)def_magic_resist[FieldAttr] / 100;
           attvalue = Power + Power * temp + attvalue;
         }
-      } else {             // ������ǳ���
-        if (AttIsPlayer) { // ����������ħ������
+      } else {             // 被打的是宠物
+        if (AttIsPlayer) { // 如果是玩家用魔法攻击
           temp = ((float)att_magic_lv[FieldAttr] - (float)pet_def_lv) /
                  (float)pet_def_lv / 100;
           attvalue = Power + Power * temp + attvalue;
@@ -1070,7 +1070,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
           attvalue = Power + Power * temp + attvalue;
         }
       }
-      // ����ȡ10
+      // 上下取10
       attvalue += rand() % 2 ? (rand() % 10) + 1 : -(rand() % 10) - 1;
       if (attvalue <= 0)
         attvalue = 1;
@@ -1110,23 +1110,23 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
 
       charahurt = charahurt_temp;
 
-      // ���˹���
+      // 单人攻击
       if (0 == ATTMAGIC_magic[magicattidx].uiAttackType)
         sprintf(szcommand, "%X|%X|%X|%X|", toNo, list[i], charahurt, attvalue);
-      // ���˹���
+      // 多人攻击
       else
         sprintf(szcommand, "%X|%X|%X|%X|", list[i], list[i], charahurt,
                 attvalue);
     }
 
     {
-      // Change fix ����������õ�DPֵ
+      // Change fix 加上这个先拿到DP值
       int aAttackList[BATTLE_ENTRY_MAX * 2 + 1];
       aAttackList[0] = attackNo;
       aAttackList[1] = -1;
       BATTLE_AddProfit(battleindex, aAttackList);
     }
-    // change fix ���������޿���������
+    // change fix 让替身娃娃可正常运作
     if (CHAR_getInt(charaidx, CHAR_HP) <= 0 &&
         CHAR_getInt(charaidx, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER
         /*&& !BattleArray[battleindex].dpbattle*/)
@@ -1138,14 +1138,14 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
   sprintf(szcommand, "%X|", 0x12345678);
   BATTLESTR_ADD(szcommand);
 #ifdef _FIX_MAGICDAMAGE
-  if ((TrueMagic == FALSE) && AttIsPlayer) { // ���㹥��������ֵ
+  if ((TrueMagic == FALSE) && AttIsPlayer) { // 计算攻击方经验值
     Magic_ComputeAttExp(BATTLE_No2Index(battleindex, attackNo), FieldAttr,
                         MagicLv, getexp);
   }
   for (i = 0; i < listidx; i++) {
     if (!CHAR_CHECKINDEX(def_be_hit[i]))
       continue;
-    // ���������������˯��
+    // 如果被攻击者中了睡眠
     if (CHAR_getWorkInt(def_be_hit[i], CHAR_WORKSLEEP) > 0) {
       CHAR_setWorkInt(def_be_hit[i], CHAR_WORKSLEEP, 0);
       z = BATTLE_Index2No(battleindex, def_be_hit[i]);
@@ -1155,52 +1155,52 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
   }
 #else
   // TrueMagic == FALSE
-  //  �������ľ���ֵ-----------------------------------------------------------------------------
+  //  攻击方的经验值-----------------------------------------------------------------------------
   if (AttIsPlayer) {
-    // ���˵�ħ��
+    // 被克的魔法
     DefFieldAttr = (FieldAttr + 1) % 4;
-    // ȡ��������õ�ħ���ľ���ֵ
+    // 取得玩家所用的魔法的经验值
     att_magic_exp_add = CHAR_getInt(BATTLE_No2Index(battleindex, attackNo),
                                     CHAR_EARTH_ATTMAGIC_EXP + FieldAttr);
-    // ȡ��������õ�ħ���ı���ħ������ֵ
+    // 取得玩家所用的魔法的被克魔法经验值
     att_magic_exp_sub = CHAR_getInt(BATTLE_No2Index(battleindex, attackNo),
                                     CHAR_EARTH_ATTMAGIC_EXP + DefFieldAttr);
-    // ����ʹ�õ�ħ���Ӹ����Ե�exp,��ֻ�㼸��exp
+    // 依所使用的魔法加该属性的exp,打几只算几点exp
     att_magic_exp_add += getexp;
-    // ����ʹ�õ�ħ���۱������Ե�exp,��ֻ�ۼ���exp
+    // 依所使用的魔法扣被克属性的exp,打几只扣几点exp
     att_magic_exp_sub -= getexp;
     lv_up_exp = Magic_Level_Table[att_magic_lv[FieldAttr]];
     while (att_magic_exp_add >= lv_up_exp || att_magic_exp_sub < 0) {
-      // ���������õ�ħ���ľ���ֵ���ڿ���������
+      // 如果玩家所用的魔法的经验值现在可以升级了
       if (att_magic_exp_add >= lv_up_exp) {
-        // ���������100��
+        // 如果超过了100级
         if (att_magic_lv[FieldAttr] + 1 > 100) {
           att_magic_lv[FieldAttr] = 100;
-          // ����ֵ��Ϊ0
+          // 经验值清为0
           att_magic_exp_add = 0;
         } else {
           att_magic_lv[FieldAttr]++;
-          // �����ڵľ���ֵ�۵����˼����õľ���ֵ
+          // 把现在的经验值扣掉升了级所用的经验值
           att_magic_exp_add -= lv_up_exp;
-          snprintf(msgbuf, sizeof(msgbuf), "��� %s ħ������������Ϊ %d��",
+          snprintf(msgbuf, sizeof(msgbuf), "你的 %s 魔法熟练度升级为 %d。",
                    kind[FieldAttr], att_magic_lv[FieldAttr]);
           CHAR_talkToCli(BATTLE_No2Index(battleindex, attackNo), -1, msgbuf,
                          CHAR_COLORRED);
         }
       }
-      // ���������õ�ħ�������ħ���ľ���ֵ���ڿ��Խ�����
+      // 如果玩家所用的魔法的相克魔法的经验值现在可以降级了
       if (att_magic_exp_sub < 0) {
-        // ����ȼ��Ѿ���1��
+        // 如果等级已经是1级
         if (att_magic_lv[DefFieldAttr] <= 1) {
           att_magic_lv[DefFieldAttr] = 1;
-          // ����ֵ��Ϊ0
+          // 经验值清为0
           att_magic_exp_sub = 0;
         } else {
           att_magic_lv[DefFieldAttr]--;
-          // ����һ���ȼ��ľ���ֵ�۵����ڵľ���ֵ
+          // 把下一个等级的经验值扣掉现在的经验值
           att_magic_exp_sub =
               Magic_Level_Table[att_magic_lv[DefFieldAttr]] + att_magic_exp_sub;
-          snprintf(msgbuf, sizeof(msgbuf), "��� %s ħ�������Ƚ���Ϊ %d��",
+          snprintf(msgbuf, sizeof(msgbuf), "你的 %s 魔法熟练度降级为 %d。",
                    kind[DefFieldAttr], att_magic_lv[DefFieldAttr]);
           CHAR_talkToCli(BATTLE_No2Index(battleindex, attackNo), -1, msgbuf,
                          CHAR_COLORRED);
@@ -1221,16 +1221,16 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
   for (i = 0; i < listidx; i++) {
     if (def_is_player[i] != -1) {
       charaidx = BATTLE_No2Index(battleindex, def_is_player[i]);
-      // ȡ�÷��ط���ҶԴ�ħ���Ŀ��Եȼ�
+      // 取得防守方玩家对此魔法的抗性等级
       def_magic_resist[FieldAttr] =
           CHAR_getInt(charaidx, CHAR_EARTH_RESIST + FieldAttr);
-      // ȡ�÷��ط���ҶԴ�ħ���Ŀ��Ծ���ֵ
+      // 取得防守方玩家对此魔法的抗性经验值
       def_magic_exp_add =
           CHAR_getInt(charaidx, CHAR_EARTH_DEFMAGIC_EXP + FieldAttr);
-      // ȡ�÷��ط���ҶԴ�ħ�����˵Ŀ��Եȼ�
+      // 取得防守方玩家对此魔法被克的抗性等级
       def_magic_resist[DefFieldAttr] =
           CHAR_getInt(charaidx, CHAR_EARTH_RESIST + DefFieldAttr);
-      // ȡ�÷��ط���ҶԴ�ħ�����˵Ŀ��Ծ���ֵ
+      // 取得防守方玩家对此魔法被克的抗性经验值
       def_magic_exp_sub =
           CHAR_getInt(charaidx, CHAR_EARTH_DEFMAGIC_EXP + DefFieldAttr);
       def_magic_exp_add++;
@@ -1239,31 +1239,31 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
       lv_up_exp = Magic_Level_Table[def_magic_resist[FieldAttr]];
 
       while (def_magic_exp_add >= lv_up_exp || def_magic_exp_sub < 0) {
-        // ������ط���ҶԴ�ħ���Ŀ��Եľ���ֵ���ڿ���������
+        // 如果防守方玩家对此魔法的抗性的经验值现在可以升级了
         if (def_magic_exp_add >= lv_up_exp) {
-          // ���������100��
+          // 如果超过了100级
           if (def_magic_resist[FieldAttr] + 1 > 100)
             def_magic_resist[FieldAttr] = 100;
           else {
             def_magic_resist[FieldAttr]++;
-            snprintf(msgbuf, sizeof(msgbuf), "��� %s ħ����������Ϊ %d��",
+            snprintf(msgbuf, sizeof(msgbuf), "你的 %s 魔法抗性升级为 %d。",
                      kind[FieldAttr], def_magic_resist[FieldAttr]);
             CHAR_talkToCli(charaidx, -1, msgbuf, CHAR_COLORRED);
           }
-          // ����ֵ��Ϊ0
+          // 经验值清为0
           def_magic_exp_add = 0;
         }
-        // ������ط���ҶԴ�ħ���Ŀ��Ե����ħ���ľ���ֵ���ڿ��Խ�����
+        // 如果防守方玩家对此魔法的抗性的相克魔法的经验值现在可以降级了
         if (def_magic_exp_sub < 0) {
-          // ����ȼ��Ѿ���1��
+          // 如果等级已经是1级
           if (def_magic_resist[DefFieldAttr] <= 1)
-            def_magic_exp_sub = 0; // ����ֵ��Ϊ0
+            def_magic_exp_sub = 0; // 经验值清为0
           else {
             def_magic_resist[DefFieldAttr]--;
-            // ����ֵ�����һ���ȼ��ľ���ֵ
+            // 经验值变成下一个等级的经验值
             def_magic_exp_sub =
                 Magic_Level_Table[def_magic_resist[DefFieldAttr]];
-            snprintf(msgbuf, sizeof(msgbuf), "��� %s ħ�����Խ���Ϊ %d��",
+            snprintf(msgbuf, sizeof(msgbuf), "你的 %s 魔法抗性降级为 %d。",
                      kind[DefFieldAttr], def_magic_resist[DefFieldAttr]);
             CHAR_talkToCli(charaidx, -1, msgbuf, CHAR_COLORRED);
           }
@@ -1280,7 +1280,7 @@ void BATTLE_MultiAttMagic(int battleindex, int attackNo, int toNo, int attIdx,
                   def_magic_exp_sub);
     }
     if (CHAR_CHECKINDEX(def_be_hit[i])) {
-      // ���������������˯��
+      // 如果被攻击者中了睡眠
       if (CHAR_getWorkInt(def_be_hit[i], CHAR_WORKSLEEP) > 0) {
         CHAR_setWorkInt(def_be_hit[i], CHAR_WORKSLEEP, 0);
         z = BATTLE_Index2No(battleindex, def_be_hit[i]);
@@ -1327,7 +1327,7 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
 
   BATTLE_ToCallDragonEffect(battleindex, attackNo, list, attIdx);
 
-  // ���㹥���������嵥
+  // 计算攻击的人物清单
   if (attackNo < 10)
     magicattidx = attIdx * 2 + 1;
   else
@@ -1337,12 +1337,12 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
   memset(def_is_player, -1, sizeof(def_is_player));
   memset(def_be_hit, -1, sizeof(def_be_hit));
 
-  // ���˹���
+  // 单人攻击
   if (toNo < 20) {
     toNo = list[0];
     listidx++;
 
-  } else if (20 == toNo) { // ����ȫ��
+  } else if (20 == toNo) { // 右下全体
     for (i = 0; i < 2; i++) {
       for (j = 0; j < 5; j++) {
         if (TRUE == BATTLE_TargetCheck(battleindex, CharTable[i + 2][j])) {
@@ -1351,7 +1351,7 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
         }
       }
     }
-  } else if (21 == toNo) { // ����ȫ��
+  } else if (21 == toNo) { // 左上全体
     for (i = 0; i < 2; i++) {
       for (j = 0; j < 5; j++) {
         if (TRUE == BATTLE_TargetCheck(battleindex, CharTable[i][j])) {
@@ -1360,7 +1360,7 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
         }
       }
     }
-  } // ���ϵ�һ�� , ���ϵڶ��� , ���µ�һ�� , ���µڶ���
+  } // 左上第一列 , 左上第二列 , 右下第一列 , 右下第二列
   else if (23 == toNo || 24 == toNo || 25 == toNo || 26 == toNo) {
     basey = toNo - 23;
     for (i = 0, j = basey - 1; j <= basey + 1; i++, j++) {
@@ -1368,7 +1368,7 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
         continue;
       else if ((23 == toNo || 24 == toNo) && (j < 0 || j > 1))
         continue;
-      // ������Щ����Ҫ�����嵥
+      // 计算那些人需要加入清单
       for (k = 0; k < 5; k++) {
         if (TRUE == BATTLE_TargetCheck(battleindex, CharTable[j][k])) {
           list[listidx] = CharTable[j][k];
@@ -1377,7 +1377,7 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
       }
     }
   }
-  qsort(list, listidx, sizeof(list[0]), (FUNC)SortLoc); // ����λ��
+  qsort(list, listidx, sizeof(list[0]), (FUNC)SortLoc); // 排序位置
   for (i = 0; i < listidx; i++) {
     int defType;
     charaidx = BATTLE_No2Index(battleindex, list[i]);
@@ -1396,10 +1396,10 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
       CHAR_setWorkInt(icindex, CHAR_WORKOTHERDMAGE, 0);
 
       if (BATTLE_MagicDodge(charaidx, DefIsPlayer, FieldAttr)) {
-        // û����
+        // 没击中
         attvalue = 0;
       } else {
-        if (0 == TOCALL_magic[attIdx].uiAttackType) { // ���˹���
+        if (0 == TOCALL_magic[attIdx].uiAttackType) { // 单人攻击
           attvalue = BATTLE_DamageCalc(icindex, charaidx);
         } else {
           attvalue = BATTLE_DamageCalc(icindex, charaidx);
@@ -1408,13 +1408,13 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
       CHAR_CharaDelete(icindex);
       charahp = CHAR_getInt(charaidx, CHAR_HP);
       if (-1 == petidx || CHAR_getInt(petidx, CHAR_HP) <= 0) {
-        // û�����
+        // 没骑宠物
         if ((charahp -= attvalue) < 0) {
           charahp = 0;
         }
         CHAR_setInt(charaidx, CHAR_HP, charahp);
         pethp = 0;
-        if (0 == TOCALL_magic[attIdx].uiAttackType) { // ���˹���
+        if (0 == TOCALL_magic[attIdx].uiAttackType) { // 单人攻击
           sprintf(szcommand, "%X|%X|%X|%X|", toNo, list[i], attvalue, pethp);
         } else
           sprintf(szcommand, "%X|%X|%X|%X|", list[i], list[i], attvalue, pethp);
@@ -1431,7 +1431,7 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
         attvalue = attvalue - charahurt;
         if ((pethp -= attvalue) < 0) {
           pethp = 0;
-          // ����ûѪ���˳�ս��
+          // 宠物没血了退出战场
           CHAR_setInt(charaidx, CHAR_RIDEPET, -1);
           BATTLE_changeRideImage(charaidx);
           CHAR_setWorkInt(charaidx, CHAR_WORKPETFALL, 1);
@@ -1441,7 +1441,7 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
 
         charahurt = charahurt_temp;
 
-        if (0 == TOCALL_magic[attIdx].uiAttackType) { // ���˹���
+        if (0 == TOCALL_magic[attIdx].uiAttackType) { // 单人攻击
           sprintf(szcommand, "%X|%X|%X|%X|", toNo, list[i], charahurt,
                   attvalue);
         } else
@@ -1459,23 +1459,23 @@ void BATTLE_MultiToCallDragonMagic(int battleindex, int attackNo, int toNo,
 
 #endif
 
-void BATTLE_MultiRessurect(int battleindex, // �������̼������͵�
-                           int attackNo,    // ��������  į
-                           int toNo,        // ������ľ����  į
-                           int power,       // ��  �����
-                           int per,         // �Ѿ���
-                           int UseEffect,   // �����м��ް�������
-                           int RecevEffect  // ������ľ���м��ް�������
+void BATTLE_MultiRessurect(int battleindex, // 田玄伙奶件犯永弁旦
+                           int attackNo,    // 井仃月谛  寞
+                           int toNo,        // 井仃日木月谛  寞
+                           int power,       // 湘  荚汊袄
+                           int per,         // ⊙井＂
+                           int UseEffect,   // 银丹谛及巨白尼弁玄
+                           int RecevEffect  // 井仃日木月谛及巨白尼弁玄
 ) {
   int i, toindex, UpPoint = 0, workhp;
   int ToList[SIDE_OFFSET * 2 + 1];
   char szCommand[256];
   BATTLE_MultiListDead(battleindex, toNo, ToList);
-  BATTLE_MagicEffect(battleindex, // �������̼������͵�
-                     attackNo,    // ��������  į(��  ���)
-                     ToList,      // ������ľ����  į������(��  ���)
-                     UseEffect,   // �������оް�������
-                     RecevEffect  // ������ľ���оް�������
+  BATTLE_MagicEffect(battleindex, // 田玄伙奶件犯永弁旦
+                     attackNo,    // 井仃月谛  寞(ㄟ  ㄠㄨ)
+                     ToList,      // 井仃日木月谛  寞伉旦玄(ㄟ  ㄠㄨ)
+                     UseEffect,   // 井仃月谛巨白尼弁玄
+                     RecevEffect  // 井仃日木月谛巨白尼弁玄
   );
 
   for (i = 0; ToList[i] != -1; i++) {
@@ -1548,7 +1548,7 @@ void BATTLE_MultiReLife(int battleindex, int attackNo, int toNo, int power,
     CHAR_setInt(toindex, CHAR_HP,
                 min(workhp, CHAR_getWorkInt(toindex, CHAR_WORKMAXHP)));
     CHAR_setFlg(toindex, CHAR_ISDIE, 0);
-    // snprintf( szBuffer, sizeof(szBuffer), "(%s)�ָ���ʶ", CHAR_getUseName(
+    // 历史注释的原始编码已损坏，无法可靠恢复。
     // toindex ) );
     snprintf(buf1, sizeof(buf1), "BJ|a%X|m%X|e%X|e%X|FF|", ToList[i],
              CHAR_getInt(toindex, CHAR_MP),
@@ -1581,11 +1581,11 @@ void BATTLE_MultiStatusChange(int battleindex, int attackNo, int toNo,
   int perStatus;
   int ToList[SIDE_OFFSET * 2 + 1];
   BATTLE_MultiList(battleindex, toNo, ToList);
-  BATTLE_MagicEffect(battleindex, // �������̼������͵�
-                     attackNo,    // ��������  į(��  ���)
-                     ToList,      // ������ľ����  į������(��  ���)
-                     UseEffect,   // �������оް�������
-                     RecevEffect  // ������ľ���оް�������
+  BATTLE_MagicEffect(battleindex, // 田玄伙奶件犯永弁旦
+                     attackNo,    // 井仃月谛  寞(ㄟ  ㄠㄨ)
+                     ToList,      // 井仃日木月谛  寞伉旦玄(ㄟ  ㄠㄨ)
+                     UseEffect,   // 井仃月谛巨白尼弁玄
+                     RecevEffect  // 井仃日木月谛巨白尼弁玄
   );
 
   char_index = BATTLE_No2Index(battleindex, attackNo);
@@ -1667,23 +1667,23 @@ void BATTLE_MultiStatusRecovery(int battleindex, int attackNo, int toNo,
   return;
 }
 
-void BATTLE_MultiMagicDef(int battleindex, // �������̼������͵�
-                          int attackNo,    // ��������  į
-                          int toNo,        // ������ľ����  į
-                          int kind,        // ����  ܷ  ����
-                          int count,       // ����
-                          int UseEffect,   // �����м��ް�������
-                          int RecevEffect  // ������ľ���м��ް�������
+void BATTLE_MultiMagicDef(int battleindex, // 田玄伙奶件犯永弁旦
+                          int attackNo,    // 井仃月谛  寞
+                          int toNo,        // 井仃日木月谛  寞
+                          int kind,        // 升及  芊  豢井
+                          int count,       // 荚醒
+                          int UseEffect,   // 银丹谛及巨白尼弁玄
+                          int RecevEffect  // 井仃日木月谛及巨白尼弁玄
 ) {
 
   int i, toindex, char_index;
   int ToList[SIDE_OFFSET * 2 + 1];
   BATTLE_MultiList(battleindex, toNo, ToList);
-  BATTLE_MagicEffect(battleindex, // �������̼������͵�
-                     attackNo,    // ��������  į(��  ���)
-                     ToList,      // ������ľ����  į������(��  ���)
-                     UseEffect,   // �������оް�������
-                     RecevEffect  // ������ľ���оް�������
+  BATTLE_MagicEffect(battleindex, // 田玄伙奶件犯永弁旦
+                     attackNo,    // 井仃月谛  寞(ㄟ  ㄠㄨ)
+                     ToList,      // 井仃日木月谛  寞伉旦玄(ㄟ  ㄠㄨ)
+                     UseEffect,   // 井仃月谛巨白尼弁玄
+                     RecevEffect  // 井仃日木月谛巨白尼弁玄
   );
 
   char_index = BATTLE_No2Index(battleindex, attackNo);
@@ -1691,7 +1691,7 @@ void BATTLE_MultiMagicDef(int battleindex, // �������̼����
     toindex = BATTLE_No2Index(battleindex, ToList[i]);
     CHAR_setWorkInt(toindex, MagicDefTbl[kind], count);
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)��(%s)����(����%s)",
+    //	"(%s)将(%s)遭受(损伤%s)",
     //	CHAR_getUseName( char_index ),
     //	CHAR_getUseName( toindex ),
     //	aszMagicDefFull[kind]
@@ -1705,14 +1705,14 @@ void BATTLE_MultiMagicDef(int battleindex, // �������̼����
 
 #if 1
 
-void BATTLE_MultiParamChange(int battleindex, // �������̼������͵�
-                             int attackNo,    // ��������  į
-                             int toNo,        // ������ľ����  į
-                             int kind,        // �����ɷ¶�������
-                             int power,       // ���̼���
-                             int par,         // �ѻ�ң����
-                             int UseEffect,   // �����м��ް�������
-                             int RecevEffect  // ������ľ���м��ް�������
+void BATTLE_MultiParamChange(int battleindex, // 田玄伙奶件犯永弁旦
+                             int attackNo,    // 井仃月谛  寞
+                             int toNo,        // 井仃日木月谛  寞
+                             int kind,        // 升及由仿丢□正井
+                             int power,       // 禾奶件玄
+                             int par,         // ⊙煌遥允月
+                             int UseEffect,   // 银丹谛及巨白尼弁玄
+                             int RecevEffect  // 井仃日木月谛及巨白尼弁玄
 ) {
 
   int i, toindex, char_index;
@@ -1722,11 +1722,11 @@ void BATTLE_MultiParamChange(int battleindex, // �������̼���
 
   BATTLE_MultiList(battleindex, toNo, ToList);
 
-  BATTLE_MagicEffect(battleindex, // �������̼������͵�
-                     attackNo,    // ��������  į(��  ���)
-                     ToList,      // ������ľ����  į������(��  ���)
-                     UseEffect,   // �������оް�������
-                     RecevEffect  // ������ľ���оް�������
+  BATTLE_MagicEffect(battleindex, // 田玄伙奶件犯永弁旦
+                     attackNo,    // 井仃月谛  寞(ㄟ  ㄠㄨ)
+                     ToList,      // 井仃日木月谛  寞伉旦玄(ㄟ  ㄠㄨ)
+                     UseEffect,   // 井仃月谛巨白尼弁玄
+                     RecevEffect  // 井仃日木月谛巨白尼弁玄
   );
 
   char_index = BATTLE_No2Index(battleindex, attackNo);
@@ -1807,11 +1807,11 @@ void BATTLE_MultiAttReverse(int battleindex, //
 
   BATTLE_MultiList(battleindex, toNo, ToList);
 
-  BATTLE_MagicEffect(battleindex, // �������̼������͵�
-                     attackNo,    // ��������  į(��  ���)
-                     ToList,      // ������ľ����  į������(��  ���)
-                     UseEffect,   // �������оް�������
-                     RecevEffect  // ������ľ���оް�������
+  BATTLE_MagicEffect(battleindex, // 田玄伙奶件犯永弁旦
+                     attackNo,    // 井仃月谛  寞(ㄟ  ㄠㄨ)
+                     ToList,      // 井仃日木月谛  寞伉旦玄(ㄟ  ㄠㄨ)
+                     UseEffect,   // 井仃月谛巨白尼弁玄
+                     RecevEffect  // 井仃日木月谛巨白尼弁玄
   );
   char_index = BATTLE_No2Index(battleindex, attackNo);
   for (i = 0; ToList[i] != -1; i++) {
@@ -1860,7 +1860,7 @@ void BATTLE_MultiCaptureUp(int battleindex, int attackNo, int toNo, int power,
     CHAR_setWorkInt(toindex, CHAR_WORKMODCAPTURE, workhp);
 
     // snprintf( szBuffer, sizeof(szBuffer),
-    //	"(%s)�Ĳ����ʱ��(%d)",
+    //	"(%s)的捕获率变成(%d)",
     //		CHAR_getUseName( toindex ), UpPoint );
 
     // BATTLE_BroadCast( battleindex, szBuffer,
@@ -1880,7 +1880,7 @@ int BATTLE_FieldAttChange(int char_index, char *pArg) {
   int battleindex, power = 30;
   int FieldAttr[] = {BATTLE_ATTR_NONE, BATTLE_ATTR_EARTH, BATTLE_ATTR_WATER,
                      BATTLE_ATTR_FIRE, BATTLE_ATTR_WIND};
-  char szCommand[256], *aszAttr[] = {"��", "��", "ˮ", "��", "��"};
+  char szCommand[256], *aszAttr[] = {"无", "地", "水", "火", "风"};
   char *pszP = pArg;
   for (; attr == -1 && pszP[0] != 0; pszP++) {
     for (i = 0; i < 5; i++) {
@@ -1922,8 +1922,8 @@ int MAGIC_FieldAttChange_Battle(int char_index, int toNo, int magic_index,
   return BATTLE_FieldAttChange(char_index, pArg);
 }
 
-int MAGIC_StatusChange_Battle(int char_index, // �������м��̼������͵�
-                              int toNo,       // ������ľ���м��̼������͵�
+int MAGIC_StatusChange_Battle(int char_index, // 井仃月谛及奶件犯永弁旦
+                              int toNo,       // 井仃日木月谛及奶件犯永弁旦
                               int magic_index,     // magicindex
                               int mp) {
   int status = -1, i, attackNo, turn = 3;
@@ -1962,8 +1962,8 @@ int MAGIC_StatusChange_Battle(int char_index, // �������м��̼
 }
 
 #ifdef _MAGIC_DEEPPOISON
-int MAGIC_StatusChange_Battle2(int char_index, // �������м��̼������͵�
-                               int toNo,       // ������ľ���м��̼������͵�
+int MAGIC_StatusChange_Battle2(int char_index, // 井仃月谛及奶件犯永弁旦
+                               int toNo,       // 井仃日木月谛及奶件犯永弁旦
                                int magic_index,     // magicindex
                                int mp          // MP
 ) {
@@ -2000,9 +2000,9 @@ int MAGIC_StatusChange_Battle2(int char_index, // �������м���
   attackNo = BATTLE_Index2No(battleindex, char_index);
 
   if (status == BATTLE_ST_NONE) {
-    ReceveEffect = SPR_tyusya; //   �����巴��ľ
+    ReceveEffect = SPR_tyusya; //   月午五反仇木
   } else {
-    ReceveEffect = SPR_hoshi; // ���������巴��ľ
+    ReceveEffect = SPR_hoshi; // 井井月午五反仇木
   }
   BATTLE_MultiStatusChange(battleindex, attackNo, toNo, status, turn + 2,
                            MAGIC_EFFECT_USER, ReceveEffect, Success);
@@ -2042,13 +2042,13 @@ int MAGIC_MagicStatusChange_Battle(int char_index, int toNo, int magic_index,
   if (getStringFromIndexWithDelim(magicarg, "|", 4, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
-  if (strstr(buf1, "��") != 0) {
+  if (strstr(buf1, "单") != 0) {
     if (toNo >= 20)
       return FALSE;
   }
   battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
   attackNo = BATTLE_Index2No(battleindex, char_index);
-  // ����ͼ�ž���
+  // 动画图号决定
 #define SPR_mic_def 101411
   ReceveEffect = SPR_heal2;
   if (status == 1)
@@ -2123,7 +2123,7 @@ int MAGIC_ParamChange_Battle(int char_index, //
   }
   if (kind == -1)
     return FALSE;
-  if (strstr(pszP, "%")) { // ���������ѻ�ң
+  if (strstr(pszP, "%")) { // 仇及桦宁反⊙煌遥
     par = 1;
   }
   if (sscanf(pszP, "%d", &pow) != 1) {
@@ -2137,8 +2137,8 @@ int MAGIC_ParamChange_Battle(int char_index, //
   return TRUE;
 }
 
-int MAGIC_AttReverse_Battle(int char_index, // �������м��̼������͵�
-                            int toNo,       // ������ľ���м��̼������͵�
+int MAGIC_AttReverse_Battle(int char_index, // 井仃月谛及奶件犯永弁旦
+                            int toNo,       // 井仃日木月谛及奶件犯永弁旦
                             int magic_index,     // magicindex
                             int mp          // MP
 ) {
@@ -2214,7 +2214,7 @@ int MAGIC_ResAndDef_Battle(int char_index, int toNo, int magic_index, int mp) {
     if (BATTLE_CheckSameSide(char_index, toNo) == 0) {
       battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
       BATTLE_NoAction(battleindex, BATTLE_Index2No(battleindex, char_index));
-      CHAR_talkToCli(char_index, -1, "����⾵��..����ʩ�����ҵз���",
+      CHAR_talkToCli(char_index, -1, "复活光镜守..不得施予非玩家敌方。",
                      CHAR_COLORYELLOW);
       return FALSE;
     }
@@ -2256,7 +2256,7 @@ int MAGIC_ResAndDef_Battle(int char_index, int toNo, int magic_index, int mp) {
 int MAGIC_AttMagic_Battle(int char_index, int toNo, int magic_index, int mp) {
   int attno, attidx, battleindex;
   int attr = -1, i, power;
-  char aszattr[][32] = {"��", "ˮ", "��", "��"};
+  char aszattr[][32] = {"地", "水", "火", "风"};
   char buf1[256];
   char *magicarg;
   int magiclv = 0;
@@ -2337,7 +2337,7 @@ int MAGIC_ToCallDragon_Battle(int char_index, int toNo, int magic_index, int mp)
 
 #endif
 
-int MAGIC_CaptureUp_Battle(int char_index, // �������м��̼������͵�
+int MAGIC_CaptureUp_Battle(int char_index, // 井仃月谛及奶件犯永弁旦
                            int toNo, int magic_index, int mp) {
   int attackNo, ReceveEffect;
   int battleindex, pow = 5;
@@ -2415,7 +2415,7 @@ static int BATTLE_getMagicAdjustInt(int attackindex, int defindex, int MagicLv,
 void Magic_ComputeAttExp(int charindex, int Mnum, int MagicLv, int Expoint) {
   int magiclv1, magicex1;
   int addEx = (MagicLv * 3) * Expoint;
-  char MagicStr[][128] = {"��", "ˮ", "��", "��"};
+  char MagicStr[][128] = {"地", "水", "火", "风"};
   char buf1[256];
   memset(buf1, 0, sizeof(buf1));
   magiclv1 = CHAR_getInt(charindex, CHAR_EARTH_EXP + Mnum);
@@ -2425,7 +2425,7 @@ void Magic_ComputeAttExp(int charindex, int Mnum, int MagicLv, int Expoint) {
     magicex1 = 0;
     if (magiclv1 < 100) {
       magiclv1 += 1;
-      sprintf(buf1, "%sħ������������Ϊ%d��", MagicStr[Mnum], magiclv1);
+      sprintf(buf1, "%s魔法熟练度提升为%d。", MagicStr[Mnum], magiclv1);
       CHAR_talkToCli(charindex, -1, buf1, CHAR_COLORYELLOW);
     }
   }
@@ -2438,7 +2438,7 @@ void Magic_ComputeAttExp(int charindex, int Mnum, int MagicLv, int Expoint) {
   CHAR_setInt(charindex, CHAR_EARTH_EXP + Mnum, magiclv1);
   CHAR_setInt(charindex, CHAR_EARTH_ATTMAGIC_EXP + Mnum, magicex1);
 
-  Mnum = (Mnum + 1) % 4; // ��˵�ħ��
+  Mnum = (Mnum + 1) % 4; // 相克的魔法
   magiclv1 = CHAR_getInt(charindex, CHAR_EARTH_EXP + Mnum);
   magicex1 = CHAR_getInt(charindex, CHAR_EARTH_ATTMAGIC_EXP + Mnum);
   if (magiclv1 > 1) {
@@ -2449,7 +2449,7 @@ void Magic_ComputeAttExp(int charindex, int Mnum, int MagicLv, int Expoint) {
       if (magiclv1 < 0)
         magiclv1 = 0;
       CHAR_setInt(charindex, CHAR_EARTH_EXP + Mnum, magiclv1);
-      sprintf(buf1, "%sħ���������½�Ϊ%d��", MagicStr[Mnum], magiclv1);
+      sprintf(buf1, "%s魔法熟练度下降为%d。", MagicStr[Mnum], magiclv1);
       CHAR_talkToCli(charindex, -1, buf1, CHAR_COLORYELLOW);
     }
     CHAR_setInt(charindex, CHAR_EARTH_ATTMAGIC_EXP + Mnum, magicex1);
@@ -2464,7 +2464,7 @@ void Magic_ComputeDefExp(int charindex, int Mnum, int MagicLv, int Damage) {
   int magicex1;
   int addEx;
   char buf1[256];
-  char MagicStr[][128] = {"��", "ˮ", "��", "��"};
+  char MagicStr[][128] = {"地", "水", "火", "风"};
   if (Damage < 200)
     return;
   memset(buf1, 0, sizeof(buf1));
@@ -2483,14 +2483,14 @@ void Magic_ComputeDefExp(int charindex, int Mnum, int MagicLv, int Damage) {
       if (magiclv1 > 100)
         magiclv1 = 100;
       CHAR_setInt(charindex, CHAR_EARTH_RESIST + Mnum, magiclv1);
-      sprintf(buf1, "%s��ħֵ����Ϊ%d��", MagicStr[Mnum], magiclv1);
+      sprintf(buf1, "%s抗魔值提升为%d。", MagicStr[Mnum], magiclv1);
       CHAR_talkToCli(charindex, -1, buf1, CHAR_COLORYELLOW);
     }
   }
   if (magicex1 < 0)
     magicex1 = 0;
   CHAR_setInt(charindex, CHAR_EARTH_DEFMAGIC_EXP + Mnum, magicex1);
-  Mnum = (Mnum + 1) % 4; // ��˵�ħ��
+  Mnum = (Mnum + 1) % 4; // 相克的魔法
   magiclv1 = CHAR_getInt(charindex, CHAR_EARTH_RESIST + Mnum);
   magicex1 = CHAR_getInt(charindex, CHAR_EARTH_DEFMAGIC_EXP + Mnum);
   if (magiclv1 > 1) {
@@ -2500,7 +2500,7 @@ void Magic_ComputeDefExp(int charindex, int Mnum, int MagicLv, int Damage) {
       magiclv1 -= 1;
       if (magiclv1 < 0)
         magiclv1 = 0;
-      sprintf(buf1, "%s��ħֵ�½�Ϊ%d��", MagicStr[Mnum], magiclv1);
+      sprintf(buf1, "%s抗魔值下降为%d。", MagicStr[Mnum], magiclv1);
       CHAR_talkToCli(charindex, -1, buf1, CHAR_COLORYELLOW);
       CHAR_setInt(charindex, CHAR_EARTH_RESIST + Mnum, magiclv1);
     }
@@ -2523,11 +2523,11 @@ int MAGIC_ParamChange_Turn_Battle(int char_index, int toNo, int magic_index,
     return FALSE;
   }
   pszP = magicarg;
-  // ���ë��
+  // 躲绊毛潸
   for (; status == -1 && pszP[0] != 0; pszP++) {
-    // �ྮ�ո���
+    // ㄠ井日腹绸
     for (i = 1; i < BATTLE_ST_END; i++) {
-      // ���������������
+      // 躲绊疋永正伉井＂
       if (strncmp(pszP, aszStatus[i], 2) == 0) {
         status = i;
         pszP += 2;
@@ -2561,10 +2561,10 @@ void BATTLE_MultiParamChangeTurn(int battleindex, int attackNo, int toNo,
 
   int i, toindex, perStatus, char_index;
   int ToList[SIDE_OFFSET * 2 + 1];
-  char_index = BATTLE_No2Index(battleindex, attackNo); // ����index
+  char_index = BATTLE_No2Index(battleindex, attackNo); //攻方index
   BATTLE_MultiList(battleindex, toNo, ToList);
 
-  // ʩħ������Ч��
+  // 施魔法动画效果
   BATTLE_MagicEffect(battleindex, attackNo, ToList, UseEffect, RecevEffect);
 
   for (i = 0; ToList[i] != -1; i++) {
@@ -2661,7 +2661,7 @@ void PROFESSION_MAGIC_ATTAIC(int battleindex, int attackNo, int toNo,
       }
     }
   }
-  qsort(list, listidx, sizeof(list[0]), (FUNC)SortLoc); // ����λ��
+  qsort(list, listidx, sizeof(list[0]), (FUNC)SortLoc); // 排序位置
 
   PROFESSION_MAGIC_GET_PRACTICE(&hp_power, &mp_power, &dec_hp, &dec_mp,
                                 char_index);
@@ -2678,7 +2678,7 @@ void PROFESSION_MAGIC_ATTAIC(int battleindex, int attackNo, int toNo,
     if (!CHAR_CHECKINDEX(charaidx))
       continue;
 
-    // ����ħ����Ч
+    // 制作魔法特效
     if (CHAR_createCharacter(100354, 777, 45, 45, 0, &icindex, &ioindex, 0) ==
         TRUE) {
 
@@ -2712,7 +2712,7 @@ void PROFESSION_MAGIC_ATTAIC(int battleindex, int attackNo, int toNo,
 #ifdef _PROFESSION_ADDSKILL
         if (command == BATTLE_COM_S_STORM) {
           if ((PROFESSION_BATTLE_StatusAttackCheck(
-                   char_index, charaidx, BATTLE_ST_WATER, 30) == 0) // ״̬���м춨
+                   char_index, charaidx, BATTLE_ST_WATER, 30) == 0) // 状态命中检定
               || (CHAR_getInt(charaidx, CHAR_HP) <= 0)) {
 
           } else {
@@ -2733,7 +2733,7 @@ void PROFESSION_MAGIC_ATTAIC(int battleindex, int attackNo, int toNo,
           }
         }
 
-        // ��¼����������idx
+        // 记录被攻击方的idx
         decmplist[decmplistcount++] = list[i];
 #endif
       }
@@ -2745,7 +2745,7 @@ void PROFESSION_MAGIC_ATTAIC(int battleindex, int attackNo, int toNo,
         }
         CHAR_setInt(charaidx, CHAR_HP, charahp);
         pethp = 0;
-        if (0 == PROFESSION_magic[attIdx].uiAttackType) { // ���˹���
+        if (0 == PROFESSION_magic[attIdx].uiAttackType) { // 单人攻击
           sprintf(szcommand, "%X|%X|%X|%X|", toNo, list[i], attvalue, pethp);
         } else
           sprintf(szcommand, "%X|%X|%X|%X|", list[i], list[i], attvalue, pethp);
@@ -2771,7 +2771,7 @@ void PROFESSION_MAGIC_ATTAIC(int battleindex, int attackNo, int toNo,
 
         charahurt = charahurt_temp;
 
-        if (0 == PROFESSION_magic[attIdx].uiAttackType) { // ���˹���
+        if (0 == PROFESSION_magic[attIdx].uiAttackType) { // 单人攻击
           sprintf(szcommand, "%X|%X|%X|%X|", toNo, list[i], charahurt,
                   attvalue);
         } else
@@ -2817,7 +2817,7 @@ void PROFESSION_MAGIC_ATTAIC(int battleindex, int attackNo, int toNo,
       }
     }
   }
-  if (command == BATTLE_COM_S_DOOM) { // ����ĩ�� ����Ч��
+  if (command == BATTLE_COM_S_DOOM) { // 世界末日 灭敏效果
     if (skill_level >= 10) {
       for (i = 0; i < decmplistcount; i++) {
         if (!CHAR_CHECKINDEX(BATTLE_No2Index(battleindex, decmplist[i])))
@@ -2827,12 +2827,12 @@ void PROFESSION_MAGIC_ATTAIC(int battleindex, int attackNo, int toNo,
           CHAR_setWorkInt(BATTLE_No2Index(battleindex, decmplist[i]),
                           CHAR_WORKFEAR, 4);
           BATTLE_BadStatusString(decmplist[i], BATTLE_ST_FEAR);
-          sprintf(szcommand, "BD|r%X|0|6|%X|", decmplist[i], -20); // ����30%
+          sprintf(szcommand, "BD|r%X|0|6|%X|", decmplist[i], -20); // 敏降30%
           BATTLESTR_ADD(szcommand);
-          // ����
+          // 减攻
           sprintf(szcommand, "BD|r%X|0|4|%X|", decmplist[i], -10);
           BATTLESTR_ADD(szcommand);
-          // ����
+          // 减防
           sprintf(szcommand, "BD|r%X|0|5|%X|", decmplist[i], -10);
           BATTLESTR_ADD(szcommand);
         }
@@ -2942,16 +2942,16 @@ int analysis_profession_parameter(int attIdx, int skill, int toNo,
   char temp[64];
   char *pszOption;
   // Robin fix profession magic_type
-  // char magic[3][5]={"��","��","��"};
-  char magic[3][5] = {"��", "��", "��"};
+  // char magic[3][5]={"火","电","冰"};
+  char magic[3][5] = {"火", "冰", "电"};
   int magic_type = -1;
 
-  // ȡ�ü��ܲ���
+  // 取得技能参数
   if ((pszOption = PROFESSION_SKILL_getChar(skill, PROFESSION_SKILL_OPTION)) ==
       "\0")
     return -1;
 
-  // ħ������
+  // 魔法属性
   memset(temp, 0, sizeof(temp));
   if (!getStringFromIndexWithDelim(pszOption, "|", 1, temp, sizeof(temp)))
     return -1;
@@ -3034,7 +3034,7 @@ int analysis_profession_parameter(int attIdx, int skill, int toNo,
   return magic_type;
 }
 
-// ȡ�����ȵ��˺���
+// 取熟练度得伤害力
 void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
                                    float *dec_hp, float *dec_mp,
                                    int char_index) {
@@ -3048,7 +3048,7 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
   critical = RAND(1, 100);
 
   switch (command) {
-  case BATTLE_COM_S_VOLCANO_SPRINGS: // ��ɽȪ
+  case BATTLE_COM_S_VOLCANO_SPRINGS: // 火山泉
   {
     *hp_power = skill_level * 10 + 100;
 
@@ -3062,7 +3062,7 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
 
     break;
   }
-  case BATTLE_COM_S_FIRE_BALL: // ������
+  case BATTLE_COM_S_FIRE_BALL: // 火星球
   {
     if (skill_level >= 10)
       *hp_power = 360;
@@ -3081,12 +3081,12 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
 
     break;
   }
-  case BATTLE_COM_S_SUMMON_THUNDER: // ������
+  case BATTLE_COM_S_SUMMON_THUNDER: // 召雷术
   {
     *hp_power = skill_level * 10 + 200;
     break;
   }
-  case BATTLE_COM_S_CURRENT: // ������
+  case BATTLE_COM_S_CURRENT: // 电流术
   {
 #ifdef _PROFESSION_ADDSKILL
     if (skill_level >= 10)
@@ -3106,7 +3106,7 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
 #endif
     break;
   }
-  case BATTLE_COM_S_STORM: // ������
+  case BATTLE_COM_S_STORM: // 暴风雨
   {
 #ifdef _PROFESSION_ADDSKILL
     if (skill_level > 9)
@@ -3124,7 +3124,7 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
 #endif
     break;
   }
-  case BATTLE_COM_S_ICE_ARROW: // ������
+  case BATTLE_COM_S_ICE_ARROW: // 冰箭术
   {
     if (skill_level >= 10)
       *hp_power = 250;
@@ -3132,7 +3132,7 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
       *hp_power = skill_level * 10 + 130;
     break;
   }
-  case BATTLE_COM_S_ICE_CRACK: // ������
+  case BATTLE_COM_S_ICE_CRACK: // 冰爆术
   {
     if (skill_level >= 10)
       *hp_power = 400;
@@ -3143,7 +3143,7 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
 
     break;
   }
-  case BATTLE_COM_S_DOOM: // ����ĩ��
+  case BATTLE_COM_S_DOOM: // 世界末日
   {
     if (skill_level >= 10)
       *hp_power = 550;
@@ -3163,7 +3163,7 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
       *hp_power = 200;
     break;
   }
-  case BATTLE_COM_S_FIRE_SPEAR: // ����ǹ
+  case BATTLE_COM_S_FIRE_SPEAR: // 火龙枪
   {
     if (skill_level > 9)
       *hp_power = 800;
@@ -3182,7 +3182,7 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
     break;
   }
 
-  case BATTLE_COM_S_BLOOD: // ��Ѫ����
+  case BATTLE_COM_S_BLOOD: // 嗜血成性
   {
     int hp = CHAR_getInt(char_index, CHAR_HP);
     if (hp > 1)
@@ -3193,12 +3193,12 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
 
     break;
   }
-  case BATTLE_COM_S_BLOOD_WORMS: // ��Ѫ��
+  case BATTLE_COM_S_BLOOD_WORMS: // 嗜血蛊
   {
     *hp_power = skill_level * 10 + 20;
     break;
   }
-  case BATTLE_COM_S_SIGN: // һ���Ѫ
+  case BATTLE_COM_S_SIGN: // 一针见血
   {
 #ifdef _PROFESSION_ADDSKILL
     if (skill_level >= 10) {
@@ -3234,7 +3234,7 @@ void PROFESSION_MAGIC_GET_PRACTICE(float *hp_power, float *mp_power,
 #endif
     break;
   }
-  case BATTLE_COM_S_ENCLOSE: // ������
+  case BATTLE_COM_S_ENCLOSE: // 附身术
   {
 #ifdef _PROFESSION_ADDSKILL
     if (skill_level >= 10)
@@ -3292,7 +3292,7 @@ void PROFESSION_MAGIC_TOLIST_SORT(int *list, int *listidx, int char_index) {
   command = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
 
   switch (command) {
-  case BATTLE_COM_S_CURRENT: // ������
+  case BATTLE_COM_S_CURRENT: // 电流术
   {
 #ifdef _PROFESSION_ADDSKILL
     if (skill_level > 9)
@@ -3368,8 +3368,8 @@ void PROFESSION_MAGIC_TOLIST_SORT(int *list, int *listidx, int char_index) {
 #endif
     break;
   }
-  case BATTLE_COM_S_CONVOLUTE: // ��������
-  case BATTLE_COM_S_FIRE_BALL: // ������
+  case BATTLE_COM_S_CONVOLUTE: // 回旋攻击
+  case BATTLE_COM_S_FIRE_BALL: // 火星球
   {
     int toNo = -1, toNo2 = -1, battleindex = -1, i = 0, count = 0;
     battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
@@ -3484,7 +3484,7 @@ void PROFESSION_MAGIC_CHANGE_STATUS(int char_index, int hp_power,
   command = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
 
   switch (command) {
-  case BATTLE_COM_S_BLOOD: // ��Ѫ����
+  case BATTLE_COM_S_BLOOD: // 嗜血成性
   {
     int rate = 0;
 
@@ -3503,7 +3503,7 @@ void PROFESSION_MAGIC_CHANGE_STATUS(int char_index, int hp_power,
 
     break;
   }
-  case BATTLE_COM_S_BLOOD_WORMS: // ��Ѫ��
+  case BATTLE_COM_S_BLOOD_WORMS: // 嗜血蛊
   {
     if (skill_level >= 10) {
       *add_hp += hp_power * 0.2;
@@ -3515,7 +3515,7 @@ void PROFESSION_MAGIC_CHANGE_STATUS(int char_index, int hp_power,
     break;
   }
 #ifdef _PROFESSION_ADDSKILL
-  case BATTLE_COM_S_SIGN: // һ���Ѫ
+  case BATTLE_COM_S_SIGN: // 一针见血
   {
     int success = 10;
     if (RAND(0, 100) < success) {
@@ -3538,7 +3538,7 @@ void PROFESSION_MAGIC_CHANGE_STATUS(int char_index, int hp_power,
   }
 }
 
-// ȡ��λ�ò���������Ķ���ħ��ͼ�ż�����
+// 取得位置不是在中央的多人魔法图号及座标
 void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
                                char *pszOption) {
   int command = 0, img2 = 0, x = 0, y = 0;
@@ -3551,7 +3551,7 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
   command = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
 
   switch (command) {
-  case BATTLE_COM_S_BLOOD: // ��Ѫ����
+  case BATTLE_COM_S_BLOOD: // 嗜血成性
   {
     int img = 0;
 
@@ -3567,7 +3567,7 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
     PROFESSION_MAGIC_CHANG_IMG2(img, pszOption, attIdx);
     return;
   }
-  case BATTLE_COM_S_VOLCANO_SPRINGS: // ��ɽȪ
+  case BATTLE_COM_S_VOLCANO_SPRINGS: // 火山泉
   {
     int img = 0;
 
@@ -3592,25 +3592,25 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
       if (getStringFromIndexWithDelim(pszOption, "|", 12, temp, sizeof(temp)))
         y = atoi(temp);
 
-      // ���ö���
+      // 後置动画
       PROFESSION_magic[attIdx].uiSpriteNum = img;
 
-      // ���ö�������
+      // 後置动画座标
       PROFESSION_magic[attIdx].siSx = x;
       PROFESSION_magic[attIdx].siSy = y;
     }
 
     return;
   }
-  case BATTLE_COM_S_BLOOD_WORMS: // ��Ѫ��
+  case BATTLE_COM_S_BLOOD_WORMS: // 嗜血蛊
   {
-    // �ҷ�
+    // 右方
     if (toNo == 20 || toNo == 25 || toNo == 26 ||
         (toNo >= 0 && toNo < SIDE_OFFSET))
       PROFESSION_MAGIC_CHANG_IMG2(101623, pszOption, attIdx);
     return;
   }
-  case BATTLE_COM_S_ICE_MIRROR: // ������
+  case BATTLE_COM_S_ICE_MIRROR: // 冰镜术
   {
     if (toNo >= 0 && toNo < 10)
       PROFESSION_MAGIC_CHANG_IMG2(101652, pszOption, attIdx);
@@ -3626,74 +3626,74 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
       if (getStringFromIndexWithDelim(pszOption, "|", 12, temp, sizeof(temp)))
         y = atoi(temp);
 
-      // ���ö���
+      // 後置动画
       PROFESSION_magic[attIdx].uiSpriteNum = 101652;
 
-      // ���ö�������
+      // 後置动画座标
       PROFESSION_magic[attIdx].siSx = x;
       PROFESSION_magic[attIdx].siSy = y;
     }
 
     return;
   }
-  case BATTLE_COM_S_ENCLOSE: // ������
+  case BATTLE_COM_S_ENCLOSE: // 附身术
   {
-    // �ҷ�
+    // 右方
     if (toNo == 20 || toNo == 25 || toNo == 26 ||
         (toNo >= 0 && toNo < SIDE_OFFSET))
       PROFESSION_MAGIC_CHANG_IMG2(101643, pszOption, attIdx);
     return;
   }
-  case BATTLE_COM_S_FIRE_SPEAR: // ����ǹ
+  case BATTLE_COM_S_FIRE_SPEAR: // 火龙枪
   {
-    // �ҷ�
+    // 右方
     // if( toNo == 20 || toNo == 25 || toNo == 26 )
     if (toNo < 10)
       PROFESSION_MAGIC_CHANG_IMG2(101642, pszOption, attIdx);
     return;
   }
-  case BATTLE_COM_S_DOOM: // ����ĩ��
+  case BATTLE_COM_S_DOOM: // 世界末日
   {
-    // �ҷ�
+    // 右方
     if (toNo == 20 || toNo == 25 || toNo == 26)
       PROFESSION_MAGIC_CHANG_IMG2(101639, pszOption, attIdx);
     return;
   }
-  case BATTLE_COM_S_ICE_CRACK: // ������
+  case BATTLE_COM_S_ICE_CRACK: // 冰爆术
   {
-    // �ҷ�
+    // 右方
     if (toNo == 20 || toNo == 25 || toNo == 26)
       PROFESSION_MAGIC_CHANG_IMG2(101650, pszOption, attIdx);
     return;
   }
-  case BATTLE_COM_S_ICE_ARROW: // ������
+  case BATTLE_COM_S_ICE_ARROW: // 冰箭术
   {
-    // �ҷ�
+    // 右方
     if (toNo == 20 || toNo == 25 || toNo == 26 ||
         (toNo >= 0 && toNo < SIDE_OFFSET))
       PROFESSION_MAGIC_CHANG_IMG2(101649, pszOption, attIdx);
     return;
   }
-  case BATTLE_COM_S_STORM: // ������
+  case BATTLE_COM_S_STORM: // 暴风雨
   {
-    // �ҷ�
+    // 右方
     if (toNo == 20 || toNo == 25 || toNo == 26)
       PROFESSION_MAGIC_CHANG_IMG2(101677, pszOption, attIdx);
     return;
   }
 #ifdef _PROFESSION_ADDSKILL
-  case BATTLE_COM_S_BOUNDARY: // �����Խ��
+  case BATTLE_COM_S_BOUNDARY: // 四属性结界
   {
-    // �ҷ�
+    // 右方
     if (toNo == 20 || toNo == 25 || toNo == 26) {
       if (getStringFromIndexWithDelim(pszOption, "|", 1, temp, sizeof(temp))) {
-        if (strcmp("�ؽ��", temp) == 0)
+        if (strcmp("地结界", temp) == 0)
           PROFESSION_MAGIC_CHANG_IMG2(101786, pszOption, attIdx);
-        else if (strcmp("ˮ���", temp) == 0)
+        else if (strcmp("水结界", temp) == 0)
           PROFESSION_MAGIC_CHANG_IMG2(101774, pszOption, attIdx);
-        else if (strcmp("����", temp) == 0)
+        else if (strcmp("火结界", temp) == 0)
           PROFESSION_MAGIC_CHANG_IMG2(101780, pszOption, attIdx);
-        else if (strcmp("����", temp) == 0)
+        else if (strcmp("风结界", temp) == 0)
           PROFESSION_MAGIC_CHANG_IMG2(101792, pszOption, attIdx);
         else
           PROFESSION_MAGIC_CHANG_IMG2(101770, pszOption, attIdx);
@@ -3702,31 +3702,31 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
     return;
   }
 #endif
-  case BATTLE_COM_S_CONVOLUTE: // ��������
+  case BATTLE_COM_S_CONVOLUTE: // 回旋攻击
   {
     img2 = 101656;
-    if (toNo == 25) { // �� 1
+    if (toNo == 25) { // 右 1
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 9, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 10, temp, sizeof(temp)))
         y = atoi(temp);
-    } else if (toNo == 26) { // �� 2
+    } else if (toNo == 26) { // 右 2
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 11, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 12, temp, sizeof(temp)))
         y = atoi(temp);
-    } else if (toNo == 23) { // �� 1
+    } else if (toNo == 23) { // 左 1
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 13, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 14, temp, sizeof(temp)))
         y = atoi(temp);
-    } else if (toNo == 24) { // �� 2
+    } else if (toNo == 24) { // 左 2
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 15, temp, sizeof(temp)))
         x = atoi(temp);
@@ -3736,38 +3736,38 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
     } else
       return;
 
-    // ���ö���
+    // 後置动画
     PROFESSION_magic[attIdx].uiSpriteNum = img2;
 
-    // ���ö�������
+    // 後置动画座标
     PROFESSION_magic[attIdx].siSx = x;
     PROFESSION_magic[attIdx].siSy = y;
 
     break;
   }
-  case BATTLE_COM_S_THROUGH_ATTACK: // �ᴩ����
+  case BATTLE_COM_S_THROUGH_ATTACK: // 贯穿攻击
   {
-    if ((toNo == 13) || (toNo == 18)) { // ���� 1
+    if ((toNo == 13) || (toNo == 18)) { // 左下 1
       img2 = 101676;
       x = 50;
       y = 240;
-    } else if ((toNo == 11) || (toNo == 16)) { // �� 2
+    } else if ((toNo == 11) || (toNo == 16)) { // 左 2
       img2 = 101675;
       x = 120;
       y = 200;
-    } else if ((toNo == 10) || (toNo == 15)) { // �� 3
+    } else if ((toNo == 10) || (toNo == 15)) { // 左 3
       img2 = 101674;
       x = 140;
       y = 160;
-    } else if ((toNo == 12) || (toNo == 17)) { // �� 4
+    } else if ((toNo == 12) || (toNo == 17)) { // 左 4
       img2 = 101673;
       x = 160;
       y = 120;
-    } else if ((toNo == 14) || (toNo == 19)) { // �� 5
+    } else if ((toNo == 14) || (toNo == 19)) { // 左 5
       img2 = 101672;
       x = 180;
       y = 80;
-    } else if ((toNo == 3) || (toNo == 8)) { // �� 1
+    } else if ((toNo == 3) || (toNo == 8)) { // 右 1
       img2 = 101665;
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 9, temp, sizeof(temp)))
@@ -3775,7 +3775,7 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 10, temp, sizeof(temp)))
         y = atoi(temp);
-    } else if ((toNo == 1) || (toNo == 6)) { // �� 2
+    } else if ((toNo == 1) || (toNo == 6)) { // 右 2
       img2 = 101664;
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 11, temp, sizeof(temp)))
@@ -3783,7 +3783,7 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 12, temp, sizeof(temp)))
         y = atoi(temp);
-    } else if ((toNo == 0) || (toNo == 5)) { // �� 3
+    } else if ((toNo == 0) || (toNo == 5)) { // 右 3
       img2 = 101663;
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 13, temp, sizeof(temp)))
@@ -3791,7 +3791,7 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 14, temp, sizeof(temp)))
         y = atoi(temp);
-    } else if ((toNo == 2) || (toNo == 7)) { // �� 4
+    } else if ((toNo == 2) || (toNo == 7)) { // 右 4
       img2 = 101662;
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 15, temp, sizeof(temp)))
@@ -3799,7 +3799,7 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 16, temp, sizeof(temp)))
         y = atoi(temp);
-    } else if ((toNo == 4) || (toNo == 9)) { // �� 5
+    } else if ((toNo == 4) || (toNo == 9)) { // 右 5
       img2 = 101661;
       memset(temp, 0, sizeof(temp));
       if (getStringFromIndexWithDelim(pszOption, "|", 17, temp, sizeof(temp)))
@@ -3810,21 +3810,21 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
     } else
       return;
 
-    // ���ö���
+    // 後置动画
     PROFESSION_magic[attIdx].uiSpriteNum = img2;
 
-    // ���ö�������
+    // 後置动画座标
     PROFESSION_magic[attIdx].siSx = x;
     PROFESSION_magic[attIdx].siSy = y;
 
-    // ǰ�ö���
+    // 前置动画
     if (toNo >= 10) {
       int img1 = 101671;
       PROFESSION_magic[attIdx].uiPrevMagicNum = img1;
     }
     break;
   }
-  case BATTLE_COM_S_FIRE_BALL: // ������
+  case BATTLE_COM_S_FIRE_BALL: // 火星球
   {
     if (toNo == 25) {
       img2 = 101694;
@@ -3883,10 +3883,10 @@ int PROFESSION_MAGIC_GET_DAMAGE(int attackindex, int defindex, int magic_type,
 {
   int damage = 0;
 
-#ifdef _FIX_MAGIC_RESIST // WON ADD ����ħ������
-  int proficiency = 0;   // ������
-  int resist = 0;        // ����
-  int suit = 0;          // װ��
+#ifdef _FIX_MAGIC_RESIST // WON ADD 修正魔法抗性
+  int proficiency = 0;   // 熟练度
+  int resist = 0;        // 抗性
+  int suit = 0;          // 装备
   int spirit = 0;
 
   if (command == BATTLE_COM_S_DOOM)
@@ -3958,18 +3958,18 @@ int PROFESSION_MAGIC_GET_DAMAGE(int attackindex, int defindex, int magic_type,
 #else //_FIX_MAGIC_RESIST
 
   fire_proficiency =
-      CHAR_getWorkInt(attackindex, CHAR_WORK_F_PROFICIENCY); // ��������
+      CHAR_getWorkInt(attackindex, CHAR_WORK_F_PROFICIENCY); // 火熟练度
   electric_proficiency =
-      CHAR_getWorkInt(attackindex, CHAR_WORK_T_PROFICIENCY); // ��������
+      CHAR_getWorkInt(attackindex, CHAR_WORK_T_PROFICIENCY); // 电熟练度
   ice_proficiency =
-      CHAR_getWorkInt(attackindex, CHAR_WORK_I_PROFICIENCY);       // ��������
-  fire_resist = CHAR_getWorkInt(defindex, CHAR_WORK_F_RESIST);     // ��
-  electric_resist = CHAR_getWorkInt(defindex, CHAR_WORK_T_RESIST); // �翹
-  ice_resist = CHAR_getWorkInt(defindex, CHAR_WORK_I_RESIST);      // ����
+      CHAR_getWorkInt(attackindex, CHAR_WORK_I_PROFICIENCY);       // 冰熟练度
+  fire_resist = CHAR_getWorkInt(defindex, CHAR_WORK_F_RESIST);     // 火抗
+  electric_resist = CHAR_getWorkInt(defindex, CHAR_WORK_T_RESIST); // 电抗
+  ice_resist = CHAR_getWorkInt(defindex, CHAR_WORK_I_RESIST);      // 冰抗
 
   if (magic_type == 1) {
-    attack = power * (100 + fire_proficiency) / 100; // �����ӳ�
-    if (rand_num < 40) {                             // ԭ�����˺�
+    attack = power * (100 + fire_proficiency) / 100; // 攻击加成
+    if (rand_num < 40) {                             // 原攻击伤害
       attack = attack * (100 - fire_resist) / 100;
     } else {
       rand_num = RAND(-20, 20);
@@ -3983,9 +3983,9 @@ int PROFESSION_MAGIC_GET_DAMAGE(int attackindex, int defindex, int magic_type,
       rand_num = RAND(-20, 20);
       attack = attack * (100 - (rand_num + electric_resist)) / 100;
     }
-  } else if (magic_type == 3) {                     // ������
-    attack = power * (100 + ice_proficiency) / 100; // �����ӳ�
-    if (rand_num < 40) {                            // ԭ�����˺�
+  } else if (magic_type == 3) {                     // 冰属性
+    attack = power * (100 + ice_proficiency) / 100; // 攻击加成
+    if (rand_num < 40) {                            // 原攻击伤害
       attack = attack * (100 - ice_resist) / 100;
     } else {
       rand_num = RAND(-20, 20);
@@ -4009,7 +4009,7 @@ int PROFESSION_MAGIC_GET_ICE_MIRROR_DAMAGE(int attackindex, int defindex,
                                            int command, int power) {
   int damage = power;
 
-  if (command == BATTLE_COM_S_ICE_MIRROR) { // ������
+  if (command == BATTLE_COM_S_ICE_MIRROR) { // 冰镜术
     float defense = -1;
     int rate = 0;
     int defpet = BATTLE_getRidePet(defindex);
@@ -4033,11 +4033,11 @@ int PROFESSION_MAGIC_GET_ICE_MIRROR_DAMAGE(int attackindex, int defindex,
     // andy_Edit
     damage = 120 + (int)((defense * rate / 100) +
                          ((defense - base_defense) * rate / 200));
-    // ���ƶ�npc���˺�
+    // 控制对npc的伤害
     if (CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEENEMY)
       damage = damage > 800 ? 800 : damage;
 
-  } else if (command == BATTLE_COM_S_CONVOLUTE) { // ��������
+  } else if (command == BATTLE_COM_S_CONVOLUTE) { // 回旋攻击
     int skill_level = CHAR_GETWORKINT_HIGH(attackindex, CHAR_WORKBATTLECOM3);
     int hit = 0;
 
@@ -4046,19 +4046,19 @@ int PROFESSION_MAGIC_GET_ICE_MIRROR_DAMAGE(int attackindex, int defindex,
     hit = skill_level * 2 + 60;
 
     // if( rand_num <= hit ){
-    //  ȡ�û��������˺�
+    //  取得回旋攻击伤害
     damage = BATTLE_PROFESSION_CONVOLUTE_GET_DAMAGE(attackindex, defindex,
                                                     skill_level);
     //}else{
     //	damage = 0;
     //}
-  } else if (command == BATTLE_COM_S_THROUGH_ATTACK) { // �ᴩ����
+  } else if (command == BATTLE_COM_S_THROUGH_ATTACK) { // 贯穿攻击
     int skill_level = CHAR_GETWORKINT_HIGH(attackindex, CHAR_WORKBATTLECOM3);
 
     skill_level = PROFESSION_CHANGE_SKILL_LEVEL_A(skill_level);
 
     if (skill_level != 10) {
-      // �������½�
+      // 命中率下降
       CHAR_setWorkInt(attackindex, CHAR_MYSKILLHIT, 1);
       CHAR_setWorkInt(attackindex, CHAR_MYSKILLHIT_NUM, -70);
       CHAR_setWorkInt(attackindex, CHAR_WORKHITRIGHT,
@@ -4067,9 +4067,9 @@ int PROFESSION_MAGIC_GET_ICE_MIRROR_DAMAGE(int attackindex, int defindex,
     damage = BATTLE_PROFESSION_THROUGH_ATTACK_GET_DAMAGE(attackindex, defindex);
   }
 #ifdef _PROFESSION_ADDSKILL
-  else if (command == BATTLE_COM_S_CURRENT               // ������
-           || command == BATTLE_COM_S_SUMMON_THUNDER) {  // ������
-    if (CHAR_getWorkInt(defindex, CHAR_WORKWATER) > 0) { // ˮ����
+  else if (command == BATTLE_COM_S_CURRENT               //电流术
+           || command == BATTLE_COM_S_SUMMON_THUNDER) {  // 召雷术
+    if (CHAR_getWorkInt(defindex, CHAR_WORKWATER) > 0) { // 水附体
       if (RAND(1, 100) < 75)
         damage *= 3;
     }
@@ -4171,21 +4171,21 @@ int PROFESSION_MAGIC_CHANG_STATUS(int command, int battleindex, int char_index,
   skill_level = PROFESSION_CHANGE_SKILL_LEVEL_M(skill_level);
 
   switch (command) {
-  case BATTLE_COM_S_THROUGH_ATTACK: // �ᴩ����
+  case BATTLE_COM_S_THROUGH_ATTACK: // 贯穿攻击
   {
     int skill_level = CHAR_GETWORKINT_HIGH(char_index, CHAR_WORKBATTLECOM3);
 
     skill_level = PROFESSION_CHANGE_SKILL_LEVEL_A(skill_level);
 
-    if (no == 0) { // ����ǰ�ŵ�
+    if (no == 0) { // 攻击前排的
       attvalue = attvalue * (skill_level * 2 + 70) / 100;
-    } else if (no == 1) { // �������ŵ�
+    } else if (no == 1) { // 攻击後排的
       attvalue = attvalue * (skill_level * 2 + 50) / 100;
     }
 
     break;
   }
-  case BATTLE_COM_S_ICE_CRACK: // ������
+  case BATTLE_COM_S_ICE_CRACK: // 冰爆术
   {
     int hit = 0, rand_num = RAND(0, 100);
     if (skill_level >= 10)
@@ -4227,9 +4227,9 @@ int PROFESSION_MAGIC_CHANG_STATUS(int command, int battleindex, int char_index,
     attvalue = 0;
     break;
   }
-  case BATTLE_COM_S_ENCLOSE: // ������
+  case BATTLE_COM_S_ENCLOSE: // 附身术
   {
-    for (j = 1; j < BATTLE_ST_END; j++) // �������쳣״̬��return
+    for (j = 1; j < BATTLE_ST_END; j++) // 若已有异常状态则return
       if (CHAR_getWorkInt(charaidx, StatusTbl[j]) > 0)
         return attvalue;
 
@@ -4259,7 +4259,7 @@ int PROFESSION_MAGIC_CHANG_STATUS(int command, int battleindex, int char_index,
 
       rand_num = RAND(0, 100);
 
-      if (rand_num <= success) { // �ɹ�ʱĿ�����
+      if (rand_num <= success) { // 成功时目标混乱
 #ifdef _PROFESSION_ADDSKILL
         CHAR_setWorkInt(charaidx, CHAR_WORKANNEX, round);
 #else
@@ -4271,9 +4271,9 @@ int PROFESSION_MAGIC_CHANG_STATUS(int command, int battleindex, int char_index,
     }
     break;
   }
-  case BATTLE_COM_S_ICE_ARROW: // ����
+  case BATTLE_COM_S_ICE_ARROW: // 冰箭
   {
-    for (j = 1; j < BATTLE_ST_END; j++) { // �������쳣״̬��return
+    for (j = 1; j < BATTLE_ST_END; j++) { // 若已有异常状态则return
       if (CHAR_getWorkInt(charaidx, StatusTbl[j]) > 0)
         return attvalue;
     }
@@ -4291,7 +4291,7 @@ int PROFESSION_MAGIC_CHANG_STATUS(int command, int battleindex, int char_index,
         success = 10;
       rand_num = RAND(0, 100);
 
-      if (rand_num <= success) { // �ɹ�ʱĿ�꽵��
+      if (rand_num <= success) { // 成功时目标降敏
         int dec_dex = 0, turn = 0;
 
         if (skill_level >= 8)
@@ -4315,9 +4315,9 @@ int PROFESSION_MAGIC_CHANG_STATUS(int command, int battleindex, int char_index,
     }
     break;
   }
-  case BATTLE_COM_S_BLOOD_WORMS: // ��Ѫ��
+  case BATTLE_COM_S_BLOOD_WORMS: // 嗜血蛊
   {
-    for (j = 1; j < BATTLE_ST_END; j++) { // �������쳣״̬��return
+    for (j = 1; j < BATTLE_ST_END; j++) { // 若已有异常状态则return
       if (CHAR_getWorkInt(charaidx, StatusTbl[j]) > 0)
         return attvalue;
     }
@@ -4367,7 +4367,7 @@ int PROFESSION_MAGIC_CHANG_STATUS(int command, int battleindex, int char_index,
 
       rand_num = RAND(0, 100);
 
-      if (rand_num <= success) { // �ɹ�ʱĿ����Ѫ
+      if (rand_num <= success) { // 成功时目标吸血
         if (skill_level >= 10)
           turn = 5;
         else if (skill_level >= 7)
@@ -4416,7 +4416,7 @@ void BATTLE_MultiAttMagic_Fire(int battleindex, int attackNo, int defNo,
   float temp = 0.0f;
   //	int attattr[5], defattr[5];
   char msgbuf[64];
-  char kind[4][3] = {"��", "ˮ", "��", "��"};
+  char kind[4][3] = {"地", "水", "火", "风"};
 #else
   BOOL TrueMagic = FALSE;
 #endif
@@ -4449,7 +4449,7 @@ void BATTLE_MultiAttMagic_Fire(int battleindex, int attackNo, int defNo,
     AttIsPlayer = 0;
     if (attType == CHAR_TYPEPLAYER) {
       AttIsPlayer = 1;
-      for (i = 0; i < 4; i++) { // att_magic_lv[i]: i = 0:�� 1:ˮ 2:�� 3:��
+      for (i = 0; i < 4; i++) { // att_magic_lv[i]: i = 0:地 1:水 2:火 3:风
         att_magic_lv[i] = CHAR_getInt(BATTLE_No2Index(battleindex, attackNo),
                                       CHAR_EARTH_EXP + i);
       }
@@ -4484,7 +4484,7 @@ void BATTLE_MultiAttMagic_Fire(int battleindex, int attackNo, int defNo,
       if (defType == CHAR_TYPEPLAYER) {
         DefIsPlayer = 1;
         for (j = 0; j < DEF_MAGIC_NUM;
-             j++) { // def_magic_resist[i]: i = 0:�� 1:ˮ 2:�� 3:��
+             j++) { // def_magic_resist[i]: i = 0:地 1:水 2:火 3:风
           def_magic_resist[j] = CHAR_getInt(charaidx, CHAR_EARTH_RESIST + j);
 #ifdef _EQUIT_DEFMAGIC
           def_magic_resist[j] +=
@@ -4521,7 +4521,7 @@ void BATTLE_MultiAttMagic_Fire(int battleindex, int attackNo, int defNo,
 #endif
     }
     pet_def_lv = CHAR_getInt(charaidx, CHAR_LV);
-    if (BATTLE_MagicDodge(charaidx, DefIsPlayer, FieldAttr)) { // ����������
+    if (BATTLE_MagicDodge(charaidx, DefIsPlayer, FieldAttr)) { // 计算闪避率
       attvalue = pethp = 0;
       sprintf(szcommand, "r%X|f%X|d%X|p%X|", list[i], 0, attvalue, pethp);
       BATTLESTR_ADD(szcommand);
@@ -4581,7 +4581,7 @@ void BATTLE_MultiAttMagic_Fire(int battleindex, int attackNo, int defNo,
     }
 
     charahp = CHAR_getInt(charaidx, CHAR_HP);
-    // û�г���
+    // 没有宠物
     if (-1 == petidx || CHAR_getInt(petidx, CHAR_HP) <= 0) {
       if ((charahp -= attvalue) < 0) {
         charahp = 0;

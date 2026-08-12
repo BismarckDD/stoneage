@@ -21,11 +21,11 @@ extern struct FM_POINTLIST fmpointlist;
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
-#ifdef _PERSONAL_FAME // Arminius 8.30: �����������
+#ifdef _PERSONAL_FAME // Arminius 8.30: 家族个人声望
 
-// Arminius: �Ұ�����ֵ����
+// Arminius: 我把声望值减半
 int FMAdvTbl[] = {
-    // ����ð�� Table
+    // 家族冒险 Table
     0,     // 0
     1,     // 1
     1,     // 2
@@ -231,10 +231,10 @@ static struct ynset {
   char string[32];
 } yntable[] = {
     {0, "no"},  {0, "No"},  {0, "NO"},  {0, "NO"},
-    {0, "No"},  {0, "no"},  {0, "��"},  {0, "��"},
+    {0, "No"},  {0, "no"},  {0, "否"},  {0, "否"},
 
     {1, "yes"}, {1, "Yes"}, {1, "YES"}, {1, "YES"},
-    {1, "Yes"}, {1, "yes"}, {1, "��"},  {1, "��"},
+    {1, "Yes"}, {1, "yes"}, {1, "是"},  {1, "是"},
 
 };
 
@@ -373,7 +373,7 @@ BOOL NPC_Util_isFaceToChara(int index1, int index2, int distance) {
   }
   if (CHAR_getInt(index1, CHAR_X) == CHAR_getInt(index2, CHAR_X) &&
       CHAR_getInt(index1, CHAR_Y) == CHAR_getInt(index2, CHAR_Y)) {
-    /* ����ئ�Ȼ�������FALSE */
+    /* 井今卅匀化中凶日FALSE */
     return FALSE;
   }
 
@@ -389,7 +389,7 @@ BOOL NPC_Util_isFaceToChara(int index1, int index2, int distance) {
       return FALSE;
     }
   }
-  /* �������Ϻ�ئ��ئ��������FALSE */
+  /* 兮氏兮氏褐卅日卅井匀凶日FALSE */
   return FALSE;
 }
 
@@ -579,38 +579,38 @@ static int SearchNearLine(int xStart, int yStart, int floor, int xPlus,
   return -1;
 }
 
-static int SearchNearAround(int x,     /* ����  �Ҽ�  ��   */
-                            int y,     /* ����  �Ҽ�  ��   */
-                            int floor, /* ����  �Ҽ��׷�ʧ */
-                            int Part, /* ���������  �ټ����̼� */
-                            int Level, /*   �ҷ�Ի  ľ��������   */
-                            int type /* �������� CHAR ������ */
+static int SearchNearAround(int x,     /* 腹绸  艘及  甄   */
+                            int y,     /* 腹绸  艘及  甄   */
+                            int floor, /* 腹绸  艘及白夫失 */
+                            int Part, /* 腹绸钒铵允月  赓及仿奶件 */
+                            int Level, /*   艘方曰  木化中月覃   */
+                            int type /* 腹绸允月 CHAR 正奶皿 */
 ) {
   int i, iTarget = -1;
   for (i = 0; i < 4; i++) {
-    if (Part == 0) { /* �������̼�ë���� */
+    if (Part == 0) { /* 晓及仿奶件毛腹绸 */
       iTarget = SearchNearLine(x - Level + 1, y - Level, floor, 1, 0, Level * 2,
                                type);
       if (iTarget >= 0)
         break;
-    } else if (Part == 1) { /* 㯼����̼�ë���� */
+    } else if (Part == 1) { /* 惘及仿奶件毛腹绸 */
       iTarget = SearchNearLine(x + Level, y - Level + 1, floor, 0, 1, Level * 2,
                                type);
       if (iTarget >= 0)
         break;
-    } else if (Part == 2) { /* Ʊ�����̼�ë���� */
+    } else if (Part == 2) { /* 票及仿奶件毛腹绸 */
       iTarget = SearchNearLine(x + Level - 1, y + Level, floor, -1, 0,
                                Level * 2, type);
       if (iTarget >= 0)
         break;
-    } else if (Part == 3) { /* �������̼�ë���� */
+    } else if (Part == 3) { /* 尔及仿奶件毛腹绸 */
       iTarget = SearchNearLine(x - Level, y + Level - 1, floor, 0, -1,
                                Level * 2, type);
       if (iTarget >= 0)
         break;
     }
     Part++;
-    Part &= 3; /* �ݼ��ɡ���ë���� */
+    Part &= 3; /* 戚及由□玄毛腹绸 */
   }
   return iTarget;
 }
@@ -639,9 +639,9 @@ int NPC_Util_SearchNear(int meindex, int maxlen, int type) {
   x = CHAR_getInt(meindex, CHAR_X);
   y = CHAR_getInt(meindex, CHAR_Y);
 
-  /*  ���� */
+  /*  腹绸 */
   for (i = 0; i < objnum; i++) {
-    /*ƽ�ҷ�����������*/
+    /*平乓仿弁正□及凛*/
     if (obj[i].type != OBJTYPE_CHARA)
       continue;
     if (CHAR_getInt(obj[i].index, CHAR_WHICHTYPE) != type)
@@ -649,21 +649,21 @@ int NPC_Util_SearchNear(int meindex, int maxlen, int type) {
     if (floor != obj[i].floor)
       continue;
 
-    /* CHAR_TYPEENEMY ���ݷ�index�����м�������ؤ�¼�ƥ������������ */
+    /* CHAR_TYPEENEMY 及凛反index互愤坌及桦宁互丐月及匹民尼永弁允月 */
     if (obj[i].index == meindex)
       continue;
 
     tX = ABS(x - CHAR_getInt(obj[i].index, CHAR_X));
     tY = ABS(y - CHAR_getInt(obj[i].index, CHAR_Y));
     if (tX > maxlen)
-      continue; /* �Tľ�ʿ�*/
+      continue; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
     if (tY > maxlen)
-      continue; /* ئ���ݳ�*/
+      continue; /* 卅日戚尺*/
 
     iLen = tX * tX + tY * tY;
     if (iMin > iLen) {
       iMin = iLen;
-      iTarget = obj[i].index; /* �̼������͵�ë趪E*/
+      iTarget = obj[i].index; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
     }
   }
 
@@ -684,12 +684,11 @@ int NPC_Util_SearchNearEnemy(int meindex, int maxlen) {
 /*******************************************************
 
   int NPC_Util_SuberiWalk(
-        int	index,	CHAR ���̼������͵�
+	int	index,	CHAR 及奶件犯永弁旦
   );
 
-          -1  ��Ѩ�����¦�Ⱦ����Ȼ��޷¡�
-          -2
-��ƽ�ҷ�������¦�Ⱦ����Ȼ��޷¡�
+          -1  “穴永皿卞娄匀井井匀化巨仿□
+          -2  “平乓仿弁正卞娄匀井井匀化巨仿□
 
 
 *******************************************************/
@@ -750,13 +749,13 @@ int NPC_Util_SuberiWalk(int index, int dir) {
   default:
     tX = x + CHAR_getDX(dir);
     tY = y + CHAR_getDY(dir);
-    /* �׻���*/
+    /* 褡户凶*/
     if (MAP_walkAble(index, fl, tX, tY) == 0) {
-      dir = -1; /* Ѩ�����¦�Ⱦ�������*/
+      dir = -1; /* 穴永皿卞娄匀井井匀凶*/
     }
     //		}else
     //		if( NPC_Util_OtherCharCheck( fl,tX, tY ) ){
-    //			dir = -2;/* ƽ�ҷ±�¦�Ⱦ�������*/
+    //			dir = -2;/* 平乓仿卞娄匀井井匀凶*/
     //		}
     /*		CHAR_walk( index, dir, 0 );*/
     return dir;
@@ -767,10 +766,10 @@ int NPC_Util_SuberiWalk(int index, int dir) {
     tX = x + CHAR_getDX(dir2);
     tY = y + CHAR_getDY(dir2);
     if (MAP_walkAble(index, fl, tX, tY) == 0) {
-      aDirList[i] = -1; /* ����ئ�������������f����ڽ*/
+      aDirList[i] = -1; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
                         //		}else if( NPC_Util_OtherCharCheck( fl,tX, tY ) ){
     } else {
-      /* ������!!*/
+      /* 垫仃凶!!*/
       OkFlg++;
     }
   }
@@ -791,7 +790,7 @@ int NPC_Util_SuberiWalk(int index, int dir) {
 /*-----------------------------------------------------------------------
  *
  * ----------------------------------
- * IN : int meindex : ƽ�ҷ�index
+ * IN : int meindex : 平乓仿index
  * OUT:
  * RETURN:
  * ----------------------------------
@@ -823,12 +822,12 @@ int NPC_Util_GetNumFromArg(int meindex, char *in) {
 }
 
 /*
- * ƥ���¾�����ľ�����ѹ���
+ * 匹五月井手仄木氏楮醒瓜伉
  * by ringo
  *
- * int charindex : ����ƽ�ҷ¼� index
+ * int charindex : 覆擂平乓仿及 index
  *
- * ߯Ի��
+ * 忒曰袄
  *
  */
 int NPC_Util_SearchItemInChar(int charindex, int item_index) {
@@ -861,8 +860,8 @@ int NPC_Util_SearchItemInChar(int charindex, int item_index) {
 *
 * int NPC_Util_GetDirCharToChar( int fromindex, int toindex, int mode)
 *
-* int	fromindex 	��ƽ�ҷ�index����
-*                   0:toindex�������Ȼ�
+* int	fromindex 	仇及平乓仿index井日
+*                   0:toindex卞轾井匀化
 *
 ------------------------------------------------------------------------*/
 int NPC_Util_GetDirCharToChar(int fromindex, int toindex, int mode) {
@@ -891,7 +890,7 @@ int NPC_Util_GetDirCharToChar(int fromindex, int toindex, int mode) {
 *
 * int NPC_Util_WalkCharToChar( int fromindex, int toindex, int mode)
 *
-*                   0:toindex�������Ȼ�
+*                   0:toindex卞轾井匀化
 *
 ------------------------------------------------------------------------*/
 int NPC_Util_WalkCharToChar(int fromindex, int toindex, int mode, int suberi) {
@@ -921,7 +920,7 @@ int NPC_Util_WalkCharToChar(int fromindex, int toindex, int mode, int suberi) {
 *
 * void NPC_Util_NPCDelete( int srcindex)
 *
-* int	srcindex 	����index
+* int	srcindex 	壅允index
 *
 ------------------------------------------------------------------------*/
 void NPC_Util_NPCDelete(int srcindex) {
@@ -1229,12 +1228,12 @@ int *NPC_Util_getEnemy(int meindex, int char_index) {
         int flg = FALSE;
         int j;
         for (j = 0; j < 5; j++) {
-          /* ���л��¼����ƾ����� */
+          /* 坞中化月及反云井仄中 */
           if (!ENEMY_CHECKINDEX(NPCUtil_enemytbl[j]))
             break;
 
           target_et_array = ENEMYTEMP_getEnemyTempArray(NPCUtil_enemytbl[j]);
-          /* �ƾ����� */
+          /* 云井仄中 */
           if (!ENEMYTEMP_CHECKINDEX(target_et_array))
             break;
 
@@ -1270,7 +1269,7 @@ void NPC_EventSetFlg(int talker, int shiftbit)
   int iGetFame = 0;
 #endif
 
-  /*--  -1���׷º�����绥ئ����ì����   -*/
+  /*--  -1反白仿弘卞楮溢互卅中奶矛件玄   -*/
   if (shiftbit == -1)
     return;
 
@@ -1289,16 +1288,16 @@ void NPC_EventSetFlg(int talker, int shiftbit)
 #endif
   }
 #ifdef _TEACHER_SYSTEM
-  iGetFame /= 20; // ��ʦ���ѧ������������ 5% (1/20)
-  // ������õ�������û�д��0
+  iGetFame /= 20; // 导师获得学生所得声望的 5% (1/20)
+  // 检查所得的声望有没有大於0
   if (iGetFame > 0) {
-    // �����û�е�ʦ
+    // 检查有没有导师
     if (strlen(CHAR_getChar(talker, CHAR_TEACHER_ID)) > 0 &&
         strlen(CHAR_getChar(talker, CHAR_TEACHER_NAME)) > 0) {
       int iPlayernum = CHAR_getPlayerMaxNum(), i;
       char szMsg[128];
 
-      // ��鵼ʦ�ڲ�������
+      // 检查导师在不在线上
       for (i = 0; i < iPlayernum; i++) {
         if (CHAR_getCharUse(i) == FALSE)
           continue;
@@ -1307,11 +1306,11 @@ void NPC_EventSetFlg(int talker, int shiftbit)
             strcmp(CHAR_getChar(talker, CHAR_TEACHER_NAME),
                    CHAR_getChar(i, CHAR_NAME)) == 0) {
           float fGetFame = (float)iGetFame / 100;
-          // ��ʦ������
+          // 导师在线上
           CHAR_setWorkInt(i, CHAR_WORK_GET_TEACHER_FAME,
                           CHAR_getWorkInt(i, CHAR_WORK_GET_TEACHER_FAME) +
                               iGetFame);
-          sprintf(szMsg, "���ѧ�� %s %.2f ������",
+          sprintf(szMsg, "获得学生 %s %.2f 点声望",
                   CHAR_getChar(talker, CHAR_NAME), fGetFame);
           CHAR_talkToCli(i, -1, szMsg, CHAR_COLORYELLOW);
           break;
@@ -1329,7 +1328,7 @@ BOOL NPC_EventCheckFlg(int talker, int shiftbit) {
   int point = 0;
   int array;
   int shift;
-  /*--  -1���׷º�����绥ئ����ì����   -*/
+  /*--  -1反白仿弘卞楮溢互卅中奶矛件玄   -*/
   if (shiftbit == -1)
     return FALSE;
 
@@ -1348,7 +1347,7 @@ void NPC_NowEventSetFlg(int talker, int shiftbit) {
   int point = 0;
   int array;
   int shift;
-  /*--  -1���׷º�����绥ئ����ì����   -*/
+  /*--  -1反白仿弘卞楮溢互卅中奶矛件玄   -*/
   if (shiftbit == -1)
     return;
 
@@ -1439,7 +1438,7 @@ void AddFMAdv(int talker, int shiftbit) {
   FreeAddFMAdv(talker, shiftbit);
 #endif
   sprintf(buf, "%d", fmadv);
-#ifdef _PERSONAL_FAME // Arminius 8.30: �����������
+#ifdef _PERSONAL_FAME // Arminius 8.30: 家族个人声望
   CHAR_earnFame(talker, fmadv);
 #endif
 #ifdef _NEW_MANOR_LAW
@@ -1466,7 +1465,7 @@ void AddFMAdv(int talker, int shiftbit) {
     {
       int i;
       for (i = 0; i < FAMILY_MAXHOME; i++) {
-        // �κ�һ��ׯ԰������ս�ų�,����ֵһ�ı����ACҪ������������
+        // 任何一个庄园有在挑战排程,气势值一改变就向AC要最新气势资料
         if (fmpointlist.fm_inwar[i]) {
           SaacClient_ACShowTopFMList_send(acfd, FM_TOP_MOMENTUM);
           break;
@@ -1476,7 +1475,7 @@ void AddFMAdv(int talker, int shiftbit) {
 #endif
   }
 #ifdef _NEW_MANOR_LAW
-  // δ���ͨ��ʱֻ���³�Ա����ֵ
+  // 未审核通过时只更新成员气势值
   else if (CHAR_getInt(talker, CHAR_FMLEADERFLAG) == FMMEMBER_APPLY) {
     int fd = getfdFromCharaIndex(talker);
     sprintf(buf, "%d", CHAR_getInt(talker, CHAR_FAME));
@@ -1521,7 +1520,7 @@ int addNpcFamilyTax(int meindex, int talkerindex, int income) {
   case 60:
     npc_village = 6;
     break;
-    // Syu ADD �����Ĵ����˰������
+    // Syu ADD 修正四大城无税收问题
   case 71:
     npc_village = 6;
     break;
@@ -1561,7 +1560,7 @@ int addNpcFamilyTax(int meindex, int talkerindex, int income) {
                                       token, sizeof(token)) == FALSE)
         return 0;
       fmindex = atoi(token);
-      // Terry add for ���ׯ԰û��ռ���򲻼���
+      // Terry add for 如果庄园没人占领则不计算
       if (fmindex < 0)
         return 0;
       // end

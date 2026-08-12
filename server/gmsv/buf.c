@@ -33,28 +33,31 @@ BOOL configmem(int unit, int unitnumber) {
 
 BOOL memInit(void) {
   int i;
+  size_t metadata_size;
+  size_t pool_size;
   if (memconfig == FALSE)
     return FALSE;
-  mem = calloc(1, sizeof(Memory) * UNITNUMBER);
+  metadata_size = sizeof(Memory) * (size_t)UNITNUMBER;
+  pool_size = (size_t)UNIT * (size_t)UNITNUMBER;
+  mem = calloc((size_t)UNITNUMBER, sizeof(Memory));
   if (mem == NULL) {
-    print("memInit: Can't alloc memory: %d\n", sizeof(Memory) * UNITNUMBER);
+    print("memInit: cannot allocate metadata table: %zu bytes\n", metadata_size);
     return FALSE;
   }
 
-  memset(mem, 0, sizeof(Memory) * UNITNUMBER);
   for (i = 0; i < UNITNUMBER; i++) {
     mem[i].pointer = NULL;
     mem[i].used = FALSE;
     mem[i].nsize = 0;
   }
-  mem[0].pointer = calloc(1, UNIT * UNITNUMBER);
+  mem[0].pointer = calloc(1, pool_size);
   if (mem[0].pointer == NULL) {
-    print("���ɷ��� %d byte\n", UNIT * UNITNUMBER);
+    print("memInit: cannot allocate memory pool: %zu bytes\n", pool_size);
     free(mem);
+    mem = NULL;
     return FALSE;
   }
-  memset(mem[0].pointer, 0, sizeof(UNIT * UNITNUMBER));
-  print("�ڴ��ѷ��� %.2f MB...", UNIT * UNITNUMBER / 1024.0 / 1024.0);
+  print("Memory pool allocated: %.2f MB...", pool_size / 1024.0 / 1024.0);
   readblock = 0;
   for (i = 0; i < UNITNUMBER; i++)
     mem[i].pointer = mem[0].pointer + i * UNIT;
