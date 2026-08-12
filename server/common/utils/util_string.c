@@ -179,14 +179,7 @@ char *chop(char *src) {
 }
 
 char *chompex(char *src) {
-  char *s = src;
-  while (*s) {
-    if (*s == '\r' || *s == '\n') {
-      *s = '\0';
-    }
-    s++;
-  }
-  return src;
+  return sa_normalize_text_line(src);
 }
 
 char *dchop(char *src, const char *del_str) {
@@ -226,9 +219,13 @@ char *pohcd(char *src, const char *del_str) {
 
 void util_strncpysafe1(char *dst, const int dst_len, const char *src,
                        const int copy_bytes) {
-  if (dst_len <= 0 || copy_bytes <= 0)
+  if (dst_len <= 0 || dst == NULL)
     return;
-  if (!dst || !src)
+  if (copy_bytes <= 0) {
+    dst[0] = '\0';
+    return;
+  }
+  if (src == NULL)
     return;
   int src_len = strlen(src);
   if (copy_bytes < src_len)

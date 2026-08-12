@@ -11,6 +11,37 @@
 #include <string.h>
 #include <time.h>
 
+/* 将 fgets() 读到的文本行规范为不含 CR/LF 的内容。
+ * 兼容 LF、CRLF 和旧数据包中的 CRCRLF。 */
+static inline char *sa_normalize_text_line(char *line) {
+  char *cursor;
+  if (line == NULL)
+    return NULL;
+  cursor = strpbrk(line, "\r\n");
+  if (cursor != NULL)
+    *cursor = '\0';
+  return line;
+}
+
+/* 项目中的 fgets() 均用于文本文件。统一移除遗留的 CR 字符，同时保留
+ * LF，避免改变仍依赖换行符的旧逻辑；调用 chomp() 时再删除完整行尾。 */
+static inline char *sa_fgets_text(char *buffer, int size, FILE *stream) {
+  char *result = fgets(buffer, size, stream);
+  if (result != NULL) {
+    char *read_cursor = buffer;
+    char *write_cursor = buffer;
+    while (*read_cursor != '\0') {
+      if (*read_cursor != '\r')
+        *write_cursor++ = *read_cursor;
+      ++read_cursor;
+    }
+    *write_cursor = '\0';
+  }
+  return result;
+}
+
+#define fgets(buffer, size, stream) sa_fgets_text((buffer), (size), (stream))
+
 #ifdef _WIN32
 #include "windows_compat.h"
 #else

@@ -150,6 +150,7 @@ int icache_num;
 
 int ITEM_initItemIngCache(void) {
   int i;
+  int missing_atom_count = 0;
   icache_num = ITEM_getItemMaxIdNum();
   print("icache_num: %d ", icache_num);
   icache = calloc(1, sizeof(struct ingcache) * icache_num);
@@ -164,20 +165,24 @@ int ITEM_initItemIngCache(void) {
   for (i = 0; i < icache_num; i++) {
     if (ITEM_gIndex[i].use) { // new
       int k = 0;
-#define ADD_ICACHE_INGRED(nm, vl)                                              \
-  if (ITEM_gTable[ITEM_gIndex[i].index].item.string[nm].string[0]) {                  \
-    icache[i].ingind[k] = ITEM_getAtomIndexByName(                             \
-        ITEM_gTable[ITEM_gIndex[i].index].item.string[nm].string);                    \
-    if (icache[i].ingind[k] < 0) {                                             \
-        print("fucking[%s][%d] for %d %s\n",                                   \
-            ITEM_gTable[ITEM_gIndex[i].index].item.string[nm].string,                 \
-            ITEM_gTable[ITEM_gIndex[i].index].item.data[vl],                          \
-            ITEM_gTable[i].item.data[ITEM_ID],                                     \
-            ITEM_gTable[ITEM_gIndex[i].index].item.string[ITEM_NAME].string);         \
-    } else {                                                                   \
-      icache[i].ingval[k] = ITEM_gTable[ITEM_gIndex[i].index].item.data[vl];          \
-      k++;                                                                     \
-    }                                                                          \
+#define ADD_ICACHE_INGRED(nm, vl)                                             \
+  if (ITEM_gTable[ITEM_gIndex[i].index].item.string[nm].string[0]) {          \
+    icache[i].ingind[k] = ITEM_getAtomIndexByName(                            \
+        ITEM_gTable[ITEM_gIndex[i].index].item.string[nm].string);            \
+    if (icache[i].ingind[k] < 0) {                                            \
+      print("物品素材未在 itematom.txt 中定义：ID=%d 名称=%s 素材=%s "       \
+            "数量=%d\n",                                                    \
+            i,                                                               \
+            ITEM_gTable[ITEM_gIndex[i].index]                                \
+                .item.string[ITEM_NAME].string,                              \
+            ITEM_gTable[ITEM_gIndex[i].index].item.string[nm].string,        \
+            ITEM_gTable[ITEM_gIndex[i].index].item.data[vl]);                \
+      ++missing_atom_count;                                                   \
+    } else {                                                                  \
+      icache[i].ingval[k] =                                                   \
+          ITEM_gTable[ITEM_gIndex[i].index].item.data[vl];                   \
+      k++;                                                                    \
+    }                                                                         \
   }
       ADD_ICACHE_INGRED(ITEM_INGNAME0, ITEM_INGVALUE0);
       ADD_ICACHE_INGRED(ITEM_INGNAME1, ITEM_INGVALUE1);
@@ -215,10 +220,14 @@ int ITEM_initItemIngCache(void) {
       }
     }
   }
+  if (missing_atom_count > 0) {
+    print("物品素材缓存初始化完成，但有 %d 个素材定义缺失。\n",
+          missing_atom_count);
+  }
   return TRUE;
 }
 
-int init_item_atom_callback(int *line_num, const char *line) {
+void init_item_atom_callback(int *line_num, const char *line) {
   char tk[1024];
   getStringFromIndexWithDelim(line, ",", 1, tk, sizeof(tk));
   snprintf(item_atoms[*line_num].name, sizeof(item_atoms[*line_num].name), "%s", tk);
@@ -363,8 +372,8 @@ static void ITEM_merge_getPetFix(int petid, int *fixuse, int *fixatom,
     fixatom[ingnum] =                                                          \
         ITEM_getAtomIndexByName(ENEMYTEMP_getChar(petarray, nm));              \
     if (fixatom[ingnum] < 0) {                                                 \
-      print("\nfucking atom:[%s] for pet id %d",                               \
-            ENEMYTEMP_getChar(petarray, nm), petid);                           \
+      print("\n宠物素材未在 itematom.txt 中定义：宠物ID=%d 素材=%s",           \
+            petid, ENEMYTEMP_getChar(petarray, nm));                           \
       continue;                                                                \
     }                                                                          \
     baseup[ingnum] = ENEMYTEMP_getInt(petarray, vl1);                          \
@@ -408,8 +417,8 @@ static void ITEM_merge_getPetFix(int petid, int *fixuse, int *fixatom,
     fixatom[ingnum] =                                                          \
         ITEM_getAtomIndexByName(ENEMYTEMP_getChar(petarray, nm));              \
     if (fixatom[ingnum] < 0) {                                                 \
-      print("\nfucking atom:[%s] for pet id %d",                               \
-            ENEMYTEMP_getChar(petarray, nm), petid);                           \
+      print("\n宠物素材未在 itematom.txt 中定义：宠物ID=%d 素材=%s",           \
+            petid, ENEMYTEMP_getChar(petarray, nm));                           \
       continue;                                                                \
     }                                                                          \
     baseup[ingnum] = ENEMYTEMP_getInt(petarray, vl1);                          \
@@ -763,8 +772,8 @@ int ITEM_mergeItem(int char_index, ITEM_Item *items, int num, int money,
     int j;                                                                     \
     int index = ITEM_getAtomIndexByName(items[i].string[nm].string);           \
     if (index < 0) {                                                           \
-      print("\nfucking atom:[%s] for item id %d", items[i].string[nm].string,  \
-            items[i].data[ITEM_ID]);                                           \
+      print("\n物品素材未在 itematom.txt 中定义：物品ID=%d 素材=%s",           \
+            items[i].data[ITEM_ID], items[i].string[nm].string);               \
       continue;                                                                \
     }                                                                          \
     for (j = 0; j < ingnum; j++) {                                             \

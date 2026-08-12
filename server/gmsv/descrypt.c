@@ -13,16 +13,11 @@ typedef unsigned short ushort;
 typedef	unsigned int uint;
 typedef unsigned long ulong;
 
-
-
-
 void des_setparity(char *key)
 {
 	int n;
-
 	for (n = 8; n > 0; n--) {
 		char c;
-
 		c = *key &= 0x7f;
 		c ^= c << 4;
 		c ^= c << 2;
@@ -118,20 +113,13 @@ void des_setkey(char *key)
 	}
 }
 
-
-
-
-
 #if MSC
 #define	ror4(x) _lrotr(x, 4)
 #define	rol1(x) _lrotl(x, 1)
-
 #else
 #define	ror4(x)	((x) >> 4 | (x) << 28)
 #define	rol1(x)	((x) << 1 | (x) >> 31)
-
 #endif
-
 
 #if SMALL
 uchar Sboxes[8][64] = {

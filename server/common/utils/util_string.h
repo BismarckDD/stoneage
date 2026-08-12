@@ -18,10 +18,10 @@ int getHash(const char *s);
 char *chop(char *src);
 // src的尾字符是否在del_str中，若是，则删除
 char *dchop(char *src, const char *del_str);
-// 删除尾部回车
-#define chomp(src) dchop(src, "\n")
-// 删除串中所有的\r和\n
-char *chmopex(char *src);
+/* 删除文本行尾。兼容 LF、CRLF，以及旧数据包中常见的 CRCRLF。 */
+#define chomp(src) chompex(src)
+/* 从第一个 CR/LF 起截断字符串。 */
+char *chompex(char *src);
 // src的头字符是否在del_str中，若是，则删除
 char *pohcd(char *src, const char *del_str);
 

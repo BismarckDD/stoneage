@@ -30,7 +30,8 @@ int get_file_line_num(const char* filename) {
       DecryptKey(line);
     }
 #endif
-    if (line[0] == '#' || line[0] == '\n') {
+    sa_normalize_text_line(line);
+    if (line[0] == '#' || line[0] == '\0') {
       continue;
     }
     ++line_num;
@@ -55,7 +56,8 @@ int get_file_lines(const char* filename, int *line_num,
       DecryptKey(line);
     }
 #endif
-    if (line[0] == '#' || line[0] == '\n') {
+    sa_normalize_text_line(line);
+    if (line[0] == '#' || line[0] == '\0') {
       continue;
     }
     callback(line_num, line);

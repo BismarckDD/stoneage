@@ -425,12 +425,12 @@ BOOL init(int argc, char **argv, char **env) {
     else
       break;
   }
-  print("succeed.\n");
+  print("成功.\n");
   print("开始初始化物品列表......");
   if (!initObjectArray(getObjnum()))
     goto CLOSEBIND;
-  print("初始化物品列表完毕.\n");
-  print("Start to init char arry......");
+  print("成功.\n");
+  print("开始画......");
 #ifdef _OFFLINE_SYSTEM
   if (!CHAR_initCharArray(getPlayercharnum(), getPetcharnum(),
                           getOtherscharnum()))
@@ -438,7 +438,7 @@ BOOL init(int argc, char **argv, char **env) {
   if (!CHAR_initCharArray(getFdnum(), getPetcharnum(), getOtherscharnum()))
 #endif
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to read item configuration file......");
   if (!ITEM_readItemConfFile(getItemfile())) {
     print("read item conf file failed.\n");
@@ -448,35 +448,35 @@ BOOL init(int argc, char **argv, char **env) {
     print("init exist items array failed.\n");
     goto CLOSEBIND;
   }
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to init battle array......");
   if (!BATTLE_initBattleArray(getBattlenum()))
     goto CLOSEBIND;
-  print("succeed\n");
+  print("成功.\n");
   print("Start to init function table......");
   if (!initFunctionTable())
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to init address book related......");
   if (!PETMAIL_initOffmsgBuffer(getAddressbookoffmsgnum()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to init invincible place......");
   if (!CHAR_initInvinciblePlace(getInvfile()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to init appear position......");
   if (!CHAR_initAppearPosition(getAppearfile()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to init title name......");
   if (!TITLE_initTitleName(getTitleNamefile()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to init title......");
   if (!TITLE_initTitleConfig(getTitleConfigfile()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to init Encount......");
   if (!ENCOUNT_initEncount(getEncountfile()))
     goto CLOSEBIND;
@@ -649,8 +649,11 @@ BOOL init(int argc, char **argv, char **env) {
 #endif
   print("Start to connect host...... ");
   acfd = connectHost(getAccountservername(), getAccountserverport());
-  if (acfd == -1)
+  if (acfd == -1) {
+    print("连接 SAAC 失败：%s:%u。请确认 SAAC 已启动且端口配置正确。\n",
+          getAccountservername(), getAccountserverport());
     goto CLOSEBIND;
+  }
 #ifdef _EPOLL_ET_MODE
   if (epoll_add_acfd(acfd) == -1)
     goto CLOSEBIND;
@@ -763,4 +766,5 @@ CLOSEBIND:
 MEMEND:
   logOut("Mem End.\n");
   memEnd();
+  return FALSE;
 }

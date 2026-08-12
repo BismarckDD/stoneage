@@ -486,13 +486,12 @@ typedef struct tagReadConf {
 } ReadConf;
 
 ReadConf gReadConf[] = {
-    {"debug_level", NULL, 0, (void *)&gServerConfig.debug_level, CHAR},
+    {"debuglevel", NULL, 0, (void *)&gServerConfig.debug_level, CHAR},
     {"usememoryunit", NULL, 0, (void *)&gServerConfig.memory_unit, INT},
     {"usememoryunitnum", NULL, 0, (void *)&gServerConfig.memory_unitnum, INT},
     {"acserv", gServerConfig.account_server_name,
      sizeof(gServerConfig.account_server_name), NULL, 0},
-    {"account_server_port", NULL, 0, (void *)&gServerConfig.account_server_port,
-     SHORT},
+    {"acservport", NULL, 0, (void *)&gServerConfig.account_server_port, SHORT},
     {"acpasswd", gServerConfig.account_server_password,
      sizeof(gServerConfig.account_server_password), NULL, 0},
     {"gameservname", gServerConfig.game_server_name,
@@ -503,7 +502,7 @@ ReadConf gReadConf[] = {
     {"allowmanorpk", NULL, 0, (void *)&gServerConfig.allowmanorpk, SHORT},
     {"port", NULL, 0, (void *)&gServerConfig.port, SHORT},
     {"servernumber", NULL, 0, (void *)&gServerConfig.servernumber, INT},
-    {"reuse_addr", NULL, 0, (void *)&gServerConfig.reuse_addr, INT},
+    {"reuseaddr", NULL, 0, (void *)&gServerConfig.reuse_addr, INT},
     {"nodelay", NULL, 0, (void *)&gServerConfig.do_nodelay, INT},
     {"log_write_time", NULL, 0, (void *)&gServerConfig.log_write_time, INT},
     {"log_io_time", NULL, 0, (void *)&gServerConfig.log_io_time, INT},
@@ -1169,11 +1168,11 @@ void LoadPetTalk(void) {
 #endif
       if (strlen(talkmem) != 0) {
         if (talkmem[strlen(talkmem) - 1] != '|') {
-          strcatsafe(talkmem, len, "|");
+          util_strcatsafe(talkmem, len, "|");
         }
       }
       chompex(line);
-      strcatsafe(talkmem, len, line);
+      util_strcatsafe(talkmem, len, line);
     }
     fclose(fp);
   } else {
@@ -1220,13 +1219,13 @@ void LoadPetTalk(void) {
             if (strlen(pettalktext[maxid].DATA) != 0) {
               if (pettalktext[maxid]
                       .DATA[strlen(pettalktext[maxid].DATA) - 1] != '|') {
-                strcatsafe(pettalktext[maxid].DATA,
-                           sizeof(pettalktext[maxid].DATA), "|");
+                util_strcatsafe(pettalktext[maxid].DATA,
+                                sizeof(pettalktext[maxid].DATA), "|");
               }
             }
             chompex(line);
-            strcatsafe(pettalktext[maxid].DATA, sizeof(pettalktext[maxid].DATA),
-                       line);
+            util_strcatsafe(pettalktext[maxid].DATA,
+                            sizeof(pettalktext[maxid].DATA), line);
           }
           maxid++;
           fclose(fp);
@@ -1286,11 +1285,11 @@ void LoadPetTalk(void) {
 #endif
       if (strlen(pettalktext) != 0) {
         if (pettalktext[strlen(pettalktext) - 1] != '|') {
-          strcatsafe(pettalktext, len, "|");
+          util_strcatsafe(pettalktext, len, "|");
         }
       }
       chompex(line);
-      strcatsafe(pettalktext, len, line);
+      util_strcatsafe(pettalktext, len, line);
     }
     fclose(fp);
     print("\n %s", pettalktext);

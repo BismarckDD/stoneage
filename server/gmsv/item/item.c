@@ -26,8 +26,8 @@ ITEM_Exists *ITEM_gExists = NULL;
 ITEM_Table *ITEM_gTable = NULL;
 ITEM_Index *ITEM_gIndex = NULL;
 static char *ITEM_checkString(char *string);
-static int ITEM_getRandomValue(char *string, int *randomwidth, int num);
-static int ITEM_isstring1or0(char *string, int *randomwidth, int num);
+static int ITEM_getRandomValue(const char *string, int *randomwidth, int num);
+static int ITEM_isstring1or0(const char *string, int *randomwidth, int num);
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
@@ -245,6 +245,7 @@ typedef enum {
   ITEM_CHARENTRY = 1,
   ITEM_INTFUNC = 2,
   ITEM_CHARFUNC = 3,
+  ITEM_SKIPENTRY = 4,
 } ITEM_DATATYPECATEGORY;
 
 static struct ITEM_tagItemConfentry {
@@ -341,6 +342,18 @@ static struct ITEM_tagItemConfentry {
     {"unkown8", ITEM_INTENTRY, ITEM_UNKNOWN8, NULL},
     {"unkown9", ITEM_INTENTRY, ITEM_UNKNOWN9, NULL},
     {"unkown10", ITEM_CHARENTRY, ITEM_UNKNOWN10, NULL},
+#else
+    /* itemset6 keeps these ten GF-reserved columns even in non-GF builds. */
+    {"reserved1", ITEM_SKIPENTRY, -1, NULL},
+    {"reserved2", ITEM_SKIPENTRY, -1, NULL},
+    {"reserved3", ITEM_SKIPENTRY, -1, NULL},
+    {"reserved4", ITEM_SKIPENTRY, -1, NULL},
+    {"reserved5", ITEM_SKIPENTRY, -1, NULL},
+    {"reserved6", ITEM_SKIPENTRY, -1, NULL},
+    {"reserved7", ITEM_SKIPENTRY, -1, NULL},
+    {"reserved8", ITEM_SKIPENTRY, -1, NULL},
+    {"reserved9", ITEM_SKIPENTRY, -1, NULL},
+    {"reserved10", ITEM_SKIPENTRY, -1, NULL},
 #endif
 
     {"poison", ITEM_INTFUNC, ITEM_POISON, ITEM_getRandomValue},
@@ -1010,7 +1023,7 @@ void ITEM_getDefaultItemData(int item_id, ITEM_Item *item) {
 }
 #endif
 
-static int ITEM_getRandomValue(char *string, int *randomwidth, int num) {
+static int ITEM_getRandomValue(const char *string, int *randomwidth, int num) {
   int minvalue;
   int maxvalue;
   char token[64];
@@ -1029,7 +1042,7 @@ static int ITEM_getRandomValue(char *string, int *randomwidth, int num) {
   *randomwidth = ABS(maxvalue - minvalue);
   return min(minvalue, maxvalue);
 }
-static int ITEM_isstring1or0(char *string, int *randomwidth, int num) {
+static int ITEM_isstring1or0(const char *string, int *randomwidth, int num) {
   char token[64];
   int ret;
 
@@ -1094,6 +1107,7 @@ void callbackReadItemConfigFile2(int *line_num, const char *line) {
     if (read_pos == ITEM_ID_TOKEN_INDEX)
       item_id = atoi(token);
     ++read_pos;
+
     if (strlen(token) != 0) {
       switch (ITEM_itemDescriptors[i].type) {
       case ITEM_INTENTRY:
@@ -1105,7 +1119,7 @@ void callbackReadItemConfigFile2(int *line_num, const char *line) {
                    token);
         break;
       case ITEM_INTFUNC: {
-        int (*int_function)(char *, int *, int);
+        int (*int_function)(const char *, int *, int);
         int_function = ITEM_itemDescriptors[i].func;
         item.data[ITEM_itemDescriptors[i].index] = int_function(
             line, &intdata[ITEM_itemDescriptors[i].index], read_pos);
@@ -1153,6 +1167,7 @@ void callbackReadItemConfigFile2(int *line_num, const char *line) {
       for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
         ITEM_gTable[*line_num].randomdata[i] = intdata[i];
       }
+      ++(*line_num);
     }
   } else {
     print("Item Data Error.\n");
@@ -1161,7 +1176,7 @@ void callbackReadItemConfigFile2(int *line_num, const char *line) {
 
 BOOL ITEM_readItemConfFile(char *filename) {
   max_item_id = 0;
-  int line_num, i;
+  int line_num, loaded_item_num, i;
   get_file_lines(filename, &line_num, callbackReadItemConfigFile);
   if (max_item_id <= 0) {
     print("Max item ID is illegal.\n");
@@ -1193,7 +1208,8 @@ BOOL ITEM_readItemConfFile(char *filename) {
   for (i = 0; i < ITEM_sIndexLen; i++) {
     ITEM_gIndex[i].use = FALSE;
   }
-  get_file_lines(filename, &line_num, callbackReadItemConfigFile2);
+  get_file_lines(filename, &loaded_item_num, callbackReadItemConfigFile2);
+  print("Loaded Item Count: %d...", loaded_item_num);
   return TRUE;
 }
 

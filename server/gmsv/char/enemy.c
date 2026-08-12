@@ -191,8 +191,6 @@ INLINE BOOL GROUP_setChar(int index, GROUP_DATACHAR element, char *new) {
 int GROUP_getEnemyNum(void) { return GROUP_groupnum; }
 
 void enemytemp_callback(int *line_num, const char* line) {
-  chomp(line);
-  replaceString(line, '\t', ' ');
   char token[256];
   int i, ret;
   for (i = 0; i < E_T_DATACHARNUM; i++) {
@@ -299,9 +297,7 @@ int ENEMYTEMP_getEnemyTempArrayFromInitnum(int EnemyTempNo) {
   return -1;
 }
 
-void enemy_callback(int *line_num, char *line) {
-  chomp(line);
-  replaceString(line, '\t', ' ');
+void enemy_callback(int *line_num, const char *line) {
   char token[256];
   int ret;
   ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));

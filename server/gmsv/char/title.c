@@ -437,15 +437,13 @@ static int TITLE_getConfigOneLine(FILE *fp, char *line, int linelen)
     }
 #endif
     linenum++;
+    /* 配置语法不依赖空白。统一删除空格、制表符和 Windows CRLF，
+     * 再判断注释/空行，避免把只含 '\r' 的行解析成未知字段。 */
+    deleteCharFromStringNoEscape(buf, " \t\r\n");
+    if (buf[0] == '\0')
+      continue;
     if (buf[0] == '#')
-      continue; /* comment */
-    if (buf[0] == '\n')
-      continue; /* none    */
-    /*  垫毛帮溥允月    */
-    /*  引内 tab 毛 " " 卞  五晶尹月    */
-    replaceString(buf, '\t', ' ');
-    /* 旦矢□旦绰轮 */
-    deleteCharFromString(buf, " ");
+      continue;
 
     if (buf[0] == '{') {
       if (startflg == TRUE) {
@@ -466,17 +464,15 @@ static int TITLE_getConfigOneLine(FILE *fp, char *line, int linelen)
       if (startflg == TRUE) {
         if (strlen(line) != 0) {
           if (line[strlen(line) - 1] != ',') {
-            strcatsafe(line, linelen, ",");
+            util_strcatsafe(line, linelen, ",");
           }
         }
         /* ㄠ垫卞引午户化中仁*/
-        chompex(buf);
-        strcatsafe(line, linelen, buf);
+        util_strcatsafe(line, linelen, buf);
       }
       /*   躲垫分互"{"匹反元引匀化卅中桦宁反公及引引ㄠ垫匹忒允 }*/
       else {
-        chompex(buf);
-        strcatsafe(line, linelen, buf);
+        util_strcatsafe(line, linelen, buf);
         return 1;
       }
     }
@@ -640,7 +636,8 @@ BOOL TITLE_initTitleConfig(char *filename) {
           }
           /* 由仿丢□正互  卅及毛隙烂今木凶 */
           if (j == arraysizeof(TITLE_param)) {
-            fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+            fprint("头衔配置语法错误：%s 第%d条，未知字段：%s\n", filename,
+                   linenum, token);
             TITLE_initTitleData(titlecfg_readlen);
             errflg = TRUE;
             break;
@@ -703,8 +700,12 @@ BOOL TITLE_initTitleConfig(char *filename) {
         }
       }
       /* 惫寞  隙烂互  井匀凶 or 卅氏井仄日及巨仿□*/
-      if (errflg || TITLE_ConfigTable[titlecfg_readlen].title == -1) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+      if (errflg) {
+        continue;
+      }
+      if (TITLE_ConfigTable[titlecfg_readlen].title == -1) {
+        fprint("头衔配置语法错误：%s 第%d条缺少 TITLE 字段\n", filename,
+               linenum);
         TITLE_initTitleData(titlecfg_readlen);
       } else {
         titlecfg_readlen++;
