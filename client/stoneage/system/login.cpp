@@ -167,6 +167,12 @@ extern BOOL g_bUseAlpha;
 extern BOOL g_bUseAlpha;
 #endif
 
+static char *gButtonList[] = {
+    "确  定", "取  消",
+    // " ＯＫ ", "CANCEL",
+    "确  定", "取  消",
+    "上一页", "下一页" };
+
 void idPasswordProc(void)
 {
     // 登录画面状态机（SubProcNo）：
@@ -179,21 +185,6 @@ void idPasswordProc(void)
     static char szWGSState[] = "登入游戏中，请稍候！";
     if (SubProcNo == 0)
     {
-#ifdef __NEW_CLIENT
-        extern HANDLE hPing;
-        extern SOCKET sockRaw;
-        if (hPing)
-        {
-            closesocket(sockRaw);
-            sockRaw = INVALID_SOCKET;
-            TerminateThread(hPing, 0);
-            CloseHandle(hPing);
-            hPing = NULL;
-        }
-#endif
-#ifndef _STONDEBUG_
-        Sleep(0);
-#endif
         PaletteChange(DEF_PAL, 0);
         SubProcNo++;
         initInputIdPassword();
@@ -219,7 +210,6 @@ void idPasswordProc(void)
         GetKeyInputFocus(idPasswordFocus[idPasswordFocusSw]);
         SubProcNo++;
     }
-
     // 只有状态 2 才允许编辑输入框和点击 OK/QUIT，连接期间锁定输入。
     if (SubProcNo == 2)
         flag = TRUE;
@@ -227,7 +217,7 @@ void idPasswordProc(void)
     if (ret == 1)
     {
         SubProcNo = 3;
-        play_se(217, 320, 240);
+        play_se(217, 320, 240); // 播放Music
     }
     else if (ret == 2)
     {
@@ -241,12 +231,7 @@ void idPasswordProc(void)
     }
     if (SubProcNo == 3)
     {
-        // 用户提交账号密码后，先显示“登入游戏中”窗口，再启动 WGS/登录服务器连接流程。
-#ifdef _STONDEBUG_
-        w = (strlen(szWGSState) + 23) * 9 / 64 + 2;
-#else
         w = (strlen(szWGSState) + 3) * 9 / 64 + 2;
-#endif
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -281,41 +266,7 @@ void idPasswordProc(void)
                 int xx, yy;
                 if (iWGS == 7)
                     isWGS7 = 1; // Nuke 0615: Avoid 7's lock
-
-#ifdef _STONDEBUG_
-                switch (iWGS)
-                {
-                case 0:
-                    wsprintf(msg, "%s", szWGSState);
-                    break;
-                case 1: // 连接WGS
-                    wsprintf(msg, "%s(%s)", szWGSState, "Connect to WGS!!");
-                    break;
-                case 2: // 取得CSIP
-                    wsprintf(msg, "%s(%s)", szWGSState, "Get the Redirect!!");
-                    break;
-                case 3: // 连接CS
-                    wsprintf(msg, "%s(%s)", szWGSState, "Connect to CS!!");
-                    break;
-                case 4: // 取得Public key(加密)
-                    wsprintf(msg, "%s(%s)", szWGSState, "Get the Public key!!");
-                    break;
-                case 5: // 取得Session key(解密)
-                    wsprintf(msg, "%s(%s)", szWGSState, "Send the Session key!!");
-                    break;
-                case 6: // 取得连接GS表单
-                    wsprintf(msg, "%s(%s)", szWGSState, "Get Continue!!");
-                    break;
-                case 7: // 传送帐号、密码
-                    wsprintf(msg, "%s(%s)", szWGSState, "Send UserName!!");
-                    break;
-                case 8:
-                    wsprintf(msg, "%s(%s)", szWGSState, "Get Goto!!");
-                    break;
-                }
-#else
                 wsprintf(msg, "%s(%d)", szWGSState, iWGS);
-#endif
                 len = strlen(msg);
                 xx = (w * 64 - len * 8) / 2;
                 yy = (h * 48 - 16) / 2;
@@ -387,15 +338,6 @@ void idPasswordProc(void)
     {
         if (commonMsgWin(msg))
         {
-            // ＯＫ????????
-            // 错误讯息回到Title画面重新启动Hook
-#ifdef _SAHOOK // Syu ADD Hook程式
-            if (hookflag == false)
-            {
-                hookflag = true;
-                KeyboardHook_Start(hWnd, UM_KEYEVENT);
-            }
-#endif
             SubProcNo = 2;
             Sleep(1000);
         }
@@ -3835,7 +3777,6 @@ void characterLoginProc(void)
 {
     int ret;
     static char msg[256];
-
     if (SubProcNo == 0)
     {
         initCharLogin();
@@ -4067,12 +4008,6 @@ void characterLoginProc(void)
             sprintf_s(msg, "签入处理失败(%d)。", ret);
         }
 #endif
-
-#ifdef _STONDEBUG_
-        char msg2[1024];
-        sprintf_s(msg2, "%d %s", ret, msg);
-        strncpy_s(msg, msg2, sizeof(msg));
-#endif
     }
     if (SubProcNo == 100)
     {
@@ -4082,10 +4017,7 @@ void characterLoginProc(void)
     if (SubProcNo == 101)
     {
         if (commonMsgWin(msg))
-        {
-            // ＯＫ????????
             ChangeProc(PROC_TITLE_MENU);
-        }
     }
     RunAction();
     StockTaskDispBuffer();
@@ -4093,18 +4025,11 @@ void characterLoginProc(void)
 
 static short charLoginProcNo = 0;
 
-// ???
 void initCharLogin(void)
 {
     charLoginProcNo = 0;
 }
 
-// ?????
-//
-//  ??：     0 ... ?????
-//                 1 ... ??????
-//                -1 ... ??????
-//                -2 ... ???
 int charLogin(void)
 {
     static ACTION *ptActMenuWin = NULL;
@@ -6174,9 +6099,6 @@ void initServerWindowType7(char *data)
     shopWindow1Msg[sizeof(shopWindow1Msg) - 1] = '\0';
 }
 
-// ?????????
-// ????????????????
-// ??????????????????
 void serverWindowType0(int mode)
 {
     static int winX, winY;
@@ -6186,16 +6108,6 @@ void serverWindowType0(int mode)
     static int btnCnt;
     static int msgLine;
     static STR_BUFFER input;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id;
     int i, j;
     int mask;
@@ -6340,7 +6252,7 @@ void serverWindowType0(int mode)
                     {
                         fontId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -6354,8 +6266,6 @@ void serverWindowType0(int mode)
     }
 }
 
-// ?????????
-// ???????????????
 void serverWindowType1(void)
 {
     static int winX, winY;
@@ -6364,16 +6274,6 @@ void serverWindowType1(void)
     static int btnLoc[6][2];
     static int btnCnt;
     static int msgLine;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id, id2;
     int i, j;
     int mask;
@@ -6537,7 +6437,7 @@ void serverWindowType1(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -6553,16 +6453,6 @@ void serverWindowType2(void)
     static int btnId[] = {-2, -2, -2, -2, -2, -2};
     static int btnLoc[6][2];
     static int btnCnt;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id, id2;
     int i, j;
     int mask;
@@ -6722,7 +6612,7 @@ void serverWindowType2(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -6738,16 +6628,6 @@ void serverWindowType3(void)
     static int btnId[] = {-2, -2, -2, -2, -2, -2};
     static int btnLoc[6][2];
     static int btnCnt;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id, id2;
     int i, j;
     int mask;
@@ -6915,7 +6795,7 @@ void serverWindowType3(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -6933,16 +6813,6 @@ void serverWindowType4(void)
     static int btnId[] = {-2, -2, -2, -2, -2, -2};
     static int btnLoc[6][2];
     static int btnCnt;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id, id2;
     int i, j;
     int mask;
@@ -7152,7 +7022,7 @@ void serverWindowType4(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -7168,16 +7038,6 @@ void serverWindowType9(void)
     static int btnId[] = {-2, -2, -2, -2, -2, -2};
     static int btnLoc[6][2];
     static int btnCnt;
-    char *btnTitle[] = {
-        "确  定",
-        "取  消",
-        //    " ＯＫ ",
-        //    "CANCEL",
-        "确  定",
-        "取  消",
-        "上一页",
-        "下一页"};
-
     static int selectID[3] = {-1, -1, -1};
     static int selects = 0;
 
@@ -7371,7 +7231,7 @@ void serverWindowType9(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -7379,8 +7239,6 @@ void serverWindowType9(void)
         }
     }
 }
-
-// ?????????
 
 void initShopWindow1(void);
 int shopWindow1(void);
@@ -13275,16 +13133,6 @@ void FMWindowType(void)
     static int btnCnt;
     static int msgLine;
     static int fmdelid;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id, id2;
     int i, j;
     int mask;
@@ -13668,7 +13516,7 @@ void FMWindowType(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -13765,16 +13613,6 @@ void FMWindowType(void)
     static int btnCnt;
     static int msgLine;
     static int fmdelid;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     char getstatus[3];
     int id, id2;
     int i, j;
@@ -14058,7 +13896,7 @@ void FMWindowType(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -14123,16 +13961,6 @@ void FMWindowType1(void)
     static int btnCnt;
     static int msgLine;
     static STR_BUFFER input;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id;
     int i, j;
     int mask;
@@ -14258,7 +14086,7 @@ void FMWindowType1(void)
                     {
                         fontId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -14361,16 +14189,6 @@ void FMWindowType2(void)
 
     static int btnCnt;
     static int msgLine;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id, id2;
     int i, j;
     int mask;
@@ -14622,7 +14440,7 @@ void FMWindowType2(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + 110 + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -14641,7 +14459,7 @@ int fmselectdetuyWindow(int x, int y, int id)
     int ret = 0;
     int dutytobtn = -1;
     char buff[64];
-    char *btnTitle[] =
+    char *fmButtonList[] =
         {
             "一般族员",
             "退    出",
@@ -14650,7 +14468,7 @@ int fmselectdetuyWindow(int x, int y, int id)
             //"祭    司",
             //"财 务 长",
             //"副 族 长",
-            "取    消"};
+            "取    消" };
 
     if (fmYesNoproc == 1)
     {
@@ -14685,21 +14503,6 @@ int fmselectdetuyWindow(int x, int y, int id)
         play_se(202, 320, 240);
     }
 
-    /*switch(FMmsgWN[id]){
-    case FMMEMBER_ELDER:
-    dutytobtn = 2;
-    break;
-    case FMMEMBER_INVITE:
-    dutytobtn = 3;
-    break;
-    case FMMEMBER_BAILEE:
-    dutytobtn = 4;
-    break;
-    case FMMEMBER_VICELEADER:
-    dutytobtn = 5;
-    default:
-    break;
-    }*/
     switch (FMmsgWN[id])
     {
     case FMMEMBER_ELDER:
@@ -14720,23 +14523,23 @@ int fmselectdetuyWindow(int x, int y, int id)
         for (int i = 0; i < 4; i++)
             if (FMmsgWN[id] == 2 && i == 2)
             {
-                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_GRAY, btnTitle[i], 0);
+                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_GRAY, fmButtonList[i], 0);
             }
             else if (pc.familyleader == FMMEMBER_ELDER && i == 2)
             {
-                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_GRAY, btnTitle[i], 0);
+                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_GRAY, fmButtonList[i], 0);
             }
             else if (dutytobtn == i)
             {
-                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_GRAY, btnTitle[i], 0);
+                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_GRAY, fmButtonList[i], 0);
             }
             else if (i == 3)
             {
-                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_WHITE, btnTitle[i], 0);
+                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_WHITE, fmButtonList[i], 0);
             }
             else
             {
-                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 0);
+                StockFontBuffer(btnLoc[i][0], btnLoc[i][1], FONT_PRIO_FRONT, FONT_PAL_YELLOW, fmButtonList[i], 0);
             }
     }
 
@@ -14802,10 +14605,7 @@ int fmYesNoWindow(int x, int y, int id)
     static ACTION *ptActMenuWin = NULL;
     int ret = 0;
     char buff[64];
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消"};
+    char *yesNoButtonList[] = { "确  定", "取  消" };
 
     if (ptActMenuWin == NULL)
     {
@@ -14830,7 +14630,7 @@ int fmYesNoWindow(int x, int y, int id)
     {
         for (int i = 0; i < 2; i++)
             StockFontBuffer(btnLoc[i][0], btnLoc[i][1],
-                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 0);
+                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, yesNoButtonList[i], 0);
     }
 
     for (int i = 0; i < 2; i++)
@@ -14934,16 +14734,6 @@ void FMWindowType4(void)
     static int btnCnt;
     static int msgLine;
     static int fmdelid;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id, id2;
     int i, j;
     int mask;
@@ -15176,7 +14966,7 @@ void FMWindowType4(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -15239,16 +15029,6 @@ void FMWindowType3(void)
 #ifdef _NEW_MANOR_LAW
     char szMessage[128];
 #endif
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id, id2;
     int i, j;
     int mask;
@@ -15420,7 +15200,7 @@ void FMWindowType3(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -15477,16 +15257,6 @@ void FMWindowType3(void)
     static int btnCnt;
     static int msgLine;
     static int fmdelid;
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id, id2;
     int i, j;
     int mask;
@@ -15617,7 +15387,7 @@ void FMWindowType3(void)
                     {
                         btnId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -15973,17 +15743,6 @@ void FMPKListWN(int mode)
             "已 排 定"};
     int showcolor;
     int pushStatus;
-
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id;
     int i, j;
     int mask;
@@ -16102,7 +15861,7 @@ void FMPKListWN(int mode)
                     {
                         fontId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -16250,30 +16009,6 @@ void FMPKSelectWN(int mode)
     // static STR_BUFFER input;
     char dataBuf[256];
     char buf[256];
-
-    // int    dataStatus;
-    /*
-    char *dataStatusStr[] =
-    {
-    "未使用",
-    " 修改 ",
-    " 接受 ",
-    "设定中",
-    "等待回答",
-    "已排定"
-    };
-    */
-
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id;
     int i, j;
     int mask;
@@ -16398,7 +16133,7 @@ void FMPKSelectWN(int mode)
                     {
                         fontId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -16467,17 +16202,6 @@ void FMPKDetailWN(int mode)
     char dataBuf[256];
     char buf[256];
     char buf2[256];
-
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id;
     int i, j;
     int mask;
@@ -16634,7 +16358,7 @@ void FMPKDetailWN(int mode)
                     {
                         fontId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }
@@ -17076,29 +16800,6 @@ void showRidePetWN(void)
     char dataBuf[256];
     char buf[256];
 
-    // int    dataStatus;
-    /*
-    char *dataStatusStr[] =
-    {
-    "未使用",
-    " 修改 ",
-    " 接受 ",
-    "设定中",
-    "等待回答",
-    "已排定"
-    };
-    */
-
-    char *btnTitle[] =
-        {
-            "确  定",
-            "取  消",
-            //    " ＯＫ ",
-            //    "CANCEL",
-            "确  定",
-            "取  消",
-            "上一页",
-            "下一页"};
     int id;
     int i, j;
     int mask;
@@ -17235,7 +16936,7 @@ void showRidePetWN(void)
                     {
                         fontId[i] =
                             StockFontBuffer(winX + btnLoc[j][0], winY + btnLoc[j][1],
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, btnTitle[i], 2);
+                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, gButtonList[i], 2);
                         j++;
                     }
                 }

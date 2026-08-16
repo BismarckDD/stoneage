@@ -13,9 +13,6 @@
 #endif
 
 
-/**** DirectDraw Include ****/
-#include <ddraw.h>
-
 /**** USER INCLUDE ****/
 #include "version.h"
 #include "directDraw.h"

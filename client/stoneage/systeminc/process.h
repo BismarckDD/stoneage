@@ -1,88 +1,68 @@
-﻿/************************/
-/*    process.h            */
-/************************/
-#ifndef _PROCESS_H_
-#define _PROCESS_H_
+﻿#ifndef __PROCESS_H__
+#define __PROCESS_H__
 
-/* ?????? */
-enum{
-    PROC_INIT,
-    PROC_ID_PASSWORD,                // ????????向???
-    PROC_TITLE_MENU,                // ??????????牙
-    PROC_CHAR_SELECT,                // ???︻?
-    PROC_CHAR_MAKE,                    // ????
-    PROC_CHAR_LOGIN_START,            // ????????
-    PROC_CHAR_LOGIN,                // ????????
-    PROC_CHAR_LOGOUT,                // ????????
-    PROC_OPENNING,
-    PROC_GAME,                        // ???????
-    PROC_BATTLE,                    // ???????
-    PROC_DISCONNECT_SERVER,            // ???????κ???????
+#ifdef __PROCESS_CPP__
+#define EXTERN
+#else
+#define EXTERN extern
+#endif /* __PROCESS_CPP__ */
 
-    PROC_TAKE_TEST,                    // ㄌ????
-    PROC_OHTA_TEST,                    // 兣????
-    PROC_DWAF_TEST,                    // 兛???
-    PROC_SPR_VIEW,                    // ??????囝????
-    PROC_ANIM_VIEW,                    // ????????囝????
-    PROC_SE_TEST,                    // ???囝????
-
+enum {
+  PROC_INIT,
+  PROC_ID_PASSWORD,      //
+  PROC_TITLE_MENU,       // ??????????牙
+  PROC_CHAR_SELECT,      // 选择角色的页面
+  PROC_CHAR_MAKE,        // 创建角色页面
+  PROC_CHAR_LOGIN_START, // ????????
+  PROC_CHAR_LOGIN,       // ????????
+  PROC_CHAR_LOGOUT,      // 角色登出的页面
+  PROC_OPENNING,
+  PROC_GAME,              // 正常游戏的页面
+  PROC_BATTLE,            // 游戏战斗的页面
+  PROC_DISCONNECT_SERVER, // 和服务器失去连接(掉线)的页面
+  PROC_TAKE_TEST,         //
+  PROC_OHTA_TEST,         //
+  PROC_DWAF_TEST,         //
+  PROC_SPR_VIEW,          // ??????囝????
+  PROC_ANIM_VIEW,         // ????????囝????
+  PROC_SE_TEST,           // ???囝????
 #ifdef _80_LOGIN_PLAY
-    PROC_80_LOGIN,
+  PROC_80_LOGIN,
 #endif
 #ifdef _PK2007
-    PROC_PKSERVER_SELECT,
+  PROC_PKSERVER_SELECT,
 #endif
-    PROC_ENDING
+  PROC_ENDING
 };
 
-/* ????吻? */
-extern UINT ProcNo;
-/* ??????吻? */
-extern UINT SubProcNo;
-/* ????吻?  */
-extern int ProcNo2;
-/* ??????吻? */
-extern int SubProcNo2;
-
-extern int palNo;
-extern int oldPalNo;
-extern int palTime; //the third
-
+EXTERN UINT ProcNo;
+EXTERN UINT SubProcNo;
+EXTERN int ProcNo2;
+EXTERN int SubProcNo2;
+EXTERN int palNo;
+EXTERN int oldPalNo;
+EXTERN int palTime; // the third
 
 /* ?????? */
-void Process( void );
+void Process(void);
 /* ????阪??? */
-void ChangeProc( int procNo );
+void ChangeProc(int procNo);
 /* ????阪??? */
-void ChangeProc( int procNo, int subProcNo );
+void ChangeProc(int procNo, int subProcNo);
 /* ????阪??? */
-void ChangeProc2( int procNo );
+void ChangeProc2(int procNo);
 /* ????阪??? */
-void ChangeProc2( int procNo, int subProcNo );
+void ChangeProc2(int procNo, int subProcNo);
 
-/* ????????? */
-void GameProc( void );
+/* 石器主循环 */
+void GameProc(void);
 
-// ?????
-void warpEffectProc( void );
-// ??????
-void repairMap( void );
-
-void paletteProc( void );
-
-#ifdef _STONDEBUG_        
-
-/* ㄌ?????????? */
-void TakeTestProc( void );
-
-/* 兣???????? */
-void OhtaTestProc( void );
-
-#endif
+void warpEffectProc(void);
+void repairMap(void);
+void paletteProc(void);
 
 #ifdef _SURFACE_ANIM
 void AniProc(void);
 #endif
 
-
-#endif
+#endif /* __PROCESS_H__ */

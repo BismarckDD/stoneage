@@ -1,8 +1,9 @@
 ﻿/************************/
-/*    font.h                */
+/*    font.h            */
+/*                      */
 /************************/
-#ifndef _FONT_H_
-#define _FONT_H_
+#ifndef __FONT_H__
+#define __FONT_H__
 
 #define FONT_SIZE 14
 #ifdef _NEWFONT_
@@ -48,10 +49,8 @@ extern int FontCnt;
 
 void FontPrint(char *moji, int x, int y, int dispPrio);
 
-// ???????? ///////////////////////////////////////////////////////
 void FontPrintDec(char *moji, int x, int y, int dispPrio);
 
-/* ????????????? *********************************************/
 int StockFontBuffer(int x, int y, char fontPrio, int color, char *str,
                     BOOL hitFlag);
 #ifdef _MO_CHAT_EXPRESSION
@@ -67,7 +66,6 @@ HFONT CreateNewFont(int size);
 #endif
 
 void StockFontBuffer2(STR_BUFFER *strBuffer);
-/* ONLINEGM ADD */
 int StockFontBuffer3(STR_BUFFER *strBuffer);
 void StockFontBufferFamily(STR_BUFFER *strBuffer);
 #endif

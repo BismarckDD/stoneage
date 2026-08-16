@@ -1,5 +1,4 @@
 ﻿#include "systeminc/system.h"
-#include "version.h"
 
 #define ASCII(a) a - 'A' + 10
 #define ASCII_DEC(a) a - '0' + 35

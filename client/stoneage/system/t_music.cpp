@@ -2920,20 +2920,13 @@ int play_se(int tone, int x, int y)
     if (tone > TONE_MAX) return -1;
     if (tone_tbl[ tone ].voice_place == -1) return -1;
     if (tone_tbl[ tone ].play_time) return 0;
-    //〈???吻????
     d0 = voice[ voice_seek_point ].tone_no;
     if(voice[ voice_seek_point ].tone_no != tone){        //可??吻??????
         voice[ voice_seek_point ].tone_no = tone;
-        //???????????佃??????
         if(d0 != -2){
             RELEASE(pDSData[voice_seek_point]);        //??
         }
-        //????
         if( pDSound->DuplicateSoundBuffer(pDSData_tone[tone_tbl[ tone ].voice_place],&pDSData[voice_seek_point]) != DS_OK ){
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "葩秶汒秞buffer囮啖ㄐ", "Error", MB_OK);
-#endif
-            //???????????佃???????
             voice[ voice_seek_point ].tone_no = -2;
             return -1;
         }
@@ -2969,32 +2962,18 @@ int play_se(int tone, int x, int y)
 }
 #endif
 
-//??????????  ????  ??????????
-//int play_environment_tone(int tone, int distance, int voice_address, int panpot, int new_flg)
 int play_environment_tone(int tbl_no, int new_flg)
 {
     int d0;
-//    int total_level;
-
-//    t_music_se_no = tone;
-
     if (MuteFlag) return -1;
-
     if(dsound_flg == -1)
         return -1;
-
     if(env_tbl[tbl_no].tone > TONE_MAX){        //???????
         return -1;
     }
-
     if(tone_tbl[ env_tbl[tbl_no].tone ].voice_place == -1){        //叉????
         return -1;
     }
-
-//    if(tone_tbl[ env_tbl[tbl_no].tone ].play_time){        //??????
-//        return 0;
-//    }
-
     env_tbl[tbl_no].distance = env_tbl[tbl_no].distance << 4;        //?????π?阪?
     env_tbl[tbl_no].distance /= 0x6a;                //
 
@@ -3025,20 +3004,11 @@ int play_environment_tone(int tbl_no, int new_flg)
         }
     }
 
-    //??????
-//    total_level = (127 - env_tbl[tbl_no].volume) * tone_tbl[ env_tbl[tbl_no].tone ].voice_volume / 127;
-
-    //?????????
-//    total_level = total_level * t_music_se_volume / 15;
-
-    //??????阪?????
     if(env_tbl[tbl_no].volume != env_tbl[tbl_no].volume_old){
-        // ????????
         pDSData[ env_tbl[tbl_no].voice_address ]->SetVolume(volume_tbl[ env_tbl[tbl_no].volume ]);
         env_tbl[tbl_no].volume_old = env_tbl[tbl_no].volume;
     }
 
-    //??????阪?????
     if(env_tbl[tbl_no].panpot != env_tbl[tbl_no].panpot_old){
         // ????????
         pDSData[ env_tbl[tbl_no].voice_address ]->SetPan(panpot_tbl[ env_tbl[tbl_no].panpot ]);

@@ -154,7 +154,6 @@ int getMAC(char *mac)
             Adapter.adapt.adapter_address[3],
             Adapter.adapt.adapter_address[4],
             Adapter.adapt.adapter_address[5]);
-
     return 0;
 }
 
@@ -458,6 +457,26 @@ int PASCAL WinMain(HINSTANCE hInstance,
                    int nCmdShow)
 {
 
+#ifndef SWITCH_MODE
+  extern int displayBpp;
+  HDC hDcDest = GetDC(hWnd);
+  displayBpp = GetDeviceCaps(hDcDest, BITSPIXEL);
+  ReleaseDC(hWnd, hDcDest);
+  if(displayBpp != 32){
+      DEVMODE dm;
+      CreateCompatibleDEVMODE(&dm, 32, GetDeviceCaps(hDcDest, HORZRES),GetDeviceCaps(hDcDest, VERTRES), GetDeviceCaps(hDcDest, VREFRESH));
+      ChangeDisplaySettings(&dm, 0);
+      char buf[256];
+      GetModuleFileName(NULL,buf,sizeof(buf));
+      STARTUPINFO StartInfo;
+      PROCESS_INFORMATION procStruct;
+      memset(&StartInfo, 0, sizeof(STARTUPINFO));
+      StartInfo.cb = sizeof(STARTUPINFO);
+      CreateProcess(buf," OpenClient",NULL,NULL,FALSE,NORMAL_PRIORITY_CLASS,NULL,NULL,&StartInfo,&procStruct);
+      Sleep(3000);
+      return FALSE;
+  }
+#endif
     SetErrorMode(SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
     CreateMutex(NULL, FALSE, SA_MUTE);
 
