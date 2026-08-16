@@ -23,7 +23,7 @@ char *sunday(char *str, char *subStr) {
         break;
       }
     }
-    if (j == subLen) {  // 找到字串，返回
+    if (j == subLen) { // 找到字串，返回
       return str + pos;
     }
   }

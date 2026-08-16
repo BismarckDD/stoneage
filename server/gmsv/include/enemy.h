@@ -213,8 +213,8 @@ INLINE char *ENEMYTEMP_getChar( int index, ENEMYTEMP_DATACHAR element);
 INLINE BOOL ENEMYTEMP_getInt_setChar( int index ,ENEMYTEMP_DATACHAR element, char* new );
 INLINE char *ENEMYTEMP_getInt_getChar( int index, ENEMYTEMP_DATACHAR element);
 int ENEMYTEMP_getInt_getEnemyNum( void);
-BOOL ENEMYTEMP_getInt_initEnemy( char* filename );
-BOOL ENEMYTEMP_getInt_reinitEnemy( void );
+BOOL ENEMYTEMP_getInt_initEnemy(char* filename);
+BOOL ENEMYTEMP_getInt_reinitEnemy(void);
 int ENEMYTEMP_getEnemyTempArray( int enemy_index);
 int ENEMYTEMP_getEnemyTempArrayFromTempNo( int EnemyTempNo);
 int ENEMYTEMP_getEnemyTempArrayFromInitnum( int EnemyTempNo);
@@ -225,10 +225,10 @@ INLINE BOOL GROUP_setChar( int index ,GROUP_DATACHAR element, char* new );
 INLINE char *GROUP_getChar( int index, GROUP_DATACHAR element);
 int GROUP_getEnemyNum( void);
 
-BOOL ENEMYTEMP_initEnemy( char* filename );
-BOOL ENEMYTEMP_reinitEnemy( void );
-BOOL GROUP_initGroup( char* filename );
-BOOL GROUP_reinitGroup( void );
+BOOL ENEMYTEMP_initEnemy(const char* filename);
+BOOL ENEMYTEMP_reinitEnemy(void);
+BOOL GROUP_initGroup(const char* filename);
+BOOL GROUP_reinitGroup(void);
 
 #ifdef _PET_EVOLUTION
 int EVOLUTION_createPetFromEnemyIndex( int char_index, int baseindex, int flg);

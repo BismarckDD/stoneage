@@ -4184,7 +4184,7 @@ void get_name(ACTION *a1)
         //????
         if (d0 == '|')
             break;
-        if (IsDBCSLeadByte(d0))
+        if (IsDBCSLeadByteEx(936, d0))
         {
             *a2++ = d0;
             *a2++ = BattleCmd[command_point++];
@@ -4405,7 +4405,7 @@ void get_command_asc(void)
         //????
         if (d0 == '|')
             break;
-        if (IsDBCSLeadByte(d0))
+        if (IsDBCSLeadByteEx(936, d0))
         {
             *a2++ = d0;
             *a2++ = BattleCmd[command_point++];
@@ -11839,7 +11839,7 @@ void get_bc_asc(ACTION *a1, int flg)
         //????
         if (d0 == '|')
             break;
-        if (IsDBCSLeadByte(d0))
+        if (IsDBCSLeadByteEx(936, d0))
         {
             *a2++ = d0;
             *a2++ = BattleStatus[bc_pointer++];
@@ -11874,7 +11874,7 @@ void get_bc_asc_ridepet(ACTION *a1)
         //????
         if (d0 == '|')
             break;
-        if (IsDBCSLeadByte(d0))
+        if (IsDBCSLeadByteEx(936, d0))
         {
             *a2++ = d0;
             *a2++ = BattleStatus[bc_pointer++];

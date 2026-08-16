@@ -1056,8 +1056,18 @@ static int ITEM_isstring1or0(const char *string, int *randomwidth, int num) {
 
 static char *ITEM_checkString(char *string) {
 #define ITEM_STRINGLEN 64
-  if (strlen(string) >= ITEM_STRINGLEN)
-    print("Over %d:[%s]\n", ITEM_STRINGLEN, string);
+  const size_t length = strlen(string);
+  if (length >= ITEM_STRINGLEN) {
+#ifdef _WIN32
+    char utf8_string[512];
+    if (sa_gbk_to_utf8(string, utf8_string, sizeof(utf8_string)) >= 0)
+      print("Item text over %d bytes (actual %zu): [%s]\n", ITEM_STRINGLEN,
+            length, utf8_string);
+    else
+#endif
+      print("Item text over %d bytes (actual %zu): [%s]\n", ITEM_STRINGLEN,
+            length, string);
+  }
   return string;
 #undef ITEM_STRINGLEN
 }
@@ -1179,10 +1189,10 @@ BOOL ITEM_readItemConfFile(char *filename) {
   int line_num, loaded_item_num, i;
   get_file_lines(filename, &line_num, callbackReadItemConfigFile);
   if (max_item_id <= 0) {
-    print("Max item ID is illegal.\n");
+    print("最大的物品ID非法.%d.\n", max_item_id);
     return FALSE;
   }
-  print("Max Item ID: %d...", max_item_id);
+  print("最大的物品ID: %d...", max_item_id);
   ITEM_sTableLen = line_num + 1;
   ITEM_sIndexLen = max_item_id + 1;
   if (ITEM_gTable != NULL)
@@ -1209,7 +1219,7 @@ BOOL ITEM_readItemConfFile(char *filename) {
     ITEM_gIndex[i].use = FALSE;
   }
   get_file_lines(filename, &loaded_item_num, callbackReadItemConfigFile2);
-  print("Loaded Item Count: %d...", loaded_item_num);
+  print("物品数量: %d......", loaded_item_num);
   return TRUE;
 }
 

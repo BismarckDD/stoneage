@@ -366,7 +366,7 @@ void CTalkWindow::ReadFaceSymbolFile(void)
             if(fgets(szReadBuffer,sizeof(szReadBuffer),pfFaceSymbolFile) == NULL) break;
             getStringToken(szReadBuffer,'=',1,sizeof(m_fsFaceSymbol[i].szSymbol),m_fsFaceSymbol[i].szSymbol);
             getStringToken(szReadBuffer,'=',2,sizeof(m_fsFaceSymbol[i].szFaceName),m_fsFaceSymbol[i].szFaceName);
-            chop(m_fsFaceSymbol[i].szFaceName);
+            // chop(m_fsFaceSymbol[i].szFaceName);
             iStrlen = strlen(m_fsFaceSymbol[i].szFaceName);
             if(iStrlen <= 0) break;
             m_fsFaceSymbol[i].bUse = TRUE;

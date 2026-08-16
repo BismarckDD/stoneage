@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#include <cmath>
+
 #define PAI 3.1415926535897932384626433832795
 
 #define ABS(a) (((a)<0)?-(a):(a))

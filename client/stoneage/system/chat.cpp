@@ -414,36 +414,16 @@ bool CheckName( const char* strSay )
     }
     return true;
 }
-extern int ansi_encoding;
-extern int use_big5;
 void StrToNowStrBuffer( char *str )
 {
-    if(ansi_encoding == 950 ){
-        extern char* BIG5ToGB2312(const char* szBIG5String);
-        char *newstr;
-        newstr=BIG5ToGB2312((const char *)str);
-        int strLen,i;
-        strLen=strlen(newstr);
-        if(strLen>86)
-            strLen=86;
-        for(i=0;i<strLen;i++){
-            if(IsDBCSLeadByte(newstr[i])){
-                StockStrBufferDBChar(newstr+i);
-                i++;
-            }else
-                StockStrBufferChar(newstr[i]);
-        }
-    }else{
-        int strLen,i;
-        strLen=strlen(str);
-        if(strLen>86)
-            strLen=86;
-        for(i=0;i<strLen;i++){
-            if(IsDBCSLeadByte(str[i])){
-                StockStrBufferDBChar(str+i);
-                i++;
-            }else
-                StockStrBufferChar(str[i]);
+    int strLen = strlen(str);
+    if(strLen > 86) strLen = 86;
+    for(int i = 0; i < strLen; i++){
+        if(IsDBCSLeadByteEx(936, str[i])){
+            StockStrBufferDBChar(str + i);
+            i++;
+        }else{
+            StockStrBufferChar(str[i]);
         }
     }
 }
@@ -451,31 +431,14 @@ void StrToNowStrBuffer( char *str )
 
 void StrToNowStrBuffer1( char *str )
 {
-    if(use_big5){
-        int strLen,i;
-        char 繁体[1024]={0};
-        LCMapString (0x804,0x4000000,str, strlen(str),繁体,1024);
-        strLen=strlen(繁体);
-        if(strLen>86)
-            strLen=86;
-        for(i=0;i<strLen;i++){
-            if(IsDBCSLeadByte(繁体[i])){
-                StockStrBufferDBChar(繁体+i);
-                i++;
-            }else
-                StockStrBufferChar(繁体[i]);
-        }
-    }else{
-        int strLen,i;
-        strLen=strlen(str);
-        if(strLen>86)
-            strLen=86;
-        for(i=0;i<strLen;i++){
-            if(IsDBCSLeadByte(str[i])){
-                StockStrBufferDBChar(str+i);
-                i++;
-            }else
-                StockStrBufferChar(str[i]);
+    int strLen = strlen(str);
+    if(strLen > 86) strLen = 86;
+    for(int i = 0; i < strLen; i++){
+        if(IsDBCSLeadByteEx(936, str[i])){
+            StockStrBufferDBChar(str + i);
+            i++;
+        }else{
+            StockStrBufferChar(str[i]);
         }
     }
 }
@@ -485,13 +448,13 @@ int StrToNowStrBuffer2( char *str )
     int strLen,i;
     strLen=strlen(str);
     if(strLen>70){
-        if(IsDBCSLeadByte(str[68]))
+        if(IsDBCSLeadByteEx(936, str[68]))
             strLen = 69;
         else
             strLen = 70;
     }
     for(i=0;i<strLen;i++){
-        if(IsDBCSLeadByte(str[i])){
+        if(IsDBCSLeadByteEx(936, str[i])){
             StockStrBufferDBChar(str+i);
             i++;
         }else
@@ -828,7 +791,7 @@ void KeyboardRight()
     if((cursor=pNowStrBuffer->cursor) < (pNowStrBuffer->cnt)){
         char *lpstr=pNowStrBuffer->buffer;
         lpstr+=cursor;
-        if(*lpstr && IsDBCSLeadByte(*lpstr))
+        if(*lpstr && IsDBCSLeadByteEx(936, *lpstr))
             byte=2;
         pNowStrBuffer->cursor+=byte;
     }
@@ -1160,15 +1123,6 @@ void StockChatBufferLine( char *str_, unsigned char color )
 #endif
 {
     char *str=str_;
-    extern int ansi_encoding;
-    extern int use_big5;
-    if(use_big5){
-        char 繁体[1024]={0};
-        LCMapString (0x804,0x4000000,str_, strlen(str_),繁体,1024);
-        str = 繁体;
-    }else{
-        str = str_;
-    }
 #ifdef _SA_LIAOTIAN_
     if(NowChatLine_Bak != NowChatLine) NowChatLine = NowChatLine_Bak;
 #endif
@@ -1450,7 +1404,7 @@ int GetStrLastByte( char *str )
     //        ( *str == ( char )0x81 && *( str + 1 ) == ( char )0x51 ) ) ){
     
         // ????
-        if(IsDBCSLeadByte(*str)){
+        if(IsDBCSLeadByteEx(936, *str)){
         
             // ???????????
             if( *( str + 1 ) == NULL ) return 3; // ??
@@ -1477,7 +1431,7 @@ int GetStrWidth( char *str )
     int width = 0;
     // ??????????
     while(!( *str == '\0' ) ){
-        if(IsDBCSLeadByte(*str)){
+        if(IsDBCSLeadByteEx(936, *str)){
             str += 2;
             width += FONT_SIZE; // 全形的size
         }else{

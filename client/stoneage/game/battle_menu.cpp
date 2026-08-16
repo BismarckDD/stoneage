@@ -3499,11 +3499,11 @@ void BattleCntDownDisp( void )
         // ???????
         sprintf_s( moji, "第 %02d 回合", BattleCliTurnNo + 1 );
         // 
-        if(ResoMode == 0 || ResoMode == 2){
+        if(gResolutionMode == 0 || gResolutionMode == 2){
             StockFontBuffer( 290, 180, FONT_PRIO_BACK, FONT_PAL_YELLOW, moji, 0 );
-        }else if(ResoMode == 3){
+        }else if(gResolutionMode == 3){
             StockFontBuffer( 370, 245, FONT_PRIO_BACK, FONT_PAL_YELLOW, moji, 0 );
-        }else if(ResoMode == 4){
+        }else if(gResolutionMode == 4){
             StockFontBuffer( 480, 320, FONT_PRIO_BACK, FONT_PAL_YELLOW, moji, 0 );
         }
         

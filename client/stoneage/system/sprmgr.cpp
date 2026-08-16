@@ -127,7 +127,7 @@ void AllocateBmpToSurface( int bmpNo)
 #ifdef _READ16BITBMP
             if(g_bUseAlpha) SurfaceInfoSys[SurfaceSearchPoint].bmpNo = bmpNo;
 #endif
-            if(ResoMode == 1){
+            if(gResolutionMode == 1){
                 SurfaceInfo[ SurfaceSearchPoint ].offsetX = offsetX / 2;
 #ifdef _READ16BITBMP
                 if(g_bUseAlpha) SurfaceInfoSys[SurfaceSearchPoint].offsetX = offsetX / 2;

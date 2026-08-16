@@ -24,15 +24,13 @@ struct gamegroup{
     char    name[61];
 };
 
-#define SUCCESSFULSTR    "successful"        // ??????????
-#define FAILEDSTR        "failed" 
+#define SUCCESSFULSTR   "successful"
+#define FAILEDSTR       "failed" 
 #define OKSTR           "ok"
 #define CANCLE          "cancle"
 
-#define TIMEOUT (600*1000)                   //  ????????????????????????
+#define TIMEOUT (600*1000)
 
-//#define NETBUFSIZ (1024*16)
-//#define NETBUFSIZ (1024*8)
 #define NETBUFSIZ (1024*64) // Robin 2004.05.04
 
 extern char *net_writebuf;

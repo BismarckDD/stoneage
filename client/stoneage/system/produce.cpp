@@ -349,7 +349,7 @@ BOOL Produce4Way( int mode )
 //    ClearBackSurface();    
     for( i = 0 ; i < 4 ; i++ ){
         //???????????????
-        if(ResoMode == 1){
+        if(gResolutionMode == 1){
             rect[i].top >>= 1;
             rect[i].left >>= 1;
             rect[i].right >>= 1;
@@ -552,7 +552,7 @@ BOOL ProduceHagare( int mode )
             rect.right = posX[ i ] + CutX;
             rect.bottom = posY[ i ] + CutY;
             //???????????????
-            if(ResoMode == 1){
+            if(gResolutionMode == 1){
                 rect.top >>= 1;
                 rect.left >>= 1;
                 rect.right >>= 1;
@@ -572,7 +572,7 @@ BOOL ProduceHagare( int mode )
             rect.right = posX[ i ] + CutX;
             rect.bottom = posY[ i ] + CutY;
             //???????????????
-            if(ResoMode == 1){
+            if(gResolutionMode == 1){
                 rect.top >>= 1;
                 rect.left >>= 1;
                 rect.right >>= 1;
@@ -767,7 +767,7 @@ BOOL ProduceHagare( int mode )
             rect.right = posX[ i ] + 80;
             rect.bottom = posY[ i ] + 60;
             //???????????????
-            if(ResoMode == 1){
+            if(gResolutionMode == 1){
                 rect.top >>= 1;
                 rect.left >>= 1;
                 rect.right >>= 1;
@@ -787,7 +787,7 @@ BOOL ProduceHagare( int mode )
             rect.right = posX[ i ] + 80;
             rect.bottom = posY[ i ] + 60;
             //???????????????
-            if(ResoMode == 1){
+            if(gResolutionMode == 1){
                 rect.top >>= 1;
                 rect.left >>= 1;
                 rect.right >>= 1;
@@ -857,7 +857,7 @@ BOOL Produce_bran_small(int ang)
     for(d7=480 + DISPLACEMENT_Y -BRAN_SIZE_Y; d7>=0; d7-=BRAN_SIZE_Y){
         for(d6=640 + DISPLACEMENT_X-BRAN_SIZE_X; d6>=0; d6-=BRAN_SIZE_X){
             //???????????????
-            if(ResoMode == 1){
+            if(gResolutionMode == 1){
                 rect.left = d6 >> 1;
                 rect.right = (d6+BRAN_SIZE_X) >> 1;
                 rect.top = d7 >> 1;
@@ -869,7 +869,7 @@ BOOL Produce_bran_small(int ang)
                 rect.bottom = (d7+BRAN_SIZE_Y);
             }
             //???????????????
-            if(ResoMode == 1){
+            if(gResolutionMode == 1){
                 x = (((*a0 * bran_cnt) >> 6) + 320 - (BRAN_SIZE_X >> 1)) >> 1;
                 y = (((*(a0 + 1) * bran_cnt) >> 6) + 240 - (BRAN_SIZE_Y >> 1)) >> 1;
                 lpDraw->lpBACKBUFFER->BltFast(x,y,lpBattleSurface,&rect,DDBLTFAST_WAIT);
@@ -1011,7 +1011,7 @@ BOOL ProduceCenterPress( int mode )
         ProduceInitFlag = FALSE;
         if( mode == 0 ){
             line = 240;
-            if( ResoMode == 1 ) line >>= 1;
+            if( gResolutionMode == 1 ) line >>= 1;
         }else    line = 0;
     }
     // ???????????????
@@ -1020,7 +1020,7 @@ BOOL ProduceCenterPress( int mode )
     rect1.right = DEF_APPSIZEX;
     rect2.left  = 0;
     rect2.right = DEF_APPSIZEX;
-    if( ResoMode == 1 ){
+    if( gResolutionMode == 1 ){
         h >>= 1;
         rect1.right >>= 1;
         rect2.right >>= 1;

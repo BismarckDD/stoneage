@@ -2,8 +2,8 @@
 //
 // Any questions and bugs, mailto: arminius@mail.hwaei.com.tw
 
-#ifndef __UTIL_H_
-#define __UTIL_H_
+#ifndef __AUTIL_H__
+#define __AUTIL_H__
 #include "version.h"
 #define SLICE_MAX  20
 #define SLICE_SIZE 65500

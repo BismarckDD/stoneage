@@ -392,9 +392,9 @@ BOOL init(int argc, char **argv, char **env) {
     }
     print("\nGameServerName: %s\n", GameServerName);
   }
-  print("开始初始化内存设置......");
+  print("开始初始化内存设置:");
   if (!configmem(getMemoryunit(), getMemoryunitnum())) {
-    print("\n内存配置无效：usememoryunit=%u, usememoryunitnum=%u。\n",
+    print("\n内存配置无效：usememoryunit=%u, usememoryunitnum=%u.\n",
           getMemoryunit(), getMemoryunitnum());
     return FALSE;
   }
@@ -404,9 +404,9 @@ BOOL init(int argc, char **argv, char **env) {
   }
   print("内存初始化完毕.\n");
 
-  print("开始初始化网络设置......");
+  print("开始初始化网络设置:");
   if (!initConnect(getFdnum())) {
-    print("开始初始化网络设置......");
+    print("网络配置初始化失败.\n");
     goto MEMEND;
   }
   while (1) {
@@ -426,32 +426,30 @@ BOOL init(int argc, char **argv, char **env) {
       break;
   }
   print("成功.\n");
-  print("开始初始化物品列表......");
+  print("开始初始化地图可交互对象(包括玩家、NPC、宠物、物品)列表:");
   if (!initObjectArray(getObjnum()))
     goto CLOSEBIND;
   print("成功.\n");
-  print("开始画......");
-#ifdef _OFFLINE_SYSTEM
-  if (!CHAR_initCharArray(getPlayercharnum(), getPetcharnum(),
-                          getOtherscharnum()))
-#else
+  print("开始初始化角色列表(服务器所有的玩家、NPC、敌人):");
   if (!CHAR_initCharArray(getFdnum(), getPetcharnum(), getOtherscharnum()))
-#endif
     goto CLOSEBIND;
   print("成功.\n");
-  print("Start to read item configuration file......");
+  print("开始初始化物品列表(服务器可以同时存在的所有物品):");
   if (!ITEM_readItemConfFile(getItemfile())) {
-    print("read item conf file failed.\n");
+    print("物品配置文件读取失败，服务退出.\n");
     goto CLOSEBIND;
   }
+  // 整个服务器所有的物品
   if (!ITEM_initExistItemsArray(getItemnum())) {
-    print("init exist items array failed.\n");
+    print("初始化物品列表失败，服务退出.\n");
     goto CLOSEBIND;
   }
   print("成功.\n");
-  print("Start to init battle array......");
-  if (!BATTLE_initBattleArray(getBattlenum()))
+  print("开始初始化战斗列表(服务器可以同时容纳的所有战斗):");
+  if (!BATTLE_initBattleArray(getBattlenum())) {
+    print("初始化物品列表失败，服务退出.\n");
     goto CLOSEBIND;
+  }
   print("成功.\n");
   print("Start to init function table......");
   if (!initFunctionTable())
@@ -469,40 +467,43 @@ BOOL init(int argc, char **argv, char **env) {
   if (!CHAR_initAppearPosition(getAppearfile()))
     goto CLOSEBIND;
   print("成功.\n");
-  print("Start to init title name......");
+  print("开始初始化头衔名称......");
   if (!TITLE_initTitleName(getTitleNamefile()))
     goto CLOSEBIND;
   print("成功.\n");
-  print("Start to init title......");
+  print("开始初始化头衔配置......");
   if (!TITLE_initTitleConfig(getTitleConfigfile()))
     goto CLOSEBIND;
   print("成功.\n");
-  print("Start to init Encount......");
+  print("开始初始化遭遇敌人坐标配置......");
   if (!ENCOUNT_initEncount(getEncountfile()))
     goto CLOSEBIND;
-  print("succeed.\n");
-  print("Start to read enemy base config file......");
-  if (!ENEMYTEMP_initEnemy(getEnemyBasefile()))
+  print("成功.\n");
+  const char *enemyBaseFile = getEnemyBasefile();
+  print("开始初始化宠物模板(一个宠物模板可能生成多个宠物实例):%s,", enemyBaseFile);
+  if (!ENEMYTEMP_initEnemy(enemyBaseFile))
     goto CLOSEBIND;
-  print("succeed.\n");
-  print("Start to read enemy config file......");
-  if (!ENEMY_initEnemy(getEnemyfile()))
+  print("成功.\n");
+  const char *enemyFile = getEnemyfile();
+  print("开始初始化宠物实例(一个宠物模板可能生成多个宠物实例):%s,", enemyFile);
+  if (!ENEMY_initEnemy(enemyFile))
     goto CLOSEBIND;
-  print("succeed.\n");
-  print("Start to init group......");
+  print("成功.\n");
+  print("开始初始化敌人群组......");
   if (!GROUP_initGroup(getGroupfile()))
     goto CLOSEBIND;
-  print("succeed.\n");
-  print("Start to init magic config......");
-  if (!MAGIC_initMagic(getMagicfile()))
+  print("成功.\n");
+  const char *magicFile = getMagicfile();
+  print("开始初始化魔法配置(精灵):%s,", magicFile);
+  if (!MAGIC_initMagic(magicFile))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
 #ifdef _ATTACK_MAGIC
-  print("Start to init attack magic......");
-  if (!ATTMAGIC_initMagic(getAttMagicfileName()))
+  const char *attMagicFile = getAttMagicfileName();
+  print("开始初始化魔法配置(攻击性魔法):%s,", attMagicFile);
+  if (!ATTMAGIC_initMagic(attMagicFile))
     goto CLOSEBIND;
-  print("attack magic file path: %s......", getAttMagicfileName());
-  print("succeed.\n");
+  print("成功.\n");
 #endif
   print("Start to init pet skill......");
   if (!PETSKILL_initPetskill(getPetskillfile()))
@@ -514,14 +515,15 @@ BOOL init(int argc, char **argv, char **env) {
     goto CLOSEBIND;
   print("succeed.\n");
 #endif
-  print("Start to init Item Atom......");
-  if (!ITEM_initItemAtom(getItematomfile()))
+  const char *itemAtomFile = getItematomfile();
+  print("开始初始化合成材料:%s,", itemAtomFile);
+  if (!ITEM_initItemAtom(itemAtomFile))
     goto CLOSEBIND;
-  print("succeed.\n");
-  print("Start to init item ing cache......");
+  print("成功.\n");
+  print("开始初始化合成配方,");
   if (!ITEM_initItemIngCache())
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to init rand table.");
   if (!ITEM_initRandTable())
     goto CLOSEBIND;
@@ -533,7 +535,7 @@ BOOL init(int argc, char **argv, char **env) {
   print("Start to init quiz......");
   if (!QUIZ_initQuiz(getQuizfile()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
 #ifdef _GMRELOAD
   print("Start to load gm set......");
   if (!LoadGMSet(getGMSetfile()))
@@ -599,7 +601,7 @@ BOOL init(int argc, char **argv, char **env) {
   else
     print("succeed.\n");
 #endif
-  print("Start to init read map......");
+  print("开始初始化地图......");
   if (!MAP_initReadMap(getMaptilefile(), getMapdir()))
     goto CLOSEBIND;
   print("succeed.\n");
@@ -758,13 +760,11 @@ CLOSEAC:
   logOut("Close AC.\n");
   close(acfd);
 CLOSEBIND:
-  logOut("Close Bind.\n");
+  logOut("关闭绑定的文件描述符.\n");
   close(bindedfd);
-  // print("close binded fd.\n");
   endConnect();
-  // print("End Close Bind.\n");
 MEMEND:
-  logOut("Mem End.\n");
+  logOut("释放内存.\n");
   memEnd();
   return FALSE;
 }

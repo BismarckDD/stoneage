@@ -1,4 +1,4 @@
-﻿#include "version.h"
+﻿#define __GAME_MAIN_CPP__
 #include "systeminc/system.h"
 #include <winuser.h>
 #include <winbase.h>
@@ -49,10 +49,6 @@ extern Landed PcLanded;
 
 int 是否重开登组队_1;
 
-int ansi_encoding; // Windows ANSI 编码识别符
-constexpr int ANSI_BIG5 = 950;
-constexpr int ANSI_GB2312 = 936;
-
 int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
 
 #ifdef _OPTIMIZATIONFLIP_
@@ -65,7 +61,7 @@ int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
 // ?????????????
 void ChangeWindowMode(void);
 // ???????
-void SetResoMode(int Mode);
+void SetgResolutionMode(int Mode);
 void StrToNowStrBuffer(char *str);
 void StrToNowStrBuffer1(char *str);
 
@@ -86,13 +82,6 @@ int debug_info_flag = 0;
 int FrameRate;
 int DrawFrameCnt;
 DWORD DrawFrameTime;
-#ifdef _STONDEBUG_
-static int palNo = 0;
-static int fontNo = 0;
-#endif
-
-// declaration in game_main.h
-int GameState;
 
 #ifdef _OPTIMIZATIONFLIP_
 // 过程时间
@@ -114,7 +103,6 @@ DWORD SystemTime = 6;
 #ifdef _NEW_SPEED_
 BOOL GameSpeedFlag = FALSE;
 #endif
-DWORD NowTime;
 int NoDrawCnt = 1;
 int BackBufferDrawType;
 #ifdef _READ16BITBMP
@@ -175,8 +163,6 @@ DWORD WINAPI TestThreadProc1(PVOID pParam)
     extern BOOL IsContainsProcess(char* strProName, BOOL 判断 = 1);
     if (IsContainsProcess("多窗口", 0) || IsContainsProcess("同步", 0) ||
         IsContainsProcess("SbieSvc.exe")||IsContainsProcess("SbieCtrl.exe"))  ExitProcess(NULL);
-    extern void 按键检测();
-    按键检测();
     return 0;
 }
 
@@ -318,143 +304,14 @@ bool GameMain(void)
         SortDispBuffer();
         HitMouseCursor();
         PaletteProc();
-#ifdef _AIDENGLU_
-        static int 重新登陆原地开始时间 = 0;
-        static int 重新登陆AI开始时间 = 0;
-        static int 重新登陆方向开始时间 = 0;
-        static int 重新登陆组队开始时间 = 0;
-        static int 重新登陆喊话开始时间 = 0;
-        extern int 是否重登战斗了;
-        extern int 是否重登人物方向;
-        extern int 是否重登AI模式;
-        extern int 是否重登组队;
-        extern int 是否重登喊话;
-        static int 开组队开始时间 = 0;
-
-        if (ProcNo == PROC_GAME){
-            if (PcLanded.队模 == 0){
-                if (是否重登AI模式){
-                    if (是否重开登组队_1){
-                        是否重开登组队_1 = FALSE;
-                        开组队开始时间 = TimeGetTime();
-                    }
-                }
-                if (partyModeFlag){//多一人的时候则登陆
-                    if (是否重登战斗了){
-                        是否重登战斗了 = FALSE;
-                        重新登陆原地开始时间 = TimeGetTime();
-                    }
-                }
-            }
-            else{
-                if (是否重登战斗了){
-                    是否重登战斗了 = FALSE;
-                    重新登陆原地开始时间 = TimeGetTime();
-                }
-            }
-            if (开组队开始时间){
-                if (TimeGetTime() > 开组队开始时间 + 500){
-                    extern unsigned int sockfd;
-                    if(!pc.etcFlag &PC_ETCFLAG_PARTY){
-                        pc.etcFlag |= PC_ETCFLAG_PARTY;
-                        lssproto_FS_send(sockfd, pc.etcFlag);
-                    }
-                }
-            }
-            if (重新登陆原地开始时间){
-                if (TimeGetTime() > 重新登陆原地开始时间 + 2000){
-                    重新登陆原地开始时间 = 0;
-                    extern unsigned int sockfd;
-                    lssproto_SaMenu_send(sockfd, 11);
-                }
-            }
-            if (是否重登AI模式){
-                重新登陆AI开始时间 = TimeGetTime();
-                是否重登AI模式 = FALSE;
-            }
-            if (重新登陆AI开始时间){
-                if (TimeGetTime() > 重新登陆AI开始时间 + 500){
-                    重新登陆AI开始时间 = 0;
-                    AI = AI_SELECT;
-                    StockChatBufferLine("开启ＡＩ模式！", FONT_PAL_RED);
-                    pc.etcFlag |= PC_AI_MOD;
-                    lssproto_FS_send(sockfd, pc.etcFlag);
-                }
-            }
-            if (是否重登人物方向){
-                是否重登人物方向 = FALSE;
-                重新登陆方向开始时间 = TimeGetTime();
-            }
-            if (重新登陆方向开始时间){
-                if (TimeGetTime() > 重新登陆方向开始时间 + 500){
-                    重新登陆方向开始时间 = 0;
-                    char dir2[2];
-                    setPcDir(PcLanded.人物方向);
-                    dir2[0] = cnvServDir(PcLanded.人物方向, 1);
-                    dir2[1] = '\0';
-                    walkSendForServer(nowGx, nowGy, dir2);
-                }
-            }
-            extern int 自动登陆是否开启;
-            if (是否重登组队&&!是否重登人物方向&&!重新登陆方向开始时间&&!partyModeFlag){
-                if (!重新登陆组队开始时间){
-                    重新登陆组队开始时间 = TimeGetTime();
-                }
-                else{
-                    if (TimeGetTime() > 重新登陆组队开始时间 + FIELD_BTN_PUSH_WAIT){
-                        重新登陆组队开始时间 = 0;
-                        lssproto_PR_send(sockfd, nowGx, nowGy, 1);
-                    }
-                }
-                if (是否重登喊话){
-                    if (!重新登陆喊话开始时间){
-                        重新登陆喊话开始时间 = TimeGetTime();
-                    }
-                    else{
-                        if (TimeGetTime() > 重新登陆喊话开始时间 + 1000 * 60){
-                            重新登陆喊话开始时间 = 0;
-                            char m[1024];
-                            sprintf_s(m, "P|哪位好心人能带我练级哟。刚掉线重新登陆，求好心人站我面前带我练级！位置(%d,%d)", nowGx, nowGy);
-                            lssproto_TK_send(sockfd, nowGx, nowGy, m, 0, NowMaxVoice);
-                        }
-                    }
-                }
-            }
-            else{
-                重新登陆组队开始时间 = 0;
-                重新登陆喊话开始时间 = 0;
-            }
-        }
-        extern int 自动登陆是否开启;
-        if (ProcNo >= 1 && ProcNo <= 3){
-            if (PcLanded.大区 != -1 && PcLanded.小区 != -1 && PcLanded.人物 != -1){
-                if (自动登陆是否开启)
-                    StockFontBuffer(10, 550, FONT_PRIO_FRONT, FONT_PAL_RED, "正在自动登陆中,按F9可停止自动登陆！", 0);
-                else
-                    StockFontBuffer(10, 550, FONT_PRIO_FRONT, FONT_PAL_RED, "按F9可自动登陆游戏！", 0);
-            }
-        }
-        if (joy_trg[1] & JOY_F9&&ProcNo >= 1 && ProcNo <= 3)
-        {
-            if (自动登陆是否开启) 自动登陆是否开启 = !自动登陆是否开启;
-            else{
-                if (PcLanded.大区 != -1 && PcLanded.小区 != -1 && PcLanded.人物 != -1)
-                    自动登陆是否开启 = TRUE;
-            }
-        }
-#endif
-#ifdef _STONDEBUG_
-        if (joy_trg[1] & JOY_F9  && WindowMode){
-#else            
         if (joy_trg[1] & JOY_F9  && WindowMode && LowResoCmdFlag){
-#endif
 
             if (BackBufferDrawType != DRAW_BACK_PRODUCE){
                 if (lpDraw != NULL){
                     // DirectDraw ?
                     ReleaseDirectDraw();
                     DeleteObject(hFont);
-                    SetResoMode(((ResoMode + 1) % 5));
+                    SetgResolutionMode(((gResolutionMode + 1) % 5));
                     InitDirectDraw();
                     InitOffScreenSurface();
                     InitFont(0);
@@ -487,32 +344,6 @@ bool GameMain(void)
             }
         }
 
-
-#ifdef _STONDEBUG_
-        if( joy_trg[ 0 ] & JOY_HOME ){
-            strcpy( MyChatBuffer.buffer + MyChatBuffer.cnt, DebugKey0 );
-            MyChatBuffer.cnt += strlen( DebugKey0 );
-        }
-        if( joy_trg[ 0 ] & JOY_END ){
-            strcpy( MyChatBuffer.buffer + MyChatBuffer.cnt, DebugKey1 );
-            MyChatBuffer.cnt += strlen( DebugKey1 );
-        }
-        if( joy_trg[ 0 ] & JOY_INS ){
-            strcpy( MyChatBuffer.buffer + MyChatBuffer.cnt, DebugKey2 );
-            MyChatBuffer.cnt += strlen( DebugKey2 );
-        }
-        DisplayFrameRate();
-        {
-            if( di_key[ DIK_PRIOR ] & 0x80 ){ 
-                if( debug_info_flag == 0 ) debug_info_flag = 1;
-                if( debug_info_flag == 2 ) debug_info_flag = 3;
-            }else{
-                if( debug_info_flag == 1 ) debug_info_flag = 2;
-                if( debug_info_flag == 3 ) debug_info_flag = 0;
-            }
-            if (debug_info_flag == 1 || debug_info_flag == 2) InfoDisp();
-        }
-#endif    
 
 #ifdef __NEW_CLIENT_MEM
 #ifndef __NEW_CLIENT_ONLY_WRITE
@@ -698,10 +529,6 @@ bool GameMain(void)
             }
         }
 
-#ifdef _STONDEBUG_        
-        SurfaceDispCnt = 0;
-        //        DrawDebugLine( 250 ); 
-#endif        
 #ifndef __SKYISLAND
         switch( BackBufferDrawType ){
 
@@ -724,30 +551,6 @@ bool GameMain(void)
 #else
         if (BackBufferDrawType != DRAW_BACK_PRODUCE){
 #endif
-#ifdef _STONDEBUG_
-            no_wait_cnt++;
-            if( GetAsyncKeyState( 0x10 ) & 0x8000 )
-                no_wait_cnt &= 7;
-            else
-                no_wait_cnt &= 3;
-            if( GetAsyncKeyState( 0x10 ) & 0x8000 ){        //???????????
-                if(!no_wait_cnt){
-                    PutBmp();    // ????????????????
-                    // dwaf ?????????
-                    baseXFastDraw = nowXFastDraw;
-                    baseYFastDraw = nowYFastDraw;
-                    baseXFastDraw2 = nowXFastDraw2;
-                    baseYFastDraw2 = nowYFastDraw2;
-                }
-            }
-            else {
-                PutBmp();    // ????????????????
-                baseXFastDraw = nowXFastDraw;
-                baseYFastDraw = nowYFastDraw;
-                baseXFastDraw2 = nowXFastDraw2;
-                baseYFastDraw2 = nowYFastDraw2;
-            }
-#else
 #ifdef _NEW_SPEED_
             no_wait_cnt++;
             no_wait_cnt &= 3;
@@ -779,31 +582,13 @@ bool GameMain(void)
             baseYFastDraw2 = nowYFastDraw2;
 
 #endif //_SPEED
-#endif    
 #ifdef __SKYISLAND
         }
 #endif
 
-#ifdef _STONDEBUG_        
-        DrawDebugLine(0);
-#endif        
 
-#ifdef _STONDEBUG_    
-        if (GetAsyncKeyState(0x10) & 0x8000){        //???????????
-            if (!no_wait_cnt){
-                Flip();    // ????????
-            }
-        }
-        else {
-            Flip();    // ????????
-        }
-#else
         Flip();    // ????????
-#endif        
 
-#ifdef _STONDEBUG_        
-        DrawDebugLine(249);
-#endif
 
 #ifdef _STONDEBUG_    
         if (GetAsyncKeyState(0x10) & 0x8000){        //???????????
@@ -1110,7 +895,6 @@ void DisplayFrameRate(void)
   }
 }
 
-// ??? *****************************************************************/
 void PutLogo(void)
 {
     DispBuffer.DispCnt = 0;
@@ -1118,18 +902,6 @@ void PutLogo(void)
     ClearBackSurface();    // ???????????????
     PutBmp();            // ????????????????
     Flip();                //
-}
-
-void GameErrorMessage(char *buf)
-{
-#ifdef _STONDEBUG_
-  FILE *fp = NULL;
-
-  if( ( fopen_s(&fp, "err.log","a+"))!=NULL ) return;
-  if (buf != NULL)
-      fprintf(fp, "%s\n", buf);
-  fclose(fp);
-#endif
 }
 
 bool GameInit(void)
@@ -1160,16 +932,17 @@ bool GameInit(void)
       return false;
   }
   if (InitOffScreenSurface() == FALSE){
-      MessageBoxNew(hWnd, "初始化Off Screan Surface失败！", "确定", MB_OK | MB_ICONSTOP);
+      MessageBoxNew(hWnd, "初始化OffScreanSurface失败！", "确定", MB_OK | MB_ICONSTOP);
       return false;
   }
-  if (InitPalette() == FALSE)
-      return FALSE;
+  if (InitPalette() == FALSE) {
+      MessageBoxNew(hWnd, "初始化调色板失败！", "确定", MB_OK | MB_ICONSTOP);
+      return false;
+  }
   if (initRealbinFileOpen(realBinName, adrnBinName) == FALSE) {
       MessageBoxNew(hWnd, "开启Real.bin失败！", "确定", MB_OK | MB_ICONSTOP);
       return false;
   }
-  //PutLogo();
   initAutoMapColor(adrnBinName);
   if (InitSprBinFileOpen(sprBinName, sprAdrnBinName) == FALSE){
       MessageBoxNew(hWnd, "开启Spr.bin失败！", "确定", MB_OK | MB_ICONSTOP);
@@ -1317,14 +1090,6 @@ void GameEnd(void)
     // ????????
     SaveChatRegistyStr();
 
-    // ?????
-    //    timeKillEvent(timerId);
-
-    //{
-    // ALT+TAB ?????
-    //    int nOldVal;
-    //    SystemParametersInfo (SPI_SCREENSAVERRUNNING, FALSE, &nOldVal, 0);
-    //}
 #ifdef _CHANNEL_MODIFY
     SaveChatData(NULL, 0, true);
 #endif

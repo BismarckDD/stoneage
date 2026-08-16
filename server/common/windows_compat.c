@@ -114,6 +114,28 @@ int sa_platform_init(void) {
   return 0;
 }
 
+int sa_gbk_to_utf8(const char *source, char *destination,
+                   size_t destination_size) {
+  wchar_t wide[512];
+  int wide_length;
+  int utf8_length;
+
+  if (source == NULL || destination == NULL || destination_size == 0)
+    return -1;
+  destination[0] = '\0';
+  wide_length = MultiByteToWideChar(936, 0, source, -1, wide,
+                                    (int)(sizeof(wide) / sizeof(wide[0])));
+  if (wide_length == 0)
+    return -1;
+  utf8_length = WideCharToMultiByte(CP_UTF8, 0, wide, wide_length, destination,
+                                    (int)destination_size, NULL, NULL);
+  if (utf8_length == 0) {
+    destination[0] = '\0';
+    return -1;
+  }
+  return utf8_length - 1;
+}
+
 static SOCKET sa_native_socket(int fd) {
   SOCKET result = INVALID_SOCKET;
   if (fd <= 0 || fd >= SA_MAX_WINDOWS_SOCKETS) {

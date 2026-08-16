@@ -12,10 +12,6 @@ int FontZenkauWidth;
 int FontHankakuWidth;
 int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
 
-extern char *GB2312ToBIG5(const char *szBIG5String);
-extern int ansi_encoding;
-extern const int ANSI950 = 950;
-
 #ifdef _SUNDAY_STR_SEARCH
 extern char* sunday(char* str, char* subStr); 
 #endif
@@ -31,19 +27,7 @@ int StockFontBufferExt(int x, int y, char fontPrio, int color, char *str,
   FontBuffer[FontCnt].color = color;
   FontBuffer[FontCnt].hitFlag = hitFlag;
 
-  extern int use_big5;
-  if (use_big5) {
-    char tradition_chinese[1024] = {0};
-    LCMapString(0x804, 0x4000000, str, strlen(str), tradition_chinese, 1024);
-    ansi_encoding == ANSI950
-        ? strcpy(FontBuffer[FontCnt].str, GB2312ToBIG5((const char *)tradition_chinese))
-        : strcpy(FontBuffer[FontCnt].str, tradition_chinese);
-  } else {
-    if (ansi_encoding == ANSI950) {
-      strcpy(FontBuffer[FontCnt].str, GB2312ToBIG5((const char *)str));
-    } else
-      strcpy(FontBuffer[FontCnt].str, str);
-  }
+  strcpy(FontBuffer[FontCnt].str, str);
   FontBuffer[FontCnt].size = size;
   return FontCnt++;
 }
@@ -62,15 +46,7 @@ int StockFontBuffer(int x, int y, char fontPrio, int color, char *str,
   FontBuffer[FontCnt].fontPrio = fontPrio;
   FontBuffer[FontCnt].color = color;
   FontBuffer[FontCnt].hitFlag = hitFlag;
-  extern int ansi_encoding;
-  extern int use_big5;
-  if (use_big5) {
-    char 繁体[1024] = {0};
-    LCMapString(0x804, 0x4000000, str, strlen(str), 繁体, 1024);
-    strcpy(FontBuffer[FontCnt].str, 繁体);
-  } else {
-    strcpy(FontBuffer[FontCnt].str, str);
-  }
+  strcpy(FontBuffer[FontCnt].str, str);
   return FontCnt++;
 }
 #endif
@@ -84,15 +60,10 @@ void CreatFontHdc() {
     HFONT font = CreateFont(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
                             1, 0, 0, 0, 17, (LPCTSTR) "Microsoft JhengHei");
 #else
-    HFONT font;
-    if (ansi_encoding == ANSI950) {
-      font = CreateFont(FONT_SIZE2, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 1,
-                        0, 0, 0, 17, (LPCTSTR) "Microsoft JhengHei");
-    } else {
-      font = CreateFont(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 134,
+    HFONT font = CreateFont(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                        GB2312_CHARSET,
                         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
                         FIXED_PITCH | FF_ROMAN, (LPCTSTR) "宋体");
-    }
 #endif
     SelectObject(FontSizeHdc, font);
   } else {
@@ -252,9 +223,7 @@ void StockFontBuffer2(STR_BUFFER *strBuffer) {
         FontBuffer[FontCnt].str[i] = '*';
       FontBuffer[FontCnt].str[i] = NULL;
     } else {
-        ansi_encoding == ANSI950
-        ? strcpy(FontBuffer[FontCnt].str, GB2312ToBIG5((const char *)strBuffer->buffer))
-        : strcpy(FontBuffer[FontCnt].str, strBuffer->buffer);
+      strcpy(FontBuffer[FontCnt].str, strBuffer->buffer);
     }
 #ifdef _NEWFONT_
     char strtemp[512];
@@ -409,11 +378,7 @@ void StockFontBufferFamily(STR_BUFFER *strBuffer) {
         FontBuffer[FontCnt].str[i] = '*';
       FontBuffer[FontCnt].str[i] = NULL;
     } else {
-      if (ansi_encoding == 950) {
-        strcpy(FontBuffer[FontCnt].str,
-               GB2312ToBIG5((const char *)strBuffer->buffer));
-      } else
-        strcpy(FontBuffer[FontCnt].str, strBuffer->buffer);
+      strcpy(FontBuffer[FontCnt].str, strBuffer->buffer);
     }
     strBuffer->imeX = strBuffer->x - 60 + strBuffer->cursor * (FONT_SIZE >> 1);
     strBuffer->imeY = strBuffer->y;

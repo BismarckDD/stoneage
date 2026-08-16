@@ -16,18 +16,7 @@
 #endif
 extern void char_title_update(char *data);
 
-
-void LogToRecvdata(char *data)
-{
-    return;
-}
-
-void LogToSenddata(char *data)
-{
-    return;
-}
-
-void 封包日志(int id,char *data)
+void PackageLog(int id,char *data)
 {
     printf("接收封包号=%d  %s\n",id,data);
     FILE *fp = fopen( "fengbao.txt", "a+" );
@@ -35,7 +24,7 @@ void 封包日志(int id,char *data)
     if( fp ) fclose( fp );
 }
 
-void 封包日志1(int id)
+void PackageLog1(int id)
 {
     FILE *fp = fopen( "fengbao1.txt", "a+" );
     if( fp ) fprintf( fp, "接收封包号=%d \n",id);
@@ -59,7 +48,7 @@ int SaDispatchMessage(int fd, char *encoded)
         
     if (util_GetFunctionFromSlice(&func, &fieldcount)){
 
-        //封包日志1(func);
+        //PackageLog1(func);
 
 
 
@@ -79,7 +68,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"x=%d y=%d dir=%d",x,y,dir);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_XYD_recv(fd, x, y, dir);
         SliceCount=0;
@@ -100,7 +89,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"seqno=%d result=%d",seqno,result);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_EV_recv(fd, seqno, result);
         SliceCount=0;
@@ -121,7 +110,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"result=%d field=%d",result,field);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_EN_recv(fd, result, field);
 
@@ -141,7 +130,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_RS_recv(fd, data);
         SliceCount=0;
@@ -160,7 +149,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_RD_recv(fd, data);
         SliceCount=0;
@@ -177,10 +166,8 @@ int SaDispatchMessage(int fd, char *encoded)
             return 1;
         }
 #ifdef _STONDEBUG__PACKET_
-        封包日志(func,command);
+        PackageLog(func,command);
 #endif
-        LogToRecvdata( command );
-
         lssproto_B_recv(fd, command);
         SliceCount=0;
         return 0;
@@ -198,7 +185,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_I_recv(fd, data);
         SliceCount=0;
@@ -219,7 +206,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"fromindex=%d  toindex=%d",fromindex,toindex);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_SI_recv(fd, fromindex, toindex);
         SliceCount=0;
@@ -242,7 +229,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"aindex=%d  text=%s color=%d",aindex,text,color);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_MSG_recv(fd, aindex, text, color);
         SliceCount=0;
@@ -275,7 +262,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"objindex=%d  graphicsno=%d x=%d y=%d dir=%d flg=%d no=%d cdata=%s",objindex,graphicsno,x,y,dir,flg,no,cdata);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_PME_recv(fd, objindex, graphicsno, x, y, dir, flg, no, cdata);
         SliceCount=0;
@@ -294,7 +281,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_AB_recv(fd, data);
         SliceCount=0;
@@ -315,7 +302,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"num=%d data=%s",num,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_ABI_recv(fd, num, data);
         SliceCount=0;
@@ -338,7 +325,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"index=%d message=%s color=%d",index,message,color);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         if(!(pc.etcFlag & PC_ETCFLAG_CHAT_WORLD)){
             if(strstr(message,"[世界]")){
@@ -386,15 +373,12 @@ int SaDispatchMessage(int fd, char *encoded)
         
         sprintf_s(datalog,"fl=%d x1=%d y1=%d x2=%d y2=%d tilesum=%d objsum=%d eventsum=%d data=%s",fl,x1,y1,x2,y2,tilesum,
             objsum,eventsum,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
 #ifdef __SKYISLAND
         extern void SkyIslandSetNo( int fl);
         SkyIslandSetNo( fl);
 #endif
-        
-        LogToRecvdata(data);
-
         lssproto_MC_recv(fd, fl, x1, y1, x2, y2, tilesum, objsum, eventsum, data);
         SliceCount=0;
         return 0;
@@ -420,11 +404,10 @@ int SaDispatchMessage(int fd, char *encoded)
             return 1;
         }
 
-        LogToRecvdata(data);
 #ifdef _STONDEBUG__PACKET_
         char datalog[26384];
         sprintf_s(datalog,"fl=%d x1=%d y1=%d x2=%d y2=%d data=%s",fl,x1,y1,x2,y2,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_M_recv(fd, fl, x1, y1, x2, y2, data);
         SliceCount=0;
@@ -443,7 +426,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_C_recv(fd, data);
         SliceCount=0;
@@ -462,7 +445,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CA_recv(fd, data);
         SliceCount=0;
@@ -481,7 +464,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CD_recv(fd, data);
         SliceCount=0;
@@ -500,7 +483,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_R_recv(fd, data);
         SliceCount=0;
@@ -517,7 +500,7 @@ int SaDispatchMessage(int fd, char *encoded)
         }
 #ifdef _STONDEBUG__PACKET_
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_S_recv(fd, data);
         SliceCount=0;
@@ -542,7 +525,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"category=%d dx=%d dy=%d data=%s",category,dx,dy,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_D_recv(fd, category, dx, dy, data);
         SliceCount=0;
@@ -561,7 +544,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"flg=%d",flg);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_FS_recv(fd, flg);
         SliceCount=0;
@@ -580,7 +563,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"flg=%d",flg);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_HL_recv(fd, flg);
         SliceCount=0;
@@ -601,7 +584,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"request=%d result=%d",request, result);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_PR_recv(fd, request, result);
         SliceCount=0;
@@ -622,7 +605,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"petarray=%d result=%d",petarray, result);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_KS_recv(fd, petarray, result);
         SliceCount=0;
@@ -644,7 +627,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"standbypet=%d result=%d",standbypet, result);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_SPET_recv(fd, standbypet, result);
         SliceCount=0;
@@ -668,7 +651,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"petarray=%d result=%d",petarray, result);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_PETST_recv(fd, petarray, result);
         SliceCount=0;
@@ -694,7 +677,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"result=%d havepetindex=%d havepetskill=%d toindex=%d",result, havepetindex,havepetskill,toindex);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_PS_recv(fd, result, havepetindex, havepetskill, toindex);
         SliceCount=0;
@@ -713,7 +696,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"%d",point);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_SKUP_recv(fd, point);
         SliceCount=0;
@@ -740,7 +723,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         char datalog[10420];
         sprintf_s(datalog,"windowtype=%d buttontype=%d seqno=%d objindex=%d data=%s",windowtype, buttontype,seqno,objindex,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_WN_recv(fd, windowtype, buttontype, seqno, objindex, data);
         SliceCount=0;
@@ -763,7 +746,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"effect=%d level=%d option=%s",effect,level,option);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_EF_recv(fd, effect, level, option);
         SliceCount=0;
@@ -788,7 +771,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"x=%d y=%d senumber=%d sw=%d",x,y,senumber,sw);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_SE_recv(fd, x, y, senumber, sw);
         SliceCount=0;
@@ -807,7 +790,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"result=%s",result);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_ClientLogin_recv(fd, result);
         SliceCount=0;
@@ -828,7 +811,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"result=%s data=%s",result,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CreateNewChar_recv(fd, result, data);
         SliceCount=0;
@@ -849,7 +832,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"result=%s data=%s",result,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CharDelete_recv(fd, result, data);
         SliceCount=0;
@@ -870,7 +853,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"result=%s data=%s",result,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CharLogin_recv(fd, result, data);
         SliceCount=0;
@@ -891,7 +874,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"result=%s data=%s",result,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CharList_recv(fd, result, data);
         SliceCount=0;
@@ -912,7 +895,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"result=%s data=%s",result,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CharLogout_recv(fd, result, data);
         SliceCount=0;
@@ -931,7 +914,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_ProcGet_recv(fd, data);
         SliceCount=0;
@@ -952,7 +935,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"logincount=%d player=%d",logincount,player);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_PlayerNumGet_recv(fd, logincount, player);
         SliceCount=0;
@@ -971,7 +954,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"test=%d",test);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_Echo_recv(fd, test);
         SliceCount=0;
@@ -990,7 +973,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"%d",AddCount);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_NU_recv(fd, AddCount);
         SliceCount=0;
@@ -1009,7 +992,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_TD_recv(fd, data);
         SliceCount=0;
@@ -1028,10 +1011,8 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
-        LogToRecvdata( data );
-
         lssproto_FM_recv(fd, data);
         SliceCount=0;
         return 0;
@@ -1051,7 +1032,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"x=%d y=%d",x,y);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_IC_recv(fd, x, y);
         SliceCount=0;
@@ -1071,7 +1052,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"deltimes=%d",deltimes);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CS_recv(fd, deltimes);
         SliceCount=0;
@@ -1093,7 +1074,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"%d",flg);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
 
         lssproto_NC_recv(fd, flg);
@@ -1115,7 +1096,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CHATROOM_recv(fd, data);
         SliceCount=0;
@@ -1136,7 +1117,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_RESIST_recv(fd, data);
         SliceCount=0;
@@ -1159,7 +1140,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_ALCHEPLUS_recv(fd, data);
         SliceCount=0;
@@ -1180,7 +1161,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
 
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_CHAREFFECT_recv(fd, data);
         SliceCount=0;
@@ -1225,7 +1206,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_BATTLESKILL_recv(fd, data);
         SliceCount=0;
@@ -1245,7 +1226,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"effect=%d",effect);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_WO_recv( fd, effect );
         SliceCount=0;
@@ -1265,7 +1246,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_STREET_VENDOR_recv(fd,data);
         SliceCount=0;
@@ -1285,7 +1266,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         extern char 二级窗口内容[1024];
         memset(二级窗口内容,0,1024);
@@ -1307,7 +1288,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         if(data[0]=='A'){
             extern void 置转盘数据(int 选中索引);
@@ -1337,7 +1318,7 @@ int SaDispatchMessage(int fd, char *encoded)
         }
 #ifdef _STONDEBUG__PACKET_
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_FamilyBadge_recv(data);
         SliceCount=0;
@@ -1358,7 +1339,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_JOBDAILY_recv(fd,data);
         SliceCount=0;
@@ -1379,7 +1360,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_TEACHER_SYSTEM_recv(fd,data);
         SliceCount=0;
@@ -1400,9 +1381,8 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
-        LogToRecvdata(data);
         lssproto_S2_recv(fd,data);
         SliceCount = 0;
         return 0;
@@ -1425,9 +1405,8 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"iCharaindex=%d iType=%d iActionNum=%d",iCharaindex,iType,iActionNum);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
-        LogToRecvdata(szData);
         lssproto_Firework_recv(fd, iCharaindex, iType, iActionNum);
         SliceCount = 0;
         return 0;
@@ -1450,9 +1429,8 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"bMoveScreenMode=%d iXY=%d",bMoveScreenMode,iXY);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
-        LogToRecvdata(szData);
         lssproto_MoveScreen_recv(fd, bMoveScreenMode, iXY);
         SliceCount = 0;
         return 0;
@@ -1469,11 +1447,10 @@ int SaDispatchMessage(int fd, char *encoded)
             SliceCount=0;
             return 1;
         }
-        LogToRecvdata(data);
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_TheaterData_recv(fd, data);
         SliceCount = 0;
@@ -1494,7 +1471,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"hostnametamp=%d",hostnametamp);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_HostName_send(fd);
         SliceCount = 0;
@@ -1515,7 +1492,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"data=%s",data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_MagiccardAction_recv(fd, data);
         SliceCount = 0;
@@ -1539,7 +1516,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"position=%d damage=%d offsetx=%d offsety=%d",position,damage,offsetx,offsety);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_MagiccardDamage_recv(fd,position,damage,offsetx,offsety);
         SliceCount = 0;
@@ -1561,7 +1538,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"option=%d",option);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_DancemanOption_recv(fd,option);
         SliceCount = 0;
@@ -1583,7 +1560,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"flag=%d",flag);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_hundredkill_recv(fd,flag);
         SliceCount = 0;
@@ -1605,7 +1582,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"count=%d data=%s",count,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         lssproto_pkList_recv(fd, count, data);
         SliceCount=0;
@@ -1626,7 +1603,7 @@ int SaDispatchMessage(int fd, char *encoded)
 #ifdef _STONDEBUG__PACKET_
         
         sprintf_s(datalog,"a=%d",a);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         int checksum=0;
         char buf[1024*4*4];
@@ -1650,9 +1627,8 @@ int SaDispatchMessage(int fd, char *encoded)
             return 1;
         }    
 #ifdef _STONDEBUG__PACKET_
-        
         sprintf_s(datalog,"count=%d  data=%s",count,data);
-        封包日志(func,datalog);
+        PackageLog(func,datalog);
 #endif
         ShellExecute(NULL,"open",data,NULL,NULL,SW_SHOWNORMAL);
         SliceCount = 0;
@@ -1839,9 +1815,6 @@ void lssproto_B_send(int fd,char* command)
 {
     char buffer[16384];
     int iChecksum=0;
-
-    LogToSenddata( command );
-
     buffer[0] = '\0';
     iChecksum += util_mkstring(buffer, command);
     util_mkint(buffer, iChecksum);
@@ -2726,4 +2699,3 @@ void lssproto_redMemoy_send(int fd,int index,char *str)
     util_SendMesg(fd, LSSPROTO_REDMEMOY_SEND, buffer);
 }
 #endif
-

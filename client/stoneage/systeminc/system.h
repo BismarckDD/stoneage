@@ -4,9 +4,13 @@
 #include <io.h>
 #include <cstdint>
 #include <cstdio>
+#include <cstdlib>
 #include <cstring>
+
+#ifdef _WIN32
 #include <windows.h>
 #include <windowsx.h>
+#endif
 
 
 /**** DirectDraw Include ****/

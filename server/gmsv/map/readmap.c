@@ -102,11 +102,6 @@ BOOL MAP_readMapConfFile(char *filename) {
     return FALSE;
   }
   while (fgets(line, sizeof(line), file)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     char imgnum[16];
     BOOL ret;
     int imgnumber;
@@ -138,11 +133,6 @@ BOOL MAP_readMapConfFile(char *filename) {
     return FALSE;
   }
   while (fgets(line, sizeof(line), file)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     char token[64];
     int imagenumber;
     int ret;
@@ -389,7 +379,7 @@ BOOL MAP_IsMapFile(char *filename) {
   char buf[16];
   int ret;
 
-  f = fopen(filename, "r");
+  f = fopen(filename, "rb");
   if (f == NULL) {
     errorprint;
     return FALSE;
@@ -434,7 +424,7 @@ BOOL MAP_readMapOne(char *filename) {
     return FALSE;
   }
   mapindex = MAP_mapnum_index;
-  f = fopen(filename, "r");
+  f = fopen(filename, "rb");
   if (f == NULL) {
     errorprint;
     return FALSE;
@@ -502,7 +492,11 @@ BOOL MAP_readMapOne(char *filename) {
 
   ret = fread(tile, sizeof(unsigned short) * xsiz * ysiz, 1, f);
   if (ret != 1) {
-    errorprint;
+    fprint("Map tile read failed: file=%s map=%d size=%dx%d "
+           "expected=%zu offset=%lld eof=%d ioerror=%d\n",
+           filename, id, xsiz, ysiz,
+           sizeof(unsigned short) * (size_t)xsiz * (size_t)ysiz,
+           (long long)ftell(f), feof(f), ferror(f));
     goto FREELINK;
   }
   //    for( i  = 0 ; i < xsiz * ysiz ; i ++ )
@@ -525,7 +519,11 @@ BOOL MAP_readMapOne(char *filename) {
   }
   ret = fread(obj, sizeof(short) * xsiz * ysiz, 1, f);
   if (ret != 1) {
-    errorprint;
+    fprint("Map object read failed: file=%s map=%d size=%dx%d "
+           "expected=%zu offset=%lld eof=%d ioerror=%d\n",
+           filename, id, xsiz, ysiz,
+           sizeof(short) * (size_t)xsiz * (size_t)ysiz,
+           (long long)ftell(f), feof(f), ferror(f));
     goto FREELINK;
   }
   //    for( i  = 0 ; i < xsiz * ysiz ; i ++ )
@@ -666,8 +664,8 @@ BOOL MAP_readMapDir(char *dirname) {
   for (i = 0; i < filenum; i++)
     if (MAP_IsMapFile(filenames[i].string))
       mapfilenum++;
-    else
-      fprint("%s is not a map file.\n", filenames[i].string);
+  //  else
+  //    fprint("%s is not a map file.\n", filenames[i].string);
   print("reads map file %d, total file: %d.\n", mapfilenum, filenum);
   if (mapfilenum == 0)
     print("dirname: %s.\n", dirname);

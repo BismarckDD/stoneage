@@ -50,22 +50,8 @@ void ImeProc()
         lpstr1=GetImeDescString();
         if( 1!=dwInfo){
             if( lpstr1){
-                char* BIG5ToGB2312(const char* szBIG5String);
-                extern int ansi_encoding;
-                extern int use_big5;
-                if(use_big5){
-                    char 繁体[1024]={0};
-                    LCMapString(0x804,0x4000000,lpstr1, strlen(lpstr1),繁体,1024);
-                    if(ansi_encoding==950)
-                        StockFontBuffer(530-strlen(lpstr1)*(FONT_SIZE>>1) + DISPLACEMENT_X,460 + DISPLACEMENT_Y ,FONT_PRIO_FRONT,0,BIG5ToGB2312((const char *)繁体),0);
-                    else
-                        StockFontBuffer(530-strlen(lpstr1)*(FONT_SIZE>>1) + DISPLACEMENT_X,460 + DISPLACEMENT_Y ,FONT_PRIO_FRONT,0,繁体,0);
-                }else{
-                    if(ansi_encoding==950)
-                        StockFontBuffer(530-strlen(lpstr1)*(FONT_SIZE>>1) + DISPLACEMENT_X,460 + DISPLACEMENT_Y ,FONT_PRIO_FRONT,0,BIG5ToGB2312((const char *)lpstr1),0);
-                    else
-                        StockFontBuffer(530-strlen(lpstr1)*(FONT_SIZE>>1) + DISPLACEMENT_X,460 + DISPLACEMENT_Y ,FONT_PRIO_FRONT,0,lpstr1,0);
-                }
+                StockFontBuffer(530-strlen(lpstr1)*(FONT_SIZE>>1) + DISPLACEMENT_X,
+                    460 + DISPLACEMENT_Y, FONT_PRIO_FRONT, 0, lpstr1, 0);
             }
 
             char tmp[64];
@@ -180,4 +166,3 @@ void ImeProc()
     bShowItemExplain = FALSE;
 // end
 }
-

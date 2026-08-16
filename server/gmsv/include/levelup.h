@@ -12,6 +12,5 @@ int BATTLE_LevelUpCheck(
 	int char_index
 );
 
-
 #endif
 

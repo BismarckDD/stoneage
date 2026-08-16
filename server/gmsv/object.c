@@ -29,7 +29,7 @@ BOOL initObjectArray(const int object_num) {
     memset(&obj[i], 0, sizeof(Object));
     obj[i].type = OBJTYPE_NOUSE;
   }
-  print("Allocate %.2f MB memory...", sizeof(Object) * object_num / 1024.0 / 1024.0);
+  print("分配 %.2f MB 空间......", sizeof(Object) * object_num / 1024.0 / 1024.0);
   return TRUE;
 }
 

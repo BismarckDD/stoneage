@@ -1,5 +1,4 @@
-﻿#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "systeminc/font.h"
 #include "systeminc/action.h"
 #include "systeminc/sprdisp.h"

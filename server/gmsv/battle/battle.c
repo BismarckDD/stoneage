@@ -681,14 +681,13 @@ BOOL BATTLE_initBattleArray(int battlenum) {
 
   int i;
   BATTLE_battlenum = battlenum;
-
   BattleArray = allocateMemory(sizeof(BATTLE) * BATTLE_battlenum);
   if (BattleArray == NULL)
     return FALSE;
   for (i = 0; i < BATTLE_battlenum; i++) {
     memset(&BattleArray[i], 0, sizeof(BATTLE));
   }
-  print("分配 %4.2f MB 空间...",
+  print("分配 %4.2f MB 空间......",
         ((float)sizeof(Char) * BATTLE_battlenum) / 1024.0 / 1024.0);
   return TRUE;
 }
@@ -10633,7 +10632,7 @@ static int BATTLE_Battling(int battleindex) {
     }
   }
   // printf("后 szBattleString=%s\n",szBattleString);
-  strncat(szAllBattleString, szBattleString, sizeof(szAllBattleString));
+  strcatsafe(szAllBattleString, szBattleString, sizeof(szAllBattleString));
   for (i = 0; i < entrynum; i++) {
     char_index = EntryList[i].char_index;
     if (!CHAR_CHECKINDEX(char_index))

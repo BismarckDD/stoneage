@@ -100,6 +100,8 @@ int sa_set_process_priority(int nice_value);
 int sa_gettimeofday(struct timeval *value, void *timezone_value);
 int sa_inet_aton(const char *address, struct in_addr *result);
 int sa_install_console_handler(void (*handler)(int));
+int sa_gbk_to_utf8(const char *source, char *destination,
+                   size_t destination_size);
 char *index(const char *text, int character);
 char *rindex(const char *text, int character);
 long random(void);

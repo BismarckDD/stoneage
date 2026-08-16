@@ -185,7 +185,7 @@ void LogLogin(const char *char_id,   // 玩家ID
               ,
               char *mac
 #endif
-);
+             );
 
 void LogCreatFUPet(char *PetName, int petid, int lv, int hp, int vital, int str,
                    int tgh, int dex, int fixstr, int fixtgh, int fixdex,

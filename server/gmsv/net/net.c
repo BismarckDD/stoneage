@@ -956,7 +956,7 @@ BOOL CONNECT_acfdInitWB(int fd) {
 
 ANY_THREAD void endConnect(void) {
   int i;
-  print("connect: %d, connect_len: %d.\n", Connect, ConnectLen);
+  print("连接数量: %d......", ConnectLen);
   if (Connect == NULL) return;
   for (i = 0; i < ConnectLen; i++) {
     int lco;
@@ -964,12 +964,11 @@ ANY_THREAD void endConnect(void) {
     if (lco == 0) {
       CONNECT_endOne_debug(i);
     }
-    print("free connect %d.\n", i);
     free(Connect[i].rb);
     free(Connect[i].wb);
   }
   free(Connect);
-  print("free connect.\n");
+  print("所有连接已经被释放.\n");
 }
 
 ANY_THREAD BOOL CONNECT_appendCAbuf(int fd, char *data, int size) {

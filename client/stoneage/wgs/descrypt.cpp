@@ -11,19 +11,13 @@
 #define    NO    0
 typedef unsigned char uchar;
 typedef unsigned short ushort;
-typedef    unsigned int uint;
+typedef unsigned int uint;
 typedef unsigned long ulong;
-
-
-
 
 void des_setparity(char *key)
 {
-    int n;
-
-    for (n = 8; n > 0; n--) {
-        char c;
-
+    char c;
+    for (int n = 8; n > 0; n--) {
         c = *key &= 0x7f;
         c ^= c << 4;
         c ^= c << 2;
@@ -31,7 +25,6 @@ void des_setparity(char *key)
         *key++ ^= ~c & 0x80;
     }
 }
-
 
 ulong Keys[16][2];
 

@@ -1,6 +1,5 @@
-﻿#include "version.h"
-#include "../systeminc/system.h"
-#include "../systeminc/pc.h"
+﻿#include "systeminc/system.h"
+#include "systeminc/pc.h"
 #include "winlua.h"
 
 #include <locale.h>

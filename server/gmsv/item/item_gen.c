@@ -151,6 +151,8 @@ int icache_num;
 int ITEM_initItemIngCache(void) {
   int i;
   int missing_atom_count = 0;
+  int cached_item_count = 0;
+  FILE *cache_log;
   icache_num = ITEM_getItemMaxIdNum();
   print("icache_num: %d ", icache_num);
   icache = calloc(1, sizeof(struct ingcache) * icache_num);
@@ -158,9 +160,12 @@ int ITEM_initItemIngCache(void) {
     print("icache is NULL.\n");
     return FALSE;
   }
-  print("IngCache %4.2f MB ...\n",
+  print("配方缓存 %4.2f MB 空间 ......",
         sizeof(struct ingcache) * icache_num / 1024.0 / 1024.0);
-  remove("old_icache.txt");
+  cache_log = fopen("old_icache.txt", "w");
+  if (cache_log == NULL) {
+    print("Cannot open old_icache.txt; continuing without cache report.\n");
+  }
   memset(icache, 0, icache_num * sizeof(struct ingcache));
   for (i = 0; i < icache_num; i++) {
     if (ITEM_gIndex[i].use) { // new
@@ -202,28 +207,31 @@ int ITEM_initItemIngCache(void) {
               ITEM_gTable[ITEM_gIndex[i].index].item.string[ITEM_NAME].string); // new
         }
       } else {
-        FILE *fp;
         icache[i].use = 1;
+        cached_item_count++;
         icache[i].canmergefrom =
             ITEM_gTable[ITEM_gIndex[i].index].item.data[ITEM_CANMERGEFROM]; // new
         icache[i].canmergeto =
             ITEM_gTable[ITEM_gIndex[i].index].item.data[ITEM_CANMERGETO]; // new
-        if ((fp = fopen("old_icache.txt", "a+")) != NULL) {
-          fprintf(fp, "[%s] - %s+%s+%s+%s+%s \n", ITEMTBL_getChar(i, ITEM_NAME),
+        if (cache_log != NULL) {
+          fprintf(cache_log, "[%s] - %s+%s+%s+%s+%s \n",
+                  ITEMTBL_getChar(i, ITEM_NAME),
                   ITEMTBL_getChar(i, ITEM_INGNAME0),
                   ITEMTBL_getChar(i, ITEM_INGNAME1),
                   ITEMTBL_getChar(i, ITEM_INGNAME2),
                   ITEMTBL_getChar(i, ITEM_INGNAME3),
                   ITEMTBL_getChar(i, ITEM_INGNAME4));
-          fclose(fp);
         }
       }
     }
   }
+  if (cache_log != NULL)
+    fclose(cache_log);
   if (missing_atom_count > 0) {
-    print("物品素材缓存初始化完成，但有 %d 个素材定义缺失。\n",
+    print("物品合成方案缓存初始化完成，但有 %d 个素材定义缺失。\n",
           missing_atom_count);
   }
+  print("物品合成方案缓存初始化完成: 共%d个......", cached_item_count);
   return TRUE;
 }
 
@@ -241,7 +249,7 @@ int ITEM_initItemAtom(const char *filename) {
 
   const int line_num = get_file_line_num(filename);
   if (line_num == 0) {
-    print("Empty item atom file. Plz check: %s\n", filename);
+    print("空文件，请检查: %s\n", filename);
     return FALSE;
   }
   const int total_item_atoms_size = line_num * sizeof(struct item_atom);
@@ -255,11 +263,11 @@ int ITEM_initItemAtom(const char *filename) {
   int read_line_num = 0;
   get_file_lines(filename, &read_line_num, init_item_atom_callback);
   if (read_line_num >= MAX_ITEM_ATOMS_SIZE) {
-    print("Item Atom Count is too big to use. %d\n", read_line_num);
+    print("素材数量太多，无法初始化成功. %d\n", read_line_num);
     return FALSE;
   } else {
     item_atoms_size = read_line_num;
-    print("Effective Item Atom Count: %d\n", read_line_num);
+    print("有效的素材数量: %d......", read_line_num);
     return TRUE;
   }
 }

@@ -32,7 +32,6 @@ extern int MagicItemPosState[4];
 BOOL 任务查询开关=FALSE;
 #endif
 extern int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
-int use_big5 = FALSE;
 int 经验开关 = TRUE;
 int 人物屏蔽开关 = FALSE;
 int 右键攻击 = FALSE;
@@ -10503,22 +10502,9 @@ void MenuProc(void)
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
                     MenuToggleFlag ^= JOY_ESC;
-#ifdef _CANCEL_FANTI
-                    StockChatBufferLine("功能开发中！", FONT_PAL_RED);
-                    play_se(202, 320, 240);
-#else
-                    if (use_big5)
-                    {
-                        use_big5 = FALSE;
-                        StockChatBufferLine("切换简体！", FONT_PAL_RED);
-                    }
-                    else{
-                        use_big5 = TRUE;
-                        StockChatBufferLine("切换繁体！", FONT_PAL_RED);
-                    }
+                    StockChatBufferLine("客户端已统一使用简体中文。", FONT_PAL_RED);
                     play_se(202, 320, 240);
                     break;
-#endif
 
                 }
                 if (HitFontNo == systemWndFontNo[15]){
@@ -10646,12 +10632,7 @@ void MenuProc(void)
             systemWndFontNo[20] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    卡密使用    ", 2);    y += 34;//y += 40;
             systemWndFontNo[21] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    快捷传送    ", 2);    y += 34;//y += 40;
             systemWndFontNo[9] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    掉线重连    ", 2);    y += 34;//y += 40;
-            if (use_big5){
-                systemWndFontNo[10] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    切换简体    ", 2);    y += 34;//y += 40;
-            }
-            else{
-                systemWndFontNo[10] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    切换繁体    ", 2);    y += 34;//y += 40;
-            }
+            systemWndFontNo[10] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    简体中文    ", 2);    y += 34;//y += 40;
             if (人物屏蔽开关){
                 systemWndFontNo[22] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    人物显示    ", 2);    y += 34;//y += 40;
             }
@@ -22833,4 +22814,3 @@ void send_StandBy_Pet(void)
 
 所以请加到menu2.cpp  by  Change
 ========================================= */
-

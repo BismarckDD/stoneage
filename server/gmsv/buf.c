@@ -1,11 +1,10 @@
 #include "handletime.h"
 
-static int UNIT;
-static int UNITNUMBER;
-static int memconfig;
+static int sUnitSize;       // 每个内存块的大小
+static int sUnitNumTotal;   // 所有可用的内存块的数量
+static int sUnitNumCurr;    // 当前已用的内存块的数量
 static int readblock;
-static int NowMemory;
-static struct timeval AllocOldTime;
+static struct timeval sLastAllocTime;
 
 typedef struct tagMemory {
   char *pointer;
@@ -21,31 +20,24 @@ void memEnd(void) {
   }
 }
 
-BOOL configmem(int unit, int unitnumber) {
-  if (memconfig == TRUE)
-    return FALSE;
-  UNIT = unit;
-  UNITNUMBER = unitnumber;
-  if (UNIT <= 0 || UNITNUMBER <= 0)
-    return memconfig = FALSE;
-  return memconfig = TRUE;
+BOOL configmem(int unit_size, int unit_number) {
+  sUnitSize = unit_size;
+  sUnitNumTotal = unit_number;
+  if (sUnitSize <= 0 || sUnitNumTotal <= 0)
+  return TRUE;
 }
 
 BOOL memInit(void) {
   int i;
-  size_t metadata_size;
-  size_t pool_size;
-  if (memconfig == FALSE)
-    return FALSE;
-  metadata_size = sizeof(Memory) * (size_t)UNITNUMBER;
-  pool_size = (size_t)UNIT * (size_t)UNITNUMBER;
-  mem = calloc((size_t)UNITNUMBER, sizeof(Memory));
+  size_t metadata_size = sizeof(Memory) * (size_t)sUnitNumTotal;
+  size_t pool_size = (size_t)sUnitSize * (size_t)sUnitNumTotal;
+  mem = calloc((size_t)sUnitNumTotal, sizeof(Memory));
   if (mem == NULL) {
     print("memInit: cannot allocate metadata table: %zu bytes\n", metadata_size);
     return FALSE;
   }
 
-  for (i = 0; i < UNITNUMBER; i++) {
+  for (i = 0; i < sUnitNumTotal; i++) {
     mem[i].pointer = NULL;
     mem[i].used = FALSE;
     mem[i].nsize = 0;
@@ -57,30 +49,28 @@ BOOL memInit(void) {
     mem = NULL;
     return FALSE;
   }
-  print("Memory pool allocated: %.2f MB...", pool_size / 1024.0 / 1024.0);
+  print("内存分配: %.2f MB 空间......", pool_size / 1024.0 / 1024.0);
   readblock = 0;
-  for (i = 0; i < UNITNUMBER; i++)
-    mem[i].pointer = mem[0].pointer + i * UNIT;
+  for (i = 0; i < sUnitNumTotal; i++)
+    mem[i].pointer = mem[0].pointer + i * sUnitSize;
 
-  NowMemory = 0;
-  AllocOldTime.tv_sec = NowTime.tv_sec;
-  AllocOldTime.tv_usec = NowTime.tv_usec;
+  sUnitNumCurr = 0;
+  sLastAllocTime.tv_sec = NowTime.tv_sec;
+  sLastAllocTime.tv_usec = NowTime.tv_usec;
   return TRUE;
 }
 
+// 分配nbyte个字节的内存空间，返回指向该内存空间的指针
 void *allocateMemory(const unsigned int nbyte) {
   int i;
-  int arrayAllocSize;
   BOOL flg = FALSE;
   void *ret;
   int first = 0;
-
-  arrayAllocSize = nbyte / UNIT + (nbyte % UNIT ? 1 : 0);
-  if (arrayAllocSize == 0)
-    return NULL;
+  const int unitNumAlloc = nbyte / sUnitSize + (nbyte % sUnitSize ? 1 : 0);
+  if (unitNumAlloc == 0) return NULL;
   i = readblock;
   while (1) {
-    if (i > UNITNUMBER - arrayAllocSize) {
+    if (i > sUnitNumTotal - unitNumAlloc) {
       i = 0;
     }
     if (mem[i].used != FALSE) {
@@ -88,7 +78,7 @@ void *allocateMemory(const unsigned int nbyte) {
     } else {
       int j;
       BOOL found = TRUE;
-      for (j = i; j < i + arrayAllocSize; j++) {
+      for (j = i; j < i + unitNumAlloc; j++) {
         if (mem[j].used != FALSE) {
           i = j + mem[j].nsize;
           found = FALSE;
@@ -99,62 +89,58 @@ void *allocateMemory(const unsigned int nbyte) {
       }
       if (found) {
         mem[i].used = TRUE;
-        mem[i].nsize = arrayAllocSize;
-        readblock = i + arrayAllocSize;
+        mem[i].nsize = unitNumAlloc;
+        readblock = i + unitNumAlloc;
         ret = mem[i].pointer;
         break;
       }
     }
-    if ((i >= readblock || i > UNITNUMBER - arrayAllocSize) && flg == TRUE) {
+    if ((i >= readblock || i > sUnitNumTotal - unitNumAlloc) && flg == TRUE) {
       ret = NULL;
       break;
     }
-    if (i > UNITNUMBER - arrayAllocSize) {
+    if (i > sUnitNumTotal - unitNumAlloc) {
       i = 0;
       flg = TRUE;
     }
   }
   if (ret == NULL) {
     print("Can't Allocate %d byte .remnants:%4.2f\n", nbyte,
-          (float)(NowMemory / UNITNUMBER));
+          (float)(sUnitNumCurr / sUnitNumTotal));
   } else {
-    NowMemory += arrayAllocSize;
-
-    if (NowTime.tv_sec > AllocOldTime.tv_sec + 10) {
-      print("\n");
-      if (NowMemory > (double)UNITNUMBER * 0.9) {
+    sUnitNumCurr += unitNumAlloc;
+    if (NowTime.tv_sec > sLastAllocTime.tv_sec + 10) {
+      if (sUnitNumCurr > (double)sUnitNumTotal * 0.9) {
         print("Warning!! Memory use rate exceeded 90%% .remnants:%d\n",
-              UNITNUMBER - NowMemory);
-      } else if (NowMemory > (double)UNITNUMBER * 0.8) {
+              sUnitNumTotal - sUnitNumCurr);
+      } else if (sUnitNumCurr > (double)sUnitNumTotal * 0.8) {
         print("Warning!! Memory use rate exceeded 80%% .remnants:%d\n",
-              UNITNUMBER - NowMemory);
-      } else if (NowMemory > (double)UNITNUMBER * 0.7) {
+              sUnitNumTotal - sUnitNumCurr);
+      } else if (sUnitNumCurr > (double)sUnitNumTotal * 0.7) {
         print("Memory use rate exceeded 70%% .remnants:%d\n",
-              UNITNUMBER - NowMemory);
+              sUnitNumTotal - sUnitNumCurr);
       }
-      memcpy(&AllocOldTime, &NowTime, sizeof(AllocOldTime));
+      memcpy(&sLastAllocTime, &NowTime, sizeof(sLastAllocTime));
     }
   }
   return ret;
 }
 void freeMemory(void *freepointer) {
-  int arrayindex;
   char *toppointer;
   toppointer = mem[0].pointer;
   if (freepointer == NULL)
     return;
-  arrayindex = (int)(((uintptr_t)freepointer - (uintptr_t)toppointer) / UNIT);
+  int arrayindex = (int)(((uintptr_t)freepointer - (uintptr_t)toppointer) / sUnitSize);
   if (arrayindex < readblock) {
     readblock = arrayindex;
   }
   mem[arrayindex].used = FALSE;
-
-  NowMemory -= mem[arrayindex].nsize;
+  sUnitNumCurr -= mem[arrayindex].nsize;
 }
 
 void showMem(char *buf) {
-  sprintf(buf, "NowMemory.remnants:%d%%",
-          ((UNITNUMBER - NowMemory) * 100) / UNITNUMBER);
+  sprintf(buf, "内存剩余比例:%d%%",
+          ((sUnitNumTotal - sUnitNumCurr) * 100) / sUnitNumTotal);
   printf("\n");
   printf(buf);
 }

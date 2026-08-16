@@ -2164,7 +2164,7 @@ BOOL CHAR_initCharArray(int pnum, int petnum, int onum) {
     return FALSE;
   }
   // andy_log
-  print("分配 %4.2f MB 空间...",
+  print("分配 %4.2f MB 空间.....",
         ((float)sizeof(Char) * CHAR_charanum) / 1024 / 1024);
 
   for (i = 0; i < CHAR_charanum; i++) {

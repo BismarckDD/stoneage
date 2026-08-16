@@ -1,6 +1,4 @@
 ﻿#include "math2.h"
-#include <math.h>
-#include <stdlib.h>
 
 constexpr int ASIN_DIV = 64;
 constexpr int ATAN_DIV = 64;
@@ -263,8 +261,6 @@ void initRand2(void) {
   }
 }
 
-#if 1
-
 int rand2(void) {
   static int r = 0;
   int ret;
@@ -274,52 +270,6 @@ int rand2(void) {
     r = 0;
   return ret;
 }
-
-#else
-
-int rand2(void) {
-  //    static int r = 0;
-  static int under25 = 0;
-  static int cnt = 0;
-  static int cnt2 = 5;
-  int ret;
-
-  ret = (rand() % 100);
-
-  //    ret = randTbl[r];
-  //    r++;
-  //    if( r >= MAX_RND2_TBL )
-  //        r = 0;
-
-  if (ret < 25) {
-    under25++;
-    if (under25 >= 4 && cnt >= cnt2) {
-      under25 = 0;
-      cnt = 0;
-      cnt2++;
-      if (cnt2 > 6)
-        cnt2 = 4;
-    } else {
-      ret = 99 - ret;
-      cnt++;
-    }
-  } else {
-    if (ret > 85 && cnt > 10) {
-      ret = 99 - ret;
-      cnt = 0;
-      cnt2++;
-      if (cnt2 > 6)
-        cnt2 = 4;
-    } else {
-      cnt++;
-    }
-    under25 = 0;
-  }
-
-  return ret;
-}
-
-#endif
 
 float pointLen(float x1, float y1, float x2, float y2) {
   float x, y;

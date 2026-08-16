@@ -5,6 +5,7 @@
     <LocalDebuggerWorkingDirectory>$(ProjectDir)..\build\$(Configuration)</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>OpenClient</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArgumentsHistory>OpenClient|</LocalDebuggerCommandArgumentsHistory>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VER25_Release|Win32'">
     <LocalDebuggerCommand>$(ProjectDir)..\build\$(Configuration)\stoneage.exe</LocalDebuggerCommand>

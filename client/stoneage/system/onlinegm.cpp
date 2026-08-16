@@ -1,5 +1,4 @@
 ﻿#include "time.h"
-#include "version.h"
 #include "systeminc/system.h"
 #include "systeminc/loadrealbin.h"
 #include "systeminc/loadsprbin.h"
@@ -408,7 +407,7 @@ int SendProblemMsg(char pid[16], char ppw[16], char pdb[] , char pinput[])
                 *pOutTmp++  =  *pInTmp;
             else
             {
-                if(*pInTmp==0x20&&(!IsDBCSLeadByte(*pInTmp)))
+                if(*pInTmp==0x20&&(!IsDBCSLeadByteEx(936, *pInTmp)))
                     *pOutTmp++  =  '+';
                 else
                 {

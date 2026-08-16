@@ -6,9 +6,11 @@
 #include <locale.h>
 
 #ifdef _WIN_LUAJIT_
+
 extern int nGroup;
 extern struct gameserver gmsv[];
 extern struct gamegroup gmgroup[];
+
 static int SetGroupMaxNum(lua_State *L) {
   const int num = luaL_checkint(L, 1);
   nGroup = num;
@@ -35,11 +37,9 @@ static int SetServerList(lua_State *L) {
   const char *ServerIP = luaL_checklstring(L, 2, &l);
   const char *ServerPort = luaL_checklstring(L, 3, &l);
   const char *ServerName = luaL_checklstring(L, 4, &l);
-
   strcpy(gmsv[id].ipaddr, ServerIP);
   strcpy(gmsv[id].port, ServerPort);
   strcpy(gmsv[id].name, ServerName);
-
   gmsv[id].used = '1';
   return 1;
 }

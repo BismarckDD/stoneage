@@ -785,7 +785,7 @@ void repairMap( void )
     nowYFastDraw2 = nowYFastDraw;
 
     //???????????????
-    if( ResoMode == 1 ){
+    if( gResolutionMode == 1 ){
         nowXFastDraw = (int)(dx/2+.5);
         nowYFastDraw = (int)(dy/2+.5);
     }

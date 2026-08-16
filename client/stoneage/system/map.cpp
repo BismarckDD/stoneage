@@ -1,10 +1,6 @@
-﻿#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <direct.h>
+﻿#include <direct.h>
 #include <math.h>
 
-#include "version.h"
 #include "systeminc/system.h"
 #include "systeminc/map.h"
 #include "game/anim_tbl.h"
@@ -755,7 +751,7 @@ void ddrawBattleMap(void)
     baseXFastDraw = (int)(dx + .5);
     baseYFastDraw = (int)(dy + .5);
     //???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         nowXFastDraw = (int)(dx / 2 + .5);
         nowYFastDraw = (int)(dy / 2 + .5);
@@ -885,7 +881,7 @@ void drawMap(void)
     baseXFastDraw = (int)(dx + .5);
     baseYFastDraw = (int)(dy + .5);
     //???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         nowXFastDraw = (int)(dx / 2 + .5);
         nowYFastDraw = (int)(dy / 2 + .5);
@@ -1128,7 +1124,7 @@ void drawMap2(void)
     nowXFastDraw2 = nowXFastDraw;
     nowYFastDraw2 = nowYFastDraw;
     //???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         nowXFastDraw = (int)(dx / 2 + .5);
         nowYFastDraw = (int)(dy / 2 + .5);
@@ -4854,7 +4850,7 @@ void mapEffectRain(void)
     MAP_EFFECT *buf;
 
     // ???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         ww >>= 1;
         hh >>= 1;
@@ -4885,7 +4881,7 @@ void mapEffectRain(void)
         else
         {
             mapEffectRainFrameMax = (mapEffectRainLevel - 2) << 2;
-            if (ResoMode == 1)
+            if (gResolutionMode == 1)
                 mapEffectRainFrameMax >>= 1;
             for (i = 0; i < mapEffectRainFrameMax; i++)
             {
@@ -4940,7 +4936,7 @@ void mapEffectSnow(void)
     MAP_EFFECT *buf;
     int i, j;
     // ???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         ww >>= 1;
         hh >>= 1;
@@ -4981,7 +4977,7 @@ void mapEffectSnow(void)
         else
         {
             mapEffectSnowFrameMax = (mapEffectSnowLevel - 2) << 1;
-            if (ResoMode == 1)
+            if (gResolutionMode == 1)
                 mapEffectSnowFrameMax >>= 1;
             for (i = 0; i < mapEffectSnowFrameMax; i++)
             {
@@ -5055,7 +5051,7 @@ void calEffectStar(MAP_EFFECT *buf)
     buf->x = (int)(mx + .5) + buf->ggx;
     buf->y = (int)(my + .5) + buf->ggy;
     //???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         buf->x >>= 1;
         buf->y >>= 1;
@@ -5623,7 +5619,7 @@ void mapEffectSnow2(int n)
     MAP_EFFECT *buf;
 
     // ???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         ww >>= 1;
         hh >>= 1;
@@ -5666,7 +5662,7 @@ void mapEffectSnow2(int n)
             else
             {
                 mapEffectSnowFrameMax = (mapEffectSnowLevel - 2) << 1;
-                if (ResoMode == 1)
+                if (gResolutionMode == 1)
                     mapEffectSnowFrameMax >>= 1;
                 for (i = 0; i < mapEffectSnowFrameMax; i++)
                 {
@@ -5731,7 +5727,7 @@ void mapEffectRain2(int n)
     MAP_EFFECT *buf;
 
     // ???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         ww >>= 1;
         hh >>= 1;
@@ -5764,7 +5760,7 @@ void mapEffectRain2(int n)
             else
             {
                 mapEffectRainFrameMax = (mapEffectRainLevel - 2) << 2;
-                if (ResoMode == 1)
+                if (gResolutionMode == 1)
                     mapEffectRainFrameMax >>= 1;
                 for (i = 0; i < mapEffectRainFrameMax; i++)
                 {
@@ -5819,7 +5815,7 @@ void mapEffectKamiFubuki(void)
     MAP_EFFECT *buf;
 
     // ???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         ww >>= 1;
         hh >>= 1;
@@ -5861,7 +5857,7 @@ void mapEffectKamiFubuki(void)
         else
         {
             mapEffectKamiFubukiFrameMax = (mapEffectKamiFubukiLevel - 2) << 1;
-            if (ResoMode == 1)
+            if (gResolutionMode == 1)
                 mapEffectKamiFubukiFrameMax >>= 1;
             for (i = 0; i < mapEffectKamiFubukiFrameMax; i++)
             {
@@ -6047,7 +6043,7 @@ void mapEffectHalloweenProc(void)
   int hosei1 = 940, hosei2 = -200, ww = DEF_APPSIZEX, hh = DEF_APPSIZEY, j;
   static unsigned int time = TimeGetTime();
   MAP_EFFECT *buf;
-  if (ResoMode == 1) {
+  if (gResolutionMode == 1) {
     ww >>= 1;
     hh >>= 1;
     hosei1 = 370;

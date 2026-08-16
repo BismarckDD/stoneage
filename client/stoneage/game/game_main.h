@@ -1,4 +1,11 @@
-#pragma once
+#ifndef __GAME_MAIN_H__
+#define __GAME_MAIN_H__
+
+#ifdef __GAME_MAIN_CPP__
+#define EXTERN
+#else
+#define EXTERN extern 
+#endif /* __GAME_MAIN_CPP__ */
 
 enum {
   GAME_LOGIN,
@@ -8,21 +15,14 @@ enum {
   GAME_BATTLE
 };
 
+EXTERN int GameState;
+EXTERN DWORD NowTime;
 
-extern int   GameState;
-extern DWORD NowTime;
+bool GameMain(void);
+bool GameInit(void);
+void GameEnd(void);
 
-
-bool GameMain( void );
-
-bool GameInit( void );
-
-void GameEnd( void );
+void DisplayFrameRate(void);
 
 
-#ifdef _STONDEBUG_
-void InfoDisp( void );
-#endif
-
-void DisplayFrameRate( void );
-
+#endif /* __GAME_MAIN_H__ */

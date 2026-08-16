@@ -79,7 +79,7 @@ int SendPhoneMsg(char pid[16], char ppw[16], char pps[], char pms[])
     int x=0,mc=0;
     do
     {
-        if(IsDBCSLeadByte(pms[x]))
+        if(IsDBCSLeadByteEx(936, pms[x]))
             x+=2;
         else
             x++;
@@ -111,7 +111,7 @@ int SendPhoneMsg(char pid[16], char ppw[16], char pps[], char pms[])
             else
             {
             //    if(isspace(*pInTmp))
-                if(*pInTmp==0x20&&(!IsDBCSLeadByte(*pInTmp)))
+                if(*pInTmp==0x20&&(!IsDBCSLeadByteEx(936, *pInTmp)))
                     *pOutTmp++  =  '+';
                 else
                 {

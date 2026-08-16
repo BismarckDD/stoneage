@@ -88,6 +88,7 @@ void SortDispBuffer( void );
 BOOL 获取动画尺寸(ACTION* a0,short* wx,short* wy);
 void PutBmp( void );
 int StockDispBuffer( int x, int y, UCHAR prio, int bmpNo, BOOL hitFlag );
+int StockDispBufferScaled( int x, int y, UCHAR prio, int bmpNo );
 #ifdef _SFUMATO
 int StockDispBuffer2( int x, int y, UCHAR dispPrio, int bmpNo, BOOL hitFlag, int sfumato/* = 0*/);
 #else

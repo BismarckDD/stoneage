@@ -48,16 +48,7 @@
 #define _ITEM_EQUITSPACE              // (可开放) ANDY 新增装备栏位
 #define _EQUIT_ARRANGE                // (可开放) ANDY 格挡
 #define _EQUIT_NEWGLOVE               // (可开放) ANDY 手套栏位
-//#define _ALCHEMIST                    // Robin 精炼功能 
-//#define _ALCHEPLUS                    // Robin 鉴定功能 
-//#define _NPC_ITEMUP                   // (可开) Change 让道具升级的NPC
-//#define _ITEM_COUNTDOWN               // cyg 道具倒数功能
-//#define _CHATROOMPROTOCOL             // (可开放) Syu ADD 聊天室频道
-//#define _FRIENDCHANNEL                // (可开放) ROG ADD 好友频道
-//#define __ONLINEGM
 #endif
-//#define _BATTLE_PK_PLAYER_FOR_40      // 40人战斗
-//#define _BATTLE_PK_PLAYER_FOR_6VS6    // 6 vs 6       XIEZI 添加
 
 #ifdef _BATTLE_PK_PLAYER_FOR_40
 #define BATTLESIDENUM 4                 // 战斗队伍数量
@@ -573,7 +564,6 @@ unsigned int TimeGetTime(void);
 #define _PETCOLOR_                    // 1级宠物变色
 #define _PETKILL_COST_FAME            // Terry 宠物技能店学技能要花费声
 #define _AIDENGLU_                    // 自动登陆
-#define _ZHENGSHIKAIFU_               // 正式开服打开
 #define _ZENGJIASHUO_                 // 增加一个锁道具的图标，同时被锁的道具不能选中
 #define _BUDING_ "554CDB1A99DF514B2F0B09DBDA0A6E9D"       //补丁加密
 #define _TIME_GET_TIME                // 用QueryPerformanceCounter取代timeGetTime
@@ -625,7 +615,7 @@ unsigned int TimeGetTime(void);
 #define _ICONBUTTONS_                // 转盘
 #define _BATTLE_TIME_  99000    
 #define _PET_2TRANS                  // (可开) Change 宠物2转
-#define _DEBUGVER_    "2.2"          //DEBUG版本号
+#define _DEBUGVER_    "0.1"          //DEBUG版本号
 #define _NEWSHOP_         //商城
 #define _SHOWPETTRN_       //显示宠物转数
 #ifdef _SA_MAC_VERSION_CONTROL
@@ -636,7 +626,7 @@ unsigned int TimeGetTime(void);
 #define _NEW_CHARDATA_                // 新人物资料
 #define _PETBLESS_                    // 宠物祝福
 #define _RIDEPET_                     // 骑宠开关
-#define DEF_APPNAME "STONEAGE"        // 游戏标题
+#define DEF_APPNAME "STONEAGE(REMAKE)"  // 游戏标题
 #define _RIDEQUERY_                   // 骑宠查询
 #define _CHAT_SPACING 24              // 聊天行距设置 20
 #define __EMOTION                     // Cary 特殊的表情，只做client
@@ -667,5 +657,5 @@ unsigned int TimeGetTime(void);
 #define EXPRESSION_NOID_START    55117 // 表情地图号起始ID
 #define EXPRESSION_NOID_END      55215 // 表情地图号结束ID
 #define EXPRESSION_NOID_NUM ( EXPRESSION_NOID_END - EXPRESSION_NOID_START )
-#define    _SUNDAY_STR_SEARCH       // SUNDAY字符串匹配算法, 比KMP速度更快的算法
+#define _SUNDAY_STR_SEARCH       // SUNDAY字符串匹配算法, 比KMP速度更快的算法
 #endif

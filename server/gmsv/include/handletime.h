@@ -19,16 +19,14 @@ EXTERN int    DEBUG_ADJUSTTIME;
 
 BOOL setNewTime(void);
 #ifdef _ASSESS_SYSEFFICACY
-void Assess_InitSysEfficacy( void);
-void Assess_SysEfficacy( int flg);
-void ASSESS_getSysEfficacy( float *TVsec);
+void Assess_InitSysEfficacy(void);
+void Assess_SysEfficacy(int flg);
+void ASSESS_getSysEfficacy(float *TVsec);
 #ifdef _ASSESS_SYSEFFICACY_SUB
-void Assess_SysEfficacy_sub( int flg, int loop);
-void ASSESS_getSysEfficacy_sub( float *TVsec, int loop);
+void Assess_SysEfficacy_sub(int flg, int loop);
+void ASSESS_getSysEfficacy_sub(float *TVsec, int loop);
 #endif
 #endif
-// WON REM
-//struct tm *localtime(const time_t *timep);
 
 /*仇仇井日票｝HiO［LS凛棉楮溢［*/
 /*    凛棉150(坌)*60=9000  =750*12 匹   LS1     */
@@ -54,7 +52,7 @@ typedef enum
 	LS_EVENING ,
 }LSTIME_SECTION;
 
-void RealTimeToLSTime(long t , LSTIME *lstime);
+void RealTimeToLSTime(long t, LSTIME *lstime);
 /*void LSTimeToRealTime( LSTIME *lstime, long *t);*/
 LSTIME_SECTION getLSTime (LSTIME *lstime);
 

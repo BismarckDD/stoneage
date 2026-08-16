@@ -239,7 +239,7 @@ void enemytemp_callback(int *line_num, const char* line) {
   ++(*line_num);
 }
 
-BOOL ENEMYTEMP_initEnemy(char *filename) {
+BOOL ENEMYTEMP_initEnemy(const char *filename) {
   char line[256];
   int enemytemp_readlen = 0;
   int i, j;
@@ -261,7 +261,7 @@ BOOL ENEMYTEMP_initEnemy(char *filename) {
   }
   int res = get_file_lines(filename, &enemytemp_readlen, enemytemp_callback);
   ENEMYTEMP_enemynum = enemytemp_readlen;
-  print("有效宠物基本状态数是 %d...", ENEMYTEMP_enemynum);
+  print("有效宠物模板数量是 %d......", ENEMYTEMP_enemynum);
   return TRUE;
 }
 
@@ -380,7 +380,7 @@ BOOL ENEMY_initEnemy(const char *filename) {
   }
   get_file_lines(filename, &enemy_readlen, enemy_callback);
   ENEMY_enemynum = enemy_readlen;
-  print("有效宠物数是 %d..", ENEMY_enemynum);
+  print("有效宠物实例数是 %d......", ENEMY_enemynum);
   return TRUE;
 }
 
@@ -442,7 +442,7 @@ int ENEMY_getEnemyTempNoFromId(int EnemyId) {
   return -1;
 }
 
-BOOL GROUP_initGroup(char *filename) {
+BOOL GROUP_initGroup(const char *filename) {
   char line[256];
   int linenum = 0;
   int group_readlen = 0;
@@ -457,11 +457,6 @@ BOOL GROUP_initGroup(char *filename) {
   GROUP_groupnum = 0;
 
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */

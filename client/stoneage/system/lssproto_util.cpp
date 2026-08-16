@@ -15,13 +15,6 @@
 long lssproto_ringoCompressor( unsigned char *code , long codelen , unsigned char *text , long textlen);
 long lssproto_ringoDecompressor( unsigned char *text , long textlen , unsigned char *code , long codelen);
 #endif
-/*
-  lsrpc routines
-*/
-// Nuke +1
-//#include <time.h>
-//char *NJT_dummy;
-//char *NJT[NJT_MAX];
 
 int lssproto_AllocateCommonWork(int bufsiz)
 {
@@ -381,7 +374,7 @@ char*  lssproto_escapeString( char*a )
     for(i=0,c=0;a[i]!='\0';i++){
         if(a[i]==-1){
             lssproto.escapework[c++]=' ';
-        }else if(IsDBCSLeadByte(a[i])){
+        }else if(IsDBCSLeadByteEx(936, a[i])){
             lssproto.escapework[c++]=a[i++];
             if(a[i]=='\0'){
                 c--;
@@ -413,7 +406,7 @@ char* lssproto_descapeString( char*a )
     lssproto.escapework[0]='\0';
     int c=0;
     for(int i=0,c=0;a[i]!='\0';i++){
-        if(IsDBCSLeadByte(a[i])){
+        if(IsDBCSLeadByteEx(936, a[i])){
             lssproto.escapework[c++]=a[i++];
             if(a[i]=='\0'){
                 c--;
@@ -1514,6 +1507,5 @@ char *lssproto_cnv10to62( int a, char *out, int outlen )
     *(out+j) = '\0';
     return( out);
 }
-
 
 /* end of generated code */

@@ -115,7 +115,7 @@ BOOL PutTileBmp( void )
                 sx = 0;
                 sy = 0;
                 //???????????????
-                if( ResoMode == 1 ){
+                if( gResolutionMode == 1 ){
                     //src.right /= 2;
                     //src.bottom /= 2;
                     src.right >>= 1;
@@ -173,7 +173,7 @@ BOOL PutTileBmp( void )
                     for(lpSurfaceInfo = SpriteInfo[ bmpNo ].lpSurfaceInfo,lpSurfaceInfoSys = SpriteInfo[bmpNo].lpSurfaceInfoSys
                     ;lpSurfaceInfo != NULL,lpSurfaceInfoSys != NULL
                     ;lpSurfaceInfo = lpSurfaceInfo->pNext,lpSurfaceInfoSys = lpSurfaceInfoSys->pNext){
-                        if(ResoMode == 1){
+                        if(gResolutionMode == 1){
                             if(DrawSurfaceFast((pDispInfo->x >> 1) + lpSurfaceInfo->offsetX,
                                 (pDispInfo->y >> 1) + lpSurfaceInfo->offsetY,
                                 lpSurfaceInfo->lpSurface,lpSurfaceInfoSys->lpSurface) == DDERR_SURFACEBUSY) SurfaceBusyFlag = TRUE;
@@ -190,7 +190,7 @@ BOOL PutTileBmp( void )
 #endif
                 {
                     for(lpSurfaceInfo = SpriteInfo[ bmpNo ].lpSurfaceInfo;lpSurfaceInfo != NULL;lpSurfaceInfo = lpSurfaceInfo->pNext ){
-                        if(ResoMode == 1){
+                        if(gResolutionMode == 1){
                             if(DrawSurfaceFast((pDispInfo->x >> 1) + lpSurfaceInfo->offsetX,
                             (pDispInfo->y >> 1) + lpSurfaceInfo->offsetY,
                             lpSurfaceInfo->lpSurface ) == DDERR_SURFACEBUSY) SurfaceBusyFlag = TRUE;
@@ -377,7 +377,7 @@ void PutBmp( void )
                     sx = 0;
                     sy = 0;
                     //???????????????
-                    if( ResoMode == 1 ){
+                    if( gResolutionMode == 1 ){
                         src.right >>= 1;
                         src.bottom >>= 1;
                     }
@@ -420,6 +420,41 @@ void PutBmp( void )
         }
         if( LoadBmp( bmpNo ) == FALSE ) continue;
         {
+            if (pDispInfo->DrawEffect == 6) {
+                RECT sourceRect;
+                RECT destinationRect;
+                destinationRect.left = 0;
+                destinationRect.top = 0;
+                destinationRect.right = lpDraw->xSize;
+                destinationRect.bottom = lpDraw->ySize;
+
+                for (lpSurfaceInfo = SpriteInfo[bmpNo].lpSurfaceInfo;
+                     lpSurfaceInfo != NULL;
+                     lpSurfaceInfo = lpSurfaceInfo->pNext) {
+                    sourceRect.left = 0;
+                    sourceRect.top = 0;
+                    sourceRect.right = min(SurfaceSizeX,
+                        SpriteInfo[bmpNo].width - lpSurfaceInfo->offsetX);
+                    sourceRect.bottom = min(SurfaceSizeY,
+                        SpriteInfo[bmpNo].height - lpSurfaceInfo->offsetY);
+
+                    destinationRect.left = lpSurfaceInfo->offsetX * lpDraw->xSize /
+                        SpriteInfo[bmpNo].width;
+                    destinationRect.top = lpSurfaceInfo->offsetY * lpDraw->ySize /
+                        SpriteInfo[bmpNo].height;
+                    destinationRect.right = (lpSurfaceInfo->offsetX + sourceRect.right) *
+                        lpDraw->xSize / SpriteInfo[bmpNo].width;
+                    destinationRect.bottom = (lpSurfaceInfo->offsetY + sourceRect.bottom) *
+                        lpDraw->ySize / SpriteInfo[bmpNo].height;
+
+                    if (lpDraw->lpBACKBUFFER->Blt(&destinationRect,
+                            lpSurfaceInfo->lpSurface, &sourceRect,
+                            DDBLT_WAIT, NULL) == DDERR_SURFACEBUSY)
+                        SurfaceBusyFlag = TRUE;
+                    lpSurfaceInfo->date = SurfaceDate;
+                }
+                continue;
+            }
             for(lpSurfaceInfo = SpriteInfo[ bmpNo ].lpSurfaceInfo;lpSurfaceInfo != NULL;lpSurfaceInfo = lpSurfaceInfo->pNext){
 #ifdef _CACHE_SURFACE_
                 DrawSurfaceFromPalette(lpSurfaceInfo);
@@ -600,6 +635,15 @@ int StockDispBuffer( int x, int y, UCHAR dispPrio, int bmpNo, BOOL hitFlag )
     pDispInfo->bmpNo = BmpNo;
     pDispInfo->pAct = NULL;
     return DispBuffer.DispCnt++;
+}
+
+// Queue an opaque sprite that is stretched to the whole back buffer.
+// This is intended for full-screen title/login backgrounds only.
+int StockDispBufferScaled( int x, int y, UCHAR dispPrio, int bmpNo )
+{
+    int id = StockDispBuffer(x, y, dispPrio, bmpNo, FALSE);
+    if (id >= 0) DispBuffer.DispInfo[id].DrawEffect = 6;
+    return id;
 }
 
 #ifdef _SFUMATO
@@ -933,7 +977,7 @@ void DrawAni()
                 for(lpSurfaceInfo = SpriteInfo[ bmpNo ].lpSurfaceInfo,lpSurfaceInfoSys = SpriteInfo[ bmpNo ].lpSurfaceInfoSys
                 ;lpSurfaceInfo != NULL,lpSurfaceInfoSys != NULL
                 ;lpSurfaceInfo = lpSurfaceInfo->pNext,lpSurfaceInfoSys = lpSurfaceInfoSys->pNext){
-                    if(ResoMode == 1){
+                    if(gResolutionMode == 1){
                         if(DrawSurfaceFast((pDispInfo->x >> 1) + lpSurfaceInfo->offsetX,(pDispInfo->y >> 1) + lpSurfaceInfo->offsetY,
                             lpSurfaceInfo->lpSurface,lpSurfaceInfoSys->lpSurface) == DDERR_SURFACEBUSY) SurfaceBusyFlag = TRUE;
                     }
@@ -949,7 +993,7 @@ void DrawAni()
 #endif
             {
                 for(lpSurfaceInfo = SpriteInfo[ bmpNo ].lpSurfaceInfo;lpSurfaceInfo != NULL;lpSurfaceInfo = lpSurfaceInfo->pNext ){
-                    if(ResoMode == 1){
+                    if(gResolutionMode == 1){
                         if(DrawSurfaceFast((pDispInfo->x >> 1) + lpSurfaceInfo->offsetX,
                         (pDispInfo->y >> 1) + lpSurfaceInfo->offsetY,
                         lpSurfaceInfo->lpSurface ) == DDERR_SURFACEBUSY) SurfaceBusyFlag = TRUE;
@@ -2926,4 +2970,3 @@ BOOL 获取动画尺寸(ACTION* a0,S2 *wx,S2* wy)
     }
     return FALSE;
 }
-

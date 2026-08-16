@@ -922,12 +922,12 @@ void DrawBitmapToSurface2(SURFACE_INFO *surface_info,LPDIRECTDRAWSURFACE lpSurfa
 #else
     bmpWidth = RealBinWidth;
 #endif
-    if(ResoMode == 1){
+    if(gResolutionMode == 1){
         pSource -= bmpWidth;
         sizeY >>= 1;
     }
     for( i = 0 ; i < sizeY ; i++ ){
-        if(ResoMode == 1){
+        if(gResolutionMode == 1){
             _asm{
                 mov        edi,[pDest]        //?????
                     mov        esi,[pSource]    //??????
@@ -1227,12 +1227,12 @@ void DrawBitmapToSurface2(SURFACE_INFO *surface_info, int offsetX, int offsetY, 
 #else
     bmpWidth = RealBinWidth;
 #endif
-    if (ResoMode == 1){
+    if (gResolutionMode == 1){
         pSource -= bmpWidth;
         sizeY >>= 1;
     }
     for (i = 0; i < sizeY; i++){
-        if (ResoMode == 1){
+        if (gResolutionMode == 1){
             _asm{
                 mov        edi, [pDest]
                     mov        esi, [pSource]
@@ -1372,12 +1372,12 @@ void DrawBitmapToSurface2(SURFACE_INFO *surface_info, int offsetX, int offsetY, 
 #else
     bmpWidth = RealBinWidth;
 #endif
-    if(ResoMode == 1){
+    if(gResolutionMode == 1){
         pSource -= bmpWidth;
         sizeY >>= 1;
     }
     for( i = 0 ; i < sizeY ; i++ ){
-        if(ResoMode == 1){
+        if(gResolutionMode == 1){
             _asm{
                 mov        edi,[pDest]
                     mov        esi,[pSource]
@@ -1521,7 +1521,7 @@ void DrawBox(RECT *rect, unsigned char color, BOOL fill)
     short pixel;        // 16BitColor????
 
     //???????????????
-    if (ResoMode == 1){
+    if (gResolutionMode == 1){
         rect->top = (rect->top >> 1) - 1;
         rect->left = (rect->left >> 1) - 1;
         rect->right = (rect->right >> 1) + 1;
@@ -1938,7 +1938,7 @@ void DrawAutoMapping(int x, int y, unsigned char *autoMap, int w, int h)
     mul = 1;
 
     //???????????????
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         x = x / 2;
         y = y / 2;
@@ -2143,7 +2143,7 @@ void DrawMapEffect(void)
     ww = DEF_APPSIZEX;
     hh = DEF_APPSIZEY;
     //???????????????
-    if (ResoMode == 1){
+    if (gResolutionMode == 1){
         ww >>= 1;
         hh >>= 1;
     }
@@ -2603,7 +2603,7 @@ void DrawDebugLine(unsigned char color)
     k = lpDraw->ySize;
     l = 8;
     //???????????????
-    if (ResoMode == 1){
+    if (gResolutionMode == 1){
         j >>= 1;
         k >>= 1;
         l >>= 1;
@@ -2975,25 +2975,13 @@ void InitFont(int fontNo)
     //宋体
     //char *fontName[] = { "Microsoft JhengHei","楷体_GB2312" };
 #ifdef _NEWFONT_
-    extern int ansi_encoding;
     char fontName[2][128];
-    if(ansi_encoding==950){
-        sprintf(fontName[0],"Microsoft JhengHei");
-        sprintf(fontName[1],"Microsoft JhengHei");
-    }else{
-        sprintf(fontName[0],"Microsoft JhengHei");
-        sprintf(fontName[1],"Microsoft JhengHei");
-    }
+    sprintf(fontName[0],"Microsoft JhengHei");
+    sprintf(fontName[1],"Microsoft JhengHei");
 #else
-    extern int ansi_encoding;
     char fontName[2][128];
-    if(ansi_encoding==950){
-        sprintf(fontName[0],"Microsoft JhengHei");
-        sprintf(fontName[1],"Microsoft JhengHei");
-    }else{
-        sprintf(fontName[0],"宋体");
-        sprintf(fontName[1],"楷体_GB2312");
-    }
+    sprintf(fontName[0],"宋体");
+    sprintf(fontName[1],"楷体_GB2312");
 
     //char *fontName[] = { "宋体", "楷体_GB2312" };
 #endif
@@ -3004,7 +2992,7 @@ void InitFont(int fontNo)
     }
 
     //???????????????
-    if (ResoMode == 1){
+    if (gResolutionMode == 1){
         // MS??????????????????????
         hFont = CreateFont(
 #ifdef _NEWFONT_
@@ -3040,24 +3028,13 @@ void InitFont(int fontNo)
     else {
 #ifdef _NEWFONT_
         char strfame[128];
-        if(ansi_encoding==950){
-            sprintf(strfame,"Microsoft JhengHei");
-        }else{
-            sprintf(strfame,"Microsoft JhengHei");
-        }
+        sprintf(strfame,"Microsoft JhengHei");
         hFont = CreateFont(FONT_SIZE1,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,1,
             0,0,0,17,(LPCTSTR)strfame
             );
 #else
 
-        char strfame[128];
-        if(ansi_encoding==950){
-            sprintf(strfame,"Microsoft JhengHei");
-            hFont = CreateFont(FONT_SIZE2,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,1,
-            0,0,0,17,(LPCTSTR)strfame
-            );
-        }else{
-            hFont = CreateFont(
+        hFont = CreateFont(
             FONT_SIZE1,
             0,
             0,
@@ -3073,7 +3050,6 @@ void InitFont(int fontNo)
             FIXED_PITCH |
             FF_ROMAN,
             fontName[fontNo]);
-        }
 #endif
     }
 }
@@ -3124,7 +3100,7 @@ void PutText(char fontPrio)
 #endif
     for (i = 0; i < FontCnt; i++){
         if (FontBuffer[i].fontPrio == fontPrio){
-            if (ResoMode == 1){
+            if (gResolutionMode == 1){
                 TextOut(hDc, FontBuffer[i].x / 2 + 1, FontBuffer[i].y / 2 + 1, FontBuffer[i].str, (int)strlen(FontBuffer[i].str));
             }
             else {
@@ -3276,7 +3252,7 @@ void PutText(char fontPrio)
                         colorFlag = TRUE;
                     }
                     //???????????????
-                    if (ResoMode == 1){
+                    if (gResolutionMode == 1){
                         // ?????????
                         TextOut(hDc, FontBuffer[i].x >> 1, FontBuffer[i].y >> 1, FontBuffer[i].str, (int)strlen(FontBuffer[i].str));
                     }
@@ -3504,7 +3480,7 @@ void snapShot(void)
         return;
     }
 
-    if (ResoMode == 1)
+    if (gResolutionMode == 1)
     {
         w = 320;
         h = 240;
@@ -3993,26 +3969,13 @@ HFONT CreateNewFont(int size) {
 
 #ifdef _NEWFONT_
         char strfame[128];
-        extern int ansi_encoding;
-        if(ansi_encoding==950){
-            sprintf(strfame,"Microsoft JhengHei");
-        }else{
-            sprintf(strfame,"Microsoft JhengHei");
-        }
+        sprintf(strfame,"Microsoft JhengHei");
      
         return CreateFont(size,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,1,
             0,0,0,17,(LPCTSTR)strfame);
 #else
-        char strfame[128];
-        extern int ansi_encoding;
-        if(ansi_encoding==950){
-            sprintf(strfame,"Microsoft JhengHei");
-            return CreateFont(size,0,0,0,FW_NORMAL,FALSE,FALSE,FALSE,1,
-            0,0,0,17,(LPCTSTR)strfame);
-        }else{
-            return CreateFont(size,0,0,0,400,FALSE,FALSE,FALSE,134,
+            return CreateFont(size,0,0,0,400,FALSE,FALSE,FALSE,GB2312_CHARSET,
             OUT_DEFAULT_PRECIS,CLIP_DEFAULT_PRECIS,DEFAULT_QUALITY,FIXED_PITCH|FF_ROMAN,(LPCTSTR)"宋体");
-        }
 
 #endif        
 }

@@ -1,8 +1,7 @@
-﻿#include <stdio.h>
-#include <winsock.h>
+﻿#include <winsock.h>
 #include <time.h>
 #include <tchar.h>
-#include "version.h"
+#include "systeminc/text_encoding.h"
 #include "systeminc/system.h"
 #include "systeminc/netmain.h"
 #include "systeminc/netproc.h"
@@ -596,13 +595,12 @@ int connectServer(void)
             CopyMemory(userPassword, szPassword, 32);
             ecb_crypt("f;encor1c", userPassword, 32, DES_DECRYPT);
 
-            extern char 机器数据[];
             unsigned char tmp[16];
             CHAR mac[64];
             MD5_CTX_ENCRYPT md5Context;
             MD5Init(&md5Context);
-            MD5Update(&md5Context, (unsigned char*)机器数据,
-                      (unsigned int)strlen(机器数据));
+            MD5Update(&md5Context, (unsigned char*)gMachineData, 
+                      (unsigned int)strlen(gMachineData));
             MD5Final(tmp, &md5Context);
             size_t leng = 0;
             for (int i = 0; i < 16; i ++)
@@ -698,7 +696,7 @@ void charListStart(void)
 {
     int i;
 
-    for (i = 0; i < MAXCHARACTER; i++)
+    for (i = 0; i < MAX_CHARACTER; i++)
         resetCharacterList(i);
 #ifdef _MORECHARACTERS_
     extern int 多人物当前页数;
@@ -769,7 +767,7 @@ void lssproto_CharList_recv(int fd, char *result, char *data)
             return;
         }
         charListStatus = 1;
-        for (i = 0; i < MAXCHARACTER; i++)
+        for (i = 0; i < MAX_CHARACTER; i++)
         {
             strcpy(nm, "");
             strcpy(opt, "");
@@ -1240,22 +1238,8 @@ void lssproto_S_recv(int fd, char *data)
                 extern int nServerGroup;
                 sprintf_s( title, "%s %s [%s] %s", DEF_APPNAME, gmgroup[nServerGroup].name, gmsv[selectServerIndex].name,pc.name );
 
-                extern int use_big5;    
-                if(use_big5){
-                    char 繁体[1024]={0};
-                    LCMapString (0x804,0x4000000,title, strlen(title),繁体,1024);
-                    sprintf(title,"%s",繁体);
-                }
-
 #endif
-                extern int ansi_encoding;
-                extern char* GB2312ToBIG5(const char* szGBString);
-                if(ansi_encoding==950){
-                    SetWindowText( hWnd, GB2312ToBIG5((const char *)title));
-                }else{
-
-                    SetWindowText(hWnd,title);
-                }
+                SetWindowTextGbk(hWnd, title);
             }
             if (!bNewServer)
                 pc.ridePetNo = -1;
