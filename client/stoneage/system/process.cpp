@@ -155,6 +155,18 @@ void Process(void) {
   case PROC_ENDING:
     break;
   }
+
+  // Keep the client-space mouse coordinates visible in every interactive scene.
+  // A fixed position is easier to read and does not interfere with hit testing.
+  if (lpDraw != NULL && ProcNo != PROC_INIT) {
+    char mousePosition[64];
+    sprintf_s(mousePosition, "Mouse: (%d, %d)", mouse.nowPoint.x,
+              mouse.nowPoint.y);
+    StockFontBuffer(8, 8, FONT_PRIO_FRONT, FONT_PAL_YELLOW, mousePosition, 0);
+    char ProcNoStr[64];
+    sprintf_s(ProcNoStr, "ProcNo: %d", ProcNo);
+    StockFontBuffer(8, 24, FONT_PRIO_FRONT, FONT_PAL_YELLOW, ProcNoStr, 0);
+  }
 }
 
 void ChangeProc(int procNo) {

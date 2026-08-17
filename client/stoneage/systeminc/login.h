@@ -125,7 +125,7 @@ enum
 #define WINDOW_BUTTONTYPE_PRE       (1 << 4)
 #define WINDOW_BUTTONTYPE_NEXT      (1 << 5)
 
-#define MAX_GMGROUP 19
+#define MAX_GMGROUP 20
 #define MAX_GMSV    150
 
 extern BOOL logOutFlag;

@@ -1,5 +1,4 @@
-﻿#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "winlua.h"
 #include "systeminc/character.h"
 #include "systeminc/tool.h"
@@ -10,8 +9,6 @@
 #include "systeminc/netmain.h"
 #include "sdk/caryime.h"
 #include "oft/work.h"
-#include <locale.h>
-#include <io.h>
 
 #ifdef _WIN_LUAJIT_
 extern int cloasewindows;

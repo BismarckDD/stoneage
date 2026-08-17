@@ -1,6 +1,4 @@
-﻿/* menu.cpp 档案太大了,新功能写在这 */
-#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "systeminc/font.h"
 #include "sdk/caryime.h"
 #include "game/anim_tbl.h"

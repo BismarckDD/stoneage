@@ -1,17 +1,26 @@
 ﻿#pragma once
 
-/**** SYSTEM INCLUDE ****/
-#include <io.h>
+/**** C INCLUDE ****/
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
+#include <ctime>
 
+/**** CPP INCLUDE ****/
+#include <string>
+
+/**** WIN32 INCLUDE ****/
 #ifdef _WIN32
 #include <windows.h>
 #include <windowsx.h>
+#include <io.h>
+#include <ime.h>  /* WIN输入法 */
+#include <imm.h>  /* WIN输入法管理器*/
+#include <direct.h>
+#include <winnls32.h>  /* 还是输入法 */
+#include <tlhelp32.h>  /* TOOL HELPER*/
 #endif
-
 
 /**** USER INCLUDE ****/
 #include "version.h"

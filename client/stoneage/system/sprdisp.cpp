@@ -1,5 +1,4 @@
-﻿#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "systeminc/loadrealbin.h"
 #include "systeminc/loadsprbin.h"
 #include "game/anim_tbl.h"

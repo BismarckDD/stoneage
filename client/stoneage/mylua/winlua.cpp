@@ -1,13 +1,15 @@
-﻿#include "../systeminc/system.h"
-#include "../newproto/autil.h"
-#include "../systeminc/action.h"
-#include "../wgs/tea.h"
+﻿#include "systeminc/system.h"
+#include "newproto/autil.h"
+#include "systeminc/action.h"
+#include "wgs/tea.h"
 #include "winlua.h"
 #include <io.h>
 #include <locale.h>
+
 #ifdef _WIN_LUAJIT_
 static const char *progname = "lua";
-MY_Lua MYLua;
+static SaLua sSaLua;
+
 lua_State *FindWinIntLua(int wintype, char *data) {
   lua_State *lua = NULL;
   if (lua == NULL) {
@@ -192,7 +194,7 @@ int decryptLUA(lua_State *L, char *filename) {
 }
 
 int myluaload(char *filename) {
-  MY_Lua *salua = &MYLua;
+  SaLua *salua = &sSaLua;
   while (salua->next != NULL) {
     if (strcmp(salua->luapath, filename) == 0) {
       return FALSE;
@@ -202,8 +204,8 @@ int myluaload(char *filename) {
   salua->luapath = new char[strlen(filename) + 1];
   memset(salua->luapath, 0, strlen(filename) + 1);
   strcpy(salua->luapath, filename);
-  salua->next = (tagMYLua *)new MY_Lua;
-  memset(salua->next, 0, sizeof(MY_Lua));
+  salua->next = new SaLua;
+  memset(salua->next, 0, sizeof(SaLua));
   if (salua->next == NULL)
     return EXIT_FAILURE;
 
@@ -215,7 +217,7 @@ int myluaload(char *filename) {
   luaL_openlibs(salua->lua);
   luaAB_openlibs(salua->lua);
   lua_gc(salua->lua, LUA_GCRESTART, 0);
-#ifdef _RELUA_
+#if 1
   int re = dofile(salua->lua, filename);
   if (re != 0) {
     printf("文件：%s 错误提示：%s 行数：%d\n", filename,
@@ -242,8 +244,7 @@ int myluaload(char *filename) {
 }
 
 int remyluaload(char *filename) {
-  MY_Lua *salua = &MYLua;
-
+  SaLua *salua = &sSaLua;
   while (salua->next != NULL) {
     if (strlen(salua->luapath) > 0) {
       if (strlen(filename) > 0) {
@@ -267,49 +268,43 @@ int remyluaload(char *filename) {
   return EXIT_SUCCESS;
 }
 
-int closemyluaload() {
-  MY_Lua *salua = &MYLua;
+int CloseSaLua() {
+  SaLua *salua = &sSaLua;
   while (salua->next != NULL) {
     lua_pop(salua->lua, 1);
     lua_close(salua->lua);
     salua = salua->next;
   }
-
   return EXIT_SUCCESS;
 }
 
-void LoadStoneAgeLUA(char *path) {
-  char filename[256];
-
+void LoadStoneAgeLUA(const char *dirpath) {
+  char basepath[256];
+  lstrcpy(basepath, dirpath);
+  lstrcat(basepath, "/");
+  lstrcat(basepath, "*.*"); // 找所有文件
   WIN32_FIND_DATA wfd;
-  HANDLE hFind;
-  lstrcpy(filename, path);
-  lstrcat(filename, "/");
-  lstrcat(filename, "*.*"); // 找所有文件
-
-  hFind = FindFirstFile(filename, &wfd);
+  HANDLE hFind = FindFirstFile(basepath, &wfd);
   if (hFind == INVALID_HANDLE_VALUE) // 如果没有找到或查找失败
     return;
   do {
-
     if (wfd.cFileName[0] == '.')
-      continue; // 过滤这两个目录
+      continue; // 过滤.和..这两个目录
     if (wfd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY) {
-      sprintf_s(filename, "%s//%s", path, wfd.cFileName);
-      LoadStoneAgeLUA(filename);
+      sprintf_s(basepath, "%s//%s", dirpath, wfd.cFileName);
+      LoadStoneAgeLUA(basepath);
     } else {
 #ifdef _RELUA_
       if (strcmptail(wfd.cFileName, ".lua") == 0)
 #else
 #ifdef _SA_VERSION_25
       if (strcmptail(wfd.cFileName, "es") == 0)
-#endif
-
-#endif
+#endif // _SA_VERSION_25
+#endif // _RELUA_
       {
         char filename[256];
         memset(filename, 0, 256);
-        sprintf_s(filename, "%s//%s", path, wfd.cFileName);
+        sprintf_s(filename, "%s//%s", dirpath, wfd.cFileName);
         myluaload(filename);
       }
     }
@@ -330,7 +325,7 @@ void NewLoadStoneAgeLUA(char *filename) {
 }
 
 lua_State *FindLua(char *filename) {
-  MY_Lua *salua = &MYLua;
+  SaLua *salua = &sSaLua;
   char newfilename[256];
   sprintf_s(newfilename, "%s", filename);
   while (salua->next != NULL) {

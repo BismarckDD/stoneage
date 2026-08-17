@@ -5,6 +5,7 @@
 #include <crtdbg.h>
 #endif
 
+#define _SA_VERSION_25
 
 #ifdef _SA_VERSION_SPECIAL
 #define _SA_VERSION_60

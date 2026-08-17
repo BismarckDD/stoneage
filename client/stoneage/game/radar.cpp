@@ -557,7 +557,6 @@ int radar2(ACTION *pAct, int x, int y, int cnt) {
       }
     }
   }
-  // ????????
   pAct->dirCnt++;
   if (pAct->dirCnt >= cnt)
     pAct->dirCnt = 0;

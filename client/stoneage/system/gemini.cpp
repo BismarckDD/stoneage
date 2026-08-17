@@ -1,10 +1,6 @@
-﻿//#include     "main.h"
-//#include     "action.h"
-#include "version.h"
-#include     "../systeminc/system.h"
-
-#include    "../oft/vg410.h"
-#include    "../oft/work.h"
+﻿#include "systeminc/system.h"
+#include "oft/vg410.h"
+#include "oft/work.h"
 
 Sint16 DELTA_TBL[]={
 /*SPEED = 1*/
@@ -581,16 +577,6 @@ Sint16 DELTA_TBL[]={
 *            DELTA DATA MOVING            *
 *                                        *
 ****************************************/
-
-/*    ENT    :   ATR_SPD(A0)
-*            ATR_CRS(A0)
-
-*    EXT    :   d1.w:??火?去?
-*        :   d2.w:??火?去?
-
-*    DESTORY    :   D0,D1,D2,D3,D4
-*            A1,A6
-*/
 
 void gemini(ACTION *a0)
 {

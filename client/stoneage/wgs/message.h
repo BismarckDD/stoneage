@@ -160,7 +160,4 @@ void testtest();
 LPTSTR O_WGS_Format();
 #endif
 DWORD GetCafeNumber();
-#ifdef NO_WGS
-void SetTestServer();
-#endif
 #endif

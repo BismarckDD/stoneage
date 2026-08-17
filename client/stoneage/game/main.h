@@ -9,6 +9,7 @@
 
 #include "version.h"
 #include "systeminc/netmain.h"
+#include "systeminc/login.h"
 
 LRESULT CALLBACK PASCAL WindMsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 BOOL SystemTask(void);
@@ -60,8 +61,8 @@ EXTERN char sprAdrnBinName[BIN_NAME_LEN];
 EXTERN char realtrueBinName[BIN_NAME_LEN];
 EXTERN char adrntrueBinName[BIN_NAME_LEN];
 #endif
-EXTERN struct gameserver gmsv[];
-EXTERN struct gamegroup gmgroup[];
+EXTERN GameServer gmsv[MAX_GMSV];
+EXTERN GameGroup gmgroup[MAX_GMGROUP];
 
 #ifdef __MAIN_CPP__
 BOOL offlineFlag = FALSE;

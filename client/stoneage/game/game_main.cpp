@@ -24,13 +24,12 @@
 #include "NewProto/autil.h"
 #include "NewProto/protocol.h"
 #include "systeminc/field.h"
-#include <tlhelp32.h>
+#include "mylua/winlua.h"
 #ifdef _OPTIMIZATIONFLIP_
 #include <thread> 
 #include <chrono>
 #endif
 #ifdef _CMD_MODE
-#include <io.h>
 #include <fcntl.h>
 #endif
 #ifdef _REMAKE_20
@@ -964,9 +963,8 @@ bool GameInit(void)
 #endif
 
 #ifdef _WIN_LUAJIT_
-    memset(gmsv, 0, sizeof(gameserver)*MAX_GMSV);
-    memset(gmgroup, 0, sizeof(gamegroup)*MAX_GMGROUP);
-    extern void LoadStoneAgeLUA(char *path);
+    memset(gmsv, 0, sizeof(GameServer)*MAX_GMSV);
+    memset(gmgroup, 0, sizeof(GameGroup)*MAX_GMGROUP);
     LoadStoneAgeLUA(_LUA_PATCH_);
 #endif
     InitAction();

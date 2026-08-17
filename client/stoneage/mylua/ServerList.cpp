@@ -8,8 +8,8 @@
 #ifdef _WIN_LUAJIT_
 
 extern int nGroup;
-extern struct gameserver gmsv[];
-extern struct gamegroup gmgroup[];
+extern struct GameServer gmsv[];
+extern struct GameGroup gmgroup[];
 
 static int SetGroupMaxNum(lua_State *L) {
   const int num = luaL_checkint(L, 1);

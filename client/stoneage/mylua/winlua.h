@@ -3,14 +3,13 @@ extern "C" {
   #include "lua/lua.h"
   #include "lua/lualib.h"
 }
-#include <stdio.h>
-#include <stdlib.h>
 
 #ifdef _WIN_LUAJIT_
+
 int myluaload(char *filename);
 int remyluaload(char *filename);
-void LoadStoneAgeLUA(char *path);
-int closemyluaload();
+void LoadStoneAgeLUA(const char *path);
+int CloseSaLua();
 int dofile(lua_State *L, const char *name);
 int docall(lua_State *L, int narg, int clear);
 int getArrayInt(lua_State *L, int idx);
@@ -27,11 +26,11 @@ ACTION *FreeServerWinTypeLua(lua_State *lua);
 void ReLoadStoneAgeLUA(char *filename);
 void LC_LUA_ITEM_DIRECTIONS(int x, int y, char *name, int iamge);
 
-typedef struct tagMYLua {
+struct SaLua {
   lua_State *lua;
   char *luapath;
-  struct tagMYLua *next;
-} MY_Lua;
+  SaLua *next;
+};
 
 LUALIB_API int luaopen_Win(lua_State *L);
 LUALIB_API int luaopen_ServerList(lua_State *L);
@@ -40,4 +39,5 @@ LUALIB_API int luaopen_Lssproto(lua_State *L);
 LUALIB_API int luaopen_Data(lua_State *L);
 int FreeGetBattleMap(int floor);
 int CheckPlayOnLine(int index, char *account, char *mac);
-#endif
+
+#endif // 

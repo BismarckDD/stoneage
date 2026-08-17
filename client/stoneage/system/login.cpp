@@ -143,8 +143,10 @@ STR_BUFFER *idPasswordStr = &idKey;
 short idKeyReturn = 0;
 static int idPasswordGraId[] = {-2, -2};
 static int idPasswordFocusSw = 0;
-static short idKeyBoxX, idKeyBoxY;
-static short passwdBoxX, passwdBoxY;
+static short usernameBoxX, usernameBoxY;
+static short passwordBoxX, passwordBoxY;
+static short OkButtonX, OkButtonY;
+static short QuitButtonX, QuitButtonY;
 BOOL bAgain = FALSE;
 #ifdef _DELBORNPLACE // Syu ADD 6.0版本后，人物统一出生于新手村
 static ACTION *pActPet20;
@@ -348,28 +350,21 @@ void initInputIdPassword(void)
 {
     for (int i = 0; i < sizeof(idPasswordGraId) / sizeof(int); i++)
         idPasswordGraId[i] = -2;
-    // 以下坐标以 800x600 登录背景为基准；文字缓冲区的坐标就是实际文字起点。
-    idKeyBoxX = 364;
-    idKeyBoxY = 253;
-    initStrBuffer(&idKey, idKeyBoxX, idKeyBoxY, 18, FONT_PAL_WHITE, FONT_PRIO_BACK);
+    // 以下坐标以 640 * 480 登录背景为基准；StrBuffer的坐标就是实际文字起点。
+    usernameBoxX = 372;
+    usernameBoxY = 95;
+    initStrBuffer(&idKey, usernameBoxX, usernameBoxY, 18, FONT_PAL_WHITE, FONT_PRIO_BACK);
     idKey.cnt = 0;
     idKey.cursor = 0;
-    passwdBoxX = 364;
-    passwdBoxY = 286;
-    initStrBuffer(&passwd, passwdBoxX, passwdBoxY, 18, FONT_PAL_WHITE, FONT_PRIO_BACK);
+    passwordBoxX = 372;
+    passwordBoxY = 135;
+    initStrBuffer(&passwd, passwordBoxX, passwordBoxY, 18, FONT_PAL_WHITE, FONT_PRIO_BACK);
     passwd.cnt = 0;
     passwd.cursor = 0;
     // 普通模式使用掩码显示密码，避免明文直接出现在画面上。
     passwd.filterFlag = BLIND_TYPE;
     idPasswordFocusSw = 0;
     GetKeyInputFocus(idPasswordFocus[idPasswordFocusSw]);
-#ifdef _75_LOGIN
-    if (g_bUseAlpha)
-    {
-        aEffect = MakeAnimDisp(300, 244, 101817, 0);
-        aEffect1 = MakeAnimDisp(300, 244, 101818, 0);
-    }
-#endif
 }
 
 int inputIdPassword(BOOL flag)
@@ -386,47 +381,38 @@ int inputIdPassword(BOOL flag)
     {
         if (strlen(idKey.buffer) > 0 && strlen(passwd.buffer) > 0)
         {
-
-            // 按下OK后要求DLL传回真正的密码
-#ifdef _SAHOOK // Syu ADD Hook程式
-            keyboardHook_Send(passwd.buffer);
-            passwd.cnt = strlen(passwd.buffer);
-            passwd.buffer[passwd.cnt] = '\0';
-#else
             idKey.buffer[idKey.cnt] = '\0';
             passwd.buffer[passwd.cnt] = '\0';
-#endif
             ret = 1;
         }
         else
-        {
             ret = -1;
-        }
     }
     else if (id == 1)
-    {
         ret = 2;
-    }
     selOkFlag = flag ? 2 : 0;
 
     // 将账号和密码文本加入本帧文字绘制队列。
     StockFontBuffer2(&idKey);
     StockFontBuffer2(&passwd);
+    // id == 0: usernameBox
+    // id == 1: passwordBox
     id = -1;
-
     if (selOkFlag)
     {
         // 输入框命中区域：点击账号框或密码框时切换键盘输入焦点。
-        if (MakeHitBox(x1, y1, x2, y2, DISP_PRIO_BOX))
-        {
-            id = 0;
-        }
-        x1 = passwdBoxX - 4 - 2;
-        y1 = passwdBoxY - 2 - 1;
-        if (MakeHitBox(x1, y1, x2, y2, DISP_PRIO_BOX))
-        {
-            id = 1;
-        }
+        x1 = usernameBoxX - 6;
+        y1 = usernameBoxY - 3;
+        x2 = x1 + 140;
+        y2 = y1 + 26;
+        // 在页面上画出BOX的UI,且将usernameBox画出来
+        if (MakeHitBox(x1, y1, x2, y2, DISP_PRIO_BOX)) id = 0;
+        x1 = passwordBoxX - 6;
+        y1 = passwordBoxY - 3;
+        x2 = x1 + 140;
+        y2 = y1 + 26;
+        // 在页面上画出BOX的UI,且将passwordBox画出来
+        if (MakeHitBox(x1, y1, x2, y2, DISP_PRIO_BOX)) id = 1;
     }
     if (idKeyReturn)
     {
@@ -438,15 +424,10 @@ int inputIdPassword(BOOL flag)
     if (joy_trg[1] & JOY_TAB)
     {
         if (oldId == 0)
-        {
             id = 1;
-        }
         else if (oldId == 1)
-        {
             id = 0;
-        }
     }
-
     if (!flag)
     {
         GetKeyInputFocus(NULL);
@@ -456,63 +437,37 @@ int inputIdPassword(BOOL flag)
     {
         if (flag2)
             id = oldId;
-        // Hook程式启动关闭与星号处理
-#ifdef _SAHOOK // Syu ADD Hook程式
-        if ((id == 1) && (hookflag == false))
-        {
-            hookflag = true;
-            KeyboardHook_Start(hWnd, UM_KEYEVENT);
-        }
-        else if ((id == 0) && (hookflag == true))
-        {
-            hookflag = false;
-            KeyboardHook_Stop();
-            extern int HOOK_PASSWD_NUM;
-            HOOK_PASSWD_NUM = 0;
-        }
-#endif
         GetKeyInputFocus(idPasswordFocus[id]);
         flag2 = FALSE;
         oldId = id;
     }
-#ifdef _NEW_WIN_POS_
-#ifdef _SA_VERSION_25
-    // OK 按钮的鼠标区域，以及按下状态图片的绘制中心。
-    x1 = 300;
-    y1 = 320;
-    x2 = x1 + 85;
-    y2 = y1 + 30;
-    cx = 343;
-    cy = 337;
-#endif
 
-#endif
+    // 请注意cx/cy的作用！！！2026.08.16
+    // OK 按钮的鼠标区域，以及按下状态图片的绘制中心。
+    x1 = 320;
+    y1 = 220;
+    x2 = x1 + 60;
+    y2 = y1 + 120;
+    cx = 320;
+    cy = 240;
     if (MakeHitBox(x1, y1, x2, y2, -1) && selOkFlag)
         idPasswordGraId[0] = StockDispBuffer(cx, cy, DISP_PRIO_BG, CG_TITLE_ID_PASS_OK, 1);
     else
         idPasswordGraId[0] = -2;
-#ifdef _SA_VERSION_25
     // QUIT 按钮的鼠标区域，以及按下状态图片的绘制中心。
-    x1 = 415;
-    y1 = 320;
-    x2 = x1 + 85;
-    y2 = y1 + 30;
-    cx = 459;
-    cy = 338;
+    x1 = 420;
+    y1 = 230;
+    x2 = x1 + 60;
+    y2 = y1 + 130;
+    cx = 320;
+    cy = 240;
     if (MakeHitBox(x1, y1, x2, y2, -1) && selOkFlag)
         idPasswordGraId[1] = StockDispBuffer(cx, cy, DISP_PRIO_BG, CG_TITLE_ID_PASS_QUIT, 1);
     else
-#endif
-
         idPasswordGraId[1] = -2;
-#ifdef __SKYISLAND
-#ifdef _NEW_WIN_POS_
+
     // 登录面板背景最后以最低优先级加入队列，按钮和文字会绘制在它上面。
     StockDispBufferScaled(SCREEN_WIDTH_CENTER, SCREEN_HEIGHT_CENTER, DISP_PRIO_BG, CG_TITLE_ID_PASS);
-#else
-    StockDispBuffer(320, 240, DISP_PRIO_BG, CG_TITLE_ID_PASS, 0);
-#endif
-#endif
     return ret;
 }
 
@@ -660,7 +615,7 @@ int focusFontId(int *id, int cnt)
 static short userCertifyErrorMsgWinProcNo = 0;
 
 extern char szAnnouncement[];
-extern struct gamegroup gmgroup[];
+extern struct GameGroup gmgroup[];
 
 void titleProc(void)
 {
@@ -1203,9 +1158,6 @@ int connecGameServer(void)
 }
 
 ///////////////////////////////////////////////////////////////////////////
-//
-// ???????????
-//
 // cary 十二、加入saac的错误讯息
 void selectCharacterProc(void)
 {
@@ -1215,24 +1167,6 @@ void selectCharacterProc(void)
     int x;
     static char msg[256];
     static int btnGraId[] = {-2, -2, -2, -2, -2, -2, -2};
-#ifdef _PKSERVERCHARSEL // (不可开) Syu ADD PK服务器选择星系人物
-    static int PkBtn[1] = {-2};
-    int x3, y3;
-    char ServerName[13][32] = {
-        {"预设"},
-        {"天鹰　　　"},
-        {"网路家庭　"},
-        {"圣兽　　　"},
-        {"星乐园　　"},
-        {"银河系　　"},
-        {"太阳　　　"},
-        {"北斗　　　"},
-        {"天神　　　"},
-        {"紫微　　　"},
-        {"苍龙　　　"},
-        {"香港地区　"},
-        {"香港新界　"}};
-#endif
     int btnUseFlag = 0;
     int attrColor[4][2] =
         {
@@ -1247,10 +1181,8 @@ void selectCharacterProc(void)
     if (SubProcNo == 0)
     {
         SubProcNo++;
-
         initDownloadCharList();
     }
-    // ??????????
     if (SubProcNo == 1)
     {
         ret = downloadCharList();
@@ -1259,167 +1191,31 @@ void selectCharacterProc(void)
             SubProcNo = 10;
             play_bgm(2);
         }
-        else if (ret == -1)
+        else if (ret <= -1 && ret >= -13)
         {
             SubProcNo = 100;
             cleanupNetwork();
             strcpy(msg, 登陆错误内容);
         }
-        else if (ret == -2)
+        else if (ret <= -101 && ret >= -105)
         {
             SubProcNo = 100;
             cleanupNetwork();
             strcpy(msg, 登陆错误内容);
         }
-        else if (ret == -3)
+        else if (ret <= -201 && ret >= -205)
         {
             SubProcNo = 100;
             cleanupNetwork();
             strcpy(msg, 登陆错误内容);
         }
-        else if (ret == -4)
+        else if (ret <= -301 && ret >= -304)
         {
             SubProcNo = 100;
             cleanupNetwork();
             strcpy(msg, 登陆错误内容);
         }
-        else if (ret == -5)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -6)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -7)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -8)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -9)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -10)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容 /*"系统忙线中，请稍候再试！"*/);
-        }
-        else if (ret == -11)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-#ifdef _CHANGEGALAXY
-        else if (ret == -12)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-#endif
-#ifdef _ERROR301
-        else if (ret == -13)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-#endif
-        else if (ret == -101)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -102)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -103)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -201)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -202)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -203)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -204)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -205)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -301)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -302)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -303)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -304)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -401)
-        {
-            SubProcNo = 100;
-            cleanupNetwork();
-            strcpy(msg, 登陆错误内容);
-        }
-        else if (ret == -402)
+        else if (ret <= -401 && ret >= -402)
         {
             SubProcNo = 100;
             cleanupNetwork();
@@ -1439,35 +1235,20 @@ void selectCharacterProc(void)
     {
         btnUseFlag = 2;
     }
-
-    // ???????
     if (SubProcNo == 20)
     {
         // cary 按下删除人物后
-#ifdef _PKSERVERCHARSEL // (不可开) Syu ADD PK服务器选择星系人物
-        PkMenuflag = 0;
-#endif
-
         ret = DelCharGraColorWin();
-        //        ret = commonYesNoWindow( 320, 240 );
-        // ??
         if (ret == 1)
-        {
             SubProcNo++;
-        }
-        else
-            // ???
-            if (ret == 2)
-            {
-                SubProcNo = 10;
-            }
+        else if (ret == 2)
+            SubProcNo = 10;
     }
     if (SubProcNo == 21)
     {
         initDeleteCharacter();
         SubProcNo++;
     }
-    // ????
     if (SubProcNo == 22)
     {
         ret = deleteCharacter();
@@ -1481,9 +1262,7 @@ void selectCharacterProc(void)
             clearUserSetting(selectPcNo);
 #endif
 
-            if (saveNowState())
-            {
-            }
+            saveNowState();
             if (maxPcNo > 0)
                 maxPcNo--;
             SubProcNo = 10;

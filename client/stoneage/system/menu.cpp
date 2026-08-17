@@ -1,5 +1,4 @@
-﻿#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "systeminc/font.h"
 #include "sdk/caryime.h"
 #include "game/anim_tbl.h"
@@ -9024,16 +9023,12 @@ void InitItem3(int x, int y)
     }
 }
 // CoolFish: End 
-
-// ???????? ******************************************************/
 BOOL MakeHitBox(int x1, int y1, int x2, int y2, int dispPrio)
 {
-    // ?????
     if (mouse.nowPoint.x <= x2 && x1 <= mouse.nowPoint.x &&
         mouse.nowPoint.y <= y2 && y1 <= mouse.nowPoint.y){
         // ???????
         if (dispPrio >= 0){
-            // ????????????????
             StockBoxDispBuffer(x1, y1, x2, y2, dispPrio, BoxColor, 0);
         }
         return TRUE;
@@ -9041,23 +9036,17 @@ BOOL MakeHitBox(int x1, int y1, int x2, int y2, int dispPrio)
     return FALSE;
 }
 
-// ????????? **************************************************************/
 void DeathLetterAction(void)
 {
-    int i;
-
-    for (i = 0; i < 4; i++){
+    for (int i = 0; i < 4; i++){
         DeathAction(pActLetter[i]);
         pActLetter[i] = NULL;
     }
 }
 
-// ???????? ***************************************************************/
 void InitMailSendFlag(void)
 {
-    int i;
-
-    for (i = 0; i < MAX_ADR_BOOK; i++) mailWndSendFlag[i] = 0;
+    for (int i = 0; i < MAX_ADR_BOOK; i++) mailWndSendFlag[i] = 0;
 }
 
 #ifdef _PET_SKINS
@@ -9068,10 +9057,8 @@ extern void petChange(int graphNo);
 #endif
 
 
-// ????????????? *****************************************************/
 void DeathMenuAction(void)
 {
-
 #ifdef _MAGIC_ITEM_
     if(道具光环Act) DeathAction(道具光环Act);
     道具光环Act=NULL;
@@ -9332,8 +9319,8 @@ BOOL 自动登陆窗口 = FALSE;
 ACTION *p自动登陆窗口 = NULL;
 ACTION * 方向动作;
 ACTION * 人物动作;
-extern struct gameserver gmsv[];
-extern struct gamegroup  gmgroup[];
+extern struct GameServer gmsv[];
+extern struct GameGroup  gmgroup[];
 void 自动登陆窗口回调()
 {
     static int 方向窗口是否打开;

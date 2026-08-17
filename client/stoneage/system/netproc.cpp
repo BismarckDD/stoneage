@@ -1,8 +1,7 @@
-﻿#include <winsock.h>
-#include <time.h>
+﻿#include "systeminc/system.h"
+#include <winsock.h>
 #include <tchar.h>
 #include "systeminc/text_encoding.h"
-#include "systeminc/system.h"
 #include "systeminc/netmain.h"
 #include "systeminc/netproc.h"
 #include "systeminc/lssproto_cli.h"
@@ -76,7 +75,7 @@ short charLoginStatus = 0;
 short charLogoutStatus = 0;
 
 #ifdef _MAILSHOWPLANET // (可开放) Syu ADD 显示名片星球
-extern struct gameserver gmsv[];
+extern struct GameServer gmsv[];
 #endif
 
 #ifdef _NEW_WGS_MSG // WON ADD WGS的新视窗

@@ -1,22 +1,7 @@
-﻿#ifndef _RADAR_
-#define _RADAR_
+﻿#ifndef __RADAR_H__
+#define __RADAR_H__
 
-void radar( ACTION *, int *, int * );
+void radar(ACTION *, int *, int *);
+int radar2(ACTION *pAct, int x, int y, int cnt);
 
-/********************************************************************
-*
-*      ????
-*
-*      IN     pAct   希??????????
-*             x       ?火??火
-*             y       ?火??火
-*             cnt   ??阪??????
-*
-*      OUT    d1     ??  ( 0 ? ??? )
-*
-*      ???( 0 ? 31 )? a0->crs ?向? 
-*
-********************************************************************/
-int radar2( ACTION *pAct, int x, int y, int cnt );
-
-#endif
+#endif // __RADAR_H__
