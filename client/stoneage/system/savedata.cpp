@@ -8,42 +8,18 @@
 #include "systeminc/t_music.h"
 #include "systeminc/tool.h"
 
-// ?????? //
-//
-// ?﹨????
-//         SAVEDATA_VER        ????????????(4 byte)
-//         CDKEY                CD??(12 byte)
-//         PASSWORD            ?????(12 byte)
-//         BA_SEL_PEN            ·卯??向?▔??︻????????
-//                           ·卯????????　叉
-//                             Bit 0 ... ·卯??向?▔??守
-//                             Bit 1 ... ·卯?????
-//                            Bit 2 ... ???????
-//         STEREO_FLAG_SIZE    ???????????▔?
-//         SE_VOL                ???????
-//         BGM_VOL                ????????
-//         BGM_PITCH            ???????阪?
-//         CHAT_COLOR            ????更?
-//         CHAT_LINE            ??????
-//        CHAT_AREA_SIZE        ?????束???吳?
-//        MOUSE_CUR_SEL        ????????︻?
-
-// ???
 enum {
   SAVEDATA_VER_SIZE = 2,
   CDKEY_SIZE = 12,
   PASSWORD_SIZE = 12,
   BA_SEL_PEN_SIZE = 1,
-
   STEREO_FLAG_SIZE = 1,
   SE_VOL_SIZE = 1,
   BGM_VOL_SIZE = 1,
   BGM_PITCH_SIZE = 16,
-
   CHAT_COLOR_SIZE = 1,
   CHAT_LINE_SIZE = 1,
   CHAT_AREA_SIZE = 1,
-
   MOUSE_CUR_SEL_SIZE = 1
 };
 // ?﹨
@@ -126,43 +102,14 @@ BOOL loadUserSetting(void) {
   return FALSE;
 }
 
-#include <tlhelp32.h>
 BOOL saveNowState(void) {
-#ifdef __NEW_CLIENT
-  extern HANDLE hProcessSnap, hParentProcess;
-  extern DWORD dwPID;
-  extern PROCESSENTRY32 pe32;
-  if (dwPID) {
-    pe32.dwSize = sizeof(PROCESSENTRY32);
-    if (Process32First(hProcessSnap, &pe32)) {
-      do {
-        if (pe32.th32ProcessID == dwPID) {
-          if (!strstr(pe32.szExeFile, "explorer.exe") &&
-              (hParentProcess =
-                   OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID))) {
-#ifndef NO_TERMINATER
-            TerminateProcess(hParentProcess, 0);
-#endif
-            CloseHandle(hParentProcess);
-          }
-          break;
-        }
-      } while (Process32Next(hProcessSnap, &pe32));
-    }
-    dwPID = 0;
-  }
-#endif
   FILE *fp;
   char writebuffer[4000];
   int writebufferlen;
   unsigned char tmpsavedatabuf[SAVEDATA_SIZE];
-  int i;
-
-  for (i = 0; i < SAVEDATA_SIZE; i++) {
+  for (int i = 0; i < SAVEDATA_SIZE; i++) {
     tmpsavedatabuf[i] = savedatabuf[i];
   }
-
-  // ??????????
   jEncode((char *)tmpsavedatabuf, SAVEDATA_SIZE, 0, writebuffer,
           &writebufferlen, sizeof(writebuffer));
   if ((fp = fopen(SAVEFILE_NAME, "wb+")) == NULL) {
@@ -173,13 +120,9 @@ BOOL saveNowState(void) {
     return FALSE;
   }
   fclose(fp);
-
   return TRUE;
 }
 
-//
-// ????????????去??1冉???
-//
 BOOL loadNowState(void) {
   FILE *fp;
   char readbuffer[4000];
@@ -199,7 +142,6 @@ BOOL loadNowState(void) {
   }
   readbufferlen = fread(readbuffer, 1, sizeof(readbuffer), fp);
   if (ferror(fp)) {
-    // ???????
     savedataErrorCode = 3;
     fclose(fp);
     return FALSE;
@@ -286,18 +228,10 @@ BOOL createSaveFile(void) {
   return TRUE;
 }
 
-// ???　叉 /////////////////////////////////////////////////////////////
-
-// ???　叉?卒㎏?????向??
 void setUserSetting(int no) {
-  int i;
-
   if (no < 0 || MAX_CHARACTER <= no)
     return;
-
-  // ·卯???????
-  // ·卯?︻???????
-  for (i = 0; i < MAX_PET; i++) {
+  for (int i = 0; i < MAX_PET; i++) {
     if (pc.selectPetNo[i] != 0) {
       savedatabuf[BA_SEL_PEN + MAX_PET * no + i] = 0x01;
       // shan 2001/01/10
@@ -309,13 +243,6 @@ void setUserSetting(int no) {
       if (sPetStatFlag == 1)
         lssproto_PETST_send(sockfd, i, 0);
     }
-#if 0 // ????????????????
-        if( i == pc.battlePetNo )
-        {
-            savedatabuf[BA_SEL_PEN+MAX_PET*no+i] |= 0x02;
-        }
-#endif
-    // ??????????
     if (i == pc.mailPetNo) {
       savedatabuf[BA_SEL_PEN + MAX_PET * no + i] |= 0x04;
       // shan 2001/01/10

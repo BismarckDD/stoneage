@@ -35,7 +35,7 @@
 #include "wgs/Ping.h"
 #endif
 
-#define SA_VERSION ""
+#define SA_VERSION "2.5"
 #define SA_VERSION_NUM 300
 #ifdef _AIDENGLU_
 extern Landed PcLanded;
@@ -175,6 +175,7 @@ static char *gButtonList[] = {
     "确  定", "取  消",
     "上一页", "下一页" };
 
+// 第一个界面所有
 void idPasswordProc(void)
 {
     // 登录画面状态机（SubProcNo）：
@@ -264,14 +265,12 @@ void idPasswordProc(void)
         {
             if (ptActMenuWin->hp >= 1)
             {
-                int len;
-                int xx, yy;
                 if (iWGS == 7)
                     isWGS7 = 1; // Nuke 0615: Avoid 7's lock
                 wsprintf(msg, "%s(%d)", szWGSState, iWGS);
-                len = strlen(msg);
-                xx = (w * 64 - len * 8) / 2;
-                yy = (h * 48 - 16) / 2;
+                int len = strlen(msg);
+                int xx = (w * 64 - len * 8) / 2;
+                int yy = (h * 48 - 16) / 2;
                 StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
             }
         }
@@ -515,28 +514,20 @@ int commonMsgWin(char *msg)
         ret = 1;
         play_se(217, 320, 240);
     }
-    if (ret != 0)
+    if (ret != 0 && ptActMenuWin)
     {
-        if (ptActMenuWin)
-        {
-            DeathAction(ptActMenuWin);
-            ptActMenuWin = NULL;
-            return ret;
-        }
+        DeathAction(ptActMenuWin);
+        ptActMenuWin = NULL;
+        return ret;
     }
 
-    if (ptActMenuWin != NULL)
+    if (ptActMenuWin && ptActMenuWin->hp >= 1)
     {
-        if (ptActMenuWin->hp >= 1)
-        {
-            int len;
-            int xx;
-            len = strlen(msg) + 1;
-            xx = (w * 64 - len * 8) / 2;
-            StockFontBuffer(x + xx, y + 30, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
-            xx = (w * 64 - strlen("ＯＫ") * 8) / 2;
-            fontId[0] = StockFontBuffer(x + xx, y + 56, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "ＯＫ", 2);
-        }
+        int len = strlen(msg) + 1;
+        int xx = (w * 64 - len * 8) / 2;
+        StockFontBuffer(x + xx, y + 30, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
+        xx = (w * 64 - strlen("ＯＫ") * 8) / 2;
+        fontId[0] = StockFontBuffer(x + xx, y + 56, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "ＯＫ", 2);
     }
     return ret;
 }
@@ -596,8 +587,7 @@ int selFontId(int *id, int cnt)
 
 int focusGraId(int *id, int cnt)
 {
-    int i;
-    for (i = 0; i < cnt; i++)
+    for (int i = 0; i < cnt; i++)
         if (id[i] == HitDispNo)
             return i;
     return -1;
@@ -605,8 +595,7 @@ int focusGraId(int *id, int cnt)
 
 int focusFontId(int *id, int cnt)
 {
-    int i;
-    for (i = 0; i < cnt; i++)
+    for (int i = 0; i < cnt; i++)
         if (id[i] == HitFontNo)
             return i;
     return -1;
@@ -615,7 +604,6 @@ int focusFontId(int *id, int cnt)
 static short userCertifyErrorMsgWinProcNo = 0;
 
 extern char szAnnouncement[];
-extern struct GameGroup gmgroup[];
 
 void titleProc(void)
 {
@@ -629,19 +617,15 @@ void titleProc(void)
         if (0 < strlen(szAnnouncement))
             SubProcNo = 200;
         else
-            SubProcNo++;
+            ++SubProcNo;
     }
-    if (SubProcNo == 1)
+    if (SubProcNo == 1) // 初始化
     {
         if (initNet())
         {
-            if (nGroup > 1)
-                SubProcNo = 2;
-            else
-                SubProcNo = 3;
+            SubProcNo = nGroup > 1 ? 2 : 3;
             ProduceInitFlag = TRUE;
             initSelectServer();
-            //    disconnectServerFlag = FALSE;
         }
         else
         {
@@ -649,8 +633,7 @@ void titleProc(void)
             strcpy(netprocErrmsg, NET_ERRMSG_SOCKLIBERROR);
         }
     }
-    // 选择Group
-    if (SubProcNo == 2)
+    if (SubProcNo == 2) // 选择Group
     {
         ret = selectGroup();
         if (ret == 1)
@@ -672,20 +655,11 @@ void titleProc(void)
             cleanupNetwork();
         }
     }
-    // 选择Server
-    if (SubProcNo == 3)
+    if (SubProcNo == 3) // 选择Server
     {
         ret = selectServer();
         if (ret == 1)
-        {
-#ifdef _SHOWIPSLEEP_
-
-            extern HANDLE IP线程;
-            CloseHandle(IP线程);
-            IP线程 = NULL;
-#endif
-            SubProcNo++;
-        }
+            ++SubProcNo;
         else if (ret == 2)
         {
             if (nGroup < 2)
@@ -701,13 +675,13 @@ void titleProc(void)
     }
     if (SubProcNo == 4)
     {
-        // 连接Game server的初始化
+        // 连接GameServer的初始化
         initConnecGameServer();
-        SubProcNo++;
+        ++ SubProcNo;
     }
-    if (SubProcNo == 5)
+    if (SubProcNo == 5) // 
     {
-        // 连接Game server
+        // 连接Gameserver
         ret = connecGameServer();
         if (ret == 1)
         {
@@ -727,7 +701,7 @@ void titleProc(void)
     if (SubProcNo == 100)
     {
         initCommonMsgWin();
-        SubProcNo++;
+        ++SubProcNo;
     }
     if (SubProcNo == 101)
     {
@@ -755,20 +729,12 @@ void titleProc(void)
 #else
     StockDispBuffer(320, 240, DISP_PRIO_BG, CG_TITLE, 0);
 #endif
-    // ?????
-#ifdef _TAIKEN
-    StockFontBuffer(480, 424, FONT_PRIO_BACK, FONT_PAL_BLUE, "体验版", 0);
-#endif
 #ifdef _SA_VERSION_25
     StockFontBuffer(620, 580, FONT_PRIO_BACK, FONT_PAL_BLUE, "体验版！", 0);
 #endif
 }
-
-// ????
-
 ACTION *ptActSelectServerWin = NULL;
 
-// ???
 void initSelectServer(void)
 {
     ptActSelectServerWin = NULL;
@@ -838,12 +804,7 @@ int selectGroup()
             if (gmgroup[nServerGroup].used == 1)
                 return 1;
             else
-            {
-#ifdef _AIDENGLU_
-                // 自动登陆是否开启 = FALSE;
-#endif
                 return 3;
-            }
         }
         else if (id == nGroup)
         {
@@ -932,10 +893,6 @@ DWORD WINAPI IP延时读取(PVOID pParam)
 
 #endif
 
-//
-//  ??：    0 ... ?
-//                1 ... ????
-//                2 ... ????
 int selectServer()
 {
     static int fontId[] = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2};
@@ -1051,21 +1008,13 @@ int selectServer()
     return 0;
 }
 
-// ????????
-
-static short connecGameServerProcNo = 0;
+static short connectGameServerProcNo = 0;
 
 void initConnecGameServer(void)
 {
-    connecGameServerProcNo = 0;
+    connectGameServerProcNo = 0;
 }
 
-// ?????
-//
-//  ??：     0 ... ???
-//                 1 ... ??
-//                -1 ... ??????????????
-//                -2 ... ??????????
 int connecGameServer(void)
 {
     static ACTION *ptActMenuWin = NULL;
@@ -1074,14 +1023,10 @@ int connecGameServer(void)
     int ret2;
     static char msg[256];
 
-    // ???
-    if (connecGameServerProcNo == 0)
+    if (connectGameServerProcNo == 0)
     {
-        connecGameServerProcNo = 1;
-
+        connectGameServerProcNo = 1;
         sprintf_s(msg, "%s服务器连线中", gmsv[selectServerIndex].name);
-
-        // ??????
         w = (strlen(msg) * 9 + 63) / 64;
         if (w < 2)
             w = 2;
@@ -1097,67 +1042,45 @@ int connecGameServer(void)
 #endif
     }
 
-    // ?????????
-    if (connecGameServerProcNo == 1)
+    if (connectGameServerProcNo == 1)
     {
         cleanupNetwork();
         if (initNet())
         {
             dwServer = GS;
-            connecGameServerProcNo = 2;
+            connectGameServerProcNo = 2;
         }
         else
-        {
             ret = -1;
-        }
     }
-    // ????????
-    if (connecGameServerProcNo == 2)
+    if (connectGameServerProcNo == 2)
     {
         initConnectServer();
-        connecGameServerProcNo = 3;
+        connectGameServerProcNo = 3;
     }
-    if (connecGameServerProcNo == 3)
+    if (connectGameServerProcNo == 3)
     {
         ret2 = connectServer();
         if (ret2 == 1)
-        {
             ret = 1;
-        }
         else if (ret2 < 0)
-        {
             ret = -2;
-        }
     }
-
-    if (ret != 0)
-    {
-        if (ptActMenuWin)
-        {
-            DeathAction(ptActMenuWin);
-            ptActMenuWin = NULL;
-        }
+    if (ret != 0 && ptActMenuWin) {
+        DeathAction(ptActMenuWin);
+        ptActMenuWin = NULL;
     }
-
-    if (ptActMenuWin != NULL)
+    if (ptActMenuWin && ptActMenuWin->hp >= 1)
     {
-        // ?????
-        if (ptActMenuWin->hp >= 1)
-        {
-            int len;
-            int xx, yy;
-
-            len = strlen(msg);
-            xx = (w * 64 - len * 8) / 2;
-            yy = (h * 48 - 16) / 2;
-            StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
-        }
+        int len = strlen(msg);
+        int xx = (w * 64 - len * 8) / 2;
+        int yy = (h * 48 - 16) / 2;
+        StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
     }
 
     return ret;
 }
 
-///////////////////////////////////////////////////////////////////////////
 // cary 十二、加入saac的错误讯息
 void selectCharacterProc(void)
 {
@@ -3906,11 +3829,6 @@ int charLogin(void)
 static int produce_logout(void);
 static int produce_vct_no = 0;
 
-///////////////////////////////////////////////////////////////////////////
-//
-// ????????
-//
-
 void initCharLogout(void);
 int charLogout(void);
 
@@ -4043,10 +3961,6 @@ void initCharLogout(void)
 }
 
 // ???????
-//  ??：     0 ... ??????
-//                 1 ... ????????
-//                -1 ... ??????
-//                -2 ... ???
 int charLogout(void)
 {
     extern unsigned int systemWndNo; // ??????

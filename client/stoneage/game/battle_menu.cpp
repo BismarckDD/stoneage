@@ -1,5 +1,4 @@
-﻿#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "systeminc/font.h"
 #include "sdk/caryime.h"
 #include "game/battle_menu.h"
@@ -45,10 +44,8 @@ enum {
 #define BATTLE_CNT_DOWN_TIME _BATTLE_TIME_  //每局战斗时间
 #endif
 
-char BattleCmd[ BATTLE_COMMAND_SIZE ];
-// ?????????????
-char BattleCmdBak[ BATTLE_BUF_SIZE ][ BATTLE_COMMAND_SIZE ];
-// ??????????????
+char BattleCmd[BATTLE_COMMAND_SIZE];
+char BattleCmdBak[BATTLE_BUF_SIZE][BATTLE_COMMAND_SIZE];
 int BattleCmdReadPointer;
 int BattleCmdWritePointer;
 

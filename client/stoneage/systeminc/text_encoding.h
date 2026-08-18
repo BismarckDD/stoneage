@@ -20,6 +20,32 @@ inline std::wstring GbkToWide(const char *text)
     return result;
 }
 
+inline std::string Utf8ToGbk(const char *text)
+{
+    if (text == NULL || text[0] == '\0')
+        return std::string();
+
+    int wideLength = MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text, -1,
+                                         NULL, 0);
+    if (wideLength <= 0)
+        return std::string();
+
+    std::wstring wideText(wideLength, L'\0');
+    MultiByteToWideChar(CP_UTF8, MB_ERR_INVALID_CHARS, text, -1,
+                        &wideText[0], wideLength);
+
+    int gbkLength = WideCharToMultiByte(936, 0, wideText.c_str(), -1, NULL, 0,
+                                        NULL, NULL);
+    if (gbkLength <= 0)
+        return std::string();
+
+    std::string result(gbkLength, '\0');
+    WideCharToMultiByte(936, 0, wideText.c_str(), -1, &result[0], gbkLength,
+                        NULL, NULL);
+    result.resize(gbkLength - 1);
+    return result;
+}
+
 inline BOOL SetWindowTextGbk(HWND window, const char *text)
 {
     const std::wstring wideText = GbkToWide(text);

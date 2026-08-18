@@ -22,11 +22,6 @@ int net_writebuflen;
 BOOL disconnectServerFlag = FALSE;
 BOOL oldDisconnectServerFlag = FALSE;
 
-#ifdef _LOG_MSG
-char debugLogFileName[256] = "recvdata.txt"; // ?????????????????
-#endif
-
-
 int getServerInfo(int index, char *hostname, short *port) {
   if (index < 0 || index >= sizeof(gmsv) / sizeof(gmsv[0]))
     return -1;
@@ -36,184 +31,12 @@ int getServerInfo(int index, char *hostname, short *port) {
 }
 
 char rpc_linebuffer[NETBUFSIZ];
-extern int testCnt;
-
-#ifdef _STONDEBUG_
-int CheckNetErrror(void) {
-  int error = WSAGetLastError();
-  // ??????
-  switch (error) {
-  case WSANOTINITIALISED:
-    return error;
-  case WSAENETDOWN:
-    return error;
-  case WSAEACCES:
-    return error;
-  case WSAEINTR:
-    return error;
-  case WSAEINPROGRESS:
-    return error;
-  case WSAEFAULT:
-    return error;
-  case WSAENETRESET:
-    return error;
-  case WSAENOBUFS:
-    return error;
-  case WSAENOTCONN:
-    return error;
-  case WSAENOTSOCK:
-    return error;
-  case WSAEOPNOTSUPP:
-    return error;
-  case WSAESHUTDOWN:
-    return error;
-  case WSAEWOULDBLOCK:
-    return error;
-  case WSAEMSGSIZE:
-    return error;
-  case WSAEINVAL:
-    return error;
-  case WSAECONNABORTED:
-    return error;
-  case WSAECONNRESET:
-    return error;
-  case WSAETIMEDOUT:
-    return error;
-  default:
-    return error;
-  }
-  return error;
-}
-#endif
-
-#ifdef _STONDEBUG_
-
-/*
-  ???Web???????????
-
-  do_http_request_forever()
-
-  static ??????????????????????
-
-  char *ip : IP????(???????????????????)
-  unsigned short port : ?????????80?
-  char *obj : ??????????????
-  int sec : ???????
-
-  ????： 0??????????????
- */
-static int http_sock;
-static int http_call_counter = 0;
-static time_t http_call_last_time;
-static int http_connecting = 0;
-static int http_sent_request = 0;
-
-int do_http_request_forever(char *ip, unsigned short port, char *obj, int sec) {
-  fd_set rfds, wfds;
-  int r;
-  struct timeval tm;
-
-  /* ??????????????????
-     1?1?????????? */
-  if (http_call_last_time != time(NULL)) {
-    http_call_last_time = time(NULL);
-  } else {
-    return 0;
-  }
-
-  // fprintf(stderr,".");
-
-  if (http_call_counter == 0) {
-    struct sockaddr_in sin;
-
-    /* sec?1?connect?? */
-    if (time(NULL) % sec != 0)
-      return 0;
-
-    http_sock = socket(AF_INET, SOCK_STREAM, 0);
-    if (http_sock < 0)
-      return -1;
-
-    unsigned long flg = 1;
-    ioctlsocket(http_sock, FIONBIO, &flg);
-#if 0
-        fprintf(stderr,"socket()\n" );
-        flags = fcntl( http_sock, F_GETFL,0);
-        if( fcntl( http_sock, F_SETFL, flags|O_NONBLOCK )< 0){
-            close( http_sock );
-            return -2;
-        }
-#endif
-    memset(&sin, 0, sizeof(sin));
-    sin.sin_addr.s_addr = inet_addr(ip);
-    sin.sin_port = htons(port);
-    sin.sin_family = AF_INET;
-
-    if (connect(http_sock, (struct sockaddr *)&sin, sizeof(sin)) ==
-        SOCKET_ERROR) {
-
-      if (WSAGetLastError() == WSAEWOULDBLOCK) {
-        // ?????????????????
-      } else {
-        closesocket(http_sock);
-        return -5;
-      }
-    }
-
-    http_call_counter++;
-    http_sent_request = 0;
-    // fprintf(stderr,"connected\n" );
-    return 0;
-  }
-
-  FD_ZERO(&rfds);
-  FD_SET(http_sock, &rfds);
-  FD_ZERO(&wfds);
-  FD_SET(http_sock, &wfds);
-
-  tm.tv_usec = tm.tv_sec = 0;
-  r = select(http_sock + 1, &rfds, &wfds, (fd_set *)NULL, &tm);
-
-  if (r > 0 && FD_ISSET(http_sock, &rfds)) {
-    char buf[1000];
-    r = recv(http_sock, buf, sizeof(buf), 0);
-    if (r <= 0) {
-      closesocket(http_sock);
-      /* ????????? */
-      http_call_counter = 0;
-    }
-    // fprintf(stderr,"read %d\n",r );
-  }
-
-  if (r > 0 && FD_ISSET(http_sock, &wfds) && http_sent_request == 0) {
-    /* HTTP????MSS?????????
-       1??write?????????????
-       ???????????????????????????
-       ????? */
-    int r;
-    char fuck[1000];
-    sprintf_s(fuck, "GET %s HTTP/1.0\r\n\r\n", obj);
-
-    r = send(http_sock, fuck, strlen(fuck), 0);
-
-    if (r <= 0) {
-      closesocket(r);
-      http_call_counter = 0;
-      return -10;
-    }
-    // fprintf(stderr,"wrote %d\n",r );
-    http_sent_request = 1;
-  }
-  return 0;
-}
-#endif
 
 void networkLoop(void) {
   if (init_net == FALSE)
     return;
 
   if (disconnectServerFlag && !oldDisconnectServerFlag) {
-    // ??????????
     ChangeProc(PROC_DISCONNECT_SERVER);
   }
   oldDisconnectServerFlag = disconnectServerFlag;
@@ -343,25 +166,20 @@ void networkLoop(void) {
         lssproto_Echo_send(sockfd, "hoge");
       else
         old_lssproto_Echo_send(sockfd, "hoge");
-      testCnt++;
     }
   }
 }
 
 BOOL initNet(void) {
-  int ret;
   WSADATA wsadata;
   // winsock??????
-  ret = WSAStartup(MAKEWORD(1, 1), &wsadata);
-  if (ret != 0)
+  if (WSAStartup(MAKEWORD(1, 1), &wsadata) != 0)
     return FALSE;
-  // cary test    lssproto_InitClient( appendWriteBuf, 65536, sockfd );
+  // cary test lssproto_InitClient( appendWriteBuf, 65536, sockfd );
   lssproto_InitClient(appendWriteBuf, NETBUFSIZ, sockfd);
-
   init_net = TRUE;
   disconnectServerFlag = FALSE;
   oldDisconnectServerFlag = FALSE;
-
   return TRUE;
 }
 

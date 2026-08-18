@@ -64,20 +64,10 @@ void SetgResolutionMode(int Mode);
 void StrToNowStrBuffer(char *str);
 void StrToNowStrBuffer1(char *str);
 
-// #ifndef _STONDEBUG_
-// #define _STONDEBUG_
-// #endif
-//
 #define _BATTLESLEPP_ 0
-int testCnt;
 static char no_wait_cnt = 0;
 int debug_info_flag = 0;
 
-//---------------------------------------------------------------------------//
-// ???????                                                        //
-//---------------------------------------------------------------------------//
-
-// ?????????
 int FrameRate;
 int DrawFrameCnt;
 DWORD DrawFrameTime;
@@ -822,9 +812,6 @@ void InfoDisp( void )
     sprintf_s( szMoji,"BattleMapNo      = %d",BattleMapNo );
     StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
 
-    sprintf_s( szMoji,"HogeCnt          = %d",testCnt );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
     sprintf_s( szMoji,"EventEnemyFlag   = %d",eventEnemyFlag );
     StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
 
@@ -980,7 +967,7 @@ bool GameInit(void)
     MouseInit();
     if (loadUserSetting() == FALSE){
         char msg[1024];
-        sprintf_s(msg, SAVE_ERRMSG_loadNowState, savedataErrorCode);
+        sprintf_s(msg, "加载用户设置失败 (code = %d)!", savedataErrorCode);
         MessageBoxNew(hWnd, msg, "确定", MB_OK | MB_ICONSTOP);
         return false;
     }

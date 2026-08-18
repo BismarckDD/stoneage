@@ -8,7 +8,6 @@
 #include "systeminc/menu.h"
 #include "systeminc/netmain.h"
 #include "sdk/caryime.h"
-#include "oft/work.h"
 
 #ifdef _WIN_LUAJIT_
 extern int cloasewindows;

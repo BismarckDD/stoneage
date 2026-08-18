@@ -1,9 +1,7 @@
 #pragma once
 
 #include "windows.h"
-
-extern struct action;
-typedef struct action ACTION;
+#include "systeminc/action.h"
 
 typedef unsigned char Uint8;
 typedef signed char Sint8;

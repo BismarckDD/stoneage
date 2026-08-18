@@ -22043,8 +22043,7 @@ void checkRidePet(int pindex)
 //andy_add 2002/06/24
 int RIDEPET_getNOindex(int baseNo)
 {
-    int i;
-    for (i = 0; i < sizeof(RPlistMode) / sizeof(tagRidePetList); i++)    {
+    for (int i = 0; i < sizeof(RPlistMode) / sizeof(tagRidePetList); i++)    {
         if (RPlistMode[i].charNo == baseNo)
             return RPlistMode[i].Noindex;
     }

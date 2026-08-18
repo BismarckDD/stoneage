@@ -116,14 +116,13 @@ void GetEncrypt(Parameter *param) {
 void PKey_Init() {
   TCHAR szTemp[17], szTemp1[3];
   srand((unsigned)time(NULL));
-  int i;
-  for (i = 0; i < 7; i++)
+  for (int i = 0; i < 7; i++)
     szTemp[i] = P_Key[i] = rand() % 256;
   P_Key[7] = '\0';
-  for (i = 7; i < 16; i++)
+  for (int i = 7; i < 16; i++)
     szTemp[i] = rand() % 256;
   P_Key1[0] = '\0';
-  for (i = 0; i < 16; i++) {
+  for (int i = 0; i < 16; i++) {
     wsprintf(szTemp1, "%02X", (unsigned char)~szTemp[i]);
     lstrcat(P_Key1, szTemp1);
   }
@@ -161,7 +160,7 @@ void ipAddressAnalyze() {
   DWORD dwCafeKey = GetCafeNumber();
   Parameter *param = messHead->param;
   HKEY hkey;
-  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Waei\\石器时代\\5.00.000", 0,
+  if (RegOpenKeyEx(HKEY_LOCAL_MACHINE, "Software\\Blizzard\\StoneAge\\2.50.000", 0,
                    KEY_READ, &hkey) == ERROR_SUCCESS) {
     dwCafeKey |= 0x02;
     RegCloseKey(hkey);

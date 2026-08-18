@@ -6,6 +6,7 @@
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
+#include <clocale>
 
 /**** CPP INCLUDE ****/
 #include <string>

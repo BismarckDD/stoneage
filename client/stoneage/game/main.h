@@ -1,18 +1,18 @@
 ﻿#ifndef __MAIN_H__
 #define __MAIN_H__
 
-#ifdef __MAIN_CPP__
-#define EXTERN 
-#else
-#define EXTERN extern
-#endif
-
 #include "version.h"
 #include "systeminc/netmain.h"
 #include "systeminc/login.h"
 
 LRESULT CALLBACK PASCAL WindMsgProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
 BOOL SystemTask(void);
+
+#ifdef __MAIN_CPP__
+#define EXTERN 
+#else
+#define EXTERN extern
+#endif
 
 #ifdef __MAIN_CPP__
 EXTERN int DISPLACEMENT_X = 160;

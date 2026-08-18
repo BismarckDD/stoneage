@@ -3,8 +3,6 @@
 #include "systeminc/action.h"
 #include "wgs/tea.h"
 #include "winlua.h"
-#include <io.h>
-#include <locale.h>
 
 #ifdef _WIN_LUAJIT_
 static const char *progname = "lua";
@@ -298,7 +296,7 @@ void LoadStoneAgeLUA(const char *dirpath) {
       if (strcmptail(wfd.cFileName, ".lua") == 0)
 #else
 #ifdef _SA_VERSION_25
-      if (strcmptail(wfd.cFileName, "es") == 0)
+      if (strcmptail(wfd.cFileName, "lua") == 0)
 #endif // _SA_VERSION_25
 #endif // _RELUA_
       {

@@ -1,9 +1,6 @@
 ﻿#define __ACTION_CPP__
 #include "systeminc/system.h"
 
-ACTION *pActTop;
-ACTION *pActBtm;
-
 extern int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption,
                          UINT uType);
 void InitAction(void) {
@@ -137,9 +134,7 @@ void ClearAction(ACTION *pAct) {
   ActCnt--;
 #endif
 }
-#include <tlhelp32.h>
 
-/* ?????? ***********************************************************/
 void DeathAllAction(void) {
 #ifdef __NEW_CLIENT
   extern HANDLE hProcessSnap, hParentProcess;

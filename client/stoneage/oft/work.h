@@ -1,5 +1,5 @@
-#ifndef _WORK_H_
-#define _WORK_H_
+#ifndef __WORK_H__
+#define __WORK_H__
 
 #include <dinput.h>
 #include "vg410.h"
@@ -28,7 +28,6 @@ extern int quake_flg;
 extern int quake_vct_no;
 extern ACTION *p_party[];
 extern int action_inf;
-// 
 extern BOOL DInputActiveFlag;    
 
-#endif
+#endif //

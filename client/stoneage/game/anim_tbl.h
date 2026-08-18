@@ -1,5 +1,5 @@
-﻿#ifndef __ANIM_TBL_H_
-#define __ANIM_TBL_H_
+﻿#ifndef __ANIM_TBL_H__
+#define __ANIM_TBL_H__
 
 /*WARNING: 换用pragma once时需要注意，似乎这里只覆盖到2322行*/
 
@@ -2477,4 +2477,4 @@ static tagRidePetList RPlistMode[] = {
 #define SPRNEW_024sp            102127        //矛            ?
 #define SPRNEW_024bw            102128        //弓
 
-#endif
+#endif // 

@@ -2,13 +2,11 @@
 #include "systeminc/character.h"
 #include "systeminc/menu.h"
 #include "winlua.h"
-#include <io.h>
-#include <locale.h>
 #ifdef _AIDENGLU_
-#include "../systeminc/pc.h"
+#include "systeminc/pc.h"
 extern Landed PcLanded;
 #endif
-#include "../systeminc/field.h"
+#include "systeminc/field.h"
 #ifdef _WIN_LUAJIT_
 
 #define L_ESC '%'
@@ -371,7 +369,6 @@ static int Lua_strmemcpy(lua_State *L) {
 }
 
 static const luaL_Reg salib[] = {
-
     {"getStringFromIndexWithDelim", Lua_getStringFromIndexWithDelim_body},
     {"strmemcpy", Lua_strmemcpy},
     {"TeaDecryption", Lua_TeaDecryption},

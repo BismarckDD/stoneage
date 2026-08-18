@@ -6,8 +6,8 @@
     |1B  |  5 Byte    |       0~4090B    |
     +----+------------+------------------+
 -----------------------------------------------*/
-#ifndef __MESSAGE
-#define __MESSAGE
+#ifndef __MESSAGE_H__
+#define __MESSAGE_H__
 
 #include <windows.h>
 // Message name
@@ -155,9 +155,7 @@ void ipAddressAnalyze();
 BOOL ReadWGSMessage(LPSTR lpstr, int &iStrLen);
 void DoHellow();
 void DoSKey();
-#ifdef _OMIT_WGS
-void testtest();
-LPTSTR O_WGS_Format();
-#endif
 DWORD GetCafeNumber();
-#endif
+
+
+#endif // __MESSAGE_H__

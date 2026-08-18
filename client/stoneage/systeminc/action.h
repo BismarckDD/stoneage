@@ -3,6 +3,12 @@
 #include "version.h"
 #include "newproto/autil.h"
 
+#ifdef __ACTION_CPP__
+#define EXTERN
+#else
+#define EXTERN extern
+#endif
+
 // 处理优先顺序
 enum {
   PRIO_TOP,        // 最优先
@@ -55,10 +61,9 @@ enum {
 #define ACT_ATR_HIT_BOX_COL7 (1 << 24) // 右下第一列
 #define ACT_ATR_HIT_BOX_COL8 (1 << 25) // 右下第二列
 
-/* ?????? **********************************************************/
-struct action {
-  struct action *pPrev, *pNext;  // 上一个及下一个action指标
-  void (*func)(struct action *); // action所执行的function的指标
+struct ACTION {
+  ACTION *pPrev, *pNext;  // 上一个及下一个action指标
+  void (*func)(ACTION *); // action所执行的function的指标
   void *pYobi;                   // 备用的struct指标
   void *pOther;                  // 其它用途struct指标
   UCHAR prio;                    // action处理时的优先顺序
@@ -194,37 +199,20 @@ struct action {
 #endif
 };
 
-typedef struct action ACTION;
+EXTERN ACTION *pActTop;
+EXTERN ACTION *pActBtm;
+EXTERN ACTION *pJiki;
 
-/* ?????????????????? */
-extern ACTION *pActTop;
-extern ACTION *pActBtm;
-
-/* ?????? */
-extern ACTION *pJiki;
-
-#ifdef _STONDEBUG_
-/* ?????????? */
-extern int ActCnt;
-#endif
-
-/* ?????????? *****************************************************/
 ACTION *GetAction(UCHAR prio, UINT yobiSize);
 
-/* ??????????? *****************************************************/
 void InitAction(void);
 
-/* ????????? *********************************************************/
 void RunAction(void);
 
-/* ????????????************************************************/
 void DeathAction(ACTION *pAct);
 
-/* ??????? *******************************************************/
 void DeathAllAction(void);
 
-/* ???????????? ***********************************************/
 void ClearAction(ACTION *pAct);
 
-/* ???????? *********************************************************/
 void EndAction(void);
