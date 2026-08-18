@@ -483,7 +483,7 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 #endif
 
   // 进入主循环:登录,选择服务器,选择橘色,地图和战斗都由该函数按ProcNo进行Dispatch。
-  /* !!! */
+  /* !!! 2026.08.18 */
   GameMain();
 
 #ifdef __NEW_CLIENT

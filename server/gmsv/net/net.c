@@ -2230,16 +2230,19 @@ int isThereThisIP(unsigned long ip) {
   int i;
   unsigned long ipa;
 
-  for (i = 0; i < ConnectLen; i++)
-    if (!Connect[i].use)
+  for (i = 0; i < ConnectLen; i++) {
+    if (!Connect[i].use) {
       continue;
+    }
 
-  if (Connect[i].state == NOTLOGIN ||
-      Connect[i].state == WHILEDOWNLOADCHARLIST) {
-    memcpy(&ipa, &Connect[i].sin.sin_addr, 4);
+    if (Connect[i].state == NOTLOGIN ||
+        Connect[i].state == WHILEDOWNLOADCHARLIST) {
+      memcpy(&ipa, &Connect[i].sin.sin_addr, 4);
 
-    if (ipa == ip)
-      return 1;
+      if (ipa == ip) {
+        return 1;
+      }
+    }
   }
 
   return 0;
@@ -2378,7 +2381,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       else if (sockfd < ConnectLen) {
         char mess[64] = "A"; // Nuke +2 Errormessage
         if (bNewServer) {
-          mess[0] = "7.0";
+          mess[0] = 'N';
 
         } else
           mess[0] = '$';

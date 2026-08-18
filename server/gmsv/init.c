@@ -694,14 +694,12 @@ BOOL init(int argc, char **argv, char **env) {
 #ifdef _LOTTERY_SYSTEM
   SaacClient_LotterySystem_send();
 #endif
-  print("Start to load log conf file...... ");
-  {
-    char logconffile[512];
-    snprintf(logconffile, sizeof(logconffile), "%s/%s", getLogdir(),
-             getLogconffile());
-    if (!initLog(logconffile))
-      goto CLOSEAC;
-  }
+  char logConfFile[512];
+  snprintf(logConfFile, sizeof(logConfFile), "%s/%s", getLogdir(),
+          getLogconffile());
+  print("Start to load log conf file: %s......", logConfFile);
+  if (!initLog(logConfFile))
+    goto CLOSEAC;
   print("succeed.\n");
 #ifdef _PET_ITEM
   restoreObjects(getStoredir());

@@ -136,66 +136,6 @@ void HighSpeedCheck( void )
 }
 #endif
 
-DWORD WINAPI TestThreadProc(PVOID pParam)
-{
-    DWORD dwStart = GetTickCount();
-    Sleep(3000);
-    DWORD endstart = GetTickCount() - dwStart;
-    if (endstart >= 3500){
-        ExitProcess(0);
-    }
-    return 0;
-}
-
-DWORD WINAPI TestThreadProc1(PVOID pParam)
-{
-    extern BOOL IsContainsProcess(char* strProName, BOOL 判断 = 1);
-    if (IsContainsProcess("多窗口", 0) || IsContainsProcess("同步", 0) ||
-        IsContainsProcess("SbieSvc.exe")||IsContainsProcess("SbieCtrl.exe"))  ExitProcess(NULL);
-    return 0;
-}
-
-HANDLE hThread = NULL;
-HANDLE hThread1 = NULL;
-void CALLBACK TimerProc(HWND hWnd, UINT nMsg, UINT nTimerid, DWORD dwTime)
-{
-    if (hThread) CloseHandle(hThread);
-    hThread = CreateThread(NULL, 0, TestThreadProc, 0, 0, NULL);
-}
-void CALLBACK TimerProc1(HWND hWnd, UINT nMsg, UINT nTimerid, DWORD dwTime)
-{
-    if (hThread1) CloseHandle(hThread1);
-    hThread1 = CreateThread(NULL, 0, TestThreadProc1, 0, 0, NULL);
-}
-
-
-
-#ifdef _ANNOUNCEMENT_
-int 公告数量 = 0;
-char 公告内容[512];
-int 公告颜色 = -1;
-int 公告时间 = 0;
-
-void announce()
-{
-    if (公告数量 == 0) return;
-    int showcolor;
-    公告时间 += 4;
-    int left = ((公告时间 / 25) % (800 + (strlen(公告内容) * 8)));
-    if (left == 0){
-        公告数量--;
-        if (公告颜色 == -1){
-            showcolor = rand() % 10;
-        }
-        else{
-            showcolor = 公告颜色;
-        }
-    }
-    StockFontBuffer(800 - left, 60, 1, showcolor, 公告内容, 0);
-}
-#endif
-
-
 bool GameMain(void)
 {
     if (GameInit() == false){
@@ -220,15 +160,12 @@ bool GameMain(void)
     extern BOOL  isXP();
     BOOL isXPSystem = isXP();
 #endif
-
     CreatFontHdc();
 
-#ifdef _ANTI_DEBUG_
-    SetTimer(0, 0, 6000, &TimerProc);
-    SetTimer(0, 0, 60000, &TimerProc1);
-#endif
+// 2026.08.18 Game 主循环 @Franklin
     while (true){
 
+        // SystemTask用于从系统获取消息
         if (SystemTask() == FALSE){
             GameEnd();
             return false;
@@ -243,18 +180,8 @@ bool GameMain(void)
             finishLoop = FALSE;
         }
 #endif
-
-
 #ifdef _CHECK_GAMESPEED
         HighSpeedCheck();
-#endif
-#ifdef _REMAKE_20
-#ifndef _STONDEBUG_
-        if(dwDisableInputScriptTime + 300000 < TimeGetTime()){
-            DisableInputScript();
-            dwDisableInputScriptTime = TimeGetTime();
-        }
-#endif
 #endif
         RealTimeToSATime(&SaTime);
         DispBuffer.DispCnt = 0;
@@ -264,21 +191,20 @@ bool GameMain(void)
             networkLoop();
         
         cdda_play(cdda_no);
+        // 读取按键？
         joy_read();
-#if 1
+        // F12: 用于截屏, 加一个时间判断，防止反复截屏
         if (joy_trg[1] & JOY_F12){
-            static unsigned int prePushTime = 0;
-            if (prePushTime + 500 <= TimeGetTime()){
+            static unsigned int prevSnapShotTime = 0;
+            if (prevSnapShotTime + 500 <= TimeGetTime()){
                 snapShot();
-                prePushTime = TimeGetTime();
+                prevSnapShotTime = TimeGetTime();
             }
         }
-#endif
+        // F11: 是否显示角色名称
         if (joy_trg[1] & JOY_F11)
             nameOverTheHeadFlag = !nameOverTheHeadFlag;
-
         Process();
-
         MouseProc();
 #ifdef _SURFACE_ANIM
         AniProc();
@@ -411,7 +337,7 @@ bool GameMain(void)
 #endif
 
 #else
-        NowTime = TimeGetTime();//获取当前的时间 毫秒
+        NowTime = TimeGetTime(); //获取当前的时间戳(ms)
         nowtime = nowttime1;
         //nowtime ^= 0xffffbcde;
         static DWORD OldTime = nowttime1;
@@ -433,8 +359,7 @@ bool GameMain(void)
                     Sleep(0);
                     continue;
                 }
-            }//else
-            //OldTime^= 0x855ff55f;
+            }
         }
 #endif
 #endif
@@ -574,25 +499,7 @@ bool GameMain(void)
 #ifdef __SKYISLAND
         }
 #endif
-
-
         Flip();    // ????????
-
-
-#ifdef _STONDEBUG_    
-        if (GetAsyncKeyState(0x10) & 0x8000){        //???????????
-            nowtime = TimeGetTime();
-            _itoa_s(nowtime ^ 0xffffbcde, sz, 10);
-        } else {
-            nowtime = atoi( sz);
-            nowtime ^= 0xffffbcde;
-            while( nowtime >= TimeGetTime() ){
-                if( WindowMode ){
-                    Sleep(1);
-                }
-            }
-        }
-#else
 #ifdef _NEW_SPEED_
         //nowtime = atoi( sz);
         //nowtime ^= 0xffffbcde;
@@ -611,7 +518,6 @@ bool GameMain(void)
         }
         nowtime = 0;
 
-#endif
 #endif
 
         if (PalChangeFlag == TRUE){
@@ -721,153 +627,12 @@ bool GameMain(void)
         Sleep(1);
         NoDrawCnt = 1;
 #endif
-
-#ifdef _STONDEBUG_        
-        // ?????????????
-        DrawFrameCnt++;
-#endif
         SurfaceDate++;
     }
 
     return false;
 }
 
-#ifdef _STONDEBUG_        
-unsigned int iTotalUseTime;
-unsigned int iTotalProcTime;
-unsigned int iTotalRunCount;
-unsigned int iShowCount;
-LARGE_INTEGER tf;
-
-void InfoDisp( void )
-{
-    char szMoji[ 256 ];
-    int x = lpDraw->xSize - 200;
-    int y = 64;
-    char c = 0;
-
-    sprintf_s( szMoji,"ActionCnt        = %d", ActCnt );
-    // ?????????????
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"DispCnt          = %d", DispBuffer.DispCnt );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"SurfaceCnt       = %d",SurfaceCnt );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"SearchPoint      = %d",SurfaceSearchPoint );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"SysramSurfaceCnt = %d",SysramSurfaceCnt );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"VramSurfaceCnt   = %d",VramSurfaceCnt );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"SurfaceUseCnt    = %d",SurfaceUseCnt );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"SurfaceDispCnt   = %d",SurfaceDispCnt );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"SurfaceDate      = %d",SurfaceDate );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"FrameRate        = %d",FrameRate );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"HitDispNo        = %d",HitDispNo );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"HitFontNo        = %d",HitFontNo );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"MouseLevel       = %d",mouse.level );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"ProcNo           = %d",ProcNo );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"SubProcNo        = %d",SubProcNo );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"ActionSize       = %d",sizeof( ACTION ) );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"MouseX           = %d",mouse.nowPoint.x );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"MouseY           = %d",mouse.nowPoint.y );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"TimeZone         = %d",SaTime.hour );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    c = 0;
-
-    sprintf_s( szMoji,"PalNo            = %d",PalState.palNo );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"BattleMapNo      = %d",BattleMapNo );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"EventEnemyFlag   = %d",eventEnemyFlag );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    // ???
-    if( BattleMyNo >= 20 ){
-        sprintf_s( szMoji,"BattleTurnNo     = %d",BattleCliTurnNo );
-    }else{
-        sprintf_s( szMoji,"BattleTurnNo     = %d",BattleCliTurnNo + 1 );
-    }
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"BattleDebTurnNo   = %d",BattleDebTurnNo );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-#ifdef _READ16BITBMP
-#ifdef _STONDEBUG_
-    if(iTotalRunCount % 100){
-        iShowCount = iTotalUseTime/iTotalRunCount;
-        //        iTotalUseTime = 0;
-        //        iTotalRunCount = 0;
-    }
-    sprintf_s( szMoji,"TestProcUseTime = %d",iShowCount);
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-    sprintf_s( szMoji,"TestRunTimes = %d",iTotalRunCount);
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-#endif
-#ifdef _TALK_WINDOW
-    sprintf_s(szMoji,"g_iCursorCount = %d",g_iCursorCount);
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-#endif
-#endif
-
-    sprintf_s( szMoji,"selectPetNo[ 0 ] = %d",pc.selectPetNo[ 0 ] );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"selectPetNo[ 1 ] = %d",pc.selectPetNo[ 1 ] );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s( szMoji,"selectPetNo[ 2 ] = %d",pc.selectPetNo[ 2 ] );
-    StockFontBuffer( x, y, FONT_PRIO_FRONT, c++, szMoji, 0 );y += 16;
-
-    sprintf_s(szMoji, "selectPetNo[ 3 ] = %d", pc.selectPetNo[3]);
-    StockFontBuffer(x, y, FONT_PRIO_FRONT, c++, szMoji, 0); y += 16;
-
-    sprintf_s(szMoji, "selectPetNo[ 4 ] = %d", pc.selectPetNo[4]);
-    StockFontBuffer(x, y, FONT_PRIO_FRONT, c++, szMoji, 0); y += 16;
-
-    sprintf_s(szMoji, "BattlePetStMenCnt= %d", BattlePetStMenCnt);
-    StockFontBuffer(x, y, FONT_PRIO_FRONT, c++, szMoji, 0); y += 16;
-
-    sprintf_s(szMoji, "BattlePetReceiveFlag= %d", BattlePetReceiveFlag);
-    StockFontBuffer(x, y, FONT_PRIO_FRONT, c++, szMoji, 0); y += 16;
-
-}
-#endif        
-
-// ??????????????
 void DisplayFrameRate(void)
 {
   // ??????
@@ -1196,3 +961,24 @@ void InitConsoleWindow(void)
 }
 
 #endif
+
+#ifdef _ANNOUNCEMENT_
+void announce()
+{
+    if (gAnnouncementNum == 0) return;
+    int showcolor;
+    gAnnouncementTime += 4;
+    int left = ((gAnnouncementTime / 25) % (800 + (strlen(gAnnouncementContent) * 8)));
+    if (left == 0){
+        gAnnouncementNum--;
+        if (gAnnouncementColor == -1){
+            showcolor = rand() % 10;
+        }
+        else{
+            showcolor = gAnnouncementColor;
+        }
+    }
+    StockFontBuffer(800 - left, 60, 1, showcolor, gAnnouncementContent, 0);
+}
+#endif
+

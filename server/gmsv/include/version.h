@@ -4,6 +4,10 @@
 #include "correct_bug.h"
 #include "common.h"
 
+#define _ATTESTAION_ID 1
+#define _VERSION_80
+#define _NEW_FUNC_DECRYPT
+#define DENGLUKEY1 "6D27AEB8326A2A8E7D04B9F9B44C59C7"
 /*  网络模型  */
 //#define _EPOLL_ET_MODE         // EPOLL_ET模型
 //#define _EPOLL_POOL_COUNT 5    // 线程池数量

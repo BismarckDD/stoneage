@@ -1,10 +1,4 @@
-﻿#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <direct.h>
-#include <math.h>
-
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "systeminc/loadrealbin.h"
 #include "systeminc/loadsprbin.h"
 #include "systeminc/field.h"

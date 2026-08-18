@@ -7,32 +7,30 @@
 #include "version.h"
 #define DISP_BUFFER_SIZE 4096 // ???????
 enum {
-  DISP_PRIO_BG = 0,       // 背景
-  DISP_PRIO_TILE = 1,     // 地表// ????????????????
-  DISP_PRIO_CHAR = 10,    // 人物// ???
-  DISP_PRIO_PARTS = 10,   // 建物// ???????
+  DISP_PRIO_BG = 0,       // 背景图片
+  DISP_PRIO_TILE = 1,     // 地表图片
+  DISP_PRIO_CHAR = 10,    // 玩家/NPC/宠物
+  DISP_PRIO_PARTS = 10,   // 建筑物
   DISP_PRIO_RESERVE = 20, // 预留
-  DISP_PRIO_JIKI = 30,    /* ?     */
-  DISP_PRIO_GRID = 100,   // ????????
-  DISP_PRIO_BOX,          /* ???? */
-  DISP_PRIO_IME1,         /* ????????????  ?? */
-  DISP_PRIO_IME2,         /* ????????????  ? */
-                          /* ??????? */
-  DISP_PRIO_MENU,         // 选单/* ???? */
-  DISP_PRIO_IME3,         /* ?????????????  ?? */
-  DISP_PRIO_IME4,         /* ?????????????  ? */
-  DISP_PRIO_BOX2,         /* ????? */
-  DISP_PRIO_ITEM,         /* ???? */
-                          /* ???????? */
-  DISP_PRIO_YES_NO_WND,   /* ?????? */
-  DISP_PRIO_YES_NO_BTN,   /* ???? */
-  DISP_PRIO_BOX3,         /* ????? */
-  DISP_PRIO_DRAG,         /* ????? */
-  DISP_PRIO_MOUSE,        /* ???????     */
-  DISP_PRIO_TOP = 255     /* ??     */
+  DISP_PRIO_JIKI = 30,    /* */
+  DISP_PRIO_GRID = 100,   /* */
+  DISP_PRIO_BOX,          /* */
+  DISP_PRIO_IME1,         /* */
+  DISP_PRIO_IME2,         /* */
+  DISP_PRIO_MENU,         // 选单图片
+  DISP_PRIO_IME3,         /* */
+  DISP_PRIO_IME4,         /* */
+  DISP_PRIO_BOX2,         /*  */
+  DISP_PRIO_ITEM,         /* */
+  DISP_PRIO_YES_NO_WND,   /* */
+  DISP_PRIO_YES_NO_BTN,   /* */
+  DISP_PRIO_BOX3,         /* */
+  DISP_PRIO_DRAG,         /* */
+  DISP_PRIO_MOUSE,        /* */
+  DISP_PRIO_TOP = 255     /* */
 };
 
-typedef struct {
+struct DISP_INFO {
   int x, y;        // 秀图时的座标// ?
   int bmpNo;       // 图编号
   ACTION *pAct;    // 动作
@@ -44,7 +42,7 @@ typedef struct {
 #ifdef _SFUMATO
   int sfumato; // 二次渲染图层色彩
 #endif
-} DISP_INFO;
+};
 
 typedef struct {
   short no;       // 这张图在DISP_INFO的位置// ????????
@@ -56,8 +54,8 @@ typedef struct {
   DISP_SORT DispSort[DISP_BUFFER_SIZE];
   short DispCnt; // 目前储存数量//
 } DISP_BUFFER;
-extern DISP_BUFFER DispBuffer;
 
+extern DISP_BUFFER DispBuffer;
 extern char *pRealBinBits;
 extern int RealBinWidth, RealBinHeight;
 #ifdef _READ16BITBMP
@@ -83,7 +81,6 @@ void ablend_565(unsigned char *lpAlpha, unsigned int iAlpPitch,
                 unsigned int iDstH, unsigned int iDstPitch);
 extern int SurfaceBusyFlag;
 void SortDispBuffer(void);
-BOOL 获取动画尺寸(ACTION *a0, short *wx, short *wy);
 void PutBmp(void);
 int StockDispBuffer(int x, int y, UCHAR prio, int bmpNo, BOOL hitFlag);
 int StockDispBufferScaled(int x, int y, UCHAR prio, int bmpNo);

@@ -1,6 +1,4 @@
 #include <windows.h>
-
-#include "version.h"
 #include "systeminc/system.h"
 #include "vg410.h"
 #include "work.h"
@@ -38,10 +36,10 @@ Uint32 joy_auto_repeat(Uint8 d1)
         joy_timer[d1]=0;        /*?????????????*/
         return 0;
     }
-    if(joy_trg[d1] & JOY_UP){                /*ýÆ?*/
-        d0|=JOY_UP;                    /*????ýÆ???*/
+    if(joy_trg[d1] & JOY_UP){                /*ï¿½ï¿½?*/
+        d0|=JOY_UP;                    /*????ï¿½ï¿½???*/
     } else {
-        if(joy_con[d1] & JOY_UP){            /*ýÆ?*/
+        if(joy_con[d1] & JOY_UP){            /*ï¿½ï¿½?*/
             joy_timer[d1]++;    /*??*/
             if(joy_timer[d1]==REPEAT_TIME){
                 joy_timer[d1]-=REPEAT_SPEED;
@@ -157,12 +155,12 @@ Uint32 joy_auto_repeat(Uint8 d1)
 }
 
 #if 0
-/*??????????  ??????¥‚????????§\?  ??????????*/
+/*??????????  ??????ï¿½ï¿½????????ï¿½\?  ??????????*/
 void joy_read(void)
 {
     Uint16    d0,d1;
     Uint16 a,c;
-    d0=0;                        //??¢Dûè???
+    d0=0;                        //??ï¿½Dï¿½ï¿½???
     if(GetAsyncKeyState(VK_LEFT) & 0x8000)
         d0|=JOY_LEFT;
     if(GetAsyncKeyState(VK_UP) & 0x8000)
@@ -181,7 +179,7 @@ void joy_read(void)
         d0|=JOY_B;
     joy_con[0] = d0;
 
-    d0=0;                        //??¢Dûè???
+    d0=0;                        //??ï¿½Dï¿½ï¿½???
     if(GetAsyncKeyState(VK_NUMPAD4) & 0x8000)
         d0|=JOY_LEFT;
     if(GetAsyncKeyState(VK_NUMPAD8) & 0x8000)
@@ -200,19 +198,19 @@ void joy_read(void)
         d0|=JOY_B;
     joy_con[1] = d0;
 
-    d1 = ~(joy_buf[0]);                //??¢D???
+    d1 = ~(joy_buf[0]);                //??ï¿½D???
     joy_trg[0] = d1 & joy_con[0];
 
-    d1 = ~(joy_buf[1]);                //??¢D???
+    d1 = ~(joy_buf[1]);                //??ï¿½D???
     joy_trg[1] = d1 & joy_con[1];
 
-    c = ~(joy_con[0]);                //??¢D¢¬úÇ?
+    c = ~(joy_con[0]);                //??ï¿½Dï¿½ï¿½ï¿½ï¿½?
     a = ~(joy_buf[0]);
     a ^= c;
     a &= c;
     joy_pul[0] = a;
 
-    c = ~(joy_con[1]);                //??¢D¢¬úÇ?
+    c = ~(joy_con[1]);                //??ï¿½Dï¿½ï¿½ï¿½ï¿½?
     a = ~(joy_buf[1]);
     a ^= c;
     a &= c;
@@ -226,21 +224,21 @@ void joy_read(void)
 }
 #else
 /*-------------------------------------------
-    ?????????ûè¥x
+    ?????????ï¿½ï¿½x
 ---------------------------------------------*/
 BOOL CALLBACK GetJoystickCallback(LPDIDEVICEINSTANCE lpddi,LPVOID pvRef)
 {
     HRESULT ret;
 
 #ifndef DI_2
-    //??????????????????????þÎ
+    //??????????????????????ï¿½ï¿½
     ret = pDInput->CreateDevice(lpddi->guidInstance,&pDInputDevice2,NULL);
     if(ret != DI_OK){
         return DIENUM_CONTINUE;
     }
 #else
     LPDIRECTINPUTDEVICE pDev;
-    //??????????????????????þÎ
+    //??????????????????????ï¿½ï¿½
     ret = pDInput->CreateDevice(lpddi->guidInstance,&pDev,NULL);
     if(ret != DI_OK){
         return DIENUM_CONTINUE;
@@ -250,7 +248,7 @@ BOOL CALLBACK GetJoystickCallback(LPDIDEVICEINSTANCE lpddi,LPVOID pvRef)
     return DIENUM_STOP;
 }
 
-/*??????????  ??????¥‚????????????????§\?  ??????????*/
+/*??????????  ??????ï¿½ï¿½????????????????ï¿½\?  ??????????*/
 void joy_read(void)
 {
     Uint32    d0,d1;
@@ -264,11 +262,11 @@ void joy_read(void)
 
     d0=0;                        
     
-    //??¢Dûè???
+    //??ï¿½Dï¿½ï¿½???
     
     if( DInputActiveFlag == TRUE ){
-        if(joy_flg == TRUE){        //????????£Ï£Ë??
-            pDInputDevice2->Poll();        //????????¥‚???
+        if(joy_flg == TRUE){        //????????ï¿½Ï£ï¿½??
+            pDInputDevice2->Poll();        //????????ï¿½ï¿½???
             ret = pDInputDevice2->GetDeviceState(sizeof(DIJOYSTATE),&dijs);
             if(ret == DI_OK){
                 if(dijs.lX > 500)
@@ -288,7 +286,7 @@ void joy_read(void)
                 pDInputDevice2->Acquire();
             }
         }
-        ret = pDInputDevice->GetDeviceState(256,di_key);        //?????¥‚???
+        ret = pDInputDevice->GetDeviceState(256,di_key);        //?????ï¿½ï¿½???
     }
     if(ret == DI_OK){
         if(di_key[DIK_LEFT] & 0x80)
@@ -311,7 +309,7 @@ void joy_read(void)
         // ???? ?????????
         // ESC ??
         if(di_key[DIK_ESCAPE] & 0x80){
-            // ?????????§ó??þ†??
+            // ?????????ï¿½ï¿½??ï¿½ï¿½??
             //if( ImeBufferBak2 == NULL ) 
             d0|=JOY_ESC;
         }
@@ -344,7 +342,7 @@ void joy_read(void)
             
         }
         
-        // ¥{ûì??
+        // ï¿½{ï¿½ï¿½??
         if( di_key[DIK_PRIOR]    & 0x80)        d0|=JOY_P_UP;
         if( di_key[DIK_NEXT]     & 0x80)        d0|=JOY_P_DOWN;
         if( di_key[DIK_HOME]     & 0x80)        d0|=JOY_HOME;
@@ -358,8 +356,8 @@ void joy_read(void)
 
         d0=0;
         
-        //??¢Dûè???
-        // ???¨Á???þ†??
+        //??ï¿½Dï¿½ï¿½???
+        // ???ï¿½ï¿½???ï¿½ï¿½??
         if( GetImeString() == NULL ){
             
             // ?????????
@@ -392,7 +390,7 @@ void joy_read(void)
             if(di_key[DIK_9] & 0x80) d0|=JOY_CTRL_9;
             if(di_key[DIK_0] & 0x80) d0|=JOY_CTRL_0;
             if(di_key[DIK_MINUS] & 0x80)     d0|=JOY_CTRL_MINUS;
-            //cary Ê®Áù
+            //cary Ê®ï¿½ï¿½
             if(di_key[DIK_EQUALS] & 0x80)     d0|=JOY_CTRL_CIRCUMFLEX;
             if(di_key[DIK_BACKSLASH] & 0x80) d0|=JOY_CTRL_YEN;
             if(di_key[DIK_J] & 0x80) d0|=JOY_CTRL_J;
@@ -403,7 +401,7 @@ void joy_read(void)
             // Robin 0607 channel
             if(di_key[DIK_C] & 0x80) d0|=JOY_CTRL_C;
 
-            #ifdef _TELLCHANNEL                //ROG ADD ÃÜÓïÆµµÀ
+            #ifdef _TELLCHANNEL                //ROG ADD ï¿½ï¿½ï¿½ï¿½Æµï¿½ï¿½
             if( di_key[DIK_R] & 0x80 ) d0|=JOY_CTRL_R;
             #endif
 
@@ -510,19 +508,19 @@ void joy_read(void)
         
         joy_con[1] = d0;
 
-        d1 = ~(joy_buf[0]);                //??¢D???
+        d1 = ~(joy_buf[0]);                //??ï¿½D???
         joy_trg[0] = d1 & joy_con[0];
 
-        d1 = ~(joy_buf[1]);                //??¢D???
+        d1 = ~(joy_buf[1]);                //??ï¿½D???
         joy_trg[1] = d1 & joy_con[1];
 
-        c = ~(joy_con[0]);                //??¢D¢¬úÇ?
+        c = ~(joy_con[0]);                //??ï¿½Dï¿½ï¿½ï¿½ï¿½?
         a = ~(joy_buf[0]);
         a ^= c;
         a &= c;
         joy_pul[0] = a;
 
-        c = ~(joy_con[1]);                //??¢D¢¬úÇ?
+        c = ~(joy_con[1]);                //??ï¿½Dï¿½ï¿½ï¿½ï¿½?
         a = ~(joy_buf[1]);
         a ^= c;
         a &= c;
@@ -561,14 +559,14 @@ int InitDInput(void)
         return FALSE;
     }
 #endif
-    //???????????????????þÎ
+    //???????????????????ï¿½ï¿½
     ret = pDInput->CreateDevice(GUID_SysKeyboard,&pDInputDevice,NULL);
     if(ret != DI_OK){
         RELEASE(pDInput);
         return FALSE;
     }
 
-    //??????????¡@¤e
+    //??????????ï¿½@ï¿½e
     ret = pDInputDevice->SetDataFormat(&c_dfDIKeyboard);
     if(ret != DI_OK){
         RELEASE(pDInputDevice);
@@ -576,7 +574,7 @@ int InitDInput(void)
         return FALSE;
     }
 
-    //????¡@¤e
+    //????ï¿½@ï¿½e
     ret = pDInputDevice->SetCooperativeLevel(hWnd,DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
     if(ret != DI_OK){
         RELEASE(pDInputDevice);
@@ -597,12 +595,12 @@ int InitDInput(void)
         return FALSE;
     }
 #endif
-    keyboad_flg = TRUE;        //?????£Ï£Ë
+    keyboad_flg = TRUE;        //?????ï¿½Ï£ï¿½
 
-    joy_flg = FALSE;        //????????þtúé?
+    joy_flg = FALSE;        //????????ï¿½tï¿½ï¿½?
     return TRUE;
 
-    //?????????£S?
+    //?????????ï¿½S?
     pDInputDevice2 = NULL;
 
 #ifndef DI_2
@@ -618,7 +616,7 @@ int InitDInput(void)
         return FALSE;
     }
 #endif
-    //??????????¡@¤e
+    //??????????ï¿½@ï¿½e
     ret = pDInputDevice2->SetDataFormat(&c_dfDIJoystick);
     if(ret != DI_OK){
         RELEASE(pDInputDevice2);
@@ -626,7 +624,7 @@ int InitDInput(void)
         return FALSE;
     }
 
-    //????¡@¤e
+    //????ï¿½@ï¿½e
     ret = pDInputDevice2->SetCooperativeLevel(hWnd,DISCL_NONEXCLUSIVE | DISCL_FOREGROUND);
     if(ret != DI_OK){
         RELEASE(pDInputDevice2);
@@ -636,7 +634,7 @@ int InitDInput(void)
 
     DIPROPRANGE diprg; 
  
-    // û´?£k?§d??¡@¤e
+    // ï¿½ï¿½?ï¿½k?ï¿½d??ï¿½@ï¿½e
     diprg.diph.dwSize    = sizeof(diprg); 
     diprg.diph.dwHeaderSize    = sizeof(diprg.diph); 
     diprg.diph.dwObj    = DIJOFS_X; 
@@ -649,7 +647,7 @@ int InitDInput(void)
 
     pDInputDevice2->Acquire();
 
-    joy_flg = TRUE;        //????????£Ï£Ë
+    joy_flg = TRUE;        //????????ï¿½Ï£ï¿½
     return TRUE;
 }
 /*-------------------------------------------
@@ -657,13 +655,13 @@ int InitDInput(void)
 ---------------------------------------------*/
 int EndDInput(void)
 {
-    //?????£Ï£Ë??
+    //?????ï¿½Ï£ï¿½??
     if(keyboad_flg == TRUE){
         pDInputDevice->Unacquire();
         RELEASE(pDInputDevice);
         RELEASE(pDInput);
     }
-    //????????£Ï£Ë??
+    //????????ï¿½Ï£ï¿½??
     if(joy_flg == TRUE){
         pDInputDevice2->Unacquire();
         RELEASE(pDInputDevice2);

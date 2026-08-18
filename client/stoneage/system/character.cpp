@@ -1,12 +1,6 @@
-﻿#include <stdio.h>
-#include <stdlib.h>
-
-/* WIN32_LEAN_AND_MEAN?define???WINDOWS.H???
-?????????????????*/
-#define WIN32_LEAN_AND_MEAN 
+﻿#define WIN32_LEAN_AND_MEAN 
 #include <windows.h>
 #include <Mmsystem.h>
-#include <math.h>
 
 #include "systeminc/system.h"
 #include "systeminc/action.h"
@@ -24,7 +18,30 @@
 
 extern BOOL g_bUseAlpha;
 
-// ?????????
+BOOL getCartoonSize(ACTION *a0, S2 *wx, S2 *wy) {
+  int chrNo = ATR_CHR_NO(a0) - SPRSTART;
+  if (chrNo < 0) {
+    int BmpNo;
+    realGetNo(ATR_CHR_NO(a0), (U4 *)&BmpNo);
+    if (realGetWH(BmpNo, wx, wy))
+      return TRUE;
+    else
+      return FALSE;
+  } else {
+    if (chrNo >= mxSPRITE)
+      return FALSE;
+    ANIMLIST *ptAnimlist = SpriteData[chrNo].ptAnimlist;
+    if (ptAnimlist) {
+      FRAMELIST *ptFramelist = ptAnimlist[0].ptFramelist;
+      if (realGetWH(ptFramelist[0].BmpNo, wx, wy))
+        return TRUE;
+      else
+        return FALSE;
+    }
+  }
+  return FALSE;
+}
+
 enum
 {
     CHAROBJ_USE_FREE,
@@ -32,13 +49,12 @@ enum
     CHAROBJ_USE_VIEW
 };
 // Robin
-//#define MAX_CHAROBJ    1000
-#define MAX_CHAROBJ    1500
+#define MAX_CHAROBJ 1500
 CHAROBJ charObj[MAX_CHAROBJ];
-int maxCharObj;        // ??
-int tailCharObj;    // ????????
-int freeCharObj;    // ???????
-int searchCharObj;    // ???
+int maxCharObj;
+int tailCharObj;
+int freeCharObj;
+int searchCharObj;
 
 #ifdef _AniCharBubble       // Syu ADD 动画层人物吐出气泡
 #define RAND(x,y)   ((x-1)+1+ (int)( (double)(y-(x-1))*rand()/(RAND_MAX+1.0)) )
@@ -48,14 +64,8 @@ int waittime = 0 ;            //气泡结束后等待时间
 static ACTION *popAct;        //气泡动画
 #endif
 
-// ???????????????
-int charIconOffsetY[12] =
-{
-    -71, -88, -84, -88, -96, -102, -88, -88, -88, -85, -85, -88
-};
+int charIconOffsetY[12] = { -71, -88, -84, -88, -96, -102, -88, -88, -88, -85, -85, -88 };
 
-
-// ???????
 int battleIconTbl[][2] =
 {
     {  CG_VS_MARK_1A,  CG_VS_MARK_1B },
@@ -1183,7 +1193,7 @@ void drawCharStatus( ACTION *ptAct )
                     }
                 }
                 short x1,y1;
-                if(获取动画尺寸(ptAct,&x1,&y1)){
+                if(getCartoonSize(ptAct,&x1,&y1)){
                     ext->ptmManorIcon->x  = ptAct->x;
                     ext->ptmManorIcon->y  = ptAct->y;
                     ext->ptmManorIcon->mx = ptAct->mx;
@@ -1206,7 +1216,7 @@ void drawCharStatus( ACTION *ptAct )
             int no;
             U4 bmpNo;
             short x1,y1;
-            if(获取动画尺寸(ptAct,&x1,&y1)){
+            if(getCartoonSize(ptAct,&x1,&y1)){
                 realGetNo( battleIconTbl[(battleNo%10)][(sideNo%1)], &bmpNo );
                 // ??????????????
                 setCharPrio( bmpNo, ptAct->x, ptAct->y, 0,ptAct->sFamilyIcon?-(y1/2+_OTHERTEXIAOY_):-(y1/2+_FANILYTEXIAOY_), ptAct->mx, ptAct->my
@@ -1228,7 +1238,7 @@ void drawCharStatus( ACTION *ptAct )
 
             U4 bmpNo;
             short x1,y1;
-            if(获取动画尺寸(ptAct,&x1,&y1)){
+            if(getCartoonSize(ptAct,&x1,&y1)){
                 realGetNo( CG_TRADE_MARK, &bmpNo );        
                 setCharPrio( bmpNo, ptAct->x, ptAct->y, 0,ptAct->sFamilyIcon?-(y1/2+_OTHERTEXIAOY_):-(y1/2+_FANILYTEXIAOY_), ptAct->mx, ptAct->my
     #ifdef _SFUMATO
@@ -1256,7 +1266,7 @@ void drawCharStatus( ACTION *ptAct )
         //no %= 12;    // ?????????
         // ???????????????
         short x1,y1;
-        if(获取动画尺寸(ptAct,&x1,&y1)){
+        if(getCartoonSize(ptAct,&x1,&y1)){
             ext->ptActAngelMark->x  = ptAct->x;
             ext->ptActAngelMark->y  = ptAct->y + ptAct->anim_y + 140;
             ext->ptActAngelMark->mx = ptAct->mx;
@@ -1284,7 +1294,7 @@ void drawCharStatus( ACTION *ptAct )
             int no;
             U4 bmpNo;
             short x1,y1;
-            if(获取动画尺寸(ptAct,&x1,&y1)){
+            if(getCartoonSize(ptAct,&x1,&y1)){
                 realGetNo( CG_ICON_WATCHING, &bmpNo );
                 // ??????????????
                 setCharPrio( bmpNo, ptAct->x, ptAct->y, 0,ptAct->sFamilyIcon?-(y1/2+_OTHERTEXIAOY_):-(y1/2+_FANILYTEXIAOY_), ptAct->mx, ptAct->my
@@ -1304,7 +1314,7 @@ void drawCharStatus( ACTION *ptAct )
             int no;
             U4 bmpNo;
             short x1,y1;
-            if(获取动画尺寸(ptAct,&x1,&y1)){
+            if(getCartoonSize(ptAct,&x1,&y1)){
                 realGetNo( CG_SPEECH_HELP, &bmpNo );
                 // ??????????????
                 setCharPrio( bmpNo, ptAct->x, ptAct->y, 0,ptAct->sFamilyIcon?-(y1/2+_OTHERTEXIAOY_-20):-(y1/2+_FANILYTEXIAOY_-20), ptAct->mx, ptAct->my
@@ -1342,7 +1352,7 @@ void drawCharStatus( ACTION *ptAct )
                 }
             }
             short x1,y1;
-            if(获取动画尺寸(ptAct,&x1,&y1)){
+            if(getCartoonSize(ptAct,&x1,&y1)){
                 ext->ptActLeaderMark->x  = ptAct->x;
                 ext->ptActLeaderMark->y  = ptAct->y;
                 ext->ptActLeaderMark->mx = ptAct->mx;
@@ -1404,7 +1414,7 @@ void drawCharStatus( ACTION *ptAct )
                     ;//ATR_PAT_NO(ptAct) = 0;
                 }else{
                     short x1,y1;
-                    if(获取动画尺寸(ptAct,&x1,&y1)){
+                    if(getCartoonSize(ptAct,&x1,&y1)){
                         setCharPrio( bmpNo, ptAct->x, ptAct->y, 20,ptAct->sFamilyIcon?-(y1/2+_OTHERTEXIAOY_):-(y1/2+_FANILYTEXIAOY_), ptAct->mx, ptAct->my
     #ifdef _SFUMATO
                             , ptAct->sfumato
@@ -1431,7 +1441,7 @@ void drawCharStatus( ACTION *ptAct )
         if(!ext1->ptStreetVendor){
             if(ptAct->TitleText.flg==1){
                 short x1,y1;
-                if(获取动画尺寸(ptAct,&x1,&y1)){
+                if(getCartoonSize(ptAct,&x1,&y1)){
                     PutTitleText(ptAct->x-ptAct->TitleText.len/2,ptAct->y-(y1/2+45)-12,0,ptAct->TitleText,0);
                 }
             }    
@@ -1573,7 +1583,7 @@ void drawCharStatus( ACTION *ptAct )
                     }
                 }
                 short x1,y1;
-                if(获取动画尺寸(ptAct,&x1,&y1)){
+                if(getCartoonSize(ptAct,&x1,&y1)){
                     pattern( ext->ptActEmotion, ANM_NOMAL_SPD, ANM_LOOP );
                     setCharPrio( ext->ptActEmotion->bmpNo,
                         ext->ptActEmotion->x, ext->ptActEmotion->y, 0,ptAct->sFamilyIcon?-(y1/2+_OTHERTEXIAOY_):-(y1/2+_FANILYTEXIAOY_),
@@ -1640,7 +1650,7 @@ void drawCharStatus( ACTION *ptAct )
                     }
                 }
                 short x1,y1;
-                if(获取动画尺寸( ptAct,&x1,&y1)){
+                if(getCartoonSize( ptAct,&x1,&y1)){
                     ext->ptMindIcon->x  = ptAct->x;
                     ext->ptMindIcon->y  = ptAct->y;
                     ext->ptMindIcon->mx = ptAct->mx;
@@ -1670,7 +1680,7 @@ void drawCharStatus( ACTION *ptAct )
                 }
                 short x1,y1,x2,y2;
                 y2=x2=0;
-                if(获取动画尺寸(ptAct,&x1,&y1)){
+                if(getCartoonSize(ptAct,&x1,&y1)){
                     ext->ptNoticeIcon->x  = ptAct->x;
                     ext->ptNoticeIcon->y  = ptAct->y;
                     ext->ptNoticeIcon->mx = ptAct->mx;
@@ -1707,7 +1717,7 @@ void drawCharStatus( ACTION *ptAct )
                 }
                 short x1,y1,x2,y2;
                 y2=x2=0;
-                if(获取动画尺寸(ptAct,&x1,&y1)){
+                if(getCartoonSize(ptAct,&x1,&y1)){
                     ext->ptFamilyIcon->x  = ptAct->x;
                     ext->ptFamilyIcon->y  = ptAct->y;
                     ext->ptFamilyIcon->mx = ptAct->mx;
@@ -1715,7 +1725,7 @@ void drawCharStatus( ACTION *ptAct )
                     pattern( ext->ptFamilyIcon, ANM_NOMAL_SPD, ANM_LOOP );
 #ifdef _CHARTITLE_
                     if(ext->ptTitleIcon){
-                        获取动画尺寸(ext->ptTitleIcon,&x2,&y2);
+                        getCartoonSize(ext->ptTitleIcon,&x2,&y2);
                         x2=x2/2;
                     }
 #endif
@@ -1763,7 +1773,7 @@ void drawCharStatus( ACTION *ptAct )
                     }
                 }
                 short x1,y1;
-                if(获取动画尺寸(ptAct,&x1,&y1)){
+                if(getCartoonSize(ptAct,&x1,&y1)){
                     ext->ptmFamilyIcon->x  = ptAct->x;
                     ext->ptmFamilyIcon->y  = ptAct->y;
                     ext->ptmFamilyIcon->mx = ptAct->mx;
@@ -1799,7 +1809,7 @@ void drawCharStatus( ACTION *ptAct )
                 }
                 short x1,y1,x2,y2;
                 y2=x2=0;
-                if(获取动画尺寸(ptAct,&x1,&y1)){
+                if(getCartoonSize(ptAct,&x1,&y1)){
                     ext->ptTitleIcon->x  = ptAct->x;
                     ext->ptTitleIcon->y  = ptAct->y;
                     ext->ptTitleIcon->mx = ptAct->mx;
@@ -2105,14 +2115,8 @@ void drawCharStatus( ACTION *ptAct )
     else if( ((ptAct->picture>>24) & 0x000000ff) == 2 && ext->ptActPicture != NULL ) {
         int pictable[9]={100388,100841,101178,100854,101570,100353,101759,101424,101489};
         if( ptAct->anim_chr_no == pictable[((ptAct->picture&0x00ff0000)>>16)&0x000000ff] ){
-            //int no;
-            //no = (ptAct->anim_chr_no - SPR_001em) / 20;
-            //no %= 12;    // ?????????
-            // ???????????????
-
-
             short x1,y1;
-            if(获取动画尺寸(ptAct,&x1,&y1)){
+            if(getCartoonSize(ptAct,&x1,&y1)){
                 ext->ptActPicture->x  = ptAct->x;
                 ext->ptActPicture->y  = ptAct->y + ptAct->anim_y + 140;
                 ext->ptActPicture->mx = ptAct->mx;
@@ -4042,6 +4046,3 @@ void 设置静止的动作为站立( void )
         }
     }
 }
-
-
-

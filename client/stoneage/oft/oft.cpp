@@ -1,5 +1,4 @@
-﻿#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "vg410.h"
 #include "work.h"
 #include "systeminc/loadrealbin.h"

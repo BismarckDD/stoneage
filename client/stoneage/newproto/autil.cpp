@@ -5,15 +5,12 @@
 // -------------------------------------------------------------------
 // The following definitions is to define game-dependent codes.
 // Before compiling, remove the "//".
-#define __STONEAGE
-#include "version.h"
-#include <stdio.h>
-#include <stdlib.h>
 #include <windows.h>
 #include "autil.h"
 #include "systeminc/chat.h"
 #include "systeminc/font.h"
 #include "systeminc/lssproto_util.h"
+#include <cstdio>
 
 char **MesgSlice;
 int SliceCount;
@@ -33,7 +30,6 @@ void util_Init(void) {
 // -------------------------------------------------------------------
 // Split up a message into slices by spearator.  Store those slices
 // into a global buffer "char **MesgSlice"
-//
 // arg: source=message string;  separator=message separator (1 byte)
 // ret: (none)
 void util_SplitMessage(char *source, char *separator) {
@@ -140,30 +136,9 @@ int util_GetFunctionFromSlice(int *func, int *fieldcount) {
   return 0; // failed: message not complete
 }
 
-// -------------------------------------------------------------------
 // Discard a message from MesgSlice.
-//
 void util_DiscardMessage(void) {
-
   SliceCount = 0;
-  /*
-    int i,j;
-    void *ptr;
-
-    i=0;
-    while ((i<SliceCount)&&(strcmp(MesgSlice[i], DEFAULTFUNCBEGIN)!=0)) i++;
-
-    if (i>=SliceCount) {
-      // discard all message
-      for (j=0; j<SliceCount; j++) strcpy(MesgSlice[j],"");
-    } else {
-      for (j=0; j<SliceCount-i; j++) {
-        ptr=MesgSlice[j];
-        MesgSlice[j]=MesgSlice[j+i];
-        MesgSlice[j+i]=ptr;
-      }
-    }
-  */
 }
 #ifdef _NEWNET_
 extern long tea_encrypt(long *v, long n, long *k);
@@ -196,10 +171,7 @@ void util_SendMesg(int fd, int func, char *buffer) {
 #else
   util_EncodeMessage(t2, t1);
 #endif
-
-#ifdef __STONEAGE
   lssproto_Send(fd, t2);
-#endif
 }
 
 // -------------------------------------------------------------------

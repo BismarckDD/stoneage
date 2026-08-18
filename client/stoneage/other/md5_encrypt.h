@@ -10,10 +10,8 @@
 #include <stdio.h>
 #include <time.h>
 #include <string.h>
-//#include <afx.h>
 
 #define MD 5
-
 #ifndef PROTOTYPES
 #define PROTOTYPES 0
 #endif
@@ -38,7 +36,7 @@ typedef unsigned long int UINT4;  /* UINT4 defines a four byte word */
 #define TEST_BLOCK_COUNT 1000
 
  /* Constants for MD5Transform routine. */
-#define S11 7     /* ¸÷ÂÖ×óÒÆµÄÎ»Êý */
+#define S11 7     /* ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Æµï¿½Î»ï¿½ï¿½ */
 #define S12 12
 #define S13 17
 #define S14 22

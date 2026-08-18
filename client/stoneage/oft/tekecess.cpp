@@ -1,4 +1,3 @@
-#include "version.h"
 #include "systeminc/system.h"
 #include "sdk/caryime.h"
 #include "systeminc/ime_sa.h"
@@ -13,9 +12,9 @@ extern void damage_num( ACTION *a0 );
 extern int piyo_point;
 
 int flash_pal_cnt;
-PALETTEENTRY    Palette2[256];    // ?????¢B¢l
+PALETTEENTRY    Palette2[256];    // ?????ï¿½Bï¿½l
 
-/* ?©û????? *********************************************************/
+/* ?ï¿½ï¿½????? *********************************************************/
 void die_flash( void )
 {
     int d0 = 0;
@@ -24,7 +23,7 @@ void die_flash( void )
     case 0:
         break;
 
-//??????????  ?©û  ??????????
+//??????????  ?ï¿½ï¿½  ??????????
     case 1:
         flash_vct_no++;
         break;
@@ -74,22 +73,22 @@ void die_flash( void )
         }
         if(WindowMode){        //??????????
             flash_pal_cnt++;
-            if(flash_pal_cnt == 10){        //¨Á??¦u??
+            if(flash_pal_cnt == 10){        //ï¿½ï¿½??ï¿½u??
                 flash_pal_cnt = 0;
                 lpDraw->lpPALETTE->SetEntries( 0, 0, 256, Palette2 );
             } else {
-                d0 = 1;        //ü¬????
+                d0 = 1;        //ï¿½ï¿½????
             }
         } else {
             lpDraw->lpPALETTE->SetEntries( 0, 0, 256, Palette2 );
         }
-        if(d0 == 0){        //ü¬???
+        if(d0 == 0){        //ï¿½ï¿½???
             flash_vct_no = 0;
         }
         break;
 
 #if 0
-//??????????  ?ýõ  ??????????
+//??????????  ?ï¿½ï¿½  ??????????
     case 4:
         for( d7 = 0; d7 < 10; d7++ ){
             Palette2[d7].peBlue      = Palette[d7].peBlue;
@@ -137,7 +136,7 @@ void die_flash( void )
         flash_vct_no = 6;
         break;
 
-//??????????  ?ýõ  ?  ?????  ??????????
+//??????????  ?ï¿½ï¿½  ?  ?????  ??????????
     case 6:
         for(d7=10; d7<246; d7++){
             if(Palette2[d7].peRed != Palette[d7].peRed){
@@ -170,41 +169,41 @@ void die_flash( void )
         }
         if(WindowMode){        //??????????
             flash_pal_cnt++;
-            if(flash_pal_cnt == 10){        //¨Á??¦u??
+            if(flash_pal_cnt == 10){        //ï¿½ï¿½??ï¿½u??
                 flash_pal_cnt = 0;
                 lpDraw->lpPALETTE->SetEntries( 0, 0, 256, Palette2 );
             } else {
-                d0 = 1;        //ü¬????
+                d0 = 1;        //ï¿½ï¿½????
             }
         } else {
             lpDraw->lpPALETTE->SetEntries( 0, 0, 256, Palette2 );
         }
-        if(d0 == 0){        //ü¬???
+        if(d0 == 0){        //ï¿½ï¿½???
             flash_vct_no = 0;
         }
         break;
 #endif
     }
 }
-/* ???????£k¤úû¨ *********************************************************/
+/* ???????ï¿½kï¿½ï¿½ï¿½ï¿½ *********************************************************/
 void damage_dispx( void )
 {
-    ACTION *pActLoop = pActTop->pNext;     /* ¡I¥d????????ûè¥x */
-    ACTION *pActLoopBak;  /* ?©û???????? */
+    ACTION *pActLoop = pActTop->pNext;     /* ï¿½Iï¿½d????????ï¿½ï¿½x */
+    ACTION *pActLoopBak;  /* ?ï¿½ï¿½???????? */
     int d0;
     char szMoji[ 256 ];
 
     // ?????    
     while(1){
     
-        /* ??§Ž???????? */    
+        /* ??ï¿½ï¿½???????? */    
         if( pActLoop == pActBtm ) break;
 
-        /* þØ????? */
+        /* ï¿½ï¿½????? */
         if( pActLoop->deathFlag == FALSE ){
         
             /* Pd( pActLoop->prio ); */
-            /* ?????????ûÂ? */
+            /* ?????????ï¿½ï¿½? */
             if( pActLoop->func == damage_num ){
                 if(ATR_INT_WORK1(pActLoop) == 0){        //????
                     sprintf_s( szMoji,"Miss" );
@@ -224,12 +223,12 @@ void damage_dispx( void )
             
         }else{    /* ?????? */
         
-            /* ¡q????? */
+            /* ï¿½q????? */
             pActLoop->pPrev->pNext = pActLoop->pNext;
             pActLoop->pNext->pPrev = pActLoop->pPrev;
             /* ?????? */
             pActLoopBak = pActLoop->pNext;
-            /* ??????úÇ */
+            /* ??????ï¿½ï¿½ */
             ClearAction( pActLoop );
             /* ???????? */
             pActLoop = pActLoopBak;
@@ -269,7 +268,7 @@ void TakeTestProc( void )
                     piyo_point &= 63;
                 }
                 if(s_timer&3){
-                    damage_dispx();        //???????£k¤úû¨
+                    damage_dispx();        //???????ï¿½kï¿½ï¿½ï¿½ï¿½
                     goto TakeTestProc01_100;
                 }
             } else {
@@ -282,11 +281,11 @@ void TakeTestProc( void )
             RunAction();
 
 TakeTestProc01_100:
-            if(flash_vct_no){        //?©û???????
-                die_flash();        //?©û?????
+            if(flash_vct_no){        //?ï¿½ï¿½???????
+                die_flash();        //?ï¿½ï¿½?????
             }
 
-            // ???¤úû¨????????????
+            // ???ï¿½ï¿½ï¿½ï¿½????????????
             StockTaskDispBuffer();
             
             /* ?????? */

@@ -1,5 +1,4 @@
 #include "version.h"
-#include <string.h>
 #include "char.h"
 #include "object.h"
 #include "char_base.h"
@@ -14,7 +13,8 @@
 #include "anim_tbl.h"
 #include "handletime.h"
 #include "npc_eventaction.h"
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 extern int CheckCharMaxItem(int charindex);
 #endif
 enum {
@@ -302,8 +302,10 @@ int NPC_NPCEnemy_Encount( int meindex, int char_index, int mode)
 				found = TRUE;
 				itemid = atoi(data);
 
-#ifdef _NEW_ITEM_
-				for(j=0;j<itemMax;j++){
+#ifdef _NEW_ITEM_
+
+				for(j=0;j<itemMax;j++){
+
 #else
 				for( j=0 ; j<CHAR_MAXITEMHAVE ; j++ ){
 #endif
@@ -705,9 +707,12 @@ static int NPC_NPCEnemy_StealItem( char *argstr, int meindex, int char_index)
 		int		delitemgroup[CHAR_MAXITEMHAVE];
 		int		found = 0;
 		int		i;
-#ifdef _NEW_ITEM_
-		int itemMax = CheckCharMaxItem(char_index);
-		for( i = 0; i < itemMax; i ++ ) {
+#ifdef _NEW_ITEM_
+
+		int itemMax = CheckCharMaxItem(char_index);
+
+		for( i = 0; i < itemMax; i ++ ) {
+
 #else
 		for( i = 0; i < CHAR_MAXITEMHAVE; i ++ ) {
 #endif
@@ -994,9 +999,12 @@ BOOL NPCEnemy_WarpManReduce(int meindex,int talker,char *buf)
 	getStringFromIndexWithDelim(buf2,"*",2,buf3,sizeof(buf3));
 	kosuu = atoi(buf3);
 	
-#ifdef _NEW_ITEM_
-		int itemMax = CheckCharMaxItem(talker);
-		for( i=0;i<itemMax;i++ ){
+#ifdef _NEW_ITEM_
+
+		int itemMax = CheckCharMaxItem(talker);
+
+		for( i=0;i<itemMax;i++ ){
+
 #else
 		for( i=0;i<CHAR_MAXITEMHAVE;i++ ){
 #endif
@@ -1100,9 +1108,12 @@ BOOL NPCEnemy_ItemCheck(int meindex,int talker,int itemNo,int flg)
 	int i;
 	int item_index=-1;
 	int id;
-#ifdef _NEW_ITEM_
-		int itemMax = CheckCharMaxItem(talker);
-		for( i=0;i<itemMax;i++ ){
+#ifdef _NEW_ITEM_
+
+		int itemMax = CheckCharMaxItem(talker);
+
+		for( i=0;i<itemMax;i++ ){
+
 #else
 		for( i=0;i<CHAR_MAXITEMHAVE;i++ ){
 #endif

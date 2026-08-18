@@ -4558,14 +4558,10 @@ void lssproto_hundredkill_recv(int fd, int flag) {
 #ifdef _ANNOUNCEMENT_
 
 void lssproto_DENGON_recv(char *data, int colors, int nums) {
-  extern int 公告数量;
-  extern char 公告内容[512];
-  extern int 公告颜色;
-  extern int 公告时间;
-  公告时间 = 0;
-  sprintf(公告内容, "%s", data);
-  公告颜色 = colors;
-  公告数量 = nums;
+  gAnnouncementTime = 0;
+  sprintf(gAnnouncementContent, "%s", data);
+  gAnnouncementColor = colors;
+  gAnnouncementNum = nums;
 }
 #endif
 

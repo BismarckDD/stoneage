@@ -5,17 +5,16 @@
 #ifndef __AUTIL_H__
 #define __AUTIL_H__
 #include "version.h"
-#define SLICE_MAX  20
+#define SLICE_MAX 20
 #define SLICE_SIZE 65500
-extern char **MesgSlice;    // store message slices
-extern int SliceCount;      // count slices in MesgSlice
-
+extern char **MesgSlice; // store message slices
+extern int SliceCount;   // count slices in MesgSlice
 extern char PersonalKey[];
 
-#define DEFAULTTABLE    \
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz{}"
+#define DEFAULTTABLE                                                           \
+  "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz{}"
 #define DEFAULTFUNCBEGIN "&"
-#define DEFAULTFUNCEND   "#"
+#define DEFAULTFUNCEND "#"
 
 void util_Init(void);
 void util_Release(void);
@@ -46,52 +45,44 @@ int util_mkint(char *buffer, int value);
 int util_destring(int sliceno, char *value);
 int util_mkstring(char *buffer, char *value);
 
-#endif
-
-
-int strcmptail( char *s1 , char *s2 );
-
-#ifndef _AUTIL_H_
-#define _AUTIL_H_
+int strcmptail(char *s1, char *s2);
 
 #ifdef _FONT_STYLE_
-typedef struct
-{
+struct WM_STR_STYLE {
   int x;
   int size;
   int color;
   char str[128];
-}WM_STR_STYLE;
+};
 
-typedef struct
-{
+struct WM_STR {
   int flg;
   WM_STR_STYLE style[30];
-} WM_STR;
+};
 
-typedef struct
-{
-    int x;
-    int size;
-    int color;
-    char str[32];
-} TITLE_STR_STYLE;
+struct TITLE_STR_STYLE {
+  int x;
+  int size;
+  int color;
+  char str[32];
+};
 
-typedef struct
-{
+struct TITLE_STR {
   int flg;
   int len;
   TITLE_STR_STYLE style[10];
-} TITLE_STR;
+};
 
-void getCharTitleSplit( char *str,TITLE_STR* title);
+void getCharTitleSplit(char *str, TITLE_STR *title);
 extern WM_STR wmstr[25];
-void getStrSplitNew( char str[][256]);
-extern char* sunday( char* str,  char* subStr);
-void PutWinText(int x,int y,char fontPrio,int color,char *str,BOOL hitFlag,int index );
+void getStrSplitNew(char str[][256]);
+extern char *sunday(char *str, char *subStr);
+void PutWinText(int x, int y, char fontPrio, int color, char *str, BOOL hitFlag,
+                int index);
 
-#endif
-#endif
+#endif // _FONT
 
-BOOL getStringFromIndexWithDelim_body(char* src, char* delim, int index, char* buf, int buflen);
+#endif // 
 
+BOOL getStringFromIndexWithDelim_body(char *src, char *delim, int index,
+                                      char *buf, int buflen);

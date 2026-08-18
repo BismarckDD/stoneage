@@ -61,7 +61,6 @@ extern BOOL TimeZonePalChangeFlag; // ??┼??????????????
 void RealTimeToSATime( LSTIME *lstime );
 /*void LSTimeToRealTime( LSTIME *lstime, long *t);*/
 LSTIME_SECTION getLSTime (LSTIME *lstime);
-// ??┼??????????? ***********************************/
 void TimeZoneProc( void );
 
 #endif  /*__HANDLETIME_H__*/
