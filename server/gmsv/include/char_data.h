@@ -12,18 +12,13 @@
 
 typedef struct tagLevelUpPattern
 {
-#if 1
     struct  Exptbl{
         int origin;
         int multi;
     }exptbl[3];
     int     hpupminpoint;   /*  hp 及丐互月   斓袄*/
     int     hpupmaxpoint;   /*  hp 及丐互月   斓袄*/
-
     int     needexp;        /*    邰卅烦董袄    */
-#else
-    int     uppoint[5];
-#endif
 }LevelUpPattern;
 
 /*====================赓渝袄｝伊皮伙失永皿楮溢====================*/

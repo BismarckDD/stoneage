@@ -51,13 +51,13 @@ char szUser[32];
 char szPassword[32];
 
 void initInputIdPassword(void);
+void initServerSelectionBox(void);
 int inputIdPassword(BOOL);
 void initCommonMsgWin(void);
 int commonMsgWin(char *);
 void initCertifyIdPassword(void);
-void initSelectServer(void);
-int selectGroup();
-int selectServer();
+int renderGroupSelectionBox();
+int renderServerSelectionBox();
 void initConnecGameServer(void);
 int connecGameServer(void);
 void initDownloadCharList(void);
@@ -145,7 +145,6 @@ static short usernameBoxX, usernameBoxY;
 static short passwordBoxX, passwordBoxY;
 static short OkButtonX, OkButtonY;
 static short QuitButtonX, QuitButtonY;
-BOOL bAgain = FALSE;
 #ifdef _DELBORNPLACE // Syu ADD 6.0版本后，人物统一出生于新手村
 static ACTION *pActPet20;
 int BornPetNum = 0;
@@ -173,7 +172,7 @@ static char *gButtonList[] = {
     "确  定", "取  消",
     "上一页", "下一页" };
 
-// 第一个界面所有
+// 账号密码界面(启动后第一个页面)的生成和控制逻辑
 void idPasswordProc(void)
 {
     // 登录画面状态机（SubProcNo）：
@@ -196,9 +195,8 @@ void idPasswordProc(void)
     }
     if (SubProcNo == 1)
     {
-        if (!bAgain)
-            bAgain = TRUE;
-        else
+        static bool isFirstFrame = true;
+        if (!isFirstFrame)
         {
             CopyMemory(idKey.buffer, szUser, 32);
             ecb_crypt("f;encor1c", idKey.buffer, 32, DES_DECRYPT);
@@ -206,6 +204,9 @@ void idPasswordProc(void)
             ecb_crypt("f;encor1c", passwd.buffer, 32, DES_DECRYPT);
             idKey.cursor = idKey.cnt = strlen(idKey.buffer);
             passwd.cursor = passwd.cnt = strlen(passwd.buffer);
+        } else {
+            // 只有第一帧的时候不执行上面的逻辑
+            isFirstFrame = false;
         }
         idPasswordFocusSw = 0;
         GetKeyInputFocus(idPasswordFocus[idPasswordFocusSw]);
@@ -600,10 +601,10 @@ int focusFontId(int *id, int cnt)
 }
 
 static short userCertifyErrorMsgWinProcNo = 0;
-
 extern char szAnnouncement[];
 
-void titleProc(void)
+// 服务器选择页面
+void SelectServerProc(void)
 {
     int ret;
     static char msg[256];
@@ -623,7 +624,7 @@ void titleProc(void)
         {
             SubProcNo = nGroup > 1 ? 2 : 3;
             ProduceInitFlag = TRUE;
-            initSelectServer();
+            initServerSelectionBox();
         }
         else
         {
@@ -633,11 +634,9 @@ void titleProc(void)
     }
     if (SubProcNo == 2) // 选择Group
     {
-        ret = selectGroup();
+        ret = renderGroupSelectionBox();
         if (ret == 1)
-        {
-            SubProcNo++;
-        }
+            ++SubProcNo;
         else if (ret == 2)
         {
             idPasswordFocusSw = 0;
@@ -655,7 +654,7 @@ void titleProc(void)
     }
     if (SubProcNo == 3) // 选择Server
     {
-        ret = selectServer();
+        ret = renderServerSelectionBox();
         if (ret == 1)
             ++SubProcNo;
         else if (ret == 2)
@@ -671,15 +670,14 @@ void titleProc(void)
                 SubProcNo = 2;
         }
     }
-    if (SubProcNo == 4)
+    if (SubProcNo == 4) // 初始化连接Server
     {
-        // 连接GameServer的初始化
         initConnecGameServer();
-        ++ SubProcNo;
+        ++SubProcNo;
     }
     if (SubProcNo == 5) // 
     {
-        // 连接Gameserver
+        // 2026.08.19 这一步很关键，涉及网络通信!!!
         ret = connecGameServer();
         if (ret == 1)
         {
@@ -733,7 +731,7 @@ void titleProc(void)
 }
 ACTION *ptActSelectServerWin = NULL;
 
-void initSelectServer(void)
+inline void initServerSelectionBox(void)
 {
     ptActSelectServerWin = NULL;
 }
@@ -742,7 +740,7 @@ void initSelectServer(void)
 1 ... 决定Group
 2 ... 按回上一页
 3 ... 选择到网咖专用的服务器    */
-int selectGroup()
+int renderGroupSelectionBox()
 {
     static int fontId[] = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2};
     static int x, y;
@@ -832,66 +830,12 @@ int selectGroup()
     return 0;
 }
 
-#ifdef _SHOWIPSLEEP_
-HANDLE IP线程 = NULL;
-CPing objPing;
-DWORD WINAPI IP延时读取(PVOID pParam)
-{
-    int i;
-    WORD wVersionRequested;
-    WSADATA wsaData;
-    int err;
-    while (1)
-    {
-        if (SubProcNo == 3)
-        {
-            int j = gmgroup[nServerGroup].startindex;
-            for (i = 0; i < gmgroup[nServerGroup].num; i++, j++)
-            {
-                if ('1' == gmsv[j].used)
-                {
-                    int result = objPing.Ping(gmsv[j].ipaddr);
-                    if (result)
-                    {
-                        int nTime;
-                        u_char nTTL;
-                        float fMiss;
-                        nTime = -1;
-                        objPing.Result(&nTime, &fMiss, &nTTL);
-                        if (nTime > 200)
-                            nTime = -1;
-                        gmsv[j].delay = nTime;
-                    }
-                    else
-                        gmsv[j].delay = -1;
-                }
-                else
-                {
-                    gmsv[j].delay = -1;
-                }
-            }
-
-            DWORD StartTime = GetTickCount() + 1200;
-            while (1)
-            {
-                if (GetTickCount() > StartTime)
-                {
-                    break;
-                }
-                else
-                    Sleep(100);
-            }
-        }
-        else
-            break;
-        Sleep(3000);
-    }
-    return 0;
-}
-
-#endif
-
-int selectServer()
+// 渲染服务器选择页面
+/*return:    0 ... 选择中
+1 ... 决定Server
+2 ... 按回上一页
+3 ... 选择到网咖专用的服务器    */
+int renderServerSelectionBox()
 {
     static int fontId[] = {-2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2, -2};
     static int x, y;
@@ -899,6 +843,7 @@ int selectServer()
     int id;
     int i;
     int ret = 0;
+    // 服务器选择窗口
     if (ptActSelectServerWin == NULL)
     {
         y = 270 + 0;
@@ -912,6 +857,7 @@ int selectServer()
             x = 128;
         else if (row == 4)
             x = 64;
+        // 创建这个窗口
         ptActSelectServerWin = MakeWindowDisp(x, y, row << 1, 3, NULL, 1);
 #ifdef _SHOWIPSLEEP_
         extern DWORD WINAPI IP延时读取(PVOID pParam);
@@ -1008,7 +954,7 @@ int selectServer()
 
 static short connectGameServerProcNo = 0;
 
-void initConnecGameServer(void)
+inline void initConnecGameServer(void)
 {
     connectGameServerProcNo = 0;
 }
@@ -1020,7 +966,6 @@ int connecGameServer(void)
     int ret = 0;
     int ret2;
     static char msg[256];
-
     if (connectGameServerProcNo == 0)
     {
         connectGameServerProcNo = 1;
@@ -1039,7 +984,6 @@ int connecGameServer(void)
         y = ptActMenuWin->y;
 #endif
     }
-
     if (connectGameServerProcNo == 1)
     {
         cleanupNetwork();
@@ -1053,11 +997,14 @@ int connecGameServer(void)
     }
     if (connectGameServerProcNo == 2)
     {
+        // 注意这个是初始化connectServerCounter = 0;
+        // 而不是 connectGameServerProcNo = 0; !!!!
         initConnectServer();
         connectGameServerProcNo = 3;
     }
     if (connectGameServerProcNo == 3)
     {
+        // 正式进入网络连接
         ret2 = connectServer();
         if (ret2 == 1)
             ret = 1;
@@ -4686,112 +4633,20 @@ void openServerWindow(int windowtype, int buttontype, int index, int id, char *d
 
 void openServerWindowProc(void)
 {
-#if 0
-    // 
-    if( joy_trg[ 1 ] & JOY_F6 )
-    {
-#if 1
-        openServerWindow( 9, 0x3c, 0, 0,
-            "1|萨姆吉尔的武器店|欢迎光临。现在推出很棒的技能喔|"
-            "背水一战之　|500|攻击力上升３０％　防御力下降３０％|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            "地球一周|1000|也许还有什么新的发现（适当）|"
-            );
-#endif
-#if 0
-        openServerWindow( 1, 0x3c, 0, 0,
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-            "BBBBBBBBBBBBBBBB\n"
-            "CCCC\n"
-            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD\n"
-            "EE\n"
-            "FFFFF\n"
-            "GGGGGGGGGGGG\n"
-            "H\n"
-            "IIIIIIIIIIIIIIIIIIIIIIIII\n"
-            "JJJJJJJJJJJ\n"
-            "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK\n"
-            "LLLLLLLLLLLLLLL\n"
-            "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\n"
-            "BBBBBBBBBBBBBBBB\n"
-            "CCCC\n"
-            "DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDD\n"
-            "EE\n"
-            "FFFFF\n"
-            "GGGGGGGGGGGG\n"
-            "H\n"
-            "IIIIIIIIIIIIIIIIIIIIIIIII\n"
-            "JJJJJJJJJJJ\n"
-            "KKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKKK\n"
-            "LLLLLLLLLLLLLLL\n"     );
-#endif
-#if 0
-        openServerWindow( 7, 0x3c, 0, 0,
-            "1|1|0|????????|?????????????|??????????????????|"
-            "?????????????????|????????|"
-            "??|0|30|24000|???????|"
-            "??|0|100|24001|???????|"
-            "????|0|200|24001|?????????|"
-            "?????|0|300|24001|???????|"
-            "????|0|50|24001|?????????|"
-            "??????|0|100|24001|???????????|"
-            "??|0|100|24001|???????|"
-            "??|0|100|24001|???????|"
-            "??|0|100|24001|???????|"
-            "??????|0|100|24001|??????????????????????\n???????????" );
-#endif
-#if 0
-        openServerWindow( 7, 0x3c, 0, 0,
-            "0|1|0|????????|?????????????|???????????|"
-            "?个???|?????????????????\n??????|???????|"
-            "?????????????|"
-            "??|0|1|30|24000|???????|"
-            "??|0|3|100|24001|???????|"
-            "????|0|5|200|24001|?????????|"
-            "?????|0|10|300|24001|???????|"
-            "????|0|1|10|24001|?????????|"
-            "??????|0|2|100|24001|???????????|"
-            "??|0|3|100|24001|???????|"
-            "??|0|4|100|24001|???????|"
-            "??|0|1|100|24001|???????|"
-            "??????|1|100|9999999|24001|??????????????????????\n???????????" );
-#endif
-    }
-#endif
-
     // Robin 0720 Login Announce
     if (LoginAnnounce)
     {
         LoginAnnounce = 0;
         lssproto_WN_recv(sockfd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1, AnnounceBuf);
     }
-
-    // ????????????????
     if (windowTypeWN < 0)
         return;
-
-    // ????????????????????????????
     if (ABS(wnOpenX - nowGx) >= 2 || ABS(wnOpenY - nowGy) >= 2)
     {
         wnCloseFlag = 1; // ?????????
     }
     switch (windowTypeWN)
     {
-        // ???????
     case WINDOW_MESSAGETYPE_MESSAGE:
     case WINDOW_MESSAGETYPE_WIDEMESSAGE:
         serverWindowType0(0);
@@ -4942,7 +4797,6 @@ void openServerWindowProc(void)
     case WINDOW_FMMESSAGETYPE_FMSDENGON:
         FMWindowType1();
         break;
-
         // Robin FM_PK
     case WINDOW_MESSAGETYPE_PKSCHEDULELIST:
         FMPKListWN(0);
@@ -4953,23 +4807,18 @@ void openServerWindowProc(void)
     case WINDOW_MESSAGETYPE_PKSCHEDULEDETAIL:
         FMPKDetailWN(0);
         break;
-
     case WINDOW_MESSAGETYPE_FAMILYTAX:
         familyTaxWN();
         break;
-
     case WINDOW_MESSAGETYPE_SHOWRIDEPET:
         showRidePetWN();
         break;
-
     case WINDOW_MESSAGETYPE_LEADERSELECT:
         familyLeaderChangeWN();
         break;
-
     case WINDOW_MESSAGETYPE_LEADERSELECTQ:
         familyLeaderChangeQWN();
         break;
-
     case WINDOW_MESSAGETYPE_LEADERSELECTA:
         familyLeaderChangeAWN();
         break;
@@ -5126,7 +4975,6 @@ void getStrSplit(char *dist, char *src, int distSize, int line, int strLen)
         ptMsg = msg;
         while (1)
         {
-            // ???strLen??????
             if (strlen(ptMsg) > (unsigned int)strLen)
             {
                 strncpy_s(dis, strLen + 1, ptMsg, strLen);
@@ -5236,14 +5084,11 @@ short shopWindowProcNo;
 void initServerWindowType2(char *data)
 {
     char msg[256];
-
     shopWindowProcNo = 0;
-
     getStringToken(data, '|', 1, sizeof(msg) - 1, msg);
     makeStringFromEscaped(msg);
     strncpy_s(shopWindow1Title, msg, sizeof(shopWindow1Title) - 1);
     shopWindow1Title[sizeof(shopWindow1Title) - 1] = '\0';
-
     getStringToken(data, '|', 2, sizeof(msg) - 1, msg);
     makeStringFromEscaped(msg);
     strncpy_s(shopWindow1Msg, msg, sizeof(shopWindow1Msg) - 1);
@@ -5252,7 +5097,6 @@ void initServerWindowType2(char *data)
     getStringToken(data, '|', 3, sizeof(msg) - 1, msg);
     pc.fame = atoi(msg);
 #endif
-
     menuIndexWN = indexWN;
 }
 

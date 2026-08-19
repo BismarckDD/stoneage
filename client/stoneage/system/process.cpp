@@ -35,12 +35,11 @@ void Process(void) {
   switch (ProcNo) {
   case PROC_OPENNING:
     break;
-  case PROC_INIT: /* ??????? */
+  case PROC_INIT: /* 初始化游戏 */
     InitProc();
-    initMapEffect(TRUE); // ???????????
+    initMapEffect(TRUE); //
     break;
-  // ????????向???
-  case PROC_ID_PASSWORD:
+  case PROC_ID_PASSWORD: //
 #ifdef _NEW_MUISC_
     if (new_music) {
       new_music = false;
@@ -63,20 +62,20 @@ void Process(void) {
     break;
   case PROC_TITLE_MENU:
     BackBufferDrawType = DRAW_BACK_NORMAL;
-    titleProc();
-    TitleProduce();        // ?????
-    RunAction();           // ?????????
-    StockTaskDispBuffer(); // ???牙????????????
+    SelectServerProc();
+    TitleProduce();
+    RunAction();
+    StockTaskDispBuffer();
     break;
-  case PROC_CHAR_SELECT: // ???︻?
+  case PROC_CHAR_SELECT: // 选择角色
     BackBufferDrawType = DRAW_BACK_NORMAL;
     selectCharacterProc();
     break;
-  case PROC_CHAR_MAKE:
+  case PROC_CHAR_MAKE:   // 创建角色
     BackBufferDrawType = DRAW_BACK_NORMAL;
     makeCharacterProc();
     break;
-  case PROC_CHAR_LOGIN_START:
+  case PROC_CHAR_LOGIN_START:  // 登入
     BackBufferDrawType = DRAW_BACK_NORMAL;
     initMap();              // 初始化地图
     initPcAll();            // 初始化游戏状态

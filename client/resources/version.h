@@ -405,7 +405,6 @@ extern int viewOffsetY;
 //#define _PET_TRACE_MOUSE
 //#define __EDEN_DICE                  // (不可开) 赌场骰子
 #define _AI_OTHER                        // AI其它功能
-#define __AI                            // Cary 加入自动战斗功能
 #ifdef _AI_OTHER
 #define _AI_CAPTURE
 #endif
@@ -564,7 +563,7 @@ unsigned int TimeGetTime(void);
 
 #define _PETCOLOR_                    // 1级宠物变色
 #define _PETKILL_COST_FAME            // Terry 宠物技能店学技能要花费声
-#define _AIDENGLU_                    // 自动登陆
+// #define _AIDENGLU_                    // 自动登陆
 #define _ZENGJIASHUO_                 // 增加一个锁道具的图标，同时被锁的道具不能选中
 #define _BUDING_ "554CDB1A99DF514B2F0B09DBDA0A6E9D"       //补丁加密
 #define _TIME_GET_TIME                // 用QueryPerformanceCounter取代timeGetTime

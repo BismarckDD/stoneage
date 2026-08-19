@@ -3,22 +3,21 @@
 #include "version.h"
 #include "action.h"
 
-enum
-{
-  WINDOW_MESSAGETYPE_MESSAGE,                    // ???????
-  WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,        // ?????????
-  WINDOW_MESSAGETYPE_SELECT,                    // ?????
-  WINDOW_MESSAGETYPE_PETSELECT,                // ????????
-  WINDOW_MESSAGETYPE_PARTYSELECT,                // ???????
-  WINDOW_MESSAGETYPE_PETANDPARTYSELECT,        // ???????????
+enum {
+  WINDOW_MESSAGETYPE_MESSAGE,                 // ???????
+  WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,     // ?????????
+  WINDOW_MESSAGETYPE_SELECT,                  // ?????
+  WINDOW_MESSAGETYPE_PETSELECT,               // ????????
+  WINDOW_MESSAGETYPE_PARTYSELECT,             // ???????
+  WINDOW_MESSAGETYPE_PETANDPARTYSELECT,       // ???????????
   WINDOW_MESSAGETYPE_ITEMSHOPMENU,            // ???????????
   WINDOW_MESSAGETYPE_ITEMSHOPMAIN,            // ??????????
-  WINDOW_MESSAGETYPE_LIMITITEMSHOPMAIN,        // ??????????????????
+  WINDOW_MESSAGETYPE_LIMITITEMSHOPMAIN,       // ??????????????????
   WINDOW_MESSAGETYPE_PETSKILLSHOP,            // ?????????????
-  WINDOW_MESSAGETYPE_WIDEMESSAGE,                // ???????????
-  WINDOW_MESSAGETYPE_WIDEMESSAGEANDLINEINPUT,    // ?????????????
+  WINDOW_MESSAGETYPE_WIDEMESSAGE,             // ???????????
+  WINDOW_MESSAGETYPE_WIDEMESSAGEANDLINEINPUT, // ?????????????
   WINDOW_MESSAGETYPE_POOLITEMSHOPMENU,        // ?????????????????
-  WINDOW_MESSAGETYPE_POOLITEMSHOPMAIN,            // ?????????????????
+  WINDOW_MESSAGETYPE_POOLITEMSHOPMAIN,        // ?????????????????
 
   WINDOW_MESSAGETYPE_FAMILYADD,
   WINDOW_MESSAGETYPE_FAMILYJOIN,
@@ -35,34 +34,34 @@ enum
   WINDOW_FMMESSAGETYPE_DP,
 
   WINDOW_MESSAGETYPE_BANK,
-  
+
   // Arminius 7.12 scheduleman
-  WINDOW_MESSAGETYPE_PKSCHEDULELIST,    //25
+  WINDOW_MESSAGETYPE_PKSCHEDULELIST, // 25
   WINDOW_MESSAGETYPE_PKSCHEDULESELECTFAMILY,
   WINDOW_MESSAGETYPE_PKSCHEDULEDETAIL,
 
   // Robin
   WINDOW_MESSAGETYPE_LOGINMESSAGE,
   WINDOW_MESSAGETYPE_FAMILYTAX,
-  WINDOW_MESSAGETYPE_SHOWRIDEPET,    //30
+  WINDOW_MESSAGETYPE_SHOWRIDEPET, // 30
   WINDOW_MESSAGETYPE_FAMILYDETAIL,
 
   WINDOW_MESSAGETYPE_LEADERSELECT,
   WINDOW_MESSAGETYPE_LEADERSELECTQ,
   WINDOW_MESSAGETYPE_LEADERSELECTA,
-//Terry add 2002/01/03
+// Terry add 2002/01/03
 #ifdef __EDEN_AUCTION
-  WINDOW_MESSAGETYPE_AUCTIONNEW,    //35
+  WINDOW_MESSAGETYPE_AUCTIONNEW, // 35
   WINDOW_MESSAGETYPE_AUCTIONLIST_BUY,
   WINDOW_MESSAGETYPE_AUCTIONSURVEY,
   WINDOW_MESSAGETYPE_AUCTIONMODIFY,
   WINDOW_MESSAGETYPE_AUCTIONLIST_MODIFY,
 #endif
-//Terry end
+// Terry end
 #ifdef _BLACK_MARKET
   WINDOW_MESSAGETYPE_BLACKMARKET,
 #endif
-#ifdef _ADD_FAMILY_TAX               // WON ADD 增加庄园税收    
+#ifdef _ADD_FAMILY_TAX // WON ADD 增加庄园税收
   WINDOWS_MESSAGETYPE_FAMILY_TAX,
 #endif
 #ifdef _NPC_FUSION
@@ -91,42 +90,42 @@ enum
 #endif
 
 #ifdef _ANGEL_SUMMON
-    WINDOW_MESSAGETYPE_ANGELMESSAGE = 101,
-    WINDOW_MESSAGETYPE_ANGELASK,
+  WINDOW_MESSAGETYPE_ANGELMESSAGE = 101,
+  WINDOW_MESSAGETYPE_ANGELASK,
 #endif
 
 #ifdef _MOUSE_DBL_CLICK
-    WINDOW_MESSAGETYPE_MOUSEGETNAME,
+  WINDOW_MESSAGETYPE_MOUSEGETNAME,
 #endif
 
 #ifdef _CONTRACT
-    WINDOW_MESSAGETYPE_CONTRACT,
+  WINDOW_MESSAGETYPE_CONTRACT,
 #endif
 
 #ifdef _RACEMAN
-    WINDOW_MESSAGETYPE_RACEMAN_RANK,
+  WINDOW_MESSAGETYPE_RACEMAN_RANK,
 #endif
 
 #ifdef _DRAGON_FUSION
-    WINDOWS_MESSAGETYPE_DRAGONFUSION,
+  WINDOWS_MESSAGETYPE_DRAGONFUSION,
 #endif
 
 #ifdef _NPC_DAYACTION
-    WINDOW_MESSAGETYPE_DAYACTION_FMRANK,
+  WINDOW_MESSAGETYPE_DAYACTION_FMRANK,
 #endif
 
 };
 
-#define WINDOW_BUTTONTYPE_NONE      (0)
-#define WINDOW_BUTTONTYPE_OK        (1 << 0)
-#define WINDOW_BUTTONTYPE_CANCEL    (1 << 1)
-#define WINDOW_BUTTONTYPE_YES       (1 << 2)
-#define WINDOW_BUTTONTYPE_NO        (1 << 3)
-#define WINDOW_BUTTONTYPE_PRE       (1 << 4)
-#define WINDOW_BUTTONTYPE_NEXT      (1 << 5)
+#define WINDOW_BUTTONTYPE_NONE (0)
+#define WINDOW_BUTTONTYPE_OK (1 << 0)
+#define WINDOW_BUTTONTYPE_CANCEL (1 << 1)
+#define WINDOW_BUTTONTYPE_YES (1 << 2)
+#define WINDOW_BUTTONTYPE_NO (1 << 3)
+#define WINDOW_BUTTONTYPE_PRE (1 << 4)
+#define WINDOW_BUTTONTYPE_NEXT (1 << 5)
 
 #define MAX_GMGROUP 20
-#define MAX_GMSV    150
+#define MAX_GMSV 150
 
 extern BOOL logOutFlag;
 extern unsigned int MsgCooltime;
@@ -136,50 +135,52 @@ extern short createCharFlag;
 extern int windowTypeWN;
 extern short wnCloseFlag;
 
-void idPasswordProc( void );
-void titleProc( void );
-void selectCharacterProc( void );
-void characterLoginProc( void );
+void idPasswordProc(void);
+void SelectServerProc(void);
+void selectCharacterProc(void);
+void characterLoginProc(void);
 
-void makeCharacterProc( void );
+void makeCharacterProc(void);
 
-void characterLogoutProc( void );
+void characterLogoutProc(void);
 #ifdef _80_LOGIN_PLAY
 void _80LoginProc(void);
 #endif
 
-void initOpenServerWindow( void );
-void openServerWindow( int, int, int, int, char * );
-void openServerWindowProc( void );
+void initOpenServerWindow(void);
+void openServerWindow(int, int, int, int, char *);
+void openServerWindowProc(void);
 
-int selGraId( int *, int );
-int selRepGraId( int *, int );
-int pushGraId( int *, int );
-int selFontId( int *, int );
-int focusGraId( int *, int );
-int focusFontId( int *, int );
+int selGraId(int *, int);
+int selRepGraId(int *, int);
+int pushGraId(int *, int);
+int selFontId(int *, int);
+int focusGraId(int *, int);
+int focusFontId(int *, int);
 #ifdef _BLACK_MARKET
-void closeBlackMarketWN( void );
+void closeBlackMarketWN(void);
 #endif
 
 #ifdef _PET_TRACE_MOUSE
-class SCPlayPet{
+class SCPlayPet {
 private:
-    ACTION *m_pPet;
-    int m_iDestX,m_iDestY,m_iX,m_iY,m_iCount,m_iDirx,m_iDiry,b,m_iActionStep;
-    bool m_bMove,m_bChangeDir,m_bAIWalk;
-    unsigned int m_iTimeToChangeAction,m_iTimeToChangeTime,m_iKindOfChangeTime;
+  ACTION *m_pPet;
+  int m_iDestX, m_iDestY, m_iX, m_iY, m_iCount, m_iDirx, m_iDiry, b,
+      m_iActionStep;
+  bool m_bMove, m_bChangeDir, m_bAIWalk;
+  unsigned int m_iTimeToChangeAction, m_iTimeToChangeTime, m_iKindOfChangeTime;
 
-    void CnangePetAction(bool bUserMove);
+  void CnangePetAction(bool bUserMove);
+
 public:
-    SCPlayPet();
-    ~SCPlayPet();
+  SCPlayPet();
+  ~SCPlayPet();
 
-    void Proc(void);
-    void SetActionStep(int iActionStep) { m_iActionStep = iActionStep;};
+  void Proc(void);
+  void SetActionStep(int iActionStep) { m_iActionStep = iActionStep; };
 };
 #endif
 
 #ifdef _PK2007
-void selectpkProc( void );
+void selectpkProc(void);
 #endif

@@ -28,6 +28,7 @@ extern ACTION* MagicItemActAddr;
 extern int MagicItemCombinData[3];
 extern int MagicItemPosState[4];
 #endif
+
 #ifdef _RENWU_
 BOOL 任务查询开关=FALSE;
 #endif
@@ -10074,23 +10075,11 @@ void MenuProc(void)
         }
     }
 
-    // ????????
-#ifdef __AI
-    if (!AI_State&&!自动登陆窗口 && ((joy_trg[0] & JOY_CTRL_M && GetImeString() == NULL)
-        || (TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[0])
-        || (MapWmdFlagBak == TRUE && BattleResultWndFlag == FALSE && EncountFlag == FALSE && ProcNo == PROC_GAME && SubProcNo == 3                
-
-        )
-        )){
-#else
     if( ( joy_trg[ 0 ] & JOY_CTRL_M && GetImeString() == NULL ) 
         || ( TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[ 0 ] )
         || ( MapWmdFlagBak == TRUE && BattleResultWndFlag == FALSE && EncountFlag == FALSE && ProcNo == PROC_GAME && SubProcNo == 3 )
         ){  
-#endif
-        // ???
         if (ProcNo == PROC_BATTLE){
-            // ???
             play_se(220, 320, 240);
         }
         else{
@@ -10225,7 +10214,7 @@ void MenuProc(void)
     StockDispBuffer(785, 505, DISP_PRIO_IME3, 55260+聊天状态1, 1);
     if( MakeHitBox(785-10, 505-10,785+10,505+10, DISP_PRIO_IME4 ) == TRUE ){
         sprintf(聊天提示,"聊天信息上拉,当前聊天信息位置%d！",NowChatLine);
-        ShowBottomLineString(FONT_PAL_WHITE, 聊天提示);    
+        // ShowBottomLineString(FONT_PAL_WHITE, 聊天提示);    
         if(mouse.state & MOUSE_LEFT_CRICK){
             聊天状态1 = 1;
             if(mouse.onceState & MOUSE_LEFT_CRICK){
@@ -10242,7 +10231,7 @@ void MenuProc(void)
     StockDispBuffer(785, 530, DISP_PRIO_IME3, 55262+聊天状态2, 1);
     if( MakeHitBox(785-10, 530-10,785+10,530+10, DISP_PRIO_IME4 ) == TRUE ){
         sprintf(聊天提示,"聊天信息下拉,当前聊天信息位置%d！",NowChatLine);
-        ShowBottomLineString(FONT_PAL_WHITE, 聊天提示);    
+        // ShowBottomLineString(FONT_PAL_WHITE, 聊天提示);    
         if( (mouse.state & MOUSE_LEFT_CRICK)){
             聊天状态2 = 1;
             if(mouse.onceState & MOUSE_LEFT_CRICK){
@@ -10258,7 +10247,7 @@ void MenuProc(void)
     StockDispBuffer(785, 555, DISP_PRIO_IME3, 55264+聊天状态3, 1);
     if( MakeHitBox(785-10, 555-10,785+10,555+10, DISP_PRIO_IME4 ) == TRUE ){
         sprintf(聊天提示,"聊天信息正常显示,当前聊天信息位置%d！",NowChatLine);
-        ShowBottomLineString(FONT_PAL_WHITE, 聊天提示);    
+        // ShowBottomLineString(FONT_PAL_WHITE, 聊天提示);    
         if( (mouse.state & MOUSE_LEFT_CRICK)){
             聊天状态3 = 1;
             if(mouse.onceState & MOUSE_LEFT_CRICK){

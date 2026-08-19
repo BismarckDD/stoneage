@@ -5,11 +5,11 @@
 
 struct GameServer {
   char used;
-  char ipaddr[127];
-  char port[64];
-  char name[64];
+  char ipaddr[64];
+  char port[16];
+  char name[32];
 #ifdef _SHOW_COUNT // WON ADD 秀服务器流量
-  char count[64];
+  char count[32];
 #endif
 #ifdef _SHOWIPSLEEP_
   int delay;
@@ -20,7 +20,7 @@ struct GameGroup {
   char used;
   char num;
   char startindex;
-  char name[61];
+  char name[32];
 };
 
 #define SUCCESSFULSTR "successful"

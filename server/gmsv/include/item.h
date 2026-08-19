@@ -1,6 +1,9 @@
 #ifndef __ITEM_H__
 #define __ITEM_H__
 
+#include "util_type.h"
+#include "char_base.h"
+
 #ifdef _SIMPLIFY_ITEMSTRING
 typedef struct ITEM_tagIntDataSetting {
   char *dumpchar;
@@ -27,20 +30,20 @@ typedef struct ITEM_tag_charDataSetting {
 #endif
 
 typedef enum {
-  ITEM_FIST = 0, // 
-  ITEM_AXE,      // weapon -> hand.
-  ITEM_CLUB,     // weapon -> hand.
-  ITEM_SPEAR,    // weapon -> hand.
-  ITEM_BOW,      // weapon -> hand.
-  ITEM_SHIELD,   // shield -> hand.
-  ITEM_HELM,     // helm   -> head.
-  ITEM_ARMOUR,   // armor  -> body.
+  ITEM_FIST = 0,     //
+  ITEM_AXE,          // weapon -> hand.
+  ITEM_CLUB,         // weapon -> hand.
+  ITEM_SPEAR,        // weapon -> hand.
+  ITEM_BOW,          // weapon -> hand.
+  ITEM_SHIELD,       // shield -> hand.
+  ITEM_HELM,         // helm   -> head.
+  ITEM_ARMOUR,       // armor  -> body.
   ITEM_BRACELET = 8, //
   ITEM_MUSIC,
-  ITEM_NECKLACE, // 
-  ITEM_RING,     // 
+  ITEM_NECKLACE, //
+  ITEM_RING,     //
   ITEM_BELT,     // ->
-  ITEM_EARRING,  // 
+  ITEM_EARRING,  //
   ITEM_NOSERING,
   ITEM_AMULET,
   /* ****** */
@@ -54,7 +57,7 @@ typedef enum {
   ITEM_JEWEL,
 #endif
 #ifdef _ITEM_CHECKWARES
-  ITEM_WARES,   //
+  ITEM_WARES, //
 #endif
 #ifdef _ITEM_EQUITSPACE
   ITEM_WBELT,   //
@@ -168,7 +171,7 @@ typedef enum {
   ITEM_CANMERGEFROM, /* be able to merge from. */
   ITEM_CANMERGETO,   /* ba able to merge to. */
 
-  ITEM_INGVALUE0,    /*  */
+  ITEM_INGVALUE0, /*  */
   ITEM_INGVALUE1,
   ITEM_INGVALUE2,
   ITEM_INGVALUE3,
@@ -237,17 +240,18 @@ typedef enum {
                       * int char_index: 使用物品的玩家编号.
                       * int char_item_index: 使用物品在玩家物品栏中的编号. */
   ITEM_ATTACHFUNC,   /* Attach是什么操作？
-                      * int char_index: 
+                      * int char_index:
                       * int item_index: */
   ITEM_DETACHFUNC,   /* Attach的相反操作.
-                      * int char_index: 
+                      * int char_index:
                       * int item_index: */
   ITEM_DROPFUNC,     /* 丢弃物品后的回调方法.
                       *  int char_index: 丢弃物品的玩家编号.
                       *  int item_index: 丢弃物品的全局编号. */
   ITEM_PICKUPFUNC,   /* 拾取物品后的回调方法.
                       *  int char_index: 拾取物品的玩家编号.
-                      *  int item_index: 拾取前物品只有全局编号，没有玩家物品栏编号. */
+                      *  int item_index:
+                      * 拾取前物品只有全局编号，没有玩家物品栏编号. */
 #ifdef _Item_ReLifeAct
   ITEM_DIERELIFEFUNC,
 #endif
@@ -316,7 +320,7 @@ INLINE BOOL _ITEM_CHECKINDEX(char *file, int line, int index);
 
 BOOL ITEM_initExistItemsArray(int num);
 BOOL ITEM_endExistItemsArray(ITEM_Table *item_table);
-#define ITEM_initExistItemsOne(item)                                            \
+#define ITEM_initExistItemsOne(item)                                           \
   _ITEM_initExistItemsOne(__FILE__, __LINE__, item)
 int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *item);
 
@@ -325,23 +329,26 @@ int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *item);
 
 void _ITEM_endExistItemsOne(int index, char *file, int line);
 
-#define ITEM_getInt(Index, item_data_enum)                                            \
+#define ITEM_getInt(Index, item_data_enum)                                     \
   _ITEM_getInt(__FILE__, __LINE__, Index, item_data_enum)
-INLINE int _ITEM_getInt(char *file, int line, int index, ITEM_DATA_ENUM item_data_enum);
+INLINE int _ITEM_getInt(char *file, int line, int index,
+                        ITEM_DATA_ENUM item_data_enum);
 
-#define ITEM_setInt(Index, item_data_enum, data)                                      \
+#define ITEM_setInt(Index, item_data_enum, data)                               \
   _ITEM_setInt(__FILE__, __LINE__, Index, item_data_enum, data)
-INLINE int _ITEM_setInt(char *file, int line, int index, ITEM_DATA_ENUM item_data_enum,
-                        int data);
+INLINE int _ITEM_setInt(char *file, int line, int index,
+                        ITEM_DATA_ENUM item_data_enum, int data);
 INLINE char *ITEM_getChar(int index, ITEM_CHAR_DATA_ENUM item_data_enum);
-INLINE BOOL ITEM_setChar(int index, ITEM_CHAR_DATA_ENUM item_data_enum, char *new);
+INLINE BOOL ITEM_setChar(int index, ITEM_CHAR_DATA_ENUM item_data_enum,
+                         char *new);
 INLINE int ITEM_getWorkInt(int index, ITEM_WORKDATAINT item_data_enum);
-INLINE int ITEM_setWorkInt(int index, ITEM_WORKDATAINT item_data_enum, int data);
+INLINE int ITEM_setWorkInt(int index, ITEM_WORKDATAINT item_data_enum,
+                           int data);
 INLINE int ITEM_getITEM_sItemNum(void);
 INLINE int ITEM_getITEM_sUseItemNum(void);
 INLINE BOOL ITEM_getITEM_use(int index);
 void ITEM_constructFunctable(int item_index);
-#define ITEM_getFunctionPointer(item_index, functype)                           \
+#define ITEM_getFunctionPointer(item_index, functype)                          \
   _ITEM_getFunctionPointer(item_index, functype, __FILE__, __LINE__)
 void *_ITEM_getFunctionPointer(int item_index, int functype, char *file,
                                int line);

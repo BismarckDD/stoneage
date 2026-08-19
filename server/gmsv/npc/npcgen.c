@@ -322,32 +322,31 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
 void NPC_generateLoop(BOOL checkall) {
   int i, j;
   int CreateOk = 0;
-  int enemynum;
-  static int createcount = 0;
-  static struct timeval _store_npc_generateloop_time;
+  static int npcCreatedNum = 0;
+  static struct timeval lastNpcGenerationTime;
   if (checkall == FALSE) {
-    if (time_diff_us(NowTime, _store_npc_generateloop_time) < (1000 * 1000)) {
+    if (time_diff_us(NowTime, lastNpcGenerationTime) < (1000 * 1000)) {
       return;
     } else {
-      _store_npc_generateloop_time = NowTime;
+      lastNpcGenerationTime = NowTime;
     }
   }
+  if (npcCreatedNum >= NPC_createnum)
+    npcCreatedNum = 0;
   for (i = 0; i < NPC_createnum; i++) {
-    if (createcount >= NPC_createnum)
-      createcount = 0;
     // printf("i, NPC_createnum: %d, %d\n", i, NPC_createnum);
-    enemynum = NPC_getCreateInt(createcount, NPC_CREATEENEMYNUM);
-    for (j = 0; j < enemynum; j++) {
+    int enemyNpcNum = NPC_getCreateInt(npcCreatedNum, NPC_CREATEENEMYNUM);
+    for (j = 0; j < enemyNpcNum; j++) {
       // printf("j, NPC_createnum: %d, %d\n", j, NPC_createnum);
-      if (NPC_createCheckGenerateFromTime(createcount) == TRUE) {
+      if (NPC_createCheckGenerateFromTime(npcCreatedNum) == TRUE) {
         CreateOk++;
-        NPC_createInitTime(createcount);
-        if (NPC_generateNPC(createcount, j) == TRUE) {
-          NPC_createIncreaseEnemynum(createcount);
+        NPC_createInitTime(npcCreatedNum);
+        if (NPC_generateNPC(npcCreatedNum, j) == TRUE) {
+          NPC_createIncreaseEnemynum(npcCreatedNum);
         }
       }
     }
-    createcount++;
+    npcCreatedNum++;
     if (checkall == FALSE && CreateOk >= one_loop_born) {
       break;
     }

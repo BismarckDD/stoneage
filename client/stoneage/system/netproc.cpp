@@ -89,7 +89,7 @@ char gamestate_login_charname[128];
 // GAMESTATE_DELETECHAR??????????????
 char gamestate_deletechar_charname[128];
 char netprocErrmsg[1024];
-int netproc_sending = NETPROC_NOTSEND;
+static int netproc_sending = NETPROC_NOTSEND;
 DWORD start_time = 0;
 char c_temp[1024];
 int connectServerCounter = 0;
@@ -347,6 +347,7 @@ int ConnectWGS() {
 }
 
 struct sockaddr_in sin_server;
+
 int connectServer(void) {
   if (!init_net)
     return 0;
@@ -380,7 +381,6 @@ int connectServer(void) {
     extern BOOL NoDelay;
     if (NoDelay) {
       int flag = 1;
-
       if (setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY, (char *)&flag,
                      sizeof(int)) != 0) {
         count = 0;
@@ -547,7 +547,6 @@ int connectServer(void) {
       if ((bNewServer & 0xf000000) == 0xf000000) {
         lstrcpy(PersonalKey, userId);
         lstrcat(PersonalKey, _RUNNING_KEY);
-        //                lstrcat(PersonalKey, "520999");
       } else {
         lstrcpy(PersonalKey, userId);
         lstrcat(PersonalKey, "19761101");
@@ -555,7 +554,6 @@ int connectServer(void) {
       netproc_sending = NETPROC_SENDING;
     }
     if (netproc_sending == NETPROC_RECEIVED) {
-      //  recv ?????
       if (clientLoginStatus)
         connectServerCounter = 81;
       else {
@@ -564,6 +562,7 @@ int connectServer(void) {
 #endif
         count = 0;
         netproc_sending = NETPROC_NOTSEND;
+        // 2026.08.19 这里出的问题：无法登录服务器
         sprintf_s(netprocErrmsg, NET_ERRMSG_LOGINFAIL);
         closesocket(sockfd);
         dwServer = NULL;
@@ -3287,31 +3286,11 @@ void lssproto_I_recv(int fd, char *data) {
     pc.item[i].道具类型 = getIntegerToken(data, '|', no + 14);
 #endif
 #endif
-    /*
-#ifdef _ITEM_JIGSAW
-    {
-        char jigsaw[10];
-        getStringToken(data, '|', no + 15, sizeof(jigsaw) - 1, jigsaw);
-        makeStringFromEscaped(jigsaw);
-        strcpy( pc.item[i].jigsaw, jigsaw );
-        if( i == JigsawIdx ){
-            SetJigsaw( pc.item[i].graNo, pc.item[i].jigsaw );
-        }
-    }
-#endif
-#ifdef _NPC_ITEMUP
-        pc.item[i].itemup = getIntegerToken(data, '|', no + 16);
-#endif
-#ifdef _ITEM_COUNTDOWN
-        pc.item[i].counttime = getIntegerToken(data, '|', no + 17);
-#endif
-        */
   }
 }
 
 void lssproto_WN_recv(int fd, int windowtype, int buttontype, int seqno,
                       int objindex, char *data) {
-  // ????????????????????
   if (logOutFlag)
     return;
 
@@ -3345,8 +3324,8 @@ void lssproto_PME_recv(int fd, int objindex, int graphicsno, int x, int y,
       createPetAction(graphicsno, x, y, dir, 2, 0, -1);
       break;
     }
-  } else
-  // ?
+  }
+  else
   {
     char smalltoken[2048];
     int id;
