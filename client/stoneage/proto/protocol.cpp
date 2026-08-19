@@ -1,5 +1,4 @@
-﻿#include <windows.h>
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "protocol.h"
 #include "autil.h"
 #include "systeminc/pc.h"
@@ -18,14 +17,6 @@ void PackageLog(int id, char *data) {
   FILE *fp = fopen("fengbao.txt", "a+");
   if (fp)
     fprintf(fp, "接收封包号=%d  %s\n", id, data);
-  if (fp)
-    fclose(fp);
-}
-
-void PackageLog1(int id) {
-  FILE *fp = fopen("fengbao1.txt", "a+");
-  if (fp)
-    fprintf(fp, "接收封包号=%d \n", id);
   if (fp)
     fclose(fp);
 }
@@ -52,7 +43,6 @@ int SaDispatchMessage(int fd, char *encoded) {
         return 1;
       }
 #ifdef _STONDEBUG__PACKET_
-
       sprintf_s(datalog, "x=%d y=%d dir=%d", x, y, dir);
       PackageLog(func, datalog);
 #endif
@@ -62,7 +52,6 @@ int SaDispatchMessage(int fd, char *encoded) {
     } else if (func == LSSPROTO_EV_RECV) {
       int seqno;
       int result;
-
       iChecksum += util_deint(2, &seqno);
       iChecksum += util_deint(3, &result);
       util_deint(4, &iChecksumrecv);
@@ -71,7 +60,6 @@ int SaDispatchMessage(int fd, char *encoded) {
         return 1;
       }
 #ifdef _STONDEBUG__PACKET_
-
       sprintf_s(datalog, "seqno=%d result=%d", seqno, result);
       PackageLog(func, datalog);
 #endif
@@ -81,7 +69,6 @@ int SaDispatchMessage(int fd, char *encoded) {
     } else if (func == LSSPROTO_EN_RECV) {
       int result;
       int field;
-
       iChecksum += util_deint(2, &result);
       iChecksum += util_deint(3, &field);
       util_deint(4, &iChecksumrecv);
@@ -90,7 +77,6 @@ int SaDispatchMessage(int fd, char *encoded) {
         return 1;
       }
 #ifdef _STONDEBUG__PACKET_
-
       sprintf_s(datalog, "result=%d field=%d", result, field);
       PackageLog(func, datalog);
 #endif
@@ -1137,55 +1123,6 @@ int SaDispatchMessage(int fd, char *encoded) {
       return 0;
     }
 #endif
-#ifdef _SECONDARY_WINDOW_DATA_
-    else if (func == LSSPROTO_SECONDARY_WINDOW_RECV) {
-      char data[16384];
-      iChecksum += util_destring(2, data);
-      util_deint(3, &iChecksumrecv);
-      if (iChecksum != iChecksumrecv) {
-        SliceCount = 0;
-        return 1;
-      }
-#ifdef _STONDEBUG__PACKET_
-
-      sprintf_s(datalog, "data=%s", data);
-      PackageLog(func, datalog);
-#endif
-      extern char 二级窗口内容[1024];
-      memset(二级窗口内容, 0, 1024);
-      sprintf(二级窗口内容, "%s", data);
-      SliceCount = 0;
-      return 0;
-    }
-#endif
-#ifdef _ICONBUTTONS_
-    else if (func == LSSPROTO_TRUNTABLE_RECV) {
-      char data[16384];
-      iChecksum += util_destring(2, data);
-      util_deint(3, &iChecksumrecv);
-      if (iChecksum != iChecksumrecv) {
-        SliceCount = 0;
-        return 1;
-      }
-#ifdef _STONDEBUG__PACKET_
-
-      sprintf_s(datalog, "data=%s", data);
-      PackageLog(func, datalog);
-#endif
-      if (data[0] == 'A') {
-        extern void 置转盘数据(int 选中索引);
-        置转盘数据(atoi(data + 1));
-      }
-#ifdef _CHARSIGNDAY_
-      if (data[0] == 'C') {
-        extern void 置签到状态(int 状态);
-        置签到状态(atoi(data + 1));
-      }
-#endif
-      SliceCount = 0;
-      return 0;
-    }
-#endif
 
 #ifdef _FAMILYBADGE_
     else if (func == LSSPROTO_FAMILYBADGE_RECV) {
@@ -1564,10 +1501,10 @@ int SaDispatchMessage(int fd, char *encoded) {
   return 1;
 }
 
+// WALK?
 void lssproto_W_send(int fd, int x, int y, char *direction) {
   char buffer[16384];
   int iChecksum = 0;
-
   buffer[0] = '\0';
   iChecksum += util_mkint(buffer, x);
   iChecksum += util_mkint(buffer, y);
@@ -1579,7 +1516,6 @@ void lssproto_W_send(int fd, int x, int y, char *direction) {
 void lssproto_W2_send(int fd, int x, int y, char *direction) {
   char buffer[16384];
   int iChecksum = 0;
-
   buffer[0] = '\0';
   iChecksum += util_mkint(buffer, x);
   iChecksum += util_mkint(buffer, y);
@@ -1588,10 +1524,10 @@ void lssproto_W2_send(int fd, int x, int y, char *direction) {
   util_SendMesg(fd, LSSPROTO_W2_SEND, buffer);
 }
 
+// ???
 void lssproto_EV_send(int fd, int event, int seqno, int x, int y, int dir) {
   char buffer[16384];
   int iChecksum = 0;
-
   buffer[0] = '\0';
   iChecksum += util_mkint(buffer, event);
   iChecksum += util_mkint(buffer, seqno);
@@ -1602,10 +1538,10 @@ void lssproto_EV_send(int fd, int event, int seqno, int x, int y, int dir) {
   util_SendMesg(fd, LSSPROTO_EV_SEND, buffer);
 }
 
+// ????
 void lssproto_EN_send(int fd, int x, int y) {
   char buffer[16384];
   int iChecksum = 0;
-
   buffer[0] = '\0';
   iChecksum += util_mkint(buffer, x);
   iChecksum += util_mkint(buffer, y);
@@ -1613,10 +1549,10 @@ void lssproto_EN_send(int fd, int x, int y) {
   util_SendMesg(fd, LSSPROTO_EN_SEND, buffer);
 }
 
+// ????
 void lssproto_DU_send(int fd, int x, int y) {
   char buffer[16384];
   int iChecksum = 0;
-
   buffer[0] = '\0';
   iChecksum += util_mkint(buffer, x);
   iChecksum += util_mkint(buffer, y);

@@ -18,6 +18,7 @@ extern int lastfunctime;
 #endif
 
 #define DME() print("<DME(%d)%d:%d>", fd, __LINE__, func)
+
 extern int cliretfunc;
 int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   /* No client RPC is valid while the account server is authenticating it. */

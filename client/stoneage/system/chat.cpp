@@ -1,6 +1,4 @@
-﻿#include "time.h"
-#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
 #include "systeminc/font.h"
 #include "sdk/caryime.h"
 #include "systeminc/netproc.h"
@@ -9,10 +7,10 @@
 #include "systeminc/menu.h"
 #include "systeminc/t_music.h"
 #include "systeminc/tool.h"
-#include "systeminc/lssproto_cli.h"
+#include "proto/lssproto_cli.h"
+#include "proto/protocol.h"
 #include "systeminc/netmain.h"
 #include "systeminc/chat.h"
-#include "NewProto/protocol.h"
 #ifdef _TALK_WINDOW
 #include "systeminc/talkwindow.h"
 #endif

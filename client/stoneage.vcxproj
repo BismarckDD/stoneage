@@ -20,10 +20,11 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stoneage\red_memoy.h" />
-    <ClInclude Include="stoneage\mylua\lssproto.h" />
     <ClInclude Include="stoneage\mylua\winlua.h" />
-    <ClInclude Include="stoneage\newproto\autil.h" />
-    <ClInclude Include="stoneage\newproto\protocol.h" />
+    <ClInclude Include="stoneage\proto\autil.h" />
+    <ClInclude Include="stoneage\proto\protocol.h" />
+    <ClInclude Include="stoneage\proto\lssproto_cli.h" />
+    <ClInclude Include="stoneage\proto\lssproto_util.h" />
     <ClInclude Include="stoneage\oft\sys2.h" />
     <ClInclude Include="stoneage\oft\vg410.h" />
     <ClInclude Include="stoneage\oft\work.h" />
@@ -31,9 +32,7 @@
     <ClInclude Include="stoneage\other\md5_encrypt.h" />
     <ClInclude Include="stoneage\other\PtternSeparationBin.h" />
     <ClInclude Include="stoneage\systeminc\action.h" />
-    <ClInclude Include="stoneage\systeminc\BinLoad.h" />
     <ClInclude Include="stoneage\systeminc\character.h" />
-    <ClInclude Include="stoneage\systeminc\CharSignDay.h" />
     <ClInclude Include="stoneage\systeminc\chat.h" />
     <ClInclude Include="stoneage\systeminc\directdraw.h" />
     <ClInclude Include="stoneage\systeminc\EncryptClient.h" />
@@ -46,8 +45,6 @@
     <ClInclude Include="stoneage\systeminc\loadrealbin.h" />
     <ClInclude Include="stoneage\systeminc\loadsprbin.h" />
     <ClInclude Include="stoneage\systeminc\login.h" />
-    <ClInclude Include="stoneage\systeminc\lssproto_cli.h" />
-    <ClInclude Include="stoneage\systeminc\lssproto_util.h" />
     <ClInclude Include="stoneage\systeminc\magicitem.h" />
     <ClInclude Include="stoneage\systeminc\map.h" />
     <ClInclude Include="stoneage\systeminc\menu.h" />
@@ -67,7 +64,6 @@
     <ClInclude Include="stoneage\systeminc\system.h" />
     <ClInclude Include="stoneage\systeminc\talkwindow.h" />
     <ClInclude Include="stoneage\systeminc\tool.h" />
-    <ClInclude Include="stoneage\systeminc\Turntable.h" />
     <ClInclude Include="stoneage\systeminc\t_music.h" />
     <ClInclude Include="stoneage\systeminc\unpack.h" />
     <ClInclude Include="stoneage\wgs\descrypt.h" />
@@ -121,14 +117,15 @@
     <ClCompile Include="third_party\lua\lzio.c" />
     <ClCompile Include="stoneage\char_title.cpp" />
     <ClCompile Include="stoneage\red_memoy.cpp" />
-    <ClCompile Include="stoneage\mylua\data.cpp" />
-    <ClCompile Include="stoneage\mylua\lssproto.cpp" />
+    <ClCompile Include="stoneage\mylua\pet_data.cpp" />
     <ClCompile Include="stoneage\mylua\sa.cpp" />
-    <ClCompile Include="stoneage\mylua\ServerList.cpp" />
+    <ClCompile Include="stoneage\mylua\server_list.cpp" />
     <ClCompile Include="stoneage\mylua\win.cpp" />
     <ClCompile Include="stoneage\mylua\winlua.cpp" />
-    <ClCompile Include="stoneage\newproto\autil.cpp" />
-    <ClCompile Include="stoneage\newproto\protocol.cpp" />
+    <ClCompile Include="stoneage\proto\autil.cpp" />
+    <ClCompile Include="stoneage\proto\protocol.cpp" />
+    <ClCompile Include="stoneage\proto\lssproto_cli.cpp" />
+    <ClCompile Include="stoneage\proto\lssproto_util.cpp" />
     <ClCompile Include="stoneage\oft\oft.cpp" />
     <ClCompile Include="stoneage\oft\sys2.cpp" />
     <ClCompile Include="stoneage\oft\tekecess.cpp" />
@@ -139,7 +136,6 @@
     <ClCompile Include="stoneage\system\action.cpp" />
     <ClCompile Include="stoneage\system\ai_setting.cpp" />
     <ClCompile Include="stoneage\system\character.cpp" />
-    <ClCompile Include="stoneage\system\CharSignDay.cpp" />
     <ClCompile Include="stoneage\system\chat.cpp" />
     <ClCompile Include="stoneage\system\directdraw.cpp" />
     <ClCompile Include="stoneage\system\field.cpp" />
@@ -152,8 +148,6 @@
     <ClCompile Include="stoneage\system\loadrealbin.cpp" />
     <ClCompile Include="stoneage\system\loadsprbin.cpp" />
     <ClCompile Include="stoneage\system\login.cpp" />
-    <ClCompile Include="stoneage\system\lssproto_cli.cpp" />
-    <ClCompile Include="stoneage\system\lssproto_util.cpp" />
     <ClCompile Include="stoneage\system\magicitem.cpp" />
     <ClCompile Include="stoneage\system\map.cpp" />
     <ClCompile Include="stoneage\system\menu.cpp" />
@@ -173,7 +167,6 @@
     <ClCompile Include="stoneage\system\sprmgr.cpp" />
     <ClCompile Include="stoneage\system\talkwindow.cpp" />
     <ClCompile Include="stoneage\system\tool.cpp" />
-    <ClCompile Include="stoneage\system\Turntable.cpp" />
     <ClCompile Include="stoneage\system\t_music.cpp" />
     <ClCompile Include="stoneage\system\unpack.cpp" />
     <ClCompile Include="stoneage\wgs\common.cpp" />

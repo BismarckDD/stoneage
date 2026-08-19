@@ -6,9 +6,10 @@
 #include "game/anim_tbl.h"  
 #include "systeminc/pc.h"        
 #include "systeminc/netmain.h"
-#include "systeminc/lssproto_cli.h"
 #include "systeminc/character.h"
 #include "systeminc/map.h"
+#include "proto/lssproto_cli.h"
+#include "proto/protocol.h"
 #include <dinput.h>
 
 #define RELEASE(x) if(x){x->Release();x=NULL;}
@@ -248,7 +249,6 @@ BOOL CALLBACK GetJoystickCallback(LPDIDEVICEINSTANCE lpddi,LPVOID pvRef)
     return DIENUM_STOP;
 }
 
-/*??????????  ??????��????????????????�\?  ??????????*/
 void joy_read(void)
 {
     Uint32    d0,d1;
@@ -305,16 +305,11 @@ void joy_read(void)
         //    d0|=JOY_A;
         //if(di_key[DIK_H] & 0x80)
         //    d0|=JOY_B;
-            
-        // ???? ?????????
         // ESC ??
         if(di_key[DIK_ESCAPE] & 0x80){
-            // ?????????��??��??
-            //if( ImeBufferBak2 == NULL ) 
             d0|=JOY_ESC;
         }
         
-        // ??????? Ctrl ???????????
         if( di_key[DIK_RCONTROL] & 0x80 || di_key[DIK_LCONTROL] & 0x80 ){ 
             // Ctrl + M
             if( di_key[DIK_M] & 0x80 )    d0|=JOY_CTRL_M;

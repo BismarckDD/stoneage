@@ -1,7 +1,7 @@
 ﻿#include <direct.h>
-#include <math.h>
-
+//
 #include "systeminc/system.h"
+//
 #include "systeminc/map.h"
 #include "game/anim_tbl.h"
 #include "systeminc/pc.h"
@@ -10,7 +10,8 @@
 #include "systeminc/loadrealbin.h"
 #include "systeminc/loadsprbin.h"
 #include "systeminc/netmain.h"
-#include "systeminc/lssproto_cli.h"
+#include "proto/lssproto_cli.h"
+#include "proto/protocol.h"
 #include "game/battle_proc.h"
 #include "systeminc/t_music.h"
 #include "systeminc/field.h"

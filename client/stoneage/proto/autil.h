@@ -82,7 +82,7 @@ void PutWinText(int x, int y, char fontPrio, int color, char *str, BOOL hitFlag,
 
 #endif // _FONT
 
-#endif // 
+#endif //
 
 BOOL getStringFromIndexWithDelim_body(char *src, char *delim, int index,
                                       char *buf, int buflen);

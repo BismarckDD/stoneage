@@ -1,5 +1,5 @@
-﻿#ifndef _PROTOCOL_H_
-#define _PROTOCOL_H_
+﻿#ifndef __PROTOCOL_H__
+#define __PROTOCOL_H__
 
 int SaDispatchMessage(int fd, char *encoded);
 

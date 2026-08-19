@@ -15,7 +15,9 @@
 #include "systeminc/t_music.h"
 #include "systeminc/netmain.h"
 #include "systeminc/map.h"
-#include "systeminc/lssproto_cli.h"
+#include "proto/lssproto_cli.h"
+#include "proto/protocol.h"
+#include "proto/autil.h"
 #include "systeminc/field.h"
 #include "game/anim_tbl.h"
 #include "systeminc/login.h"
@@ -23,7 +25,6 @@
 #include "wgs/message.h"
 #include "wgs/descrypt.h"
 #include "mylua/winlua.h"
-#include "newproto/autil.h"
 #ifdef _SHOWIPSLEEP_
 #include "other/readip.h"
 #endif
@@ -84,9 +85,6 @@ void BankProc(void);
 #endif
 #ifdef _NEWSHOP_
 ACTION *商城动作地址;
-#endif
-#ifdef _ICONBUTTONS_
-extern ACTION *转盘动作地址;
 #endif
 #ifdef _CHARSIGNDAY_
 extern ACTION *签到动作地址;
@@ -4659,17 +4657,6 @@ void openServerWindow(int windowtype, int buttontype, int index, int id, char *d
         return;
     }
 #endif
-#ifdef _ICONBUTTONS_
-    if (windowtype == 1003)
-    {
-        cloasewindows = 0;
-        extern void 转盘窗口初始化(char *内容);
-        extern ACTION *创建转盘窗口();
-        转盘窗口初始化(data);
-        创建转盘窗口();
-        return;
-    }
-#endif
 #ifdef _MAGIC_ITEM_
     if (windowtype == 1004)
     {
@@ -4697,8 +4684,6 @@ void openServerWindow(int windowtype, int buttontype, int index, int id, char *d
 #endif
 }
 
-// ????????????
-// ?????????
 void openServerWindowProc(void)
 {
 #if 0
@@ -5060,23 +5045,6 @@ void openServerWindowProc(void)
             if (商城动作地址->hp >= 1)
             {
                 商城动作地址 = 商城数据显示();
-            }
-        }
-        break;
-#endif
-#ifdef _ICONBUTTONS_
-    case 1003:
-        extern ACTION *转盘数据显示();
-        extern ACTION *创建转盘窗口();
-        if (转盘动作地址 == NULL)
-        {
-            转盘动作地址 = 创建转盘窗口();
-        }
-        if (转盘动作地址)
-        {
-            if (转盘动作地址->hp >= 1)
-            {
-                转盘数据显示();
             }
         }
         break;
@@ -6277,11 +6245,7 @@ void serverWindowType2(void)
                         len = strlen(pet[i - 1].name);
                         strcpy(msgWN[1], pet[i - 1].name);
                     }
-#if 0
-                    StockFontBuffer( winX+152+(144-len*9)/2, winY+21+(j+1)*21,
-#else
                     StockFontBuffer(winX + 42, winY + 21 + (j + 1) * 21, // modified by zhuo 62改成42
-#endif
                                     FONT_PRIO_FRONT, FONT_PAL_WHITE, msgWN[1], 0);
 
                     sprintf_s(msgWN[1], "LV.%d", pet[i - 1].level);
@@ -7302,26 +7266,16 @@ int shopWindow1(void)
             ret = 3; // ??
             wnCloseFlag = 0;
         }
-
         if (0 <= id && id <= 2)
         {
-#if 1
             char data[256];
             char msg[256];
             sprintf_s(data, "%d", ret);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-#if 0
-            if( bNewServer)
-                lssproto_WN_send( sockfd, nowGx, nowGy, menuIndexWN, idWN, 0, msg ) ;
-            else
-                oldlssproto_WN_send( sockfd, nowGx, nowGy, menuIndexWN, idWN, 0, msg ) ;
-#else
             if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             else
                 old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-#endif
-#endif
         }
 
         if (id >= 0)
@@ -10161,11 +10115,7 @@ int skillShopWindow2(void)
                         len = strlen(pet[i].name);
                         strcpy(msgWN[1], pet[i].name);
                     }
-#if 0
-                    StockFontBuffer( x+88+(144-len*9)/2, y+28+(j+1)*26,
-#else
                     StockFontBuffer(x + 62, y + 28 + (j + 1) * 26,
-#endif
                                     FONT_PRIO_FRONT, FONT_PAL_WHITE, msgWN[1], 0);
 
                     sprintf_s(msgWN[1], "LV.%d", pet[i].level);
@@ -11311,48 +11261,27 @@ int poolShopWindow4(void)
         // id = 0, id = 1 ??????????????
         if (id >= 2 || selId >= 0)
         {
-            // ?????
             if (id == 2)
-            {
                 ret = 1;
-            }
             else if (id == 100)
-            {
                 ret = 100;
-            }
             else
             {
                 selShopItemNo = selId;
-#if 0
-                    if( ????????? )
-                    {
-                        ret = 3;
-                    }
-                    else
-#endif
-                {
-                    ret = 2;
-                }
+                ret = 2;
             }
-
             DeathAction(ptActMenuWin);
             ptActMenuWin = NULL;
             if (ret == 100 || ret == 1)
-            {
                 windowTypeWN = -1;
-            }
             return ret;
         }
 
         if (ptActMenuWin->hp >= 1)
         {
-            int xx;
-
-            // ????????
-            xx = (w - strlen(shopWindow1Title) / 2 * 17) / 2;
+            int xx = (w - strlen(shopWindow1Title) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 18, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Title, 0);
 
-            // ?????????
             if (!itemMaxFlag)
             {
                 for (i = 0; i < sizeof(shopWindow2Msg) / sizeof(shopWindow2Msg[0]); i++)
@@ -15088,166 +15017,6 @@ void FMWindowType3(void)
         }
     }
 }
-#endif
-/*----------   Shan(END)   ----------*/
-
-// Robin 家族寄物处
-#if 0    
-
-typedef struct {
-    int index;
-    char name[64];
-    int graNo;
-    char memo[128];
-} itemPool;
-
-static int havenum;
-itemPool myPool[15];
-itemPool fmPool[15];
-static int poolPage = 0;
-
-void initItemman( char* data )
-{
-    int i;
-    char buf[1024];
-
-    DeathAction( ptActMenuWin );
-    ptActMenuWin = NULL;
-    windowTypeWN = WINDOW_MESSAGETYPE_ITEMMAN;
-
-    havenum = getIntegerToken( data, '|',  3 );
-
-    //poolPage = 1;
-    for( i=0; i < havenum; i++ ) 
-    {
-        myPool[i].index = getIntegerToken( data, '|',  3+((i*4)+1) );
-        getStringToken( data, '|', 3+((i*4)+2), sizeof( buf )-1, buf );
-        strcpy( myPool[i].name, buf);
-        myPool[i].graNo = getIntegerToken( data, '|',  3+((i*4)+3) );
-        getStringToken( data, '|', 3+((i*4)+4), sizeof( buf )-1, buf );
-        strcpy( myPool[i].memo, buf);
-    }
-    for( i=havenum; i < 15; i++ )
-    {
-        myPool[i].index = 0;
-        strcpy( myPool[i].name, "");
-        myPool[i].graNo = 0;
-        strcpy( myPool[i].memo, "");
-    }
-
-}
-
-void closeItemmanWN( void )
-{
-
-    play_se( 203, 320, 240 );    // ????????
-    windowTypeWN = -1;
-    DeathAction( ptActMenuWin );
-    ptActMenuWin = NULL;
-
-}
-
-
-int itemmanWN( void )
-{
-    static int w, h, x, y, xx, yy;
-    static int btnId[5];
-    static int fontId[15];
-    int i;
-    int selBtnId = -1;
-    int selFontBtnId = -1;
-    char buf[1024];
-    int prevBtnGraNo[] = { CG_PREV_BTN, CG_PREV_BTN_DOWN };
-    int nextBtnGraNo[] = { CG_NEXT_BTN, CG_NEXT_BTN_DOWN };
-    int itemColor[] = { FONT_PAL_WHITE, FONT_PAL_GRAY, FONT_PAL_RED };
-    int prevBtn=0, nextBtn=0;
-
-
-    if( CheckMenuFlag()
-        || joy_trg[ 0 ] & JOY_ESC
-        || actBtn == 1
-        || menuBtn == 1
-        || disconnectServerFlag == TRUE
-        || wnCloseFlag == 1 )
-    {
-        closeItemmanWN();
-        return 0;
-    }
-
-    if( ptActMenuWin == NULL )
-    {
-        //familyListProcNo = 11;
-
-        w=432; h=420;
-        x = (lpDraw->xSize-w)/2;
-        y = (lpDraw->ySize-h)/2;
-
-        ptActMenuWin = MakeWindowDisp( x, y, w, h, NULL, -1, FALSE );
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif    
-        //InitItem4( 325, 230 );
-        play_se( 202, 320, 240 );    // ????????    
-
-    }
-
-    if( ptActMenuWin->hp >= 1 )
-    {
-
-        selBtnId = focusGraId( btnId, sizeof( btnId )/sizeof( int ) );
-        selFontBtnId = focusFontId( fontId, sizeof( fontId )/sizeof( int ) );
-
-        if( mouse.onceState & MOUSE_LEFT_CRICK )
-        {
-            switch( selBtnId ) {
-            case 0:
-                closeItemmanWN();
-                return 0;
-            case 1:
-                if( poolPage+1 > 1 )
-                    poolPage --;
-                break;
-            case 2:
-                if( poolPage+1 < (havenum/7)+1 )
-                    poolPage ++;
-                break;
-            }
-
-            if( selFontBtnId != -1 ) {
-                sprintf_s( buf, "B|I|%d", myPool[(poolPage*7)+selFontBtnId].index );
-                if( bNewServer)
-                    lssproto_FM_send( sockfd, buf );
-                else
-                    old_lssproto_FM_send( sockfd, buf );
-                return 0;
-            }
-        }
-
-        if( (selFontBtnId>=0)&&(selFontBtnId<15) ) {
-            StockFontBuffer( x+110, y+300, FONT_PRIO_FRONT, 0, myPool[(poolPage*7)+selFontBtnId].name, 0 );
-            StockFontBuffer( x+110, y+320, FONT_PRIO_FRONT, 0, myPool[(poolPage*7)+selFontBtnId].memo, 0 );
-            StockDispBuffer( x + 65, y + 345, DISP_PRIO_IME3, myPool[(poolPage*7)+selFontBtnId].graNo, 0 );
-        }
-
-        for( i= 0 ; i< 7 ; i++ )
-        {
-            fontId[i] = StockFontBuffer( x+34, y+120+(i*21),
-                FONT_PRIO_FRONT, 0, myPool[(poolPage*7)+i].name, 2 );
-        }
-
-        btnId[0] = StockDispBuffer( x + 220, y + 400, DISP_PRIO_IME3, CG_CANCEL_BTN, 2 );
-        btnId[1] = StockDispBuffer( x +32, y+100, DISP_PRIO_IME3, prevBtnGraNo[prevBtn], 2 );
-        btnId[2] = StockDispBuffer( x+200, y+100, DISP_PRIO_IME3, nextBtnGraNo[nextBtn], 2 );
-        sprintf_s( buf, "%2d/%2d 页", poolPage+1, (havenum/7)+1 );
-        StockFontBuffer( x +66, y+92, FONT_PRIO_FRONT, FONT_PAL_WHITE, buf, 0 );
-
-        StockFontBuffer( x+175, y+18, FONT_PRIO_FRONT, 0, "家族寄物处", 0 );
-        StockDispBuffer( x+w/2, y+h/2, DISP_PRIO_MENU, CG_ITEMSHOP_WIN, 1 );
-    }
-    return 0;
-}
-
 #endif
 
 // 删除人物输入密码的视窗

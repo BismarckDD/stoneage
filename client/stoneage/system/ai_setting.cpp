@@ -5,8 +5,8 @@
 #include "systeminc/t_music.h"
 #include "game/battle_menu.h"
 #include "systeminc/netmain.h"
-#include "systeminc/lssproto_cli.h"
-#include "NewProto/protocol.h"
+#include "proto/lssproto_cli.h"
+#include "proto/protocol.h"
 #include "wgs/descrypt.h"
 #include "systeminc/login.h"
 

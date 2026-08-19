@@ -1,7 +1,8 @@
 ﻿#include "systeminc/system.h"
 #include "systeminc/savedata.h"
 #include "systeminc/chat.h"
-#include "systeminc/lssproto_cli.h"
+#include "proto/lssproto_cli.h"
+#include "proto/protocol.h"
 #include "systeminc/menu.h"
 #include "systeminc/netmain.h"
 #include "systeminc/pc.h"
@@ -222,9 +223,7 @@ BOOL createSaveFile(void) {
       (unsigned int)writebufferlen) {
     return FALSE;
   }
-
   fclose(fp);
-
   return TRUE;
 }
 
@@ -253,15 +252,11 @@ void setUserSetting(int no) {
   sPetStatFlag = 0;
 }
 
-// ???　叉?卒㎏???????
 void getUserSetting(int no) {
   int i;
 
   if (no < 0 || MAX_CHARACTER <= no)
     return;
-
-  // ·卯???????
-  // ·卯?︻???????
   pc.battlePetNo = -1;
   for (i = 0; i < MAX_PET; i++) {
     if ((savedatabuf[BA_SEL_PEN + MAX_PET * no + i] & 0x01)) {
@@ -269,7 +264,6 @@ void getUserSetting(int no) {
     } else {
       pc.selectPetNo[i] = 0;
     }
-    // ???????
     if ((savedatabuf[BA_SEL_PEN + MAX_PET * no + i] & 0x04)) {
       pc.mailPetNo = i;
     }

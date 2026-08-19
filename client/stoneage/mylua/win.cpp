@@ -9,6 +9,7 @@
 #include "systeminc/netmain.h"
 #include "sdk/caryime.h"
 
+// 定义使用LUA调整窗口的方法
 #ifdef _WIN_LUAJIT_
 extern int cloasewindows;
 extern SA_WINDOWS windows;

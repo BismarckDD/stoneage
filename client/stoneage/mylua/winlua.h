@@ -1,3 +1,5 @@
+#pragma once
+
 extern "C" {
   #include "lua/lauxlib.h"
   #include "lua/lua.h"
@@ -18,7 +20,7 @@ LUALIB_API int luaopen_Win(lua_State *L);
 LUALIB_API int luaopen_Lssproto(lua_State *L);
 LUALIB_API int luaopen_Sa(lua_State *L);
 LUALIB_API int luaopen_ServerList(lua_State *L);
-LUALIB_API int luaopen_Data(lua_State *L);
+LUALIB_API int luaopen_PetData(lua_State *L);
 lua_State *FindLua(char *filename);
 lua_State *FindWinIntLua(int wintype, char *data);
 ACTION *FreeCreateWinTypeLua(lua_State *lua);
@@ -31,12 +33,6 @@ struct SaLua {
   char *luapath;
   SaLua *next;
 };
-
-LUALIB_API int luaopen_Win(lua_State *L);
-LUALIB_API int luaopen_ServerList(lua_State *L);
-LUALIB_API int luaopen_Sa(lua_State *L);
-LUALIB_API int luaopen_Lssproto(lua_State *L);
-LUALIB_API int luaopen_Data(lua_State *L);
 int FreeGetBattleMap(int floor);
 int CheckPlayOnLine(int index, char *account, char *mac);
 

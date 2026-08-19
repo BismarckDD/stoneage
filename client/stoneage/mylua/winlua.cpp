@@ -85,11 +85,13 @@ ACTION *FreeServerWinTypeLua(lua_State *lua) {
   return (ACTION *)ret;
 }
 
+// 定义Client中所需的lua_libs
 static const luaL_Reg lualibs[] = {
     {"Win", luaopen_Win},   {"lssproto", luaopen_Lssproto},
     {"sa", luaopen_Sa},     {"ServerList", luaopen_ServerList},
-    {"data", luaopen_Data}, {NULL, NULL}};
+    {"data", luaopen_PetData}, {NULL, NULL}};
 
+// 执行Client中所需的lua_libs
 LUALIB_API void luaAB_openlibs(lua_State *L) {
   const luaL_Reg *lib = lualibs;
   for (; lib->func; lib++) {

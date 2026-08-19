@@ -4,8 +4,8 @@
 #include "systeminc/sprdisp.h"
 #include "systeminc/menu.h"
 #include "systeminc/mouse.h"
-#include "newproto/autil.h"
-#include "newproto/protocol.h"
+#include "proto/autil.h"
+#include "proto/protocol.h"
 
 
 #ifdef _CHARTITLE_STR_

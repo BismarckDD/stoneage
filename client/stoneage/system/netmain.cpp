@@ -2,7 +2,8 @@
 #include "systeminc/netmain.h"
 #include "sdk/zlib.h"
 #include "systeminc/login.h"
-#include "systeminc/lssproto_cli.h"
+#include "proto/lssproto_cli.h"
+#include "proto/protocol.h"
 #include "wgs/message.h"
 #include "wgs/shop.h"
 #include <winsock.h>
@@ -60,24 +61,6 @@ void networkLoop(void) {
   FD_SET(sockfd, &efds);
 
   int a = select(2, &rfds, &wfds, (fd_set *)NULL, &tm);
-#if 0
-    if( FD_ISSET( sockfd , &efds )){
-        char buf[256]; 
-        memset( buf , 0 , sizeof(buf));
-        int len = recv( sockfd , buf , sizeof( buf ) -1 , 0 );
-        if( len == SOCKET_ERROR ){
-#ifdef _STONDEBUG_
-            CheckNetErrror();
-#endif
-            closesocket( sockfd );
-            dwServer = NULL;
-            // ??????????????
-            disconnectServerFlag = TRUE;
-        }
-    }
-#endif
-
-  // ???
   int len = SOCKET_ERROR;
 #ifdef __NEW_CLIENT_MEM
   BOOL ret;
@@ -127,10 +110,7 @@ void networkLoop(void) {
   ret = VirtualProtect(net_readbuf, NETBUFSIZ, PAGE_NOACCESS, &oldprotect);
 #endif
 #endif
-
   static unsigned int writetime = TimeGetTime();
-
-  // ????
   if (FD_ISSET(sockfd, &wfds)) {
 #ifdef __NEW_CLIENT_MEM
     ret = VirtualProtect(net_writebuf, NETBUFSIZ, PAGE_READWRITE, &oldprotect);
@@ -138,10 +118,8 @@ void networkLoop(void) {
     len = 0;
     if (net_writebuflen)
       len = send(sockfd, net_writebuf, net_writebuflen, 0);
-    /*???????*/
     if (len > 0)
       writetime = TimeGetTime();
-
     if (len == SOCKET_ERROR) {
       if (WSAGetLastError() != WSAEWOULDBLOCK) {
 #ifdef _STONDEBUG_
@@ -267,13 +245,11 @@ int appendWriteBuf(int index, char *buf, int size) {
 }
 
 int shiftReadBuf(int size) {
-  int i;
   if (server_choosed == 0)
     return -100;
-
   if (size > net_readbuflen)
     return -1;
-  for (i = size; i < net_readbuflen; i++) {
+  for (int i = size; i < net_readbuflen; i++) {
     net_readbuf[i - size] = net_readbuf[i];
   }
   net_readbuflen -= size;
@@ -311,14 +287,8 @@ int getLineFromReadBuf(char *output, int maxlen) {
           break;
         }
       }
-
-      // ???????
       shiftReadBuf(i + 1);
-
-      // ????????????????????
-      // ?????????????????????????????????
       net_readbuf[net_readbuflen] = '\0';
-
       return 0;
     }
   }
@@ -328,11 +298,9 @@ int getLineFromReadBuf(char *output, int maxlen) {
 int sendn(SOCKET s, char *buffer, int len) {
   int total = 0;
   int r;
-
   if (server_choosed == 0)
     return -100;
-
-  while (1) {
+  while (TRUE) {
     r = send(s, buffer, len, 0);
     if (r == SOCKET_ERROR)
       return SOCKET_ERROR;

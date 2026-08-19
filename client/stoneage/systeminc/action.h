@@ -1,7 +1,7 @@
 ﻿#pragma once
 
 #include "version.h"
-#include "newproto/autil.h"
+#include "proto/autil.h"
 
 #ifdef __ACTION_CPP__
 #define EXTERN

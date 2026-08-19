@@ -585,7 +585,7 @@ unsigned int TimeGetTime(void);
 //#define _CHAR_MANOR_DEBUG           // 人物脚下光环DEBUG
 #define _ANNOUNCEMENT_                // 公告系统
 //#define _EFFECT_MAP_                // 塔特效
-#ifndef _DEBUG__
+#ifndef _DEBUG_
 // #define _ANTI_DEBUG_               // 反调试: 测试版本注释, 正式版本开启.
 #else
 #define _CMD_MODE                    // 调试模式
@@ -593,9 +593,7 @@ unsigned int TimeGetTime(void);
 //#define _MO_SHOW_FPS               // 显示fps
 #define _RELUA_                      // DEBUG模式下启用按个人信息则重读LUA
 #endif
-#define SHOW_VERSION "www.shiqi.hk"
-//#define _TRADE_BUG_LOG                //交易bug日志
-#define _SECONDARY_WINDOW_DATA_        //二级窗口内容
+#define SHOW_VERSION "2.0"
 #define LABEL_STR_                 //标记重定义输出[普][密]
 
 #ifdef _SA_VERSION_25

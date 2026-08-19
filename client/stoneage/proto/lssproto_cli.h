@@ -6,10 +6,9 @@
  * util output/lssproto_util.c , output/lssproto_util.h
  * src  /opt/kawata/sa/bin/../doc/lssproto.html
  */
-#ifndef _LSSPROTOCLI_H_
-#define _LSSPROTOCLI_H_
+#ifndef __LSSPROTO_CLI_H__
+#define __LSSPROTO_CLI_H__
 
-#include "newproto/protocol.h"
 #include "lssproto_util.h"
 
 #ifdef MAXLSRPCARGS

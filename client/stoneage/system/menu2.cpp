@@ -5,7 +5,7 @@
 #include "systeminc/pc.h"
 #include "game/battle_menu.h"
 #include "game/battle_proc.h"
-#include "systeminc/lssproto_cli.h"
+#include "proto/lssproto_cli.h"
 #include "systeminc/netmain.h"
 #include "systeminc/loadsprbin.h"
 #include "systeminc/savedata.h"

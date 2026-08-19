@@ -6,7 +6,7 @@
 #include "systeminc/t_music.h"
 #include "systeminc/netmain.h"
 #include "systeminc/map.h"
-#include "NewProto/protocol.h"
+#include "proto/protocol.h"
 #include "systeminc/login.h"
 #include "sdk/caryime.h"
 #include "systeminc/field.h"

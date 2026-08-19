@@ -21,8 +21,8 @@
 #include "systeminc/login.h"
 #include "systeminc/pc.h"
 #include "systeminc/map.h"
-#include "NewProto/autil.h"
-#include "NewProto/protocol.h"
+#include "proto/autil.h"
+#include "proto/protocol.h"
 #include "systeminc/field.h"
 #include "mylua/winlua.h"
 #ifdef _OPTIMIZATIONFLIP_

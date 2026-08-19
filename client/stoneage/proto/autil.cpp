@@ -5,12 +5,12 @@
 // -------------------------------------------------------------------
 // The following definitions is to define game-dependent codes.
 // Before compiling, remove the "//".
+#include <cstdio>
 #include <windows.h>
 #include "autil.h"
 #include "systeminc/chat.h"
 #include "systeminc/font.h"
-#include "systeminc/lssproto_util.h"
-#include <cstdio>
+#include "proto/lssproto_util.h"
 
 char **MesgSlice;
 int SliceCount;
@@ -137,9 +137,7 @@ int util_GetFunctionFromSlice(int *func, int *fieldcount) {
 }
 
 // Discard a message from MesgSlice.
-void util_DiscardMessage(void) {
-  SliceCount = 0;
-}
+void util_DiscardMessage(void) { SliceCount = 0; }
 #ifdef _NEWNET_
 extern long tea_encrypt(long *v, long n, long *k);
 void stringtohexstr(char *dst, char *src, int len) {

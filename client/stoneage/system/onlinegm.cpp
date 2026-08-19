@@ -5,7 +5,7 @@
 #include "systeminc/login.h"
 #include "systeminc/menu.h"
 #include "systeminc/map.h"
-#include "systeminc/lssproto_cli.h"
+#include "proto/lssproto_cli.h"
 #include "systeminc/pc.h"
 #include "systeminc/netmain.h"
 #include "systeminc/handletime.h"

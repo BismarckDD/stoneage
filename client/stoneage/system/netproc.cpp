@@ -1,6 +1,9 @@
-﻿#include "systeminc/system.h"
+﻿#define __NETPROC_CPP__
+#include "systeminc/system.h"
 #include "systeminc/netproc.h"
-#include "NewProto/autil.h"
+#include "proto/autil.h"
+#include "proto/lssproto_cli.h"
+#include "proto/protocol.h"
 #include "game/anim_tbl.h"
 #include "game/battle_map.h"
 #include "game/battle_menu.h"
@@ -11,7 +14,6 @@
 #include "systeminc/field.h"
 #include "systeminc/handletime.h"
 #include "systeminc/login.h"
-#include "systeminc/lssproto_cli.h"
 #include "systeminc/map.h"
 #include "systeminc/menu.h"
 #include "systeminc/netmain.h"
@@ -89,7 +91,6 @@ char gamestate_deletechar_charname[128];
 char netprocErrmsg[1024];
 int netproc_sending = NETPROC_NOTSEND;
 DWORD start_time = 0;
-BOOL bNewServer;
 char c_temp[1024];
 int connectServerCounter = 0;
 
@@ -356,7 +357,6 @@ int connectServer(void) {
     unsigned long flg = 1;
     struct hostent *h;
     lstrcpy(PersonalKey, _DEFAULT_PKEY);
-    //        lstrcpy(PersonalKey, "forever");
     start_time = TimeGetTime();
     if (getServerInfo(selectServerIndex, hostname, &pt) < 0) {
       count = 0;

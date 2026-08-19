@@ -8,7 +8,7 @@
 #include "systeminc/handletime.h"
 #include "systeminc/ime_sa.h"
 #include "systeminc/login.h"
-#include "systeminc/lssproto_cli.h"
+#include "proto/lssproto_cli.h"
 #include "systeminc/map.h"
 #include "systeminc/menu.h"
 #include "systeminc/netmain.h"
