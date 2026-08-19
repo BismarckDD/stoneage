@@ -58,7 +58,12 @@ static int Callfromcli_Util_getTargetCharaindex(int fd, int to_index) {
 
 void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
                                  int servid, char *Newip) {
+  printf("[登录请求] fd=%d cdkey='%s' passwd='%s' mac='%s' servid=%d\n",
+         fd, cdkey ? cdkey : "NULL", passwd ? passwd : "NULL",
+         mac ? mac : "NULL", servid);
   if (CONNECT_getState(fd) != NULLCONNECT) {
+    printf("[登录失败] 连接状态错误 fd=%d state=%d (期望NULLCONNECT=%d)\n",
+           fd, CONNECT_getState(fd), NULLCONNECT);
     print("\n unexpected ClientLogin state fd=%d state=%d", fd,
           CONNECT_getState(fd));
     return;
@@ -67,6 +72,8 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
   if (cdkey == NULL || passwd == NULL || cdkey[0] == '\0' ||
       passwd[0] == '\0' || strlen(cdkey) >= CDKEYLEN ||
       strlen(passwd) >= PASSWDLEN) {
+    printf("[登录失败] 参数校验失败 cdkey='%s' passwd='%s'\n",
+           cdkey ? cdkey : "NULL", passwd ? passwd : "NULL");
     GmsvServer_ClientLogin_send(fd, "no");
     return;
   }
@@ -102,13 +109,16 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
   {
     int res;
     if (strlen(cdkey) == 0 || strlen(passwd) == 0 || strlen(ip) == 0) {
-      // print("Cannot login due to empty cdkey, passwd, ip.\n");
+      printf("[登录失败] 预检查参数为空 cdkey='%s' passwd='%s' ip='%s'\n",
+             cdkey, passwd, ip);
       GmsvServer_ClientLogin_send(fd, "no");
       CONNECT_endOne_debug(fd);
       return;
     }
 
+    printf("[登录预检查] 调用sasql_query cdkey='%s'\n", cdkey);
     res = sasql_query(cdkey, passwd);
+    printf("[登录预检查] sasql_query结果 res=%d (0=失败,1=成功,2=密码错,3=未注册)\n", res);
     if (res == 3) {
       if (getNoCdkeyPlayer() > 0 && fd - player_online >= getNoCdkeyPlayer() &&
           getNoCdkeyMode() != 0) {
@@ -129,6 +139,7 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
         }
       }
     } else if (res != 1) {
+      printf("[登录失败] 预检查未通过 res=%d cdkey='%s'\n", res, cdkey);
       if (getNoCdkeyPlayer() > 0 && fd - player_online >= getNoCdkeyPlayer() &&
           getNoCdkeyMode() == 2) {
         if (strcmp(ip, getNoAttIp(0)) != 0 && strcmp(ip, getNoAttIp(1)) != 0 &&
@@ -154,10 +165,12 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
 #endif
 #ifdef _NEWCLISETMAC
   CONNECT_setState(fd, WHILEAUTH);
+  printf("[登录转发] 转发给SAAC验证 fd=%d cdkey='%s' ip='%s'\n", fd, cdkey, ip);
   SaacClient_ACCharLogin_send(acfd, CONNECT_getFdid(fd), cdkey, passwd, ip,
                               mac);
 #else
   CONNECT_setState(fd, WHILEAUTH);
+  printf("[登录转发] 转发给SAAC验证 fd=%d cdkey='%s' ip='%s'\n", fd, cdkey, ip);
   SaacClient_ACCharLogin_send(acfd, CONNECT_getFdid(fd), cdkey, passwd, ip);
 #endif
 }

@@ -1260,14 +1260,21 @@ void SaacClient_ACCharLogin_recv(int fd, int client_fdid, int flag) {
   const int client_fd = getfdFromFdid(client_fdid);
   (void)fd;
 
+  printf("[GMSV收到验证结果] fd=%d client_fdid=%d client_fd=%d flag=%d\n",
+         fd, client_fdid, client_fd, flag);
+
   if (CONNECT_checkfd(client_fd) == FALSE ||
-      CONNECT_getState(client_fd) != WHILEAUTH)
+      CONNECT_getState(client_fd) != WHILEAUTH) {
+    printf("[GMSV验证结果] 连接无效或状态错误 client_fd=%d\n", client_fd);
     return;
+  }
 
   if (flag == 0) {
+    printf("[登录成功] 发送 'ok' 给客户端 fd=%d\n", client_fd);
     CONNECT_setState(client_fd, NOTLOGIN);
     GmsvServer_ClientLogin_send(client_fd, "ok");
   } else {
+    printf("[登录失败] 发送 'no' 给客户端 fd=%d flag=%d\n", client_fd, flag);
     /* Failed authentication must not enter character-select operations. */
     CONNECT_setState(client_fd, NULLCONNECT);
     GmsvServer_ClientLogin_send(client_fd, "no");

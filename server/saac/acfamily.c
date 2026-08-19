@@ -371,7 +371,7 @@ int ACShowTopFMList(char *data, int datasize, int kindflag) {
 
   strcpy(data, "");
   if (kindflag == 1) {
-    for (i = 0; i < MAX_FAMILY; i++) {
+    for (i = 0; i < TOPFMLISTNUM; i++) {
       if (strcmp(family[fmpopularindex[i]].fmname, "") == 0) {
         j++;
         continue;
@@ -397,7 +397,7 @@ int ACShowTopFMList(char *data, int datasize, int kindflag) {
               family[fmpopularindex[i]].fmleadername,
               (family[fmpopularindex[i]].fmpopular / 100));
 #endif
-      if (i < MAX_FAMILY)
+      if (i < TOPFMLISTNUM)
         strcat(t1, " ");
       if (strlen(data) + strlen(t1) >= datasize) {
         logErr("getFMsortedlist: datafer overflow.");
@@ -496,7 +496,7 @@ int ACShowTopFMList(char *data, int datasize, int kindflag) {
   }
 #ifdef _PERSONAL_FAME // Arminius: 家族个人声望
   else if (kindflag == 7) {
-    for (i = 0; i < MAX_FAMILY; i++) {
+    for (i = 0; i < TOPFMLISTNUM; i++) {
       if (strcmp(family[fmtotalfameindex[i]].fmname, "") == 0) {
         j++;
         continue;
@@ -505,7 +505,7 @@ int ACShowTopFMList(char *data, int datasize, int kindflag) {
               family[fmtotalfameindex[i]].fmname,
               family[fmtotalfameindex[i]].fmleadername,
               (family[fmtotalfameindex[i]].fmtotalfame / 100));
-      if (i < MAX_FAMILY)
+      if (i < TOPFMLISTNUM)
         strcat(t1, " ");
       if (strlen(data) + strlen(t1) >= datasize) {
         logErr("getFMsortedlist: datafer overflow.");
@@ -516,8 +516,8 @@ int ACShowTopFMList(char *data, int datasize, int kindflag) {
   }
 #endif
 #ifdef _NEW_MANOR_LAW
-  else if (kindflag == 8) { // 十大气势家族(全部气势排名都传给game server)
-    for (i = 0; i < MAX_FAMILY; i++) {
+  else if (kindflag == 8) { // 十大气势家族(前TOPFMLISTNUM个气势排名传给game server)
+    for (i = 0; i < TOPFMLISTNUM; i++) {
       if (strcmp(family[fmMomentumIndex[i]].fmname, "") == 0) {
         j++;
         continue;
@@ -526,7 +526,7 @@ int ACShowTopFMList(char *data, int datasize, int kindflag) {
               family[fmMomentumIndex[i]].fmname,
               family[fmMomentumIndex[i]].fmleadername,
               (family[fmMomentumIndex[i]].fmmomentum) / 100);
-      if (i < MAX_FAMILY)
+      if (i < TOPFMLISTNUM)
         strcat(t1, " ");
       if (strlen(data) + strlen(t1) >= datasize) {
         logErr("getFMsortedlist: datafer overflow.");

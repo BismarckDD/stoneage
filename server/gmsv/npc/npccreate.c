@@ -13,6 +13,8 @@
 #include "readmap.h"
 #include "util.h"
 
+void NPC_setDefaultNPCCreate(NPC_Create *cr);
+
 INLINE int NPC_CHECKCREATEINDEX(int index) {
   if (NPC_createnum <= index || index < 0)
     return FALSE;
@@ -37,12 +39,17 @@ INLINE int NPC_getCreateInt(int index, NPC_CREATEINT element) {
 }
 
 BOOL NPC_initCreateArray(int createnum) {
+  int i;
   NPC_createnum = createnum;
   NPC_create = (NPC_Create *)allocateMemory(sizeof(NPC_Create) * NPC_createnum);
 
   print("开启大小:%d. 创建数量:%d.\n", sizeof(NPC_Create), createnum);
   if (NPC_create == NULL) {
     return FALSE;
+  }
+  memset(NPC_create, 0, sizeof(NPC_Create) * NPC_createnum);
+  for (i = 0; i < NPC_createnum; i++) {
+    NPC_setDefaultNPCCreate(&NPC_create[i]);
   }
   NPC_create_readindex = 0;
   return TRUE;
@@ -279,11 +286,15 @@ int NPC_readCreateFile(char *filename) {
                 cr.intdata[NPC_CREATEBORNRIGHTDOWNY];
           }
 
+          if (NPC_create_readindex >= NPC_createnum) {
+            fprint("NPC create capacity exceeded in file: %s\n", filename);
+            goto FCLOSERETURNFALSE;
+          }
           memcpy(&NPC_create[NPC_create_readindex], &cr, sizeof(NPC_Create));
 
           NPC_create_readindex++;
 
-          if (NPC_create_readindex >= NPC_createnum) {
+          if (NPC_create_readindex > NPC_createnum) {
             print("创建超过配置缓冲\n");
             print("配置创建文件数目 %d\n", NPC_createnum);
             print("没用文件:%s\n", filename);
@@ -395,11 +406,11 @@ int NPC_readCreateFile(char *filename) {
         char enemyname[64];
 
         /*  雁钗瞬民尼永弁  */
-        if (enemyreadindex <= arraysizeof(cr.templateindex))
-          /* OK */
-          ;
-        else
-          break;
+        if (enemyreadindex >= arraysizeof(cr.templateindex)) {
+          fprint("Too many enemy entries in %s:%d (max:%d)\n", filename,
+                 linenum, arraysizeof(cr.templateindex));
+          goto FCLOSERETURNFALSE;
+        }
 
         getStringFromIndexWithDelim(secondToken, "|", 1, enemyname,
                                     sizeof(enemyname));
@@ -465,13 +476,16 @@ BOOL NPC_readNPCCreateFiles(char *topdirectory, int createsize) {
   print("读取NPC创建文件...");
   for (i = 0; i < filenum; i++) {
     if (NPC_IsNPCCreateFile(filenames[i].string)) {
-      if (NPC_readCreateFile(filenames[i].string) == -1) {
-        break;
+      if (NPC_readCreateFile(filenames[i].string) == FALSE) {
+        fprint("Failed to read NPC create file: %s\n", filenames[i].string);
+        freeMemory(filenames);
+        return FALSE;
       }
     }
   }
   print("正确创建NPC %d ...", NPC_create_readindex);
-  // NPC_createnum=NPC_create_readindex;
+  /* Do not expose unused capacity to the runtime generation loop. */
+  NPC_createnum = NPC_create_readindex;
 #ifdef DEBUG
   /* 99/4/8 By Kawata csv溥挚卞仄化支月 */
   print("Npc_Create's\n");
@@ -530,10 +544,10 @@ BOOL NPC_createGetRECT(int createindex, RECT *r) {
 
 /*------------------------------------------------------------
  * 参数
- *  cindex      int
+ *  cindex int
  * 返回值
- *  BOOL    综匀化中中桦宁  TRUE(1)
- *  BOOL    综匀化中仃卅中桦宁  FALSE(0)
+ *  BOOL    允许创建 TRUE(1)
+ *  BOOL    不能创建 FALSE(0)
  ------------------------------------------------------------*/
 BOOL NPC_createCheckGenerateFromTime(int cindex) {
   struct timeval old;
@@ -566,16 +580,15 @@ BOOL NPC_createCheckGenerateFromTime(int cindex) {
  *  无
  ------------------------------------------------------------*/
 void NPC_createInitTime(int index) {
-  /*  综月仪卞卅匀凶井日袄毛涩烂  */
   NPC_create[index].workdata[NPC_CREATEWORKMAKESTARTSEC] = NowTime.tv_sec;
   NPC_create[index].workdata[NPC_CREATEWORKMAKESTARTUSEC] = NowTime.tv_usec;
 }
 
 /*------------------------------------------------------------
- * 娄醒
- *  index       int         奶件犯永弁旦
- * 忒曰袄
- *  卅仄
+ * 输入
+ *  index int
+ * 返回值
+ *  无
  ------------------------------------------------------------*/
 void NPC_createIncreaseEnemynum(int index) {
   if (!NPC_CHECKCREATEINDEX(index))

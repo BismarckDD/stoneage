@@ -1,5 +1,4 @@
 #include "version.h"
-#include <string.h>
 #include "char.h"
 #include "char_event.h"
 #include "object.h"
@@ -12,22 +11,14 @@
 #include "config_file.h"
 #include "npcgen.h"
 
-/*
----------------------------------------------------------------------
+/* ---------------------------------------------------------------------
 sysinfo By Kawata
----------------------------------------------------------------------
-*/
-
+--------------------------------------------------------------------- */
 #define		NPC_SYSINFO_MSGMAX				21
-
 #define		NPC_SYSINFO_PASSWD_DEFAULT		"longzoro"
-
 #define		NPC_SYSINFO_TIMELIMIT_DEFAULT		120
-
 #define		NPC_SYSINFO_SHUTDOWNLIMIT_DEFAULT	5
-
 #define		NPC_SYSINFO_SHUTDOWN_MSG		"再过 %d 分钟後，即开始进行server系统维护。"
-
 #define		NPC_SYSINFO_SHUTDOWN_MSG_COMP	"server已关闭。"
 enum {
 	CHAR_WORK_MODE        		= CHAR_NPCWORKINT1,
@@ -355,7 +346,7 @@ static void NPC_Sysinfo_Msg_EndInfo( int meindex, int tindex, char *msg)
 
 }
 /*------------------------------------------------------------------------
- * HELP丢永本□斥
+ * HELP 
  *----------------------------------------------------------------------*/
 static void NPC_Sysinfo_Msg_Help( int meindex, int tindex, char *msg)
 {
@@ -826,8 +817,8 @@ static void NPC_Sysinfo_SetSaacwrite( int meindex, int tindex, char *msg)
 static void NPC_Sysinfo_SetSaacread( int meindex, int tindex, char *msg)
 {
 	int interval;
-	char	msgbuf[256];
-	char	buff[256];
+	char msgbuf[256];
+	char buff[256];
 	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
 		interval = atoi( buff);
 		if( interval > 0 ) {

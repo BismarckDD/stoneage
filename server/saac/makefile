@@ -6,7 +6,7 @@ CFLAGS=-m64 -w -O3 -g -pipe -Wall $(INCFLAGS) -D_FILE_OFFSET_BITS=64 -D_LARGEFIL
 
 ifeq ($(shell uname),CYGWIN_NT-5.1)
 	SQLSRC=sasql_cygwin.c
-	SQL=-lodbc32 -lz -lpthread
+	SQL=-L /usr/lib/mysql/ -lmysqlclient -lz -lpthread
 	TARGET=../../csa/saac/saacjt
 endif
 ifeq ($(shell uname),Linux)

@@ -1774,6 +1774,8 @@ void SaacServer_ACCheckCharacterOnLine_send(int fd, int charaindex, int iOnline,
 #endif
 
 void SaacServer_ACCharLogin_send(int fd, int clifd, int flag) {
+  printf("[SAAC发送结果] fd=%d clifd=%d flag=%d (0=成功,1=参数错误,2=账号锁定,3=IP/MAC锁定,5=未注册,6=密码错)\n",
+         fd, clifd, flag);
   CreateHeader(ws->work, "ACCharLogin");
   strcatsafe(ws->work, mkstr_int(clifd), ws->work_buf_size);
   strcatsafe(ws->work, mkstr_int(flag), ws->work_buf_size);

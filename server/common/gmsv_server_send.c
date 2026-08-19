@@ -2838,8 +2838,11 @@ void GmsvServer_SE_send(int fd, int x, int y, int senumber, int sw) {
   util_SendMesg(fd, LSSPROTO_SE_SEND, buffer);
 }
 void GmsvServer_ClientLogin_send(int fd, char *result) {
-  if (CONNECT_checkfd(fd) == FALSE)
+  if (CONNECT_checkfd(fd) == FALSE) {
+    printf("[GMSV回复] fd=%d 无效连接\n", fd);
     return;
+  }
+  printf("[GMSV回复客户端] fd=%d result='%s'\n", fd, result);
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CLIENTLOGIN_SEND-result:%s\n", result);
 #endif

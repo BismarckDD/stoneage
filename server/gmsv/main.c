@@ -160,7 +160,8 @@ void main_loop(void) {
   print("succeed.\n");
 #endif
 
-  while (1) {
+  while (TRUE) {
+    print("进入到循环里");
 #ifdef _ASSESS_SYSEFFICACY
     Assess_SysEfficacy(0);
 #endif

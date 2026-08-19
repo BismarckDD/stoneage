@@ -11,12 +11,12 @@ Server 端现在可以使用 MSYS2 的 MinGW-w64 UCRT64 工具链编译为原生
 pacman -Syu
 pacman -S --needed mingw-w64-ucrt-x86_64-gcc \
   mingw-w64-ucrt-x86_64-cmake \
-  mingw-w64-ucrt-x86_64-ninja
+  mingw-w64-ucrt-x86_64-ninja \
+  mingw-w64-ucrt-x86_64-libmysqlclient
 ```
 
 本项目依赖 GNU C 扩展，因此 Windows 构建必须使用 MinGW-w64，不能使用
-MSVC。SAAC 的可选数据库认证在 Windows 下使用系统 ODBC 管理器；链接库由
-Windows SDK 提供，无需另外下载 MySQL 开发包。
+MSVC。SAAC 使用 MySQL C API 直连数据库，需要安装 `libmysqlclient` 开发包。
 
 ## 2. 编译
 
@@ -51,10 +51,23 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 它误当成完整运行包。Windows 路径建议在配置中统一使用 `/`，例如
 `D:/stoneage/runtime/data/map`；相对路径会以运行数据目录为基准。
 
-若启用 MSSQL/ODBC，在 Windows 的“ODBC 数据源(64 位)”中创建 DSN，并在
-`acserv.cf` 中提供 `USEMSSQL`、`SQL_DSN` 等参数。不启用时设置
-`USEMSSQL 0`。该配置只允许 SAAC 在没有 ODBC 的情况下启动，账号认证会按
-fail-closed 策略拒绝所有玩家登录；需要玩家正常登录时必须启用并正确配置数据库。
+SAAC 使用 MySQL 直连方式，在 `acserv.cf` 中配置数据库连接参数：
+
+```
+sql_IP          127.0.0.1
+sql_Port        3306
+sql_ID          root
+sql_PS          your_password
+sql_DataBase    CSA
+sql_Table       CSAlogin
+sql_NAME        Name
+sql_PASS        PassWord
+sql_LOCK        LOCK
+AutoReg         0
+openbackground  1
+```
+
+确保 MySQL 服务已启动并可连接。
 
 ## 4. 启动
 

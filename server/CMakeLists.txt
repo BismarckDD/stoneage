@@ -120,9 +120,25 @@ foreach(target gmsv saac)
   target_link_libraries(${target} PRIVATE ws2_32)
 endforeach()
 
-# The Windows SAAC implementation uses the system ODBC manager. It remains
-# disabled at runtime unless USEMSSQL is enabled in acserv.cf.
-target_link_libraries(saac PRIVATE odbc32)
+# The Windows SAAC implementation links directly to MySQL via libmysqlclient.
+# Install via MSYS2: pacman -S mingw-w64-ucrt-x86_64-libmysqlclient
+find_package(PkgConfig QUIET)
+if(PKG_CONFIG_FOUND)
+  pkg_check_modules(MYSQL IMPORTED_TARGET mysqlclient)
+endif()
+if(MYSQL_FOUND)
+  target_link_libraries(saac PRIVATE PkgConfig::MYSQL)
+else()
+  # Fallback: assume headers are in ucrt64/include/mysql and libs in ucrt64/lib
+  set(MYSQL_ROOT "C:/msys64/ucrt64")
+  if(DEFINED ENV{MSYS2_ROOT})
+    set(MYSQL_ROOT "$ENV{MSYS2_ROOT}/ucrt64")
+  endif()
+  target_include_directories(saac PRIVATE "${MYSQL_ROOT}/include")
+  target_link_directories(saac PRIVATE "${MYSQL_ROOT}/lib")
+  target_link_libraries(saac PRIVATE mysqlclient)
+endif()
+target_link_libraries(saac PRIVATE z)
 target_link_libraries(gmsv PRIVATE z)
 
 # MinGW links zlib dynamically. Keep the runtime DLL next to gmsv.exe so the

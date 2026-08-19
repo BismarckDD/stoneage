@@ -1,4 +1,5 @@
 #include "version.h"
+#include <limits.h>
 #include "common.h"
 #include "buf.h"
 #include "char.h"
@@ -23,15 +24,12 @@ typedef struct tagNPC_searchPoint {
 #define NPC_CREATECHALLENGETIME 1
 int all_nosee = 0;     /* ㄠ及凛｛蝈化及衬毛 no_see 卞 */
 int all_nobody = 0;    /* ㄠ及凛｛蝈化及衬毛 no_body 卞 */
-int one_loop_born = 1; /* ㄠ伙□皿匹  嫖戏心请允醒 oneloop_born */
+int one_loop_born = 1; /* 每个LOOP生成NPC的数量限制 */
 
 /*------------------------------------------------------------
  * 衬毛丹心分允桦赭毛瑁烂允月
  * 娄醒
- *  nobody  int                 1 及凛反簿手中卅中凛卞勾仁月
- *                                          (簿井中化手综月)
- *                                          (簿井中凶凛及心综月)
- *                                  毛仄卅仁卅月
+ *  nobody  int
  * 忒曰袄
  *  综木月凛反  TRUE
  *  综木卅中凛反  FALSE
@@ -52,11 +50,16 @@ static BOOL NPC_searchCreatePoint(NPC_Create *cr, int nobody, int nosee,
           cr->intdata[NPC_CREATEBORNLEFTUPX] + 1;
   height = cr->intdata[NPC_CREATEBORNRIGHTDOWNY] -
            cr->intdata[NPC_CREATEBORNLEFTUPY] + 1;
+  if (width <= 0 || height <= 0 || width > INT_MAX / height) {
+    fprint("Invalid NPC create area: floor=%d x=%d y=%d width=%d height=%d\n",
+           floor, x, y, width, height);
+    return FALSE;
+  }
   area = width * height;
   if (nobody == 0 && all_nobody == 0) {
     BOOL found = FALSE;
-    for (i = x; i <= x + width && found == FALSE; i++) {
-      for (j = y; j <= y + height && found == FALSE; j++) {
+    for (i = x; i < x + width && found == FALSE; i++) {
+      for (j = y; j < y + height && found == FALSE; j++) {
         OBJECT object;
         for (object = MAP_getTopObj(floor, i, j); object;
              object = NEXT_OBJECT(object)) {
@@ -81,12 +84,8 @@ static BOOL NPC_searchCreatePoint(NPC_Create *cr, int nobody, int nosee,
     int cry;
 
     startpoint = RAND(0, area - 1);
-    if (width == 0) {
-      return FALSE;
-    } else {
-      crx = startpoint % width + x;
-      cry = startpoint / width + y;
-    }
+    crx = startpoint % width + x;
+    cry = startpoint / width + y;
 
     if (cr->intdata[NPC_CREATEIGNOREINVINCIBLE] == 0 &&
         CHAR_isInvincibleArea(floor, crx, cry)) {
@@ -331,17 +330,32 @@ void NPC_generateLoop(BOOL checkall) {
       lastNpcGenerationTime = NowTime;
     }
   }
-  if (npcCreatedNum >= NPC_createnum)
+  if (NPC_create == NULL || NPC_createnum <= 0) {
+    return;
+  }
+  if (npcCreatedNum < 0 || npcCreatedNum >= NPC_createnum)
     npcCreatedNum = 0;
   for (i = 0; i < NPC_createnum; i++) {
-    // printf("i, NPC_createnum: %d, %d\n", i, NPC_createnum);
+    if (!NPC_CHECKCREATEINDEX(npcCreatedNum)) {
+      fprint("Invalid NPC create index: %d (count:%d)\n", npcCreatedNum,
+             NPC_createnum);
+      npcCreatedNum = 0;
+      break;
+    }
     int enemyNpcNum = NPC_getCreateInt(npcCreatedNum, NPC_CREATEENEMYNUM);
+    if (enemyNpcNum < 0 ||
+        enemyNpcNum > arraysizeof(NPC_create[npcCreatedNum].templateindex)) {
+      fprint("Invalid enemy count: createindex=%d count=%d max=%d\n",
+             npcCreatedNum, enemyNpcNum,
+             arraysizeof(NPC_create[npcCreatedNum].templateindex));
+      npcCreatedNum++;
+      continue;
+    }
     for (j = 0; j < enemyNpcNum; j++) {
-      // printf("j, NPC_createnum: %d, %d\n", j, NPC_createnum);
       if (NPC_createCheckGenerateFromTime(npcCreatedNum) == TRUE) {
-        CreateOk++;
-        NPC_createInitTime(npcCreatedNum);
         if (NPC_generateNPC(npcCreatedNum, j) == TRUE) {
+          ++CreateOk;
+          NPC_createInitTime(npcCreatedNum);
           NPC_createIncreaseEnemynum(npcCreatedNum);
         }
       }

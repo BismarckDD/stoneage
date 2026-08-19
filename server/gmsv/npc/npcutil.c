@@ -1,5 +1,5 @@
 #include "version.h"
-#include "npcutil.h"
+//
 #include "autil.h"
 #include "char.h"
 #include "config_file.h"
@@ -8,6 +8,7 @@
 #include "map_deal.h"
 #include "npc_door.h"
 #include "npccreate.h"
+#include "npcutil.h"
 #include "object.h"
 #include "readmap.h"
 
@@ -582,9 +583,9 @@ static int SearchNearLine(int xStart, int yStart, int floor, int xPlus,
 static int SearchNearAround(int x,     /* 腹绸  艘及  甄   */
                             int y,     /* 腹绸  艘及  甄   */
                             int floor, /* 腹绸  艘及白夫失 */
-                            int Part, /* 腹绸钒铵允月  赓及仿奶件 */
+                            int Part,  /* 腹绸钒铵允月  赓及仿奶件 */
                             int Level, /*   艘方曰  木化中月覃   */
-                            int type /* 腹绸允月 CHAR 正奶皿 */
+                            int type   /* 腹绸允月 CHAR 正奶皿 */
 ) {
   int i, iTarget = -1;
   for (i = 0; i < 4; i++) {
@@ -663,7 +664,8 @@ int NPC_Util_SearchNear(int meindex, int maxlen, int type) {
     iLen = tX * tX + tY * tY;
     if (iMin > iLen) {
       iMin = iLen;
-      iTarget = obj[i].index; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+      iTarget =
+          obj[i].index; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
     }
   }
 
@@ -684,7 +686,7 @@ int NPC_Util_SearchNearEnemy(int meindex, int maxlen) {
 /*******************************************************
 
   int NPC_Util_SuberiWalk(
-	int	index,	CHAR 及奶件犯永弁旦
+        int	index,	CHAR 及奶件犯永弁旦
   );
 
           -1  “穴永皿卞娄匀井井匀化巨仿□
@@ -969,30 +971,14 @@ static char *NPC_Util_MargeStrFromArgFile(char *filename, char *buf, int len) {
   FILE *fp;
   char *cret = NULL;
   char line[NPC_UTIL_GETARGSTR_LINEMAX];
-  char opfile[32];
+  char opfile[128];
 
   sprintf(opfile, "%s/", getNpcdir());
   strcat(opfile, filename);
   *buf = '\0';
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", opfile);
-  fp = fopen(realopfile, "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen(opfile, "r");
-  }
+  fp = fopen(opfile, "r");
   if (fp != NULL) {
     while (fgets(line, sizeof(line), fp)) {
-#ifdef _CRYPTO_DATA
-      if (crypto == TRUE) {
-        DecryptKey(line);
-      }
-#endif
       if (strlen(buf) != 0) {
         if (buf[strlen(buf) - 1] != '|') {
           strcatsafe(buf, len, "|");
@@ -1488,10 +1474,10 @@ void AddFMAdv(int talker, int shiftbit) {
 #endif
 #else
   SaacClient_ACFixFMData_send(acfd, CHAR_getChar(talker, CHAR_FMNAME),
-                             CHAR_getInt(talker, CHAR_FMINDEX),
-                             CHAR_getWorkInt(talker, CHAR_WORKFMINDEXI),
-                             FM_FIX_FMADV, buf, "",
-                             CHAR_getWorkInt(talker, CHAR_WORKFMCHARINDEX), 0);
+                              CHAR_getInt(talker, CHAR_FMINDEX),
+                              CHAR_getWorkInt(talker, CHAR_WORKFMINDEXI),
+                              FM_FIX_FMADV, buf, "",
+                              CHAR_getWorkInt(talker, CHAR_WORKFMCHARINDEX), 0);
 #endif
 }
 
@@ -1574,13 +1560,13 @@ int addNpcFamilyTax(int meindex, int talkerindex, int income) {
                                       token, sizeof(token)) == FALSE)
         return 0;
       fmindexi = atoi(token);
-      SaacClient_ACFixFMData_send(acfd, fmname, fmindex, fmindexi, FM_FIX_FMGOLD,
-                                 buf2, "",
-                                 CHAR_getWorkInt(meindex, CHAR_WORKFMCHARINDEX),
-                                 CONNECT_getFdid(clifd));
+      SaacClient_ACFixFMData_send(
+          acfd, fmname, fmindex, fmindexi, FM_FIX_FMGOLD, buf2, "",
+          CHAR_getWorkInt(meindex, CHAR_WORKFMCHARINDEX),
+          CONNECT_getFdid(clifd));
 
       //					print(" addNpcFamilyTax_fm:%s ",
-      //fmname);
+      // fmname);
       return 1;
     }
   }
@@ -1665,16 +1651,16 @@ int getPlayerEventNoticeNo(int meindex, int talker) {
 
         if (strstr(buf2, "REQUEST") != NULL) {
           //		print("NPCName=%s EVENT_READY_TO_START\n",
-          //CHAR_getChar(meindex,CHAR_NAME));
+          // CHAR_getChar(meindex,CHAR_NAME));
           return EVENT_READY_TO_START;
         } else if (strstr(buf2, "ACCEPT") != NULL) {
           //				print("NPCName=%s EVENT_CAN_ACCECPT\n",
-          //CHAR_getChar(meindex,CHAR_NAME));
+          // CHAR_getChar(meindex,CHAR_NAME));
           return EVENT_CAN_ACCECPT;
 
         } else if (strstr(buf2, "MESSAGE") != NULL) {
           //				print("NPCName=%s EVENT_NOT_RESPOND\n",
-          //CHAR_getChar(meindex,CHAR_NAME));
+          // CHAR_getChar(meindex,CHAR_NAME));
           return EVENT_NOT_RESPOND;
         }
       }
@@ -1687,7 +1673,7 @@ int getPlayerEventNoticeNo(int meindex, int talker) {
     return EVENT_NOT_RESPOND;
   }
   //	print("NPCName=%s EVENT_CANNOT_START\n",
-  //CHAR_getChar(meindex,CHAR_NAME));
+  // CHAR_getChar(meindex,CHAR_NAME));
   return EVENT_CANNOT_START;
 }
 #endif

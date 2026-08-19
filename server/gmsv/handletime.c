@@ -97,7 +97,6 @@ void Assess_InitSysEfficacy() {
   Family_TotalClock = 0;
   SaveCheck_TotalClock = 0;
   GMBroadCast_TotalClock = 0;
-
   SubStartClock = 0;
 #endif
 }

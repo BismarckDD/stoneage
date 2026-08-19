@@ -1,45 +1,39 @@
 #include "version.h"
 //
-#include <signal.h>
 #include <errno.h>
+#include <signal.h>
+#include "gmsv_server.h"
+#include "saac_client.h"
 #ifndef _WIN32
-#include <unistd.h>
 #include <execinfo.h>
+#include <unistd.h>
 #endif
 //
 #include "buf.h"
-#include "net.h"
 #include "char.h"
-#include "item.h"
-#include "object.h"
 #include "config_file.h"
-#include "gmsv_server.h"
-#include "saac_client.h"
-#include "log.h"
-#include "petmail.h"
 #include "copyright.h"
-#ifdef _ALLBLUES_LUA
-#include "mylua/mylua.h"
-#endif
+#include "item.h"
+#include "log.h"
+#include "net.h"
+#include "object.h"
+#include "petmail.h"
 
-void logerr(char *token)
-{
-	char tmp[256];
-	struct tm now;
-	time_t timep;
-	time(&timep);
-	memcpy(&now, localtime(&timep), sizeof(now));
-
-	sprintf(tmp, "%04d-%02d-%02d.log", 	now.tm_year+1900,	now.tm_mon+1,	now.tm_mday);
-																																								
-	FILE *fp=fopen(tmp,"a+");
-	fwrite(token, strlen(token), 1, fp);
+void logerr(char *token) {
+  char tmp[256];
+  struct tm now;
+  time_t timep;
+  time(&timep);
+  memcpy(&now, localtime(&timep), sizeof(now));
+  sprintf(tmp, "%04d-%02d-%02d.log", now.tm_year + 1900, now.tm_mon + 1,
+          now.tm_mday);
+  FILE *fp = fopen(tmp, "a+");
+  fwrite(token, strlen(token), 1, fp);
   fclose(fp);
-	printf( token );
+  printf(token);
 }
 
-void dump()
-{
+void dump() {
 #ifdef _WIN32
   void *array[10];
   USHORT size = CaptureStackBackTrace(0, arraysizeof(array), array, NULL);
@@ -47,8 +41,7 @@ void dump()
   char line[96];
   printf("Obtained %u stack frames.\n", (unsigned)size);
   for (i = 0; i < size; ++i) {
-    snprintf(line, sizeof(line), "  frame[%u] = %p\n", (unsigned)i,
-             array[i]);
+    snprintf(line, sizeof(line), "  frame[%u] = %p\n", (unsigned)i, array[i]);
     logerr(line);
   }
 #else
@@ -57,47 +50,44 @@ void dump()
   char **strings;
   size_t i;
 
-  size = backtrace (array, 10);
-  strings = backtrace_symbols (array, size);
+  size = backtrace(array, 10);
+  strings = backtrace_symbols(array, size);
 
-  printf ("Obtained %zd stack frames.\n", size);
+  printf("Obtained %zd stack frames.\n", size);
 
-  for (i = 0; i < size; i++){
-  	logerr(strings[i]);
-	}
+  for (i = 0; i < size; i++) {
+    logerr(strings[i]);
+  }
 
-  free (strings);
+  free(strings);
 #endif
-
 }
 
 void signalset(void);
- 
-static void allDataDump( void )
-{
-	int i;
-	for( i = 0; i < CHAR_getPlayerMaxNum(); i ++ ){
-		if(CHAR_CHECKINDEX(i) == TRUE){
-			CHAR_charSaveFromConnect(i, FALSE);
-		}
-	}
-	saveforsaac();
-	storeCharaData();
+
+static void allDataDump(void) {
+  int i;
+  for (i = 0; i < CHAR_getPlayerMaxNum(); i++) {
+    if (CHAR_CHECKINDEX(i) == TRUE) {
+      CHAR_charSaveFromConnect(i, FALSE);
+    }
+  }
+  saveforsaac();
+  storeCharaData();
   closeAllLogFile();
 #ifdef _PET_ITEM
-	storeObjects( getStoredir() );
-	storePetmail();
+  storeObjects(getStoredir());
+  storePetmail();
 #endif
-#ifdef _ALLBLUES_LUA   
-	closemyluaload();
+#ifdef _ALLBLUES_LUA
+  closemyluaload();
 #endif
 }
 
-void shutdownProgram( void )
-{
-    printf("关闭SAAC连接:%d\n",close( acfd ));
-    printf("关闭绑定端口:%d\n",close( bindedfd ));
-    memEnd();
+void shutdownProgram(void) {
+  printf("关闭SAAC连接:%d\n", close(acfd));
+  printf("关闭绑定端口:%d\n", close(bindedfd));
+  memEnd();
 }
 
 #ifdef _KEEP_UP_NO_LOGIN
@@ -109,170 +99,164 @@ extern time_t initTime;
 #endif
 extern int player_online;
 extern int player_maxonline;
-char saacretfunc[255]="";
-char *saacsendfunc = NULL;
-int cliretfunc=0;
-int clisendfunc=0;
+char saacretfunc[255] = "";
+static char saacsendfunc_buf[255] = "";
+char *saacsendfunc = saacsendfunc_buf;
+int cliretfunc = 0;
+int clisendfunc = 0;
 
+void sigshutdown(int number) {
+  char buff[256];
 
-#ifdef _ABSOLUTE_DEBUG
-char errordata[256]="";
-char charId[32]="";
-int lastfunctime=0;
-int debugline=0;
-int comnum=-1;
-#endif
-
-
-void sigshutdown( int number)
-{
-		char buff[256];
-
-		if( number == 0 ){
-			printf( "\n\n\nGMSV正常关闭\n" );
-		}else if( number == 2 ){
+  if (number == 0) {
+    printf("\n\n\nGMSV正常关闭\n");
+  } else if (number == 2) {
 #ifdef _KEEP_UP_NO_LOGIN
-    	if(strlen(keepupnologin) > 0){
-    		strcpy(keepupnologin,"");
-    		printf( "已解除禁止登陆状态\n" );
-    		return;
-    	}
+    if (strlen(keepupnologin) > 0) {
+      strcpy(keepupnologin, "");
+      printf("已解除禁止登陆状态\n");
+      return;
+    }
 #endif
-			printf( "\n\n\nGMSV被CTRL+C手动中断\n" );
-		}else{
-			sprintf( buff, "\n=========以下是服务器出错原因=========\n");
-			logerr(buff);
-	    sprintf( buff, "标准信息: %d\n" , number  );
-	    logerr(buff);
+    printf("\n\n\nGMSV被CTRL+C手动中断\n");
+  } else {
+    sprintf(buff, "\n=========以下是服务器出错原因=========\n");
+    logerr(buff);
+    sprintf(buff, "标准信息: %d\n", number);
+    logerr(buff);
 #ifdef _GMSV_DEBUG
-			sprintf( buff, "主 函 数: %s\n", DebugMainFunction );
-			logerr(buff);
+    sprintf(buff, "主 函 数: %s\n", DebugMainFunction);
+    logerr(buff);
 #endif
-			sprintf( buff, "在线人数: %d\n", player_online);
-			logerr(buff);
-			sprintf( buff, "最高在线: %d\n", player_maxonline);
-			logerr(buff);
-			sprintf( buff, "SAAC接收: %s\n", saacretfunc);
-			logerr(buff);
-			sprintf( buff, "SAAC发送: %s\n", saacsendfunc);
-			logerr(buff);
-			sprintf( buff, "cli 接收: %d\n", cliretfunc);
-			logerr(buff);
-			sprintf( buff, "cli 发送: %d\n", clisendfunc);
-			logerr(buff);
+    sprintf(buff, "在线人数: %d\n", player_online);
+    logerr(buff);
+    sprintf(buff, "最高在线: %d\n", player_maxonline);
+    logerr(buff);
+    sprintf(buff, "SAAC接收: %s\n", saacretfunc);
+    logerr(buff);
+    sprintf(buff, "SAAC发送: %s\n", saacsendfunc);
+    logerr(buff);
+    sprintf(buff, "cli 接收: %d\n", cliretfunc);
+    logerr(buff);
+    sprintf(buff, "cli 发送: %d\n", clisendfunc);
+    logerr(buff);
 #ifdef _ABSOLUTE_DEBUG
-			sprintf( buff, "错误数据: %s\n", errordata);
-			logerr(buff);
-			sprintf( buff, "错误账号: %s\n", charId);
-			logerr(buff);
-			sprintf( buff, "最后执行: %d\n", lastfunctime);
-			logerr(buff);
-			sprintf( buff, "调试行数: %d\n", debugline);
-			logerr(buff);
-			sprintf( buff, "COM 接口: %d\n", comnum);
-			logerr(buff);
-			sprintf( buff, "当前版本: %s\n", SERVER_VERSION);
-			logerr(buff);
+    sprintf(buff, "错误数据: %s\n", errordata);
+    logerr(buff);
+    sprintf(buff, "错误账号: %s\n", charId);
+    logerr(buff);
+    sprintf(buff, "最后执行: %d\n", lastfunctime);
+    logerr(buff);
+    sprintf(buff, "调试行数: %d\n", debugline);
+    logerr(buff);
+    sprintf(buff, "COM 接口: %d\n", comnum);
+    logerr(buff);
+    sprintf(buff, "当前版本: %s\n", SERVER_VERSION);
+    logerr(buff);
 #endif
-			sprintf( buff, "以下是主要错误，必须向我们提交的错误\n");
-			logerr(buff);
-			dump();
-			sprintf( buff, "=========以上是服务器出错原因=========\n");
-			logerr(buff);
-		}
-		if( number == 0 || number == 2 ){
-			printf( "在线人数: %d\n", player_online);
-			printf( "最高在线: %d\n", player_maxonline);
-			printf( "当前版本: %s\n", SERVER_VERSION);
-		}
-		
+    sprintf(buff, "以下是主要错误，必须向我们提交的错误\n");
+    logerr(buff);
+    dump();
+    sprintf(buff, "=========以上是服务器出错原因=========\n");
+    logerr(buff);
+  }
+  if (number == 0 || number == 2) {
+    printf("在线人数: %d\n", player_online);
+    printf("最高在线: %d\n", player_maxonline);
+    printf("当前版本: %s\n", SERVER_VERSION);
+  }
+
 #ifdef _GMSV_DEBUG
-	  {
-	    	time_t new_t;
-	    	int dd,hh,mm,ss;
-	    	char buf[128];
-	    	time(&new_t);
-	    	if(initTime==0){
-	    		printf( "运行时间: 尚未初始化完\n" );
-	    	}else{
-		    	new_t-=initTime;
-			
-					dd=(int) new_t / 86400; new_t=new_t % 86400;
-		   		hh=(int) new_t / 3600;  new_t=new_t % 3600;
-		      mm=(int) new_t / 60;    new_t=new_t % 60;
-		      ss=(int) new_t;
-		      
-					if (dd>0) {
-		      	snprintf( buf, sizeof( buf ) , "服务器共运行了 %d 日 %d 小时 %d 分 %d 秒。",dd,hh,mm,ss);
-		      } else if (hh>0) {
-		      	snprintf( buf, sizeof( buf ) , "服务器共运行了 %d 小时 %d 分 %d 秒。",hh,mm,ss);
-		      } else {
-		       	snprintf( buf, sizeof( buf ) , "服务器共运行了 %d 分 %d 秒。",mm,ss);
-		      }
-		      if( number == 0 || number == 2 ){
-		      	printf( "运行时间: %s\n", buf );
-		      }else{
-			      sprintf( buff, "运行时间: %s\n", buf );
-			      logerr(buff);
-			    }
-	    	}
-		}
+  {
+    time_t new_t;
+    int dd, hh, mm, ss;
+    char buf[128];
+    time(&new_t);
+    if (initTime == 0) {
+      printf("运行时间: 尚未初始化完\n");
+    } else {
+      new_t -= initTime;
+
+      dd = (int)new_t / 86400;
+      new_t = new_t % 86400;
+      hh = (int)new_t / 3600;
+      new_t = new_t % 3600;
+      mm = (int)new_t / 60;
+      new_t = new_t % 60;
+      ss = (int)new_t;
+
+      if (dd > 0) {
+        snprintf(buf, sizeof(buf), "服务器共运行了 %d 日 %d 小时 %d 分 %d 秒。",
+                 dd, hh, mm, ss);
+      } else if (hh > 0) {
+        snprintf(buf, sizeof(buf), "服务器共运行了 %d 小时 %d 分 %d 秒。", hh,
+                 mm, ss);
+      } else {
+        snprintf(buf, sizeof(buf), "服务器共运行了 %d 分 %d 秒。", mm, ss);
+      }
+      if (number == 0 || number == 2) {
+        printf("运行时间: %s\n", buf);
+      } else {
+        sprintf(buff, "运行时间: %s\n", buf);
+        logerr(buff);
+      }
+    }
+  }
 #endif
-		remove( "gmsvlog.err2");
-		rename( "gmsvlog.err1", "gmsvlog.err2" );
-		rename( "gmsvlog.err", "gmsvlog.err1" );
-		rename( "gmsvlog", "gmsvlog.err" );
+  remove("gmsvlog.err2");
+  rename("gmsvlog.err1", "gmsvlog.err2");
+  rename("gmsvlog.err", "gmsvlog.err1");
+  rename("gmsvlog", "gmsvlog.err");
 
-    allDataDump();
+  allDataDump();
 
-    signal(SIGINT , SIG_IGN );
+  signal(SIGINT, SIG_IGN);
 #ifndef _WIN32
-    signal(SIGQUIT, SIG_IGN );
-    signal(SIGILL,  SIG_IGN );
-    signal(SIGTRAP, SIG_IGN );
-    signal(SIGIOT,  SIG_IGN );
-    signal(SIGBUS,  SIG_IGN );
-    signal(SIGFPE,  SIG_IGN );
-    signal(SIGKILL, SIG_IGN );
-    signal(SIGSEGV, SIG_IGN );
-    signal(SIGPIPE, SIG_IGN );
+  signal(SIGQUIT, SIG_IGN);
+  signal(SIGILL, SIG_IGN);
+  signal(SIGTRAP, SIG_IGN);
+  signal(SIGIOT, SIG_IGN);
+  signal(SIGBUS, SIG_IGN);
+  signal(SIGFPE, SIG_IGN);
+  signal(SIGKILL, SIG_IGN);
+  signal(SIGSEGV, SIG_IGN);
+  signal(SIGPIPE, SIG_IGN);
 #endif
-    signal(SIGTERM, SIG_IGN );
+  signal(SIGTERM, SIG_IGN);
 
-    shutdownProgram();
-    exit(number);
+  shutdownProgram();
+  exit(number);
 }
 
-void signalset( void )
-{
-    // CoolFish: Test Signal 2001/10/26
-    print("\n开始获取信号..\n");
-		print("SIGINT:%d\n",  SIGINT);
+void signalset(void) {
+  // CoolFish: Test Signal 2001/10/26
+  print("\n开始获取信号..\n");
+  print("SIGINT:%d\n", SIGINT);
 #ifndef _WIN32
-		print("SIGQUIT:%d\n", SIGQUIT);
-		print("SIGFPE:%d\n",  SIGILL);
-		print("SIGTRAP:%d\n", SIGTRAP);
-		print("SIGIOT:%d\n",  SIGIOT);
-		print("SIGBUS:%d\n",  SIGBUS);
-		print("SIGFPE:%d\n",  SIGFPE);
-		print("SIGKILL:%d\n", SIGKILL);
-		print("SIGSEGV:%d\n", SIGSEGV);
-		print("SIGPIPE:%d\n", SIGPIPE);
+  print("SIGQUIT:%d\n", SIGQUIT);
+  print("SIGFPE:%d\n", SIGILL);
+  print("SIGTRAP:%d\n", SIGTRAP);
+  print("SIGIOT:%d\n", SIGIOT);
+  print("SIGBUS:%d\n", SIGBUS);
+  print("SIGFPE:%d\n", SIGFPE);
+  print("SIGKILL:%d\n", SIGKILL);
+  print("SIGSEGV:%d\n", SIGSEGV);
+  print("SIGPIPE:%d\n", SIGPIPE);
 #endif
-		print("SIGTERM:%d\n", SIGTERM);
-    signal( SIGINT , sigshutdown );
+  print("SIGTERM:%d\n", SIGTERM);
+  signal(SIGINT, sigshutdown);
 #ifndef _WIN32
-    signal( SIGQUIT, sigshutdown );
-    signal( SIGILL,  sigshutdown );
-    signal( SIGTRAP, sigshutdown );
-    signal( SIGIOT,  sigshutdown );
-    signal( SIGBUS,  sigshutdown );
-    signal( SIGFPE,  sigshutdown );
-    signal( SIGKILL, sigshutdown );
-    signal( SIGSEGV, sigshutdown );
-    signal( SIGPIPE, SIG_IGN );
+  signal(SIGQUIT, sigshutdown);
+  signal(SIGILL, sigshutdown);
+  signal(SIGTRAP, sigshutdown);
+  signal(SIGIOT, sigshutdown);
+  signal(SIGBUS, sigshutdown);
+  signal(SIGFPE, sigshutdown);
+  signal(SIGKILL, sigshutdown);
+  signal(SIGSEGV, sigshutdown);
+  signal(SIGPIPE, SIG_IGN);
 #else
-    sa_install_console_handler(sigshutdown);
+  sa_install_console_handler(sigshutdown);
 #endif
-    signal( SIGTERM, sigshutdown );
+  signal(SIGTERM, sigshutdown);
 }

@@ -872,14 +872,19 @@ void SaacServer_ACFMAnnounce_recv(int fd, char *fmname, int fmindex, int index,
 void SaacServer_ACShowTopFMList_recv(int fd, int kindflag) {
 #ifdef _FAMILY
   int r = 0;
-  char data[150 * MAX_FAMILY];
-  strcpy(data, "");
-  r = ACShowTopFMList(data, sizeof(data), kindflag);
+  char *data = (char *)malloc(150 * MAX_FAMILY);
+  if (data == NULL) {
+    SaacServer_ACShowTopFMList_send(fd, FAILED, kindflag, r, "Nothing");
+    return;
+  }
+  data[0] = '\0';
+  r = ACShowTopFMList(data, 150 * MAX_FAMILY, kindflag);
   if (r < 0) {
     SaacServer_ACShowTopFMList_send(fd, FAILED, kindflag, r, "Nothing");
   } else {
     SaacServer_ACShowTopFMList_send(fd, SUCCESSFUL, kindflag, r, data);
   }
+  free(data);
 #endif
 }
 
@@ -1556,6 +1561,8 @@ void SaacServer_ACCharLogin_recv(int fd, int clifd, char *id, char *pas,
 ) {
   int res;
 #ifdef _SASQL
+  printf("[SAAC验证] clifd=%d id='%s' pas='%s' ip='%s'\n",
+         clifd, id ? id : "NULL", pas ? pas : "NULL", ip ? ip : "NULL");
   if (id == NULL || pas == NULL || ip == NULL || strlen(id) == 0 ||
       strlen(id) >= USERID_MAX || strlen(pas) == 0 ||
       strlen(pas) > SAAC_PASSWORD_MAX || strlen(ip) == 0 ||
@@ -1564,33 +1571,41 @@ void SaacServer_ACCharLogin_recv(int fd, int clifd, char *id, char *pas,
       || mac == NULL || strlen(mac) > SAAC_MAC_MAX
 #endif
   ) {
-    printf("登陆信息有错误！\n");
+    printf("[SAAC验证失败] 登陆信息有错误 id='%s' pas='%s' ip='%s'\n",
+           id ? id : "NULL", pas ? pas : "NULL", ip ? ip : "NULL");
     SaacServer_ACCharLogin_send(fd, clifd, 1);
     return;
   }
+  printf("[SAAC检查] 账号锁定检查 id='%s'\n", id);
   if (sasql_check_lock(id)) {
-    printf("该账号%s禁止登陆!\n", id);
+    printf("[SAAC验证失败] 该账号%s禁止登陆!\n", id);
     SaacServer_ACCharLogin_send(fd, clifd, 2);
     return;
   }
+  printf("[SAAC检查] IP锁定检查 ip='%s'\n", ip);
   if (sasql_check_lock(ip)) {
-    printf("该IP%s禁止登陆!\n", ip);
+    printf("[SAAC验证失败] 该IP%s禁止登陆!\n", ip);
     SaacServer_ACCharLogin_send(fd, clifd, 3);
     return;
   }
   if (strlen(mac) > 0) {
+    printf("[SAAC检查] MAC锁定检查 mac='%s'\n", mac);
     if (sasql_check_lock(mac)) {
-      printf("该MAC%s禁止登陆!\n", ip);
+      printf("[SAAC验证失败] 该MAC%s禁止登陆!\n", mac);
       SaacServer_ACCharLogin_send(fd, clifd, 3);
       return;
     }
   }
+  printf("[SAAC验证] 调用sasql_query id='%s'\n", id);
   res = sasql_query(id, pas);
+  printf("[SAAC验证] sasql_query结果 res=%d (0=失败,1=成功,2=密码错,3=未注册)\n", res);
   if (res == 3) {
 #ifdef _SQL_REGISTER
+    printf("[SAAC验证] 账号未注册, 尝试自动注册 id='%s'\n", id);
     if (!sasql_register(id, pas))
 #endif
     {
+      printf("[SAAC验证失败] 账号未注册且自动注册失败 id='%s'\n", id);
       SaacServer_ACCharLogin_send(fd, clifd, 5);
       return;
     }
@@ -1599,12 +1614,15 @@ void SaacServer_ACCharLogin_recv(int fd, int clifd, char *id, char *pas,
     if (sasql_ItemPetLocked_Char(id, pas) != 1)
 #endif
     {
+      printf("[SAAC验证失败] 密码错误 id='%s'\n", id);
       SaacServer_ACCharLogin_send(fd, clifd, 6);
       return;
     }
   }
+  printf("[SAAC验证成功] id='%s' 记录在线信息\n", id);
   sasql_online(id, NULL, ip, mac, 1);
 #endif
+  printf("[SAAC回复] clifd=%d flag=0 (登录成功)\n", clifd);
   SaacServer_ACCharLogin_send(fd, clifd, 0);
 }
 

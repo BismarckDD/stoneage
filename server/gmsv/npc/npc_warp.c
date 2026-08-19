@@ -1,5 +1,4 @@
 #include "version.h"
-#include <string.h>
 #include "object.h"
 #include "char_base.h"
 #include "char.h"
@@ -316,12 +315,10 @@ void NPC_WarpWarpCharacter( int warpnpcindex, int char_index )
 void NPC_WarpWatch( int meobjindex, int objindex, CHAR_ACTION act,
                     int x,int y,int dir, int* opt,int optlen )
 {
-    int     meindex,moveindex;
+    int meindex,moveindex;
     if( OBJECT_getType( objindex ) != OBJTYPE_CHARA )return;
-
     meindex = OBJECT_getIndex(meobjindex);
     moveindex = OBJECT_getIndex(objindex);
-
     if( CHAR_getInt( moveindex,CHAR_WHICHTYPE ) != CHAR_TYPEPLAYER ){
         return;
     }
