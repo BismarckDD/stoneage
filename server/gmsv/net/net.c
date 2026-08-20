@@ -1634,7 +1634,7 @@ void chardatasavecheck(void) {
 }
 
 /*------------------------------------------------------------
- * fd 互 valid 卅手及井升丹井毛譬屯月
+ * fd 互 valid
  * 娄醒
  *  fd          int         fd
  * 忒曰袄
@@ -2165,18 +2165,15 @@ void CONNECT_SysEvent_Loop(void) {
             }
           }
         }
-
         //每10秒
 #ifdef _TYPE_TOXICATION //中毒
         if (Connect[i].toxication > 0) {
           CHAR_ComToxicationHp(Connect[i].char_index);
         }
-
 #endif
         // Nuke 0624 Avoid Useless Connection
         if (Connect[i].state == NOTLOGIN) {
           Connect[i].cotime++;
-
           if (Connect[i].cotime > 30) {
             print("LATE");
 #ifdef _NETLOG_
@@ -2195,30 +2192,19 @@ void CONNECT_SysEvent_Loop(void) {
         } else {
           Connect[i].cotime = 0;
         }
-
         if ((Connect[i].nu <= 22)) {
-
           if (Connect[i].nu <= 0) {
             Connect[i].nu_decrease++;
-
             if (Connect[i].nu_decrease >= 30)
               Connect[i].nu_decrease = 30;
-
             if (Connect[i].nu_decrease > 22)
               logSpeed(i);
           } else {
             Connect[i].nu_decrease -= 1;
-
             if (Connect[i].nu_decrease < 0)
               Connect[i].nu_decrease = 0;
           }
           GmsvServer_NU_send(i, 0);
-          /*
-                    r = 22 - Connect[ i ].nu_decrease;
-                    r = ( r >= 15 ) ? r : 15;
-                    GmsvServer_NU_send( i, r );
-                    Connect[ i ].nu += r;
-          */
         }
       }
     }
@@ -2229,7 +2215,6 @@ void CONNECT_SysEvent_Loop(void) {
 int isThereThisIP(unsigned long ip) {
   int i;
   unsigned long ipa;
-
   for (i = 0; i < ConnectLen; i++) {
     if (!Connect[i].use) {
       continue;

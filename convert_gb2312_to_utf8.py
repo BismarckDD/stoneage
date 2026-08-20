@@ -12,10 +12,8 @@ def convert_to_utf8(file_path):
         raw_data = file.read()
         encoding = chardet.detect(raw_data)['encoding']
         try:
-           if encoding == 'GB2312':
-               text = raw_data.decode('GB2312')
-           elif encoding == 'GBK':
-               text = raw_data.decode('GBK')
+           if encoding == 'GB2312' or encoding == 'GBK':
+               text = raw_data.decode('gbk')  # GBK 是 GB2312 的超集，统一使用 GBK 解码
            else:
                return
            with open(file_path, 'w', encoding='utf-8') as utf8_file:
@@ -33,6 +31,10 @@ def scan_and_convert(folder_path):
                 convert_to_utf8(file_path)
 
 if __name__ == "__main__":
-    folder_path = input("Enter the folder path to scan: ")
+    import sys
+    if len(sys.argv) > 1:
+        folder_path = sys.argv[1]
+    else:
+        folder_path = input("Enter the folder path to scan: ")
     scan_and_convert(folder_path)
 

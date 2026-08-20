@@ -1,10 +1,10 @@
 CPUUSE 2
 ##############################
 #SAAC基本参数设置
-# 帐户服务器端卿
+# 帐户服务器端口
 port 10001
 
-# 帐户服务器密瞿
+# SAAC服务器密码
 pass test
 
 # rotale_internal
@@ -78,15 +78,15 @@ sql_Port        3306
 #sql服务器账卿
 sql_ID          root
 #sql服务器密瞿
-sql_PS          123456
+sql_PS          samysql
 #sql数据库名
-sql_DataBase    CSA
+sql_DataBase    sa
 #sql人物信息表名
 sql_Table       CSAlogin
 #sql用户名字欿
-sql_NAME        Name
+sql_NAME        username
 #sql密码字段县
-sql_PASS        PassWord
+sql_PASS        password
 #sql锁定账号表名
 sql_LOCK        LOCK
 

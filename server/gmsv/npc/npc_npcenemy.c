@@ -110,9 +110,9 @@ BOOL NPC_NPCEnemyInit(int meindex) {
   if (!flag) {
       char filename[256];
       NPC_Util_CheckAssignArgFile(meindex, filename);
-      print("NPCEnemy: Invalid Param [enemyno:%d data:%s "
-            "curEnemy:%d]\nfile:%s\n",
-            meindex, data, curEnemy, filename);
+      print("NPCEnemy: Invalid Param [enemyno:%d] data:%s "
+            "curEnemy:%d, buf:%s, file:%s\n",
+            meindex, data, curEnemy, buf, filename);
     return FALSE;
   }
 

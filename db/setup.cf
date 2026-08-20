@@ -32,7 +32,7 @@ FMMAGICMPRATE1=0.2
 FMMAGICMPRATE2=0.2
 
 # 带宽优化, 原地状态下VS不显
-# 1: 全部开启; 2: 单人开启; 3: 队员开启; 0: 关闭)
+# 1: 全部开启; 2: 单人开启; 3: 队员开启; 0: 关闭
 VSFLG=1
 
 #暂时无用的
@@ -476,8 +476,8 @@ acservport=10001
 acpasswd=test
 
 # Game Server Name
-# 服务器名字
-gameservname=石器一线
+# GMSV服务器名字
+gameservname=
 
 #星球的ID
 gameservlistid=1

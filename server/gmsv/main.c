@@ -161,29 +161,23 @@ void main_loop(void) {
 #endif
 
   while (TRUE) {
-    print("进入到循环里");
 #ifdef _ASSESS_SYSEFFICACY
     Assess_SysEfficacy(0);
 #endif
-
     setNewTime();
     memcpy(&tmNow, localtime((time_t *)&NowTime.tv_sec), sizeof(tmNow));
     if (tmOld.tm_hour != getLogHour() && tmNow.tm_hour == getLogHour()) {
-
 #ifdef _GMSV_DEBUG
       DebugMainFunction = "backupAllLogFile";
 #endif
       backupAllLogFile(&tmOld);
     }
-
     setNewTime();
 #ifdef _ASSESS_SYSEFFICACY_SUB
-
     Assess_SysEfficacy_sub(0, 1);
 #ifdef _GMSV_DEBUG
     DebugMainFunction = "netloop_faster";
 #endif
-
 #ifdef _EPOLL_ET_MODE
     System_Loop();
 #else
