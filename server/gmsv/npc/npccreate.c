@@ -16,15 +16,11 @@
 void NPC_setDefaultNPCCreate(NPC_Create *cr);
 
 INLINE int NPC_CHECKCREATEINDEX(int index) {
-  if (NPC_createnum <= index || index < 0)
-    return FALSE;
-  return TRUE;
+  return (NPC_createnum <= index || index < 0) ? FALSE : TRUE;
 }
 
 INLINE int NPC_CHECKCREATEINTINDEX(int index) {
-  if (NPC_CREATEINTNUM <= index || index < 0)
-    return FALSE;
-  return TRUE;
+  return (NPC_CREATEINTNUM <= index || index < 0) ? FALSE : TRUE;
 }
 
 INLINE int NPC_setCreateInt(int index, NPC_CREATEINT element, int data) {
@@ -107,32 +103,16 @@ BOOL NPC_IsNPCCreateFile(char *filename) {
   FILE *f;
   char line1[128];
   char *ret;
-
-  /*  ~匹蔽月白央奶伙反卅仄卞允月 */
   if (filename == NULL || strlen(filename) < 1 ||
       filename[strlen(filename) - 1] == '~' || filename[0] == '#' ||
       strcmptail(filename, ".bak") == 0)
     return FALSE;
-
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  if (strcmptail(filename, ".allblues") == 0) {
-    crypto = TRUE;
-  }
-#endif
-
   f = fopen(filename, "r");
   if (f == NULL)
     goto RETURNFALSE;
   ret = fgets(line1, sizeof(line1), f);
   if (ret == NULL)
     goto FCLOSERETURNFALSE;
-#ifdef _CRYPTO_DATA
-  if (crypto == TRUE) {
-    DecryptKey(line1);
-  }
-#endif
-
   if (strcasecmp(NPC_CREATEFILEMAGIC, line1) == 0) {
     fclose(f);
     return TRUE;
@@ -164,8 +144,8 @@ int NPC_readCreateFile(char *filename) {
   POINT lu[2] = {{0, 0}, {0, 0}}; /*  born 互 0 匹 move 互 1 */
   POINT rd[2] = {{0, 0}, {0, 0}}; /*  born 互 0 匹 move 互 1 */
 
-  int defborn = FALSE; /*  born 毛涩烂仄凶井升丹井 */
-  int defmove = FALSE; /*  move 毛涩烂仄凶井升丹井 */
+  int defborn = FALSE;
+  int defmove = FALSE;
 
 #ifdef _NPC_AUTO_MOVE
   POINT automove[2] = {{0, 0}, {0, 0}};
@@ -374,7 +354,7 @@ int NPC_readCreateFile(char *filename) {
             CHAR_seekGraphicNumberFromString(secondToken);
 
       } else if (strcasecmp("name", firstToken) == 0) {
-        strcpysafe(cr.chardata[NPC_CREATENAME].string,
+        strncpysafe(cr.chardata[NPC_CREATENAME].string,
                    sizeof(cr.chardata[NPC_CREATENAME].string), secondToken);
 
       } else if (strcasecmp("time", firstToken) == 0) {
@@ -425,9 +405,11 @@ int NPC_readCreateFile(char *filename) {
             if (ret == FALSE)
               cr.arg[enemyreadindex].string[0] = '\0';
             else
-              strcpysafe(cr.arg[enemyreadindex].string,
+              strncpysafe(cr.arg[enemyreadindex].string,
                          sizeof(cr.arg[enemyreadindex].string),
                          secondToken + strlen(enemyname) + 1);
+            // print("[NPCCreate] enemy secondToken:%s, enemyname:%s, arg:%s\n",
+            //       secondToken, enemyname, cr.arg[enemyreadindex].string);
           }
           enemyreadindex++;
         } else
@@ -550,7 +532,6 @@ BOOL NPC_createGetRECT(int createindex, RECT *r) {
  *  BOOL    不能创建 FALSE(0)
  ------------------------------------------------------------*/
 BOOL NPC_createCheckGenerateFromTime(int cindex) {
-  struct timeval old;
   if (!NPC_CHECKCREATEINDEX(cindex))
     return FALSE;
 
@@ -563,13 +544,19 @@ BOOL NPC_createCheckGenerateFromTime(int cindex) {
 
   if (NPC_create[cindex].intdata[NPC_CREATETIME] < 0)
     return FALSE;
-  old.tv_sec = NPC_create[cindex].workdata[NPC_CREATEWORKMAKESTARTSEC];
-  old.tv_usec = NPC_create[cindex].workdata[NPC_CREATEWORKMAKESTARTUSEC];
 
-  if (time_diff_us(NowTime, old) <=
-      NPC_create[cindex].intdata[NPC_CREATETIME] * 1000)
+  struct timeval lastTime;
+  lastTime.tv_sec = NPC_create[cindex].workdata[NPC_CREATEWORKMAKESTARTSEC];
+  lastTime.tv_usec = NPC_create[cindex].workdata[NPC_CREATEWORKMAKESTARTUSEC];
+
+  // print("%d, %d, %d, %d\n", NowTime.tv_sec, NowTime.tv_usec, lastTime.tv_sec, lastTime.tv_usec);
+  // print("%d\n", NPC_create[cindex].intdata[NPC_CREATETIME]);
+  if (time_diff_us(NowTime, lastTime) <=
+      NPC_create[cindex].intdata[NPC_CREATETIME] * 1000) {
+    // print("FFFF\n");
     return FALSE;
-
+  }
+  // print("TTTT\n");
   return TRUE;
 }
 

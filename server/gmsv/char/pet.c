@@ -27,7 +27,7 @@ int PET_DEBUG_initPetOne(int char_index) {
   ch.workint[CHAR_WORKATTACKPOWER] = 100;
   ch.workint[CHAR_WORKDEFENCEPOWER] = 50;
   ch.data[CHAR_HP] = 100;
-  strcpysafe(ch.string[CHAR_NAME].string, 32, "宠物１");
+  strncpysafe(ch.string[CHAR_NAME].string, 32, "宠物１");
   index = PET_initCharOneArray(&ch);
 
   if (index < 0)
@@ -262,17 +262,17 @@ int PET_initCharOneArray(Char *ch) {
 #endif
   };
   for (i = 0; i < CHAR_FUNCTABLENUM; i++) {
-    strcpysafe(ch->charfunctable[i].string, sizeof(ch->charfunctable[i]),
+    strncpysafe(ch->charfunctable[i].string, sizeof(ch->charfunctable[i]),
                tmp[i]);
   }
   if (ch->data[CHAR_MAILMODE] != CHAR_PETMAIL_NONE) {
-    strcpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
+    strncpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
                sizeof(ch->charfunctable[CHAR_LOOPFUNC]), "PETMAIL_Loop");
   }
 
 #ifdef _PET_FUSION
   if (ch->data[CHAR_FUSIONBEIT] == 1 && ch->data[CHAR_FUSIONRAISE] > 0) {
-    strcpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
+    strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
                sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]),
                "PET_CheckIncubateLoop");
     ch->data[CHAR_LOOPINTERVAL] = 60000;
@@ -338,7 +338,7 @@ int PET_createPetFromCharaIndex(int char_index, int enemy_index) {
     CharNew.unionTable.indexOfPetskill[i] = CHAR_getPetSkill(enemy_index, i);
   }
   CharNew.data[CHAR_ALLOCPOINT] = CHAR_getInt(enemy_index, CHAR_ALLOCPOINT);
-  strcpysafe(CharNew.string[CHAR_NAME].string,
+  strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              CHAR_getChar(enemy_index, CHAR_NAME));
   newindex = PET_initCharOneArray(&CharNew);

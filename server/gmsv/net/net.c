@@ -109,8 +109,8 @@ typedef struct tagServerState {
   BOOL acceptmore;
   unsigned int fdid; /* fd */
   unsigned int closeallsocketnum;
-  int shutdown;  /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
-  int dsptime;   /* shutdown 乒□玉及伐□弁  醒*/
+  int shutdown;
+  int dsptime;   /* */
   int limittime;
 } ServerState;
 
@@ -169,16 +169,16 @@ typedef struct tagCONNECT {
   char passwd[PASSWDLEN]; /* 由旦伐□玉 */
   LoginType state;        /* 蜇箕及夫弘奶件橇谪 */
   int nstatecount;
-  char charname[CHARNAMELEN]; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
-  int char_index; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
-  char CAbuf[2048]; /*  CA() 毛做谅允月啃及田永白央 */
-  int CAbufsiz; /*  CAbuf 及扔奶术  */
-  struct timeval lastCAsendtime; /*瘉詨卞CA毛霜匀凶凛棉 */
-  char CDbuf[2048]; /*  CD() 毛做谅允月啃及田永白央 */
-  int CDbufsiz; /*  CDbuf 及扔奶术  */
-  struct timeval lastCDsendtime; /*瘉詨卞CD毛霜匀凶凛棉 */
-  struct timeval lastCharSaveTime; /* 瘉詨卞平乓仿犯□正毛本□皮仄凶凛棉 */
-  struct timeval lastprocesstime; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+  char charname[CHARNAMELEN]; /* */
+  int char_index; /* */
+  char CAbuf[2048]; /* CA相关 */
+  int CAbufsiz; /* */
+  struct timeval lastCAsendtime; /* */
+  char CDbuf[2048]; /* CD相关 */
+  int CDbufsiz; /* */
+  struct timeval lastCDsendtime; /* */
+  struct timeval lastCharSaveTime; /* 上次角色存档时间 */
+  struct timeval lastprocesstime; /* */
   struct timeval lastreadtime; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
 
 // Nuke start 08/27 : For acceleration avoidance
@@ -1207,7 +1207,7 @@ ANY_THREAD void CONNECT_getCdkey(int fd, char *out, int outlen) {
     return;
   }
   CONNECT_LOCK(fd);
-  strcpysafe(out, outlen, Connect[fd].cdkey);
+  strncpysafe(out, outlen, Connect[fd].cdkey);
   CONNECT_UNLOCK(fd);
 }
 
@@ -1247,7 +1247,7 @@ ANY_THREAD void CONNECT_getMAC(int fd, char *out, int outlen) {
     return;
   }
   CONNECT_LOCK(fd);
-  strcpysafe(out, outlen, Connect[fd].mac);
+  strncpysafe(out, outlen, Connect[fd].mac);
   CONNECT_UNLOCK(fd);
 }
 
@@ -1256,7 +1256,7 @@ ANY_THREAD void CONNECT_setMAC(int fd, char *in) {
     return;
   }
   CONNECT_LOCK(fd);
-  strcpysafe(Connect[fd].mac, sizeof(Connect[fd].mac), in);
+  strncpysafe(Connect[fd].mac, sizeof(Connect[fd].mac), in);
   CONNECT_UNLOCK(fd);
 }
 #endif
@@ -1266,7 +1266,7 @@ ANY_THREAD void CONNECT_getPasswd(int fd, char *out, int outlen) {
     return;
   }
   CONNECT_LOCK(fd);
-  strcpysafe(out, outlen, Connect[fd].passwd);
+  strncpysafe(out, outlen, Connect[fd].passwd);
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD void CONNECT_setPasswd(int fd, char *in) {
@@ -1274,7 +1274,7 @@ ANY_THREAD void CONNECT_setPasswd(int fd, char *in) {
     return;
   }
   CONNECT_LOCK(fd);
-  strcpysafe(Connect[fd].passwd, sizeof(Connect[fd].passwd), in);
+  strncpysafe(Connect[fd].passwd, sizeof(Connect[fd].passwd), in);
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD int CONNECT_getCtype(int fd) {
@@ -1301,7 +1301,7 @@ ANY_THREAD void CONNECT_getCharname(int fd, char *out, int outlen) {
     return;
   }
   CONNECT_LOCK(fd);
-  strcpysafe(out, outlen, Connect[fd].charname);
+  strncpysafe(out, outlen, Connect[fd].charname);
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD void CONNECT_setCharname(int fd, char *in) {
@@ -1309,7 +1309,7 @@ ANY_THREAD void CONNECT_setCharname(int fd, char *in) {
     return;
   }
   CONNECT_LOCK(fd);
-  strcpysafe(Connect[fd].charname, sizeof(Connect[fd].charname), in);
+  strncpysafe(Connect[fd].charname, sizeof(Connect[fd].charname), in);
   CONNECT_UNLOCK(fd);
 }
 
@@ -1460,7 +1460,7 @@ ANY_THREAD void CONNECT_setTradeTmp(int fd, char *a) {
     return;
   }
   CONNECT_LOCK(fd);
-  strcpysafe(Connect[fd].TradeTmp, sizeof(Connect[fd].TradeTmp), a);
+  strncpysafe(Connect[fd].TradeTmp, sizeof(Connect[fd].TradeTmp), a);
 
   CONNECT_UNLOCK(fd);
 }
@@ -1469,7 +1469,7 @@ ANY_THREAD void CONNECT_getTradeTmp(int fd, char *trademsg, int trademsglen) {
     return;
   }
   CONNECT_LOCK(fd);
-  strcpysafe(trademsg, trademsglen, Connect[fd].TradeTmp);
+  strncpysafe(trademsg, trademsglen, Connect[fd].TradeTmp);
   CONNECT_UNLOCK(fd);
 }
 
@@ -2443,7 +2443,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
             continue;
           if (Connect[i].char_index != -1)
             continue;
-          char mess[64] = "E伺服器繁忙，请稍候再试。";
+          const char mess[64] = "服务器繁忙，请稍候再试。";
           if (!from_acsv)
             write(i, mess, strlen(mess) + 1);
           close(i);
@@ -2455,10 +2455,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
   loop_num = 0;
   gettimeofday(&st, NULL);
 
-  while (1) {
-
+  while (TRUE) {
     int j;
-
     // ttom+1 for the debug
     static int i_tto = 0;
     static int i_timeNu = 0;
@@ -2720,12 +2718,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
             GOLD_DeleteTimeCheckLoop();
           }
 #endif
-#ifdef _ALLBLUES_LUA_1_5
-          if (total_count % 60 == 0) { //每分钟执行
-            NetLoopFunction();
-          }
-#endif
-
 #ifdef _DEL_DROP_PET
           if (total_count % 60 == 0) { //每分钟执行
             int objindex;
@@ -2754,12 +2746,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
           }
 #endif
 
-          //if( total_count % 60*10 == 0 ) { //每10分钟执行
-          // }
-
-          //if( total_count % 60*60 == 0 ) { //每60分钟执行
-          // }
-
 #ifdef _AUTO_PK
           if (AutoPk_PKTimeGet() > 0)
             h_autopk++;
@@ -2769,9 +2755,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
           j_counter++;
           // Syu ADD 每小时重新更新英雄战厂排行榜资料
           h_counter++;
-
           total_count++;
-
 #ifdef _LOOP_ANNOUNCE
           loop_counter++;
 #endif
@@ -2793,17 +2777,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #ifdef _AC_PIORITY
       if (flag_ac == 2)
         fdremember = fdremembercopy;
-
       flag_ac = 1;
-
       totalloop++;
-
 #endif
       break; // Break while
     }        // if(>0.1sec)
-
     loop_num++;
-
 #ifdef _AC_PIORITY
     switch (flag_ac) {
     case 1:
@@ -2907,7 +2886,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #endif
         {
           print("读取返回:%d %s\n", ret, strerror(errno));
-          print("gmsv与acsv失去连接! 异常终止...\n");
+          print("GMSV与SAAC失去连接! 异常终止...\n");
           sigshutdown(-1);
           exit(1);
         }
@@ -2929,7 +2908,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
           CONNECT_getCharname(fdremember, charname, 32);
           CONNECT_getCdkey(fdremember, cdkey, 16);
           char token[128];
-          sprintf(token, "read读取返回: %d %d %s \n", ret, errno,
+          sprintf(token, "READ读取返回: %d %d %s \n", ret, errno,
                   strerror(errno));
           LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
@@ -3170,7 +3149,7 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
   char buffer[4096];
   char buffer2[4096];
 
-  strcpysafe(buffer, sizeof(buffer), "Server Status\n");
+  strncpysafe(buffer, sizeof(buffer), "Server Status\n");
   c_max = ConnectLen;
 
   for (i = 0; i < c_max; i++) {
@@ -3212,7 +3191,7 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
            (c_use * getConnectnum() / 100), c_notdetect, c_ac,
            (c_cli * getConnectnum() / 100), c_adm, c_max,
            (login * getConnectnum() / 100));
-  strcatsafe(buffer, sizeof(buffer), buffer2);
+  strncatsafe(buffer, buffer2, sizeof(buffer));
   {
     int char_max = CHAR_getCharNum();
     int char_use = 0;
@@ -3233,7 +3212,7 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
              "char_max=%d\n"
              "pet_use=%d\n",
              char_use, char_max, pet_use);
-    strcatsafe(buffer, sizeof(buffer), buffer2);
+    strncatsafe(buffer, buffer2, sizeof(buffer));
   }
 
   {
@@ -3252,7 +3231,7 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
              "item_use=%d\n"
              "item_max=%d\n",
              item_use, item_max);
-    strcatsafe(buffer, sizeof(buffer), buffer2);
+    strncatsafe(buffer, buffer2, sizeof(buffer));
   }
 
   {
@@ -3269,7 +3248,7 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
              "object_use=%d\n"
              "object_max=%d\n",
              obj_use, obj_max);
-    strcatsafe(buffer, sizeof(buffer), buffer2);
+    strncatsafe(buffer, buffer2, sizeof(buffer));
   }
 
   if (mode == 0) {
@@ -3425,10 +3404,8 @@ int checkNu(int fd) {
   }
   Connect[fd].nu--;
   // print("NU=%d\n",Connect[fd].nu);
-
   if (Connect[fd].nu < 0)
     return -1;
-
   return 0;
 }
 

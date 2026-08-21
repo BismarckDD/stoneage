@@ -106,7 +106,7 @@ int MAGIC_DirectUse(int from_char_index, int magicid, int to_char_index,
       if (strcmp(MAGIC_getChar(marray, MAGIC_FUNCNAME), "MAGIC_MagicDef") ==
           0) {
         char ansmsg[256];
-        strcpysafe(ansmsg, sizeof(ansmsg), "该地图禁止使用光镜守精灵。");
+        strncpysafe(ansmsg, sizeof(ansmsg), "该地图禁止使用光镜守精灵。");
         CHAR_talkToCli(from_char_index, -1, ansmsg, CHAR_COLORWHITE);
         return FALSE;
       }

@@ -227,7 +227,7 @@ if (getPetMailFlg()==1){
 		CHAR_sendPMEToArroundCharacter( cindex, petindex, 0, CHAR_getInt( petindex, CHAR_PETMAILEFFECT));
 		CHAR_setInt( petindex, CHAR_MAILMODE,CHAR_PETMAIL_IDLE2);
 		CHAR_setInt( petindex, CHAR_LOOPINTERVAL, PETMAIL_LOOPINTERVAL2);
-		strcpysafe( ch->charfunctable[CHAR_LOOPFUNC].string,
+		strncpysafe( ch->charfunctable[CHAR_LOOPFUNC].string,
 					sizeof( ch->charfunctable[CHAR_LOOPFUNC]), "PETMAIL_Loop");
 		CHAR_constructFunctable( petindex);
 		CHAR_setInt( petindex, CHAR_PETMAILBUFINDEX, offmsgindex);
@@ -340,7 +340,7 @@ BOOL PETMAIL_initOffmsgBuffer( int count )
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
-		strcpysafe( PETMAIL_offmsgbuf[index].text, 
+		strncpysafe( PETMAIL_offmsgbuf[index].text, 
 					sizeof( PETMAIL_offmsgbuf[index].text),
 					buf);
 		
@@ -348,7 +348,7 @@ BOOL PETMAIL_initOffmsgBuffer( int count )
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
-		strcpysafe( PETMAIL_offmsgbuf[index].destcd, 
+		strncpysafe( PETMAIL_offmsgbuf[index].destcd, 
 					sizeof( PETMAIL_offmsgbuf[index].destcd),
 					buf);
 		
@@ -357,14 +357,14 @@ BOOL PETMAIL_initOffmsgBuffer( int count )
 			continue;
 		}
 		makeStringFromEscaped(buf);
-		strcpysafe( PETMAIL_offmsgbuf[index].destcharname, 
+		strncpysafe( PETMAIL_offmsgbuf[index].destcharname, 
 					sizeof( PETMAIL_offmsgbuf[index].destcharname),
 					buf);
 		if( !getStringFromIndexWithDelim( line, "|", 7, buf, sizeof( buf))) {
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
-		strcpysafe( PETMAIL_offmsgbuf[index].srccd, 
+		strncpysafe( PETMAIL_offmsgbuf[index].srccd, 
 					sizeof( PETMAIL_offmsgbuf[index].srccd),
 					buf);
 		if( !getStringFromIndexWithDelim( line, "|", 8, buf, sizeof( buf))) {
@@ -372,7 +372,7 @@ BOOL PETMAIL_initOffmsgBuffer( int count )
 			continue;
 		}
 		makeStringFromEscaped(buf);
-		strcpysafe( PETMAIL_offmsgbuf[index].srccharname, 
+		strncpysafe( PETMAIL_offmsgbuf[index].srccharname, 
 					sizeof( PETMAIL_offmsgbuf[index].srccharname),
 					buf);
 		linenum ++;
@@ -394,13 +394,13 @@ BOOL PETMAIL_addOffmsg( int fromindex, char *tocdkey, char *tocharaname,
             om->use = 1;
             time( & om->send_tm );
 
-            strcpysafe( om->srccd , sizeof( om->srccd ), 
+            strncpysafe( om->srccd , sizeof( om->srccd ), 
             			CHAR_getChar( fromindex, CHAR_CDKEY));
-            strcpysafe( om->srccharname , sizeof( om->srccharname ),
+            strncpysafe( om->srccharname , sizeof( om->srccharname ),
                         CHAR_getChar( fromindex, CHAR_NAME));
-            strcpysafe( om->destcd , sizeof( om->destcd ), tocdkey );
-            strcpysafe( om->destcharname , sizeof(om->destcharname), tocharaname);
-            strcpysafe( om->text , sizeof(om->text), text );
+            strncpysafe( om->destcd , sizeof( om->destcd ), tocdkey );
+            strncpysafe( om->destcharname , sizeof(om->destcharname), tocharaname);
+            strncpysafe( om->text , sizeof(om->text), text );
             om->color = color;
             return i;
         }
@@ -910,7 +910,7 @@ static void PETMAIL_IdleProc5( int index)
 #endif
 	    ch  = CHAR_getCharPointer( index);
 	    if( ch != NULL ) {
-			strcpysafe( ch->charfunctable[CHAR_LOOPFUNC].string,
+			strncpysafe( ch->charfunctable[CHAR_LOOPFUNC].string,
 						sizeof( ch->charfunctable[CHAR_LOOPFUNC]), "" );
 			CHAR_constructFunctable( index);
 		}
@@ -1084,7 +1084,7 @@ void CHAR_AutoPickupMailPet( int char_index, int petindex )
 	CHAR_setInt( petindex, CHAR_MAILMODE, CHAR_PETMAIL_NONE);
 	PETMAIL_delPetMailTotalnums( 1); // M PET 自动捡起
 
-	strcpysafe( ch->charfunctable[CHAR_LOOPFUNC].string,
+	strncpysafe( ch->charfunctable[CHAR_LOOPFUNC].string,
 				sizeof( ch->charfunctable[CHAR_LOOPFUNC]),"");
 	CHAR_setInt( petindex, CHAR_LOOPINTERVAL, 0);
 	CHAR_constructFunctable( petindex);

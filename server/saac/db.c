@@ -548,9 +548,9 @@ int dbGetEntryRankRange(char *table, int start, int end, char *output,
              gDBEntry[hits[i].entry_index].key,
              gDBEntry[hits[i].entry_index].ivalue,
              gDBEntry[hits[i].entry_index].charvalue);
-    strcatsafe(output, outlen, tmp);
+    strncatsafe(output, tmp, outlen);
     if (i != (hitsuse - 1)) {
-      strcatsafe(output, outlen, "|");
+      strncatsafe(output, "|", outlen);
     }
   }
   return 0;
@@ -733,11 +733,11 @@ int dbGetEntryCountRange(const char *table, const int count_start,
     if ((i >= count_start) && (i < (count_start + num))) {
       char tmp[1024];
       if ((i != count_start)) {
-        strcatsafe(output, outlen, "|");
+        strncatsafe(output, "|", outlen);
       }
       snprintf(tmp, sizeof(tmp), "%d,%d,%s,%d,%s", i, r, gDBEntry[cur].key,
                gDBEntry[cur].ivalue, gDBEntry[cur].charvalue);
-      strcatsafe(output, outlen, tmp);
+      strncatsafe(output, tmp, outlen);
     }
     ++i;
     cur = gDBEntry[cur].next;

@@ -84,7 +84,7 @@ INLINE BOOL ENEMY_setChar(int index, ENEMY_DATACHAR element, char *new) {
     return FALSE;
   if (!ENEMY_CHECKCHARDATAINDEX(element))
     return FALSE;
-  strcpysafe(ENEMY_enemy[index].chardata[element].string,
+  strncpysafe(ENEMY_enemy[index].chardata[element].string,
              sizeof(ENEMY_enemy[index].chardata[element].string), new);
   return TRUE;
 }
@@ -133,7 +133,7 @@ INLINE BOOL ENEMYTEMP_setChar(int index, ENEMYTEMP_DATACHAR element,
     return FALSE;
   if (!ENEMYTEMP_CHECKCHARDATAINDEX(element))
     return FALSE;
-  strcpysafe(ENEMYTEMP_enemy[index].chardata[element].string,
+  strncpysafe(ENEMYTEMP_enemy[index].chardata[element].string,
              sizeof(ENEMYTEMP_enemy[index].chardata[element].string), new);
   return TRUE;
 }
@@ -183,7 +183,7 @@ INLINE BOOL GROUP_setChar(int index, GROUP_DATACHAR element, char *new) {
     return FALSE;
   if (!GROUP_CHECKCHARDATAINDEX(element))
     return FALSE;
-  strcpysafe(GROUP_group[index].chardata[element].string,
+  strncpysafe(GROUP_group[index].chardata[element].string,
              sizeof(GROUP_group[index].chardata[element].string), new);
   return TRUE;
 }
@@ -949,7 +949,7 @@ int ENEMY_createEnemy(int array, int base_level) {
       new_char.data[CHAR_EXP] = ENEMY_getExp(array, tarray, level, enemyrank);
     }
   }
-  strcpysafe(new_char.string[CHAR_NAME].string,
+  strncpysafe(new_char.string[CHAR_NAME].string,
              sizeof(new_char.string[CHAR_NAME].string),
              (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
 
@@ -1475,7 +1475,7 @@ int ENEMY_createPetFromEnemyIndex(int char_index, int array) {
 #undef E_PAR
 #undef ET_PAR
 #undef PARAM_CAL
-  strcpysafe(CharNew.string[CHAR_NAME].string,
+  strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
   new_index = PET_initCharOneArray(&CharNew);
@@ -1625,7 +1625,7 @@ int ENEMY_createPet(int array, int vital, int str, int tgh, int dex) {
 #undef E_PAR
 #undef ET_PAR
 #undef PARAM_CAL
-  strcpysafe(CharNew.string[CHAR_NAME].string,
+  strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
   new_index = PET_initCharOneArray(&CharNew);
@@ -1755,7 +1755,7 @@ int ENEMY_TEST_createPetIndex(int array) {
 #undef E_PAR
 #undef ET_PAR
 #undef PARAM_CAL
-  strcpysafe(CharNew.string[CHAR_NAME].string,
+  strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
   new_index = PET_initCharOneArray(&CharNew);
@@ -2074,7 +2074,7 @@ int EVOLUTION_createPetFromEnemyIndex(int char_index, int baseindex, int flg) {
 #undef E_PAR
 #undef ET_PAR
 #undef PARAM_CAL
-  strcpysafe(CharNew.string[CHAR_NAME].string,
+  strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
   new_index = PET_initCharOneArray(&CharNew);
@@ -2413,7 +2413,7 @@ int PETFUSION_SetNewEgg(int toindex, int petindex, int array, int *work,
       return 0;
     // andy_log
     //    print("*CHAR_LOOPFUNCTEMP1:%s \n", "PET_CheckIncubateLoop");
-    strcpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
+    strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
                sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]),
                "PET_CheckIncubateLoop");
     ch->data[CHAR_LOOPINTERVAL] = 60000;

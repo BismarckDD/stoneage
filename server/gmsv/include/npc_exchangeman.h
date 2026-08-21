@@ -34,7 +34,7 @@ BOOL NPC_SavePointCheck(int meindex,int talker,int shiftbit,int flg);
 BOOL NPC_EventReduce(int meindex,int talker,char *buf);
 BOOL NPC_EventDelItem(int meindex,int talker,char *buf,int breakflg);
 BOOL NPC_EventDelItemEVDEL(int meindex,int talker,char *buf,char *nbuf,int breakflg);
-int NPC_EventFile(int meindex,int talker,char *buf);
+int NPC_EventFile(int meindex,int talker,char *buf,int buf_size);
 BOOL NPC_EventDelPet(int  meindex,int  talker, int petsel);
 void NPC_PetSkillMakeStr(int meindex,int toindex,int select);
 void NPC_CleanMain(int meindex,int talker,char *buf);	

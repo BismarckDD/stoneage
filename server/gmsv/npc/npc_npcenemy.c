@@ -74,6 +74,7 @@ BOOL NPC_NPCEnemyInit(int meindex) {
   char buf[64];
   int tmp, gym;
 
+  // 2026.08.21 这个argstr值不对
   if (NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr)) == NULL) {
     print("NPCEnemy:Cannot Get ArgStr!!! [enemyno]:%d, argstr:%s\n",
           meindex, argstr);
@@ -92,6 +93,7 @@ BOOL NPC_NPCEnemyInit(int meindex) {
   int curEnemy;
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "enemyno", buf, sizeof(buf)) ==
       NULL) {
+    print("NPCEnemy enemyno:%d argstr:%s\n", meindex, argstr);
     flag = FALSE;
   } else {
     int i;
@@ -422,16 +424,16 @@ int NPC_NPCEnemy_Encount(int meindex, int char_index, int mode) {
           snprintf(config, sizeof(config), "askbattlemsg%d", i);
           if (NPC_Util_GetStrFromStrWithDelim(argstr, config, buf2,
                                               sizeof(buf2)) != NULL) {
-            strcpysafe(&buf[len], sizeof(buf) - len, "\n");
+            strncpysafe(&buf[len], sizeof(buf) - len, "\n");
             len++;
-            strcpysafe(&buf[len], sizeof(buf) - len, buf2);
+            strncpysafe(&buf[len], sizeof(buf) - len, buf2);
             len += strlen(buf2);
             if (len >= sizeof(buf)) {
               print("buffer over\n");
               return FALSE;
             }
           } else {
-            strcpysafe(&buf[len], sizeof(buf) - len, "\n");
+            strncpysafe(&buf[len], sizeof(buf) - len, "\n");
             len++;
             if (len >= sizeof(buf)) {
               print("buffer over\n");
@@ -570,7 +572,7 @@ int NPC_NPCEnemy_Dying(int battleindex, int meindex) {
                           CHAR_getInt(meindex, CHAR_Y));
     ch = CHAR_getCharPointer(meindex);
     if (ch != NULL) {
-      strcpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
+      strncpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
                  sizeof(ch->charfunctable[CHAR_LOOPFUNC]), "NPCEnemyLoop");
       CHAR_constructFunctable(meindex);
       CHAR_setInt(meindex, CHAR_LOOPINTERVAL, 5000);
@@ -636,7 +638,7 @@ void NPC_NPCEnemyLoop(int meindex) {
                           CHAR_getInt(meindex, CHAR_Y));
     ch = CHAR_getCharPointer(meindex);
     if (ch != NULL) {
-      strcpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
+      strncpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
                  sizeof(ch->charfunctable[CHAR_LOOPFUNC]), "");
       CHAR_constructFunctable(meindex);
       //			CHAR_setInt( meindex, CHAR_LOOPINTERVAL, 0);

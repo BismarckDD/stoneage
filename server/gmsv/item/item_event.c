@@ -216,7 +216,7 @@ static BOOL ITEM_medicineRaiseEffect(int char_index, char *cmd, int value) {
         onoroff = ITEM_restorableParam[i].offmessage;
       else
         return FALSE;
-      strcpysafe(ansmsg, sizeof(ansmsg), onoroff);
+      strncpysafe(ansmsg, sizeof(ansmsg), onoroff);
       CHAR_talkToCli(char_index, -1, ansmsg, CHAR_COLORWHITE);
       return TRUE;
     }
@@ -229,10 +229,10 @@ static BOOL ITEM_medicineRaiseEffect(int char_index, char *cmd, int value) {
         if (value &&
             CHAR_getInt(char_index, ITEM_statusParam[i].element) < value) {
           CHAR_setInt(char_index, ITEM_statusParam[i].element, value);
-          strcpysafe(ansmsg, sizeof(ansmsg), ITEM_statusParam[i].onmessage);
+          strncpysafe(ansmsg, sizeof(ansmsg), ITEM_statusParam[i].onmessage);
         } else {
           if (CHAR_getInt(char_index, ITEM_statusParam[i].element)) {
-            strcpysafe(ansmsg, sizeof(ansmsg), ITEM_statusParam[i].offmessage);
+            strncpysafe(ansmsg, sizeof(ansmsg), ITEM_statusParam[i].offmessage);
           }
           CHAR_setInt(char_index, ITEM_statusParam[i].element, 0);
         }
@@ -248,7 +248,7 @@ static BOOL ITEM_medicineRaiseEffect(int char_index, char *cmd, int value) {
     }
   }
 #undef ITEM_STATUSCHANGEVALUE
-  strcpysafe(ansmsg, sizeof(ansmsg), "什麽也没发生。");
+  strncpysafe(ansmsg, sizeof(ansmsg), "什麽也没发生。");
   CHAR_talkToCli(char_index, -1, ansmsg, CHAR_COLORWHITE);
   return FALSE;
 }
@@ -2544,7 +2544,7 @@ void ITEM_useEncounter(int char_index, int toindex, int haveitem_index) {
     ch = CHAR_getCharPointer(char_index);
     if (ch == NULL)
       return;
-    strcpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
+    strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
                sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]),
                "CHAR_BattleStayLoop"); //战斗
     CHAR_setInt(char_index, CHAR_LOOPINTERVAL, 2500);
@@ -2659,7 +2659,7 @@ void ITEM_UseDeathCounter(int char_index, int toindex, int haveitem_index) {
     ch = CHAR_getCharPointer(char_index);
     if (ch == NULL)
       return;
-    strcpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
+    strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
                sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]),
                "CHAR_BattleStayLoop"); //战斗
     CHAR_setInt(char_index, CHAR_LOOPINTERVAL, 2500);

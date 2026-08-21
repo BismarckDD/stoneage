@@ -142,7 +142,7 @@ void BATTLE_BadStatusAllClr(int char_index) {
     ch = CHAR_getCharPointer(char_index);
     if (ch == NULL)
       return;
-    strcpysafe(ch->charfunctable[CHAR_BATTLEPROPERTY].string,
+    strncpysafe(ch->charfunctable[CHAR_BATTLEPROPERTY].string,
                sizeof(ch->charfunctable[CHAR_BATTLEPROPERTY]), ""); // 战斗
     CHAR_constructFunctable(char_index);
   }
@@ -10632,7 +10632,7 @@ static int BATTLE_Battling(int battleindex) {
     }
   }
   // printf("后 szBattleString=%s\n",szBattleString);
-  strcatsafe(szAllBattleString, szBattleString, sizeof(szAllBattleString));
+  strncatsafe(szAllBattleString, szBattleString, sizeof(szAllBattleString));
   for (i = 0; i < entrynum; i++) {
     char_index = EntryList[i].char_index;
     if (!CHAR_CHECKINDEX(char_index))

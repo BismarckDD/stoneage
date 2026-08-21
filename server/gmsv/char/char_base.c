@@ -1627,7 +1627,7 @@ INLINE BOOL _CHAR_setChar(char *file, int line, int index,
     print("err _CHAR_setChar %s:%d !\n", file, line);
     return FALSE;
   }
-  strcpysafe(CHAR_chara[index].string[element].string,
+  strncpysafe(CHAR_chara[index].string[element].string,
              sizeof(CHAR_chara[index].string[element].string), new);
   return TRUE;
 }
@@ -1664,7 +1664,7 @@ INLINE BOOL _CHAR_setWorkChar(char *file, int line, int index,
     print("err %s:%d \n", file, line);
     return FALSE;
   }
-  strcpysafe(CHAR_chara[index].workchar[element].string,
+  strncpysafe(CHAR_chara[index].workchar[element].string,
              sizeof(CHAR_chara[index].workchar[element].string), new);
   return TRUE;
 }
@@ -2385,7 +2385,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     char linedata[512];
     snprintf(linedata, sizeof(linedata), "%s=%d" CHAR_DELIMITER,
              CHAR_setintdata[i], one->data[i]);
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2401,7 +2401,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
              makeEscapeString(one->string[i].string, escapebuffer,
                               sizeof(escapebuffer)));
 
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2414,7 +2414,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     snprintf(linedata, sizeof(linedata),
              FLGRESERVESTRING "%d=%d" CHAR_DELIMITER, i, one->flg[i]);
 
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2432,7 +2432,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
       continue;
     snprintf(linedata, sizeof(linedata),
              SKILLRESERVESTRING "%d=%s" CHAR_DELIMITER, i, skillstring);
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2450,7 +2450,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
       continue;
     snprintf(linedata, sizeof(linedata),
              ITEMRESERVESTRING "%d=%s" CHAR_DELIMITER, i, itemstring);
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
 
     strlength += strlen(linedata);
@@ -2470,7 +2470,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
       continue;
     snprintf(linedata, sizeof(linedata),
              POOLITEMRESERVESTRING "%d=%s" CHAR_DELIMITER, i, itemstring);
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2488,7 +2488,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     snprintf(linedata, sizeof(linedata),
              TITLERESERVESTRING "%d=%d" CHAR_DELIMITER, i,
              one->indexOfHaveTitle[i]);
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2505,7 +2505,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     }
     snprintf(linedata, sizeof(linedata),
              ADDRESSBOOKRESERVESTRING "%d=%s" CHAR_DELIMITER, i, p);
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2525,7 +2525,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
       continue;
     snprintf(linedata, sizeof(linedata), PETSERVERSTRING "%d=%s" CHAR_DELIMITER,
              petnum, petstring);
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2556,7 +2556,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     snprintf(linedata, sizeof(linedata),
              POOLPETSERVERSTRING "%d=%s" CHAR_DELIMITER, petnum, petstring);
 
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2571,7 +2571,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     snprintf(linedata, sizeof(linedata), DATAENDCHECKPOINT "=%d" CHAR_DELIMITER,
              (int)time(NULL) / 1000);
 
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
 
     if (strlength > sizeof(CHAR_dataString)) {
@@ -2630,7 +2630,7 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
   CHAR_getDefaultChar(one, 0);
   // Robin 0726 default RidePet
   one->data[CHAR_RIDEPET] = -1;
-  strcpysafe(one->string[CHAR_FMNAME].string,
+  strncpysafe(one->string[CHAR_FMNAME].string,
              sizeof(one->string[CHAR_FMNAME].string), "\0");
   one->data[CHAR_FMINDEX] = -1;
 #ifdef _PETSKILL_BECOMEPIG
@@ -2658,7 +2658,7 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
                                       sizeof(firstToken));
     if (ret == FALSE)
       return FALSE;
-    strcpysafe(secondToken, sizeof(secondToken),
+    strncpysafe(secondToken, sizeof(secondToken),
                linebuf + strlen(firstToken) + strlen("="));
     for (i = 0; i < CHAR_DATAINTNUM; i++) {
       if (strcmp(firstToken, CHAR_setintdata[i]) == 0) {
@@ -2668,7 +2668,7 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
     }
     for (i = 0; i < CHAR_DATACHARNUM; i++) {
       if (strcmp(firstToken, CHAR_setchardata[i]) == 0) {
-        strcpysafe(one->string[i].string, sizeof(one->string[i].string),
+        strncpysafe(one->string[i].string, sizeof(one->string[i].string),
                    makeStringFromEscaped(secondToken));
         if (strlen(one->string[i].string) > 128) {
           // print(" CHARDATA_to_long!!:%s:%d ", one->string[i].string, strlen(
@@ -2874,7 +2874,7 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
 #endif
     snprintf(linedata, sizeof(linedata), "%s:%d" NONCHAR_DELIMITER,
              CHAR_setintdata[i], CHAR_getInt(petindex, i));
-    strcpysafe(&CHAR_petdataString[strlength],
+    strncpysafe(&CHAR_petdataString[strlength],
                sizeof(CHAR_petdataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_petdataString)) {
@@ -2897,7 +2897,7 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
              makeEscapeString(CHAR_getChar(petindex, i), escapebuffer,
                               sizeof(escapebuffer)));
 
-    strcpysafe(&CHAR_petdataString[strlength],
+    strncpysafe(&CHAR_petdataString[strlength],
                sizeof(CHAR_petdataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_petdataString)) {
@@ -2914,7 +2914,7 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
       continue;
     snprintf(linedata, sizeof(linedata),
              PETSKILLSERVERSTRING "%d:%d" NONCHAR_DELIMITER, i, petskillid);
-    strcpysafe(&CHAR_petdataString[strlength],
+    strncpysafe(&CHAR_petdataString[strlength],
                sizeof(CHAR_petdataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_petdataString)) {
@@ -2934,7 +2934,7 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
       continue;
     snprintf(linedata, sizeof(linedata),
              PETITEMRESERVESTRING "%d:%s" NONCHAR_DELIMITER, i, itemstring);
-    strcpysafe(&CHAR_petdataString[strlength],
+    strncpysafe(&CHAR_petdataString[strlength],
                sizeof(CHAR_petdataString) - strlength, linedata);
 
     strlength += strlen(linedata);
@@ -2994,7 +2994,7 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
                                        sizeof(petfirstToken));
       if (rc == FALSE)
         break;
-      strcpysafe(petsecondToken, sizeof(petsecondToken),
+      strncpysafe(petsecondToken, sizeof(petsecondToken),
                  buff + strlen(petfirstToken) + strlen(":"));
       //          rc = getStringFromIndexWithDelim( buff , ":" ,  2 ,
       //                                             petsecondToken ,
@@ -3010,7 +3010,7 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
       if (!found) {
         for (i = 0; i < CHAR_DATACHARNUM; i++) {
           if (strcmp(petfirstToken, CHAR_setchardata[i]) == 0) {
-            strcpysafe(ch->string[i].string, sizeof(ch->string[i].string),
+            strncpysafe(ch->string[i].string, sizeof(ch->string[i].string),
                        makeStringFromEscaped(petsecondToken));
             found = TRUE;
             findE = 1;
@@ -3639,7 +3639,7 @@ char *CHAR_makeDepotItemFromCharIndex(int char_index) {
     snprintf(linedata, sizeof(linedata),
              DEPOTITEMRESERVESTRING "%d=%s" CHAR_DELIMITER, i, itemstring);
 
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -3679,7 +3679,7 @@ BOOL CHAR_makeDepotItemStringToChar(int char_index, char *data) {
     if ((ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
                                            sizeof(firstToken))) == FALSE)
       return FALSE;
-    strcpysafe(secondToken, sizeof(secondToken),
+    strncpysafe(secondToken, sizeof(secondToken),
                linebuf + strlen(firstToken) + strlen("="));
 
     if (strncmp(firstToken, DEPOTITEMRESERVESTRING,
@@ -3896,7 +3896,7 @@ char *CHAR_makeDepotPetFromCharIndex(int char_index) {
     snprintf(linedata, sizeof(linedata),
              DEPOTPETRESERVESTRING "%d=%s" CHAR_DELIMITER, i, petstring);
 
-    strcpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
+    strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
@@ -3936,7 +3936,7 @@ BOOL CHAR_makeDepotPetStringToChar(int char_index, char *data) {
     if ((ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
                                            sizeof(firstToken))) == FALSE)
       return FALSE;
-    strcpysafe(secondToken, sizeof(secondToken),
+    strncpysafe(secondToken, sizeof(secondToken),
                linebuf + strlen(firstToken) + strlen("="));
 
     if (strncmp(firstToken, DEPOTPETRESERVESTRING,

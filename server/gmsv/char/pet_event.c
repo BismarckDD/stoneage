@@ -82,32 +82,16 @@ char *Pet_TalkGetFunStr(char *temp, char *buf, int len) {
     return NULL;
 
   sprintf(pathfile, "%s/pettalk/%s", getNpcdir(), filename);
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", pathfile);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    petarg = fopen(pathfile, "r");
-  }
+  petarg = fopen(pathfile, "r");
   if (petarg != NULL) {
     while (fgets(line, sizeof(line), petarg)) {
-#ifdef _CRYPTO_DATA
-      if (crypto == TRUE) {
-        DecryptKey(line);
-      }
-#endif
       if (strlen(talkfun) != 0) {
         if (talkfun[strlen(talkfun) - 1] != '|') {
-          strcatsafe(talkfun, sizeof(talkfun), "|");
+          strncatsafe(talkfun, "|", sizeof(talkfun));
         }
       }
       chompex(line);
-      strcatsafe(talkfun, sizeof(talkfun), line);
+      strncatsafe(talkfun, line, sizeof(talkfun));
     }
     fclose(petarg);
   } else {

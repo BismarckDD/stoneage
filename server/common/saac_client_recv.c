@@ -66,13 +66,11 @@ void SaacClient_ACServerLogin_recv(int fd, char *result, char *data) {
 #endif
   {
     if (strcmp(result, SUCCESSFUL) != 0) {
-      print("Connect to AC Server is not successful!!!. result: %s, data: %s\n",
-            result, data);
+      print("Connect SAAC FAILED. result: %s, data: %s\n", result, data);
       shutdownProgram();
       exit(1);
     }
-    print("Connect to AC Server is successful. result: %s, data: %s\n", result,
-          data);
+    print("Connect SAAC SUCCEED. result: %s, data: %s\n", result, data);
     time(&initTime);
 
 #ifdef _SERVER_NUMS

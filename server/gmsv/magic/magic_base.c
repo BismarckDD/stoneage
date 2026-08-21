@@ -106,7 +106,7 @@ INLINE BOOL MAGIC_setChar(int index, MAGIC_DATACHAR element, char *new) {
     return FALSE;
   if (!MAGIC_CHECKCHARDATAINDEX(element))
     return FALSE;
-  strcpysafe(MAGIC_magic[index].string[element].string,
+  strncpysafe(MAGIC_magic[index].string[element].string,
              sizeof(MAGIC_magic[index].string[element].string), new);
   return TRUE;
 }
@@ -299,7 +299,7 @@ BOOL ATTMAGIC_initMagic(char *filename) {
         file);
   fclose(file);
   ATTMAGIC_magicnum = ATTMAGIC_magicnum / 2;
-  print("有效的攻击魔法数 %d\n", ATTMAGIC_magicnum);
+  print("有效的攻击魔法数 %d...", ATTMAGIC_magicnum);
   return TRUE;
 }
 

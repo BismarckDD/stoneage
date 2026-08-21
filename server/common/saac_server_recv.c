@@ -30,6 +30,8 @@ char result[CHARDATASIZE];
 void SaacServer_ACServerLogin_recv(const int ti, const int id,
                                    const char *servername,
                                    const char *password) {
+  print("收到GMSV的连接请求: fd: %d, id: %d, name: %s, pass: %s\n",
+    ti, id, servername, password);
   login_game_server(ti, id, servername, password, result, sizeof(result),
                     retdata, sizeof(retdata));
   SaacServer_ACServerLogin_send(ti, result, retdata);

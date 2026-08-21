@@ -699,7 +699,7 @@ void CHAR_walkcall(int index) {
   if (!CHAR_CHECKINDEX(index))
     return;
 
-  strcpysafe(tmp, sizeof(tmp), CHAR_getWorkChar(index, CHAR_WORKWALKARRAY));
+  strncpysafe(tmp, sizeof(tmp), CHAR_getWorkChar(index, CHAR_WORKWALKARRAY));
 
   CHAR_ctodirmode(tmp[0], &dir, &mode);
   if (CHAR_getInt(index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
@@ -960,7 +960,7 @@ void CHAR_walkcall(int index) {
   /* walk及瑛绊｝WALKARRAY互弁伉失今木化中月桦宁互丐月及匹
    * 潸曰  仄化戊疋月
    */
-  strcpysafe(tmp, sizeof(tmp), CHAR_getWorkChar(index, CHAR_WORKWALKARRAY));
+  strncpysafe(tmp, sizeof(tmp), CHAR_getWorkChar(index, CHAR_WORKWALKARRAY));
   if (strlen(tmp) > 0) {
     CHAR_setWorkChar(index, CHAR_WORKWALKARRAY, &tmp[1]);
   }
@@ -1011,7 +1011,7 @@ void CHAR_walk_start(int index, int x, int y, char *dir, BOOL mapsendmode) {
     char buf[64];
     int len;
     int i;
-    strcpysafe(buf, sizeof(buf), CHAR_getWorkChar(index, CHAR_WORKWALKARRAY));
+    strncpysafe(buf, sizeof(buf), CHAR_getWorkChar(index, CHAR_WORKWALKARRAY));
 
     len = strlen(buf);
     ox = CHAR_getInt(index, CHAR_X);
@@ -1160,7 +1160,7 @@ void CHAR_sendCharaAtWalk(int char_index, int of, int ox, int oy, int xflg,
             introlen = strlen(introduction);
             introduction[introlen] = ',';
             introduction[introlen + 1] = '\0';
-            strcpysafe(&c_msg[strpos], sizeof(c_msg) - strpos, introduction);
+            strncpysafe(&c_msg[strpos], sizeof(c_msg) - strpos, introduction);
             strpos += strlen(introduction);
           }
           if (OBJECT_getType(objindex) == OBJTYPE_CHARA) {
@@ -1361,7 +1361,7 @@ void CHAR_sendCharaAtWalk(int char_index, int of, int ox, int oy, int xflg,
             introlen = strlen(introduction);
             introduction[introlen] = ',';
             introduction[introlen + 1] = '\0';
-            strcpysafe(&c_msg[strpos], sizeof(c_msg) - strpos, introduction);
+            strncpysafe(&c_msg[strpos], sizeof(c_msg) - strpos, introduction);
             strpos += strlen(introduction);
           }
           if (OBJECT_getType(objindex) == OBJTYPE_CHARA) {

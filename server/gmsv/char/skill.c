@@ -29,7 +29,7 @@ char *SKILL_makeStringFromSkillData(Skill *sk) {
     snprintf(linedata, sizeof(linedata), "%s=%d" NONCHAR_DELIMITER,
              SKILL_setint[i].dumpskill, sk->data[i]);
 
-    strcpysafe(&SKILL_dataString[strlength],
+    strncpysafe(&SKILL_dataString[strlength],
                sizeof(SKILL_dataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(SKILL_dataString))
@@ -44,7 +44,7 @@ char *SKILL_makeStringFromSkillData(Skill *sk) {
              makeEscapeString(sk->string[i].string, escapebuffer,
                               sizeof(escapebuffer)));
 
-    strcpysafe(&SKILL_dataString[strlength],
+    strncpysafe(&SKILL_dataString[strlength],
                sizeof(SKILL_dataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(SKILL_dataString))
@@ -74,7 +74,7 @@ BOOL SKILL_makeSkillFromStringToArg(char *src, Skill *sk) {
     ret = getStringFromIndexWithDelim(linebuf, "=", 1, first, sizeof(first));
     if (ret == FALSE)
       return FALSE;
-    strcpysafe(second, sizeof(second), linebuf + strlen(first) + strlen("="));
+    strncpysafe(second, sizeof(second), linebuf + strlen(first) + strlen("="));
 
     for (i = 0; i < SKILL_DATAINTNUM; i++) {
       if (strcmp(first, SKILL_setint[i].dumpskill) == 0) {
@@ -85,7 +85,7 @@ BOOL SKILL_makeSkillFromStringToArg(char *src, Skill *sk) {
 
     for (i = 0; i < SKILL_DATACHARNUM; i++) {
       if (strcmp(first, SKILL_setchar[i].dumpskill) == 0) {
-        strcpysafe(sk->string[i].string, sizeof(sk->string[i].string),
+        strncpysafe(sk->string[i].string, sizeof(sk->string[i].string),
                    makeStringFromEscaped(second));
         goto NEXT;
       }
@@ -316,7 +316,7 @@ BOOL SKILL_getUpableSkillID(int char_index, char *buf, int buflen) {
             SKILL_tbl[chsk->skill.data[SKILL_IDENTITY]].maxlevel) {
       char tmpbuf[512];
       snprintf(tmpbuf, sizeof(tmpbuf), "%d|", chsk->skill.data[SKILL_IDENTITY]);
-      strcatsafe(buf, buflen, tmpbuf);
+      strncatsafe(buf, tmpbuf, buflen);
     }
   }
   dchop(buf, "|");

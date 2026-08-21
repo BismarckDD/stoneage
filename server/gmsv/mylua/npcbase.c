@@ -28,7 +28,7 @@ static int CreateNpc (lua_State *L) {
 	const int y = luaL_checkinteger(L, 5);
 	const int dir = luaL_checkinteger(L, 6);
 	
-	strcpysafe( one.string[CHAR_NAME].string ,
+	strncpysafe( one.string[CHAR_NAME].string ,
 				sizeof(one.string[CHAR_NAME].string),
 				Name);
 	one.data[CHAR_BASEBASEIMAGENUMBER] = Image;
@@ -557,7 +557,7 @@ static int CreatePlayer (lua_State *L) {
 	const int y = luaL_checkinteger(L, 5);
 	const int dir = luaL_checkinteger(L, 6);
 	
-	strcpysafe( one.string[CHAR_NAME].string ,
+	strncpysafe( one.string[CHAR_NAME].string ,
 				sizeof(one.string[CHAR_NAME].string),
 				Name);
 	one.data[CHAR_BASEBASEIMAGENUMBER] = Image;

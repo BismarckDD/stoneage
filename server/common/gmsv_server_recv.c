@@ -645,8 +645,8 @@ void GmsvServer_W_recv(int fd, int x, int y, char *direction) {
   }
   // nuke 0407
   if (checkNu(fd) < 0) {
-    print(" NU-Err ");
-    CHAR_talkToCli(char_index, -1, "Ѷ�Ŵ���", CHAR_COLORYELLOW);
+    print("NU-Error\n");
+    CHAR_talkToCli(char_index, -1, "NU_ERROR", CHAR_COLORYELLOW);
 
 #ifdef _NETLOG_
     char cdkey[16];
@@ -659,10 +659,7 @@ void GmsvServer_W_recv(int fd, int x, int y, char *direction) {
     CONNECT_setCloseRequest(fd, 1);
     return;
   }
-  // ttom debug
   if ((x == 0) && (y == 0)) {
-    // CHAR_talkToCli(char_index, -1, "�������������ߡ�", CHAR_COLORYELLOW);
-    //  Roibn 03/14
     return;
   }
   // ttom avoid the warp at will 11/6
@@ -672,11 +669,6 @@ void GmsvServer_W_recv(int fd, int x, int y, char *direction) {
     i_diff_y = abs(iy - y);
     // Robin 03/14
     if ((i_diff_x > 1) || (i_diff_y > 1)) {
-      // Robin 0518
-      // CHAR_talkToCli(char_index, -1, "����·�����������ߡ�",
-      // CHAR_COLORYELLOW);
-
-      // return;
       x = ix;
       y = iy;
     }

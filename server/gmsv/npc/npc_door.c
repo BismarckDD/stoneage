@@ -37,7 +37,7 @@ BOOL NPC_DoorInit(int meindex) {
   CHAR_setWorkInt(meindex, CHAR_WORKDOORCLOSEG, atoi(buf));
   getStringFromIndexWithDelim(arg, "|", 3, buf, sizeof(buf));
   CHAR_setWorkChar(meindex, CHAR_WORKDOORNAME, buf);
-  strcpysafe(settingdir, sizeof(settingdir), buf);
+  strncpysafe(settingdir, sizeof(settingdir), buf);
   getStringFromIndexWithDelim(arg, "|", 4, buf, sizeof(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOORSWITCHCOUNT, atoi(buf));
   getStringFromIndexWithDelim(arg, "|", 5, buf, sizeof(buf));
@@ -470,7 +470,7 @@ int NPC_DoorGetPasswd(int meindex, char *out, int len) {
   char *m = CHAR_getWorkChar(meindex, CHAR_WORKDOORPASSWD);
   if (m == NULL)
     return -1;
-  strcpysafe(out, len, m);
+  strncpysafe(out, len, m);
   return 0;
 }
 

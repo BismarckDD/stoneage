@@ -76,14 +76,14 @@ BOOL NPC_RoomAdminNew_ReadFile(char *room_name, NPC_ROOMINFO *data) {
   memset(data, 0, sizeof(*data));
   if (!getStringFromIndexWithDelim(line, "|", 1, token, sizeof(token)))
     return FALSE;
-  util_strncpysafe2(data->cdkey, sizeof(data->cdkey), token);
+  strncpysafe(data->cdkey, sizeof(data->cdkey), token);
   if (!getStringFromIndexWithDelim(line, "|", 2, token, sizeof(token)))
     return FALSE;
-  util_strncpysafe2(data->charaname, sizeof(data->charaname),
-                    makeStringFromEscaped(token));
+  strncpysafe(data->charaname, sizeof(data->charaname),
+              makeStringFromEscaped(token));
   if (!getStringFromIndexWithDelim(line, "|", 3, token, sizeof(token)))
     return FALSE;
-  util_strncpysafe2(data->passwd, sizeof(data->passwd), token);
+  strncpysafe(data->passwd, sizeof(data->passwd), token);
   if (!getStringFromIndexWithDelim(line, "|", 4, token, sizeof(token)))
     return FALSE;
   data->expire = strcasecmp(token, "max") == 0 ? -1 : atoi(token);

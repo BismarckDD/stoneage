@@ -90,95 +90,95 @@ char *common_utoa(const unsigned long v) {
   return out;
 }
 
-char *strcpysafe(char *des, const int max_len, const char *src) {
+// strncpy并不保证以'\0'结尾，因此需要strncpysafe
+char *strncpysafe(char *des, const int max_len, const char *src) {
   int i;
   const int limit = max_len - 1;
   for (i = 0; i < limit; ++i) {
     des[i] = src[i];
-    if (src[i] == 0)
+    if (src[i] == '\0')
       break;
   }
-  des[i] = 0;
+  des[i] = '\0';
   return des;
 }
 
-char *strcpysafe2(char *des, const int max_len, const char *src) {
-  return strcpysafe(des, max_len, src);
-}
-
-/* Compatibility with the name emitted by older protocol generators. */
-char *strncpysafe2(char *des, const int max_len, const char *src) {
-  return strcpysafe(des, max_len, src);
-}
-
-char *strcatsafe(char *des, const char *src, const int max_len) {
-  int i, j;
-  const int limit = max_len - 1;
-  for (i = 0; i < limit; ++i) {
-    if (des[i] == 0) {
-      for (j = i; j < limit; j++) {
-        des[j] = src[j - i];
-        if (src[j - i] == 0)
-          break;
-      }
-      des[j] = 0;
-      break;
-    }
+char *strncpysafe2(char *des, const int des_len, const char *first, const char *last) {
+  char *des_last = des + des_len - 1;
+  while (first < last && des < des_last) {
+    *des++ = *first++;
   }
+  *des = '\0';
+  return des;
+}
+// strncat中的第三个参数，代表是可以连接的长度，而不是des的总容量
+char *strncatsafe(char *des, const char *src, const int des_len) {
+  int i, j;
+  const int idx_upper = des_len - 1;
+  for (i = 0; i < idx_upper; ++i)
+    if (des[i] == '\0')
+      break;
+
+  for (j = i; j < idx_upper; j++) {
+    if (src[j - i] == '\0')
+      break;
+    des[j] = src[j - i];
+  }
+  des[j] = '\0';
   return des;
 }
 
 char *mkstr_int(WorkSpace *ws, const int i) {
 #define MKSTR_INT(v) common_ltoa((const long)(v))
-  strcpysafe(ws->val_str, ws->work_buf_size, (char *)MKSTR_INT(i));
-  strcatsafe(ws->val_str, " ", ws->work_buf_size);
+  strncpysafe(ws->val_str, ws->work_buf_size, (char *)MKSTR_INT(i));
+  strncatsafe(ws->val_str, " ", ws->work_buf_size);
   return ws->val_str;
 }
 char *mkstr_u_int(WorkSpace *ws, const unsigned int i) {
 #define MKSTR_U_INT(v) common_utoa((const unsigned long)(v))
-  strcpysafe(ws->val_str, ws->work_buf_size, MKSTR_U_INT(i));
-  strcatsafe(ws->val_str, " ", ws->work_buf_size);
+  strncpysafe(ws->val_str, ws->work_buf_size, MKSTR_U_INT(i));
+  strncatsafe(ws->val_str, " ", ws->work_buf_size);
   return ws->val_str;
 }
 char *mkstr_long(WorkSpace *ws, const long l) {
 #define MKSTR_LONG(v) common_ltoa(v)
-  strcpysafe(ws->val_str, ws->work_buf_size, MKSTR_LONG(l));
-  strcatsafe(ws->val_str, " ", ws->work_buf_size);
+  strncpysafe(ws->val_str, ws->work_buf_size, MKSTR_LONG(l));
+  strncatsafe(ws->val_str, " ", ws->work_buf_size);
   return ws->val_str;
 }
 char *mkstr_u_long(WorkSpace *ws, const unsigned long l) {
 #define MKSTR_U_LONG(v) common_utoa(v)
-  strcpysafe(ws->val_str, ws->work_buf_size, MKSTR_U_LONG(l));
-  strcatsafe(ws->val_str, " ", ws->work_buf_size);
+  strncpysafe(ws->val_str, ws->work_buf_size, MKSTR_U_LONG(l));
+  strncatsafe(ws->val_str, " ", ws->work_buf_size);
   return ws->val_str;
 }
 char *mkstr_short(WorkSpace *ws, const short s) {
 #define MKSTR_SHORT(v) common_ltoa((const long)(v))
-  strcpysafe(ws->val_str, ws->work_buf_size, MKSTR_SHORT(s));
-  strcatsafe(ws->val_str, " ", ws->work_buf_size);
+  strncpysafe(ws->val_str, ws->work_buf_size, MKSTR_SHORT(s));
+  strncatsafe(ws->val_str, " ", ws->work_buf_size);
   return ws->val_str;
 }
 char *mkstr_u_short(WorkSpace *ws, const unsigned short s) {
 #define MKSTR_U_SHORT(v) common_utoa((const unsigned long)(v))
-  strcpysafe(ws->val_str, ws->work_buf_size, MKSTR_U_SHORT(s));
-  strcatsafe(ws->val_str, " ", ws->work_buf_size);
+  strncpysafe(ws->val_str, ws->work_buf_size, MKSTR_U_SHORT(s));
+  strncatsafe(ws->val_str, " ", ws->work_buf_size);
   return ws->val_str;
 }
 char *mkstr_char(WorkSpace *ws, const char c) {
 #define MKSTR_CHAR(v) common_ltoa((long)(v))
-  strcpysafe(ws->val_str, ws->work_buf_size, MKSTR_CHAR(c));
-  strcatsafe(ws->val_str, " ", ws->work_buf_size);
+  strncpysafe(ws->val_str, ws->work_buf_size, MKSTR_CHAR(c));
+  strncatsafe(ws->val_str, " ", ws->work_buf_size);
   return ws->val_str;
 }
 char *mkstr_u_char(WorkSpace *ws, const unsigned char c) {
 #define MKSTR_U_CHAR(v) common_utoa((const unsigned long)(v))
-  strcpysafe(ws->val_str, ws->work_buf_size, MKSTR_U_CHAR(c));
-  strcatsafe(ws->val_str, " ", ws->work_buf_size);
+  strncpysafe(ws->val_str, ws->work_buf_size, MKSTR_U_CHAR(c));
+  strncatsafe(ws->val_str, " ", ws->work_buf_size);
   return ws->val_str;
 }
 char *mkstr_string(WorkSpace *ws, const char *a) {
   char *ret = escape_string(ws, a);
-  strcatsafe(ret, " ", ws->work_buf_size);
+  strncatsafe(ret, " ", ws->work_buf_size);
   return ret;
 }
 char *mkstr_float(WorkSpace *ws, const float f) {
@@ -195,7 +195,7 @@ char *mkstr_double(WorkSpace *ws, const double d) {
     int i;                                                                     \
     ws->array_work[0] = '\0';                                                  \
     for (i = 0; i < size; i++) {                                               \
-      strcatsafe(ws->array_work, func(ws, array[i]), ws->work_buf_size);       \
+      strncatsafe(ws->array_work, func(ws, array[i]), ws->work_buf_size);       \
     }                                                                          \
     return ws->array_work;                                                     \
   }
@@ -278,7 +278,7 @@ double demkstr_double(const char *a) {
 }
 char *demkstr_string(WorkSpace *ws, const char *a) {
   if (a == (const char *)NULL) {
-    strcpysafe(ws->escape_work, ws->work_buf_size, "");
+    strncpysafe(ws->escape_work, ws->work_buf_size, "");
     return ws->escape_work;
   }
   return descape_string(ws, a);
@@ -450,7 +450,6 @@ int InitWorkSpace(WorkSpace *ws, int (*write_func)(int, char*, int),
   memset(ws->compress_work, 0, ws->work_buf_size * 3);
   // 内存越界写会导致fopen无法查明原因的阻塞，这个还是很有意思的.
   memset(ws->ret_work, 0, ws->work_buf_size);
-  printf("Finshed.\n");
   return 0;
 }
 
@@ -473,6 +472,6 @@ void FreeWorkSpace(WorkSpace *ws) {
 }
 
 void SetLogFiles(WorkSpace *ws, const char *r_log, const char *w_log) {
-  strcpysafe(ws->w_log, sizeof(ws->w_log), w_log);
-  strcpysafe(ws->r_log, sizeof(ws->r_log), r_log);
+  strncpysafe(ws->w_log, sizeof(ws->w_log), w_log);
+  strncpysafe(ws->r_log, sizeof(ws->r_log), r_log);
 }

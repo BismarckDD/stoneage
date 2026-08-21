@@ -30,9 +30,4 @@ int hashpjwEx(const char *s, const int prime);
 
 int easyGetTokenFromBuf(const char *src, const char *delim, const int count,
                         char *output, const int len);
-
-void util_strncpysafe1(char *dst, const int dst_len, const char *src,
-                       const int copy_bytes);
-void util_strncpysafe2(char *dst, const int dst_len, const char *src);
-
 #endif /* __COMMON_UTILS_UTIL_STRING_H__ */

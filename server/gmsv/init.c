@@ -171,8 +171,7 @@ BOOL init(int argc, char **argv, char **env) {
     debug(sizeof(aho.workchar), d);
   }
   print("Current Config File name: %s.\n", getConfigfilename());
-  RETURN_FALSE_IF_FALSE(readconfigfile(getConfigfilename()));
-
+  RETURN_FALSE_IF_FALSE(readgServerConfigfile(getConfigfilename()));
 #ifdef _WIN32
   sa_set_process_priority(getrunlevel());
 #else
@@ -505,10 +504,10 @@ BOOL init(int argc, char **argv, char **env) {
     goto CLOSEBIND;
   print("成功.\n");
 #endif
-  print("Start to init pet skill......");
+  print("开始初始化宠物技能......");
   if (!PETSKILL_initPetskill(getPetskillfile()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
 #ifdef _PROFESSION_SKILL // WON ADD
   print("Start to init profession skill.....");
   if (!PROFESSION_initSkill(getProfession()))
@@ -528,19 +527,19 @@ BOOL init(int argc, char **argv, char **env) {
   if (!ITEM_initRandTable())
     goto CLOSEBIND;
   print("succeed.\n");
-  print("Start to init char effect......");
+  print("开始初始化特效......");
   if (!CHAR_initEffectSetting(getEffectfile()))
     goto CLOSEBIND;
-  print("succeed.\n");
-  print("Start to init quiz......");
+  print("成功.\n");
+  print("这是啥......");
   if (!QUIZ_initQuiz(getQuizfile()))
     goto CLOSEBIND;
   print("成功.\n");
 #ifdef _GMRELOAD
-  print("Start to load gm set......");
+  print("开始加载GM设置......");
   if (!LoadGMSet(getGMSetfile()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
 #endif
 
 #ifdef _USER_EXP_CF
@@ -604,7 +603,7 @@ BOOL init(int argc, char **argv, char **env) {
   print("开始初始化地图......");
   if (!MAP_initReadMap(getMaptilefile(), getMapdir()))
     goto CLOSEBIND;
-  print("succeed.\n");
+  print("成功.\n");
   print("Start to init npc setting......");
   if (!NPC_readNPCSettingFiles(getNpcdir(), getNpctemplatenum(),
                                getNpccreatenum()))
@@ -667,13 +666,14 @@ BOOL init(int argc, char **argv, char **env) {
   if (!CONNECT_acfdInitWB(acfd))
     goto CLOSEAC;
   CONNECT_setCtype(acfd, AC);
-  print("Start to init client of SAAC ...... ");
+  print("开始初始化SAAC客户端......");
   if (SaacClient_InitClient(lsrpcClientWriteFunc, LSGENWORKINGBUFFER, acfd) < 0)
     goto CLOSEAC;
-  print("succeed.\n");
-  print("GameServerName, AccountServerPassword...... ");
+  print("成功.\n");
+  print("向SAAC发送登录的服务器名和密码......");
   {
 #if _ATTESTAION_ID == 1
+    // 2026.08.21 SaacClient是 GMSV用的
     SaacClient_ACServerLogin_send(acfd, _ATTESTAION_ID, getGameservername(),
                                  getAccountserverpasswd());
 #else
@@ -681,7 +681,7 @@ BOOL init(int argc, char **argv, char **env) {
                                  getAccountserverpasswd());
 #endif
   }
-  print("succeed.\n");
+  print("成功.\n");
 #ifdef _OTHER_SAAC_LINK
   OtherSaacConnect();
 #endif
@@ -690,7 +690,7 @@ BOOL init(int argc, char **argv, char **env) {
     SetLogFiles(&gSaacWorkSpace, getLsgenlogfilename(),
                 getLsgenlogfilename());
   }
-  print("succeed to init lss && saac log files.\n");
+  print("为工作空间设置对应的日志文件:%s\n",getLsgenlogfilename());
 #ifdef _LOTTERY_SYSTEM
   SaacClient_LotterySystem_send();
 #endif
@@ -732,28 +732,20 @@ BOOL init(int argc, char **argv, char **env) {
     i = 0;
     // Disappear_Item.string
     while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-      if (crypto == TRUE) {
-        DecryptKey(line);
-      }
-#endif
       if (line[0] == '#')
         continue;
       if (line[0] == '\n')
         continue;
       chomp(line);
       sprintf(Disappear_Item[i].string, "%s", line);
-      print("\nDisapperItem:%s", Disappear_Item[i].string);
+      print("DisapperItem:%s\n", Disappear_Item[i].string);
       i++;
     }
     fclose(f);
   }
 #endif
-
   DEBUG_ADJUSTTIME = 0;
-  print("\n");
   return TRUE;
-
 CLOSEAC:
   logOut("Close AC.\n");
   close(acfd);

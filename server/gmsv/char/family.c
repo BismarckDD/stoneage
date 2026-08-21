@@ -222,7 +222,7 @@ void CHAR_Family(int fd, int index, char *message)
       if (*message == 0) return;
       CHAR_getMessageBody(message, firstToken, sizeof(firstToken), &messagebody);
       if (!messagebody)	return;
-      strcpysafe(messageeraseescape, sizeof(messageeraseescape), messagebody);
+      strncpysafe(messageeraseescape, sizeof(messageeraseescape), messagebody);
       makeStringFromEscaped(messageeraseescape);
       switch(tolower(firstToken[0]))
       {

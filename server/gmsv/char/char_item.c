@@ -206,7 +206,7 @@ BOOL CHAR_sendItemData(int char_index, int *itemgroup, int num) {
       snprintf(token, sizeof(token), "%s|",
                ITEM_makeItemFalseStringWithNum(itemgroup[i]));
     }
-    strcpysafe(CHAR_sendItemBuffer + strlength,
+    strncpysafe(CHAR_sendItemBuffer + strlength,
                sizeof(CHAR_sendItemBuffer) - strlength, token);
     strlength += strlen(token);
     if (strlength >= arraysizeof(CHAR_sendItemBuffer)) {
@@ -786,7 +786,7 @@ void CHAR_ItemUse(int char_index, int to_char_index, int haveitem_index) {
     if (CHAR_getInt(char_index, CHAR_FLOOR) == getNoPacketMap(index)) {
       if (haveitem_index >= CHAR_STARTITEMARRAY + CHAR_MAXITEMNUM) {
         char ansmsg[256];
-        strcpysafe(ansmsg, sizeof(ansmsg), "该地图禁止使用额外的包裹。");
+        strncpysafe(ansmsg, sizeof(ansmsg), "该地图禁止使用额外的包裹。");
         CHAR_talkToCli(char_index, -1, ansmsg, CHAR_COLORWHITE);
         return;
       }
@@ -915,7 +915,7 @@ void CHAR_ItemUse(int char_index, int to_char_index, int haveitem_index) {
     usefunc(char_index, to_char_index, haveitem_index);
   } else {
     char ansmsg[256];
-    strcpysafe(ansmsg, sizeof(ansmsg), "什麽也没有发生。");
+    strncpysafe(ansmsg, sizeof(ansmsg), "什麽也没有发生。");
     CHAR_talkToCli(char_index, -1, ansmsg, CHAR_COLORWHITE);
   }
 }
@@ -955,7 +955,7 @@ BOOL CHAR_DropItemFXY(int char_index, int itemchar_index, int fl, int x, int y,
           if (dropflag == 1) {
             if ((itm = ITEM_getItemPointer(item_index)) == NULL)
               return -1;
-            strcpysafe(itm->string[ITEM_WATCHFUNC].string,
+            strncpysafe(itm->string[ITEM_WATCHFUNC].string,
                        sizeof(itm->string[ITEM_WATCHFUNC].string),
                        "ITEM_DeleteTimeWatched");
             break;
@@ -1795,7 +1795,7 @@ static int CHAR_PickUpItemFXY(int char_index, int fl, int x, int y,
           PETMAIL_delPetMailTotalnums(1); // 手动捡起mail PET
           ch = CHAR_getCharPointer(pindex);
           if (ch != NULL) {
-            strcpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
+            strncpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
                        sizeof(ch->charfunctable[CHAR_LOOPFUNC]), "");
             CHAR_constructFunctable(pindex);
           }
@@ -2633,7 +2633,7 @@ void CHAR_sendPetItemData(int char_index, int petid) {
     } else {
       snprintf(token, sizeof(token), "%s|", ITEM_makeItemFalseString());
     }
-    strcpysafe(CHAR_statusSendBuffer + strlength,
+    strncpysafe(CHAR_statusSendBuffer + strlength,
                sizeof(CHAR_statusSendBuffer) - strlength, token);
     strlength += strlen(token);
     if (strlength >= arraysizeof(CHAR_statusSendBuffer))

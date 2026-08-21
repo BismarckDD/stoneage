@@ -302,7 +302,7 @@ INLINE BOOL PETSKILL_setChar(int index, PETSKILL_DATACHAR element, char *new) {
     return FALSE;
   if (!PETSKILL_CHECKCHARDATAINDEX(element))
     return FALSE;
-  strcpysafe(PETSKILL_petskill[index].string[element].string,
+  strncpysafe(PETSKILL_petskill[index].string[element].string,
              sizeof(PETSKILL_petskill[index].string[element].string), new);
   return TRUE;
 }

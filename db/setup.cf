@@ -469,7 +469,6 @@ acserv=127.0.0.1
 #acserv=192.168.0.123
 # Account Server Port
 # 帐号服务器 SAAC的服务器端口
-#acservport=9208
 acservport=10001
 # Account Server password
 # 连接到帐号服务器 SAAC的密码
@@ -477,7 +476,7 @@ acpasswd=test
 
 # Game Server Name
 # GMSV服务器名字
-gameservname=
+gameservname=道统服务器
 
 #星球的ID
 gameservlistid=1

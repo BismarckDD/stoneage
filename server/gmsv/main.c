@@ -35,10 +35,6 @@ void family_proc();
 extern int InitOccChannel(void);
 #endif
 
-#ifdef _GMSV_DEBUG
-extern char *DebugMainFunction;
-#endif
-
 #ifdef _ANGEL_SUMMON
 int AngelReady = 0;
 time_t AngelNextTime;
@@ -89,21 +85,19 @@ int main(int argc, char **argv, char **env) {
   return 0;
 }
 
+// 2026.08.20
 void main_loop(void) {
-  print("Init NPC......");
-  NPC_generateLoop(1);
-  print("succeed.\n");
-  print("Init signal1...");
+  print("游戏开始全量设置NPC......");
+  NPC_generateLoop(TRUE);
+  print("成功.\n");
 #ifndef _WIN32
+  print("Init signal1...");
   signal(SIGUSR1, sigusr1);
-#endif
   print("succeed.\n");
   print("Init signal2...");
-#ifndef _WIN32
   signal(SIGUSR2, sigusr2);
-#endif
   print("succeed.\n");
-
+#endif
 #ifdef _MAP_WARP_POINT
   print("Init map warp point...");
   MAPPOINT_InitMapWarpPoint();
@@ -167,17 +161,11 @@ void main_loop(void) {
     setNewTime();
     memcpy(&tmNow, localtime((time_t *)&NowTime.tv_sec), sizeof(tmNow));
     if (tmOld.tm_hour != getLogHour() && tmNow.tm_hour == getLogHour()) {
-#ifdef _GMSV_DEBUG
-      DebugMainFunction = "backupAllLogFile";
-#endif
       backupAllLogFile(&tmOld);
     }
     setNewTime();
 #ifdef _ASSESS_SYSEFFICACY_SUB
     Assess_SysEfficacy_sub(0, 1);
-#ifdef _GMSV_DEBUG
-    DebugMainFunction = "netloop_faster";
-#endif
 #ifdef _EPOLL_ET_MODE
     System_Loop();
 #else
@@ -185,56 +173,27 @@ void main_loop(void) {
 #endif
     Assess_SysEfficacy_sub(1, 1);
     Assess_SysEfficacy_sub(0, 2);
-#ifdef _GMSV_DEBUG
-    DebugMainFunction = "NPC_generateLoop";
-#endif
-    NPC_generateLoop(0);
+    //
+    NPC_generateLoop(FALSE);
     Assess_SysEfficacy_sub(1, 2);
     Assess_SysEfficacy_sub(0, 3);
-#ifdef _GMSV_DEBUG
-    DebugMainFunction = "BATTLE_Loop";
-#endif
     BATTLE_Loop();
     Assess_SysEfficacy_sub(1, 3);
     Assess_SysEfficacy_sub(0, 4);
-#ifdef _GMSV_DEBUG
-    DebugMainFunction = "CHAR_Loop";
-#endif
     CHAR_Loop();
     Assess_SysEfficacy_sub(1, 4);
-
-#ifdef _GMSV_DEBUG
-    DebugMainFunction = "PETMAIL_proc";
-#endif
     PETMAIL_proc();
-
-#ifdef _GMSV_DEBUG
-    DebugMainFunction = "family_proc";
-#endif
     family_proc();
-
-#ifdef _GMSV_DEBUG
-    DebugMainFunction = "chardatasavecheck";
-#endif
     chardatasavecheck();
 #ifdef _ANGEL_SUMMON
-#ifdef _GMSV_DEBUG
-    DebugMainFunction = "AngelReadyProc";
-#endif
     AngelReadyProc();
 #endif
     tmOld = tmNow;
     if (tmOld.tm_sec != tmNow.tm_sec) {
-#ifdef _GMSV_DEBUG
-      DebugMainFunction = "CHAR_checkEffectLoop";
-#endif
       CHAR_checkEffectLoop();
     }
     if (SERVSTATE_getShutdown() > 0) {
       ShutdownProc();
-#ifdef _GMSV_DEBUG
-      DebugMainFunction = "ShutdownProc";
-#endif
     }
     tmOld = tmNow;
 #ifdef _ASSESS_SYSEFFICACY
@@ -244,7 +203,7 @@ void main_loop(void) {
   }
 }
 
-static void sendmsg_toall(char *msg) {
+void sendMsgToAll(const char *msg) {
   int i;
   int playernum = CHAR_getPlayerMaxNum();
   for (i = 0; i < playernum; i++) {
@@ -268,7 +227,7 @@ static void ShutdownProc(void) {
     } else {
       strcpy(buff, SYSINFO_SHUTDOWN_MSG_COMP);
     }
-    sendmsg_toall(buff);
+    sendMsgToAll(buff);
     SERVSTATE_setDsptime(hun);
     if (hun == 1) {
       SERVSTATE_SetAcceptMore(0);

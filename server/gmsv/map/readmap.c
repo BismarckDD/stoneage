@@ -171,7 +171,7 @@ BOOL MAP_readMapConfFile(char *filename) {
         one->data[MAP_confentries[i].index] = atoi(token);
         break;
       case MAP_CHARENTRY:
-        strcpysafe(one->string[MAP_confentries[i].index].string,
+        strncpysafe(one->string[MAP_confentries[i].index].string,
                    sizeof(one->string[MAP_confentries[i].index].string), token);
         break;
       case MAP_INTFUNC: {
@@ -184,7 +184,7 @@ BOOL MAP_readMapConfFile(char *filename) {
         char *(*charfunction)(char *);
         charfunction = MAP_confentries[i].func;
 
-        strcpysafe(one->string[MAP_confentries[i].index].string,
+        strncpysafe(one->string[MAP_confentries[i].index].string,
                    sizeof(one->string[MAP_confentries[i].index].string),
                    charfunction(token));
         break;
@@ -405,9 +405,9 @@ FCLOSERETURNTRUE:
 
 BOOL MAP_readMapOne(char *filename) {
   FILE *f;
-  char buf[16]; /*  穴斥永弁瓜件田□  心迕  */
-  short data[1024]; /*  扑亦□玄  心迕田永白央  */
-  int ret;          /*  忒曰袄熬仃潸曰迕        */
+  char buf[16];
+  short data[1024];
+  int ret;
   int i;
   int mapindex;
   int id = 0, xsiz = 0, ysiz =  0;
@@ -472,8 +472,7 @@ BOOL MAP_readMapOne(char *filename) {
   ysiz = ntohs(data[0]);
   tile = allocateMemory(sizeof(unsigned short) * xsiz * ysiz);
   if (tile == NULL) {
-    fprint("无法为地图分配内存：%s xsiz:%d "
-           "ysiz:%d\n",
+    fprint("无法为地图分配内存：%s, xsiz:%d, ysiz:%d\n",
            filename, xsiz, ysiz);
     goto FREEOBJHP;
   }
@@ -499,8 +498,6 @@ BOOL MAP_readMapOne(char *filename) {
            (long long)ftell(f), feof(f), ferror(f));
     goto FREELINK;
   }
-  //    for( i  = 0 ; i < xsiz * ysiz ; i ++ )
-  //        tile[i] = ntohs( tile[i] );
   for (i = 0; i < xsiz * ysiz; i++) {
     tile[i] = ntohs(tile[i]);
 
@@ -509,13 +506,6 @@ BOOL MAP_readMapOne(char *filename) {
              (int)(i / xsiz), tile[i]);
       invaliddata = TRUE;
     }
-    /*
-    else{
-        fprint("地图的图片为:%d x:%d y:%d 数量:%d\n",
-            id, i % xsiz, (int)(i / xsiz) , tile[i]);
-
-    }
-    */
   }
   ret = fread(obj, sizeof(short) * xsiz * ysiz, 1, f);
   if (ret != 1) {
@@ -526,8 +516,6 @@ BOOL MAP_readMapOne(char *filename) {
            (long long)ftell(f), feof(f), ferror(f));
     goto FREELINK;
   }
-  //    for( i  = 0 ; i < xsiz * ysiz ; i ++ )
-  //        obj[i] = ntohs( obj[i] );
   for (i = 0; i < xsiz * ysiz; i++) {
     obj[i] = ntohs(obj[i]);
     if (!IsValidImagenumber(obj[i])) {
@@ -545,7 +533,7 @@ BOOL MAP_readMapOne(char *filename) {
   MAP_map[mapindex].id = id;
   MAP_map[mapindex].xsiz = xsiz;
   MAP_map[mapindex].ysiz = ysiz;
-  strcpysafe(MAP_map[mapindex].string, sizeof(MAP_map[mapindex].string),
+  strncpysafe(MAP_map[mapindex].string, sizeof(MAP_map[mapindex].string),
              showstring);
   MAP_map[mapindex].tile = tile;
   MAP_map[mapindex].obj = obj;
@@ -664,15 +652,13 @@ BOOL MAP_readMapDir(char *dirname) {
   for (i = 0; i < filenum; i++)
     if (MAP_IsMapFile(filenames[i].string))
       mapfilenum++;
-  //  else
-  //    fprint("%s is not a map file.\n", filenames[i].string);
-  print("reads map file %d, total file: %d.\n", mapfilenum, filenum);
-  if (mapfilenum == 0)
+  print("读取地图文件数量:%d, 总文件数量: %d.", mapfilenum, filenum);
+  if (mapfilenum == 0) {
     print("dirname: %s.\n", dirname);
-  if (mapfilenum == 0)
     return FALSE;
+  }
   if (!MAP_initMapArray(MAX_MAP_FILES)) {
-    fprint("init map array failed.\n");
+    fprint("初始化地图数字失败.\n");
     return FALSE;
   }
 
@@ -680,7 +666,7 @@ BOOL MAP_readMapDir(char *dirname) {
     if (MAP_IsMapFile(filenames[i].string)) {
       MAP_readMapOne(filenames[i].string);
     }
-  print("reads map num index: %d...", MAP_mapnum_index);
+  print("共有地图数量:%d", MAP_mapnum_index);
   if (MAP_mapnum_index == 0) {
     MAP_endMapArray();
     return FALSE;
@@ -761,7 +747,7 @@ char *MAP_getdataFromRECT(int floor, RECT *seekr, RECT *realr) {
            makeEscapeString(MAP_map[floorindex].string, escapebuffer,
                             sizeof(escapebuffer)));
 
-  strcpysafe(MAP_dataString, sizeof(MAP_dataString), tmpbuffer);
+  strncpysafe(MAP_dataString, sizeof(MAP_dataString), tmpbuffer);
   stringlength = strlen(tmpbuffer);
 
   floorx = MAP_map[floorindex].xsiz;
@@ -784,7 +770,7 @@ char *MAP_getdataFromRECT(int floor, RECT *seekr, RECT *realr) {
     char buf[64];
     snprintf(tmpbuffer, sizeof(tmpbuffer), "%s" MAP_DATADELIMITER,
              cnv10to62(MAP_workdatabuffer[i], buf, sizeof(buf)));
-    strcpysafe(&MAP_dataString[stringlength],
+    strncpysafe(&MAP_dataString[stringlength],
                sizeof(MAP_dataString) - stringlength, tmpbuffer);
     stringlength += strlen(tmpbuffer);
   }
@@ -804,7 +790,7 @@ char *MAP_getdataFromRECT(int floor, RECT *seekr, RECT *realr) {
     else
       cnv10to62(MAP_workdatabuffer[i], buf, sizeof(buf));
     snprintf(tmpbuffer, sizeof(tmpbuffer), "%s" MAP_DATADELIMITER, buf);
-    strcpysafe(&MAP_dataString[stringlength],
+    strncpysafe(&MAP_dataString[stringlength],
                sizeof(MAP_dataString) - stringlength, tmpbuffer);
     stringlength += strlen(tmpbuffer);
   }
@@ -856,7 +842,7 @@ char *MAP_getdataFromRECT(int floor, RECT *seekr, RECT *realr) {
       cnv10to62(MAP_workdatabuffer[i], buf, sizeof(buf));
 
     snprintf(tmpbuffer, sizeof(tmpbuffer), "%s" MAP_DATADELIMITER, buf);
-    strcpysafe(&MAP_dataString[stringlength],
+    strncpysafe(&MAP_dataString[stringlength],
                sizeof(MAP_dataString) - stringlength, tmpbuffer);
     stringlength += strlen(tmpbuffer);
   }
@@ -883,7 +869,7 @@ char *MAP_getChecksumFromRECT(int floor, RECT *seekr, RECT *realr, int *tilesum,
       MAP_GETMAXSIZE < seekr->height)
     return NULL;
 
-  strcpysafe(MAP_dataString, sizeof(MAP_dataString),
+  strncpysafe(MAP_dataString, sizeof(MAP_dataString),
              makeEscapeString(MAP_map[floorindex].string, escapebuffer,
                               sizeof(escapebuffer)));
 
@@ -998,7 +984,6 @@ BOOL MAP_initReadMap(char *maptilefile, char *mapdir) {
     return FALSE;
   if (!MAP_readMapDir(mapdir))
     return FALSE;
-  print("read map dir\n");
   return TRUE;
 }
 
@@ -1615,10 +1600,10 @@ int MAP_makenew(int mapid, char *map_name) {
   MAP_map[makemapindex].xsiz = MAP_map[tomapindex].xsiz;
   MAP_map[makemapindex].ysiz = MAP_map[tomapindex].ysiz;
   if (strcmp(map_name, "") != 0) {
-    strcpysafe(MAP_map[makemapindex].string,
+    strncpysafe(MAP_map[makemapindex].string,
                sizeof(MAP_map[makemapindex].string), map_name);
   } else {
-    strcpysafe(MAP_map[makemapindex].string,
+    strncpysafe(MAP_map[makemapindex].string,
                sizeof(MAP_map[makemapindex].string),
                MAP_map[tomapindex].string);
   }

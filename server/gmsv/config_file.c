@@ -1142,37 +1142,19 @@ void LoadPetTalk(void) {
 
   for (i = 0; i < PETTALK_MAXID; i++) {
     pettalktext[i].ID = -1;
-    strcpy(pettalktext[i].DATA, "\0");
+    pettalktext[i].DATA[0] = '\0';
   }
-
   print("\n装载宠物对话文件:%s...", fn);
-
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", fn);
-  fp = fopen(realopfile, "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen(fn, "r");
-  }
+  fp = fopen(fn, "r");
   if (fp != NULL) {
     while (fgets(line, sizeof(line), fp)) {
-#ifdef _CRYPTO_DATA
-      if (crypto == TRUE) {
-        DecryptKey(line);
-      }
-#endif
       if (strlen(talkmem) != 0) {
         if (talkmem[strlen(talkmem) - 1] != '|') {
-          util_strcatsafe(talkmem, len, "|");
+          strncatsafe(talkmem, "|", len);
         }
       }
       chompex(line);
-      util_strcatsafe(talkmem, len, line);
+      strncatsafe(talkmem, line, len);
     }
     fclose(fp);
   } else {
@@ -1195,19 +1177,7 @@ void LoadPetTalk(void) {
       if (getStringFromIndexWithDelim(buf2, ",", mark, buf3, sizeof(buf3)) !=
           FALSE) {
         sprintf(fn, "%s/pettalk/%s", getNpcdir(), buf3);
-        // print("\n ...file:%s", fn);
-#ifdef _CRYPTO_DATA
-        char realopfile[256];
-        BOOL crypto = FALSE;
-        sprintf(realopfile, "%s.allblues", fn);
-        fp = fopen(realopfile, "r");
-        if (fp != NULL) {
-          crypto = TRUE;
-        } else
-#endif
-        {
-          fp = fopen(fn, "r");
-        }
+        fp = fopen(fn, "r");
         if (fp != NULL) {
           char line[4096];
           while (fgets(line, sizeof(line), fp)) {
@@ -1219,13 +1189,13 @@ void LoadPetTalk(void) {
             if (strlen(pettalktext[maxid].DATA) != 0) {
               if (pettalktext[maxid]
                       .DATA[strlen(pettalktext[maxid].DATA) - 1] != '|') {
-                util_strcatsafe(pettalktext[maxid].DATA,
-                                sizeof(pettalktext[maxid].DATA), "|");
+                strncatsafe(pettalktext[maxid].DATA, "|",
+                            sizeof(pettalktext[maxid].DATA));
               }
             }
             chompex(line);
-            util_strcatsafe(pettalktext[maxid].DATA,
-                            sizeof(pettalktext[maxid].DATA), line);
+            strncatsafe(pettalktext[maxid].DATA, line,
+                        sizeof(pettalktext[maxid].DATA));
           }
           maxid++;
           fclose(fp);
@@ -1250,51 +1220,6 @@ void LoadPetTalk(void) {
       }
     }
     print("载入总数=%d", haveid);
-  }
-}
-
-#else
-char pettalktext[4096];
-void LoadPetTalk(void) {
-  FILE *fp;
-  char fn[256];
-  char line[4096];
-  int len = sizeof(pettalktext);
-
-  memset(pettalktext, 0, sizeof(pettalktext));
-  sprintf(fn, "%s/pettalk/pettalk.mem", getNpcdir());
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", fn);
-  fp = fopen(realopfile, "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen(fn, "r");
-  }
-  if (fp != NULL) {
-    print("\n\n pettalk.mem");
-    while (fgets(line, sizeof(line), fp)) {
-#ifdef _CRYPTO_DATA
-      if (crypto == TRUE) {
-        DecryptKey(line);
-      }
-#endif
-      if (strlen(pettalktext) != 0) {
-        if (pettalktext[strlen(pettalktext) - 1] != '|') {
-          util_strcatsafe(pettalktext, len, "|");
-        }
-      }
-      chompex(line);
-      util_strcatsafe(pettalktext, len, line);
-    }
-    fclose(fp);
-    print("\n %s", pettalktext);
-  } else {
-    print("\n 不能找到 pettalk.mem");
   }
 }
 #endif
@@ -1360,25 +1285,9 @@ void Load_PetSkillCodes(void) {
   int i = 0;
   sprintf(filename, "./data/skillcode.txt");
   print("\n加载宠物技能编码文件:%s...", filename);
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  fp = fopen(realopfile, "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen(filename, "r");
-  }
+  fp = fopen(filename, "r");
   if (fp != NULL) {
     while (fgets(buf1, sizeof(buf1), fp) != NULL) {
-#ifdef _CRYPTO_DATA
-      if (crypto == TRUE) {
-        DecryptKey(buf1);
-      }
-#endif
       sscanf(buf1, "%s %d %d %s", name, &num, &ID, type);
       strcpy(Code_skill[i].name, name);
       Code_skill[i].TempNo = num;
@@ -1400,36 +1309,19 @@ void Load_PetSkillCodes(void) {
 BOOL LoadGMSet(char *filename) {
   FILE *fp;
   int i = 0, gm_num = 0;
-
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  fp = fopen(realopfile, "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen(filename, "r");
-  }
+  fp = fopen(filename, "r");
   if (fp == NULL) {
-    print("无法打开文件\n");
+    print("无法打开文件:%s\n", filename);
     return FALSE;
   }
   for (i = 0; i < GMMAXNUM; i++) {
     strcpy(gminfo[i].cdkey, "");
     gminfo[i].level = 0;
   }
-  while (1) {
+  while (TRUE) {
     char line[64], cdkey[64], level[64];
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     chop(line);
     if (line[0] == '#')
       continue;
@@ -1445,7 +1337,7 @@ BOOL LoadGMSet(char *filename) {
     easyGetTokenFromString(line, 1, cdkey, sizeof(cdkey));
     if (strcmp(cdkey, "") == 0)
       break;
-    strncpy(gminfo[gm_num].cdkey, cdkey, sizeof(gminfo[gm_num].cdkey));
+    strncpysafe(gminfo[gm_num].cdkey, sizeof(gminfo[gm_num].cdkey), cdkey);
     easyGetTokenFromString(line, 2, level, sizeof(level));
     if (strcmp(level, "") == 0)
       break;
@@ -1461,7 +1353,7 @@ char *getProgramName(void) { return gServerConfig.program_name; }
 char *getConfigFilename(void) { return gServerConfig.config_filename; }
 
 void setConfigFilename(const char *config_filename) {
-  strcpysafe(gServerConfig.config_filename,
+  strncpysafe(gServerConfig.config_filename,
              sizeof(gServerConfig.config_filename), config_filename);
 }
 
@@ -1479,13 +1371,9 @@ unsigned getMemoryUnitNum(void) { return gServerConfig.memory_unitnum; }
 
 char *getAccountServerName(void) { return gServerConfig.account_server_name; }
 
-unsigned short getAccountServerPort(void) {
-  return gServerConfig.account_server_port;
-}
+unsigned short getAccountServerPort(void) { return gServerConfig.account_server_port; }
 
-char *getAccountServerPassword(void) {
-  return gServerConfig.account_server_password;
-}
+char *getAccountServerPassword(void) { return gServerConfig.account_server_password; }
 
 char *getGameServerName(void) { return gServerConfig.game_server_name; }
 
@@ -1495,15 +1383,10 @@ char *getGameServerID(void) {
     gServerConfig.game_server_id[idx] = '\0';
   return gServerConfig.game_server_id;
 }
-
 unsigned short getAllowManorPK(void) { return gServerConfig.allowmanorpk; }
-
 unsigned short getPortNumber(void) { return gServerConfig.port; }
-
 int getServernumber(void) { return gServerConfig.servernumber; }
-
 int getReuseAddr(void) { return gServerConfig.reuse_addr; }
-
 int getNodelay(void) { return gServerConfig.do_nodelay; }
 int getLogWriteTime(void) { return gServerConfig.log_write_time; }
 int getLogIOTime(void) { return gServerConfig.log_io_time; }
@@ -1614,9 +1497,7 @@ char *getChatMagicPasswd(void) { return gServerConfig.chatmagicpasswd; }
 
 void setChatMagicPasswd(void) { sprintf(gServerConfig.chatmagicpasswd, "gm"); }
 
-unsigned getChatMagicCDKeyCheck(void) {
-  return gServerConfig.chatmagiccdkeycheck;
-}
+unsigned getChatMagicCDKeyCheck(void) { return gServerConfig.chatmagiccdkeycheck; }
 
 void setChatMagicCDKeyCheck(void) { gServerConfig.chatmagiccdkeycheck = 0; }
 
@@ -1649,23 +1530,16 @@ unsigned int getCDsendinterval_ms(void) {
 void setCDsendinterval_ms(unsigned int interval_ms) {
   gServerConfig.CDsendinterval_ms = interval_ms;
 }
-/*------------------------------------------------------------
- * Onelooptime毛  月［
- * 娄醒
- *  卅仄
- * 忒曰袄
- *  unsigned int
- ------------------------------------------------------------*/
+
 unsigned int getOnelooptime_ms(void) { return gServerConfig.Onelooptime_ms; }
 
 void setOnelooptime_ms(unsigned int interval_ms) {
   gServerConfig.Onelooptime_ms = interval_ms;
 }
+
 unsigned int getPetdeletetime(void) { return gServerConfig.Petdeletetime; }
 
-void setPetdeletetime(unsigned int interval) {
-  gServerConfig.Petdeletetime = interval;
-}
+void setPetdeletetime(unsigned int interval) { gServerConfig.Petdeletetime = interval; }
 
 unsigned int getItemdeletetime(void) { return gServerConfig.Itemdeletetime; }
 
@@ -1707,9 +1581,9 @@ void defaultConfig(char *argv0) {
     program = argv0;
   else
     program++;
-  strcpysafe(gServerConfig.program_name, sizeof(gServerConfig.program_name),
+  strncpysafe(gServerConfig.program_name, sizeof(gServerConfig.program_name),
              program);
-  strcpysafe(gServerConfig.config_filename,
+  strncpysafe(gServerConfig.config_filename,
              sizeof(gServerConfig.config_filename), "setup.cf");
 }
 
@@ -1717,55 +1591,45 @@ void lastConfig(void) {
   char entry[256];
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.mapdir);
-  strcpysafe(gServerConfig.mapdir, sizeof(gServerConfig.mapdir), entry);
-
+  strncpysafe(gServerConfig.mapdir, sizeof(gServerConfig.mapdir), entry);
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.maptilefile);
-  strcpysafe(gServerConfig.maptilefile, sizeof(gServerConfig.maptilefile),
+  strncpysafe(gServerConfig.maptilefile, sizeof(gServerConfig.maptilefile),
              entry);
-
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.battlemapfile);
-  strcpysafe(gServerConfig.battlemapfile, sizeof(gServerConfig.battlemapfile),
+  strncpysafe(gServerConfig.battlemapfile, sizeof(gServerConfig.battlemapfile),
              entry);
-
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.itemfile);
-  strcpysafe(gServerConfig.itemfile, sizeof(gServerConfig.itemfile), entry);
-
+  strncpysafe(gServerConfig.itemfile, sizeof(gServerConfig.itemfile), entry);
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.invfile);
-  strcpysafe(gServerConfig.invfile, sizeof(gServerConfig.invfile), entry);
-
+  strncpysafe(gServerConfig.invfile, sizeof(gServerConfig.invfile), entry);
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.appearfile);
-  strcpysafe(gServerConfig.appearfile, sizeof(gServerConfig.appearfile), entry);
-
+  strncpysafe(gServerConfig.appearfile, sizeof(gServerConfig.appearfile), entry);
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.effectfile);
-  strcpysafe(gServerConfig.effectfile, sizeof(gServerConfig.effectfile), entry);
-
+  strncpysafe(gServerConfig.effectfile, sizeof(gServerConfig.effectfile), entry);
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.quizfile);
-  strcpysafe(gServerConfig.quizfile, sizeof(gServerConfig.quizfile), entry);
-
+  strncpysafe(gServerConfig.quizfile, sizeof(gServerConfig.quizfile), entry);
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.titlenamefile);
-  strcpysafe(gServerConfig.titlenamefile, sizeof(gServerConfig.titlenamefile),
+  strncpysafe(gServerConfig.titlenamefile, sizeof(gServerConfig.titlenamefile),
              entry);
-
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.lsgenlog);
-  strcpysafe(gServerConfig.lsgenlog, sizeof(gServerConfig.lsgenlog), entry);
+  strncpysafe(gServerConfig.lsgenlog, sizeof(gServerConfig.lsgenlog), entry);
 
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.npcdir);
-  strcpysafe(gServerConfig.npcdir, sizeof(gServerConfig.npcdir), entry);
-
+  strncpysafe(gServerConfig.npcdir, sizeof(gServerConfig.npcdir), entry);
 #ifdef _STORECHAR
   snprintf(entry, sizeof(entry), "%s/%s", gServerConfig.topdir,
            gServerConfig.storechar);
-  strcpysafe(gServerConfig.storechar, sizeof(gServerConfig.storechar), entry);
+  strncpysafe(gServerConfig.storechar, sizeof(gServerConfig.storechar), entry);
 #endif
 }
 
@@ -1804,7 +1668,7 @@ BOOL luareadgServerConfigfile(char *data) {
       }
 
       if (gReadConf[i].charvalue != NULL)
-        strcpysafe(gReadConf[i].charvalue, gReadConf[i].charsize, secondToken);
+        strncpysafe(gReadConf[i].charvalue, gReadConf[i].charsize, secondToken);
       if (gReadConf[i].value != NULL) {
         if (strcmp("ON", secondToken) == 0) {
 
@@ -1826,27 +1690,15 @@ BOOL luareadgServerConfigfile(char *data) {
   return TRUE;
 }
 
+// 2026.08.20
 BOOL readgServerConfigfile(char *filename) {
   FILE *f = NULL;
   char linebuf[256];
   int linenum = 0;
-  char realopenfilename[256];
-  char hostname[128];
-  if (gethostname(hostname, sizeof(hostname)) != -1) {
-    char *initdot;
-    initdot = index(hostname, '.');
-    if (initdot != NULL)
-      *initdot = '\0';
-    snprintf(realopenfilename, sizeof(realopenfilename), "%s.%s", filename,
-             hostname);
-    f = fopen(realopenfilename, "r");
-  }
+  f = fopen(filename, "r");
   if (f == NULL) {
-    f = fopen(filename, "r");
-    if (f == NULL) {
-      print("Can't open %s\n", filename);
-      return FALSE;
-    }
+    print("Can't open %s\n", filename);
+    return FALSE;
   }
 
   while (fgets(linebuf, sizeof(linebuf), f)) {
@@ -1855,11 +1707,14 @@ BOOL readgServerConfigfile(char *filename) {
     int ret;
     linenum++;
     deleteWhiteSpace(linebuf);
-    if (linebuf[0] == '#' || linebuf[0] == '\n')
+    if (linebuf[0] == '#' || linebuf[0] == '\n') {
+      // print("line num is empty.: %d\n", linenum);
       continue;     /* comment or blank line. */
+    }
     chomp(linebuf); /* remove tail newline */
     ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
                                       sizeof(firstToken));
+    // print("First Token: %s,%s\n", linebuf, firstToken);
     if (ret == FALSE) {
       print("Find error at %s in line %d. Ignore\n", filename, linenum);
       continue;
@@ -1869,12 +1724,13 @@ BOOL readgServerConfigfile(char *filename) {
         char secondToken[256];
         ret = getStringFromIndexWithDelim(linebuf, "=", 2, secondToken,
                                           sizeof(secondToken));
+        // print("Second Token: %s,%s\n", linebuf, secondToken);
         if (ret == FALSE) {
           print("Find error at %s in line %d. Ignore", filename, linenum);
           break;
         }
         if (gReadConf[i].charvalue != NULL)
-          strcpysafe(gReadConf[i].charvalue, gReadConf[i].charsize,
+          strncpysafe(gReadConf[i].charvalue, gReadConf[i].charsize,
                      secondToken);
         if (gReadConf[i].value != NULL) {
           if (strcmp("ON", secondToken) == 0) {

@@ -146,7 +146,7 @@ char *TITLE_makeTitleStatusString(int char_index, int havetitleindex) {
     if (function)
       function(char_index, string, sizeof(string));
 
-    strcpysafe(TITLE_statusStringBuffer, sizeof(TITLE_statusStringBuffer),
+    strncpysafe(TITLE_statusStringBuffer, sizeof(TITLE_statusStringBuffer),
                string);
   } break;
   default:
@@ -360,7 +360,7 @@ BOOL TITLE_initTitleName(char *filename) {
       if (strlen(token) > sizeof(TITLE_table[title_readlen].name) - 1) {
         fprint("警告! 头衔名称结束文件:%s 第%d行\n", filename, linenum);
       }
-      strcpysafe(TITLE_table[title_readlen].name,
+      strncpysafe(TITLE_table[title_readlen].name,
                  sizeof(TITLE_table[title_readlen].name), token);
 
       title_readlen++;
@@ -415,15 +415,8 @@ static void TITLE_initTitleData(int array) {
   TITLE_ConfigTable[array].title = -1;
   TITLE_ConfigTable[array].equipcheckflg = FALSE;
 }
-/*------------------------------------------------------------
- *   醒垫涩烂毛引午户化ㄠ垫卞仄化支月［  戈及手仇仇匹允月［
- *------------------------------------------------------------*/
-#ifdef _CRYPTO_DATA
-static int TITLE_getConfigOneLine(FILE *fp, char *line, int linelen,
-                                  BOOL crypto)
-#else
+
 static int TITLE_getConfigOneLine(FILE *fp, char *line, int linelen)
-#endif
 {
   char buf[1024];
   int startflg = FALSE;
@@ -454,30 +447,25 @@ static int TITLE_getConfigOneLine(FILE *fp, char *line, int linelen)
       startflg = TRUE;
     } else if (buf[0] == '}') {
       if (startflg == FALSE) {
-        print("titleconfig:明明没有关闭「{」却出现了: %d \n", linenum);
-        /* } */
+        print("titleconfig花括号关闭错误 linenum: %d\n", linenum);
         return -1;
       }
       return 1;
     } else {
-      /* "{"匹湃卞铵引匀化中凶日 }*/
       if (startflg == TRUE) {
         if (strlen(line) != 0) {
           if (line[strlen(line) - 1] != ',') {
-            util_strcatsafe(line, linelen, ",");
+            strncatsafe(line, ",", linelen);
           }
         }
-        /* ㄠ垫卞引午户化中仁*/
-        util_strcatsafe(line, linelen, buf);
+        strncatsafe(line, buf, linelen);
       }
-      /*   躲垫分互"{"匹反元引匀化卅中桦宁反公及引引ㄠ垫匹忒允 }*/
       else {
-        util_strcatsafe(line, linelen, buf);
+        strncatsafe(line, buf, linelen);
         return 1;
       }
     }
   }
-  /* 仇仇卞仁月午蜕丹仪反EOF   驯五元扎卅中戊□玉分   */
   return 0;
 }
 static int TITLE_getParamData(int readarray, int array, char *src) {

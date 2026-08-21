@@ -6608,7 +6608,7 @@ int BATTLE_S_PetSkillProperty(int battleindex, int attackNo, int skill_type,
     ch = CHAR_getCharPointer(attackindex);
     if (ch == NULL)
       return iRet;
-    strcpysafe(ch->charfunctable[CHAR_BATTLEPROPERTY].string,
+    strncpysafe(ch->charfunctable[CHAR_BATTLEPROPERTY].string,
                sizeof(ch->charfunctable[CHAR_BATTLEPROPERTY]), pszP); // 战斗
     CHAR_constructFunctable(attackindex);
     iRet = TRUE;
@@ -7635,7 +7635,7 @@ int CHAR_BattleStayLoop(int char_index) {
     ch = CHAR_getCharPointer(char_index);
     if (ch == NULL)
       return 0;
-    strcpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
+    strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
                sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]), ""); // 战斗
     CHAR_setInt(char_index, CHAR_LOOPINTERVAL, 0);
     CHAR_constructFunctable(char_index);

@@ -719,13 +719,9 @@ void SelectServerProc(void)
         if (commonMsgWin(szAnnouncement))
             SubProcNo = 1;
     }
-#ifdef _NEW_WIN_POS_
     // 标题画面的底图。当前版本使用全屏缩放绘制接口。
     StockDispBufferScaled(SCREEN_WIDTH_CENTER, SCREEN_HEIGHT_CENTER, DISP_PRIO_BG, CG_TITLE);
-#else
-    StockDispBuffer(320, 240, DISP_PRIO_BG, CG_TITLE, 0);
-#endif
-#ifdef _SA_VERSION_25
+#if 0
     StockFontBuffer(620, 580, FONT_PRIO_BACK, FONT_PAL_BLUE, "体验版！", 0);
 #endif
 }
@@ -1026,7 +1022,7 @@ int connecGameServer(void)
     return ret;
 }
 
-// cary 十二、加入saac的错误讯息
+// 选择角色页面(二选一)
 void selectCharacterProc(void)
 {
     int ret;
@@ -1090,13 +1086,10 @@ void selectCharacterProc(void)
             strcpy(msg, 登陆错误内容);
         }
     }
-
     if (SubProcNo == 10)
     {
         for (i = 0; i < sizeof(btnGraId) / sizeof(int); i++)
-        {
             btnGraId[i] = -2;
-        }
         SubProcNo++;
     }
     if (SubProcNo == 11)
@@ -1140,8 +1133,6 @@ void selectCharacterProc(void)
             SubProcNo = 300;
         }
     }
-
-    // ???
     if (SubProcNo == 100)
     {
         initCommonMsgWin();
@@ -1152,9 +1143,6 @@ void selectCharacterProc(void)
         if (commonMsgWin(msg))
         {
             ChangeProc(PROC_TITLE_MENU);
-#ifdef _PKSERVERCHARSEL // (不可开) Syu ADD PK服务器选择星系人物
-            PkMenuflag = 0;
-#endif
             SubProcNo = 1;
         }
     }
@@ -1177,10 +1165,6 @@ void selectCharacterProc(void)
     if (ret == 0)
     {
         fade_out_bgm();
-#ifdef _PKSERVERCHARSEL // (不可开) Syu ADD PK服务器选择星系人物
-        PkMenuflag = 0;
-#endif
-
         ChangeProc(PROC_TITLE_MENU);
         SubProcNo = 1;
         play_se(217, 320, 240); // click声
@@ -1213,9 +1197,7 @@ void selectCharacterProc(void)
         选择人物 = ret - 3;
 #endif
         char name[CHAR_NAME_LEN + 1];
-
         strcpy(name, chartable[选择人物].name);
-
         strcpy(gamestate_login_charname, name);
 #ifdef _AIDENGLU_
         if (自动登陆是否开启)
@@ -1340,6 +1322,7 @@ void selectCharacterProc(void)
                                     DISP_PRIO_CHAR, CG_CHR_SEL_DEL_BTN, btnUseFlag);
             }
 #else
+// 判断(0, 1)角色是否存在
             if (existCharacterListEntry(i))
             {
                 StockDispBuffer(169 + i * (304 + ii) + ix, 84 + iy, DISP_PRIO_CHAR, chartable[i].faceGraNo, 0);
@@ -1402,11 +1385,7 @@ void selectCharacterProc(void)
         btnGraId[0] =
             StockDispBuffer(320 + backX, 432 + iy, DISP_PRIO_CHAR, CG_CHR_SEL_BACK_BTN, btnUseFlag);
     }
-#ifdef _NEW_WIN_POS_
-    StockDispBuffer(400, 300, DISP_PRIO_BG, CG_CHR_SEL_BG, 0);
-#else
-    StockDispBuffer(320, 240, DISP_PRIO_BG, CG_CHR_SEL_BG, 0);
-#endif
+    StockDispBufferScaled(SCREEN_WIDTH_CENTER, SCREEN_HEIGHT_CENTER, DISP_PRIO_BG, CG_CHR_SEL_BG);
 #ifdef _LOGINKICK
     if (StartTime == -1)
         StartTime = TimeGetTime();
@@ -1468,16 +1447,12 @@ void selectCharacterProc(void)
     }
 #endif
 
-    RunAction();           // ?????????
-    StockTaskDispBuffer(); // ???????????????
+    RunAction();
+    StockTaskDispBuffer();
 }
-// end
-
-// ?????????
 
 static short deleteCharacterProcNo = 0;
 
-// ???
 void initDeleteCharacter(void)
 {
     deleteCharacterProcNo = 0;

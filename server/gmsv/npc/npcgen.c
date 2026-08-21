@@ -167,7 +167,7 @@ static void NPC_copyFunction(Char *ch, NPC_Template *temp) {
   int i;
   for (i = 0; i < arraysizeof(correspondfunction); i++)
     if (temp->chardata[correspondfunction[i].template].string[0] != '\0')
-      strcpysafe(ch->charfunctable[correspondfunction[i].ch].string,
+      strncpysafe(ch->charfunctable[correspondfunction[i].ch].string,
                  sizeof(ch->charfunctable[correspondfunction[i].ch].string),
                  temp->chardata[correspondfunction[i].template].string);
 }
@@ -213,22 +213,22 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
     one.data[CHAR_BASEBASEIMAGENUMBER] = one.data[CHAR_BASEIMAGENUMBER] =
         cr->intdata[NPC_CREATEBASEIMAGENUMBER];
 
-  strcpysafe(one.string[CHAR_NAME].string, sizeof(one.string[CHAR_NAME].string),
-             template->chardata[NPC_TEMPLATECHARNAME].string);
+  strncpysafe(one.string[CHAR_NAME].string,
+              sizeof(one.string[CHAR_NAME].string),
+              template->chardata[NPC_TEMPLATECHARNAME].string);
 
   if (cr->chardata[NPC_CREATENAME].string[0] != '\0') {
-    strcpysafe(one.string[CHAR_NAME].string,
-               sizeof(one.string[CHAR_NAME].string),
-               cr->chardata[NPC_CREATENAME].string);
+    strncpysafe(one.string[CHAR_NAME].string,
+                sizeof(one.string[CHAR_NAME].string),
+                cr->chardata[NPC_CREATENAME].string);
   }
-
   // Robin 0731
   one.data[CHAR_FMINDEX] = cr->intdata[NPC_CREATEFAMILY];
   NPC_copyFunctionSetToChar(template->intdata[NPC_TEMPLATEFUNCTIONINDEX], &one);
   NPC_copyFunction(&one, template);
   one.data[CHAR_LOOPINTERVAL] = template->intdata[NPC_TEMPLATELOOPFUNCTIME];
   if (cr->arg[createtemplateindex].string[0] != '\0') {
-    strcpysafe(one.string[CHAR_NPCARGUMENT].string,
+    strncpysafe(one.string[CHAR_NPCARGUMENT].string,
                sizeof(one.string[CHAR_NPCARGUMENT].string),
                cr->arg[createtemplateindex].string);
   } else {
@@ -244,7 +244,6 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
         {NPC_TEMPLATEMINMP, CHAR_MAXMP},
         {NPC_TEMPLATEMINSTR, CHAR_STR},
         {NPC_TEMPLATEMINTOUGH, CHAR_TOUGH},
-
     };
     for (i = 0; i < arraysizeof(paramtbl); i++) {
       int randomvalue;
@@ -274,19 +273,16 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
       }
     }
   }
-
   {
     int char_index;
     int objindex;
     Object obj;
     char_index = CHAR_initCharOneArray(&one);
     if (char_index == -1) {
-      // CHAR_endCharData( &one );
       return FALSE;
     }
     if (template->intdata[NPC_TEMPLATEISFLYING])
       CHAR_setFlg(char_index, CHAR_ISFLYING, 1);
-
     obj.type = OBJTYPE_CHARA;
     obj.index = char_index;
     obj.x = CHAR_getInt(char_index, CHAR_X);
@@ -314,14 +310,13 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
 #endif
     CHAR_complianceParameter(char_index);
   }
-
   return TRUE;
 }
 
 void NPC_generateLoop(BOOL checkall) {
   int i, j;
-  int CreateOk = 0;
-  static int npcCreatedNum = 0;
+  int npcCreated = 0;
+  static int npcCreateIndex = 0;
   static struct timeval lastNpcGenerationTime;
   if (checkall == FALSE) {
     if (time_diff_us(NowTime, lastNpcGenerationTime) < (1000 * 1000)) {
@@ -331,37 +326,36 @@ void NPC_generateLoop(BOOL checkall) {
     }
   }
   if (NPC_create == NULL || NPC_createnum <= 0) {
+    fprint("NPC NPC_create is null or create_num:%d.\n", NPC_createnum);
     return;
   }
-  if (npcCreatedNum < 0 || npcCreatedNum >= NPC_createnum)
-    npcCreatedNum = 0;
   for (i = 0; i < NPC_createnum; i++) {
-    if (!NPC_CHECKCREATEINDEX(npcCreatedNum)) {
-      fprint("Invalid NPC create index: %d (count:%d)\n", npcCreatedNum,
-             NPC_createnum);
-      npcCreatedNum = 0;
-      break;
+    if (!NPC_CHECKCREATEINDEX(npcCreateIndex)) {
+      npcCreateIndex = 0;
     }
-    int enemyNpcNum = NPC_getCreateInt(npcCreatedNum, NPC_CREATEENEMYNUM);
-    if (enemyNpcNum < 0 ||
-        enemyNpcNum > arraysizeof(NPC_create[npcCreatedNum].templateindex)) {
-      fprint("Invalid enemy count: createindex=%d count=%d max=%d\n",
-             npcCreatedNum, enemyNpcNum,
-             arraysizeof(NPC_create[npcCreatedNum].templateindex));
-      npcCreatedNum++;
+    const int cEnemyNpcNum = NPC_getCreateInt(npcCreateIndex, NPC_CREATEENEMYNUM);
+    if (cEnemyNpcNum < 0 ||
+        cEnemyNpcNum > arraysizeof(NPC_create[npcCreateIndex].templateindex)) {
+      fprint("Invalid enemy count: npcCreateIndex=%d count=%d max=%d\n",
+            npcCreateIndex, cEnemyNpcNum,
+            arraysizeof(NPC_create[npcCreateIndex].templateindex));
+      // 这个index的NPC没有属于敌人的范畴
+      ++npcCreateIndex;
       continue;
     }
-    for (j = 0; j < enemyNpcNum; j++) {
-      if (NPC_createCheckGenerateFromTime(npcCreatedNum) == TRUE) {
-        if (NPC_generateNPC(npcCreatedNum, j) == TRUE) {
-          ++CreateOk;
-          NPC_createInitTime(npcCreatedNum);
-          NPC_createIncreaseEnemynum(npcCreatedNum);
+    for (j = 0; j < cEnemyNpcNum; j++) {
+      // fprint("j:%d npcCreateIndex:%d.\n", j, npcCreateIndex);
+      if (NPC_createCheckGenerateFromTime(npcCreateIndex) == TRUE) {
+        if (NPC_generateNPC(npcCreateIndex, j) == TRUE) {
+          ++npcCreated;
+          NPC_createInitTime(npcCreateIndex);
+          NPC_createIncreaseEnemynum(npcCreateIndex);
         }
       }
     }
-    npcCreatedNum++;
-    if (checkall == FALSE && CreateOk >= one_loop_born) {
+    ++npcCreateIndex;
+    // fprint("npcCreateIndex: %d, npCreated: %d\n", npcCreateIndex, npcCreated);
+    if (checkall == FALSE && npcCreated >= one_loop_born) {
       break;
     }
   }

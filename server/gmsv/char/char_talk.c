@@ -363,7 +363,7 @@ int CHAR_setChatMagicCDKey(int mode, char *cdkey) {
     if (DebugCDKey[i].use == FALSE) {
       if (mode == 0) {
         DebugCDKey[i].use = TRUE;
-        strcpysafe(DebugCDKey[i].cdkey, sizeof(DebugCDKey[i].cdkey), cdkey);
+        strncpysafe(DebugCDKey[i].cdkey, sizeof(DebugCDKey[i].cdkey), cdkey);
         found = TRUE;
         break;
       }
@@ -873,7 +873,7 @@ void CHAR_Talk(int fd, int index, char *message, int color, int area) {
   if (!messagebody)
     return;
 
-  strcpysafe(messageeraseescape, sizeof(messageeraseescape), messagebody);
+  strncpysafe(messageeraseescape, sizeof(messageeraseescape), messagebody);
   makeStringFromEscaped(messageeraseescape);
   stringlen = strlen(messageeraseescape);
   if (stringlen <= 0)

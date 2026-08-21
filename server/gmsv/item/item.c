@@ -596,7 +596,7 @@ INLINE BOOL ITEM_setChar(int index, ITEM_CHAR_DATA_ENUM element, char *new) {
     return FALSE;
   if (!ITEM_CHECKCHARDATAINDEX(element))
     return FALSE;
-  strcpysafe(ITEM_gExists[index].item.string[element].string,
+  strncpysafe(ITEM_gExists[index].item.string[element].string,
              sizeof(ITEM_gExists[index].item.string[element].string), new);
   return TRUE;
 }
@@ -710,8 +710,8 @@ BOOL ITEM_addLUAListFunction(lua_State *L, const char *luafuncname,
     return FALSE;
 
   luaFunc->lua = L;
-  strcpysafe(luaFunc->luafuncname, 128, luafuncname);
-  strcpysafe(luaFunc->luafunctable, 128, luafunctable);
+  strncpysafe(luaFunc->luafuncname, 128, luafuncname);
+  strncpysafe(luaFunc->luafunctable, 128, luafunctable);
 
   return TRUE;
 }
@@ -822,7 +822,7 @@ char *ITEM_makeStringFromItemData(ITEM_Item *one, int mode) {
     snprintf(linedata, sizeof(linedata), "%s%c%d%c",
              ITEM_setIntData[i].dumpchar, delim1,
              one->data[ITEM_setIntData[i].table], delim2);
-    strcpysafe(&ITEM_dataString[strlength], sizeof(ITEM_dataString) - strlength,
+    strncpysafe(&ITEM_dataString[strlength], sizeof(ITEM_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
   }
@@ -838,7 +838,7 @@ char *ITEM_makeStringFromItemData(ITEM_Item *one, int mode) {
              makeEscapeString(one->string[ITEM_setCharData[i].table].string,
                               escapebuffer, sizeof(escapebuffer)),
              delim2);
-    strcpysafe(&ITEM_dataString[strlength], sizeof(ITEM_dataString) - strlength,
+    strncpysafe(&ITEM_dataString[strlength], sizeof(ITEM_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
   }
@@ -847,7 +847,7 @@ char *ITEM_makeStringFromItemData(ITEM_Item *one, int mode) {
     char linedata[128];
     snprintf(linedata, sizeof(linedata), "%s%c%d%c",
              ITEM_setIntData[i].dumpchar, delim1, one->data[i], delim2);
-    strcpysafe(&ITEM_dataString[strlength], sizeof(ITEM_dataString) - strlength,
+    strncpysafe(&ITEM_dataString[strlength], sizeof(ITEM_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
   }
@@ -861,7 +861,7 @@ char *ITEM_makeStringFromItemData(ITEM_Item *one, int mode) {
                makeEscapeString(one->string[i].string, escapebuffer,
                                 sizeof(escapebuffer)),
                delim2);
-      strcpysafe(&ITEM_dataString[strlength],
+      strncpysafe(&ITEM_dataString[strlength],
                  sizeof(ITEM_dataString) - strlength, linedata);
       strlength += strlen(linedata);
     }
@@ -901,7 +901,7 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
         return FALSE;
       if (strcmp(firstToken, "id"))
         continue;
-      strcpysafe(secondToken, sizeof(secondToken),
+      strncpysafe(secondToken, sizeof(secondToken),
                  linebuf + strlen(firstToken) + strlen(delim1));
       item_id = atoi(secondToken);
       if (!ITEM_CHECKITEMTABLE(item_id))
@@ -930,7 +930,7 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
                                       sizeof(firstToken));
     if (ret == FALSE)
       return FALSE;
-    strcpysafe(secondToken, sizeof(secondToken),
+    strncpysafe(secondToken, sizeof(secondToken),
                linebuf + strlen(firstToken) + strlen(delim1));
 #ifdef _SIMPLIFY_ITEMSTRING
     for (i = 0; i < arraysizeof(ITEM_setIntData); i++) {
@@ -943,7 +943,7 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
     for (i = 0; i < arraysizeof(ITEM_setCharData); i++) {
       if (strcmp(firstToken, ITEM_setCharData[i].dumpchar))
         continue;
-      strcpysafe(item->string[ITEM_setCharData[i].table].string,
+      strncpysafe(item->string[ITEM_setCharData[i].table].string,
                  sizeof(item->string[ITEM_setCharData[i].table].string),
                  makeStringFromEscaped(secondToken));
       goto NEXT;
@@ -958,7 +958,7 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
 
     for (i = 0; i < ITEM_CHAR_DATA_ENUM_MAX; i++) {
       if (strcmp(firstToken, ITEM_setCharData[i].dumpchar) == 0) {
-        strcpysafe(item->string[i].string, sizeof(item->string[i].string),
+        strncpysafe(item->string[i].string, sizeof(item->string[i].string),
                    makeStringFromEscaped(secondToken));
         goto NEXT;
       }
@@ -983,7 +983,7 @@ void ITEM_getDefaultItemSetting(ITEM_Item *item) {
     item->data[ITEM_setIntData[i].table] = ITEM_setIntData[i].defaults;
   }
   for (i = 0; i < arraysizeof(ITEM_setCharData); i++) {
-    strcpysafe(item->string[ITEM_setCharData[i].table].string,
+    strncpysafe(item->string[ITEM_setCharData[i].table].string,
                sizeof(item->string[ITEM_setCharData[i].table].string),
                ITEM_setCharData[i].defaults);
   }
@@ -991,11 +991,11 @@ void ITEM_getDefaultItemSetting(ITEM_Item *item) {
   for (i = 0; i < ITEM_DATA_ENUM_MAX; i++)
     item->data[i] = ITEM_setIntData[i].defaults;
   for (i = 0; i < ITEM_CHAR_DATA_ENUM_MAX; i++)
-    strcpysafe(item->string[i].string, sizeof(item->string[i].string),
+    strncpysafe(item->string[i].string, sizeof(item->string[i].string),
                ITEM_setCharData[i].defaults);
 #endif
 
-  strcpysafe(item->string[ITEM_WATCHFUNC].string,
+  strncpysafe(item->string[ITEM_WATCHFUNC].string,
              sizeof(item->string[ITEM_WATCHFUNC].string),
              "ITEM_DeleteTimeWatched");
 
@@ -1011,13 +1011,13 @@ void ITEM_getDefaultItemData(int item_id, ITEM_Item *item) {
     item->data[i] = ITEMTBL_getInt(item_id, i);
   }
   for (i = 0; i < ITEM_CHAR_DATA_ENUM_MAX; i++) {
-    strcpysafe(item->string[i].string, sizeof(item->string[i].string),
+    strncpysafe(item->string[i].string, sizeof(item->string[i].string),
                ITEMTBL_getChar(item_id, i));
   }
   for (i = 0; i < ITEM_WORKDATAINTNUM; i++) {
     item->workint[i] = -1;
   }
-  strcpysafe(item->string[ITEM_WATCHFUNC].string,
+  strncpysafe(item->string[ITEM_WATCHFUNC].string,
              sizeof(item->string[ITEM_WATCHFUNC].string),
              "ITEM_DeleteTimeWatched");
 }
@@ -1124,7 +1124,7 @@ void callbackReadItemConfigFile2(int *line_num, const char *line) {
         item.data[ITEM_itemDescriptors[i].index] = atoi(token);
         break;
       case ITEM_CHARENTRY:
-        strcpysafe(item.string[ITEM_itemDescriptors[i].index].string,
+        strncpysafe(item.string[ITEM_itemDescriptors[i].index].string,
                    sizeof(item.string[ITEM_itemDescriptors[i].index].string),
                    token);
         break;
@@ -1140,7 +1140,7 @@ void callbackReadItemConfigFile2(int *line_num, const char *line) {
       case ITEM_CHARFUNC: {
         char *(*char_function)(char *);
         char_function = ITEM_itemDescriptors[i].func;
-        strcpysafe(item.string[ITEM_itemDescriptors[i].index].string,
+        strncpysafe(item.string[ITEM_itemDescriptors[i].index].string,
                    sizeof(item.string[ITEM_itemDescriptors[i].index].string),
                    char_function(token));
         break;
@@ -1505,7 +1505,7 @@ char *ITEM_makeItemStatusString(int haveitem_index, int item_index) {
 char *ITEM_makeItemFalseString(void) {
 
 #ifdef _ADD_SHOW_ITEMDAMAGE // WON ADD 显示物品耐久度
-  strcpysafe(ITEM_itemStatusStringBuffer, sizeof(ITEM_itemStatusStringBuffer),
+  strncpysafe(ITEM_itemStatusStringBuffer, sizeof(ITEM_itemStatusStringBuffer),
 #ifdef _ITEM_PILENUMS
 #ifdef _ALCHEMIST
              "||||||||||||||"
@@ -1518,7 +1518,7 @@ char *ITEM_makeItemFalseString(void) {
   );
 
 #else
-  strcpysafe(ITEM_itemStatusStringBuffer, sizeof(ITEM_itemStatusStringBuffer),
+  strncpysafe(ITEM_itemStatusStringBuffer, sizeof(ITEM_itemStatusStringBuffer),
              "||||||||");
 #endif
   return ITEM_itemStatusStringBuffer;

@@ -149,6 +149,17 @@ static inline char *sa_fgets_text(char *buffer, int size, FILE *stream) {
   fprintf(stderr, "%s:%d:", format, __FILE__, __LINE__, ##arg)
 #endif // __GUNC__
 
+/* SAAC-GMSV 通信日志宏 */
+#ifdef SAAC_COMM_LOG
+#define SAAC_LOG_SEND(func, fmt, ...)                                           \
+  fprintf(stderr, "[SAAC_SEND] %s: " fmt "\n", func, ##__VA_ARGS__)
+#define SAAC_LOG_RECV(func, fmt, ...)                                           \
+  fprintf(stderr, "[SAAC_RECV] %s: " fmt "\n", func, ##__VA_ARGS__)
+#else
+#define SAAC_LOG_SEND(func, fmt, ...) ((void)0)
+#define SAAC_LOG_RECV(func, fmt, ...) ((void)0)
+#endif
+
 #define BACKSLASH '\\'
 #define NEWLINE '\n'
 #define TAB '\t'

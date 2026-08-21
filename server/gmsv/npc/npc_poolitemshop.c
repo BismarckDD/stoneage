@@ -780,9 +780,9 @@ static char *NPC_PoolItemShop_getMsg_noarg( int tablenum,
 	if( tablenum < 0 || tablenum >= arraysizeof( poolshopmsg)) return "\0";
 	
 	if( NPC_Util_GetStrFromStrWithDelim( argstr, poolshopmsg[tablenum].option, buf, sizeof( buf)) != NULL ) {
-		strcpysafe( retstring, retstringlen, buf);
+		strncpysafe( retstring, retstringlen, buf);
 	}else {
-		strcpysafe( retstring, retstringlen, poolshopmsg[tablenum].defaultmsg);
+		strncpysafe( retstring, retstringlen, poolshopmsg[tablenum].defaultmsg);
 	}
 	return retstring;
 }

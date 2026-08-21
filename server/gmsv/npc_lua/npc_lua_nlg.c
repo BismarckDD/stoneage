@@ -1626,7 +1626,7 @@ int NPC_Lua_NLG_StayEncount(lua_State *_NLL)
 		Char 	*ch;
 		ch  = CHAR_getCharPointer( char_index);
 		if( ch == NULL ) return;
-		strcpysafe( ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
+		strncpysafe( ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
 			sizeof( ch->charfunctable[CHAR_LOOPFUNCTEMP1]), "CHAR_BattleStayLoop");//战斗
 		CHAR_setInt( char_index, CHAR_LOOPINTERVAL, 2500);
 		CHAR_constructFunctable( char_index);

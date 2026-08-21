@@ -20,11 +20,11 @@ void GetMessageInfo(int *id, char *function_name, const int len,
                     char *const *token_list) {
   if (token_list[0] == NULL || token_list[1] == NULL) {
     *id = 0;
-    strcpysafe(function_name, len, "");
+    strncpysafe(function_name, len, "");
     return;
   }
   *id = strtoul(token_list[0], NULL, 10);
-  strcpysafe(function_name, len, token_list[1]);
+  strncpysafe(function_name, len, token_list[1]);
   return;
 }
 
@@ -78,7 +78,36 @@ void DebugSend(WorkSpace *ws, const int fd, char *msg) {
 
 void Send(WorkSpace *ws, const int fd, char *msg) {
   char *encoded;
-  // TODO: log thie original string.
+#ifdef SAAC_COMM_LOG
+  // 从消息中提取函数名用于日志
+  // 消息格式: "<msg_id> <function_name> <params...>"
+  {
+    unsigned int log_msgid = 0;
+    char log_funcname[256] = {0};
+    char log_work[1024] = {0};
+    strncpy(log_work, msg, sizeof(log_work) - 1);
+    char *log_tokens[3] = {0};
+    int log_idx = 0;
+    int log_in_token = 0;
+    // 简单的token解析：提取前两个token
+    for (int i = 0; log_work[i] != '\0' && log_idx < 3; i++) {
+      if (log_work[i] != ' ' && log_work[i] != '\t') {
+        if (!log_in_token) {
+          log_tokens[log_idx++] = &log_work[i];
+          log_in_token = 1;
+        }
+      } else {
+        log_work[i] = '\0';
+        log_in_token = 0;
+      }
+    }
+    if (log_tokens[0])
+      log_msgid = strtoul(log_tokens[0], NULL, 10);
+    if (log_tokens[1])
+      strncpy(log_funcname, log_tokens[1], sizeof(log_funcname) - 1);
+    SAAC_LOG_SEND(log_funcname, "msgid=%u fd=%d msg=%s", log_msgid, fd, msg);
+  }
+#endif
 #ifdef SERVER_ENCRYPT
   encoded = ws->crypt_work;
   EncodeString(msg, encoded, ws->work_buf_size * 3);
@@ -90,9 +119,6 @@ void Send(WorkSpace *ws, const int fd, char *msg) {
     encoded[encoded_len] = '\n';
     encoded[encoded_len + 1] = 0;
     ++encoded_len;
-  } else {
-    // log("encoded_len :%d > work_buf_size:%d err : \n (%s)\n", encoded_len,
-    //     ws->work_buf_size, msg);
   }
   ws->write_func(fd, encoded, encoded_len);
 }
@@ -135,7 +161,7 @@ void EncodeString(char *src, char *out, int maxoutlen) {
   }
   /* return empty line if error or buffer excess */
   if (compressed_l <= 0) {
-    strcpysafe(out, maxoutlen, "\n");
+    strncpysafe(out, maxoutlen, "\n");
     return;
   }
   memcpy(ws->jencodecopy, ws->compress_work, compressed_l);

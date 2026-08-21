@@ -219,8 +219,7 @@ static BOOL collectFiles(const char *directory, STRING64 *files, int capacity,
         return FALSE;
       }
     } else {
-      util_strncpysafe2(files[*count].string, sizeof(files[*count].string),
-                        path);
+      strncpysafe(files[*count].string, sizeof(files[*count].string), path);
       ++*count;
     }
   }

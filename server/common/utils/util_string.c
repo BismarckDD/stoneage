@@ -158,17 +158,6 @@ char *makeEscapeString(const char *src, char *dst, const int dst_len) {
   return dst;
 }
 
-int util_strcatsafe(char *dst, const int max_len, const char *app) {
-  int dst_len = strlen(dst);
-  int app_len = strlen(app);
-  if ((dst_len + app_len) >= max_len) {
-    return -1;
-  } else {
-    strcat(dst, app);
-  }
-  return 0;
-}
-
 //  移除串中的最后一个字符.
 char *chop(char *src) {
   int len = strlen(src);
@@ -217,43 +206,6 @@ char *pohcd(char *src, const char *del_str) {
   return src;
 }
 
-void util_strncpysafe1(char *dst, const int dst_len, const char *src,
-                       const int copy_bytes) {
-  if (dst_len <= 0 || dst == NULL)
-    return;
-  if (copy_bytes <= 0) {
-    dst[0] = '\0';
-    return;
-  }
-  if (src == NULL)
-    return;
-  int src_len = strlen(src);
-  if (copy_bytes < src_len)
-    src_len = copy_bytes;
-  if (dst_len < src_len + 1) {
-    strncpy(dst, src, dst_len - 1);
-    dst[dst_len - 1] = '\0';
-  } else {
-    strncpy(dst, src, src_len);
-    dst[src_len] = '\0';
-  }
-}
-
-void util_strncpysafe2(char *dst, const int dst_len, const char *src) {
-  if (dst_len <= 0)
-    return;
-  if (!dst || !src)
-    return;
-  int src_len = strlen(src);
-  if (dst_len < src_len + 1) {
-    strncpy(dst, src, dst_len - 1);
-    dst[dst_len - 1] = '\0';
-  } else {
-    strncpy(dst, src, src_len);
-    dst[src_len] = '\0';
-  }
-}
-
 char *strstr_onebyte(char *src, char delim) {
   if (!src)
     return NULL;
@@ -283,7 +235,7 @@ int easyGetTokenFromBuf(const char *src, const char *delim, const int count,
     }
     // 针对没有找到delim,要复制到最后的case
     if (last == NULL) {
-      util_strncpysafe2(output, output_len, first);
+      strncpysafe(output, output_len, first);
       // 做一下校验是否是到最后的这种情况.
       if (i == count - 1)
         return 1;
@@ -293,7 +245,8 @@ int easyGetTokenFromBuf(const char *src, const char *delim, const int count,
     delta = length + delim_len;
   }
   // 针对找到了delim,要复制到delime的case
-  util_strncpysafe1(output, output_len, first, length);
+  // 2026.08.20 有修改
+  strncpysafe2(output, output_len, first, last);
   return 1;
 }
 
@@ -301,23 +254,26 @@ int easyGetTokenFromBuf(const char *src, const char *delim, const int count,
 BOOL GeneralSplitImpl(const char *src, const char *delim, const int index,
                       char *buf, const int buflen, const char *file,
                       const int line) {
-  int i, length = 0, addlen = 0;
+  int i, length = 0, offset = 0;
   const int delim_len = strlen(delim);
+  char *last; // delim开始字节所在的位置
   for (i = 0; i < index; i++) {
-    char *last;
-    src += addlen;
+    src += offset;
     if (delim_len == 1) {
       last = strstr_onebyte(src, delim[0]);
     } else {
       last = strstr(src, delim);
     }
     if (last == NULL) {
-      util_strncpysafe2(buf, buflen, src);
+      strncpysafe(buf, buflen, src);
+      // printf("%s,%s,%d\n", buf, src, buflen);
       return i == index - 1 ? TRUE : FALSE;
     }
     length = last - src;
-    addlen = length + delim_len;
+    offset = length + delim_len;
   }
-  util_strncpysafe1(buf, buflen, src, length);
+  // 2026.08.20 有修改
+  strncpysafe2(buf, buflen, src, last);
+  // printf("%s,%s,%d\n", buf, src, buflen);
   return TRUE;
 }

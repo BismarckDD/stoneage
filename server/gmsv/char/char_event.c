@@ -390,7 +390,7 @@ static void CHAR_clairvoyance( int char_index )
                         sendclairvoyance=TRUE;
                         snprintf( onebuf,sizeof(onebuf),
                                   "%d|%d|%c|",i,j,id );
-                        strcpysafe( CHAR_clairvoyanceString + stringlen,
+                        strncpysafe( CHAR_clairvoyanceString + stringlen,
                                     sizeof(CHAR_clairvoyanceString)
                                     - stringlen,   onebuf);
                         stringlen += strlen(onebuf);

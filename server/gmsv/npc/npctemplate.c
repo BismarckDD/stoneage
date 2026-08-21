@@ -468,74 +468,74 @@ BOOL NPC_copyFunctionSetToChar( int id, Char* ch )
 {
     if( id<0 || id>=arraysizeof(functionSet) )return FALSE;
 
-    strcpysafe( ch->charfunctable[CHAR_INITFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_INITFUNC].string,
                 sizeof( ch->charfunctable[CHAR_INITFUNC].string ),
                 functionSet[id].initfunc);
 
-    strcpysafe( ch->charfunctable[CHAR_WALKPREFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_WALKPREFUNC].string,
                 sizeof(ch->charfunctable[CHAR_WALKPREFUNC].string),
                 functionSet[id].walkprefunc);
 
-    strcpysafe( ch->charfunctable[CHAR_WALKPOSTFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_WALKPOSTFUNC].string,
                 sizeof(ch->charfunctable[CHAR_WALKPOSTFUNC].string),
                 functionSet[id].walkpostfunc);
 
-    strcpysafe( ch->charfunctable[CHAR_PREOVERFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_PREOVERFUNC].string,
                 sizeof(ch->charfunctable[CHAR_PREOVERFUNC].string),
                 functionSet[id].preoverfunc);
 
-    strcpysafe( ch->charfunctable[CHAR_POSTOVERFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_POSTOVERFUNC].string,
                 sizeof(ch->charfunctable[CHAR_POSTOVERFUNC].string),
                 functionSet[id].postoverfunc);
 
-    strcpysafe( ch->charfunctable[CHAR_WATCHFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_WATCHFUNC].string,
                 sizeof(ch->charfunctable[CHAR_WATCHFUNC].string),
                 functionSet[id].watchfunc);
 
-    strcpysafe( ch->charfunctable[CHAR_LOOPFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_LOOPFUNC].string,
                 sizeof(ch->charfunctable[CHAR_LOOPFUNC].string),
                 functionSet[id].loopfunc);
 
-    strcpysafe( ch->charfunctable[CHAR_TALKEDFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_TALKEDFUNC].string,
                 sizeof(ch->charfunctable[CHAR_TALKEDFUNC].string),
                 functionSet[id].talkedfunc);
 
-    strcpysafe( ch->charfunctable[CHAR_DYINGFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_DYINGFUNC].string,
                 sizeof(ch->charfunctable[CHAR_DYINGFUNC].string),
                 functionSet[id].dyingfunc);
 
-    strcpysafe( ch->charfunctable[CHAR_PREATTACKEDFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_PREATTACKEDFUNC].string,
                 sizeof(ch->charfunctable[CHAR_PREATTACKEDFUNC].string),
                 functionSet[id].preattackedfunc);
-    strcpysafe( ch->charfunctable[CHAR_POSTATTACKEDFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_POSTATTACKEDFUNC].string,
                 sizeof(ch->charfunctable[CHAR_POSTATTACKEDFUNC].string),
                 functionSet[id].postattackedfunc);
 
-    strcpysafe( ch->charfunctable[CHAR_OFFFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_OFFFUNC].string,
                 sizeof(ch->charfunctable[CHAR_OFFFUNC].string),
                 functionSet[id].offfunc );
 
-    strcpysafe( ch->charfunctable[CHAR_LOOKEDFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_LOOKEDFUNC].string,
                 sizeof(ch->charfunctable[CHAR_LOOKEDFUNC].string),
                 functionSet[id].lookedfunc );
 
-    strcpysafe( ch->charfunctable[CHAR_ITEMPUTFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_ITEMPUTFUNC].string,
                 sizeof(ch->charfunctable[CHAR_ITEMPUTFUNC].string),
                 functionSet[id].itemputfunc );
 
-    strcpysafe( ch->charfunctable[CHAR_SPECIALTALKEDFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_SPECIALTALKEDFUNC].string,
                 sizeof(ch->charfunctable[CHAR_SPECIALTALKEDFUNC].string),
                 functionSet[id].specialtalkedfunc );
 
-    strcpysafe( ch->charfunctable[CHAR_WINDOWTALKEDFUNC].string,
+    strncpysafe( ch->charfunctable[CHAR_WINDOWTALKEDFUNC].string,
                 sizeof(ch->charfunctable[CHAR_WINDOWTALKEDFUNC].string),
                 functionSet[id].windowtalkedfunc );
 
 #ifdef _USER_CHARLOOPS
-    strcpysafe( ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
+    strncpysafe( ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
                 sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string), "");
 
-    strcpysafe( ch->charfunctable[CHAR_LOOPFUNCTEMP2].string,
+    strncpysafe( ch->charfunctable[CHAR_LOOPFUNCTEMP2].string,
                 sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP2].string), "");
 #endif
     return TRUE;
@@ -560,8 +560,7 @@ typedef enum
  ------------------------------------------------------------*/
 INLINE int NPC_CHECKTEMPLATEINDEX(int index)
 {
-    if(  NPC_templatenum <= index || index < 0 )return FALSE;
-    return TRUE;
+    return (NPC_templatenum <= index || index < 0) ? FALSE : TRUE;
 }
 /*------------------------------------------------------------
  * Template intdata index 午仄化恳仄中井升丹井check允月
@@ -573,8 +572,7 @@ INLINE int NPC_CHECKTEMPLATEINDEX(int index)
  ------------------------------------------------------------*/
 static INLINE int NPC_CHECKTEMPLATEINTINDEX(int index)
 {
-    if(  NPC_TEMPLATEINTNUM <= index || index < 0 )return FALSE;
-    return TRUE;
+    return (NPC_TEMPLATEINTNUM <= index || index < 0) ? FALSE : TRUE;
 }
 /*------------------------------------------------------------
  * Template chardata index 午仄化恳仄中井升丹井check允月
@@ -974,7 +972,7 @@ BOOL    NPC_readTemplateFile( char* filename )
                                 NPC_templateallocitemdata( &temp );
                             break;
                         case NPC_CHARENTRY:
-                            strcpysafe( temp.chardata[NPC_readtemplate[i].index].string,
+                            strncpysafe( temp.chardata[NPC_readtemplate[i].index].string,
                                         sizeof(temp.chardata[NPC_readtemplate[i].index].string),
                                         secondToken);
                             break;
@@ -990,7 +988,7 @@ BOOL    NPC_readTemplateFile( char* filename )
                         {
                             char* (*charfunction)(char* );
                             charfunction = NPC_readtemplate[i].func;
-                            strcpysafe( temp.chardata[NPC_readtemplate[i].index].string,
+                            strncpysafe( temp.chardata[NPC_readtemplate[i].index].string,
                                         sizeof(temp.chardata[NPC_readtemplate[i].index].string),
                                         charfunction(secondToken));
                             break;

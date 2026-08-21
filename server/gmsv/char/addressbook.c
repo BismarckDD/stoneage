@@ -346,8 +346,8 @@ static BOOL ADDRESSBOOK_makeEntryFromCharaindex(int char_index,
           "getcdkeyFromCharIndex returns NULL! char_index: %d\n", char_index);
     return FALSE;
   }
-  strcpysafe(ae->cdkey, sizeof(ae->cdkey), cdkey);
-  strcpysafe(ae->charname, sizeof(ae->charname),
+  strncpysafe(ae->cdkey, sizeof(ae->cdkey), cdkey);
+  strncpysafe(ae->charname, sizeof(ae->charname),
              CHAR_getChar(char_index, CHAR_NAME));
   ae->level = CHAR_getInt(char_index, CHAR_LV);
   ae->duelpoint = CHAR_getInt(char_index, CHAR_DUELPOINT);
@@ -450,7 +450,7 @@ BOOL ADDRESSBOOK_sendAddressbookTable(int cindex) {
 #endif
                ae->use, charname_escaped, ae->level, ae->duelpoint, ae->online,
                ae->graphicsno, ae->transmigration);
-      strcpysafe(ADDRESSBOOK_returnstring + stringlen,
+      strncpysafe(ADDRESSBOOK_returnstring + stringlen,
                  sizeof(ADDRESSBOOK_returnstring) - stringlen, tmp);
       stringlen += strlen(tmp);
       if (stringlen >= sizeof(ADDRESSBOOK_returnstring)) {
@@ -461,16 +461,16 @@ BOOL ADDRESSBOOK_sendAddressbookTable(int cindex) {
       char tmp[32];
 #ifdef _VERSION_NEW
       snprintf(tmp, sizeof(tmp), "||||||||");
-      strcpysafe(ADDRESSBOOK_returnstring + stringlen,
+      strncpysafe(ADDRESSBOOK_returnstring + stringlen,
                  sizeof(ADDRESSBOOK_returnstring) - stringlen, tmp);
 #else
 #ifdef _NEW_SA80
       snprintf(tmp, sizeof(tmp), "||||||||");
-      strcpysafe(ADDRESSBOOK_returnstring + stringlen,
+      strncpysafe(ADDRESSBOOK_returnstring + stringlen,
                  sizeof(ADDRESSBOOK_returnstring) - stringlen, tmp);
 #else
       snprintf(tmp, sizeof(tmp), "|||||||");
-      strcpysafe(ADDRESSBOOK_returnstring + stringlen,
+      strncpysafe(ADDRESSBOOK_returnstring + stringlen,
                  sizeof(ADDRESSBOOK_returnstring) - stringlen, tmp);
 #endif
 #endif
@@ -507,7 +507,7 @@ BOOL ADDRESSBOOK_sendAddressbookTableOne(int cindex, int num) {
     snprintf(tmp, sizeof(tmp), "%d|%s|%d|%d|%d|%d|%d|", ae->use,
              charname_escaped, ae->level, ae->duelpoint, ae->online,
              ae->graphicsno, ae->transmigration);
-    strcpysafe(ADDRESSBOOK_returnstring + stringlen,
+    strncpysafe(ADDRESSBOOK_returnstring + stringlen,
                sizeof(ADDRESSBOOK_returnstring) - stringlen, tmp);
     stringlen += strlen(tmp);
     if (stringlen >= sizeof(ADDRESSBOOK_returnstring)) {
@@ -517,16 +517,16 @@ BOOL ADDRESSBOOK_sendAddressbookTableOne(int cindex, int num) {
     char tmp[32];
 #ifdef _NEW_SA80
     snprintf(tmp, sizeof(tmp), "||||||||");
-    strcpysafe(ADDRESSBOOK_returnstring + stringlen,
+    strncpysafe(ADDRESSBOOK_returnstring + stringlen,
                sizeof(ADDRESSBOOK_returnstring) - stringlen, tmp);
 #else
 #ifdef _NEW_SA80
     snprintf(tmp, sizeof(tmp), "||||||||");
-    strcpysafe(ADDRESSBOOK_returnstring + stringlen,
+    strncpysafe(ADDRESSBOOK_returnstring + stringlen,
                sizeof(ADDRESSBOOK_returnstring) - stringlen, tmp);
 #else
     snprintf(tmp, sizeof(tmp), "|||||||");
-    strcpysafe(ADDRESSBOOK_returnstring + stringlen,
+    strncpysafe(ADDRESSBOOK_returnstring + stringlen,
                sizeof(ADDRESSBOOK_returnstring) - stringlen, tmp);
 #endif
 #endif
@@ -586,8 +586,8 @@ BOOL ADDRESSBOOK_makeAddressbookEntry(char *in, ADDRESSBOOK_entry *a) {
   makeStringFromEscaped(work1);
   makeStringFromEscaped(work2);
 
-  strcpysafe(a->cdkey, sizeof(a->cdkey), work1);
-  strcpysafe(a->charname, sizeof(a->charname), work2);
+  strncpysafe(a->cdkey, sizeof(a->cdkey), work1);
+  strncpysafe(a->charname, sizeof(a->charname), work2);
 
   a->level = atoi(work3);
   a->duelpoint = atoi(work4);

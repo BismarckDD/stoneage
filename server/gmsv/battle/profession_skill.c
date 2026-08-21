@@ -319,7 +319,7 @@ INLINE BOOL PROFESSION_SKILL_setChar(int index,
   if (!PROFESSION_SKILL_CHECKCHARDATAINDEX(element))
     return FALSE;
 
-  strcpysafe(PROFESSION_skill[index].string[element].string,
+  strncpysafe(PROFESSION_skill[index].string[element].string,
              sizeof(PROFESSION_skill[index].string[element].string), new);
   return TRUE;
 }

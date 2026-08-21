@@ -56,17 +56,11 @@ static BOOL NPC_Familyman_readData( int meindex, int windowno, BOOL chkflg);
 static int NPC_Familyman_restoreButtontype( char *data );
 
 /*********************************
-* 赓渝质  
 *********************************/
 BOOL NPC_FamilymanInit( int meindex )
 {
 	char	argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
 	char	buf[1024];
-	//int		i;
-	//char	secondToken[1024];
-	
-	// Robin test
-	// print(" familyman_Init ");	
 	
 	NPC_Util_GetArgStr( meindex, argstr, sizeof( argstr));
 	

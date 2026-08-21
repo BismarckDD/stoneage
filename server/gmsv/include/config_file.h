@@ -196,7 +196,6 @@ unsigned short getAllowManorPK(void);
 
 /* Keep source compatibility with the names used by the legacy game code. */
 #define luareadconfigfile luareadgServerConfigfile
-#define readconfigfile readgServerConfigfile
 #define getProgname getProgramName
 #define getConfigfilename getConfigFilename
 #define setConfigfilename setConfigFilename

@@ -1,4 +1,5 @@
 #include "version.h"
+//
 #include "chatmagic.h"
 #include "battle.h"
 #include "buf.h"
@@ -3016,12 +3017,12 @@ void CHAR_CHAT_DEBUG_fixfmleader(int char_index, char *message) {
   }
 
   // charname
-  strcpysafe(cmd, sizeof(cmd), CHAR_getChar(user_index, CHAR_NAME));
+  strncpysafe(cmd, sizeof(cmd), CHAR_getChar(user_index, CHAR_NAME));
   SaacClient_ACGMFixFMData_send(acfd, index, id, "charname", cmd,
                                getFdidFromCharaIndex(char_index));
 
   // charid
-  strcpysafe(cmd, sizeof(cmd), CHAR_getChar(user_index, CHAR_CDKEY));
+  strncpysafe(cmd, sizeof(cmd), CHAR_getChar(user_index, CHAR_CDKEY));
   SaacClient_ACGMFixFMData_send(acfd, index, id, "charid", cmd,
                                getFdidFromCharaIndex(char_index));
 
@@ -3031,12 +3032,12 @@ void CHAR_CHAT_DEBUG_fixfmleader(int char_index, char *message) {
                                getFdidFromCharaIndex(char_index));
 
   // charflag
-  strcpysafe(cmd, sizeof(cmd), "3");
+  strncpysafe(cmd, sizeof(cmd), "3");
   SaacClient_ACGMFixFMData_send(acfd, index, id, "charflag", cmd,
                                getFdidFromCharaIndex(char_index));
 
   // predeltime
-  strcpysafe(cmd, sizeof(cmd), "0");
+  strncpysafe(cmd, sizeof(cmd), "0");
   SaacClient_ACGMFixFMData_send(acfd, index, id, "predeltime", cmd,
                                getFdidFromCharaIndex(char_index));
 
@@ -3046,7 +3047,7 @@ void CHAR_CHAT_DEBUG_fixfmleader(int char_index, char *message) {
                                getFdidFromCharaIndex(char_index));
 
   // eventflag
-  strcpysafe(cmd, sizeof(cmd), "0");
+  strncpysafe(cmd, sizeof(cmd), "0");
   SaacClient_ACGMFixFMData_send(acfd, index, id, "eventflag", cmd,
                                getFdidFromCharaIndex(char_index));
 }
@@ -5986,7 +5987,7 @@ void CHAR_CHAT_DEBUG_NewLoadNpc(int char_index, char *message) {
 
   if (NPC_IsNPCCreateFile(message)) {
     if (NPC_readCreateFile(message) == TRUE) {
-      NPC_generateLoop(1);
+      NPC_generateLoop(TRUE);
       CHAR_talkToCli(char_index, -1, "成功读取NPC", CHAR_COLORRED);
       return;
     }

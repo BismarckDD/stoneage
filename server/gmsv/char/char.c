@@ -267,7 +267,7 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
     CONNECT_setState(clifd, NOTLOGIN);
     return;
   }
-  strcpysafe(ch.string[CHAR_NAME].string, sizeof(ch.string[CHAR_NAME].string),
+  strncpysafe(ch.string[CHAR_NAME].string, sizeof(ch.string[CHAR_NAME].string),
              charname);
 
   if (CHAR_getNewImagenumberFromEquip(-1, imgno, 0) == -1) {
@@ -293,7 +293,7 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
 
   ch.data[CHAR_CHARM] = 60;
   ch.data[CHAR_MAXMP] = ch.data[CHAR_MP] = 100;
-  strcpysafe(ch.string[CHAR_CDKEY].string, sizeof(ch.string[CHAR_CDKEY].string),
+  strncpysafe(ch.string[CHAR_CDKEY].string, sizeof(ch.string[CHAR_CDKEY].string),
              cdkey);
 
   // Robin 0724
@@ -343,7 +343,7 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
 #ifdef _NEW_TITLE
   ch.data[CHAR_TITLE_DEFAULT] = -1;
 #endif
-  strcpysafe(ch.string[CHAR_FMNAME].string,
+  strncpysafe(ch.string[CHAR_FMNAME].string,
              sizeof(ch.string[CHAR_FMNAME].string), "\0");
   ch.data[CHAR_FMINDEX] = -1;
 
@@ -483,7 +483,7 @@ static void CHAR_setCharFuncTable(Char *ch) {
 #endif
   };
   for (i = 0; i < CHAR_FUNCTABLENUM; i++) {
-    strcpysafe(ch->charfunctable[i].string, sizeof(ch->charfunctable[i]),
+    strncpysafe(ch->charfunctable[i].string, sizeof(ch->charfunctable[i]),
                tmp[i]);
   }
 }
@@ -2903,7 +2903,7 @@ char *CHAR_makeStatusString(int index, char *category) {
                makeEscapeString(CHAR_getChar(index, getCharDataArray[i]),
                                 escapebuffer, sizeof(escapebuffer)));
 
-      strcpysafe(CHAR_statusSendBuffer + strlength,
+      strncpysafe(CHAR_statusSendBuffer + strlength,
                  sizeof(CHAR_statusSendBuffer) - strlength, token);
       strlength += strlen(token);
       if (strlength >= sizeof(CHAR_statusSendBuffer))
@@ -3035,7 +3035,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       } else {
         snprintf(token, sizeof(token), "%s|", ITEM_makeItemFalseString());
       }
-      strcpysafe(CHAR_statusSendBuffer + strlength,
+      strncpysafe(CHAR_statusSendBuffer + strlength,
                  sizeof(CHAR_statusSendBuffer) - strlength, token);
       strlength += strlen(token);
       if (strlength >= arraysizeof(CHAR_statusSendBuffer))
@@ -3068,7 +3068,7 @@ char *CHAR_makeStatusString(int index, char *category) {
         snprintf(token, sizeof(token), "%s|", SKILL_makeSkillFalseString());
       }
 
-      strcpysafe(CHAR_statusSendBuffer + strlength,
+      strncpysafe(CHAR_statusSendBuffer + strlength,
                  sizeof(CHAR_statusSendBuffer) - strlength, token);
 
       strlength += strlen(token);
@@ -3091,7 +3091,7 @@ char *CHAR_makeStatusString(int index, char *category) {
                makeEscapeString(TITLE_makeTitleStatusString(index, i), escape,
                                 sizeof(escape)));
 
-      strcpysafe(CHAR_statusSendBuffer + strlength,
+      strncpysafe(CHAR_statusSendBuffer + strlength,
                  sizeof(CHAR_statusSendBuffer) - strlength, token);
       strlength += strlen(token);
       if (strlength >= arraysizeof(CHAR_statusSendBuffer))
@@ -3151,7 +3151,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       snprintf(token, sizeof(token), "%s" STATUSSENDDELIMITER,
                makeEscapeString(CHAR_getChar(nindex, getCharDataArray[i]),
                                 escapebuffer, sizeof(escapebuffer)));
-      strcpysafe(CHAR_statusSendBuffer + strlength,
+      strncpysafe(CHAR_statusSendBuffer + strlength,
                  sizeof(CHAR_statusSendBuffer) - strlength, token);
       strlength += strlen(token);
       if (strlength >= sizeof(CHAR_statusSendBuffer))
@@ -3288,7 +3288,7 @@ char *CHAR_makeStatusString(int index, char *category) {
                                   escapebuffer, sizeof(escapebuffer)));
       }
 
-      strcpysafe(CHAR_statusSendBuffer + strlength,
+      strncpysafe(CHAR_statusSendBuffer + strlength,
                  sizeof(CHAR_statusSendBuffer) - strlength, token);
       strlength += strlen(token);
       if (strlength >= sizeof(CHAR_statusSendBuffer))
@@ -3378,7 +3378,7 @@ char *CHAR_makeStatusString(int index, char *category) {
             token, sizeof(token), "%s" STATUSSENDDELIMITER,
             makeEscapeString(MAGIC_getChar(magicindex, getMagicDataArray[i]),
                              escapebuffer, sizeof(escapebuffer)));
-        strcpysafe(CHAR_statusSendBuffer + strlength,
+        strncpysafe(CHAR_statusSendBuffer + strlength,
                    sizeof(CHAR_statusSendBuffer) - strlength, token);
         strlength += strlen(token);
         if (strlength >= sizeof(CHAR_statusSendBuffer))
@@ -3408,7 +3408,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       return "\0";
     }
     snprintf(tmp, sizeof(tmp), "W%d|", num);
-    strcpysafe(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), tmp);
+    strncpysafe(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), tmp);
     strlength += strlen(tmp);
     if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
       return CHAR_statusSendBuffer;
@@ -3432,7 +3432,7 @@ char *CHAR_makeStatusString(int index, char *category) {
                  PETSKILL_getInt(petskillindex, PETSKILL_FIELD),
                  PETSKILL_getInt(petskillindex, PETSKILL_TARGET));
 
-        strcpysafe(CHAR_statusSendBuffer + strlength,
+        strncpysafe(CHAR_statusSendBuffer + strlength,
                    sizeof(CHAR_statusSendBuffer) - strlength, token);
         strlength += strlen(token);
         if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
@@ -3445,7 +3445,7 @@ char *CHAR_makeStatusString(int index, char *category) {
                    makeEscapeString(
                        PETSKILL_getChar(petskillindex, getPetSkillDataArray[i]),
                        escapebuffer, sizeof(escapebuffer)));
-          strcpysafe(CHAR_statusSendBuffer + strlength,
+          strncpysafe(CHAR_statusSendBuffer + strlength,
                      sizeof(CHAR_statusSendBuffer) - strlength, token);
           strlength += strlen(token);
           if (strlength >= sizeof(CHAR_statusSendBuffer)) {
@@ -3455,7 +3455,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       } else {
         char token[256];
         snprintf(token, sizeof(token), "|||||");
-        strcpysafe(CHAR_statusSendBuffer + strlength,
+        strncpysafe(CHAR_statusSendBuffer + strlength,
                    sizeof(CHAR_statusSendBuffer) - strlength, token);
         strlength += strlen(token);
         if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
@@ -3487,7 +3487,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       return "\0";
     }
     snprintf(tmp, sizeof(tmp), "W%d|", num);
-    strcpysafe(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), tmp);
+    strncpysafe(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), tmp);
     strlength += strlen(tmp);
     if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
       return CHAR_statusSendBuffer;
@@ -3520,7 +3520,7 @@ char *CHAR_makeStatusString(int index, char *category) {
         snprintf(token, sizeof(token), "%d|%d|%d|",
                  //           PETSKILL_getInt( petskillindex, PETSKILL_ID),
                  p_id, field, target);
-        strcpysafe(CHAR_statusSendBuffer + strlength,
+        strncpysafe(CHAR_statusSendBuffer + strlength,
                    sizeof(CHAR_statusSendBuffer) - strlength, token);
         strlength += strlen(token);
         if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
@@ -3533,7 +3533,7 @@ char *CHAR_makeStatusString(int index, char *category) {
                    makeEscapeString(
                        PETSKILL_getChar(petskillindex, getPetSkillDataArray[i]),
                        escapebuffer, sizeof(escapebuffer)));
-          strcpysafe(CHAR_statusSendBuffer + strlength,
+          strncpysafe(CHAR_statusSendBuffer + strlength,
                      sizeof(CHAR_statusSendBuffer) - strlength, token);
           strlength += strlen(token);
           if (strlength >= sizeof(CHAR_statusSendBuffer)) {
@@ -3543,7 +3543,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       } else {
         char token[256];
         snprintf(token, sizeof(token), "|||||");
-        strcpysafe(CHAR_statusSendBuffer + strlength,
+        strncpysafe(CHAR_statusSendBuffer + strlength,
                    sizeof(CHAR_statusSendBuffer) - strlength, token);
         strlength += strlen(token);
         if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
@@ -3576,7 +3576,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       return "\0";
     }
     snprintf(tmp, sizeof(tmp), "W%d|", num);
-    strcpysafe(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), tmp);
+    strncpysafe(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), tmp);
     strlength += strlen(tmp);
     if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
       return CHAR_statusSendBuffer;
@@ -3614,7 +3614,7 @@ char *CHAR_makeStatusString(int index, char *category) {
         snprintf(token, sizeof(token), "%d|%d|%d|",
                  //           PETSKILL_getInt( petskillindex, PETSKILL_ID),
                  p_id, field, target);
-        strcpysafe(CHAR_statusSendBuffer + strlength,
+        strncpysafe(CHAR_statusSendBuffer + strlength,
                    sizeof(CHAR_statusSendBuffer) - strlength, token);
         strlength += strlen(token);
         if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
@@ -3627,7 +3627,7 @@ char *CHAR_makeStatusString(int index, char *category) {
                    makeEscapeString(
                        PETSKILL_getChar(petskillindex, getPetSkillDataArray[i]),
                        escapebuffer, sizeof(escapebuffer)));
-          strcpysafe(CHAR_statusSendBuffer + strlength,
+          strncpysafe(CHAR_statusSendBuffer + strlength,
                      sizeof(CHAR_statusSendBuffer) - strlength, token);
           strlength += strlen(token);
           if (strlength >= sizeof(CHAR_statusSendBuffer)) {
@@ -3637,7 +3637,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       } else {
         char token[256];
         snprintf(token, sizeof(token), "|||||");
-        strcpysafe(CHAR_statusSendBuffer + strlength,
+        strncpysafe(CHAR_statusSendBuffer + strlength,
                    sizeof(CHAR_statusSendBuffer) - strlength, token);
         strlength += strlen(token);
         if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
@@ -3670,7 +3670,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       return "\0";
     }
     snprintf(tmp, sizeof(tmp), "W%d|", num);
-    strcpysafe(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), tmp);
+    strncpysafe(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), tmp);
     strlength += strlen(tmp);
     if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
       return CHAR_statusSendBuffer;
@@ -3704,7 +3704,7 @@ char *CHAR_makeStatusString(int index, char *category) {
         snprintf(token, sizeof(token), "%d|%d|%d|",
                  //           PETSKILL_getInt( petskillindex, PETSKILL_ID),
                  p_id, field, target);
-        strcpysafe(CHAR_statusSendBuffer + strlength,
+        strncpysafe(CHAR_statusSendBuffer + strlength,
                    sizeof(CHAR_statusSendBuffer) - strlength, token);
         strlength += strlen(token);
         if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
@@ -3717,7 +3717,7 @@ char *CHAR_makeStatusString(int index, char *category) {
                    makeEscapeString(
                        PETSKILL_getChar(petskillindex, getPetSkillDataArray[i]),
                        escapebuffer, sizeof(escapebuffer)));
-          strcpysafe(CHAR_statusSendBuffer + strlength,
+          strncpysafe(CHAR_statusSendBuffer + strlength,
                      sizeof(CHAR_statusSendBuffer) - strlength, token);
           strlength += strlen(token);
           if (strlength >= sizeof(CHAR_statusSendBuffer)) {
@@ -3727,7 +3727,7 @@ char *CHAR_makeStatusString(int index, char *category) {
       } else {
         char token[256];
         snprintf(token, sizeof(token), "|||||");
-        strcpysafe(CHAR_statusSendBuffer + strlength,
+        strncpysafe(CHAR_statusSendBuffer + strlength,
                    sizeof(CHAR_statusSendBuffer) - strlength, token);
         strlength += strlen(token);
         if (strlength >= arraysizeof(CHAR_statusSendBuffer)) {
@@ -5431,7 +5431,7 @@ void CHAR_sendArroundCharaData(int char_index) {
           if ((introlen + strpos) > sizeof(c_msg))
             break;
 
-          strcpysafe(&c_msg[strpos], sizeof(c_msg) - strpos, introduction);
+          strncpysafe(&c_msg[strpos], sizeof(c_msg) - strpos, introduction);
           strpos += strlen(introduction);
         }
       }
@@ -6974,7 +6974,7 @@ static void CHAR_setMyPosition_sendData(int char_index, int prev_x, int prev_y,
         if ((introlen + strpos) > sizeof(c_msg))
           break;
 
-        strcpysafe(&c_msg[strpos], sizeof(c_msg) - strpos, introduction);
+        strncpysafe(&c_msg[strpos], sizeof(c_msg) - strpos, introduction);
         strpos += strlen(introduction);
       }
       if (strlen(myintroduction) != 0) {
@@ -7444,7 +7444,7 @@ static char *CHAR_make_P_StatusString(int char_index, unsigned int indextable) {
       if (!found) {
         print("找不到指定的参数[%d]\n", indextable);
       } else {
-        strcpysafe(&CHAR_P_statusSendBuffer[strlength],
+        strncpysafe(&CHAR_P_statusSendBuffer[strlength],
                    sizeof(CHAR_P_statusSendBuffer) - strlength, tmp);
 
         strlength += strlen(tmp);
@@ -7574,7 +7574,7 @@ static char *CHAR_make_N_StatusString(int char_index, int num,
       if (!found) {
         print("找不到指定的参数[%d]\n", indextable);
       } else {
-        strcpysafe(&CHAR_N_statusSendBuffer[strlength],
+        strncpysafe(&CHAR_N_statusSendBuffer[strlength],
                    sizeof(CHAR_N_statusSendBuffer) - strlength, tmp);
 
         strlength += strlen(tmp);
@@ -7739,7 +7739,7 @@ static char *CHAR_make_K_StatusString(int char_index, int num,
       if (!found) {
         print("找不到指定的参数[%d]\n", indextable);
       } else {
-        strcpysafe(&CHAR_K_statusSendBuffer[strlength],
+        strncpysafe(&CHAR_K_statusSendBuffer[strlength],
                    sizeof(CHAR_K_statusSendBuffer) - strlength, tmp);
 
         strlength += strlen(tmp);
@@ -7835,7 +7835,7 @@ int CHAR_makeDBKey(int char_index, char *pszBuffer, int size) {
   snprintf(buff, sizeof(buff), "%s_%s", cdkey,
            CHAR_getChar(char_index, CHAR_NAME));
   makeEscapeString(buff, escapebuf, sizeof(escapebuf));
-  strcpysafe(pszBuffer, size, escapebuf);
+  strncpysafe(pszBuffer, size, escapebuf);
 
   return TRUE;
 }
@@ -8214,7 +8214,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
         fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
-      strcpysafe(CHAR_effect[effectreadlen].month,
+      strncpysafe(CHAR_effect[effectreadlen].month,
                  sizeof(CHAR_effect[effectreadlen].month), token);
 
       /*  5勾户及玄□弁件毛苇月    */
@@ -8223,7 +8223,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
         fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
-      strcpysafe(CHAR_effect[effectreadlen].day,
+      strncpysafe(CHAR_effect[effectreadlen].day,
                  sizeof(CHAR_effect[effectreadlen].day), token);
 
       /*  6勾户及玄□弁件毛苇月    */
@@ -8232,7 +8232,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
         fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
-      strcpysafe(CHAR_effect[effectreadlen].hour,
+      strncpysafe(CHAR_effect[effectreadlen].hour,
                  sizeof(CHAR_effect[effectreadlen].hour), token);
 
       /*  7勾户及玄□弁件毛苇月    */
@@ -8241,7 +8241,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
         fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
-      strcpysafe(CHAR_effect[effectreadlen].min,
+      strncpysafe(CHAR_effect[effectreadlen].min,
                  sizeof(CHAR_effect[effectreadlen].min), token);
 
       /*  8勾户及玄□弁件毛苇月    */
@@ -8250,7 +8250,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
         fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
-      strcpysafe(CHAR_effect[effectreadlen].expire,
+      strncpysafe(CHAR_effect[effectreadlen].expire,
                  sizeof(CHAR_effect[effectreadlen].expire), token);
 
       effectreadlen++;

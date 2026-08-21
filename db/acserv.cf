@@ -70,24 +70,23 @@ Write_Family 600
 
 ##############################
 #MYSQL基本配置
-#ifdef _SASQL
-#sql服务器IP
+#sql服务器HOST
 sql_IP          127.0.0.1
-#sql服务器端卿
+#sql服务器PORT
 sql_Port        3306
-#sql服务器账卿
+#sql服务器账号
 sql_ID          root
-#sql服务器密瞿
+#sql服务器密码
 sql_PS          samysql
 #sql数据库名
 sql_DataBase    sa
-#sql人物信息表名
+#sql人物信息表
 sql_Table       CSAlogin
-#sql用户名字欿
+#sql用户名字
 sql_NAME        username
-#sql密码字段县
+#sql密码字段
 sql_PASS        password
-#sql锁定账号表名
+#sql锁定账号表
 sql_LOCK        LOCK
 
 ########后台功能############
@@ -122,5 +121,3 @@ ip3 127.0.0.3
 ip4 127.0.0.4
 ip5 127.0.0.5
 savezip  1
-#endif
-

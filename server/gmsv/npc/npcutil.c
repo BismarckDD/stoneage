@@ -683,19 +683,7 @@ int NPC_Util_SearchNearEnemy(int meindex, int maxlen) {
   return (NPC_Util_SearchNear(meindex, maxlen, CHAR_TYPEENEMY));
 }
 
-/*******************************************************
-
-  int NPC_Util_SuberiWalk(
-        int	index,	CHAR 及奶件犯永弁旦
-  );
-
-          -1  “穴永皿卞娄匀井井匀化巨仿□
-          -2  “平乓仿弁正卞娄匀井井匀化巨仿□
-
-
-*******************************************************/
 int NPC_Util_OtherCharCheck(int ff, int fx, int fy) {
-#if 1
   OBJECT object;
   for (object = MAP_getTopObj(ff, fx, fy); object;
        object = NEXT_OBJECT(object)) {
@@ -705,17 +693,6 @@ int NPC_Util_OtherCharCheck(int ff, int fx, int fy) {
     }
   }
   return 0;
-#else
-  int i;
-  for (i = 0; i < objnum; i++) {
-    if (obj[i].x == fx && obj[i].y == fy && obj[i].floor == ff) {
-      if (obj[i].type != OBJTYPE_NOUSE) {
-        return 1;
-      }
-    }
-  }
-  return 0;
-#endif
 }
 
 int NPC_Util_SuberiWalk(int index, int dir) {
@@ -955,12 +932,16 @@ char *NPC_Util_CheckAssignArgFile(int index, char *filename) {
     rc = getStringFromIndexWithDelim(a, "|", i, outstr, sizeof(outstr));
     if (rc == FALSE)
       break;
+    // print("[CheckAssignArgFile] index:%d token[%d]:%s\n", index, i, outstr);
     if (strstr(outstr, "file") != NULL) {
+      // print("[CheckAssignArgFile] matched 'file' substring in token:%s\n",
+      //      outstr);
       rc =
           getStringFromIndexWithDelim(outstr, ":", 2, outstr2, sizeof(outstr2));
       if (rc != FALSE) {
         strcpy(filename, outstr2);
         cret = filename;
+        // print("[CheckAssignArgFile] extracted filename:%s\n", filename);
         break;
       }
     }
@@ -977,17 +958,21 @@ static char *NPC_Util_MargeStrFromArgFile(char *filename, char *buf, int len) {
   strcat(opfile, filename);
   *buf = '\0';
   fp = fopen(opfile, "r");
+  // print("[MargeStrFromArgFile] file:%s, result:%s\n", opfile,
+  //       fp ? "OK" : "FAIL");
   if (fp != NULL) {
     while (fgets(line, sizeof(line), fp)) {
+      // print("[MargeStrFromArgFile] read line:%s\n", line);
       if (strlen(buf) != 0) {
         if (buf[strlen(buf) - 1] != '|') {
-          strcatsafe(buf, len, "|");
+          strncatsafe(buf, "|", len);
         }
       }
       chompex(line);
-      strcatsafe(buf, len, line);
+      strncatsafe(buf, line, len);
     }
     fclose(fp);
+    // print("[MargeStrFromArgFile] final buf:%s\n", buf);
     cret = buf;
   }
   return (cret);
@@ -996,13 +981,21 @@ static char *NPC_Util_MargeStrFromArgFile(char *filename, char *buf, int len) {
 char *NPC_Util_GetArgStr(int index, char *argstr, int len) {
   char filename[128];
   char *cret = NULL;
+  char *npcarg = CHAR_getChar(index, CHAR_NPCARGUMENT);
+  // print("[GetArgStr] index:%d, CHAR_NPCARGUMENT:%s\n", index,
+  //       npcarg ? npcarg : "(null)");
   if (NPC_Util_CheckAssignArgFile(index, filename) != NULL) {
+    // print("[GetArgStr] branch=file, filename:%s\n", filename);
     if (NPC_Util_MargeStrFromArgFile(filename, argstr, len) != NULL) {
       cret = argstr;
+      // print("[GetArgStr] file loaded OK, argstr:%s\n", argstr);
+    } else {
+      print("[GetArgStr] file load FAILED, argstr not set\n");
     }
   } else {
-    if (CHAR_getChar(index, CHAR_NPCARGUMENT) != NULL) {
-      strcpy(argstr, CHAR_getChar(index, CHAR_NPCARGUMENT));
+    // print("[GetArgStr] branch=direct, no file: in arg\n");
+    if (npcarg != NULL) {
+      strcpy(argstr, npcarg);
       cret = argstr;
     } else {
       cret = NULL;
@@ -1011,6 +1004,7 @@ char *NPC_Util_GetArgStr(int index, char *argstr, int len) {
   if (cret == NULL)
     print("File:%s\n", NPC_Util_CheckAssignArgFile(index, filename));
 
+  // print("cret: %s, argstr: %s\n", cret, argstr);
   return (cret);
 }
 
@@ -1052,7 +1046,7 @@ char *NPC_Util_GetStrFromStrWithDelim(char *srcstr, char *srhstr, char *buf,
       rc =
           getStringFromIndexWithDelim(outstr, ":", 2, outstr2, sizeof(outstr2));
       if (rc != FALSE) {
-        strcpysafe(buf, buflen, outstr2);
+        strncpysafe(buf, buflen, outstr2);
         cret = buf;
         break;
       }
