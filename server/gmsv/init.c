@@ -26,18 +26,9 @@
 #include "readmap.h"
 #include "readnpc.h"
 #include "title.h"
-#ifdef _TALK_MOVE_FLOOR
-#include "longzoro/move.h"
-#endif
-#ifdef _LUCK_STAR
-#include "longzoro/luckstar.h"
-#endif
 #include "autil.h"
 #ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
 #include "profession_skill.h"
-#endif
-#ifdef _ONLINE_SHOP
-#include "longzoro/newshop.h"
 #endif
 
 #ifdef _ITEM_QUITPARTY
@@ -609,30 +600,6 @@ BOOL init(int argc, char **argv, char **env) {
                                getNpccreatenum()))
     goto CLOSEBIND;
   print("succeed.\n");
-
-#ifdef _TALK_MOVE_FLOOR
-  print("Start to init move map......");
-  if (!MoveMap_init())
-    print("......failed.\n");
-  else
-    print("succeed.\n");
-#endif
-
-#ifdef _LUCK_STAR
-  print("Start to init luck star......");
-  if (!LuckStar_init())
-    print("......failed.\n");
-  else
-    print("succeed.\n");
-#endif
-
-#ifdef _ONLINE_SHOP
-  print("Start to init online shop.....");
-  if (!OnlineShop_init())
-    print("......failed.\n");
-  else
-    print("succeed.\n");
-#endif
 
 #ifdef _PLAYER_DIY_MAP
   print("Start to init player diy map......");

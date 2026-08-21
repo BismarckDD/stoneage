@@ -36,7 +36,7 @@ int getHash(const char *s) {
 #define ISSPACETAB(c) ((c) == ' ' || (c) == '\t')
 void easyGetTokenFromString(const char *src, const int count, char *output,
                             const int len) {
-  int i;
+  int i, j;
   int counter = 0;
   if (len <= 0)
     return;
@@ -51,7 +51,6 @@ void easyGetTokenFromString(const char *src, const int count, char *output,
     if (!ISSPACETAB(src[i])) {
       counter++;
       if (counter == count) {
-        int j;
         for (j = 0; j < len - 1; j++) {
           if (src[i + j] == '\0' || ISSPACETAB(src[i + j])) {
             break;
@@ -70,12 +69,13 @@ int CreateDir(const char *dirname, int mode) {
   // ret == -1 且不是目录已存在, 则返回错误.
   int ret = sa_mkdir(dirname, mode);
   if (ret < 0 && errno != EEXIST) {
-    printf("mkdir error:%d %s: %s\n", ret, strerror(errno), dirname);
+    printf("mkdir ret:%d, error:%s, dirname:%s\n", ret, strerror(errno), dirname);
     return -1;
   }
   return 0;
 }
 
+// 2026.08.22 只能创建1级目录, 创建2级目录会提示目录不存在.
 void PrepareDirectories(const char *base_dirname) {
   int i;
   char dirname[1024];

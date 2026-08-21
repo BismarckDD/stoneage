@@ -22,12 +22,6 @@
 #ifdef _FM_MODIFY
 #include "npc_fmdengon.h"
 #endif
-#ifdef _ALLBLUES_LUA   
-#include "mylua/function.h"
-#endif
-#ifdef _SASQL
-#include "longzoro/sasql.h"
-#endif
 
 
 #define CHAR_MAXNAME 32
@@ -1428,25 +1422,6 @@ void FAMILY_Detail(int fd, int meindex, char *message)
 		CHAR_talkToCli( meindex, -1, sendbuf, CHAR_COLORYELLOW);
 	}
 }
-#ifdef _SASQL
-		sprintf(sendbuf,"你目前的个人金币数为：%d",sasql_getVipPoint(meindex));
-		CHAR_talkToCli(meindex, -1, sendbuf, CHAR_COLORYELLOW);
-#else
-#ifdef _NEW_VIP_SHOP
-#ifdef _OTHER_SAAC_LINK
-		if(osfd == -1){
-			OtherSaacConnect();
-			CHAR_talkToCli( meindex, -1, "点卷服务器未正常连接!", CHAR_COLORRED );
-		}else{
-			CHAR_talkToCli(meindex, -1, "获取金币中，请稍候...", CHAR_COLORRED);
-			SaacClient__QueryPoint_send( osfd, fd, CHAR_getChar(meindex, CHAR_CDKEY));
-		}
-#else
-		CHAR_talkToCli(meindex, -1, "获取金币中，请稍候...", CHAR_COLORRED);
-		SaacClient__QueryPoint_send( acfd, fd, CHAR_getChar(meindex, CHAR_CDKEY));
-#endif
-#endif
-#endif
 #ifdef _OFFLINE_TIME 
 		sprintf(sendbuf,"你目前的可离线时间分钟：%d", CHAR_getInt(meindex,CHAR_OFFLINE_TIME));
 		CHAR_talkToCli(meindex, -1, sendbuf, CHAR_COLORYELLOW);

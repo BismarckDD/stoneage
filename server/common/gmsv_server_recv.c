@@ -31,9 +31,6 @@
 #ifdef _CHATROOMPROTOCOL
 #include "chatroom.h"
 #endif
-#ifdef _ONLINE_SHOP
-#include "longzoro/newshop.h"
-#endif
 extern int player_online;
 BOOL checkStringErr(char *);
 
@@ -2875,22 +2872,6 @@ void GmsvServer_ASSESS_ABILITY_recv(int fd) {
   }
 
   GmsvServer_ASSESS_ABILITY_send(fd, data);
-}
-#endif
-
-#ifdef _ONLINE_SHOP
-void GmsvServer_VIP_SHOP_recv(int fd, int type, int page) {
-  int charaindex = CONNECT_getCharaindex(fd);
-  if (!CHAR_CHECKINDEX(charaindex))
-    return;
-  OnlineShop_ShowList(fd, charaindex, type, page);
-}
-
-void GmsvServer_VIP_SHOP_buy_recv(int fd, int type, int page, int id, int num) {
-  int charaindex = CONNECT_getCharaindex(fd);
-  if (!CHAR_CHECKINDEX(charaindex))
-    return;
-  OnlineShop_Buy(fd, charaindex, type, page, id, num);
 }
 #endif
 

@@ -1,6 +1,5 @@
 #include "version.h"
-#include <string.h>
-
+//
 #include "char.h"
 #include "object.h"
 #include "char_base.h"
@@ -17,7 +16,6 @@
 #include "pet.h"
 //特地从天堂高薪挖角来的"传送师"
 #ifdef _PAUCTION_MAN
-#include "longzoro/sasql.h"
 enum {
 	WINDOW_PAUCTION_START=1,
 	WINDOW_PAUCTION_SELECT,

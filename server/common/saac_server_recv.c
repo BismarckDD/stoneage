@@ -1554,6 +1554,7 @@ void SaacServer_ACCheckCharacterOnLine_recv(int fd, int charaindex, char *id,
 }
 #endif
 
+//  2026.08.21 这个函数运行完会崩溃, 很奇怪
 void SaacServer_ACCharLogin_recv(int fd, int clifd, char *id, char *pas,
                                  char *ip
 #ifdef _NEWCLISETMAC

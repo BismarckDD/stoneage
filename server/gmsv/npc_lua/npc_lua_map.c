@@ -13,46 +13,8 @@
 #include "npc_lua.h"
 #define _JZ_NEWSCRIPT_LUA
 
-#ifdef _ALLBLUE_LUAscript
-/*
-char *MAP_getFloorName( int floor)
-*/
-int NPC_ABLua_map_getFloorName(lua_State *_NLL)
-{
-		CheckEx(_NLL, 1);
-		CheckIndexNull(_NLL, 1);
-		
-		int Floorid = (int)lua_tointeger(_NLL, 1);
-	
-		LRetMsg(_NLL , MAP_getFloorName(Floorid));
-		
-}
-int NPC_ABLua_map_getfloorX(lua_State *_NLL)
-{
-		CheckEx(_NLL, 1);
-		CheckIndexNull(_NLL, 1);
-		
-		int Floorid = (int)lua_tointeger(_NLL, 1);
-	
-		LRetMsg(_NLL , MAP_getfloorX(Floorid));
-		
-}
-int NPC_ABLua_map_getfloorY(lua_State *_NLL)
-{
-		CheckEx(_NLL, 1);
-		CheckIndexNull(_NLL, 1);
-		
-		int Floorid = (int)lua_tointeger(_NLL, 1);
-	
-		LRetMsg(_NLL , MAP_getfloorY(Floorid));
-		
-}
 
-
-#endif
-
-
-int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL)           //检测某点是否在地图范围内。
+int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL)  // 检测某点是否在地图范围内。
 {
 	CheckEx(_NLL, 3);
 	CheckIndexNull(_NLL, 1);

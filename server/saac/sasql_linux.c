@@ -99,7 +99,7 @@ static int readSqlConfig(char *path) {
 }
 
 BOOL sasql_init(void) {
-  if ((mysql_init(&mysql) == NULL) & readSqlConfig("acserv.cf")) {
+  if ((mysql_init(&mysql) == NULL) || readSqlConfig("acserv.cf")) {
     printf("\n数据库初始化失败！");
     exit(1);
     return FALSE;
@@ -163,6 +163,10 @@ int sasql_query(char *username, char *password) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return 0;
+    }
     num_row = mysql_num_rows(mysql_result);
 
     if (num_row > 0) {
@@ -303,6 +307,10 @@ BOOL sasql_check_lock(char *idip) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return FALSE;
+    }
     num_row = mysql_num_rows(mysql_result);
     if (num_row > 0) {
       return TRUE;
@@ -356,6 +364,10 @@ int sasql_query_point(char *name) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return -1;
+    }
     num_row = mysql_num_rows(mysql_result);
 
     if (num_row > 0) {
@@ -379,6 +391,10 @@ BOOL sasql_add_vippoint(char *ID, int point) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return -1;
+    }
     num_row = mysql_num_rows(mysql_result);
 
     if (num_row > 0) {
@@ -413,6 +429,10 @@ BOOL sasql_add_Paypoint(char *ID, int point) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return -1;
+    }
     num_row = mysql_num_rows(mysql_result);
 
     if (num_row > 0) {
@@ -454,6 +474,10 @@ char *sasql_ItemPetLocked(char *id, char *safepasswd) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return "无法解锁，请与本服管理员联系！";
+    }
     num_row = mysql_num_rows(mysql_result);
 
     if (num_row > 0) {
@@ -490,6 +514,10 @@ char *sasql_ItemPetLocked_Passwd(char *id, char *safepasswd) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return "安全密码修改失败，请与本服管理员联系！";
+    }
     num_row = mysql_num_rows(mysql_result);
     if (num_row > 0) {
       mysql_row = mysql_fetch_row(mysql_result);
@@ -536,6 +564,10 @@ int sasql_ItemPetLocked_Char(char *id, char *safepasswd) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return -1;
+    }
     num_row = mysql_num_rows(mysql_result);
     if (num_row > 0) {
       mysql_row = mysql_fetch_row(mysql_result);
@@ -584,6 +616,10 @@ char *sasql_OnlineCost(char *id, char *costpasswd, int fmindex, char *fmname) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return "充值失败，请与本服管理员联系！";
+    }
     num_row = mysql_num_rows(mysql_result);
     if (num_row > 0) {
       mysql_row = mysql_fetch_row(mysql_result);
@@ -624,6 +660,10 @@ char *sasql_TransOnlineCost() {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return "充值失败，请与本服管理员联系！";
+    }
     num_row = mysql_num_rows(mysql_result);
     if (num_row > 0) {
       while ((mysql_row = mysql_fetch_row(mysql_result))) {
@@ -691,6 +731,10 @@ char *sasql_OnlineBuy(char *id, char *costpasswd) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return "提货失败，请与本服管理员联系！";
+    }
     num_row = mysql_num_rows(mysql_result);
 
     if (num_row > 0) {
@@ -707,6 +751,10 @@ char *sasql_OnlineBuy(char *id, char *costpasswd) {
             int num_row = 0;
             mysql_free_result(mysql_result);
             mysql_result = mysql_store_result(&mysql);
+            if (mysql_result == NULL) {
+              printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+              return "提货失败，请与本服管理员联系！";
+            }
             num_row = mysql_num_rows(mysql_result);
             if (num_row > 0) {
               mysql_row = mysql_fetch_row(mysql_result);
@@ -782,6 +830,10 @@ int sasql_onlinenum(char *MAC) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return 0;
+    }
     num_row = mysql_num_rows(mysql_result);
     if (num_row > 0) {
       mysql_row = mysql_fetch_row(mysql_result);
@@ -805,6 +857,10 @@ BOOL sasql_add_FormulateAutoPk(char *ID, int point) {
     int num_row = 0;
     mysql_free_result(mysql_result);
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return -1;
+    }
     num_row = mysql_num_rows(mysql_result);
     if (num_row > 0) {
       mysql_row = mysql_fetch_row(mysql_result);
@@ -835,6 +891,10 @@ void sasql_OldpsToMd5ps() {
   }
   mysql_free_result(mysql_result);
   mysql_result = mysql_store_result(&mysql);
+  if (mysql_result == NULL) {
+    printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+    return;
+  }
   printf("    转换账号        原密码          转换MD5码\n");
   while ((mysql_row = mysql_fetch_row(mysql_result))) {
     const char *username = mysql_row[0];
@@ -864,6 +924,10 @@ void sasql_CleanCdkey(int date) {
     int GroupNum = 0;
     int ServerMaxNum = 0;
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return;
+    }
     num_row = mysql_num_rows(mysql_result);
     mysql_free_result(mysql_result);
     if (num_row > 0) {
@@ -912,6 +976,10 @@ void sasql_CleanLockCdkey() {
     int GroupNum = 0;
     int ServerMaxNum = 0;
     mysql_result = mysql_store_result(&mysql);
+    if (mysql_result == NULL) {
+      printf("\n数据库查询失败！%s\n", mysql_error(&mysql));
+      return;
+    }
     num_row = mysql_num_rows(mysql_result);
     mysql_free_result(mysql_result);
     if (num_row > 0) {

@@ -7,6 +7,8 @@
 #include "saac_server.h"
 #include "util.h"
 
+char dirname[1000];
+
 static unsigned getNextMessageID(void) {
   FILE *fp;
   unsigned i;
@@ -311,17 +313,16 @@ void Mail_expire() {
   logErr("过期邮件: 过期 %d 消息 (%s)\n", c, chartime());
 }
 
+  
 int Mail_read(const char *dir) {
   int i, read_count = 0;
   for (i = 0; i < 256; i++) {
-    char dirname[1000];
     DIR *d;
-
     snprintf(dirname, sizeof(dirname), "%s/0x%x", dir, i);
     d = opendir(dirname);
     if (d == NULL) {
       sa_mkdir(dirname, 0755);
-      logErr("创建 %s\n", dirname);
+      // logErr("创建 %s\n", dirname);
       continue;
     }
     while (1) {

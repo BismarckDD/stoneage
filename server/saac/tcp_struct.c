@@ -83,16 +83,16 @@ int tcpstruct_accept(int *tis, int ticount) {
 
       int j = 1, k;
 
-      if ((float)(((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION))) >
-          0.10) {
-        t = select_timeout;
-        sret = select(g_con[i].fd + 1, &rfds, (fd_set *)NULL, &efds, &t);
-        if (sret > 0) {
-          if ((g_con[i].fd >= 0) && FD_ISSET(g_con[i].fd, &rfds)) {
-            int fr = getFreeMem();
-            int rr, readsize;
-            if (fr <= 0)
-              continue;
+      t = select_timeout;
+      sret = select(g_con[i].fd + 1, &rfds, (fd_set *)NULL, &efds, &t);
+      if (sret > 0) {
+        if ((g_con[i].fd >= 0) && FD_ISSET(g_con[i].fd, &rfds)) {
+          int fr = getFreeMem();
+          int rr, readsize;
+          if (fr <= 0) {
+            fprintf(stderr, "连接%d内存不足, 标记远程关闭(fd=%d)\n", i, g_con[i].fd);
+            g_con[i].closed_by_remote = 1;
+          } else {
             memset(g_temp_buffer, 0, sizeof(g_temp_buffer));
             if (fr > sizeof(g_temp_buffer)) {
               readsize = sizeof(g_temp_buffer);
@@ -101,25 +101,26 @@ int tcpstruct_accept(int *tis, int ticount) {
             }
             rr = read(g_con[i].fd, g_temp_buffer, readsize);
             if (rr <= 0) {
+              fprintf(stderr, "连接%d读取返回%d, 标记远程关闭(fd=%d)\n", i, rr, g_con[i].fd);
               g_con[i].closed_by_remote = 1;
             } else {
               appendReadBuffer(i, g_temp_buffer, rr);
             }
           }
         }
+      }
 
-        if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) > 0.50) {
-          j = 2;
-        } else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) >
-                   0.40) {
-          j = 3;
-        } else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) >
-                   0.30) {
-          j = 4;
-        } else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) >
-                   0.20) {
-          j = 5;
-        }
+      if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) > 0.50) {
+        j = 2;
+      } else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) >
+                 0.40) {
+        j = 3;
+      } else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) >
+                 0.30) {
+        j = 4;
+      } else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) >
+                 0.20) {
+        j = 5;
       }
 
       for (k = 0; k < j; k++) {
@@ -173,7 +174,7 @@ int tcpstruct_accept(int *tis, int ticount) {
         continue;
       newsockfd = accept(g_main_sock_fd, (struct sockaddr *)&c, &len);
       if (newsockfd < 0) {
-        unregMemBuf(newcon);
+        releaseMemBuf(newcon);
         continue;
       }
       set_nodelay(newsockfd);
@@ -197,14 +198,13 @@ int tcpstruct_close(int ti) {
   g_con[ti].use = 0;
   g_con[ti].fd = -1;
 
-  /* 伉旦玄毛凶升匀化蝈  毛弁伉失允月 */
   consumeMemBufList(g_con[ti].mbtop_ri, NULL,
                     g_mem_buffer_size * sizeof(g_mem_buffer[0].buf), 1, 0);
   consumeMemBufList(g_con[ti].mbtop_wi, NULL,
                     g_mem_buffer_size * sizeof(g_mem_buffer[0].buf), 1, 0);
 
-  unregMemBuf(g_con[ti].mbtop_ri);
-  unregMemBuf(g_con[ti].mbtop_wi);
+  releaseMemBuf(g_con[ti].mbtop_ri);
+  releaseMemBuf(g_con[ti].mbtop_wi);
   g_con[ti].mbtop_ri = -1;
   g_con[ti].mbtop_wi = -1;
   return TCPSTRUCT_OK;
@@ -219,10 +219,13 @@ int tcpstruct_read(const int ti, char *buf, const int len) {
   return l;
 }
 
-int tcpstruct_readline(const int ti, char *buf, const int len, const int kend,
+int tcpstruct_readline(const int ti,  // Connection fd.
+                       char *buf,     // read_buf
+                       const int len, // read_buf_len
+                       const int kend,
                        const int kend_r) {
   int l;
-  int minus = 0;
+  int minus = 0;  // 最终要剥离几个字符
   if (ti < 0 || ti >= MAXCONNECTION || g_con[ti].use == 0)
     return TCPSTRUCT_EINVCIND;
   l = getLineReadBuffer(ti, buf, len);
@@ -235,19 +238,15 @@ int tcpstruct_readline(const int ti, char *buf, const int len, const int kend,
   }
 
   if (kend) {
-    if (buf[l - 1] == '\n') {
+    if (l >= 1 && buf[l - 1] == '\n') {
       buf[l - 1] = 0;
       minus = -1;
     }
   }
   if (kend_r) {
-    if (buf[l - 1] == '\r') {
-      buf[l - 1] = 0;
-      minus = -1;
-    }
-    if (buf[l - 2] == '\r') {
-      buf[l - 2] = 0;
-      minus = -2;
+    if (l + minus >= 1 && buf[l + minus - 1] == '\r') {
+      buf[l + minus - 1] = 0;
+      minus -= 1;
     }
   }
   return l + minus;

@@ -10,8 +10,6 @@
 #include "item.h"
 #include "readmap.h"
 
-#include "longzoro/sasql.h"
-
 #ifdef _JZ_NEWSCRIPT_LUA
 
 
@@ -123,9 +121,3 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL)
 	sasql_LUASQLAdv("",filepath,function,npcindex,char_index,msg,flg);
 }
 #endif
-
-
-
-
-
-

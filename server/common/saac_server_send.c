@@ -8,16 +8,13 @@ extern WorkSpace gSaacWorkSpace;
 WorkSpace *ws = &gSaacWorkSpace;
 
 // Warning: fd is not a socket, but an index of thie connect structure.
-int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debugfun) {
+int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debug_msg) {
   unsigned int msgid;
-  int token_count;
   char funcname[1024];
-  if (debugfun != NULL)
-    debugfun[0] = '\0';
-  token_count = SplitString(encoded, ws);
+  int token_count = SplitString(encoded, ws);
   if (token_count < 2) {
-    if (debugfun != NULL)
-      snprintf(debugfun, 256, "invalid or oversized SAAC message");
+    if (debug_msg != NULL)
+      snprintf(debug_msg, 256, "invalid or oversized SAAC message");
     logout_game_server(fd);
     return -1;
   }
@@ -27,8 +24,8 @@ int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debugfun) {
   /* Authentication is a protocol invariant, not an individual RPC option. */
   if (strcmp(funcname, "ACServerLogin") != 0 &&
       !is_game_server_login(fd)) {
-    if (debugfun != NULL)
-      snprintf(debugfun, 256, "unauthenticated SAAC function: %.200s",
+    if (debug_msg != NULL)
+      snprintf(debug_msg, 256, "unauthenticated SAAC function: %.200s",
                funcname);
     logout_game_server(fd);
     return -1;
@@ -1175,7 +1172,7 @@ int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debugfun) {
     return 0;
   }
 #endif
-  sprintf(debugfun, "%s", funcname);
+  sprintf(debug_msg, "UNKNOWN FUNCNAME: %s", funcname);
   return -1;
 }
 

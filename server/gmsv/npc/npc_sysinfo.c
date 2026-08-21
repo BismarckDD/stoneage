@@ -15,7 +15,7 @@
 sysinfo By Kawata
 --------------------------------------------------------------------- */
 #define		NPC_SYSINFO_MSGMAX				21
-#define		NPC_SYSINFO_PASSWD_DEFAULT		"longzoro"
+#define		NPC_SYSINFO_PASSWD_DEFAULT		"anthropic"
 #define		NPC_SYSINFO_TIMELIMIT_DEFAULT		120
 #define		NPC_SYSINFO_SHUTDOWNLIMIT_DEFAULT	5
 #define		NPC_SYSINFO_SHUTDOWN_MSG		"再过 %d 分钟後，即开始进行server系统维护。"

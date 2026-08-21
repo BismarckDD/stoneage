@@ -190,8 +190,12 @@ void sa_platform_cleanup(void) {
 void sa_sleep(unsigned int seconds) { Sleep(seconds * 1000U); }
 
 int sa_mkdir(const char *path, int mode) {
+#ifdef _WIN32
   (void)mode;
   return _mkdir(path);
+#else
+  return mkdir(path, mode);
+#endif
 }
 
 int sa_chmod(const char *path, int mode) { return _chmod(path, mode); }

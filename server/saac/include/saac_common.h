@@ -11,7 +11,7 @@
 #define CHARNAME_MAX 32 // 角色名称的最大长度
 #define TEXT_MAX 1024 // MAIL文本的最大长度
 
-#define MAXCONNECTION 15
+#define MAXCONNECTION 20
 #define MAIL_EXPIRE_TIME 3600
 #define MAX_FLUSH_MAIL 1024
 

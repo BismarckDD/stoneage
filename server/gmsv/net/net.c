@@ -2764,7 +2764,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 
         if ((i_tto % 60) == 0) {
           i_tto = 0;
-          print(".");
+          print("."); // 这个point就是从这里打印出来的
         }
         i_tto++;
 
@@ -2885,10 +2885,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
         if (fdremember == acfd)
 #endif
         {
-          print("读取返回:%d %s\n", ret, strerror(errno));
-          print("GMSV与SAAC失去连接! 异常终止...\n");
-          sigshutdown(-1);
-          exit(1);
+          print("读取返回:ret=%d,errno=%s\n", ret, strerror(errno));
+          print("GMSV与SAAC失去连接! 程序正常退出......");
+          sigshutdown(0);
         }
 #ifdef _OTHER_SAAC_LINK
         else if (CONNECT_getCtype(fdremember) == SQL) {
@@ -2953,14 +2952,13 @@ SINGLETHREAD BOOL netloop_faster(void) {
       if (fdremember != acfd)
 #endif
       {
-        //  print( "\n读取连接错误:%d %s\n", errno, strerror( errno ));
+        // print("\n读取连接错误:%d %s\n", errno, strerror(errno));
         continue;
       }
     }
 
     for (j = 0; j < 3; j++) {
       memset(rbmess, 0, sizeof(rbmess));
-
       if (GetOneLine_fix(fdremember, rbmess, sizeof(rbmess)) == FALSE)
         continue;
 
@@ -2971,19 +2969,13 @@ SINGLETHREAD BOOL netloop_faster(void) {
         if (fdremember == acfd)
 #endif
         {
-
-#ifdef _DEBUG
-          printf("读取SAAC数据:%s\n", rbmess);
-#endif
+          printf("从SAAC读取数据:%s\n", rbmess);
           if (SaacClient_ClientDispatchMessage(fdremember, rbmess) < 0) {
-            print("\nSAAC服务器数据出错!!!\n");
+            print("\n从SAAC读取数据出错!!!\n");
           }
         }
 #ifdef _OTHER_SAAC_LINK
         else if (CONNECT_getCtype(fdremember) == SQL) {
-#ifdef _DEBUG
-          printf("读取点卷数据:%s\n", rbmess);
-#endif
           if (SaacClient_ClientDispatchMessage(fdremember, rbmess) < 0) {
             print("\n点卷服务器数据出错!!!\n");
           }
@@ -3077,9 +3069,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         if (fdremember == acfd)
 #endif
         {
-#ifdef _DEBUG
-          printf("发送SAAC内容:%s\n", Connect[fdremember].wb);
-#endif
+          printf("向SAAC发送内容:%s\n", Connect[fdremember].wb);
           ret = write(fdremember, Connect[fdremember].wb,
                       (Connect[fdremember].wbuse < acwritesize)
                           ? Connect[fdremember].wbuse
@@ -3104,7 +3094,14 @@ SINGLETHREAD BOOL netloop_faster(void) {
           sprintf(token, "发送封包写入返回:%d %s\n", errno, strerror(errno));
           LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
-          CONNECT_endOne_debug(fdremember);
+#ifdef _OTHER_SAAC_LINK
+          if (CONNECT_getCtype(fdremember) != AC && CONNECT_getCtype(fdremember) != SQL)
+#else
+          if (fdremember != acfd)
+#endif
+          {
+            CONNECT_endOne_debug(fdremember);
+          }
           continue;
         } else if (ret > 0) {
           shiftWB(fdremember, ret);
@@ -3119,7 +3116,14 @@ SINGLETHREAD BOOL netloop_faster(void) {
         sprintf(token, "发送封包写入连接错误:%d %s\n", errno, strerror(errno));
         LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
-        CONNECT_endOne_debug(fdremember);
+#ifdef _OTHER_SAAC_LINK
+        if (CONNECT_getCtype(fdremember) != AC && CONNECT_getCtype(fdremember) != SQL)
+#else
+        if (fdremember != acfd)
+#endif
+        {
+          CONNECT_endOne_debug(fdremember);
+        }
       }
     }
     /* 处理连接超时。 */

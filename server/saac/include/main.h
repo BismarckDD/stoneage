@@ -47,37 +47,37 @@ typedef enum {
 typedef struct tagMemBuffer {
   int use;
   char buf[512];
-  int len;
-  int next;
+  int len;                       //
+  int next;                      //
 } MemBuffer;
+
 typedef struct tagConnection {
-  int use;
-  int fd;
-  int mbtop_ri;
-  int mbtop_wi;
+  int use;                       // 链接是否使用
+  int fd;                        // 连接fd
+  int mbtop_ri;                  // membuf top_ri 读缓存
+  int mbtop_wi;                  // membuf top_wi 写缓存
   struct sockaddr_in remoteaddr; // 远端地址，即客户端的socket地址
   int closed_by_remote;
 } Connection;
-#ifdef __MAIN_C__
-#define EXT
-#else
-#define EXT extern
-#endif
-EXT MemBuffer *g_mem_buffer;
-EXT int g_mem_buffer_size;
-EXT int g_mem_buffer_used;
-EXT int g_mem_buffer_finder;
-EXT char g_temp_buffer[1 << 20];
-EXT Connection *g_con; // SAAC-Client连接
-EXT int g_main_sock_fd; // 主sock文件描述符
-EXT struct sockaddr_in g_local_addr; // 本地SAAC服务器的TCP地址
-EXT struct timeval select_timeout; // 选择超时时间
-EXT time_t sys_time; // Robin add
-EXT gmsv gs[MAXCONNECTION]; // SAAC-GMSV连接
-#undef EXT
 
-int findregBlankMemBuf(void);
-int unregMemBuf(int index);
+#ifdef __MAIN_C__
+#define EXTERN
+#else
+#define EXTERN extern
+#endif
+EXTERN MemBuffer *g_mem_buffer;
+EXTERN int g_mem_buffer_size;
+EXTERN int g_mem_buffer_used;
+EXTERN int g_mem_buffer_finder;
+EXTERN char g_temp_buffer[1 << 20];
+EXTERN Connection *g_con; // SAAC-Client连接
+EXTERN int g_main_sock_fd; // 主sock文件描述符
+EXTERN struct sockaddr_in g_local_addr; // 本地SAAC服务器的TCP地址
+EXTERN struct timeval select_timeout; // 选择超时时间
+EXTERN time_t sys_time; // Robin add
+EXTERN gmsv gs[MAXCONNECTION]; // SAAC-GMSV连接
+#undef EXTERN
+
 int findregBlankCon(void);
 int getFreeMem(void);
 int appendReadBuffer(int index, char *data, int len);

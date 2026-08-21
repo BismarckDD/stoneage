@@ -39,16 +39,10 @@
 #ifdef _CHAR_PROFESSION
 #include "profession_skill.h"
 #endif
-#ifdef _CHARADATA_SAVE_SQL
-#include "longzoro/characters.h"
-#endif
 #ifdef _AUTO_PK
 #include "npc_autopk.h"
 #endif
 #include "npc_autopk.h"
-#ifdef _SASQL
-#include "longzoro/sasql.h"
-#endif
 #ifdef _NEW_ITEM_
 
 extern int CheckCharMaxItem(int char_index);
@@ -2001,9 +1995,6 @@ BOOL CHAR_charSaveFromConnectAndChar(int fd, Char *ch, BOOL unlock) {
     SaacClient_ACCharSave_send(acfd, cdkey, ch->string[CHAR_NAME].string,
                               CHAR_makeOptionString(ch), chardata, unlock,
                               CONNECT_getFdid(fd));
-#endif
-#ifdef _CHARADATA_SAVE_SQL
-  CHAR_CharadataSaveSQL(ch);
 #endif
   return TRUE;
 }

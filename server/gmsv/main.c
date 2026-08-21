@@ -14,9 +14,6 @@
 #include "family.h"
 #include "handletime.h"
 #include "log.h"
-#ifdef _SASQL
-#include "longzoro/sasql.h"
-#endif
 #include "map_warppoint.h"
 #include "npcgen.h"
 #include "petmail.h"

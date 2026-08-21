@@ -26,6 +26,16 @@
 int worksockfd;
 
 WorkSpace gSaacWorkSpace;
+/*
+ * CHARDATASIZE is 1 MiB while the Windows executable reserves a 2 MiB
+ * stack.  Keeping this buffer automatic leaves too little stack for
+ * request handlers such as ACCharLogin and the MariaDB client, causing
+ * STATUS_STACK_OVERFLOW in ___chkstk_ms.  SAAC handles requests on this
+ * single main loop, so one static receive buffer is sufficient.
+ TCP读取缓冲区
+ */
+static char sTcpBuf[CHARDATASIZE];
+static char sDebugFun[256];
 
 #ifdef _SAVE_ZIP
 int SAVEZIP = 0;
@@ -148,11 +158,11 @@ int login_game_server(const int ti, const char *server_name,
 
 // ti代表一个链接的标识
 int logout_game_server(const int ti) {
-  gs[ti].use = '\0';
+  gs[ti].use = 0;
   gs[ti].fd = -1;
   gs[ti].name[0] = '\0';
   tcpstruct_close(ti);
-  printf("内存剩余%f\n",
+  printf("内存剩余: %f\n",
          (float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION));
   return 0;
 }
@@ -171,7 +181,7 @@ int servid;
 static void parse_opts(int argc, char **argv) {
   int c, option_index;
   int date;
-  while (1) {
+  while (TRUE) {
     static struct option long_options[] = {
         {"nice", 1, 0, 'n'},     {"buy", 0, 0, 'b'},
         {"cost", 0, 0, 'c'},     {"help", 0, 0, 'h'},
@@ -394,8 +404,6 @@ void signal_set(void) {
   sa_install_console_handler(signal_shutdown);
 #endif
   signal(SIGTERM, signal_shutdown);
-  // kill -SIGUSR1 [PROCESS_ID] 向进程发送SIGUSR1信号
-  // signal(SIGUSR1, sigusr1);
 }
 
 int main(int argc, char **argv) {
@@ -405,16 +413,8 @@ int main(int argc, char **argv) {
     return 1;
   }
 #endif
-  /*
-      #define cpuid(in,a,b,c,d)\
-      asm("cpuid": "=a" (a), "=b" (b), "=c" (c), "=d" (d) : "a" (in));
-      unsigned long eax,ebx,ecx,edx;
-      cpuid(0,eax,ebx,ecx,edx);
-      printf("%08x %08lx %08lx %08lx %08lx\n",0,eax,ebx,ecx,edx);
-  */
   // 先解析参数, 如果有参数, 则进入测试流程
   parse_opts(argc, argv);
-
   // 给出一个随机数种子. 产生随机数: 用于Lottery
   srand((int)time(0));
   // 如果没有参数，进入正常工作流程
@@ -476,6 +476,7 @@ int main(int argc, char **argv) {
     if ((tcpr = tcpstruct_init(NULL, g_saac_config.port, 0,
                                CHARDATASIZE * 16 * MAXCONNECTION,
                                1 /* DEBUG */)) == 0) {
+      // break 是TCP INIT 成功
       break;
     }
     logErr("监听TCP端口失败, 错误代码: %d, 1s后重新尝试...\n", tcpr);
@@ -484,22 +485,22 @@ int main(int argc, char **argv) {
 #else
     sleep(1);
 #endif
-  } while (1);
-  printf("Init SAAC WorkSpace: %d %d\n", CHARDATASIZE,
+  } while (TRUE);
+  printf("TCP连接建立成功: %d %d\n", CHARDATASIZE,
          SAAC_SERVER_MAXLSRPCARGS);
   InitWorkSpace(&gSaacWorkSpace, tcpstruct_write, CHARDATASIZE,
                 SAAC_SERVER_MAXLSRPCARGS);
 
 #ifdef _AC_SEND_FM_PK // WON ADD 庄园对战列表储存在AC
-  logErr("Init FM PK...");
+  logErr("初始化家族PK相关......");
   load_fm_pk_list();
-  logErr("Succeed.\n");
+  logErr("成功.\n");
 #endif
 
 #ifdef _ACFMPK_LIST
-  logErr("Load FM PK...");
+  logErr("加载家族PK......");
   FMPK_LoadList();
-  logErr("Succeed.\n");
+  logErr("成功.\n");
 #endif
 #ifdef _ALLDOMAN
   logErr("Load HeroList...");
@@ -516,23 +517,21 @@ int main(int argc, char **argv) {
   logErr("\n开始工作.....\n");
 
   int itime = 0;
-  while (1) {
-    int newti, i;
-    static time_t main_loop_time;
+  int new_ti, i, j;
+  static BOOL lottery = FALSE;
+  static time_t main_loop_time;
+  while (TRUE) {
     sys_time = time(NULL);
 #ifdef _LOTTERY_SYSTEM
     // 周期性的抽奖活动
     char todayaward[256] = "-1,-1,-1,-1,-1,-1,-1";
     {
       if (g_saac_config.lotterysystem > 0) {
-        struct tm *p;
-        p = localtime(&sys_time); /*取得当地时间*/
-        static BOOL lottery = FALSE;
+        struct tm *p = localtime(&sys_time); /*取得当地时间*/
         if (lottery == FALSE) {
           if ((p->tm_mday % g_saac_config.lotterysystem) == 0) {
             if (p->tm_hour == 0) {
               int award[7];
-              int i, j;
               for (i = 0; i < 7; i++) {
                 award[i] = rand() % 36 + 1;
                 for (j = 0; j < i; j++) {
@@ -636,56 +635,57 @@ int main(int argc, char **argv) {
 #endif
     }
 
-    // 单线程处理
-    newti = tcpstruct_accept1();
-    if (newti >= 0) {
-      logErr("同意连接: %d\n", newti);
-      gs[newti].use = 1;
+    // 单线程处理新进入的连接
+    new_ti = tcpstruct_accept1();
+    if (new_ti >= 0) {
+      logErr("建立连接: %d\n", new_ti);
+      gs[new_ti].use = 1;
     }
 
     for (i = 0; i < MAXCONNECTION; i++) {
-      //      char buf[CHARDATASIZE * 16;
-      char buf[CHARDATASIZE];
-      const int ret_code = tcpstruct_readline_chop(i, buf, sizeof(buf) - 1);
       if (!gs[i].use)
         continue;
-      if (ret_code > 0) {
-        char debugfun[256];
-        buf[ret_code] = 0;
-        if (SaacServer_ServerDispatchMessage(i, buf, debugfun) < 0) {
-          logOut("buf:%s;%d\n", buf, strlen(buf));
+      // 不断再循环这个过程
+      // print("%d\n", i);
+      const int read_bytes = tcpstruct_readline_chop(i, sTcpBuf, sizeof(sTcpBuf) - 1);
+      if (read_bytes > 0) {
+        sTcpBuf[read_bytes] = 0;
+        int rc = SaacServer_ServerDispatchMessage(i, sTcpBuf, sDebugFun);
+        // print("rc: %d\n", rc);
+        if (rc < 0) {
+          logOut("line :%s;%d\n", sTcpBuf, strlen(sTcpBuf));
           char token[256];
-          char tmp[256];
           struct tm now;
           time_t timep;
           time(&timep);
           memcpy(&now, localtime(&timep), sizeof(now));
-          sprintf(tmp, "%02d:%02d:%02d", now.tm_hour, now.tm_min, now.tm_sec);
-          sprintf(token, "[%s]GMSV(%s) 消息:%s\n", tmp, gs[i].name, debugfun);
+          sprintf(token, "[%s]GMSV(%s)消息:%02d:%02d:%02d\n",
+            gs[i].name, sDebugFun,
+            now.tm_hour, now.tm_min, now.tm_sec);
           logFileToday(token);
         }
-      } else if (ret_code == TCPSTRUCT_ETOOLONG) {
+        logErr("成功处理请求: %d, 服务器名:%s, readbytes: %d, msg:%s, debug:%s\n",
+          i, gs[i].name, read_bytes, sTcpBuf, sDebugFun);
+      } else if (read_bytes == TCPSTRUCT_ETOOLONG) {
         logFileToday(
             "连接%d, 接收到的数据长度超过预期, 服务器名:%s, 链接登出.\n", i,
             gs[i].name);
         logout_game_server(i);
-      } else if (ret_code < 0) {
-        logErr("关闭连接: %d, 服务器名:%s\n", i, gs[i].name);
+      } else if (read_bytes < 0) {
+        logErr("关闭连接: %d, 服务器名:%s, read_bytes:%d\n", i, gs[i].name, read_bytes);
         logout_game_server(i);
-      } else if (ret_code == 0) {
-        ; // do nothing
+      } else if (read_bytes == 0) {
       }
-    }
+    } // while 
   }
 
   return 0;
 }
 
 int get_rotate_count(void) {
-  unsigned int t = (unsigned int)time(NULL);
-  int a = (t / g_saac_config.log_rotate_interval) *
+  unsigned int t = (unsigned int) time(NULL);
+  return (int) (t / g_saac_config.log_rotate_interval) *
           g_saac_config.log_rotate_interval;
-  return a;
 }
 
 int appendReadBuffer(int index, char *data, int len) {
@@ -710,6 +710,7 @@ int appendWriteBuffer(int index, char *data, int len) {
   return appendMemBufList(top, data, len);
 }
 
+// 
 int appendMemBufList(int top, char *data, int len) {
   int fr = getFreeMem();
   int rest = len;
@@ -732,13 +733,14 @@ int appendMemBufList(int top, char *data, int len) {
       int newmb;
       rest -= cpsize;
       data_topaddr += cpsize;
-      if ((newmb = findregBlankMemBuf()) == TCPSTRUCT_EMBFULL) {
+      if ((newmb = allocateMemBuf()) == TCPSTRUCT_EMBFULL) {
         FILE *fp;
         if ((fp = fopen("badsysinfo.txt", "a+")) != NULL) {
           fprintf(fp, "find newmb == TCPSTRUCT_EMBFULL err data:%s !!\n", data);
           fclose(fp);
         }
-        logErr("find newmb == TCPSTRUCT_EMBFULL err data:%s !!\n", data);
+        logErr("appendMemBufList: 内存缓冲区已满, 丢弃 %d 字节数据\n", rest);
+        return -1;
       }
       g_mem_buffer[top].next = newmb;
       top = g_mem_buffer[top].next;
@@ -747,22 +749,30 @@ int appendMemBufList(int top, char *data, int len) {
   return TCPSTRUCT_EBUG;
 }
 
-int consumeMemBufList(int top, char *out, int len, int consumeflag,
-                      int copyflag) {
-  int total = 0;
-  int top_store = top;
-  for (;;) {
-    int cpsize;
-    if (top == -1)
+int consumeMemBufList(int top,                  // top: 链表头节点索引(mbtop_ri, mbtop_wi)
+                      char *output_buffer,      // 输出缓冲区
+                      const int max_consumed_bytes,   // 最多读取多少个字节
+                      int is_consume,           // 是否消费数据
+                      int is_copy) {            // 是否拷贝到输出缓冲区
+  int consumed_bytes = 0, cpsize;
+  int head = top, prev;
+  int mem_buffer_size = g_mem_buffer_size;
+  while (top != -1 && consumed_bytes < max_consumed_bytes) {
+    if (top < -1 || top >= g_mem_buffer_size || --mem_buffer_size < 0) {
+      // top == -1 是正常的
+      logErr("[consumeMemBufList]:链表遍历异常,"
+        "top=%d, mem_buffer_size=%d, 可能存在环或损坏.\n", top, mem_buffer_size);
       break;
-    cpsize = (g_mem_buffer[top].len <= (len - total)) ? g_mem_buffer[top].len
-                                                      : (len - total);
+    }
+    cpsize = (g_mem_buffer[top].len <= (max_consumed_bytes - consumed_bytes)) ?
+      g_mem_buffer[top].len : (max_consumed_bytes - consumed_bytes);
+    // 拷贝数据
+    if (is_copy)
+      memcpy(output_buffer + consumed_bytes, g_mem_buffer[top].buf, cpsize);
+    // 无论是否拷贝，consumed_bytes都要加
+    consumed_bytes += cpsize;
 
-    if (copyflag)
-      memcpy(out + total, g_mem_buffer[top].buf, cpsize);
-    total += cpsize;
-
-    if (consumeflag) {
+    if (is_consume) {
       g_mem_buffer[top].len -= cpsize;
       if (g_mem_buffer[top].len > 0) {
         memmove(g_mem_buffer[top].buf, g_mem_buffer[top].buf + cpsize,
@@ -770,66 +780,63 @@ int consumeMemBufList(int top, char *out, int len, int consumeflag,
       }
     }
     top = g_mem_buffer[top].next;
-    if (total == len) {
-      break;
-    }
   }
 
-  if (consumeflag) {
-    /* 卅互今互0卞卅匀化月卅日荸  ［匹手  赓及支勾反荸  仄卅中冗 */
-    top = g_mem_buffer[top_store].next;
-    for (;;) {
-      if (top == -1)
+  if (is_consume && head >= 0) {
+    top = g_mem_buffer[head].next;
+    mem_buffer_size = g_mem_buffer_size;
+    while (top != -1) {
+      if (top < 0 || top >= g_mem_buffer_size || --mem_buffer_size <= 0) {
+        logErr("[consumeMemBufList]:链表清理异常,"
+          "top=%d, mem_buffer_size=%d, 可能存在环或损坏.\n", top, mem_buffer_size);
         break;
+      }
       if (g_mem_buffer[top].len == 0) {
-        int prev;
-        g_mem_buffer[top_store].next = g_mem_buffer[top].next;
+        g_mem_buffer[head].next = g_mem_buffer[top].next;
         prev = top;
         top = g_mem_buffer[top].next;
-        unregMemBuf(prev);
+        releaseMemBuf(prev);
       } else {
         top = g_mem_buffer[top].next;
       }
     }
   }
-  return total;
+  return consumed_bytes;
 }
 
-int getLineReadBuffer(int index, char *buf, int len) {
-  int top = g_con[index].mbtop_ri;
-  int ti = 0, breakflag = 0;
-  for (;;) {
-    int i;
-    int l = g_mem_buffer[top].len;
-    if (top == -1)
-      break;
-    for (i = 0; i < l; i++) {
+// 从ti所在的链接中读取之多max_len个字节
+int getLineReadBuffer(int ti, char *buf, int max_len) {
+  int top = g_con[ti].mbtop_ri;
+  int len = 0, breakflag = 0;
+  int flag = TRUE;
+  while (flag) {
+    // 2026.08.21 这里有一个修复
+    // 如果在这里break出来, 直接返回0就行嘛
+    if (top < 0 || top >= g_mem_buffer_size)
+      return 0;
+    int l = g_mem_buffer[top].len, i;
+    for (i = 0; i < l; ++i) {
       if (g_mem_buffer[top].buf[i] == '\n') {
-        breakflag = 1;
+        flag = FALSE;
         break;
       }
-      ti++;
+      ++len;
     }
-    if (breakflag)
-      break;
     top = g_mem_buffer[top].next;
   }
-  if (ti > len) {
+  if (len > max_len) {
     return TCPSTRUCT_ETOOLONG;
   }
-  /* 垫互敦岳仄化卅中 */
-  if (breakflag == 0) {
-    return 0;
-  }
 
-  return consumeMemBufList(g_con[index].mbtop_ri, buf, ti + 1, 1, 1);
+  // 消费并拷贝ti + 1 个字节到 buf
+  return consumeMemBufList(g_con[ti].mbtop_ri, buf, len + 1, 1, 1);
 }
 
 int getFreeMem(void) {
   return (g_mem_buffer_size - g_mem_buffer_used) * sizeof(g_mem_buffer[0].buf);
 }
 
-int findregBlankMemBuf(void) {
+int allocateMemBuf(void) {
   int i;
   for (i = 0; i < g_mem_buffer_size; i++) {
     g_mem_buffer_finder++;
@@ -846,11 +853,11 @@ int findregBlankMemBuf(void) {
   return TCPSTRUCT_EMBFULL;
 }
 
-int unregMemBuf(const int index) {
+int releaseMemBuf(const int index) {
   g_mem_buffer[index].use = 0;
   g_mem_buffer[index].next = -1;
   g_mem_buffer[index].len = 0;
-  g_mem_buffer_used--;
+  --g_mem_buffer_used;
   return TCPSTRUCT_OK;
 }
 
@@ -861,14 +868,17 @@ int findregBlankCon(void) {
     if (g_con[i].use == 0) {
       g_con[i].use = 1;
       g_con[i].fd = -1;
-      g_con[i].mbtop_ri = findregBlankMemBuf();
+      g_con[i].mbtop_ri = allocateMemBuf();
       if (g_con[i].mbtop_ri < 0) {
+        g_con[i].use = 0;
         fprintf(stderr, "EMBFULL\n");
         return TCPSTRUCT_EMBFULL;
       }
-      g_con[i].mbtop_wi = findregBlankMemBuf();
+      g_con[i].mbtop_wi = allocateMemBuf();
       if (g_con[i].mbtop_wi < 0) {
-        unregMemBuf(g_con[i].mbtop_ri);
+        releaseMemBuf(g_con[i].mbtop_ri);
+        g_con[i].use = 0;
+        g_con[i].mbtop_ri = -1;
         fprintf(stderr, "EMBFULL\n");
         return TCPSTRUCT_EMBFULL;
       }
@@ -1000,7 +1010,7 @@ int mission_table_save(void) {
   fp = fopen(MISSIONFILE, "w");
   if (!fp) {
     logErr("\n打开精灵召唤错误!!!! \n");
-    // return false;
+    return FALSE;
   }
   logErr("\n保存精灵召唤...");
   for (index = 0; index < MISSTION_TABLE_SIZE; index++) {
