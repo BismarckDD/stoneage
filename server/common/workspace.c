@@ -471,7 +471,3 @@ void FreeWorkSpace(WorkSpace *ws) {
   FREE(ws->ret_work);
 }
 
-void SetLogFiles(WorkSpace *ws, const char *r_log, const char *w_log) {
-  strncpysafe(ws->w_log, sizeof(ws->w_log), w_log);
-  strncpysafe(ws->r_log, sizeof(ws->r_log), r_log);
-}

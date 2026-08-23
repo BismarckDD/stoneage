@@ -22,7 +22,6 @@ BOOL RunUseChatMagic( int char_index, char *data, lua_State *lua);
 #ifdef _PETSKILL_SHOP_LUA   
 BOOL FreePetSkillShop( int talkerindex, int petindex, int oldSkillID, int newSkillID);
 #endif
-void ABNPC_Lua_NEWSHOP_Recv( int char_index);
 #ifdef _PETSKILL_SHOP_LUA   
 BOOL OffLineCommand( int battleindex, int charindex, int side);
 #endif

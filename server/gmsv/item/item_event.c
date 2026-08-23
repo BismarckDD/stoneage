@@ -2152,8 +2152,8 @@ void ITEM_useSkup(int char_index, int toindex, int haveitem_index) {
   CHAR_DelItem(char_index, haveitem_index);
 }
 // Nuke end
-extern void setNoenemy();
-// Nuke start 0626: Dragon's bless
+extern void setNoenemy(int);
+// Nuke start 0626: 龙王的祝福可以使得玩家不遇敌.
 void ITEM_useNoenemy(int char_index, int toindex, int haveitem_index) {
   int item_index, fd;
   item_index = CHAR_getItemIndex(char_index, haveitem_index);

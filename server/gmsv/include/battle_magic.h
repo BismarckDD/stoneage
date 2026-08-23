@@ -1,5 +1,5 @@
-#ifndef _BATTLE_MAGIC_H_
-#define _BATTLE_MAGIC_H_
+#ifndef __BATTLE_MAGIC_H__
+#define __BATTLE_MAGIC_H__
 
 #define MAGIC_EFFECT_USER	100600
 #define SPR_heal	100601
@@ -7,7 +7,6 @@
 #define SPR_heal3	100603
 #define SPR_tyusya	100604
 #define SPR_hoshi	100605
-
 
 #define MAGIC_ID_RECOVERY	 		1
 #define MAGIC_ID_STATUS_RECOVERY	3
@@ -196,54 +195,28 @@ void BATTLE_MultiCaptureUp(
 	int UseEffect,
 	int RecevEffect
 );
-//
-//***********************************************************
 
-//****************************************************************
-//
-// 竣濮井日汊唾允月热诸
-//
 int	MAGIC_Ressurect_Battle(
 	int char_index, // 井仃月谛及奶件犯永弁旦
 	int toNo, 		// 井仃日木月谛及奶件犯永弁旦
 	int marray, 	// magicindex
 	int mp 			// MP
 );
-//  岳  仄凶日 TRUE
-//  撩  仄凶日 FALSE
-//****************************************************************
 
-//****************************************************************
-//
-// 箪岭及  鳖毛允月热诸
-//
 int	MAGIC_AttReverse_Battle(
 	int char_index, // 井仃月谛及奶件犯永弁旦
 	int toNo, 		// 井仃日木月谛及奶件犯永弁旦
 	int marray, 	// magicindex
 	int mp 			// MP
 );
-//  岳  仄凶日 TRUE
-//  撩  仄凶日 FALSE
-//****************************************************************
-//****************************************************************
-//
-//   凯    祭允月热诸
-//
+
 int	MAGIC_CaptureUp_Battle(
 	int char_index, // 井仃月谛及奶件犯永弁旦
 	int toNo, 		// 井仃日木月谛及奶件犯永弁旦
 	int marray, 	// magicindex
 	int mp 			// MP
 );
-//  岳  仄凶日 TRUE
-//  撩  仄凶日 FALSE
-//****************************************************************
 
-//***********************************************************
-//
-//    芊羁匹  醒及平乓仿弁正□毛汊唾今六月今日卞  芊  豢毛馨笛
-//
 void BATTLE_MultiResAndDef( 
 	int battleindex, 	// 田玄伙奶件犯永弁旦
 	int attackNo,		// 井仃月谛  寞
@@ -302,6 +275,18 @@ int	MAGIC_ParamChange_Turn_Battle(int char_index,int toNo,int marray,int mp);
 void BATTLE_MultiParamChangeTurn( int battleindex,int attackNo,int toNo,int status,int UseEffect,int RecevEffect,int turn, int Success);
 #endif
 int BATTLE_MagicEffect(	int battleindex,int attackNo,int ToList[],int MyEffect,int ToEffect );
+
+
+int BATTLE_AttrCalc(int My_Fire,   // 施法玩家火属性
+                    int My_Water,  // 施法玩家水属性
+                    int My_Earth,  // 施法玩家土属性
+                    int My_Wind,   // 施法玩家风属性
+                    int My_None,   // 施法玩家无属性
+                    int Vs_Fire,   // 锹澎础
+                    int Vs_Water,  // 目标玩家水属性
+                    int Vs_Earth,  // 目标玩家土属性
+                    int Vs_Wind,   // 目标玩家风属性
+                    int Vs_None);
 
 
 

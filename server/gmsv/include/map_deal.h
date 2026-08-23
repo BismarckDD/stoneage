@@ -12,5 +12,5 @@ BOOL MAP_sendArroundChar(int char_index);
 int QuBiao(const int map_id);
 #endif
 
-#endif 
+#endif  // __MAP_DEAL_H__
 

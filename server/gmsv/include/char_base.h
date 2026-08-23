@@ -2187,5 +2187,9 @@ int CHAR_CheckLearnCode(int charindex, int ridno);
 void CHAR_SetNewTitleUse(int char_index,int id);
 void CHAR_CancelNewTitle(int char_index);
 #endif
-#endif
 
+// Forward declaration (defined later in this file)
+extern int CheckCharMaxItem(int charindex);
+extern int CheckCharMaxItemChar(Char *ch);
+
+#endif // 

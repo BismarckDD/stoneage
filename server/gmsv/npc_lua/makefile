@@ -1,4 +1,4 @@
-INCFLAGS=-I../include -I../../lua -I../../common -I../../common/utils
+INCFLAGS=-I../.. -I../include -I../../lua -I../../common
 FLTFLAGS="-s 1331200"   
 export FLTFLAGS
 CFLAGS=-m64 -w -Wall -pipe $(INCFLAGS)

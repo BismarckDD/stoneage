@@ -71,13 +71,16 @@ EXTERN int osfd;
 EXTERN int ConnectLen;
 #define CONNECT_WINDOWBUFSIZE 7
 
+// declaration: 2026.08.23
+void saveforsaac(void);
+
 BOOL initConnect(int size);
 void endConnect(void);
 #define CONNECT_endOne(sockfd, lin)                                            \
   _CONNECT_endOne(__FILE__, __LINE__, sockfd, lin)
 BOOL _CONNECT_endOne(char *file, int fromline, int sockfd, int lin);
 BOOL netloop_faster(void);
-int lsrpcClientWriteFunc(int fd, char *buf, int size);
+int lsrpcClientWriteFunc(int fd, const char *buf, int size);
 char *GetOneLine(int fd);
 BOOL initConnectOne(int sockfd, struct sockaddr_in *sin, int len);
 

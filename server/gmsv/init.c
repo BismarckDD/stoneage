@@ -46,6 +46,11 @@
 #define OPTIONSTRING "d:f:hcl"
 #define usage() print("Usage: %s [" OPTIONSTRING "]\n", getProgname());
 
+void SetLogFiles(WorkSpace *ws, const char *r_log, const char *w_log) {
+  strncpysafe(ws->w_log, sizeof(ws->w_log), w_log);
+  strncpysafe(ws->r_log, sizeof(ws->r_log), r_log);
+}
+
 void printUsage(void) {
   usage();
   print("          [-d debuglevel]        default value is 0\n");
@@ -74,38 +79,7 @@ BOOL parseCommandLine(int argc, char **argv) {
       exit(0);
       break;
     case 'c':
-#ifdef _CRYPTO_DATA
-      if (opendir("allblues") == NULL) {
-        if (sa_mkdir("allblues", 0777) == 0) {
-          printf("mkdir allblues\n");
-        }
-      }
-      if (opendir("allblues/data") == NULL) {
-        if (sa_mkdir("allblues/data", 0777) == 0) {
-          printf("mkdir allblues/data\n");
-        }
-      }
-      List("data");
-      printf("init data allblues.\n");
-      return FALSE;
-#endif
       break;
-#ifdef _CRYPTO_LUA
-    case 'l': {
-      int flg = 0, id = 0;
-      printf("请问需要加密还是解密？(0为解密, 1为加密):");
-      scanf("%d", &flg);
-      printf("请问ID是多少:");
-      scanf("%d", &id);
-      CryptoAllbluesLUA("allblues", flg, id);
-      if (flg == 0) {
-        printf("已完成解密工作\n");
-      } else {
-        printf("已完成加密工作\n");
-      }
-      return FALSE;
-    } break;
-#endif
     default:
       printUsage();
       return FALSE;
@@ -656,6 +630,7 @@ BOOL init(int argc, char **argv, char **env) {
     extern WorkSpace gSaacWorkSpace;
     SetLogFiles(&gSaacWorkSpace, getLsgenlogfilename(),
                 getLsgenlogfilename());
+
   }
   print("为工作空间设置对应的日志文件:%s\n",getLsgenlogfilename());
 #ifdef _LOTTERY_SYSTEM

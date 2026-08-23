@@ -1502,6 +1502,7 @@ int MAP_getfloorId(int index) {
     return -1;
   return MAP_map[index].id;
 }
+
 #ifdef _MO_LNS_MAPSUOXU
 BOOL MAP_SetExWarp(int mapid, int fl, int x, int y, int type) {
   const int tomapindex = MAP_getfloorIndex(mapid);

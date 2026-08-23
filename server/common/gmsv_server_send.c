@@ -2142,8 +2142,8 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
       util_DiscardMessage();
       return -1;
     }
-    NPC_Lua_NEWSHOP_Recv("ITRF_NEWSHOP", CONNECT_getCharaindex(fd));
-    // ABNPC_Lua_NEWSHOP_Recv(CONNECT_getCharaindex(fd));
+    // 2026.08.23, comment, maybe a error
+    // NPC_Lua_NEWSHOP_Recv("ITRF_NEWSHOP", CONNECT_getCharaindex(fd));
     util_DiscardMessage();
     return 0;
   }

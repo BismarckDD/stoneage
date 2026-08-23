@@ -1,6 +1,4 @@
 #include "version.h"
-#include <time.h>
-#include <string.h>
 #include "char.h"
 #include "object.h"
 #include "gmsv_server.h"
@@ -10,6 +8,7 @@
 #include "npc_fmdengon.h"
 #include "family.h"
 #include "npc_scheduleman.h"
+#include <utils/util_time.h>
 
 #define DENGONFILELINENUM      35     // 整个公布栏的资料笔数
 #define FMSDENGONFILELINENUM   140    // 家族间的留言板资料笔数

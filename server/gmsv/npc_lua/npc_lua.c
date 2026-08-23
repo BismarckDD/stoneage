@@ -80,97 +80,52 @@ static luaL_Reg Bit_RegList[] = {
 static luaL_Reg Map_RegList[] = {
 
     {"CheckCoordinates", NPC_Lua_Map_CheckCoordinates},
-
     {"GetExitFloorXY", NPC_Lua_Map_GetExitFloorXY},
-
     {"GetfloorX", NPC_Lua_Map_GetfloorX},
-
     {"GetfloorY", NPC_Lua_Map_GetfloorY},
-
     {"GetTileAndObjId", NPC_Lua_Map_GetTileAndObjId},
-
     {"SetTileAndObjId", NPC_Lua_Map_SetTileAndObjId},
-
     {"GetWalkAbleFromPoint", NPC_Lua_Map_GetWalkAbleFromPoint},
-
     {"GetImageData", NPC_Lua_Map_GetImageData},
-
     {"SetImageData", NPC_Lua_Map_SetImageData},
-
     {"GetTopObj", NPC_Lua_Map_GetTopObj},
-
     {"GetNextObj", NPC_Lua_Map_GetNextObj},
-
     {"CheckImageIndex", NPC_Lua_Map_CheckImageIndex},
-
     {"CheckIndex", NPC_Lua_Map_CheckIndex},
-
     {"MakeNewMap", NPC_Lua_Map_MakeNewMap},
-
     {"DelNewMap", NPC_Lua_Map_DelNewMap},
-
     {"SetExWarp", NPC_Lua_Map_SetExWarp},
-
     {"SetMapPoint", NPC_Lua_Map_SetMapPoint},
-
     {"DelMapPoint", NPC_Lua_Map_DelMapPoint},
-
     {"getFloorName", NPC_Lua_Map_getFloorName},
 
 #ifdef _UPMAP_
-
     {"UpMap", NPC_Lua_Map_Upmap},
-
 #endif
-
     {"检测范围", NPC_Lua_Map_CheckCoordinates},
-
     {"检测地图是否登出", NPC_Lua_Map_GetExitFloorXY},
-
     {"取X", NPC_Lua_Map_GetfloorX},
-
     {"取Y", NPC_Lua_Map_GetfloorY},
-
     {"取x", NPC_Lua_Map_GetfloorX},
-
     {"取y", NPC_Lua_Map_GetfloorY},
-
     {"取地板装饰", NPC_Lua_Map_GetTileAndObjId},
-
     {"置地板装饰", NPC_Lua_Map_SetTileAndObjId},
-
     {"是否走动", NPC_Lua_Map_GetWalkAbleFromPoint},
-
     {"取数据", NPC_Lua_Map_GetImageData},
-
     {"置数据", NPC_Lua_Map_SetImageData},
-
     {"取物件", NPC_Lua_Map_GetTopObj},
-
     {"取下一个物件", NPC_Lua_Map_GetNextObj},
-
     {"检测图片索引", NPC_Lua_Map_CheckImageIndex},
-
     {"检测地图", NPC_Lua_Map_CheckIndex},
-
     {"制作地图", NPC_Lua_Map_MakeNewMap},
-
     {"删除地图", NPC_Lua_Map_DelNewMap},
-
     {"置退出传送点", NPC_Lua_Map_SetExWarp},
-
     {"置传送点", NPC_Lua_Map_SetMapPoint},
-
     {"删除传送点", NPC_Lua_Map_DelMapPoint},
-
     {"取原名", NPC_Lua_Map_getFloorName},
-
 #ifdef _UPMAP_
-
     {"更新", NPC_Lua_Map_Upmap},
-
 #endif
-
     {NULL, NULL},
 
 };
@@ -3392,60 +3347,36 @@ void NPC_Lua_BattleWinCallBack(int _battleindex, int _createindex)
 
     return;
   }
-
   return;
 }
 
 int NPC_GivePet(int char_index, int lv, int enemyid)
-
 {
-
   int petindex = -1;
-
   int enemyarray = -1;
-
   int i = 0;
-
   enemyarray = ENEMY_getEnemyArrayFromId(enemyid);
-
   petindex = ENEMY_createPetFromEnemyIndex(char_index, enemyarray);
-
   if (!CHAR_CHECKINDEX(petindex))
     return -1;
 
   for (i = 0; i < CHAR_MAXPETHAVE; i++)
-
   {
-
     if (CHAR_getCharPet(char_index, i) == petindex)
       break;
   }
 
   if (i != CHAR_MAXPETHAVE)
-
   {
-
     if (CHAR_CHECKINDEX(petindex) == TRUE)
-
-    {
-
       CHAR_setMaxExpFromLevel(petindex, CHAR_getInt(petindex, CHAR_LV));
-    }
-
     if (lv > 0)
-
     {
-
       int k = 0;
-
       for (k = CHAR_getInt(petindex, CHAR_LV); k < lv; k++)
-
       { // 升级
-
         CHAR_PetLevelUpExInfc(petindex, k);
-
         CHAR_PetAddVariableAi(petindex, AI_FIX_PETLEVELUP);
-
         CHAR_setInt(petindex, CHAR_LV, k + 1);
       }
     }
@@ -3468,13 +3399,9 @@ int NPC_GivePet(int char_index, int lv, int enemyid)
     LogPet
 
         (
-
             CHAR_getChar(char_index, CHAR_NAME),
-
             CHAR_getChar(char_index, CHAR_CDKEY),
-
             CHAR_getChar(petindex, CHAR_NAME),
-
             CHAR_getInt(petindex, CHAR_LV),
 
             "GivePet",
@@ -4650,22 +4577,15 @@ void NPC_Lua_SQLPushCallBack(char *_result, char *_filename, char *_function,
 
     CHAR_talkToCli(_playerindex, -1, NPC_Lua_popstring(-1), CHAR_COLORRED);
 
-  } else
-
+  } 
+  else
   {
-
     int TM_Ret = 0;
-
     lua_getglobal(M_Script_Lua, (const char *)_function);
-
     lua_pushstring(M_Script_Lua, _result);
-
     lua_pushinteger(M_Script_Lua, (lua_Integer)_playerindex);
-
     lua_pushinteger(M_Script_Lua, (lua_Integer)_npcindex);
-
     lua_pushstring(M_Script_Lua, _msg);
-
     TM_Ret = lua_pcall(M_Script_Lua, 4, 0, 0);
 
     if (TM_Ret != 0)
@@ -4676,11 +4596,8 @@ void NPC_Lua_SQLPushCallBack(char *_result, char *_filename, char *_function,
 
       print("NPC_Lua_SQLPushCallBack Lua Err :%d(%s)\n", TM_Ret,
             lua_tostring(M_Script_Lua, -1));
-
       // 出栈
-
       lua_pop(M_Script_Lua, 1);
-
       return;
     }
   }
@@ -4688,49 +4605,13 @@ void NPC_Lua_SQLPushCallBack(char *_result, char *_filename, char *_function,
 
 #endif
 
-void NPC_Lua_NEWSHOP_Recv(char *function, int char_index)
-
-{
-
-  if (M_Script_Lua == NULL)
-
-  {
-
-    print("M_Script_Lua Null!");
-
-    return;
-  }
-
-  int TM_Ret = 0;
-  BOOL TM_BoolRet = FALSE;
-  lua_getglobal(M_Script_Lua, (const char *)function);
-  lua_pushinteger(M_Script_Lua, (lua_Integer)char_index);
-  TM_Ret = lua_pcall(M_Script_Lua, 1, 0, 0);
-
-  if (TM_Ret != 0)
-
-  {
-
-    print("NPC_Lua_NEWSHOP_Recv Lua Err :%d(%s)\n", TM_Ret,
-          lua_tostring(M_Script_Lua, -1));
-
-    lua_pop(M_Script_Lua, 1);
-
-    return;
-  }
-}
 #ifdef _CHARSIGNDAY_
 
 void NPC_Lua_CharSignDay_Recv(char *function, int char_index)
-
 {
-
   if (M_Script_Lua == NULL)
-
   {
-
     print("M_Script_Lua Null!");
-
     return;
   }
   int TM_Ret = 0;

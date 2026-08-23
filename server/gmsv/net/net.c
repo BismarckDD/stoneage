@@ -533,7 +533,7 @@ static int shiftRB(int fd, int len) {
   return len;
 }
 
-SINGLETHREAD int lsrpcClientWriteFunc(int fd, char *buf, int size) {
+SINGLETHREAD int lsrpcClientWriteFunc(int fd, const char *buf, int size) {
   int r;
 
   if (Connect[fd].use == FALSE) {

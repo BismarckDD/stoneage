@@ -1,7 +1,7 @@
 #ifndef __ITEM_H__
 #define __ITEM_H__
 
-#include "util_type.h"
+#include "utils/util_type.h"
 #include "char_base.h"
 
 #ifdef _SIMPLIFY_ITEMSTRING
@@ -422,5 +422,7 @@ void ITEM_getDefaultItemData(int itemID, ITEM_Item *itm);
 #ifdef _PET_ITEM
 char *ITEM_petmakeItemStatusString(int petindex, int item_id);
 #endif
+
+BOOL ITEM_checksetdata(void);
 
 #endif

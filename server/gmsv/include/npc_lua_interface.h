@@ -119,8 +119,7 @@ void NPC_Lua_SQLPushAdvCallBack(int luaresult,int luaflg,int luaerrnono,char* lu
 #endif
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif //#ifndef __NPC_LUA_INTERFACE__
-void NPC_Lua_NEWSHOP_Recv(char* function, int char_index);
-#ifdef _CHARSIGNDAY_
+#ifdef _CHARSIGNDAY_
 void NPC_Lua_CharSignDay_Recv(char* function,int char_index);
 #endif
 

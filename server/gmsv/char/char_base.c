@@ -2,9 +2,8 @@
 //
 #include "util.h"
 #include "saac_client.h"
+#include "char_base.h"
 
-// Forward declaration (defined later in this file)
-int CheckCharMaxItem(int charindex);
 // CoolFish: 2001/10/12  _UNIQUE_P_I
 #include "anim_tbl.h"
 #include "autil.h"
@@ -23,10 +22,9 @@ int CheckCharMaxItem(int charindex);
 
 // CoolFish: 2001/10/29
 #include "log.h"
-extern int CheckCharMaxItemChar(Char *ch);
+
 Char *CHAR_chara;
 #ifdef _NEW_ITEM_
-
 extern int CheckCharMaxItem(int charindex);
 #endif
 static int CHAR_charanum;

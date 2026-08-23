@@ -6,7 +6,6 @@
 #include "mylua/base.h"
 #include "mylua/mylua.h"
 
-#ifdef _ALLBLUES_LUA
 extern MY_Lua MYLua;
 
 lua_State *FindLua(char *filename) {
@@ -1941,5 +1940,4 @@ BOOL RedMoneyFunction(int char_index, char *data) {
   docall(lua, 2, 1);
   return TRUE;
 }
-#endif
 #endif

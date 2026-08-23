@@ -448,7 +448,7 @@ BOOL GROUP_initGroup(const char *filename) {
   int group_readlen = 0;
   int i, j;
   BOOL crypto = FALSE;
-  FILE *f = open_realop_file(filename, crypto);
+  FILE *f = open_realop_file(filename, &crypto);
   if (f == NULL) {
     print("文件打开失败\n");
     return FALSE;

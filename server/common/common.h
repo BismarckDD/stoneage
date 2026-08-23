@@ -2,6 +2,7 @@
 #define __COMMON_COMMON_H__
 
 #include <assert.h>
+#include <ctype.h>
 #include <errno.h>
 #include <signal.h>
 #include <stdint.h>
@@ -208,4 +209,8 @@ static inline char *sa_fgets_text(char *buffer, int size, FILE *stream) {
   ((((a) << 24) & 0xFF000000) | (((b) << 16) & 0x00FF0000) |                   \
    (((c) << 8) & 0x0000FF00) | ((d) & 0x000000FF))
 
+
+extern char* strncpysafe(char*, const int, const char*);
+extern char* strncpysafe2(char*, const int, const char*, const char*);
+extern char* strncatsafe(char*, const char*, const int);
 #endif // __COMMON_COMMON_H__

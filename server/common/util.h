@@ -5,6 +5,7 @@
 #include "utils/util_file.h"
 #include "utils/util_string.h"
 #include "utils/util_type.h"
+#include "utils/util_time.h"
 #include "utils/md5.h"
 
 BOOL strtolchecknum(char *text, void *number, int base, CTYPE type);

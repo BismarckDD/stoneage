@@ -2,12 +2,8 @@
 #define __NPC_LUA__
 
 #include "npc_lua_interface.h"
-#include "../lua/lua.h"
-#include "../lua/lauxlib.h"
-#include <string.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <assert.h>
+#include "lua/lua.h"
+#include "lua/lauxlib.h"
 
 #define LUA_DATALINE0 0
 #define LUA_DATALINE1 2000
@@ -26,14 +22,14 @@ typedef struct __CREATEENEMY
 typedef struct __SCRIPTREGLIB
 {
 	const char *LibName;				//函数库名
-	luaL_reg *FuncRegList;			//需要注册的函数库函数列表
+	luaL_Reg *FuncRegList;			//需要注册的函数库函数列表
 }SCRIPTREGLIB,*PSCRIPTREGLIB;
 
 typedef struct __SCRIPTREGCLASS
 {
 	const char *ClassName;			//类型名
 	PSCRIPTREGLIB NewLib;				//用于申请类实例的 SCRIPTREGLIB
-	luaL_reg *FuncRegList;			//需要注册的类函数列表
+	luaL_Reg *FuncRegList;			//需要注册的类函数列表
 }SCRIPTREGCLASS,*PSCRIPTREGCLASS;
 
 typedef struct __SCRIPTREGARRAY
@@ -536,7 +532,8 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //释放结果集
 
 #define LRetArray(L, Array, num) \
 { \
-	Lua_ReturnArray(L, Array, num); \
+    // 2026.08.23 找不到Lua_ReturnArray.	
+	// Lua_ReturnArray(L, Array, num); \
 	LRet(1); \
 }
 
