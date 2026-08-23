@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include "util.h"
+#include "workspace.h"
 
 // #define CHARVALUE_MAX 1024
 #define MAXTABLE 16

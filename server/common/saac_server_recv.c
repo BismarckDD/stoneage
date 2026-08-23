@@ -3,6 +3,7 @@
 #include "recv.h"
 #include "saac_config.h"
 #include "saac_server.h"
+#include "utils/util_string.h"
 
 //
 #include "char.h"
@@ -17,6 +18,10 @@
 
 // CoolFish: Family 2001/5/9
 #include "acfamily.h"
+
+// Defined in saac/main.c
+extern int mission_table_save(void);
+extern void mission_table_delete(int index);
 
 char retdata[CHARDATASIZE];
 char result[CHARDATASIZE];

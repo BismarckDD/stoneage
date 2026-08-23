@@ -3,6 +3,13 @@
 #include "tcp_struct.h"
 #include "main.h"
 
+#ifndef _WIN32
+#include <arpa/inet.h>
+#endif
+
+// Forward declaration (defined in main.c)
+extern int releaseMemBuf(const int index);
+
 int tcpstruct_init(char *addr, int p, int timeout_ms, int mem_use, int db) {
 
   // 初始化 g_mem_buffer

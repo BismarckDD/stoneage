@@ -396,7 +396,7 @@ char *descape_string(WorkSpace *ws, const char *a) {
 
 #define FREE(x) if (x != NULL) free(x);
 
-int InitWorkSpace(WorkSpace *ws, int (*write_func)(int, char*, int),
+int InitWorkSpace(WorkSpace *ws, int (*write_func)(int, const char*, int),
                   const int work_buf_size, const int string_buffer_size) {
 
   ws->work_buf_size = work_buf_size;

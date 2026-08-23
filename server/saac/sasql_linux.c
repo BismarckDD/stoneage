@@ -2,6 +2,7 @@
 #include "version.h"
 
 #ifdef _SASQL // 新添加
+#include "acfamily.h"
 #include "main.h"
 #include "sasql.h"
 #include "util.h"

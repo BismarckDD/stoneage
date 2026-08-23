@@ -4,7 +4,7 @@ export AR=ar cr
 export RANLIB=ranlib
 export SHELL=/bin/sh
 
-INCFLAGS=-I.
+INCFLAGS=-I. -I./utils
 CFLAGS=-m64 -w -O3 -Wall -pipe $(INCFLAGS) -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 SAAC_CFLAGS=$(CFLAGS) -I../saac/include
 GMSV_CFLAGS=$(CFLAGS) -I../gmsv/include -I../lua

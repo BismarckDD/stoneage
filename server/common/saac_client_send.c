@@ -8,7 +8,7 @@
 extern WorkSpace gSaacWorkSpace;
 WorkSpace *ws = &gSaacWorkSpace;
 
-int SaacClient_InitClient(int (*write_func)(int, char *, int),
+int SaacClient_InitClient(int (*write_func)(int, const char *, int),
                           int work_buffer_size, int fd) {
   (void)fd;
   if (ws->work != NULL) {

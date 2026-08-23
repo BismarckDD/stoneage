@@ -1,6 +1,7 @@
 #define __COMMON_UTILS_UTIL_STRING_C__
 
 #include "util_string.h"
+#include "workspace.h"
 
 #define PRIME 211
 

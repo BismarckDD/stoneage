@@ -15,8 +15,12 @@
 #include "saac_server.h"
 #include "tcp_struct.h"
 #include "util.h"
+#include "utils/util_time.h"
 #ifdef _SEND_EFFECT // WON ADD 送下雪、下雨等特效
 #include "recv.h"
+#endif
+#ifndef _WIN32
+#include <execinfo.h>
 #endif
 
 #ifdef _SASQL
@@ -56,6 +60,10 @@ int mission_table_init(void);
 int mission_table_save(void);
 void checkMissionTimelimit(void);
 #endif
+
+// Memory buffer allocation/release (defined later in this file)
+int allocateMemBuf(void);
+int releaseMemBuf(const int index);
 
 // Arminius 7.20 memory unlock
 // 处理用户自定义信号的方法

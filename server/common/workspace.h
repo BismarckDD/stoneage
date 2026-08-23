@@ -16,7 +16,7 @@ char *strncpysafe2(char *des, const int des_len, const char *first, const char *
 char *strncatsafe(char *des, const char *src, const int des_len);
 
 typedef struct tagWorkSpace {
-  int (*write_func)(int, char *, int); /* write function */
+  int (*write_func)(int, const char *, int); /* write function */
   int work_buf_size;              /* size of work area */
   int string_buffer_size;
   char *work;
@@ -105,7 +105,7 @@ char *demkstr_string(WorkSpace *workspace, const char *value);
 
 char *escape_string(WorkSpace *ws, const char *a);
 char *descape_string(WorkSpace *ws, const char *a);
-int InitWorkSpace(WorkSpace *ws, int (*write_func)(int, char *, int),
+int InitWorkSpace(WorkSpace *ws, int (*write_func)(int, const char *, int),
               const int work_buf_size, const int string_buffer_size);
 void FreeWorkSpace(WorkSpace *ws);
 

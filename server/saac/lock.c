@@ -1,5 +1,6 @@
 #define __LOCK_C__
 #include "lock.h"
+#include "sasql.h"
 
 void Lock_Init(void) {
   int i;

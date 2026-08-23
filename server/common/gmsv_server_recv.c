@@ -19,6 +19,7 @@
 #include "pet_skill.h"
 #include "petmail.h"
 #include "readmap.h"
+#include "saac_client.h"
 #include "trade.h" // CoolFish: Trade 2001/4/18
 #include "util.h"
 #ifdef _AUTO_PK
@@ -32,6 +33,10 @@
 #include "chatroom.h"
 #endif
 extern int player_online;
+
+// Forward declarations for functions defined in gmsv source
+extern int CheckCharMaxItem(int charindex);
+extern BOOL FreeSaMenu(int char_index, int menu_index);
 BOOL checkStringErr(char *);
 
 extern struct FM_PKFLOOR fmpkflnum[FAMILY_FMPKFLOOR];

@@ -2,7 +2,7 @@ export CC=gcc
 export RM=rm -f
 
 INCFLAGS=-I../common -I./include
-CFLAGS=-m64 -w -O3 -g -pipe -Wall $(INCFLAGS) -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
+CFLAGS=-m64 -w -O3 -g -pipe -Wall -fcommon $(INCFLAGS) -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
 
 ifeq ($(shell uname),CYGWIN_NT-5.1)
 	SQLSRC=sasql_cygwin.c
@@ -11,7 +11,7 @@ ifeq ($(shell uname),CYGWIN_NT-5.1)
 endif
 ifeq ($(shell uname),Linux)
 	SQLSRC=sasql_linux.c
-	SQL=-L /usr/lib64/mysql/ -lmysqlclient -lz -lpthread
+	SQL=-L /usr/lib/x86_64-linux-gnu/ -lmysqlclient -lz -lpthread
 	TARGET=../../csa/saac/saacjt
 endif
 

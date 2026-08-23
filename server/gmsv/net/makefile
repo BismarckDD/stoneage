@@ -1,4 +1,4 @@
-INCFLAGS=-I../include -I../../lua -I../../common
+INCFLAGS=-I../include -I../../lua -I../../common -I../../common/utils
 CFLAGS=-m64 -w -O3 -Wall -pipe $(INCFLAGS)
 
 TARGET=libnet.a

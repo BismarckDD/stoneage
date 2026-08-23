@@ -5,7 +5,7 @@ export MV=mv
 export RANLIB=ranlib
 export SED=sed
 
-INCFLAGS=-I../include -I../../lua -I../../common
+INCFLAGS=-I../include -I../../lua -I../../common -I../../common/utils
 CFLAGS=-m64 -w -O3 -Wall -pipe $(INCFLAGS)
 TARGET=libmylua.a
 SRC=$(wildcard *.c)

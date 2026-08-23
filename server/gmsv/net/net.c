@@ -4,6 +4,7 @@
 #include "gmsv_server.h"
 #include "saac_client.h"
 #include "util.h"
+#include "utils/util_time.h"
 // gmsv
 #include "net.h"
 #include "buf.h"
@@ -15,6 +16,14 @@
 #include "log.h"
 #include "msignal.h"
 #include "object.h"
+
+#ifndef _WIN32
+#include <arpa/inet.h>
+#endif
+
+// Forward declarations for functions without headers
+extern int GmsvServer_ServerDispatchMessage(int fd, char *encoded);
+extern int getConnectnum(void);
 // Arminius 7.31 cursed stone
 #include "battle.h"
 #include "char_talk.h"

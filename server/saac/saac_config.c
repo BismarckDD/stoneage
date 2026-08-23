@@ -1,5 +1,6 @@
 #define __SAAC_CONFIG_C__
 #include "saac_config.h"
+#include "utils/util_string.h"
 
 
 static char buf[2048];

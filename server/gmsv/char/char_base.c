@@ -2,6 +2,9 @@
 //
 #include "util.h"
 #include "saac_client.h"
+
+// Forward declaration (defined later in this file)
+int CheckCharMaxItem(int charindex);
 // CoolFish: 2001/10/12  _UNIQUE_P_I
 #include "anim_tbl.h"
 #include "autil.h"

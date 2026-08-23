@@ -6,16 +6,16 @@ export RANLIB=ranlib
 export SED=sed
 export SHELL=/bin/sh
 
-INCFLAGS=-I./include -I../lua -I../common
+INCFLAGS=-I./include -I../lua -I../common -I../common/utils
 CFLAGS=-m64 -w -O3 -Wall -pipe $(INCFLAGS)
 
 ifeq ($(shell uname),Linux)
-	SQL=-L/usr/lib/mysql/ -lmysqlclient -lz
+	SQL=-L/usr/lib/x86_64-linux-gnu/ -lmysqlclient -lz
 	TARGET=../../csa/gmsv/gmsvjt
 endif
 
 COMMON_LIBS=../common/libsaacclient.a ../common/libgmsvserver.a ../common/libserverutil.a ../common/libutil.a
-SUBDIR=char npc net map item battle magic mylua lua npc_lua utils
+SUBDIR=char npc net map item battle magic mylua lua npc_lua
 LIBS=net/libnet.a char/libchar.a npc/libnpc.a map/libmap.a item/libitem.a magic/libmagic.a battle/libbattle.a mylua/libmylua.a npc_lua/libnpc_lua.a ../lua/libluajit.a $(COMMON_LIBS)
 
 SRC=main.c init.c config_file.c buf.c msignal.c shop.c object.c handletime.c function.c log.c autil.c descrypt.c const.c
@@ -52,7 +52,7 @@ clean:
 	$(RM) $(OBJ)
 	$(RM) *~
 
-CUSTOM_DIR=char npc net map item battle magic longzoro mylua utils
+CUSTOM_DIR=char npc net map item battle magic mylua
 clear:
 	@for dir in $(CUSTOM_DIR); do\
 		$(MAKE) -C $$dir clean;\
