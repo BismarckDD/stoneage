@@ -49,7 +49,7 @@ int 自动登陆是否开启 = 0;
 #endif
 //-------------------------------------------END------------------------
 int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType) {
-  return MessageBoxGbk(hWnd, lpText, lpCaption, uType);
+  return MessageBoxUtf8(hWnd, lpText, lpCaption, uType);
 }
 
 BOOL NoDelay = FALSE; // TCP_NODELAY
@@ -669,7 +669,7 @@ void ChangeWindowMode(void) {
                           clientRect.bottom - clientRect.top, NULL, NULL, hInst,
                           NULL);
     if (hWnd != NULL)
-      SetWindowTextGbk(hWnd, DEF_APPNAME);
+      SetWindowTextUtf8(hWnd, DEF_APPNAME);
   } else {
     // ???????????
     SetWindowLong(hWnd, GWL_STYLE, windowStyle);

@@ -172,6 +172,12 @@ static char *gButtonList[] = {
     "确  定", "取  消",
     "上一页", "下一页" };
 
+char data[256];
+char msg[256];
+
+const char cCheckingIn[] = "签入中";
+const char cLoginingGame[] = "登入游戏中，请稍候！";
+
 // 账号密码界面(启动后第一个页面)的生成和控制逻辑
 void idPasswordProc(void)
 {
@@ -182,7 +188,6 @@ void idPasswordProc(void)
     BOOL flag = FALSE;
     int ret;
     static char msg[256];
-    static char szWGSState[] = "登入游戏中，请稍候！";
     if (SubProcNo == 0)
     {
         PaletteChange(DEF_PAL, 0);
@@ -233,7 +238,7 @@ void idPasswordProc(void)
     }
     if (SubProcNo == 3)
     {
-        w = (strlen(szWGSState) + 3) * 9 / 64 + 2;
+        w = (strlen(cLoginingGame) + 3) * 9 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -266,7 +271,7 @@ void idPasswordProc(void)
             {
                 if (iWGS == 7)
                     isWGS7 = 1; // Nuke 0615: Avoid 7's lock
-                wsprintf(msg, "%s(%d)", szWGSState, iWGS);
+                wsprintf(msg, "%s(%d)", cLoginingGame, iWGS);
                 int len = strlen(msg);
                 int xx = (w * 64 - len * 8) / 2;
                 int yy = (h * 48 - 16) / 2;
@@ -612,7 +617,7 @@ void SelectServerProc(void)
     {
         char str[128];
         sprintf_s(str, "%s %s", DEF_APPNAME, SA_VERSION);
-        SetWindowTextGbk(hWnd, str);
+        SetWindowTextUtf8(hWnd, str);
         if (0 < strlen(szAnnouncement))
             SubProcNo = 200;
         else
@@ -706,7 +711,7 @@ void SelectServerProc(void)
             char str[128];
             SubProcNo = 1;
             sprintf_s(str, "%s %s", DEF_APPNAME, SA_VERSION);
-            SetWindowTextGbk(hWnd, str);
+            SetWindowTextUtf8(hWnd, str);
         }
     }
     if (SubProcNo == 200)
@@ -789,7 +794,7 @@ int renderGroupSelectionBox()
                 nServerGroup = id;
             char title[256];
             sprintf_s(title, "%s %s %s", DEF_APPNAME, SA_VERSION, gmgroup[nServerGroup].name);
-            SetWindowTextGbk(hWnd, title);
+            SetWindowTextUtf8(hWnd, title);
             DeathAction(ptActSelectServerWin);
             ptActSelectServerWin = NULL;
             play_se(217, 320, 240); // click声
@@ -961,12 +966,13 @@ int connecGameServer(void)
     static int x, y, w, h;
     int ret = 0;
     int ret2;
-    static char msg[256];
+    static char sServerConnectingStr[256];
     if (connectGameServerProcNo == 0)
     {
         connectGameServerProcNo = 1;
-        sprintf_s(msg, "%s服务器连线中", gmsv[selectServerIndex].name);
-        w = (strlen(msg) * 9 + 63) / 64;
+        sprintf_s(sServerConnectingStr, "%s服务器连线中",
+            gmsv[selectServerIndex].name);
+        w = (strlen(sServerConnectingStr) * 9 + 63) / 64;
         if (w < 2)
             w = 2;
         h = (16 + 47) / 48;
@@ -1018,7 +1024,6 @@ int connecGameServer(void)
         int yy = (h * 48 - 16) / 2;
         StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
     }
-
     return ret;
 }
 
@@ -1122,22 +1127,20 @@ void selectCharacterProc(void)
             resetCharacterList(selectPcNo);
             clearUserSetting(selectPcNo);
 #endif
-
             saveNowState();
             if (maxPcNo > 0)
                 maxPcNo--;
             SubProcNo = 10;
         }
         else if (ret == -2)
-        {
             SubProcNo = 300;
-        }
     }
     if (SubProcNo == 100)
     {
         initCommonMsgWin();
         SubProcNo++;
     }
+    // 回到服务器选择页面
     if (SubProcNo == 101)
     {
         if (commonMsgWin(msg))
@@ -1157,11 +1160,7 @@ void selectCharacterProc(void)
         if (commonMsgWin("人物无法删除。"))
             SubProcNo = 10;
     }
-
     ret = selGraId(btnGraId, sizeof(btnGraId) / sizeof(int));
-#ifdef _AIDENGLU_
-    extern int 自动登陆是否开启;
-#endif
     if (ret == 0)
     {
         fade_out_bgm();
@@ -1179,60 +1178,28 @@ void selectCharacterProc(void)
 
         play_se(217, 320, 240); // click声
     }
-    else if ((3 <= ret && ret <= 4)
-#ifdef _AIDENGLU_
-             || (自动登陆是否开启 && SubProcNo == 11)
-#endif
-    )
+    else if ((3 <= ret && ret <= 4))
     {
         int 选择人物;
-#ifdef _AIDENGLU_
-        if (自动登陆是否开启)
-            选择人物 = PcLanded.人物;
-        else
-#endif
-#ifdef _MORECHARACTERS_
-            选择人物 = ret - 3 + 多人物当前页数 * 2;
-#else
         选择人物 = ret - 3;
-#endif
         char name[CHAR_NAME_LEN + 1];
         strcpy(name, chartable[选择人物].name);
         strcpy(gamestate_login_charname, name);
-#ifdef _AIDENGLU_
-        if (自动登陆是否开启)
-            selectPcNo = PcLanded.人物;
-        else
-#endif
-            selectPcNo = ret - 3;
-
+        selectPcNo = ret - 3;
         newCharacterFaceGraNo = chartable[选择人物].faceGraNo;
         loginDp = chartable[选择人物].dp;
-#ifdef _PKSERVERCHARSEL // (不可开) Syu ADD PK服务器选择星系人物
-        PkMenuflag = 0;
-#endif
         ChangeProc(PROC_CHAR_LOGIN_START);
         play_se(217, 320, 240); // click声
         map_bgm_no = 0;
         if (ret == 3)
-        {
             sCharSide = 1;
-        }
         else
-        {
             sCharSide = 2;
-        }
     }
     else if (5 <= ret && ret <= 6)
     {
         char name[CHAR_NAME_LEN + 1];
-
-#ifdef _MORECHARACTERS_
-        strcpy(name, chartable[ret - 5 + 多人物当前页数 * 2].name);
-#else
         strcpy(name, chartable[ret - 5].name);
-#endif
-        // cary test        sjisStringToEucString( name );
         strcpy(gamestate_deletechar_charname, name);
         selectPcNo = ret - 5;
         SubProcNo = 20;
@@ -1322,9 +1289,10 @@ void selectCharacterProc(void)
                                     DISP_PRIO_CHAR, CG_CHR_SEL_DEL_BTN, btnUseFlag);
             }
 #else
-// 判断(0, 1)角色是否存在
+// 判断 i == (0, 1)角色是否存在
             if (existCharacterListEntry(i))
             {
+                // 这里的ii,ix,iy是什么意思？
                 StockDispBuffer(169 + i * (304 + ii) + ix, 84 + iy, DISP_PRIO_CHAR, chartable[i].faceGraNo, 0);
                 x = (144 - strlen(chartable[i].name) * 9) / 2;
                 StockFontBuffer(93 + i * (304 + ii) + x + ix, 127 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, chartable[i].name, 0);
@@ -1356,8 +1324,7 @@ void selectCharacterProc(void)
                     }
                 }
                 login = chartable[i].login;
-                if (login >= 1000)
-                    login = 9999;
+                if (login >= 1000) login = 9999;
                 sprintf_s(msg, "%4d", login);
                 StockFontBuffer(156 + i * (304 + ii) + ix, 284 + iy,
                                 FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
@@ -1810,11 +1777,10 @@ static int selCharGraNoProcNo;
 static int nowSelCharGraNo;             // Char GraNo
 static int nowSelCharMouthNo;           // Char 嘴形状
 static int nowSelCharEyeNo;             // Char 眼睛形状
-static int nowSelCharStatusPoint;       // ??????????????????
-static int nowSelCharStatus[4];         // ?????????(?????????)
-static int nowSelCharAttrPoint;         // ?????????????
-static int nowSelCharAttr[4];           // 
-
+static int nowSelCharStatusPoint;       // Char 剩余的四维点数
+static int nowSelCharStatus[4];         // Char 的攻防血敏四维
+static int nowSelCharAttrPoint;         // Char 剩余的属性点数
+static int nowSelCharAttr[4];           // Char 的地水火风属性
 static int editCharParamProcNo;
 STR_BUFFER selCharName;
 static int selCharNameBoxX, selCharNameBoxY;
@@ -1836,11 +1802,7 @@ int createChar(void);
 void initSelHomeTown(void);
 int selHomeTown(void);
 
-void initMakeCharacter(void)
-{
-}
-
-// ?????????
+void initMakeCharacter(void) {}
 void makeCharacterProc(void)
 {
     int ret;
@@ -1917,11 +1879,9 @@ void makeCharacterProc(void)
 #else
         ret = selHomeTown();
 #endif
-        // ?
         if (ret == 1)
         {
             SubProcNo = 30;
-            // ????????????
 #ifdef _MORECHARACTERS_
             resetCharacterList(selectPcNo + 多人物当前页数 * 2);
             clearUserSetting(selectPcNo + 多人物当前页数 * 2);
@@ -1950,16 +1910,11 @@ void makeCharacterProc(void)
             strcpy(gamestate_login_charname, newCharacterName);
             ChangeProc(PROC_CHAR_LOGIN_START);
             createCharFlag = 1;
-            // return;
         }
         else if (ret == 2)
-        {
             SubProcNo = 100;
-        }
-        selHomeTown(); // ?????
+        selHomeTown(); // 选择出生地
     }
-
-    // ???
     if (SubProcNo == 100)
     {
         initCommonMsgWin();
@@ -1970,15 +1925,13 @@ void makeCharacterProc(void)
         extern char 创建人物内容提示[512];
         if (commonMsgWin(创建人物内容提示))
         {
-            // ＯＫ????????
             ChangeProc(PROC_CHAR_SELECT, 10);
-            // return;
         }
         selHomeTown(); // ?????
     }
 
-    RunAction();           // ?????????
-    StockTaskDispBuffer(); // ???????????????
+    RunAction();
+    StockTaskDispBuffer();
 }
 
 // ?????????
@@ -2108,14 +2061,10 @@ int selCharGraNo(void)
 #endif
                 }
                 else
-                {
                     ptActSelChar[i]->anim_no = ANIM_STAND;
-                }
             }
         }
     }
-
-    // ???????
     if (selCharGraNoProcNo == 2)
     {
         initSelCharGraColorWin();
@@ -2128,18 +2077,17 @@ int selCharGraNo(void)
         {
             ret = 1;
         }
-        else
-            if (ret2 == 2)
-            {
-                selCharGraNoProcNo = 1;
-                nowSelCharGraNo = -1;
-            }
+        else if (ret2 == 2)
+        {
+            selCharGraNoProcNo = 1;
+            nowSelCharGraNo = -1;
+        }
     }
     id = selGraId(selCharCanselGraId, sizeof(selCharCanselGraId) / sizeof(int));
     if (id == 0)
     {
         ret = 2;
-        play_se(217, 320, 240); // ?????
+        play_se(217, 320, 240);
     }
     if (ret != 0)
     {
@@ -2153,7 +2101,6 @@ int selCharGraNo(void)
         }
     }
 
-    // ????
     for (i = 0; i < MaxSelectChar; i++)
     {
         if (ptActSelChar[i] != NULL)
@@ -2177,19 +2124,9 @@ int selCharGraNo(void)
     {
         id = focusGraId(selCharCanselGraId, sizeof(selCharCanselGraId) / sizeof(int));
         if (id == 0)
-        {
             ShowBottomLineString(FONT_PAL_WHITE, "回到前一个画面。");
-        }
-#ifdef _TAIKEN
-        else if (taikenFlag)
-        {
-            ShowBottomLineString(FONT_PAL_WHITE, "体验版不能选择！");
-        }
-#endif
         else
-        {
             ShowBottomLineString(FONT_PAL_WHITE, "请选择一个人物。");
-        }
 #ifdef _NEW_WIN_POS_
         selCharCanselGraId[0] =
             StockDispBuffer(64, 520, DISP_PRIO_BG, CG_CHR_MAKE_BACK_BTN, 2);
@@ -2200,22 +2137,16 @@ int selCharGraNo(void)
 #endif
     }
 
+    // 2026.08.23 修复角色选择页面背景问题
     if (ret == 0)
-    {
-#ifdef _NEW_WIN_POS_
-        StockDispBuffer(400, 300, DISP_PRIO_BG, CG_CHR_MAKE_SEL_BG, 0);
-#else
-        StockDispBuffer(320, 240, DISP_PRIO_BG, CG_CHR_MAKE_SEL_BG, 0);
-#endif
-    }
-
-    RunAction();           // ?????????
-    StockTaskDispBuffer(); // ???????????????
+        StockDispBufferScaled(SCREEN_WIDTH_CENTER, SCREEN_HEIGHT_CENTER,
+            DISP_PRIO_BG, CG_CHR_MAKE_SEL_BG);
+    RunAction();           //
+    StockTaskDispBuffer(); //
 
     return ret;
 }
 
-// ???????????????
 void initSelCharGraColorWin(void)
 {
     selCharGraColorWinProcNo = 0;
@@ -2929,7 +2860,6 @@ int editCharParam(void)
     sprintf_s(msg, "%3d", nowSelCharStatusPoint);
     StockFontBuffer(161, 224, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
 
-    // ?????????
     for (i = 0; i < 4; i++)
     {
         sprintf_s(msg, "%3d", nowSelCharStatus[i]);
@@ -2939,8 +2869,6 @@ int editCharParam(void)
 
     sprintf_s(msg, "%3d", nowSelCharAttrPoint);
     StockFontBuffer(350, 224, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
-
-    // ????
     for (i = 0; i < 4; i++)
     {
         if (nowSelCharAttr[i] > 0)
@@ -2955,10 +2883,7 @@ int editCharParam(void)
         }
     }
 
-    // ?????
-
     graId[0] = StockDispBuffer(320, 410, DISP_PRIO_CHAR, CG_CHR_MAKE_OK_BTN, selUseFlag);
-    // ??????
     graId[1] = StockDispBuffer(420, 410, DISP_PRIO_CHAR, CG_CHR_MAKE_BACK_BTN, selUseFlag);
 
     for (i = 0; i < 4; i++)
@@ -2968,19 +2893,12 @@ int editCharParam(void)
         if (2 <= id3 && id3 <= 9 && (id3 - 2) / 2 == i)
         {
             if (((id3 - 2) % 2) == 0)
-            {
                 btn1 = 1;
-            }
             else
-            {
                 btn2 = 1;
-            }
         }
-        // < ???
         graId[i * 2 + 2] = StockDispBuffer(statusLocate[i][0] + 51, statusLocate[i][1] + 8,
                                            DISP_PRIO_CHAR, upDownBtnGraNo[0][btn1], selUseFlag);
-
-        // > ???
         graId[i * 2 + 3] = StockDispBuffer(statusLocate[i][0] + 87, statusLocate[i][1] + 8,
                                            DISP_PRIO_CHAR, upDownBtnGraNo[1][btn2], selUseFlag);
     }
@@ -2994,20 +2912,12 @@ int editCharParam(void)
             if (10 <= id3 && id <= 17 && (id3 - 10) / 2 == i)
             {
                 if (((id3 - 10) % 2) == 0)
-                {
                     btn1 = 1;
-                }
                 else
-                {
                     btn2 = 1;
-                }
             }
-
-            // < ???
             graId[i * 2 + 10] = StockDispBuffer(attrLocate[i][0] + 101, attrLocate[i][1] + 5,
                                                 DISP_PRIO_CHAR, upDownBtnGraNo[0][btn1], selUseFlag);
-
-            // > ???
             graId[i * 2 + 11] = StockDispBuffer(attrLocate[i][0] + 137, attrLocate[i][1] + 5,
                                                 DISP_PRIO_CHAR, upDownBtnGraNo[1][btn2], selUseFlag);
         }
@@ -3025,16 +2935,11 @@ int editCharParam(void)
         if (18 <= id3 && id3 <= 21 && (id3 - 18) / 2 == i)
         {
             if (((id3 - 18) % 2) == 0)
-            {
                 btn1 = 1;
-            }
             else
-            {
                 btn2 = 1;
-            }
         }
 
-        // < ???
         graId[i * 2 + 18] =
             StockDispBuffer(156, 172 + i * 24,
                             DISP_PRIO_CHAR, upDownBtnGraNo[0][btn1], selUseFlag);
@@ -3045,13 +2950,9 @@ int editCharParam(void)
     }
 
     if (nowSelCharGraNo != 0 && nowSelCharGraNo != 6)
-    {
         StockDispBuffer(320, 240, DISP_PRIO_CHAR, CG_CHR_MAKE_EYE_SEL, 0);
-    }
     else
-    {
         StockDispBuffer(320, 240, DISP_PRIO_CHAR, CG_CHR_MAKE_NOSE_SEL, 0);
-    }
 #ifdef _DELBORNPLACE // Syu ADD 6.0 统一出生于新手村
     BornPreBtn = 0;
     BornNextBtn = 0;
@@ -3110,16 +3011,13 @@ int editCharParam(void)
         pActPet20 = MakeAnimDisp(BornBaseX - 60, BornBaseY + 45, petinfo[BornPetNum].spr_num, 0);
     }
 #endif
-#ifdef _NEW_WIN_POS_
-    StockDispBuffer(400, 300, DISP_PRIO_BG, CG_CHR_MAKE_BG, 0);
-#else
-    StockDispBuffer(320, 240, DISP_PRIO_BG, CG_CHR_MAKE_BG, 0);
-#endif
-    RunAction();           // ?????????
-    StockTaskDispBuffer(); // ???????????????
-    FlashKeyboardCursor(); // ???????????
-    ImeProc();             // ???????
-
+    // 人物编成
+    StockDispBufferScaled(SCREEN_WIDTH_CENTER, SCREEN_HEIGHT_CENTER,
+        DISP_PRIO_BG, CG_CHR_MAKE_BG);
+    RunAction();
+    StockTaskDispBuffer(); //
+    FlashKeyboardCursor(); // 
+    ImeProc();             // 初始化输入法
     return ret;
 }
 
@@ -3141,15 +3039,11 @@ int selHomeTown(void)
     if (selHomeTownProcNo == 0)
     {
         for (int i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
         selHomeTownProcNo++;
     }
     if (selHomeTownProcNo == 1)
-    {
         selUseFlag = 2;
-    }
     if (selHomeTownProcNo == 10)
     {
         ret2 = commonYesNoWindow(320, 240);
@@ -3158,43 +3052,24 @@ int selHomeTown(void)
             ret = 1;
             selHomeTownProcNo = 11; //
         }
-        else
-            // ???
-            if (ret2 == 2)
-            {
-                selHomeTownProcNo = 1;
-            }
+        else if (ret2 == 2)
+            selHomeTownProcNo = 1;
     }
-
     id = selGraId(btnId, sizeof(btnId) / sizeof(int));
-    // ?????
     if (id == 0)
     {
         ret = 2;
         play_se(217, 320, 240); // ?????
     }
-#ifndef _TAIKEN
     if (1 <= id && id <= 4)
-#else
-    if (id == 2)
-#endif
     {
         nowSelHomeTownNo = id - 1;
         newCharacterHomeTown = nowSelHomeTownNo;
         selHomeTownProcNo = 10;
         play_se(217, 320, 240); // ?????
     }
-#ifdef _TAIKEN
-    else if (id == 1 || 3 <= id && id <= 4)
-    {
-        play_se(220, 320, 240); // ???
-    }
-#endif
-
     if (selHomeTownProcNo == 1)
-    {
         id = focusGraId(btnId, sizeof(btnId) / sizeof(int));
-    }
 #ifdef _SPECIAL_LOGO
     int ix = 80;
     int iy = 18;
@@ -3203,118 +3078,73 @@ int selHomeTown(void)
     int iy = 0;
 #endif
 
-    // ??????
 #ifdef _DELBORNPLACE // Syu ADD 6.0 统一出生于新手村
 #else
     if (id == 1)
     {
         StockFontBuffer(454 + ix, 135 + iy,
                         FONT_PRIO_BACK, FONT_PAL_YELLOW, homeTownName[0], 0);
-#ifndef _TAIKEN
         StockFontBuffer(386 + ix, 158 + iy,
                         FONT_PRIO_BACK, FONT_PAL_BLUE, "位在萨伊那斯的东边，", 0);
         StockFontBuffer(386 + ix, 178 + iy,
                         FONT_PRIO_BACK, FONT_PAL_BLUE, "是四个村子中最大", 0);
         StockFontBuffer(386 + ix, 198 + iy,
                         FONT_PRIO_BACK, FONT_PAL_BLUE, "也是最整齐的村子。", 0);
-#else
-        StockFontBuffer(390 + ix, 176 + iy,
-                        FONT_PRIO_BACK, FONT_PAL_BLUE, "体验版不能选择！", 0);
-#endif
     }
+    else if (id == 2)
+    {
+        StockFontBuffer(454 + ix, 135 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_YELLOW, homeTownName[1], 0);
+        StockFontBuffer(390 + ix, 168 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_BLUE, "位在萨伊那斯的西边", 0);
+        StockFontBuffer(390 + ix, 188 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_BLUE, "面向美丽海滩的村子。", 0);
+    }
+    else if (id == 3)
+    {
+        StockFontBuffer(474 + ix, 135 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_YELLOW, homeTownName[2], 0);
+        StockFontBuffer(390 + ix, 158 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_BLUE, "位在加鲁卡的东边，", 0);
+        StockFontBuffer(390 + ix, 178 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_BLUE, "四周被森林围绕着", 0);
+        StockFontBuffer(390 + ix, 198 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_BLUE, "绿意盎然的村子。", 0);
+    }
+    else if (id == 4)
+    {
+        StockFontBuffer(454 + ix, 135 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_YELLOW, homeTownName[3], 0);
+        StockFontBuffer(390 + ix, 158 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_BLUE, "位在加鲁卡的西边。", 0);
+        StockFontBuffer(390 + ix, 178 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_BLUE, "村子是在好几个小小", 0);
+        StockFontBuffer(390 + ix, 198 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_BLUE, "的岛上建立起来的。", 0);
+    }
+    else if (id == 0)
+        StockFontBuffer(390 + ix, 176 + iy,
+                        FONT_PRIO_BACK, FONT_PAL_BLUE, "回到前一个画面。", 0);
     else
-        // ??????
-        if (id == 2)
-        {
-            StockFontBuffer(454 + ix, 135 + iy,
-                            FONT_PRIO_BACK, FONT_PAL_YELLOW, homeTownName[1], 0);
-            StockFontBuffer(390 + ix, 168 + iy,
-                            FONT_PRIO_BACK, FONT_PAL_BLUE, "位在萨伊那斯的西边", 0);
-            StockFontBuffer(390 + ix, 188 + iy,
-                            FONT_PRIO_BACK, FONT_PAL_BLUE, "面向美丽海滩的村子。", 0);
-        }
-        else
-            // ??????
-            if (id == 3)
-            {
-                StockFontBuffer(474 + ix, 135 + iy,
-                                FONT_PRIO_BACK, FONT_PAL_YELLOW, homeTownName[2], 0);
-#ifndef _TAIKEN
-                StockFontBuffer(390 + ix, 158 + iy,
-                                FONT_PRIO_BACK, FONT_PAL_BLUE, "位在加鲁卡的东边，", 0);
-                StockFontBuffer(390 + ix, 178 + iy,
-                                FONT_PRIO_BACK, FONT_PAL_BLUE, "四周被森林围绕着", 0);
-                StockFontBuffer(390 + ix, 198 + iy,
-                                FONT_PRIO_BACK, FONT_PAL_BLUE, "绿意盎然的村子。", 0);
-#else
-                StockFontBuffer(390, 176 + iy,
-                                FONT_PRIO_BACK, FONT_PAL_BLUE, "体验版不能选择！", 0);
-#endif
-            }
-            else
-                // ???????
-                if (id == 4)
-                {
-                    StockFontBuffer(454 + ix, 135 + iy,
-                                    FONT_PRIO_BACK, FONT_PAL_YELLOW, homeTownName[3], 0);
-#ifndef _TAIKEN
-                    StockFontBuffer(390 + ix, 158 + iy,
-                                    FONT_PRIO_BACK, FONT_PAL_BLUE, "位在加鲁卡的西边。", 0);
-                    StockFontBuffer(390 + ix, 178 + iy,
-                                    FONT_PRIO_BACK, FONT_PAL_BLUE, "村子是在好几个小小", 0);
-                    StockFontBuffer(390 + ix, 198 + iy,
-                                    FONT_PRIO_BACK, FONT_PAL_BLUE, "的岛上建立起来的。", 0);
-#else
-                    StockFontBuffer(390 + ix, 176 + iy,
-                                    FONT_PRIO_BACK, FONT_PAL_BLUE, "体验版不能选择！", 0);
-#endif
-                }
-                else
-                    // ?????????
-                    if (id == 0)
-                    {
-                        StockFontBuffer(390 + ix, 176 + iy,
-                                        FONT_PRIO_BACK, FONT_PAL_BLUE, "回到前一个画面。", 0);
-                    }
-                    else
-                    {
-                        StockFontBuffer(390 + ix, 176 + iy,
-                                        FONT_PRIO_BACK, FONT_PAL_BLUE, "请选择出身地。", 0);
-                    }
-#ifdef _SPECIAL_LOGO
+        StockFontBuffer(390 + ix, 176 + iy,
+                       FONT_PRIO_BACK, FONT_PAL_BLUE, "请选择出身地。", 0);
     btnId[0] = StockDispBuffer(675, 450, DISP_PRIO_CHAR, CG_CHR_MAKE_BACK_BTN, selUseFlag);
     btnId[1] = StockDispBuffer(380, 295, DISP_PRIO_BG, CG_CHR_MAKE_HOME_NAME0, selUseFlag);
     btnId[2] = StockDispBuffer(370, 295, DISP_PRIO_BG, CG_CHR_MAKE_HOME_NAME1, selUseFlag);
     btnId[3] = StockDispBuffer(400, 295, DISP_PRIO_BG, CG_CHR_MAKE_HOME_NAME2, selUseFlag);
     btnId[4] = StockDispBuffer(445, 295, DISP_PRIO_BG, CG_CHR_MAKE_HOME_NAME3, selUseFlag);
-#else
-    btnId[0] = StockDispBuffer(412, 296, DISP_PRIO_CHAR, CG_CHR_MAKE_BACK_BTN, selUseFlag);
-
-    btnId[1] = StockDispBuffer(320, 240, DISP_PRIO_BG, CG_CHR_MAKE_HOME_NAME0, selUseFlag);
-    btnId[2] = StockDispBuffer(320, 240, DISP_PRIO_BG, CG_CHR_MAKE_HOME_NAME1, selUseFlag);
-    btnId[3] = StockDispBuffer(320, 240, DISP_PRIO_BG, CG_CHR_MAKE_HOME_NAME2, selUseFlag);
-    btnId[4] = StockDispBuffer(320, 240, DISP_PRIO_BG, CG_CHR_MAKE_HOME_NAME3, selUseFlag);
-#endif
-#ifdef _NEW_WIN_POS_
-    StockDispBuffer(400, 300, DISP_PRIO_BG, CG_CHR_MAKE_SEL2_BG, 0);
-#else
-    StockDispBuffer(320, 240, DISP_PRIO_BG, CG_CHR_MAKE_SEL2_BG, 0);
-#endif
+    // 2026.08.23 修复选择出生地界面便宜的问题
+    StockDispBufferScaled(SCREEN_WIDTH_CENTER, SCREEN_HEIGHT_CENTER,
+        DISP_PRIO_BG, CG_CHR_MAKE_SEL2_BG);
 #endif
     return ret;
 }
 
-// ??????
-// ???
 void initCreateChar(void)
 {
     createCharProcNo = 0;
 }
 
-// ??????
-//  ??：    0 ... ???
-//                1 ... ??
-//                2 ... 
 int createChar(void)
 {
     static ACTION *ptActMenuWin = NULL;
@@ -3322,13 +3152,9 @@ int createChar(void)
     int ret = 0;
     int ret2;
     char msg[] = "人物制作中...";
-
-    // ???
     if (createCharProcNo == 0)
     {
         createCharProcNo++;
-
-        // ??????
         w = (strlen(msg) * 9 + 63) / 64;
         if (w < 2)
             w = 2;
@@ -3341,8 +3167,6 @@ int createChar(void)
         y = ptActMenuWin->y;
 #endif
     }
-
-    // ?????
     if (createCharProcNo == 1)
     {
         createNewCharStart();
@@ -3351,20 +3175,12 @@ int createChar(void)
     if (createCharProcNo == 2)
     {
         ret2 = createNewCharProc();
-        // ??
         if (ret2 == 1)
-        {
             ret = 1;
-        }
         else
-            // 
             if (ret2 < 0)
-            {
                 ret = 2;
-            }
     }
-
-    // ???????????????
     if (ret != 0)
     {
         if (ptActMenuWin)
@@ -3376,15 +3192,11 @@ int createChar(void)
 
     if (ptActMenuWin != NULL)
     {
-        // ?????
         if (ptActMenuWin->hp >= 1)
         {
-            int len;
-            int xx, yy;
-
-            len = strlen(msg) / 2;
-            xx = (w * 64 - len * 17) / 2;
-            yy = (h * 48 - 16) / 2;
+            int len = strlen(msg) / 2;
+            int xx = (w * 64 - len * 17) / 2;
+            int yy = (h * 48 - 16) / 2;
             StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
         }
     }
@@ -3413,19 +3225,8 @@ void characterLoginProc(void)
         }
         else if (ret == 1)
         {
-#ifdef _TAIKEN
-            if (createCharFlag)
-            {
-                char title[128] = "体验版";
-                if (bNewServer)
-                    lssproto_FT_send(sockfd, title);
-                else
-                    old_lssproto_FT_send(sockfd, title);
-            }
-#endif
-            // andy_reedit initchat
             InitChat();
-            ChangeProc(PROC_GAME);
+            ChangeProc(PROC_GAME); // 进入游戏
         }
         else if (ret == -1)
         {
@@ -3434,8 +3235,8 @@ void characterLoginProc(void)
         }
         else if (ret == -2)
         {
+            // 2026.08.24 遇到这个问题
             SubProcNo = 100;
-            //    strcpy(msg, "签入处理失败。(1001)");
             strcpy(msg, "您的账号目前正在离线，请重新登录。");
         }
         else if (ret == -3)
@@ -3657,15 +3458,10 @@ int charLogin(void)
     static ACTION *ptActMenuWin = NULL;
     static int x, y, w, h;
     int ret = 0;
-    static char msg[] = "签入中";
-
-    // ???
     if (charLoginProcNo == 0)
     {
         charLoginProcNo = 1;
-
-        // ??????
-        w = strlen(msg) * 9 / 64 + 2;
+        w = strlen(cCheckingIn) * 9 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -3677,47 +3473,13 @@ int charLogin(void)
         y = ptActMenuWin->y;
 #endif
     }
-
-    // ????????
     if (charLoginProcNo == 1)
     {
-#ifdef _AIDENGLU_
-        extern int 是否重登;
-        extern int 是否重登战斗了;
-        extern int 自动登陆是否开启;
-        extern int 是否重登AI模式;
-        extern int 是否重登人物方向;
-        extern int 是否重登组队;
-        extern int 是否重登喊话;
-        extern int 是否重开登组队_1;
-        是否重登战斗了 = FALSE;
-        是否重登 = FALSE;
-        是否重登组队 = FALSE;
-        是否重登AI模式 = FALSE;
-        是否重登喊话 = FALSE;
-        是否重开登组队_1 = FALSE;
-        if (PcLanded.大区 >= 0 && PcLanded.小区 >= 0 && PcLanded.人物 >= 0 && 自动登陆是否开启)
-        {
-            是否重登 = TRUE;
-            是否重登AI模式 = TRUE;
-            是否重登人物方向 = TRUE;
-            if (PcLanded.是否自动遇敌 && PcLanded.队模 != 1)
-                是否重登战斗了 = TRUE;
-            if (PcLanded.队模 == 1)
-                是否重登组队 = TRUE;
-            if (PcLanded.是否自动喊话)
-                是否重登喊话 = TRUE;
-            if (PcLanded.队模 == 0)
-                是否重开登组队_1 = TRUE;
-        }
-#endif
         charLoginStart();
         charLoginProcNo++;
     }
     else if (charLoginProcNo == 2)
-    {
         ret = charLoginProc();
-    }
 
     if (ret != 0)
     {
@@ -3728,21 +3490,13 @@ int charLogin(void)
         }
     }
 
-    if (ptActMenuWin != NULL)
+    if (ptActMenuWin && ptActMenuWin->hp >= 1)
     {
-        // ?????
-        if (ptActMenuWin->hp >= 1)
-        {
-            int len;
-            int xx, yy;
-
-            len = strlen(msg);
-            xx = (w * 64 - len * 8) / 2;
-            yy = (h * 48 - 16) / 2;
-            StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
-        }
+        int len = strlen(msg);
+        int xx = (w * 64 - len * 8) / 2;
+        int yy = (h * 48 - 16) / 2;
+        StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, cCheckingIn, 0);
     }
-
     return ret;
 }
 
@@ -4932,21 +4686,15 @@ void getStrSplit(char *dist, char *src, int distSize, int line, int strLen)
 {
     int i, j;
     int flag;
-    char msg[256];
     char *ptMsg;
     char *dis;
-
     dis = dist;
     if (distSize - 1 < strLen)
-    {
         strLen = distSize - 1;
-    }
 
     for (i = 0, j = 0; i < line && j < line; i++, j++, dis += distSize)
     {
-        // 1???
         flag = getStringToken(src, '\n', i + 1, sizeof(msg) - 1, msg);
-
         ptMsg = msg;
         while (1)
         {
@@ -4969,7 +4717,6 @@ void getStrSplit(char *dist, char *src, int distSize, int line, int strLen)
                     break;
             }
             else
-            // ?????????????
             {
                 strcpy(dis, ptMsg);
                 break;
@@ -5564,10 +5311,7 @@ void initServerWindowType6(char *data)
 
 void initServerWindowType7(char *data)
 {
-    char msg[256];
-
     shopWindowProcNo = 0;
-
     getStringToken(data, '|', 1, sizeof(msg) - 1, msg);
     makeStringFromEscaped(msg);
     strncpy_s(shopWindow1Title, msg, sizeof(shopWindow1Title) - 1);
@@ -5681,10 +5425,8 @@ void serverWindowType0(int mode)
         // ＯＫ
         if (0 <= id && id < 6)
         {
-            char msg[256];
             btn = 1;
             btn <<= id;
-
             makeEscapeString(input.buffer, msg, sizeof(msg) - 1);
             if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
@@ -5846,21 +5588,15 @@ void serverWindowType1(void)
 
         if (0 <= id && id < 6 || 0 <= id2 && id2 < 10 || id == 100)
         {
-            char data[256];
-            char msg[256];
             if (id == 100)
-            {
                 btn = WINDOW_BUTTONTYPE_CANCEL;
-            }
             else if (0 <= id && id < 6)
             {
                 btn = 1;
                 btn <<= id;
             }
             else
-            {
                 btn = 0;
-            }
             if (id2 < 0)
                 id2 = 0;
             sprintf_s(data, "%d", id2);
@@ -6015,17 +5751,13 @@ void serverWindowType2(void)
 
         if (0 <= id && id < 6 || 0 <= id2 && id2 < 8)
         {
-            char data[256];
-            char msg[256];
             if (0 <= id && id < 6)
             {
                 btn = 1;
                 btn <<= id;
             }
             else
-            {
                 btn = 0;
-            }
             if (id2 < 0)
                 id2 = 0;
             sprintf_s(data, "%d", id2);
@@ -6203,20 +5935,15 @@ void serverWindowType3(void)
             windowTypeWN = -1;
             wnCloseFlag = 0;
         }
-
         if (0 <= id && id < 6 || 0 <= id2 && id2 < 8)
         {
-            char data[256];
-            char msg[256];
             if (0 <= id && id < 6)
             {
                 btn = 1;
                 btn <<= id;
             }
             else
-            {
                 btn = 0;
-            }
             if (id2 < 0)
                 id2 = 0;
             sprintf_s(data, "%d", id2);
@@ -6399,8 +6126,6 @@ void serverWindowType4(void)
                 }
             }
         }
-
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -6410,17 +6135,13 @@ void serverWindowType4(void)
 
         if (0 <= id && id < 6 || 0 <= id2 && id2 < 10)
         {
-            char data[256];
-            char msg[256];
             if (0 <= id && id < 6)
             {
                 btn = 1;
                 btn <<= id;
             }
             else
-            {
                 btn = 0;
-            }
             if (id2 < 0)
                 id2 = 0;
             sprintf_s(data, "%d", id2);
@@ -6615,18 +6336,13 @@ void serverWindowType9(void)
 
         if (0 <= id && id < 6)
         {
-            //|| 0 <= id2 && id2 < 8 ){
-            char data[256];
-            char msg[256];
             if (0 <= id && id < 6)
             {
                 btn = 1;
                 btn <<= id;
             }
             else
-            {
                 btn = 0;
-            }
             if (id2 < 0)
                 id2 = 0;
             // sprintf_s( data, "%d", id2 );//selectID
@@ -6784,8 +6500,6 @@ void serverWindowType5(void)
         ret = shopWindow2();
         if (ret == 1)
         {
-            char data[256];
-            char msg[256];
             sprintf_s(data, "0");
             makeEscapeString(data, msg, sizeof(msg) - 1);
             if (bNewServer)
@@ -6854,8 +6568,6 @@ void serverWindowType5(void)
         ret = shopWindow5();
         if (ret == 1)
         {
-            char data[256];
-            char msg[256];
             sprintf_s(data, "%d|%d", selShopItemNo + 1, sealItemCnt);
             makeEscapeString(data, msg, sizeof(msg) - 1);
             if (bNewServer)
@@ -6901,8 +6613,6 @@ void serverWindowType5(void)
         ret = shopWindow7();
         if (ret == 1)
         {
-            char data[256];
-            char msg[256];
             sprintf_s(data, "0");
             makeEscapeString(data, msg, sizeof(msg) - 1);
             if (bNewServer)
@@ -6912,13 +6622,9 @@ void serverWindowType5(void)
             windowTypeWN = -1;
         }
         else if (ret == 2)
-        {
             shopWindowProcNo = 110;
-        }
         else if (ret == 3)
-        {
             shopWindowProcNo = 120;
-        }
     }
 
     if (shopWindowProcNo == 110)
@@ -6940,9 +6646,6 @@ void serverWindowType5(void)
 #endif
         if (ret == 1)
         {
-            char data[256];
-            char msg[256];
-
 #ifdef _ITEM_PILENUMS
             sprintf_s(data, "%d|%d", userItem[selShopItemNo].tbl, sealItemCnt);
 #else
@@ -7087,8 +6790,6 @@ int shopWindow1(void)
         }
         if (0 <= id && id <= 2)
         {
-            char data[256];
-            char msg[256];
             sprintf_s(data, "%d", ret);
             makeEscapeString(data, msg, sizeof(msg) - 1);
             if (bNewServer)
@@ -7902,21 +7603,13 @@ int shopWindow6(void)
     return ret;
 }
 
-// ??????????
-//   ??????
 short shopWindow7ProcNo;
 
-// ???
 void initShopWindow7(void)
 {
     shopWindow7ProcNo = 0;
 }
 
-// ???
-//   ??：0 ... ???
-//           1 ... ??
-//           2 ... ?
-//           3 ... ???
 int shopWindow7(void)
 {
     static int x, y, w, h;
@@ -8024,14 +7717,11 @@ int shopWindow7(void)
         {
             prevBtn = 0;
         }
-        // ???????
         if (joy_con[0] & JOY_B)
         {
             pushId = 1;
             if (joy_auto[0] & JOY_B)
-            {
                 id = 1;
-            }
         }
         if (pushId == 1)
         {
@@ -8046,11 +7736,8 @@ int shopWindow7(void)
             }
         }
         else
-        {
             nextBtn = 0;
-        }
 
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -8516,8 +8203,6 @@ void serverWindowType6(void)
         if (ret == 1)
         {
 #if 1
-            char data[256];
-            char msg[256];
             sprintf_s(data, "%d|%d|%d|%d",
                       selShopSkillNo + 1,
                       selShopSkillPetNo,
@@ -8645,9 +8330,6 @@ void profession_windows(void)
         ret = profession_windows_2();
         if (ret == 1)
         {
-
-            char data[256];
-            char msg[256];
             sprintf_s(data, "%d|%d",
                       selShopSkillNo + 1,
                       sealSkill[selShopSkillNo].price);
@@ -9098,9 +8780,6 @@ void profession_windows2(void)
         ret = profession_windows_22();
         if (ret == 1)
         {
-
-            char data[256];
-            char msg[256];
             sprintf_s(data, "%d|%d",
                       selShopSkillNo + 1,
                       sealSkill[selShopSkillNo].price);
@@ -9529,14 +9208,8 @@ void PetSkillShowType1(void)
             }
             else if (ret == 2)
             {
-                char data[256];
-                char msg[256];
-                //                sprintf_s( data, "%d|%d|%d|%d",
                 sprintf_s(data, "%d",
-                          //                    selShopSkillNo+1
-                          //                    selShopSkillPetNo,
                           selShopSkillSlotNo
-                          //                    sealSkill[selShopSkillNo].price );
                 );
                 makeEscapeString(data, msg, sizeof(msg) - 1);
                 if (bNewServer)
@@ -9761,7 +9434,6 @@ int skillShopWindow1(void)
             sprintf_s(tmsg, "金钱 %8dＳ", pc.gold);
             StockFontBuffer(x + 244, y + 84, FONT_PRIO_FRONT, FONT_PAL_WHITE, tmsg, 0);
 
-            // 页??
             btnId[0] = StockDispBuffer(x + 32, y + 100, DISP_PRIO_IME3, prevBtnGraNo[prevBtn], 2);
             btnId[1] = StockDispBuffer(x + 200, y + 100, DISP_PRIO_IME3, nextBtnGraNo[nextBtn], 2);
             sprintf_s(tmsg, "%2d/%2d 页", shopWondow2Page + 1, shopWondow2MaxPage);
@@ -10165,12 +9837,10 @@ int skillShopWindow4(void)
 
         if (ptActMenuWin->hp >= 1)
         {
-            // ??????
             StockFontBuffer(x + 20, y + 20 + 0 * 20, FONT_PRIO_FRONT, FONT_PAL_WHITE,
                             msg1, 0);
             StockFontBuffer(x + 20, y + 20 + 1 * 20, FONT_PRIO_FRONT, FONT_PAL_WHITE,
                             "学起来吗？", 0);
-
             btnId[0] = StockDispBuffer(x + w * 64 / 3, y + 72, DISP_PRIO_IME3, CG_YES_BTN, 2);
             btnId[1] = StockDispBuffer(x + w * 64 / 3 * 2, y + 72, DISP_PRIO_IME3, CG_NO_BTN, 2);
         }
@@ -10180,8 +9850,6 @@ int skillShopWindow4(void)
 }
 
 #if 1
-
-// ?????????
 
 void initPoolShopWindow1(void);
 int poolShopWindow1(void);
@@ -10193,11 +9861,9 @@ int poolShopWindow3(void);
 void initPoolShopWindow4(void);
 int poolShopWindow4(void);
 
-// ??????????????
 void serverWindowType7(void)
 {
     int ret;
-
     if (shopWindowProcNo == 0)
     {
         initPoolShopWindow1();
@@ -10208,7 +9874,6 @@ void serverWindowType7(void)
     {
         ret = poolShopWindow1();
     }
-
     if (shopWindowProcNo == 10)
     {
         initPoolShopWindow2();
@@ -10220,8 +9885,6 @@ void serverWindowType7(void)
         ret = poolShopWindow2();
         if (ret == 1)
         {
-            char data[256];
-            char msg[256];
             sprintf_s(data, "0");
             makeEscapeString(data, msg, sizeof(msg) - 1);
             if (bNewServer)
@@ -10231,11 +9894,8 @@ void serverWindowType7(void)
             windowTypeWN = -1;
         }
         else if (ret == 2)
-        {
             shopWindowProcNo = 20;
-        }
     }
-
     if (shopWindowProcNo == 20)
     {
         initPoolShopWindow3();
@@ -10247,8 +9907,6 @@ void serverWindowType7(void)
         ret = poolShopWindow3();
         if (ret == 1)
         {
-            char data[256];
-            char msg[256];
             sprintf_s(data, "%d", poolItem[selShopItemNo].tbl);
             makeEscapeString(data, msg, sizeof(msg) - 1);
             if (bNewServer)
@@ -10286,11 +9944,8 @@ void serverWindowType7(void)
 #ifdef _ITEM_PILENUMS
                             poolItem[i].num = poolItem[j].num;
 #endif
-
                             for (k = 0; k < 3; k++)
-                            {
                                 strcpy(poolItem[i].info[k], poolItem[j].info[k]);
-                            }
                             poolItem[j].name[0] = '\0';
                             break;
                         }
@@ -10298,27 +9953,18 @@ void serverWindowType7(void)
                 }
             }
             for (i = 0; i < MAX_POOL_SHOP_ITEM * MAX_POOL_SHOP_PAGE; i++)
-            {
                 if (poolItem[i].name[0] == '\0')
                     break;
-            }
             if (i > 0)
-            {
                 shopWondow2MaxPage = (i + 7) / MAX_POOL_SHOP_ITEM;
-            }
             else
-            {
                 shopWondow2MaxPage = 1;
-            }
             if (shopWondow2Page >= shopWondow2MaxPage)
                 shopWondow2Page = shopWondow2MaxPage - 1;
-
             shopWindowProcNo = 10;
         }
         else if (ret == 2)
-        {
             shopWindowProcNo = 10;
-        }
     }
 
     if (shopWindowProcNo == 100)
@@ -10332,8 +9978,6 @@ void serverWindowType7(void)
         ret = poolShopWindow4();
         if (ret == 1)
         {
-            char data[256];
-            char msg[256];
             sprintf_s(data, "0");
             makeEscapeString(data, msg, sizeof(msg) - 1);
             if (bNewServer)
@@ -10343,13 +9987,9 @@ void serverWindowType7(void)
             windowTypeWN = -1;
         }
         else if (ret == 2)
-        {
             shopWindowProcNo = 110;
-        }
         else if (ret == 3)
-        {
             shopWindowProcNo = 120;
-        }
     }
 
     if (shopWindowProcNo == 110)
@@ -10363,8 +10003,6 @@ void serverWindowType7(void)
         ret = poolShopWindow3();
         if (ret == 1)
         {
-            char data[256];
-            char msg[256];
             sprintf_s(data, "%d", selShopItemNo + 1);
             makeEscapeString(data, msg, sizeof(msg) - 1);
             if (bNewServer)
@@ -10495,8 +10133,6 @@ int poolShopWindow1(void)
 
         if (0 <= id && id <= 2)
         {
-            char data[256];
-            char msg[256];
             sprintf_s(data, "%d", ret);
             makeEscapeString(data, msg, sizeof(msg) - 1);
             if (bNewServer)
@@ -10538,21 +10174,13 @@ int poolShopWindow1(void)
 
     return ret;
 }
-
-// ???????????????????
-
 short poolShopWindow2ProcNo;
-
 // ???
 void initPoolShopWindow2(void)
 {
     poolShopWindow2ProcNo = 0;
 }
 
-// ???
-//   ??：0 ... ???
-//           1 ... ??
-//           2 ... ?
 int poolShopWindow2(void)
 {
     static int x, y, w, h;
@@ -10749,41 +10377,24 @@ int poolShopWindow2(void)
                     }
                 }
             }
-
-            // ???
             sprintf_s(tmsg, "金钱 %8dＳ", pc.gold);
             StockFontBuffer(x + 244, y + 84, FONT_PRIO_FRONT, FONT_PAL_WHITE, tmsg, 0);
-
-            // 页??
             btnId[0] = StockDispBuffer(x + 32, y + 100, DISP_PRIO_IME3, prevBtnGraNo[prevBtn], 2);
             btnId[1] = StockDispBuffer(x + 200, y + 100, DISP_PRIO_IME3, nextBtnGraNo[nextBtn], 2);
             sprintf_s(tmsg, "%2d/%2d 页", shopWondow2Page + 1, shopWondow2MaxPage);
             StockFontBuffer(x + 66, y + 92, FONT_PRIO_FRONT, FONT_PAL_WHITE, tmsg, 0);
-
             j = shopWondow2Page * MAX_SHOP_ITEM;
             for (i = 0; i < MAX_SHOP_ITEM; i++)
             {
-                // ???????????
                 if (strlen(poolItem[j + i].name) == 0)
                     continue;
-
-                // ???????
                 color = itemColor[0];
-                // ?????????????????
                 if (poolItem[j + i].poolFlag)
                     color = itemColor[1];
-                // ????????
                 if (poolItem[j + i].price > pc.gold)
-                {
                     color = itemColor[1];
-                }
-                // ????????????
                 if (restPoolSlot <= 0)
-                {
                     color = itemColor[1];
-                }
-
-                // ????
                 StockFontBuffer(x + 34, y + 118 + i * 21,
                                 FONT_PRIO_FRONT, color, poolItem[j + i].name, 0);
 #ifdef _ITEM_PILENUMS
@@ -10798,21 +10409,15 @@ int poolShopWindow2(void)
 
             if (focusId >= 0)
             {
-                // ??????
                 StockDispBuffer(x + 64, y + 350, DISP_PRIO_IME3, poolItem[focusId].graNo, 0);
-
                 for (i = 0; i < sizeof(sealItem[0].info) / sizeof(poolItem[0].info[0]); i++)
                 {
-                    // 
                     StockFontBuffer(x + 120, y + 308 + i * 20, FONT_PRIO_FRONT, FONT_PAL_WHITE,
                                     poolItem[focusId].info[i], 0);
                 }
             }
 
-            // ?????
             btnId[2] = StockDispBuffer(x + 216, y + 402, DISP_PRIO_IME3, CG_RETURN_BTN, 2);
-
-            // ?????
             StockDispBuffer(x + w / 2, y + h / 2, DISP_PRIO_MENU, CG_ITEMSHOP_WIN, 1);
         }
     }
@@ -10820,19 +10425,13 @@ int poolShopWindow2(void)
     return ret;
 }
 
-// ?????????????????
 short poolShopWindow3ProcNo;
 
-// ???
 void initPoolShopWindow3(void)
 {
     poolShopWindow3ProcNo = 0;
 }
 
-// ???
-//   ??：0 ... ???
-//           1 ... ??
-//           2 ... ???
 int poolShopWindow3(void)
 {
     static int x, y, w, h;
@@ -10844,9 +10443,7 @@ int poolShopWindow3(void)
     if (poolShopWindow3ProcNo == 0)
     {
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
         w = 6;
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
@@ -14249,21 +13846,15 @@ void FMWindowType4(void)
 
         if (0 <= id && id < 6 || 0 <= id2 && id2 < 12 || id == 100)
         {
-            char data[256];
-            char msg[256];
             if (id == 100)
-            {
                 btn = WINDOW_BUTTONTYPE_CANCEL;
-            }
             else if (0 <= id && id < 6)
             {
                 btn = 1;
                 btn <<= id;
             }
             else
-            {
                 btn = 0;
-            }
             if (id2 < 0)
                 id2 = 0;
             sprintf_s(data, "%d|%d", FMdengonidex, id2);
@@ -14531,8 +14122,6 @@ void FMWindowType3(void)
 
         if (0 <= id && id < 6 || 0 <= id2 && id2 < 12 || id == 100)
         {
-            char data[256];
-            char msg[256];
             if (id == 100)
             {
                 btn = WINDOW_BUTTONTYPE_CANCEL;
@@ -14759,8 +14348,6 @@ void FMWindowType3(void)
 
         if (0 <= id && id < 6 || 0 <= id2 && id2 < 12 || id == 100)
         {
-            char data[256];
-            char msg[256];
             if (id == 100)
             {
                 btn = WINDOW_BUTTONTYPE_CANCEL;
@@ -14966,13 +14553,10 @@ struct FMPKData
     int flag;
     int win;
 };
+
 FMPKData FMPKDataList[4];
 int serverTime;
-
-char winStr[][16] =
-    {
-        "乱斗生存战",
-        "满场打飞战"};
+const char winStr[][16] = { "乱斗生存战", "满场打飞战"};
 
 void initFMPKListWN(char *data)
 {
@@ -15095,10 +14679,8 @@ void FMPKListWN(int mode)
         // ＯＫ
         if (0 <= id && id < 6)
         {
-            // char msg[256];
             btn = 1;
             btn <<= id;
-
             // makeEscapeString( input.buffer, msg, sizeof( msg )-1 );
             if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, "");
@@ -15365,10 +14947,8 @@ void FMPKSelectWN(int mode)
         // ＯＫ
         if (0 <= id && id < 6)
         {
-            // char msg[256];
             btn = 1;
             btn <<= id;
-
             // makeEscapeString( input.buffer, msg, sizeof( msg )-1 );
             if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, "");
@@ -16162,7 +15742,6 @@ void showRidePetWN(void)
         // ＯＫ
         if (0 <= id && id < 6)
         {
-            // char msg[256];
             btn = 1;
             btn <<= id;
 
@@ -16778,7 +16357,6 @@ void BankProc(void)
     static int BankGoldInc = 0; // 金钱每加一次的值
     static int BankGoldCnt = 0; // 按钮计数
     int x, y;
-    char msg[256];
 
     if (CheckMenuFlag() || (joy_trg[0] & JOY_ESC) || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
     {

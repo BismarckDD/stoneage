@@ -428,7 +428,6 @@ static BOOL CHAR_DischargePartySub(int char_index, int msgflg) {
       }
     }
     for (i = 0; i < getPartyNum(char_index); i++) {
-
       pindex = CHAR_getWorkInt(char_index, i + CHAR_WORKPARTYINDEX1);
       if (CHAR_CHECKINDEX(pindex)) {
         CHAR_setWorkInt(char_index, i + CHAR_WORKPARTYINDEX1, -1);

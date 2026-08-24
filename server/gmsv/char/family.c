@@ -2637,7 +2637,9 @@ int FAMILY_RidePet( int fd, int meindex, char* message )
 			if( CHAR_getInt( petindex, CHAR_TRANSMIGRATION) > getRideTrans() ) return 0;
 #endif
 
-			rideGraNo = FamilyRideFunction(meindex, petindex, atoi( token2 ));
+			// rideGraNo = FamilyRideFunction(meindex, petindex, atoi( token2 ));
+			// 2026.08.23 REMOVE LUA LOGIC
+			rideGraNo = 0;
 
 			if( rideGraNo != 0 ){
 #ifdef _ITEM_METAMO
@@ -2650,7 +2652,6 @@ int FAMILY_RidePet( int fd, int meindex, char* message )
 				CHAR_send_P_StatusString( meindex, CHAR_P_STRING_RIDEPET );
 				return 1;
 			}
-		}else {
 		}
 	}
 	return 0;

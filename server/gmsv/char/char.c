@@ -449,17 +449,17 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
 
 static void CHAR_setCharFuncTable(Char *ch) {
   int i;
-  char *tmp[CHAR_FUNCTABLENUM] = {
-      "",                 /*  CHAR_INITFUNC */
-      "core_PreWalk",     /*  CHAR_WALKPREFUNC    */
-      "core_PostWalk",    /*  CHAR_WALKPOSTFUNC   */
-      "",                 /*  CHAR_PREOVERFUNC    */
-      "",                 /*  CHAR_PREOVERFUNC    */
-      "core_PlayerWatch", /*  CHAR_WATCHFUNC  */
+  static char *func_table[CHAR_FUNCTABLENUM] = {
+      "",                 /*  CHAR_INITFUNC  = 0*/
+      "core_PreWalk",     /*  CHAR_WALKPREFUNC = 1  */
+      "core_PostWalk",    /*  CHAR_WALKPOSTFUNC = 2  */
+      "",                 /*  CHAR_PREOVERFUNC = 3  */
+      "",                 /*  CHAR_PREOVERFUNC = 4  */
+      "core_PlayerWatch", /*  CHAR_WATCHFUNC = 5 */
 #ifdef _FIX_CORE_LOOP
       "", /*  CHAR_LOOPFUNC */
 #else
-      "core_Loop", /*  CHAR_LOOPFUNC */
+      "core_Loop", /*  CHAR_LOOPFUNC = 6 */
 #endif
       "core_Dying",        /*  CHAR_DYINGFUNC */
       "core_PlayerTalked", /*  CHAR_TALKEDFUNC */
@@ -469,16 +469,19 @@ static void CHAR_setCharFuncTable(Char *ch) {
       "",                  /*  CHAR_LOOKEDFUNC */
       "",                  /*  CHAR_ITEMPUTFUNC    */
       "",                  /*  CHAR_SPECIALTALKEDFUNC    */
-      "",                  /*  CHAR_WINDOWTALKEDFUNC    */
+      "",                  /*  CHAR_WINDOWTALKEDFUNC  = 15 */
+      "",                  /*  CHAR_TYPELUANPC  = 16 */
 #ifdef _USER_CHARLOOPS
-      "", //  CHAR_LOOPFUNCTEMP1,
-      "", //  CHAR_LOOPFUNCTEMP2,
-      "", // CHAR_BATTLEPROPERTY,
+      "", //  CHAR_LOOPFUNCTEMP1, = 17
+      "", //  CHAR_LOOPFUNCTEMP2, = 18
+      "", // CHAR_BATTLEPROPERTY, = 19
 #endif
   };
   for (i = 0; i < CHAR_FUNCTABLENUM; i++) {
+    if (ch->charfunctable[i].string == NULL)
+      print("strncpysafe!!!");
     strncpysafe(ch->charfunctable[i].string, sizeof(ch->charfunctable[i]),
-               tmp[i]);
+               func_table[i]);
   }
 }
 
@@ -1032,15 +1035,13 @@ static void CHAR_setLuck(int char_index);
 extern int *piOccChannelMember;
 #endif
 void CHAR_login(int clifd, char *data, int saveindex) {
-  int char_index, objindex;
+  int char_index, objindex, pet;
   Char ch;
   int per;
-  //  char c_temp2[4096];
   if (CHAR_makeCharFromStringToArg(data, &ch) == FALSE) {
     fprint("制作人物错误！\n");
     goto MAKECHARDATAERROR;
   }
-
   char cdkey[16];
   CONNECT_getCdkey(clifd, cdkey, sizeof(cdkey));
 
@@ -1049,7 +1050,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
            ch.string[CHAR_CDKEY].string);
     goto MAKECHARDATAERROR;
   }
-
+  // 这里面有strncpysafe
   CHAR_setCharFuncTable(&ch);
   char_index = CHAR_initCharOneArray(&ch);
   if (char_index == -1) {
@@ -1103,7 +1104,6 @@ void CHAR_login(int clifd, char *data, int saveindex) {
     }
   }
 #endif
-
 #ifdef _UNLAW_THIS_LOGOUT
   {
     int i;
@@ -1123,12 +1123,10 @@ void CHAR_login(int clifd, char *data, int saveindex) {
 #endif
 
 // Nuke 20040420: CHECK MAX POINT
-#if 1
   {
-
+    print("判断属性点");
     int lv, vi, str, tou, dx, skup, trn, teq, quest, level, total, max;
     float table[] = {437, 490, 521, 550, 578, 620, 700}; // 各转最高点数(减10)
-    // float table[]={620,660,700,740,780,820}; //各转最高点数(减10)
     lv = CHAR_getInt(char_index, CHAR_LV);
     vi = CHAR_getInt(char_index, CHAR_VITAL);
     str = CHAR_getInt(char_index, CHAR_STR);
@@ -1187,7 +1185,6 @@ void CHAR_login(int clifd, char *data, int saveindex) {
 #else
     if (total > max)
 #endif
-
 #ifdef _SUPER
       if (CHAR_getInt(char_index, CHAR_SUPER) < 1)
 #endif
@@ -1201,7 +1198,6 @@ void CHAR_login(int clifd, char *data, int saveindex) {
         CHAR_setInt(char_index, CHAR_SKILLUPPOINT, max - 10);
       }
   }
-#endif
   {
     int EQ_BBI = -1, EQ_ARM = -1, EQ_NUM = -1, EQ_BI = -1;
     int CH_BI = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
@@ -1213,9 +1209,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
       if (ITEM_CHECKINDEX(EQ_ARM)) {
         EQ_NUM = ITEM_getInt(EQ_ARM, ITEM_TYPE);
       }
-
       EQ_BI = CHAR_getNewImagenumberFromEquip(-1, EQ_BBI, EQ_NUM);
-
       if (CHAR_getInt(char_index, CHAR_RIDEPET) == -1) { // 非骑宠
         if (EQ_BI != CH_BI) {
           print("\n 非骑宠形象 %d [%d=>%d]", char_index,
@@ -1244,7 +1238,6 @@ void CHAR_login(int clifd, char *data, int saveindex) {
     }
   }
 #endif
-
 #ifdef _MAP_NOEXIT
   {
     int exfloor = -1, ex_X = -1, ex_Y = -1;
@@ -1573,12 +1566,13 @@ void CHAR_login(int clifd, char *data, int saveindex) {
 #endif
 
 #ifdef _PETSKILL_BECOMEPIG
-  if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > -1) {
+  if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > -1)
+  {
     CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
                 CHAR_getInt(char_index, CHAR_BECOMEPIG_BBI));
   }
-  // change fix 处理负很大的乌力时间
-  else {
+  else // change fix 处理负很大的乌力时间
+  {
     CHAR_setInt(char_index, CHAR_BECOMEPIG, -1);
   }
 #endif
@@ -2357,7 +2351,6 @@ static BOOL CHAR_sendWatchEvent_sendCheck(int objindex, int index,
           for (loop = 1; loop < getPartyNum(recvindex); loop++) {
             int partychar_index =
                 CHAR_getWorkInt(recvindex, CHAR_WORKPARTYINDEX1 + loop);
-            /* STAND仄凶平乓仿互愤坌及由□  奴及阂分匀凶 */
             if (partychar_index == index) {
               found = TRUE;
               break;
@@ -2738,17 +2731,6 @@ INLINE int CHAR_getDY(int dir) {
   return tmp;
 }
 
-/*------------------------------------------------------------
- *   元穴旦及平乓仿弁正□毛  月［
- * 娄醒
- *  objbuf      int*        object
- *  siz         int         objbuf 及 扔奶术
- *  ff          int         白夫失
- *  fx          int         x
- *  fy          int         y
- * 忒曰袄
- *  窒蜊平乓仿互中月井［
- ------------------------------------------------------------*/
 int CHAR_getSameCoordinateObjects(int *objbuf, int siz, int ff, int fx,
                                   int fy) {
   OBJECT object;
@@ -2766,19 +2748,7 @@ int CHAR_getSameCoordinateObjects(int *objbuf, int siz, int ff, int fx,
   return findobjnum;
 }
 
-/*====================平乓仿及树  毛  月烟及楮醒====================*/
-/*左皿扑亦件犯□正及  侬  毛忡绣允月楮醒*/
 static char CHAR_optiondataString[STRINGBUFSIZ];
-/*------------------------------------------------------------
- * 左皿扑亦件迕及  侬  毛综月［
- *  level, showstring , 熔及醒 ,   飓  寞｝ 窒荚夫弘奶件仄凶井［
- *  弁仿旦［
- * 娄醒
- *  ch      Char*       平乓仿犯□正
- * 忒曰袄
- *  char*   static 卅    毛忒允及匹戚荚及裟太请仄及凛卞反    互
- *    凳今木化中月［娄醒毛公及引引忡绣仄卅中仪［
- ------------------------------------------------------------*/
 char *CHAR_makeOptionString(Char *ch) {
   char escapeshowstring[256];
   char *showstr = MAP_getfloorShowstring(ch->data[CHAR_FLOOR]);

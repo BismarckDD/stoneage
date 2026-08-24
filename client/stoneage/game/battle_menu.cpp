@@ -2259,8 +2259,6 @@ void BattleButtonPPLSKILL(void) {
         break;
       }
     }
-    //    StockFontBuffer ( 300 , 400 , FONT_PRIO_FRONT , FONT_PAL_WHITE , msg ,
-    //    0 ) ;
   }
 }
 #endif

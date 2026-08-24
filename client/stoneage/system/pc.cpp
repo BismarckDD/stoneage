@@ -714,48 +714,28 @@ void changePcAct(int x, int y, int dir, int action, int effectno,
     setPcDir(dir);
     setPcAction(ANIM_WALK);
     break;
-
-  // ????
   case 18:
-    // setPcWarpPoint(x, y);
     setPcDir(dir);
     setPcAction(ANIM_NOD);
     break;
-
-  // ?????????
   case 19:
     // setPcWarpPoint(x, y);
     setPcDir(dir);
     setPcAction(ANIM_STAND);
     break;
-
-  // 
   case 20:
     setPcWarpPoint(x, y);
     setPcDir(dir);
     break;
-
-  // ????
   case 21:
     setPcWarpPoint(x, y);
     setPcDir(dir);
     if (effectno == 1) {
-      // ???????
       setPcLeader();
-#if 0
-                if(pc.ptAct != NULL)
-                {
-                    pc.ptAct->partyGx = -1;
-                    pc.ptAct->partyGy = -1;
-                }
-#endif
     } else {
-      // ????????
       delPcLeader();
     }
     break;
-
-  // ?
   case 22:
     setPcWarpPoint(x, y);
     setPcDir(dir);
@@ -765,8 +745,6 @@ void changePcAct(int x, int y, int dir, int action, int effectno,
       delPcWatch();
     }
     break;
-
-  // ????????????
   case 23:
     setPcNameColor(effectno);
     break;
@@ -916,7 +894,6 @@ void changePcAct(int x, int y, int dir, int action, int effectno,
   }
 }
 
-// ?????? /////////////////////////////////////////////////////////
 void clearPartyParam(void) {
   int i;
 #ifdef MAX_AIRPLANENUM
@@ -949,25 +926,18 @@ void clearPartyParam(void) {
   delPcLeader();
 }
 
-// ???ptAct?NULL?????
 void clearPtActPartyParam(void) {
-  int i;
-
 #ifdef MAX_AIRPLANENUM
-  for (i = 0; i < MAX_AIRPLANENUM; i++)
+  for (int i = 0; i < MAX_AIRPLANENUM; i++)
 #else
   for (i = 0; i < MAX_PARTY; i++)
 #endif
-  {
     party[i].ptAct = NULL;
-  }
 }
 
-// ??????????????????? /////////////////////////////
 int existCharacterListEntry(int index) {
   if (index < 0 || index >= MAX_CHARACTER)
     return -1;
-
   if (chartable[index].name[0] != '\0') {
     return 1;
   } else {
@@ -975,30 +945,23 @@ int existCharacterListEntry(int index) {
   }
 }
 
-// ????????????????
 int cmpNameCharacterList(char *name) {
-  int i;
-
-  for (i = 0; i < MAX_CHARACTER; i++) {
+  for (int i = 0; i < MAX_CHARACTER; i++) {
     if (strcmp(name, chartable[i].name) == 0)
       return 1;
   }
-
   return 0;
 }
 
 #ifdef _AIDENGLU_
 extern Landed PcLanded;
 #endif
-// ??????????????????????????????????
+
 int setCharacterList(char *name, char *opt) {
   int index;
-
   makeStringFromEscaped(name);
   makeStringFromEscaped(opt);
-
   index = getIntegerToken(opt, '|', 1);
-
   if (index < 0 || index >= MAX_CHARACTER)
     return -1;
 #ifdef _AIDENGLU_
@@ -1037,24 +1000,20 @@ int resetCharacterList(int index) {
   return 0;
 }
 
-// ?????? /////////////////////////////////////////////////////////
 void getItem(void) {
   float tmpDir;
   float tmpX, tmpY;
   int dir;
   static unsigned int piSendTime = 0;
 
-  // ????????????????????????
   if (windowTypeWN == WINDOW_MESSAGETYPE_ITEMSHOPMENU ||
       windowTypeWN == WINDOW_MESSAGETYPE_ITEMSHOPMAIN ||
       windowTypeWN == WINDOW_MESSAGETYPE_LIMITITEMSHOPMAIN)
     return;
 
-  // ???????????????????
   if (ABS(nowGx - mouseMapGx) > 1 || ABS(nowGy - mouseMapGy) > 1)
     return;
 
-  // ?????????????????
   if (!checkCharObjPoint(mouseMapGx, mouseMapGy,
                          CHAROBJ_TYPE_NPC | CHAROBJ_TYPE_ITEM |
                              CHAROBJ_TYPE_MONEY))

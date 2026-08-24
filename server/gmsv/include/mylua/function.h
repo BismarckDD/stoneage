@@ -2,12 +2,6 @@
 #ifndef __MYLUA_FUNCTION_H__
 #define __MYLUA_FUNCTION_H__
 
-BOOL RunCharTalkedEvent(int meindex, int toindex, char *messageeraseescape, int color, int channel);
-BOOL RunCharLoopEvent(int meindex);
-BOOL RunCharOverlapEvent( int meindex, int toindex);
-BOOL RunCharBattleOverEvent( int meindex, int toindex, int iswin);
-BOOL RunCharWindowTalked( int meindex, int talkerindex, int seqno, int select, char *data);
-
 #ifdef _ALLBLUES_LUA_1_2 
 BOOL RunItemUseEvent( int item_index, int char_index, int toindex, int haveitem_index );
 BOOL RunItemDieReLifeEvent( int toindex, int item_index, int haveitem_index );

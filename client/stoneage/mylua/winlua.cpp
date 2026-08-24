@@ -1,5 +1,5 @@
 ﻿#include "systeminc/system.h"
-#include "newproto/autil.h"
+#include "proto/autil.h"
 #include "systeminc/action.h"
 #include "wgs/tea.h"
 #include "winlua.h"

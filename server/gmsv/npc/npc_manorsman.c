@@ -1373,7 +1373,8 @@ void NPC_ManorSavePKSchedule(int meindex, int toindex, int flg,int setTime,struc
 		makeEscapeString(ManorSchedule[manorid-1].szFmName[index],n2,sizeof(n2));
 #endif
 		makeEscapeString( getGameservername(), n3, sizeof(n3));
-		int playernum = FreeFmPk();
+		// 2026.08.23 REMOVE SPECIAL LOGIC
+		int playernum = 2; // FreeFmPk();
 		if(playernum == 0)
 			playernum = 50;
 		sprintf(msg, "%d|%d|%s|%d|%s|%d|%d|%d|%s",

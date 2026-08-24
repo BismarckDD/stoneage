@@ -51,7 +51,8 @@ void FontPrint(char *moji, int x, int y, int dispPrio);
 
 void FontPrintDec(char *moji, int x, int y, int dispPrio);
 
-int StockFontBuffer(int x, int y, char fontPrio, int color, char *str,
+int StockFontBuffer(int x, int y, char fontPrio, int color, 
+                    const char *str,
                     BOOL hitFlag);
 #ifdef _MO_CHAT_EXPRESSION
 void NewStockFontBuffer(CHAT_BUFFER *chatbuffer, int x, unsigned char color,
@@ -60,7 +61,8 @@ void delFontBuffer(CHAT_BUFFER *chatbuffer);
 #endif
 void CreatFontHdc();
 #ifdef _FONT_SIZE
-int StockFontBufferExt(int x, int y, char fontPrio, int color, char *str,
+int StockFontBufferExt(int x, int y, char fontPrio, int color,
+                       const char *str,
                        BOOL hitFlag, int size);
 HFONT CreateNewFont(int size);
 #endif

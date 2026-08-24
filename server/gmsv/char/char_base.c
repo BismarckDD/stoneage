@@ -31,6 +31,9 @@ static int CHAR_charanum;
 static int CHAR_playernum;
 static int CHAR_petnum;
 static int CHAR_othersnum;
+char linebuf[1024 * 8];
+char firstToken[1024];
+char secondToken[1024 * 8];
 
 // CoolFish: 2001/10/11
 #ifdef _UNIQUE_P_I
@@ -2639,11 +2642,8 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
   one->data[CHAR_BECOMEPIG_BBI] = 100250;
 #endif
 
-  while (1) {
+  while (TRUE) {
     BOOL ret;
-    char linebuf[1024 * 8];
-    char firstToken[1024];
-    char secondToken[1024 * 8];
     memset(linebuf, 0, sizeof(linebuf));
     memset(firstToken, 0, sizeof(firstToken));
     memset(secondToken, 0, sizeof(secondToken));
@@ -2799,8 +2799,7 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
         goto NEXT;
       } else {
         LodBadPetString(data, "错误总计", petnumber);
-
-        fprint("错误 宠物字符串 无法作成\n");
+        fprint("错误[宠物字符串]无法作成\n");
         return FALSE;
       }
     }
@@ -2997,9 +2996,6 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
         break;
       strncpysafe(petsecondToken, sizeof(petsecondToken),
                  buff + strlen(petfirstToken) + strlen(":"));
-      //          rc = getStringFromIndexWithDelim( buff , ":" ,  2 ,
-      //                                             petsecondToken ,
-      //                                             sizeof(petsecondToken) );
       found = FALSE;
       for (i = 0; i < CHAR_DATAINTNUM; i++) {
         if (strcmp(petfirstToken, CHAR_setintdata[i]) == 0) {
@@ -3654,8 +3650,6 @@ BOOL CHAR_makeDepotItemStringToChar(int char_index, char *data) {
   int readindex = 1, item_index;
   Char *ch = NULL;
   BOOL ret;
-  char firstToken[256], secondToken[4096], linebuf[4096];
-
   if (data[0] == '\0')
     return -1;
   if (!CHAR_CHECKINDEX(char_index))
@@ -3666,7 +3660,7 @@ BOOL CHAR_makeDepotItemStringToChar(int char_index, char *data) {
     return FALSE;
   }
 
-  while (1) {
+  while (TRUE) {
     memset(linebuf, 0, sizeof(linebuf));
     memset(firstToken, 0, sizeof(firstToken));
     memset(secondToken, 0, sizeof(secondToken));

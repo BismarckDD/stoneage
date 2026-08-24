@@ -8,15 +8,15 @@
 #endif /* __PROCESS_CPP__ */
 
 enum {
-  PROC_INIT,
-  PROC_ID_PASSWORD,      //
-  PROC_TITLE_MENU,       // ??????????牙
-  PROC_CHAR_SELECT,      // 选择角色的页面
-  PROC_CHAR_MAKE,        // 创建角色页面
-  PROC_CHAR_LOGIN_START, // ????????
-  PROC_CHAR_LOGIN,       // ????????
-  PROC_CHAR_LOGOUT,      // 角色登出的页面
-  PROC_OPENNING,
+  PROC_INIT,              // = 0
+  PROC_ID_PASSWORD,       // = 1 账号密码界面
+  PROC_TITLE_MENU,        // = 2 服务器选择界面
+  PROC_CHAR_SELECT,       // = 3 角色选择界面
+  PROC_CHAR_MAKE,         // = 4 角色创建界面
+  PROC_CHAR_LOGIN_START,  // = 5 登入
+  PROC_CHAR_LOGIN,        // = 6 角色登入界面
+  PROC_CHAR_LOGOUT,       // = 6 角色登出界面
+  PROC_OPENNING,          //
   PROC_GAME,              // 正常游戏的页面
   PROC_BATTLE,            // 游戏战斗的页面
   PROC_DISCONNECT_SERVER, // 和服务器失去连接(掉线)的页面

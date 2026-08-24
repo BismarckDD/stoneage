@@ -6,7 +6,15 @@ export RANLIB=ranlib
 export SED=sed
 
 INCFLAGS=-I../include -I../../lua -I../../common -I../../common/utils
-CFLAGS=-m64 -w -O3 -Wall -pipe $(INCFLAGS)
+BUILD ?= release
+ifeq ($(BUILD),debug)
+CFLAGS=-m64 -O0 -g3 -ggdb -fno-omit-frame-pointer -fno-inline -pipe -Wall \
+	-Wno-unused-result -fcommon -fgnu89-inline $(INCFLAGS) -MMD -MP
+else ifeq ($(BUILD),release)
+CFLAGS=-m64 -w -O3 -Wall -pipe -fcommon -fgnu89-inline $(INCFLAGS) -MMD -MP
+else
+$(error BUILD must be either debug or release)
+endif
 TARGET=libmylua.a
 SRC=$(wildcard *.c)
 OBJ=$(SRC:.c=.o)
@@ -34,6 +42,7 @@ $(TARGET): $(OBJ)
 
 clean:
 	$(RM) $(TARGET)
-	$(RM) $(OBJ)
+	$(RM) *.o *.d
 	$(RM) *~
 
+-include $(OBJ:.o=.d)

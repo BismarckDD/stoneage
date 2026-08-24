@@ -17,6 +17,8 @@ csa
 *.exe
 test
 server/saac/acserv.cf
+server/.last-build-type
+*.d
 .DS_Store
 docs/
 script/

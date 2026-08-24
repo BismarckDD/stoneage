@@ -5,6 +5,12 @@
 #include <ctype.h>
 #include <limits.h>
 
+#ifndef _WIN32
+#include <arpa/inet.h>
+#else
+#include <winsock2.h>
+#endif
+
 int charInclude(const char *text, const char *characters) {
   const char *match;
   if (text == NULL || characters == NULL)

@@ -20,6 +20,8 @@ extern int lastfunctime;
 
 #define DME() print("<DME(%d)%d:%d>", fd, __LINE__, func)
 
+char charname[CHARNAMELEN];
+
 extern int cliretfunc;
 int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   /* No client RPC is valid while the account server is authenticating it. */
@@ -51,9 +53,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   }
 #else
   util_DecodeMessage(raw, encoded);
-#endif
-#ifdef _DEBUG_RET
-  print("\nraw=%s\n", raw);
 #endif
   if (!util_SplitMessage(raw, SEPARATOR)) {
     DME();
@@ -1388,8 +1387,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   if (func == LSSPROTO_CREATENEWCHAR_RECV) {
     int checksum = 0, checksumrecv;
     int dataplacenum;
-    char charname[CHARNAMELEN];
-    ;
     int imgno;
     int faceimgno;
     int vital;
@@ -1494,8 +1491,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   if (func == LSSPROTO_CHARLOGIN_RECV) {
     int checksum = 0, checksumrecv;
     char charname[CHARNAMELEN];
-    ;
     checksum += util_destring(2, charname);
+    // 2026.08.24 查看收到的charname原始编码
+    // for (size_t i = 0; i < strlen(charname); ++i)
+    //   printf("%02X ", (unsigned char)charname[i]);
+    // printf("\n");
     util_deint(3, &checksumrecv);
     if (checksum != checksumrecv) {
       util_DiscardMessage();

@@ -1,5 +1,7 @@
 ﻿#include "systeminc/system.h"
 
+#include "systeminc/text_encoding.h"
+
 #define ASCII(a) a - 'A' + 10
 #define ASCII_DEC(a) a - '0' + 35
 #define FONT_BUFFER_SIZE 1024
@@ -11,12 +13,20 @@ int FontZenkauWidth;
 int FontHankakuWidth;
 int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
 
+static std::string ToDisplayGbk(const char *utf8) {
+  if (utf8 == NULL || utf8[0] == '\0')
+    return std::string();
+  const std::string converted = Utf8ToGbk(utf8);
+  // Keep legacy resource strings visible while remaining data files migrate.
+  return converted.empty() ? std::string(utf8) : converted;
+}
+
 #ifdef _SUNDAY_STR_SEARCH
 extern char* sunday(char* str, char* subStr); 
 #endif
 
 #ifdef _FONT_SIZE
-int StockFontBufferExt(int x, int y, char fontPrio, int color, char *str,
+int StockFontBufferExt(int x, int y, char fontPrio, int color, const char *str,
                        BOOL hitFlag, int size) {
   if (FontCnt >= FONT_BUFFER_SIZE)
     return -2;
@@ -26,17 +36,19 @@ int StockFontBufferExt(int x, int y, char fontPrio, int color, char *str,
   FontBuffer[FontCnt].color = color;
   FontBuffer[FontCnt].hitFlag = hitFlag;
 
-  strcpy(FontBuffer[FontCnt].str, str);
+  const std::string displayText = ToDisplayGbk(str);
+  strcpy_s(FontBuffer[FontCnt].str, displayText.c_str());
   FontBuffer[FontCnt].size = size;
   return FontCnt++;
 }
-int StockFontBuffer(int x, int y, char fontPrio, int color, char *str,
+int StockFontBuffer(int x, int y, char fontPrio, int color, const char *str,
                     BOOL hitFlag) {
   return StockFontBufferExt(x, y, fontPrio, color, str, hitFlag, 0);
 }
 #else
 
-int StockFontBuffer(int x, int y, char fontPrio, int color, char *str,
+int StockFontBuffer(int x, int y, char fontPrio, int color,
+                    const char *str,
                     BOOL hitFlag) {
   if (FontCnt >= FONT_BUFFER_SIZE)
     return -2;
@@ -45,7 +57,8 @@ int StockFontBuffer(int x, int y, char fontPrio, int color, char *str,
   FontBuffer[FontCnt].fontPrio = fontPrio;
   FontBuffer[FontCnt].color = color;
   FontBuffer[FontCnt].hitFlag = hitFlag;
-  strcpy(FontBuffer[FontCnt].str, str);
+  const std::string displayText = ToDisplayGbk(str);
+  strcpy_s(FontBuffer[FontCnt].str, displayText.c_str());
   return FontCnt++;
 }
 #endif
@@ -72,7 +85,8 @@ void CreatFontHdc() {
 }
 int getTextLength(char *str) {
   SIZE font_size;
-  GetTextExtentPoint32(FontSizeHdc, (LPCSTR)str, strlen(str),
+  const std::string displayText = ToDisplayGbk(str);
+  GetTextExtentPoint32(FontSizeHdc, displayText.c_str(), displayText.size(),
                        (LPSIZE)&font_size);
   return font_size.cx;
 }
@@ -222,7 +236,8 @@ void StockFontBuffer2(STR_BUFFER *strBuffer) {
         FontBuffer[FontCnt].str[i] = '*';
       FontBuffer[FontCnt].str[i] = NULL;
     } else {
-      strcpy(FontBuffer[FontCnt].str, strBuffer->buffer);
+      const std::string displayText = ToDisplayGbk(strBuffer->buffer);
+      strcpy_s(FontBuffer[FontCnt].str, displayText.c_str());
     }
 #ifdef _NEWFONT_
     char strtemp[512];

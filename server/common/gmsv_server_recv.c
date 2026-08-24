@@ -41,6 +41,53 @@ BOOL checkStringErr(char *);
 
 extern struct FM_PKFLOOR fmpkflnum[FAMILY_FMPKFLOOR];
 
+/* The current client transports protocol strings as UTF-8. */
+static BOOL isValidUtf8CharacterName(const char *name) {
+  const unsigned char *p = (const unsigned char *)name;
+
+  while (*p != '\0') {
+    if (*p <= 0x20 || *p == 0x7f)
+      return FALSE;
+
+    if (*p < 0x80) {
+      p++;
+      continue;
+    }
+    if (*p >= 0xc2 && *p <= 0xdf) {
+      if (p[1] == '\0' || (p[1] & 0xc0) != 0x80)
+        return FALSE;
+      p += 2;
+      continue;
+    }
+    if (*p >= 0xe0 && *p <= 0xef) {
+      if (p[1] == '\0' || p[2] == '\0' ||
+          (p[1] & 0xc0) != 0x80 || (p[2] & 0xc0) != 0x80)
+        return FALSE;
+      /* Reject overlong encodings and UTF-16 surrogate code points. */
+      if ((*p == 0xe0 && p[1] < 0xa0) ||
+          (*p == 0xed && p[1] >= 0xa0))
+        return FALSE;
+      p += 3;
+      continue;
+    }
+    if (*p >= 0xf0 && *p <= 0xf4) {
+      if (p[1] == '\0' || p[2] == '\0' || p[3] == '\0' ||
+          (p[1] & 0xc0) != 0x80 || (p[2] & 0xc0) != 0x80 ||
+          (p[3] & 0xc0) != 0x80)
+        return FALSE;
+      /* Keep code points within U+10000..U+10FFFF. */
+      if ((*p == 0xf0 && p[1] < 0x90) ||
+          (*p == 0xf4 && p[1] > 0x8f))
+        return FALSE;
+      p += 4;
+      continue;
+    }
+    return FALSE;
+  }
+
+  return TRUE;
+}
+
 static int Callfromcli_Util_getTargetCharaindex(int fd, int to_index) {
   int to_char_index = -1;
   const int char_index = CONNECT_getCharaindex(fd);
@@ -185,22 +232,19 @@ void GmsvServer_CreateNewChar_recv(int fd, int dataplacenum, char *charname,
   if (CONNECT_isCLI(fd) == FALSE)
     return;
   if (CONNECT_isNOTLOGIN(fd) == FALSE) {
-    // GmsvServer_CreateNewChar_send(fd, FAILED, "Not NOTLOGIN State\n");
     GmsvServer_CreateNewChar_send(fd, FAILED, "当前用户没有登录.\n");
     return;
   }
   if (strlen(charname) == 0) {
-    // GmsvServer_CreateNewChar_send(fd, FAILED, "0 length name.\n");
     GmsvServer_CreateNewChar_send(fd, FAILED, "用户名称长度不能位0.\n");
     return;
   } else if (strlen(charname) >= 32) {
-    // GmsvServer_CreateNewChar_send(fd, FAILED, "Too long charname.\n");
     GmsvServer_CreateNewChar_send(fd, FAILED, "用户名称长度大于16个字符.\n");
     return;
     // Nuke start 0711: Avoid naming as WAEI
   } else if (strstr(charname, "gM") || strstr(charname, "gm") ||
              strstr(charname, "GM") || strstr(charname, "Gm") ||
-             strstr(charname, "") || strstr(charname, "管理员") ||
+             strstr(charname, "管理员") ||
              strstr(charname, "admin") || strstr(charname, "ADMIN") ||
              strstr(charname, "Admin")
 #ifdef _UNREG_NEMA
@@ -214,82 +258,29 @@ void GmsvServer_CreateNewChar_recv(int fd, int dataplacenum, char *charname,
               strlen(getUnregname(3)) > 0) ||
              (strstr(charname, getUnregname(4)) && strlen(getUnregname(4)) > 0)
 #endif
-             || strstr(charname, "") || strstr(charname, "|") ||
-             strstr(charname, "'") || strstr(charname, "=") ||
-             strstr(charname, ";")
+             || strstr(charname, "|") || strstr(charname, "'")
+             || strstr(charname, "=") || strstr(charname, ";")
              // WON END
   ) {
-    GmsvServer_CreateNewChar_send(fd, FAILED, "Ivalid Char Name.\n");
+	  // 2026.08.23 创建角色失败找到这里
+    GmsvServer_CreateNewChar_send(fd, FAILED, "不合适的角色名称\n");
     return;
-    /*
-    unsigned int ip=CONNECT_get_userip(fd);
-    int a, b, c, d, ck;
-    a=(ip % 0x100); ip=ip / 0x100;
-    b=(ip % 0x100); ip=ip / 0x100;
-    c=(ip % 0x100); ip=ip / 0x100;
-    d=(ip % 0x100);
-
-    ck= (
-        ( (a== 10) && (b==0)   && (c==0) ) ||
-        ( (a==211) && (b==76) && (c==176) && (d==21) ) ||  // ̨��wayi
-        ( (a==210) && (b==64)  && (c==97)  && ((d>=21)&&(d<=25)) ) ||
-        ( (a==61)  && (b==222) && (c==142) && (d==66)) ||
-        ( (a==172) && (b==16)  && (c==172)  && (d==29) )
-      );
-
-    print(" name_WAEI_IP:%d.%d.%d.%d ck:%d ",a,b,c,d,ck );
-    if( !ck ) {
-      GmsvServer_CreateNewChar_send(fd,FAILED, "Invalid charname\n");
-      return;
-    }
-    */
   }
 #ifdef _MO_ILLEGAL_NAME
   int j;
   for (j = 0; j < 32; j++) {
     if (strstr(charname, getIllegalName(j)) && strlen(getIllegalName(j)) > 0) {
-      // GmsvServer_CreateNewChar_send(fd,FAILED, "Invalid charname\n");
       GmsvServer_CreateNewChar_send(fd, FAILED,
                                     "角色名称命中非法角色名称名单.\n");
       return;
     }
   }
 #endif
-  {
-    // Nuke start 0801,0916: Avoid strange name
-    int i, ach;
-    for (i = 0, ach = 0; i < strlen(charname); i++) {
-      if ((unsigned char)charname[i] == 0xff) {
-        ach = 1;
-        break;
-      } // Force no 0xff
-      if (((unsigned char)charname[i] >= 0x7f) &&
-          ((unsigned char)charname[i] <= 0xa0)) {
-        ach = 1;
-        break;
-      } // Force no 0x7f~0xa0
-      if ((unsigned char)charname[i] <= 0x20) {
-        ach = 1;
-        break;
-      } // Force greater than 0x20
-      if (ach) {
-        if ((((unsigned char)charname[i] >= 0x40) &&
-             ((unsigned char)charname[i] <= 0x7e)) ||
-            (((unsigned char)charname[i] >= 0xa1) &&
-             ((unsigned char)charname[i] <= 0xfe)))
-          ach = 0;
-      } else {
-        if (((unsigned char)charname[i] >= 0xa1) &&
-            ((unsigned char)charname[i] <= 0xfe))
-          ach = 1;
-      }
-    }
-    if (ach) {
-      GmsvServer_CreateNewChar_send(fd, FAILED, "角色名称中存在奇异字符.\n");
-      return;
-    }
+  if (!isValidUtf8CharacterName(charname)) {
+    GmsvServer_CreateNewChar_send(fd, FAILED,
+                                  "角色名称中存在非法字符.\n");
+    return;
   }
-  // Nuke end
 
   CONNECT_getCdkey(fd, cdkey, sizeof(cdkey));
   CHAR_createNewChar(fd, dataplacenum, charname, imgno, faceimgno, vital, str,
@@ -298,11 +289,9 @@ void GmsvServer_CreateNewChar_recv(int fd, int dataplacenum, char *charname,
 
 void GmsvServer_CharLogin_recv(int fd, char *charname) {
   char cdkey[CDKEYLEN], passwd[PASSWDLEN];
-
   if (CONNECT_isCLI(fd) == FALSE)
     return;
-
-  print("\n���Ե�½: ��������=%s\n", charname);
+  print("[CLIENT请求]Char[%s]请求登录.\n", charname);
 
   if (charname[0] == '\0') {
     GmsvServer_CharLogin_send(fd, FAILED, "Can't access char have no name\n");
@@ -1850,16 +1839,12 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
         ret = TRUE;
       }
     }
-    /* ���Ͱʾ夤����ϥ�����ɥ���Ф����䤤��碌�� */
     else if (cnt > 1) {
       int strlength;
       char msgbuf[1024];
       char escapebuf[2048];
       strcpy(msgbuf, "1\nҪ��˭ս����\n");
       strlength = strlen(msgbuf);
-      /* ������ɥ��Υ�å�����������
-       * ��Ʈ��Υ����ΰ���
-       */
       for (i = 0;
            CONNECT_getDuelcharaindex(fd, i) != -1 && i < CONNECT_WINDOWBUFSIZE;
            i++) {

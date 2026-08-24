@@ -713,7 +713,6 @@ int charLoginProc(void) {
     if (charLoginStatus == 1)
       return 1;
     else
-
 #ifdef _NEW_WGS_MSG // WON ADD WGS的新视窗
       if (ERROR_MESSAGE != 0)
         return ERROR_MESSAGE;
@@ -1070,7 +1069,7 @@ void lssproto_S_recv(int fd, char *data) {
               gmsv[selectServerIndex].name, pc.name);
 
 #endif
-    SetWindowTextGbk(hWnd, title);
+    SetWindowTextUtf8(hWnd, title);
   }
     if (!bNewServer)
       pc.ridePetNo = -1;
@@ -2815,9 +2814,6 @@ void createNewCharStart(void) {
   SETSENDING;
 }
 
-// ???????
-//   ??： 0 ... ? / 1 ... ?? / -1 ... ?????? / -2 ...
-//   ?????????
 int createNewCharProc(void) {
   if (netproc_sending == NETPROC_RECEIVED) {
     netproc_sending = NETPROC_NOTSEND;
@@ -2827,9 +2823,7 @@ int createNewCharProc(void) {
       return -2;
     }
   }
-
   SETTIMEOUT2(NET_ERRMSG_CREATECHARTIMEOUT);
-
   return 0;
 }
 

@@ -14,6 +14,7 @@
 #include "npcutil.h"
 #include "object.h"
 #include "readmap.h"
+#include "log.h"
 
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);

@@ -2978,7 +2978,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
         if (fdremember == acfd)
 #endif
         {
-          printf("从SAAC读取数据:%s\n", rbmess);
           if (SaacClient_ClientDispatchMessage(fdremember, rbmess) < 0) {
             print("\n从SAAC读取数据出错!!!\n");
           }
@@ -3078,7 +3077,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         if (fdremember == acfd)
 #endif
         {
-          printf("向SAAC发送内容:%s\n", Connect[fdremember].wb);
+          // printf("向SAAC发送内容:%s\n", Connect[fdremember].wb);
           ret = write(fdremember, Connect[fdremember].wb,
                       (Connect[fdremember].wbuse < acwritesize)
                           ? Connect[fdremember].wbuse
@@ -3090,9 +3089,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
                           : 1024 * 64);
           sendspeed += ret;
         }
-
         // Nuke end
-
         if (ret == -1 && errno != EINTR) {
 #ifdef _NETLOG_
           char cdkey[16];

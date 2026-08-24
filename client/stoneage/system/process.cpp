@@ -97,7 +97,6 @@ void Process(void) {
     BackBufferDrawType = DRAW_BACK_NORMAL;
     characterLoginProc();
     break;
-  // ?????
   case PROC_CHAR_LOGOUT: /* 角色登入 */
     characterLogoutProc();
     break;
@@ -157,13 +156,16 @@ void Process(void) {
   // Keep the client-space mouse coordinates visible in every interactive scene.
   // A fixed position is easier to read and does not interfere with hit testing.
   if (lpDraw != NULL && ProcNo != PROC_INIT) {
-    char mousePosition[64];
+    char mousePosition[32];
     sprintf_s(mousePosition, "Mouse: (%d, %d)", mouse.nowPoint.x,
               mouse.nowPoint.y);
     StockFontBuffer(8, 8, FONT_PRIO_FRONT, FONT_PAL_YELLOW, mousePosition, 0);
-    char ProcNoStr[64];
+    char ProcNoStr[32];
     sprintf_s(ProcNoStr, "ProcNo: %d", ProcNo);
     StockFontBuffer(8, 24, FONT_PRIO_FRONT, FONT_PAL_YELLOW, ProcNoStr, 0);
+    // char ProcNameStr[32];
+    // sprintf_s(ProcNameStr, "ProcName: %d", ProcNo);
+    // StockFontBuffer(8, 24, FONT_PRIO_FRONT, FONT_PAL_YELLOW, ProcNameStr, 0);
   }
 }
 
@@ -231,18 +233,18 @@ void GameProc(void) {
     paletteProc();
     DispBuffer.DispCnt = 0;
     FontCnt = 0;
-    initCharPartsPrio();      // ?????????！???叉??????
-    RunAction();              // ?????????
+    initCharPartsPrio();      //
+    RunAction();              //
     StockTaskDispBuffer();    // ???牙????????????
     stop_bgm();               //???于
     drawMap();                //    ???牙
-    MenuProc();               // ??????
-    ChatProc();               // ??????
-    ChatBufferToFontBuffer(); // ??????????????????????
-    ImeProc();                // ???????
+    MenuProc();               // 菜单进程
+    ChatProc();               // 聊天进程
+    ChatBufferToFontBuffer(); //
+    ImeProc();                // 输入法
     SortDispBuffer();         // 牙???????
     ClearBackSurface();
-    PutBmp();
+    PutBmp();                 // 绘制图片
     lpBattleSurface->BltFast(0, 0, lpDraw->lpBACKBUFFER, NULL, DDBLTFAST_WAIT);
     DispBuffer.DispCnt = 0;
     FontCnt = 0;

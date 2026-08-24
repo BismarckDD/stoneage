@@ -13,22 +13,22 @@
 #include "readmap.h"
 #include "util.h"
 
-int NPC_Lua_Map_CheckCoordinates(lua_State *_NLL) // 检测某点是否在地图范围内。
+int NPC_Lua_Map_CheckCoordinates(lua_State *lua) // 检测某点是否在地图范围内。
 {
-  CheckEx(_NLL, 3);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
-  int x = (int)lua_tointeger(_NLL, 2);
-  int y = (int)lua_tointeger(_NLL, 3);
+  CheckEx(lua, 3);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
+  int x = (int)lua_tointeger(lua, 2);
+  int y = (int)lua_tointeger(lua, 3);
   BOOL RETBOOL = MAP_checkCoordinates(map, x, y);
-  LRetBool(_NLL, RETBOOL);
+  LRetBool(lua, RETBOOL);
 }
 
-int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL) // 检测地图是否支持登出
+int NPC_Lua_Map_GetExitFloorXY(lua_State *lua) // 检测地图是否支持登出
 {
-  CheckEx(_NLL, 1);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
+  CheckEx(lua, 1);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
   int maparray[3];
   int map_type = 0;
   unsigned int point;
@@ -59,223 +59,229 @@ int NPC_Lua_Map_GetExitFloorXY(lua_State *_NLL) // 检测地图是否支持登�
     maparray[1] = 0;
     maparray[2] = 0;
   }
-  LRetArray(_NLL, maparray, arraysizeof(maparray));
+  LRetArray(lua, maparray, arraysizeof(maparray));
 }
 
-int NPC_Lua_Map_GetfloorX(lua_State *_NLL) // 获取地图X长度
+int NPC_Lua_Map_GetfloorX(lua_State *lua) // 获取地图X长度
 {
-  CheckEx(_NLL, 1);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
-  int x;
-  x = MAP_getfloorX(map);
-  LRetInt(_NLL, x);
+  CheckEx(lua, 1);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
+  int x = MAP_getfloorX(map);
+  LRetInt(lua, x);
 }
 
-int NPC_Lua_Map_GetfloorY(lua_State *_NLL) // 获取地图Y长度
+int NPC_Lua_Map_GetfloorY(lua_State *lua) // 获取地图Y长度
 {
-  CheckEx(_NLL, 1);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
+  CheckEx(lua, 1);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
   int y;
   y = MAP_getfloorX(map);
-  LRetInt(_NLL, y);
+  LRetInt(lua, y);
 }
 
-int NPC_Lua_Map_GetTileAndObjId(lua_State *_NLL) // 获取地图某点的地板和装饰层
+int NPC_Lua_Map_GetTileAndObjId(lua_State *lua) // 获取地图某点的地板和装饰层
 {
-  CheckEx(_NLL, 3);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
-  int x = (int)lua_tointeger(_NLL, 2);
-  int y = (int)lua_tointeger(_NLL, 3);
+  CheckEx(lua, 3);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
+  int x = (int)lua_tointeger(lua, 2);
+  int y = (int)lua_tointeger(lua, 3);
   int tile = -1, obj = -1;
   MAP_getTileAndObjData(map, x, y, &tile, &obj);
   int maparray[2];
   maparray[0] = tile;
   maparray[1] = obj;
-  LRetArray(_NLL, maparray, arraysizeof(maparray));
+  LRetArray(lua, maparray, arraysizeof(maparray));
 }
 
-int NPC_Lua_Map_SetTileAndObjId(lua_State *_NLL) // 设置地图某点的地板和装饰层
+int NPC_Lua_Map_SetTileAndObjId(lua_State *lua) // 设置地图某点的地板和装饰层
 {
-  CheckEx(_NLL, 5);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
-  int x = (int)lua_tointeger(_NLL, 2);
-  int y = (int)lua_tointeger(_NLL, 3);
-  int tile = (int)lua_tointeger(_NLL, 4);
-  int obj = (int)lua_tointeger(_NLL, 5);
-  if (MAP_setTileAndObjData(map, x, y, tile, obj))
-    LRetInt(_NLL, 0);
-  LRetInt(_NLL, -1);
+  CheckEx(lua, 5);
+
+  CheckIndexNull(lua, 1);
+
+  int map = (int)lua_tointeger(lua, 1);
+  int x = (int)lua_tointeger(lua, 2);
+  int y = (int)lua_tointeger(lua, 3);
+  int tile = (int)lua_tointeger(lua, 4);
+  int obj = (int)lua_tointeger(lua, 5);
+
+  if (MAP_setTileAndObjData(map, x, y, tile, obj)) {
+    LRetInt(lua, 0);
+  }
+  LRetInt(lua, -1);
 }
 
-int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *_NLL) // 获取某点是否可以行走
+int NPC_Lua_Map_GetWalkAbleFromPoint(lua_State *lua) // 获取某点是否可以行走
 {
-  CheckEx2(_NLL, 3, 4);
-  CheckIndexNull(_NLL, 1);
-  int TM_Top = lua_gettop(_NLL);
-  int map = (int)lua_tointeger(_NLL, 1);
-  int x = (int)lua_tointeger(_NLL, 2);
-  int y = (int)lua_tointeger(_NLL, 3);
+  CheckEx2(lua, 3, 4);
+  CheckIndexNull(lua, 1);
+  int TM_Top = lua_gettop(lua);
+  int map = (int)lua_tointeger(lua, 1);
+  int x = (int)lua_tointeger(lua, 2);
+  int y = (int)lua_tointeger(lua, 3);
   BOOL IsFly = FALSE;
   if (TM_Top == 4) {
-    IsFly = (BOOL)lua_toboolean(_NLL, 4);
+    IsFly = (BOOL)lua_toboolean(lua, 4);
   }
   IsFly = MAP_walkAbleFromPoint(map, x, y, IsFly);
-  LRetBool(_NLL, IsFly);
+  LRetBool(lua, IsFly);
 }
 
-int NPC_Lua_Map_GetImageData(lua_State *_NLL) // 获取图片数据
+int NPC_Lua_Map_GetImageData(lua_State *lua) // 获取图片数据
 {
-  CheckEx(_NLL, 2);
-  CheckIndexNull(_NLL, 1);
-  int MapImageid = (int)lua_tointeger(_NLL, 1);
-  int flg = (int)lua_tointeger(_NLL, 2);
+  CheckEx(lua, 2);
+  CheckIndexNull(lua, 1);
+  int MapImageid = (int)lua_tointeger(lua, 1);
+  int flg = (int)lua_tointeger(lua, 2);
   if (flg >= 0) {
     if (flg < LUA_DATALINE1) {
       flg -= LUA_DATALINE0;
       int TM_RetInt = MAP_getImageInt(MapImageid, flg);
-      LRetInt(_NLL, TM_RetInt);
+      LRetInt(lua, TM_RetInt);
     }
   }
-  LRetErrNull(_NLL, "传入的标志是错误的。");
+  LRetErrNull(lua, "传入的标志是错误的。");
 }
-int NPC_Lua_Map_SetImageData(lua_State *_NLL) // 设置图片数据
+
+int NPC_Lua_Map_SetImageData(lua_State *lua) // 设置图片数据
 {
-  CheckEx(_NLL, 3);
-  CheckIndexNull(_NLL, 1);
-  int MapImageid = (int)lua_tointeger(_NLL, 1);
-  int flg = (int)lua_tointeger(_NLL, 2);
-  int val = (int)lua_tointeger(_NLL, 3);
+  CheckEx(lua, 3);
+  CheckIndexNull(lua, 1);
+  int MapImageid = (int)lua_tointeger(lua, 1);
+  int flg = (int)lua_tointeger(lua, 2);
+  int val = (int)lua_tointeger(lua, 3);
   if (flg >= 0) {
     if (flg < LUA_DATALINE1) {
       flg -= LUA_DATALINE0;
       BOOL TM_RetBool = MAP_setImageInt(MapImageid, flg, val);
-      LRetBool(_NLL, TM_RetBool);
+      LRetBool(lua, TM_RetBool);
     }
   }
-  LRetErrNull(_NLL, "传入的标志是错误的。");
+  LRetErrNull(lua, "传入的标志是错误的。");
 }
 static OBJECT TM_Object = NULL;
-int NPC_Lua_Map_GetTopObj(lua_State *_NLL) // 用来获取地图某点上对象
+int NPC_Lua_Map_GetTopObj(lua_State *lua) // 用来获取地图某点上对象
 {
-  CheckEx(_NLL, 3);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
-  int x = (int)lua_tointeger(_NLL, 2);
-  int y = (int)lua_tointeger(_NLL, 3);
+  CheckEx(lua, 3);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
+  int x = (int)lua_tointeger(lua, 2);
+  int y = (int)lua_tointeger(lua, 3);
   TM_Object = MAP_getTopObj(map, x, y);
-  LRetBool(_NLL, TRUE);
+  LRetBool(lua, TRUE);
 }
 
-int NPC_Lua_Map_GetNextObj(lua_State *_NLL) // 获取下一个对象索引
+int NPC_Lua_Map_GetNextObj(lua_State *lua) // 获取下一个对象索引
 {
-  CheckEx(_NLL, 0);
+  CheckEx(lua, 0);
   int TM_ObjIndex = GET_OBJINDEX(TM_Object);
   TM_Object = NEXT_OBJECT(TM_Object);
   if (!CHECKOBJECTUSE(TM_ObjIndex)) {
-    LRetInt(_NLL, -1);
+    LRetInt(lua, -1);
     TM_Object = NULL;
   }
-  LRetInt(_NLL, TM_ObjIndex);
+  LRetInt(lua, TM_ObjIndex);
 }
 
-int NPC_Lua_Map_CheckImageIndex(lua_State *_NLL) // 检测某地图号图片是否存在
+int NPC_Lua_Map_CheckImageIndex(lua_State *lua) // 检测某地图号图片是否存在
 {
-  CheckEx(_NLL, 1);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
+  CheckEx(lua, 1);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
   BOOL TM_Ret = IsValidImagenumber(map);
-  LRetBool(_NLL, TM_Ret);
+  LRetBool(lua, TM_Ret);
 }
 
-int NPC_Lua_Map_CheckIndex(lua_State *_NLL) // 检测某地图号地图是否存在
+int NPC_Lua_Map_CheckIndex(lua_State *lua) // 检测某地图号地图是否存在
 {
-  CheckEx(_NLL, 1);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
-  BOOL TM_Ret = CHECKFLOORID(map);
-  LRetBool(_NLL, TM_Ret);
+  CheckEx(lua, 1);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
+  BOOL tm_ret = CHECKFLOORID(map);
+  LRetBool(lua, tm_ret);
 }
 
 #ifdef _MO_LNS_MAPSUOXU
-int NPC_Lua_Map_MakeNewMap(lua_State *_NLL) // 制造一个副本地图，并返回新地图号
+
+int NPC_Lua_Map_MakeNewMap(lua_State *lua) // 制造一个副本地图，并返回新地图号
 {
-  CheckEx2(_NLL, 1, 2);
-  CheckIndexNull(_NLL, 1);
-  int TM_Top = lua_gettop(_NLL);
-  int map = (int)lua_tointeger(_NLL, 1);
+  CheckEx2(lua, 1, 2);
+  CheckIndexNull(lua, 1);
+  int TM_Top = lua_gettop(lua);
+  int map = (int)lua_tointeger(lua, 1);
   char *name = "";
   if (TM_Top == 2) {
-    CheckIndexNull(_NLL, 2);
-    name = lua_tostring(_NLL, 2);
+    CheckIndexNull(lua, 2);
+    name = lua_tostring(lua, 2);
   }
   int TM_Ret = MAP_makenew(map, name);
-  LRetInt(_NLL, TM_Ret);
+  LRetInt(lua, TM_Ret);
 }
 
-int NPC_Lua_Map_DelNewMap(lua_State *_NLL) // 删除一个副本地图
+int NPC_Lua_Map_DelNewMap(lua_State *lua) // 删除一个副本地图
 {
-  CheckEx(_NLL, 1);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
+  CheckEx(lua, 1);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
   BOOL TM_Ret = MAP_DelMap(map);
-  LRetBool(_NLL, TM_Ret);
+  LRetBool(lua, TM_Ret);
 }
 
-int NPC_Lua_Map_SetExWarp(lua_State *_NLL) // 设置一个地图的退出传送点
+int NPC_Lua_Map_SetExWarp(lua_State *lua) // 设置一个地图的退出传送点
 {
-  CheckEx(_NLL, 5);
-  CheckIndexNull(_NLL, 1);
-  int map = (int)lua_tointeger(_NLL, 1);
-  int exfl = (int)lua_tointeger(_NLL, 2);
-  int exx = (int)lua_tointeger(_NLL, 3);
-  int exy = (int)lua_tointeger(_NLL, 4);
-  int type = (int)lua_tointeger(_NLL, 4); // 地图类型
+  CheckEx(lua, 5);
+  CheckIndexNull(lua, 1);
+  int map = (int)lua_tointeger(lua, 1);
+  int exfl = (int)lua_tointeger(lua, 2);
+  int exx = (int)lua_tointeger(lua, 3);
+  int exy = (int)lua_tointeger(lua, 4);
+  int type = (int)lua_tointeger(lua, 4); // 地图类型
   BOOL TM_Ret = MAP_SetExWarp(map, exfl, exx, exy, type);
-  LRetBool(_NLL, TM_Ret);
+  LRetBool(lua, TM_Ret);
 }
 
 int NPC_Lua_Map_SetMapPoint(
-    lua_State *_NLL) // 设置一个地图传送点 返回一个传送点索引
+    lua_State *lua) // 设置一个地图传送点 返回一个传送点索引
 {
-  CheckEx(_NLL, 1);
-  CheckIndexNull(_NLL, 1);
-  char *mappoint = lua_tostring(_NLL, 1);
+  CheckEx(lua, 1);
+  CheckIndexNull(lua, 1);
+  char *mappoint = lua_tostring(lua, 1);
   int TM_Ret = SetMapPoint(mappoint);
-  LRetInt(_NLL, TM_Ret);
+  LRetInt(lua, TM_Ret);
 }
 
-int NPC_Lua_Map_DelMapPoint(lua_State *_NLL) // 删除一个传送点
+int NPC_Lua_Map_DelMapPoint(lua_State *lua) // 删除一个传送点
 {
-  CheckEx(_NLL, 1);
-  CheckIndexNull(_NLL, 1);
-  int ps = (int)lua_tointeger(_NLL, 1);
+  CheckEx(lua, 1);
+  CheckIndexNull(lua, 1);
+  int ps = (int)lua_tointeger(lua, 1);
   BOOL TM_Ret = DelMapPoint(ps);
-  LRetBool(_NLL, TM_Ret);
+  LRetBool(lua, TM_Ret);
 }
 
 #endif //
 
-int NPC_Lua_Map_getFloorName(lua_State *_NLL) // 返回一个地图名
+int NPC_Lua_Map_getFloorName(lua_State *lua) // 返回一个地图名
 {
-  CheckEx(_NLL, 1);
-  CheckIndexNull(_NLL, 1);
-  int MapID = (int)lua_tointeger(_NLL, 1);
-  char *MapName = MAP_getFloorName(MapID);
-  LRetMsg(_NLL, MapName);
+  CheckEx(lua, 1);
+  CheckIndexNull(lua, 1);
+  int map_id = (int)lua_tointeger(lua, 1);
+  char *map_name = MAP_getFloorName(map_id);
+  LRetMsg(lua, map_name);
 }
+
 /*
-int NPC_Lua_Map_Upmap(lua_State *_NLL)          //更新地图
+int NPC_Lua_Map_Upmap(lua_State *lua) //更新地图
 {
-        CheckEx(_NLL, 3);
-        CheckIndexNull(_NLL, 1);
-        int TM_Index = (int)lua_tointeger(_NLL, 1);
-        int formatmap = (int)lua_tointeger(_NLL, 2);
-        int tomap = (int)lua_tointeger(_NLL, 3);
-        GmsvServer_Upmap_send(TM_Index,formatmap,tomap);
-        LRetBool(_NLL, TRUE);
+  CheckEx(lua, 3);
+  CheckIndexNull(lua, 1);
+  int TM_Index = (int)lua_tointeger(lua, 1);
+  int formatmap = (int)lua_tointeger(lua, 2);
+  int tomap = (int)lua_tointeger(lua, 3);
+  GmsvServer_Upmap_send(TM_Index,formatmap,tomap);
+  LRetBool(lua, TRUE);
 }
 */

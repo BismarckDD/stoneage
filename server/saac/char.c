@@ -6,12 +6,18 @@
 #include "saac_server.h"
 #include "util.h"
 
+
 // CoolFish: Family 2001/6/12
 #include "acfamily.h"
 
 // Arminius 7.17 memory lock
 #include "lock.h"
 #include "recv.h"
+
+char char_buf[MAXCHAR_PER_USER][CHARDATASIZE];
+char name_work[CHARDATASIZE];
+char option_work[CHARDATASIZE];
+char nm_work[CHARDATASIZE];
 
 static void getCharNameFromString(const char *in, char *output);
 static void getCharOptionFromString(const char *in, char *output);
@@ -52,31 +58,28 @@ static void makeCharPoolItemFileName(char *id, char *output, int outputlen);
     }                                                                          \
   }
 
-void charLoadCallback(int ti, int auth, char *c0, char *c1, char *c2, char *c3,
-                      char *c4, int i0, int i1) {
+char load_buf[CHARDATASIZE];
+char info_buf[CHARDATASIZE];
+char result[100];
+char retdata[100];
+void charLoadCallback(int ti,    // connection_fd
+                      int auth,  // 0, 必须是0，也必然是0
+                      char *id,  // username
+                      char *passwd,  // password
+                      char *charname,  // char_name
+                      char *process_no,  // process_no
+                      char *deadline,  // ""(empty)
+                      int lock,
+                      int mesgid) {
   // Spock deleted 2000/11/2
-  // static int process_id = 0;
   // CoolFish: Init char_index 2001/10/16
 #ifdef _NewSave
   int char_index = -1;
 #else
   int char_index;
 #endif
-  char loadbuf[CHARDATASIZE];
-  char infobuf[CHARDATASIZE];
-  int lock = i0;
-  char *process = c3;
-  char *id = c0;
-  char *passwd = c1;
-  char *charname = c2;
-  int mesgid = i1;
-
-  char *deadline = c4;
-
   // Spock deleted 2000/11/2
-  // process_id++;
-
-  if (auth != 0) {
+  /* if (auth != 0) {
     char data[100];
     snprintf(data, sizeof(data), "%d", auth);
 #ifdef _NewSave
@@ -85,39 +88,33 @@ void charLoadCallback(int ti, int auth, char *c0, char *c1, char *c2, char *c3,
     SaacServer_ACCharLoad_send(ti, FAILED, data, mesgid);
 #endif
     return;
-  }
+  } */
   if (isLocked(id)) {
-    int process = atoi(c3);
+    int process = atoi(process_no);
 #ifdef _NewSave
     SaacServer_ACCharLoad_send(ti, FAILED, "locked", mesgid, char_index);
 #else
     SaacServer_ACCharLoad_send(ti, FAILED, "locked", mesgid);
 #endif
     DeleteMemLock(getHash(id) & 0xff, id, &process); // 如果AP无锁则AC解锁
-    logErr("\n (%s) AC同一星系重覆登入，踢人!! ", id);
+    logErr("\n (%s) 同一星系(SAAC)重复登入，踢人!!\n", id);
     SaacServer_ACKick_recv(ti, id, 1, -1); // 踢人
-
     checkGSUCheck(id);
     return;
   }
-
   char_index = getCharIndexByName(id, charname);
-#ifdef _NewSave
-  // logErr("\n档案装载序号:%d 账号:%s 名字:%s\n", char_index, id, charname);
-#endif
-
+  logErr("\n档案装载序号:%d, 账号:%s, 名字:%s\n", char_index, id, charname);
   if (char_index < 0) {
-    /* 非法的char_index */
 #ifdef _NewSave
-    SaacServer_ACCharLoad_send(ti, FAILED, "char nonexistent", mesgid,
+    SaacServer_ACCharLoad_send(ti, FAILED, "读取档案装载序号错误.", mesgid,
                                char_index);
 #else
-    SaacServer_ACCharLoad_send(ti, FAILED, "char nonexistent", mesgid);
+    SaacServer_ACCharLoad_send(ti, FAILED, "读取档案装在序号错误.", mesgid);
 #endif
     return;
   }
 
-  if (loadCharOne(id, char_index, loadbuf, sizeof(loadbuf)) < 0) {
+  if (loadCharOne(id, char_index, load_buf, sizeof(load_buf)) < 0) {
 #ifdef _NewSave
     SaacServer_ACCharLoad_send(ti, FAILED, "cannot load ( disk i/o error?)",
                                mesgid, char_index);
@@ -135,27 +132,26 @@ void charLoadCallback(int ti, int auth, char *c0, char *c1, char *c2, char *c3,
 #endif
   }
   if (lock) {
-    char result[100];
-    char retdata[100];
 #ifdef _LOCK_ADD_NAME
     if (lockUser(gs[ti].name, id, charname, passwd, 1, result, sizeof(result),
-                 retdata, sizeof(retdata), process, deadline) < 0) {
+                 retdata, sizeof(retdata), process_no, deadline) < 0) {
 #else
     // Spock 2000/11/2
     if (lockUser(gs[ti].name, id, passwd, 1, result, sizeof(result), retdata,
                  sizeof(retdata), process, deadline) < 0) {
 #endif
-      SaacServer_ACCharLoad_send(ti, FAILED, "lock FAIL!!", mesgid, char_index);
+      // 获取用户锁失败.
+      SaacServer_ACCharLoad_send(ti, FAILED, "LOCK USER FAILED.", mesgid, char_index);
       return;
     }
   }
-  memset(infobuf, 0, sizeof(infobuf));
-  getCharInfoFromString(loadbuf, infobuf);
-  makeStringFromEscaped(infobuf);
+  memset(info_buf, 0, sizeof(info_buf));
+  getCharInfoFromString(load_buf, info_buf);
+  makeStringFromEscaped(info_buf);
 #ifdef _NewSave
-  SaacServer_ACCharLoad_send(ti, SUCCESSFUL, infobuf, mesgid, char_index);
+  SaacServer_ACCharLoad_send(ti, SUCCESSFUL, info_buf, mesgid, char_index);
 #else
-  SaacServer_ACCharLoad_send(ti, SUCCESSFUL, infobuf, mesgid);
+  SaacServer_ACCharLoad_send(ti, SUCCESSFUL, info_buf, mesgid);
 #endif
 
 #ifdef _WAEI_KICK
@@ -498,6 +494,7 @@ static void makeDeletCharFileName(char *id, char *output, int outputlen,
   makeDirFilename(output, outputlen, "char_delet", getHash(id), body);
 }
 
+// 2026.08.24 在output里填入dir_path
 static void makeCharFileName(char *id, char *output, int outputlen, int num) {
   char body[1024];
   if (strlen(id) < 1)
@@ -512,7 +509,6 @@ static void makeSleepCharFileName(char *id, char *output, int outputlen,
   char body[1024];
   if (strlen(id) < 1)
     return;
-
   snprintf(body, sizeof(body), "%s.%d.char", id, num);
   makeDirFilename(output, outputlen, g_saac_config.sleepchardir, getHash(id),
                   body);
@@ -520,10 +516,6 @@ static void makeSleepCharFileName(char *id, char *output, int outputlen,
 #endif
 
 int loadCharNameAndOption(char *id, char *output, int outputlen) {
-  char char_buf[MAXCHAR_PER_USER][CHARDATASIZE];
-  char name_work[CHARDATASIZE];
-  char option_work[CHARDATASIZE];
-  char nm_work[CHARDATASIZE];
   int i, count = 0;
   int so_far_bytes = 0;
   output[0] = 0;
@@ -555,12 +547,14 @@ int loadCharNameAndOption(char *id, char *output, int outputlen) {
   return count;
 }
 
-int loadCharOne(char *id, int num, char *output, int outputlen) {
+int loadCharOne(char *id,     // username
+                int num,      // 在当前SAAC的第几个角色(最多两个)
+                char *output,  // 角色信息,
+                int outputlen) {
   char fn[1024];
   FILE *fp;
   char c_temp, *c_ptr;
   c_ptr = output;
-
   makeCharFileName(id, fn, sizeof(fn), num);
   fp = fopen(fn, "r");
   if (fp == NULL) {
@@ -663,22 +657,24 @@ static int makeSaveCharString(char *output, int outputlen, char *nm, char *opt,
   return 0;
 }
 
+char output[CHARDATASIZE];
+char cn[CHARDATASIZE];
+
 int getCharIndexByName(char *id, char *charname) {
   int i;
   for (i = 0; i < MAXCHAR_PER_USER; i++) {
-    char output[CHARDATASIZE];
+    // 如果没有读取到角色，就跳过
     if (loadCharOne(id, i, output, sizeof(output)) < 0) {
       continue;
     } else {
-      char cn[CHARDATASIZE];
+      // 如果读取到角色信息，比对角色数据中的角色名称和传入的charname
       getCharNameFromString(output, cn);
       if (strcmp(charname, makeStringFromEscaped(cn)) == 0) {
         return i;
-      } else {
       }
     }
   }
-  return -1;
+  return -1; // 没有找到这个角色
 }
 
 static int findBlankCharIndex(char *id) {

@@ -1492,8 +1492,6 @@ void drawCharStatus( ACTION *ptAct )
 #endif
 
 #ifdef _CHAR_PROFESSION            // WON ADD 人物职业
-
-//    if( ptAct->profession_class != 0 ){
     {
         char msg[10];
 
@@ -1504,10 +1502,6 @@ void drawCharStatus( ACTION *ptAct )
         case 3:        sprintf_s( msg , "追猎者");    break;
         }
         sprintf_s( pc.profession_class_name , "%s" , msg ) ; 
-        //StockFontBuffer( ptAct->x-GetStrWidth( msg )/2, ptAct->y-110, FONT_PRIO_BACK, FONT_PAL_YELLOW, msg, 1);
-        //StockFontBuffer( ptAct->x-GetStrWidth( msg )/2, ptAct->y-110, FONT_PRIO_BACK, FONT_PAL_YELLOW, msg, 1);
-        //StockDispBuffer( ptAct->x-GetStrWidth( msg )/2 + 30, ptAct->y-90 , DISP_PRIO_IME3, CG_WAR_ICON_SMALL + pc.profession_class - 1, 0 );
-                        
     }
 
 #endif

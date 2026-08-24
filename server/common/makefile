@@ -5,7 +5,15 @@ export RANLIB=ranlib
 export SHELL=/bin/sh
 
 INCFLAGS=-I. -I./utils
-CFLAGS=-m64 -w -O3 -Wall -pipe $(INCFLAGS) -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE
+BUILD ?= release
+ifeq ($(BUILD),debug)
+CFLAGS=-m64 -O0 -g3 -ggdb -fno-omit-frame-pointer -fno-inline -pipe -Wall \
+	-Wno-unused-result -fcommon -fgnu89-inline $(INCFLAGS) -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -MMD -MP
+else ifeq ($(BUILD),release)
+CFLAGS=-m64 -O3 -DNDEBUG -w -Wall -pipe -fcommon -fgnu89-inline $(INCFLAGS) -D_FILE_OFFSET_BITS=64 -D_LARGEFILE64_SOURCE -MMD -MP
+else
+$(error BUILD must be either debug or release)
+endif
 SAAC_CFLAGS=$(CFLAGS) -I../saac/include
 GMSV_CFLAGS=$(CFLAGS) -I../gmsv/include -I../lua
 
@@ -43,7 +51,6 @@ ${LIBUTIL}: $(UTILS_OBJ)
 	$(RM) $(LIBUTIL)
 	$(AR) $(LIBUTIL) $(UTILS_OBJ)
 	$(RANLIB) $(LIBUTIL)
-	$(RM) $(UTILS_OBJ)
 
 $(UTILS_OBJ): %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -52,7 +59,6 @@ ${LIBSERVERUTIL}: $(SERVERUTIL_OBJ)
 	$(RM) $(LIBSERVERUTIL)
 	$(AR) $(LIBSERVERUTIL) $(SERVERUTIL_OBJ)
 	$(RANLIB) $(LIBSERVERUTIL)
-	$(RM) $(SERVERUTIL_OBJ)
 
 $(SERVERUTIL_OBJ): %.o: %.c
 	$(CC) $(CFLAGS) -c $< -o $@
@@ -61,7 +67,6 @@ ${LIBSAACSERVER}: $(SAACSERVER_OBJ)
 	$(RM) $(LIBSAACSERVER)
 	$(AR) $(LIBSAACSERVER) $(SAACSERVER_OBJ)
 	$(RANLIB) $(LIBSAACSERVER)
-	$(RM) $(SAACSERVER_OBJ)
 
 $(SAACSERVER_OBJ): %.o: %.c
 	$(CC) $(SAAC_CFLAGS) -c $< -o $@
@@ -70,7 +75,6 @@ ${LIBSAACCLIENT}: $(SAACCLIENT_OBJ)
 	$(RM) $(LIBSAACCLIENT)
 	$(AR) $(LIBSAACCLIENT) $(SAACCLIENT_OBJ)
 	$(RANLIB) $(LIBSAACCLIENT)
-	$(RM) $(SAACCLIENT_OBJ)
 
 $(SAACCLIENT_OBJ): %.o: %.c
 	$(CC) $(GMSV_CFLAGS) -c $< -o $@
@@ -79,15 +83,20 @@ ${LIBGMSVSERVER}: $(GMSVSERVER_OBJ)
 	$(RM) $(LIBGMSVSERVER)
 	$(AR) $(LIBGMSVSERVER) $(GMSVSERVER_OBJ)
 	$(RANLIB) $(LIBGMSVSERVER)
-	$(RM) $(GMSVSERVER_OBJ)
 
 $(GMSVSERVER_OBJ): %.o: %.c
 	$(CC) $(GMSV_CFLAGS) -c $< -o $@
 
+.PHONY: copyright
 copyright:
 	$(SHELL) ./copyright.sh
 
 clean:
 	$(RM) $(TARGET)
 	$(RM) $(OBJ)
+	$(RM) utils/*.o utils/*.d
+	$(RM) *.d
 	$(RM) *~
+
+-include $(UTILS_OBJ:.o=.d) $(SERVERUTIL_OBJ:.o=.d) $(SAACSERVER_OBJ:.o=.d) \
+         $(SAACCLIENT_OBJ:.o=.d) $(GMSVSERVER_OBJ:.o=.d)

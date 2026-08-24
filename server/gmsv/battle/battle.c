@@ -593,10 +593,8 @@ INLINE void _BATTLE_ExitAll(char *file, int line, int battleindex) {
   for (j = 0; j < 2; j++) {
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       char_index = BattleArray[battleindex].Side[j].Entry[i].char_index;
-
       if (CHAR_CHECKINDEX(char_index) == FALSE)
         continue;
-
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_NONE);
       BATTLE_Exit(char_index, battleindex);
     }
@@ -623,10 +621,10 @@ BOOL BATTLE_IsCharge(int char_index) {
 #ifdef _PROFESSION_ADDSKILL
       || CHAR_getWorkInt(char_index, CHAR_DOOMTIME) > 0
 #endif
-  ) {
+  )
     return TRUE;
-  }
-  return FALSE;
+  else
+    return FALSE;
 }
 
 void BATTLE_AllCharaCWaitSet(int battleindex) {
@@ -636,9 +634,7 @@ void BATTLE_AllCharaCWaitSet(int battleindex) {
       char_index = BattleArray[battleindex].Side[j].Entry[i].char_index;
       if (CHAR_CHECKINDEX(char_index) == FALSE)
         continue;
-
-      if (BATTLE_IsCharge(char_index) == TRUE) {
-      } else {
+      if (BATTLE_IsCharge(char_index) == FALSE) {
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
       }
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_C_WAIT);
@@ -652,7 +648,6 @@ void BATTLE_AllCharaWatchWaitSet(int battleindex) {
     char_index = BattleArray[battleindex].Side[0].Entry[i].char_index;
     if (CHAR_CHECKINDEX(char_index) == FALSE)
       continue;
-
     if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) !=
         BATTLE_CHARMODE_WATCHINIT) {
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_C_WAIT);
@@ -1130,11 +1125,11 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
 
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       int winindex = pWinEntry[i].char_index;
-      if (CHAR_CHECKINDEX(winindex) == TRUE) {
-        if (CHAR_getInt(winindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-          BattleFinishPvEFunction(battleindex, char_index);
-        }
-      }
+      // if (CHAR_CHECKINDEX(winindex) == TRUE) {
+      //   if (CHAR_getInt(winindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
+      //     BattleFinishPvEFunction(battleindex, char_index);
+      //   }
+      // }
     }
   }
 #ifdef _ROOKIE_ITEM
@@ -3716,7 +3711,8 @@ int BATTLE_GetExp(int char_index)
       addexp *= getVipBattleexp();
     }
 #endif
-    addexp = (addexp * FreePlayerExp(badindex)) / 100;
+    // addexp = (addexp * FreePlayerExp(badindex)) / 100;
+
   }
 
 #ifdef _ITEM_ADDEQUIPEXP

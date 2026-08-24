@@ -44,7 +44,7 @@ typedef enum {
 #define CDKEYLEN 16
 #define PASSWDLEN 33
 /* 角色名长度 */
-#define CHARNAMELEN 32
+#define CHARNAMELEN 64 // 改UTF8编码
 
 #define CLITIMEOUT_SEC 120
 

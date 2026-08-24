@@ -111,6 +111,8 @@ void SaacClient_ACCharLoad_recv(int fd, char *result, char *data, int ret_fd,
   if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if ((strcmp(result, SUCCESSFUL) == 0) && (data[0])) {
+    // print("Before CHAR_login, client_fd: %d, data: %s, save_index:%d\n",
+    //   client_fd, data, save_index);
     CHAR_login(client_fd, data, save_index);
   } else {
     char cdkey[64];
@@ -118,7 +120,7 @@ void SaacClient_ACCharLoad_recv(int fd, char *result, char *data, int ret_fd,
     data = "";
 #endif
     CONNECT_getCdkey(client_fd, cdkey, sizeof(cdkey));
-    print(" (%s)ACCharLoad:%s ", cdkey, data);
+    print("[SAAC回复]ACCharLoad: cdkey:%s, data:%s, result:%s\n.", cdkey, data, result);
     GmsvServer_CharLogin_send(client_fd, result, data);
     CONNECT_setState(client_fd, NOTLOGIN);
   }
@@ -127,10 +129,8 @@ void SaacClient_ACCharLoad_recv(int fd, char *result, char *data, int ret_fd,
 void SaacClient_ACCharSave_recv(int fd, char *result, char *data, int retfd) {
   int clifd = getfdFromFdid(retfd), fdid;
   char cdkey[CDKEYLEN], passwd[PASSWDLEN], charname[CHARNAMELEN];
-
   if (CONNECT_checkfd(clifd) == FALSE)
     return;
-
   CONNECT_getCdkey(clifd, cdkey, sizeof(cdkey));
   CONNECT_getPasswd(clifd, passwd, sizeof(passwd));
   CONNECT_getCharname(clifd, charname, sizeof(charname));

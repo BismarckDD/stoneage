@@ -50,15 +50,15 @@ BOOL MAP_walkAble(int char_index, int ff, int fx, int fy) {
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEBUS)
     return TRUE;
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) == CHAR_PARTY_CLIENT) {
-    int oyaindex = CHAR_getWorkInt(index, CHAR_WORKPARTYINDEX1);
+    int oyaindex = CHAR_getWorkInt(char_index, CHAR_WORKPARTYINDEX1);
     if (CHAR_CHECKINDEX(oyaindex)) {
       if (CHAR_getInt(oyaindex, CHAR_WHICHTYPE) == CHAR_TYPEBUS)
         return TRUE;
     }
   }
   return MAP_walkAbleFromPoint(ff, fx, fy,
-            CHAR_getFlg(index, CHAR_ISFLYING) |
-            CHAR_getWorkInt(index, CHAR_WORKSKYWALKER));
+            CHAR_getFlg(char_index, CHAR_ISFLYING) |
+            CHAR_getWorkInt(char_index, CHAR_WORKSKYWALKER));
 }
 
 BOOL MAP_haveHeight(int fl, int x, int y) {

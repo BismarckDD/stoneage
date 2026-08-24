@@ -1,6 +1,5 @@
 ﻿#include "systeminc/system.h"
 #include "systeminc/netmain.h"
-#include "systeminc/text_encoding.h"
 #include "winlua.h"
 
 #ifdef _WIN_LUAJIT_
@@ -26,8 +25,7 @@ static int SetGroupList(lua_State *L) {
   gmgroup[id].used = GroupUse;
   gmgroup[id].num = ServerMaxNum;
   gmgroup[id].startindex = ServerIndex;
-  const std::string groupNameGbk = Utf8ToGbk(GroupName);
-  strcpy_s(gmgroup[id].name, groupNameGbk.c_str());
+  strcpy_s(gmgroup[id].name, GroupName);
   return 1;
 }
 
@@ -41,8 +39,7 @@ static int SetServerList(lua_State *L) {
     return luaL_error(L, "SERVER ID OUT OF RANGE: %d", id);
   strcpy_s(gmsv[id].ipaddr, ServerIP);
   strcpy_s(gmsv[id].port, ServerPort);
-  const std::string serverNameGbk = Utf8ToGbk(ServerName);
-  strcpy_s(gmsv[id].name, serverNameGbk.c_str());
+  strcpy_s(gmsv[id].name, ServerName);
   gmsv[id].used = '1';
   return 1;
 }

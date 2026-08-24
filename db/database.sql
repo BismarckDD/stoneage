@@ -1,7 +1,9 @@
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
+SET time_zone = "+08:00";
+
 
 -- 数据库: `stoneage(sa)`
+-- DROP DATABASE IF EXISTS sa;
 CREATE DATABASE IF NOT EXISTS sa;
 USE sa;
 
@@ -116,30 +118,30 @@ CREATE TABLE IF NOT EXISTS `CSAlogin` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(32) NOT NULL COMMENT '用户名称',
   `password` varchar(32) NOT NULL COMMENT '用户密码',
-  `IP` varchar(16) NOT NULL DEFAULT '-',
-  `MAC` varchar(64) NOT NULL,
-  `RegTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `LoginTime` datetime DEFAULT '0000-00-00 00:00:00',
+  `IP` varchar(16) NOT NULL DEFAULT '-' COMMENT '用户上次登录的IP地址',
+  `MAC` varchar(64) NOT NULL DEFAULT '' COMMENT '用户上次登录的MAC地址',
+  `RegTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '用户注册的时间',
+  `LoginTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '用户上一次登录的时间',
   `OnlineName` varchar(32) CHARACTER SET utf8mb4 DEFAULT NULL,
   `OnlineName1` varchar(30) CHARACTER SET utf8mb4 DEFAULT NULL,
   `OnlineName2` varchar(32) CHARACTER SET utf8mb4 DEFAULT NULL,
   `Online` tinyint(4) DEFAULT '0',
   `Path` varchar(16) DEFAULT '',
   `VipPoint` int(11) DEFAULT '0',
-  `PayPoint` int(11) NOT NULL,
-  `GamblePoint` int(11) NOT NULL,
+  `PayPoint` int(11) DEFAULT '0',
+  `GamblePoint` int(11) DEFAULT '0',
   `TrialPoint` int(16) NOT NULL DEFAULT '0',
   `GoldPoint` int(16) NOT NULL DEFAULT '0',
   `SQLPoint` int(16) NOT NULL DEFAULT '0',
   `SafePasswd` varchar(32) DEFAULT '',
   `ServerId` int(4) NOT NULL DEFAULT '0',
-  `Regip` varchar(32) NOT NULL,
-  `qq` varchar(32) NOT NULL,
-  `tel` varchar(32) NOT NULL,
-  `ServerName` varchar(32) NOT NULL,
-  `Recommender` int(11) NOT NULL,
+  `Regip` varchar(32) NOT NULL DEFAULT '' COMMENT '用户注册时的IP',
+  `qq` varchar(32) NOT NULL DEFAULT '' COMMENT '',
+  `tel` varchar(32) NOT NULL DEFAULT '' COMMENT '',
+  `ServerName` varchar(32) NOT NULL DEFAULT '' COMMENT '???',
+  `Recommender` int(11) NOT NULL DEFAULT '0' COMMENT '推荐人',
   `Lock` int(4) NOT NULL DEFAULT '0',
-  `LockTime` datetime NOT NULL DEFAULT '0000-00-00 00:00:00',
+  `LockTime` datetime NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '',
   `LockInfo` varchar(32) NOT NULL DEFAULT '',
   `Offline` tinyint(4) NOT NULL DEFAULT '0',
   `Trust` tinyint(4) NOT NULL DEFAULT '0',

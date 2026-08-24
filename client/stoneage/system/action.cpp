@@ -21,15 +21,11 @@ void InitAction(void) {
   pActBtm->bmpNo = -1;      /* ??????? */
 }
 
-/* ?????????? *****************************************************/
 ACTION *GetAction(UCHAR prio, UINT yobiSize) {
   ACTION *pAct;
   ACTION *pActLoop;
   /* ?????????? */
   pAct = (ACTION *)CALLOC(1, sizeof(ACTION));
-#ifdef _STONDEBUG_
-  g_iMallocCount++;
-#endif
   if (pAct == NULL) {
     MessageBoxNew(hWnd, "pAct为空", "GetAction Erorr", MB_OK);
     return NULL;
@@ -112,27 +108,13 @@ void DeathAction1(ACTION *pAct) {
   pAct->deathFlag = TRUE;
 }
 
-/* ???????????? ***********************************************/
 void ClearAction(ACTION *pAct) {
-  // ???????
   if (pAct->pYobi != NULL) {
-    // ????
     FREE(pAct->pYobi);
     pAct->pYobi = 0;
-#ifdef _STONDEBUG_
-    g_iMallocCount--;
-#endif
   }
-  // ????????
   FREE(pAct);
   pAct = NULL;
-#ifdef _STONDEBUG_
-  g_iMallocCount--;
-#endif
-#ifdef _STONDEBUG_
-  /* ?????????? */
-  ActCnt--;
-#endif
 }
 
 void DeathAllAction(void) {
@@ -161,11 +143,8 @@ void DeathAllAction(void) {
   }
 #endif
   ACTION *pActLoop = pActTop->pNext;
-  /* ???????? */
   while (pActLoop != pActBtm) {
-    /* ??????? */
     pActLoop->deathFlag = TRUE;
-    /* ??????? */
     pActLoop = pActLoop->pNext;
   }
 }

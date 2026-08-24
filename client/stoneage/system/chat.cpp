@@ -1,5 +1,6 @@
 ﻿#include "systeminc/system.h"
 #include "systeminc/font.h"
+#include "systeminc/text_encoding.h"
 #include "sdk/caryime.h"
 #include "systeminc/netproc.h"
 #include "game/battle_proc.h"
@@ -587,6 +588,22 @@ void FlashKeyboardCursor( void )
     if( CursorFlashCnt >= 40 ) CursorFlashCnt = 0;
 }
 
+static int Utf8CodePointLength(const char *text) {
+    const unsigned char lead = (unsigned char)*text;
+    if (lead < 0x80) return 1;
+    if ((lead & 0xe0) == 0xc0) return 2;
+    if ((lead & 0xf0) == 0xe0) return 3;
+    if ((lead & 0xf8) == 0xf0) return 4;
+    return 1;
+}
+
+static int Utf8PreviousCodePointLength(const char *begin, const char *cursor) {
+    const char *previous = cursor - 1;
+    while (previous > begin && (((unsigned char)*previous & 0xc0) == 0x80))
+        --previous;
+    return (int)(cursor - previous);
+}
+
 // ?????? ***************************************************************/
 void KeyboardBackSpace( void )
 {
@@ -616,7 +633,7 @@ void KeyboardBackSpace( void )
     if((cursor=pNowStrBuffer->cursor) > 0){
         char *lpstr=pNowStrBuffer->buffer;
         char *lpstr1=lpstr+cursor;
-        byte=lpstr1-GetCharPrev(lpstr,lpstr1);
+        byte=Utf8PreviousCodePointLength(lpstr, lpstr1);
         for(;cursor<=pNowStrBuffer->cnt;cursor++){
             lpstr[cursor-byte]=lpstr[cursor];
         }
@@ -776,7 +793,7 @@ void KeyboardLeft()
     if((cursor=pNowStrBuffer->cursor) > 0){
         char *lpstr=pNowStrBuffer->buffer;
         char *lpstr1=lpstr+cursor;
-        byte=lpstr1-GetCharPrev(lpstr,lpstr1);
+        byte=Utf8PreviousCodePointLength(lpstr, lpstr1);
         pNowStrBuffer->cursor-=byte;
         CursorFlashCnt=20;
     }
@@ -789,8 +806,8 @@ void KeyboardRight()
     if((cursor=pNowStrBuffer->cursor) < (pNowStrBuffer->cnt)){
         char *lpstr=pNowStrBuffer->buffer;
         lpstr+=cursor;
-        if(*lpstr && IsDBCSLeadByteEx(936, *lpstr))
-            byte=2;
+        if (*lpstr)
+            byte = Utf8CodePointLength(lpstr);
         pNowStrBuffer->cursor+=byte;
     }
     CursorFlashCnt=20;
@@ -1090,18 +1107,22 @@ parameter:    lpc:    双位元的字元            */
 void StockStrBufferDBChar(char *lpc)
 {
     int cnt,cursor;
-    if(pNowStrBuffer==NULL || (cnt=pNowStrBuffer->cnt) >= pNowStrBuffer->len-1)
+    char gbk[3] = {lpc[0], lpc[1], '\0'};
+    const std::string utf8 = GbkToUtf8(gbk);
+    if (utf8.empty())
+        return;
+    const int byte = (int)utf8.size();
+    if(pNowStrBuffer==NULL || (cnt=pNowStrBuffer->cnt) > pNowStrBuffer->len-byte)
         return;
     char *buffer=pNowStrBuffer->buffer;
     if(pNowStrBuffer==&idKey || pNowStrBuffer==&passwd)
         return;
     else{
         for(cursor=pNowStrBuffer->cursor;cursor<=cnt;cnt--)
-            buffer[cnt+2]=buffer[cnt];
-        buffer[cursor++]=*lpc++;
-        buffer[cursor++]=*lpc;
-        pNowStrBuffer->cnt+=2;
-        pNowStrBuffer->cursor+=2;
+            buffer[cnt+byte]=buffer[cnt];
+        memcpy(buffer + cursor, utf8.data(), byte);
+        pNowStrBuffer->cnt+=byte;
+        pNowStrBuffer->cursor+=byte;
         CursorFlashCnt=20;
     }
 }

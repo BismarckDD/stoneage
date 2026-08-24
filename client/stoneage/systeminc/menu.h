@@ -718,29 +718,29 @@ typedef struct{
 #define MAX_PET_SPECIES        42    // 唾昜昜笱杅講
 #endif
 
-// ????????????去吻?
+//
 enum{
-    ANIM_DISP_PET,                // ???牙
-    ANIM_DISP_PET_SEND,            // ??????????????去
-    ANIM_DISP_PET_RECIEVE,        // ?????????????去
+    ANIM_DISP_PET,              // ???牙
+    ANIM_DISP_PET_SEND,         // ??????????????去
+    ANIM_DISP_PET_RECIEVE,      // ?????????????去
     
-    ANIM_DISP_PET_MAIN,            // ?????去︻???
-    ANIM_DISP_PET_WALK,            // 卷?
-    ANIM_DISP_PET_STAND,        // ┴?
-    ANIM_DISP_PET_ATTACK,        // ??
-    ANIM_DISP_PET_GUARD,        // ???
-    ANIM_DISP_PET_DAMAGE,        // ????
-    ANIM_DISP_PET_DEAD,            // ?昀
-    ANIM_DISP_PET_ITEM,            // ???????牙
+    ANIM_DISP_PET_MAIN,         // ?????去︻???
+    ANIM_DISP_PET_WALK,         // 行走
+    ANIM_DISP_PET_STAND,        // 站立
+    ANIM_DISP_PET_ATTACK,       // 攻击
+    ANIM_DISP_PET_GUARD,        // 防御
+    ANIM_DISP_PET_DAMAGE,       //
+    ANIM_DISP_PET_DEAD,         //
+    ANIM_DISP_PET_ITEM,         //
     
-    ANIM_DISP_LETTER_MOVE,        // ??去
-    ANIM_DISP_LETTER,            // ????????
+    ANIM_DISP_LETTER_MOVE,      // 宠物信件移动
+    ANIM_DISP_LETTER,           // 宠物新建
     
-    ANIM_DISP_MIX_PET_INIT,        // ???????
-    ANIM_DISP_MIX_PET_MOVE,        // ?????????去
-    ANIM_DISP_MIX_PET_MOJI,        // ???????????????
+    ANIM_DISP_MIX_PET_INIT,     // ???????
+    ANIM_DISP_MIX_PET_MOVE,     // ?????????去
+    ANIM_DISP_MIX_PET_MOJI,     // ???????????????
 #ifdef _THEATER
-    ANIM_DISP_THEATER_NPC,        // 曄部NPC珆尨
+    ANIM_DISP_THEATER_NPC,      // 曄部NPC珆尨
 #endif
 #ifdef _AniCrossFrame      // Syu ADD 雄賒脯蚔徹賒醱汜昜
     ANIM_DISP_CROSSFRAME = 18,
@@ -748,18 +748,17 @@ enum{
     ANIM_DISP_MIX_PET_END,        // ????????
 };
 
-// ?????﹨▍
 typedef struct{
   char name[ PET_NAME_LEN + 1 ];     // Pet本身的名字
   char freeName[ PET_NAME_LEN + 1 ]; // Player给Pet起的名字
   int faceGraNo;                     // Pet的图像
   int level;                         // Pet的level
-  int maxHp;                         // ????
-  int str;                           // ???
-  int quick;                         // ???
-  int def;                           // ??
-  int earth, water, fire, wind;      // ???
-  int flag;                          // 仕??????ㄩ?????? ?ㄩ?? ?ㄩ????? ?ㄩ仕??? ?
+  int maxHp;                         // Pet的最大生命值
+  int str;                           // Pet的力量
+  int quick;                         // Pet的速度
+  int def;                           // Pet的防御
+  int earth, water, fire, wind;      // Pet的地水火风属性
+  int flag;                          // Pet的Flag?
 }PET_ALBUM;
 
 // ????????????????﹨▍
@@ -820,13 +819,12 @@ extern STR_BUFFER TradeBuffer;
 extern STR_BUFFER petNameChange;
 // Terry add 2002/01/04
 #ifdef __EDEN_AUCTION
-extern STR_BUFFER AuctionStr;     // 鼴闖唦扴僕,50跺趼
-extern STR_BUFFER AuctionMoney;   // 鼴闖歎郔嗣珨啃勀
+extern STR_BUFFER AuctionStr;     //
+extern STR_BUFFER AuctionMoney;   //
 #endif
-// Terry end
-// ???????牙?????????吻?
-extern int  petStatusNo;
 
+// Terry end
+extern int  petStatusNo;
 extern int mailHistoryWndPageNo;    // ???????????吻?
 extern int mailHistoryWndSelectNo;  // ︻???????吻?    
 //extern int mailReceivePetGraNo;   // ??????????????????吻?
@@ -834,17 +832,17 @@ extern int mailHistoryWndSelectNo;  // ︻???????吻?
 // ·卯??去????????牙?????
 extern int MapWmdFlagBak;
 
-// ·卯??????????????????
-#define RESULT_WND_CLOSE_TIME 300   // ?企
-// ·卯?????????????????
+//
+#define RESULT_WND_CLOSE_TIME 300
+//
 extern int ResultWndTimer;
 
-// ??????
+//
 extern BOOL ItemMixRecvFlag;
 
-// ???????
+//
 extern int MouseCursorFlag;                            
-#ifdef _TRADETALKWND                // (祥褫羲) Syu ADD 蝠眢陔崝勤趕遺殤
+#ifdef _TRADETALKWND
 void TradeTalk ( char *msg ) ; 
 #endif
 
@@ -862,14 +860,14 @@ BOOL CheckMenuFlag( void );
 // ?????? ***************************************************************/
 void MenuProc( void );
 
-// ?????牙???? ***************************************************/
+// 
 ACTION *MakeWindowDisp( int x, int y, int sizeX, int sizeY, int titleNo, int wndType 
 #ifdef _NEW_RESOMODE  // 800 600 耀宒
   , BOOL fixType = TRUE
 #endif
 );
 
-// ???刪叉????? ******************************************************/
+// 画选中框(绿色的矩形框, 游戏中常用)
 BOOL MakeHitBox( int x1, int y1, int x2, int y2, int dispPrio );
 
 // ???????卒㎏ ****************************************************************/

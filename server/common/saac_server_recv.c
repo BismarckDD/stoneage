@@ -58,18 +58,17 @@ void SaacServer_ACCharLoad_recv(int ti, char *id, char *pas, char *charname,
     return;
   // Spock 2000/10/31
   static int process = 0;
-  char buf[16];
   // Spock end
 #ifdef _NewSave
-  int charindex = -1;
+  int char_index = -1;
 #endif
 
 #ifdef _SASQL
   if (sasql_query(id, pas) != 1) {
 #ifdef _NewSave
-    SaacServer_ACCharLoad_send(ti, FAILED, "not login", mesgid, charindex);
+    SaacServer_ACCharLoad_send(ti, FAILED, "PASSWORD NOT MATCH.", mesgid, char_index);
 #else
-    SaacServer_ACCharLoad_send(ti, FAILED, "not login", mesgid);
+    SaacServer_ACCharLoad_send(ti, FAILED, "PASSWORD NOT MATCH", mesgid);
 #endif
     return;
   }
@@ -77,17 +76,17 @@ void SaacServer_ACCharLoad_recv(int ti, char *id, char *pas, char *charname,
 
   if (!is_game_server_login(ti)) {
 #ifdef _NewSave
-    SaacServer_ACCharLoad_send(ti, FAILED, "not login", mesgid, charindex);
+    SaacServer_ACCharLoad_send(ti, FAILED, "GMSV NOT LOGIN", mesgid, char_index);
 #else
-    SaacServer_ACCharLoad_send(ti, FAILED, "not login", mesgid);
+    SaacServer_ACCharLoad_send(ti, FAILED, "GMSV NOT LOGIN", mesgid);
 #endif
     return;
   }
-  process++;
-  if (process > MAX_PROCESS)
-    process = 1;
-  snprintf(buf, sizeof(buf), "%d", process);
-  charLoadCallback(ti, 0, id, pas, charname, buf, "", lock, mesgid);
+  ++process; // [1, MAX_PROCESS]
+  if (process > MAX_PROCESS) process = 1;
+  char process_no[16];
+  snprintf(process_no, sizeof(process_no), "%d", process);
+  charLoadCallback(ti, 0, id, pas, charname, process_no, "", lock, mesgid);
 }
 
 #ifdef _NewSave

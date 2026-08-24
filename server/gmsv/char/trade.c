@@ -365,7 +365,7 @@ void TRADE_Close(int fd, int meindex, char* message);
 void TRADE_SwapItem(int meindex, int toindex, char* message, int fd, char* mycharaname, int tofd, char* tocharaname);
 
 int TRADE_CheckItembuf(int fd, int meindex, int toindex, int tofd, char* mycharaname, char* tocharaname);
-//BOOL TRADE_ChangeItem(int meindex, int toindex, char *a, char *b, int item1, int item2, int item_index1, int item_index2);
+BOOL TRADE_ChangeItem(int meindex, int toindex, char *a, char *b, int item1, int item2, int item_index1, int item_index2);
 BOOL TRADE_HandleItem( int meindex, int showindex, char *message, char *outmess);
 BOOL TRADE_HandleGold( int meindex, int showindex, char *message, char *outmess);
 BOOL TRADE_HandlePet( int meindex, int showindex, char *message, char *outmess);
@@ -1400,7 +1400,6 @@ int TRADE_CheckItembuf(int fd, int meindex, int toindex, int tofd, char* mychara
 		strcpy(f, token);
    if (getStringFromIndexWithDelim(itembuf, "|", 16, token, sizeof(token)) == TRUE)
 		item_index6 = atoi(token);
-
    if (getStringFromIndexWithDelim(toitembuf, "|", 5, token, sizeof(token)) == TRUE)
 	   	strcpy(g, token);
    if (getStringFromIndexWithDelim(toitembuf, "|", 6, token, sizeof(token)) == TRUE)
@@ -1542,12 +1541,13 @@ int TRADE_CheckItembuf(int fd, int meindex, int toindex, int tofd, char* mychara
 	}
 #endif
 
-	if(FreeTradeItem(meindex, item1) == 1
-		|| FreeTradeItem(meindex, item2) == 1
-		|| FreeTradeItem(meindex, item4) == 1
-		|| FreeTradeItem(meindex, item5) == 1  ){
-		return -19;
-	}
+    // 2026.08.23 REMOVE_SPECIAL_LOGIC
+	// if(FreeTradeItem(meindex, item1) == 1
+	//  || FreeTradeItem(meindex, item2) == 1
+	//  || FreeTradeItem(meindex, item4) == 1
+	//  || FreeTradeItem(meindex, item5) == 1  ){
+	// 	return -19;
+	// }
 	if( CHAR_getWorkInt( meindex, CHAR_PickAllPet) != TRUE )	{
 		if ((pet6 != -1) && (CHAR_getInt(pet6, CHAR_LV)
 			 - CHAR_getInt(meindex, CHAR_LV) > 20)
@@ -1606,16 +1606,16 @@ int TRADE_CheckItembuf(int fd, int meindex, int toindex, int tofd, char* mychara
 	}
 }
 #endif
-	if (pet6 != -1) {
-		if(FreeTradePet(meindex, pet6) == 1){
-			return -20;
-		}
-	}
-	if (pet3 != -1) {
-		if(FreeTradePet(meindex, pet3) == 1){
-			return -20;
-		}
-	}
+	// if (pet6 != -1) {
+	// 	if(FreeTradePet(meindex, pet6) == 1){
+	// 		return -20;
+	// 	}
+	// }
+	// if (pet3 != -1) {
+	// 	if(FreeTradePet(meindex, pet3) == 1){
+	// 		return -20;
+	// 	}
+	// }
 
 	TRADE_ChangeItem(meindex, toindex, a, d, item1, item4,
 		item_index1, item_index4);

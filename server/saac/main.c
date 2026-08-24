@@ -21,6 +21,7 @@
 #endif
 #ifndef _WIN32
 #include <execinfo.h>
+#include <sys/resource.h>
 #endif
 
 #ifdef _SASQL
@@ -175,7 +176,7 @@ int logout_game_server(const int ti) {
   return 0;
 }
 
-// 判断ti链接是否已经登录
+// 判断ti链接是否已经登录, 这种判定是不是合理？
 int is_game_server_login(const int ti) {
   if (strlen(gs[ti].name) == 0) {
     return 0;
@@ -345,7 +346,35 @@ void dump_error() {
 #endif
 }
 
+#ifndef _WIN32
+static void enable_core_dump(void) {
+  struct rlimit limit;
+  if (getrlimit(RLIMIT_CORE, &limit) != 0) {
+    perror("getrlimit(RLIMIT_CORE)");
+    return;
+  }
+  limit.rlim_cur = limit.rlim_max;
+  if (setrlimit(RLIMIT_CORE, &limit) != 0)
+    perror("setrlimit(RLIMIT_CORE)");
+}
+
+static int is_fatal_signal(int number) {
+  return number == SIGSEGV || number == SIGBUS || number == SIGILL ||
+         number == SIGFPE || number == SIGABRT;
+}
+#endif
+
 void signal_shutdown(const int number) {
+#ifndef _WIN32
+  if (is_fatal_signal(number)) {
+    static const char message[] =
+        "SAAC fatal signal received; generating core dump.\n";
+    write(STDERR_FILENO, message, sizeof(message) - 1);
+    signal(number, SIG_DFL);
+    raise(number);
+    _exit(128 + number);
+  }
+#endif
   if (number == 0) {
     logErr("SAAC正常关闭\n");
   } else if (number == 2) {
@@ -405,7 +434,7 @@ void signal_set(void) {
   signal(SIGIOT, signal_shutdown);
   signal(SIGBUS, signal_shutdown);
   signal(SIGFPE, signal_shutdown);
-  signal(SIGKILL, signal_shutdown);
+  signal(SIGABRT, signal_shutdown);
   signal(SIGSEGV, signal_shutdown);
   signal(SIGPIPE, SIG_IGN);
 #else
@@ -415,6 +444,9 @@ void signal_set(void) {
 }
 
 int main(int argc, char **argv) {
+#ifndef _WIN32
+  enable_core_dump();
+#endif
 #ifdef _WIN32
   if (sa_platform_init() != 0) {
     fprintf(stderr, "WinSock initialization failed: %d\n", errno);
@@ -672,8 +704,8 @@ int main(int argc, char **argv) {
             now.tm_hour, now.tm_min, now.tm_sec);
           logFileToday(token);
         }
-        logErr("成功处理请求: %d, 服务器名:%s, readbytes: %d, msg:%s, debug:%s\n",
-          i, gs[i].name, read_bytes, sTcpBuf, sDebugFun);
+        // logErr("成功处理请求: %d, 服务器名:%s, readbytes: %d, msg:%s, debug:%s\n",
+        //   i, gs[i].name, read_bytes, sTcpBuf, sDebugFun);
       } else if (read_bytes == TCPSTRUCT_ETOOLONG) {
         logFileToday(
             "连接%d, 接收到的数据长度超过预期, 服务器名:%s, 链接登出.\n", i,

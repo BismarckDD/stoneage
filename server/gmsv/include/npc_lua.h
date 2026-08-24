@@ -530,10 +530,10 @@ int NPC_Lua_SQL_FreeResult(lua_State *_NLL);            //释放结果集
 	} \
 }
 
+// 2026.08.23 找不到Lua_ReturnArray.	
+// Lua_ReturnArray(L, Array, num);
 #define LRetArray(L, Array, num) \
 { \
-    // 2026.08.23 找不到Lua_ReturnArray.	
-	// Lua_ReturnArray(L, Array, num); \
 	LRet(1); \
 }
 

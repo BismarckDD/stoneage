@@ -209,7 +209,7 @@ void callbackReadMapWarpPoint(int *warp_point_idx, const char *line) {
     print("3-1.map 传送点错误 %s [%s] \n", line, segment);
     return;
   }
-  if (MAPPOINT_creatMapWarpObj(&warp_point_idx, segment, objtype) == -1) {
+  if (MAPPOINT_creatMapWarpObj(*warp_point_idx, segment, objtype) == -1) {
     print("3-2.map 传送点错误 %s [%s] \n", line, segment);
     return;
   }

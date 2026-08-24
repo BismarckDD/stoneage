@@ -15,9 +15,6 @@
 #ifdef _PROFESSION_SKILL
 #include "profession_skill.h"
 #endif
-#ifdef _ALLBLUES_LUA_1_2
-ITEM_LuaFunc ITEM_luaFunc;
-#endif
 static int ITEM_sTableLen = 0;
 static int ITEM_sIndexLen = 0;
 static int ITEM_sItemNum = 0;
@@ -423,9 +420,6 @@ BOOL ITEM_initExistItemsArray(int num) {
   ITEM_gExists = allocateMemory(sizeof(ITEM_Exists) * num);
   if (ITEM_gExists == NULL)
     return FALSE;
-#ifdef _ALLBLUES_LUA_1_2
-  memset(&ITEM_luaFunc, 0, sizeof(ITEM_LuaFunc));
-#endif
 
   for (i = 0; i < num; i++) {
     memset(&ITEM_gExists[i], 0, sizeof(ITEM_Exists));
@@ -1055,16 +1049,9 @@ static int ITEM_isstring1or0(const char *string, int *randomwidth, int num) {
 }
 
 static char *ITEM_checkString(char *string) {
-#define ITEM_STRINGLEN 64
+#define ITEM_STRINGLEN 128
   const size_t length = strlen(string);
   if (length >= ITEM_STRINGLEN) {
-#ifdef _WIN32
-    char utf8_string[512];
-    if (sa_gbk_to_utf8(string, utf8_string, sizeof(utf8_string)) >= 0)
-      print("Item text over %d bytes (actual %zu): [%s]\n", ITEM_STRINGLEN,
-            length, utf8_string);
-    else
-#endif
       print("Item text over %d bytes (actual %zu): [%s]\n", ITEM_STRINGLEN,
             length, string);
   }

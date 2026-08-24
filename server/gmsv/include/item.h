@@ -289,7 +289,8 @@ typedef enum {
 
 typedef struct tagItem {
   int data[ITEM_DATA_ENUM_MAX];
-  STRING64 string[ITEM_CHAR_DATA_ENUM_MAX];
+  // 换UTF8之后，这个长度要长一些
+  STRING128 string[ITEM_CHAR_DATA_ENUM_MAX];
   int workint[ITEM_WORKDATAINTNUM];
   void *functable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
 #ifdef _JZ_NEWSCRIPT_LUA
