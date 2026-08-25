@@ -165,7 +165,7 @@ void PacketWrap_Thread(int state) {
 		int i;
 		for (i = state; i < ConnectLen; i += _EPOLL_POOL_COUNT) {
 			Dispatch_read_buffer(i, state);
-			usleep(1);
+			usleep(1000);
 		}
 	}
 }
@@ -204,7 +204,7 @@ void EpollLoop_Thread() {
 				doSocketSend(events[i]);
 			}
 		}
-		usleep(1);
+		usleep(1000);
 	}
 	epoll_cleanup();
 }

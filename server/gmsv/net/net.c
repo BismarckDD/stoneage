@@ -19,6 +19,7 @@
 
 #ifndef _WIN32
 #include <arpa/inet.h>
+#include <unistd.h>
 #endif
 
 // Forward declarations for functions without headers
@@ -2249,6 +2250,44 @@ int player_maxonline = 0;
 char keepupnologin[256] = "";
 #endif
 struct timeval speedst, speedet;
+
+/* 空闲节流: 一轮连接槽位扫描无任何读写事件时, 聚合全部活跃连接
+ * 做一次阻塞 select 等待数据或超时, 消除空闲期的零超时轮询风暴.
+ * 只监听可读/异常: 已连接套接字的发送缓冲几乎总可写, 监听 wfds 会立即返回变回忙等 */
+#define NETLOOP_IDLE_BLOCK_MAX_US 20000
+
+static void netloop_idle_block(const struct timeval *st,
+                               unsigned int looptime_us) {
+  struct timeval et, tmv;
+  fd_set rfds, efds;
+  int i, maxfd;
+  long remain;
+
+  gettimeofday(&et, NULL);
+  remain = (long)looptime_us - time_diff_us(et, *st);
+  if (remain > NETLOOP_IDLE_BLOCK_MAX_US)
+    remain = NETLOOP_IDLE_BLOCK_MAX_US;
+  if (remain <= 0)
+    return;
+
+  FD_ZERO(&rfds);
+  FD_ZERO(&efds);
+  FD_SET(bindedfd, &rfds);
+  maxfd = bindedfd;
+  /* 连接槽位下标即 socket fd, 与主扫描路径一致 */
+  for (i = 0; i < ConnectLen; i++) {
+    if (Connect[i].use && Connect[i].state != WHILECLOSEALLSOCKETSSAVE) {
+      FD_SET(i, &rfds);
+      FD_SET(i, &efds);
+      if (i > maxfd)
+        maxfd = i;
+    }
+  }
+  tmv.tv_sec = remain / 1000000;
+  tmv.tv_usec = remain % 1000000;
+  select(maxfd + 1, &rfds, (fd_set *)NULL, &efds, &tmv);
+}
+
 SINGLETHREAD BOOL netloop_faster(void) {
   static unsigned int total_item_use = 0;
   static int petcnt = 0;
@@ -2463,6 +2502,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
   }
   loop_num = 0;
   gettimeofday(&st, NULL);
+  int sweep_did_work = 0;
 
   while (TRUE) {
     int j;
@@ -2819,8 +2859,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
 
 #endif
 
-    if (fdremember == ConnectLen)
+    if (fdremember == ConnectLen) {
+      if (!sweep_did_work)
+        netloop_idle_block(&st, looptime_us);
+      sweep_did_work = 0;
       fdremember = 0;
+    }
 
     if (Connect[fdremember].use == FALSE)
       continue;
@@ -2870,6 +2914,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
     ret = select(fdremember + 1, &rfds, &wfds, &efds, &tmv);
 
     if (ret > 0 && FD_ISSET(fdremember, &rfds)) {
+      sweep_did_work = 1;
       errno = 0;
       char buf[1024 * 128];
       memset(buf, 0, sizeof(buf));
@@ -3069,6 +3114,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       ret = select(fdremember + 1, &rfds, &wfds, &efds, &tmv);
 
       if (ret > 0 && FD_ISSET(fdremember, &wfds)) {
+        sweep_did_work = 1;
         // Nuke start 0907: Protect gmsv
 
 #ifdef _OTHER_SAAC_LINK

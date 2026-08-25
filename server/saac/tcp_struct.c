@@ -159,8 +159,7 @@ int tcpstruct_accept(int *tis, int ticount) {
   for (i = 0; i < ticount; i++) {
     int asret;
     struct timeval t;
-    t.tv_sec = 0;
-    t.tv_usec = 0;
+    t = select_timeout;
     FD_ZERO(&rfds);
     FD_ZERO(&wfds);
     FD_ZERO(&efds);

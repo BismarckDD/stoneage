@@ -513,7 +513,7 @@ int main(int argc, char **argv) {
   /* TCPSTRUCT */
   do {
     int tcpr;
-    if ((tcpr = tcpstruct_init(NULL, g_saac_config.port, 0,
+    if ((tcpr = tcpstruct_init(NULL, g_saac_config.port, SAAC_SELECT_TIMEOUT_MS,
                                CHARDATASIZE * 16 * MAXCONNECTION,
                                1 /* DEBUG */)) == 0) {
       // break 是TCP INIT 成功

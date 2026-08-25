@@ -9,6 +9,11 @@
 // 日志数量？？？
 #define BACKLOGNUM 5
 
+/* select 轮询阻塞超时(毫秒), 避免主循环空转烧满 CPU */
+#ifndef SAAC_SELECT_TIMEOUT_MS
+#define SAAC_SELECT_TIMEOUT_MS 50
+#endif
+
 int tcpstruct_write(int ti, const char *buf, int len);
 
 /*
