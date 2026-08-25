@@ -6,6 +6,7 @@
 // The following definitions is to define game-dependent codes.
 // Before compiling, remove the "//".
 #include <cstdio>
+#include <cstdint>
 #include <windows.h>
 #include "autil.h"
 #include "systeminc/chat.h"
@@ -914,6 +915,95 @@ void getStrSplitNew(char str[][256]) {
       getstrstyle(str[i], i, 0, FALSE, wmstr);
     }
   }
+}
+
+
+
+/**
+ * @brief 判断该codepoint是否需要计为2个单位
+ */
+static int is_double_unit(uint32_t codepoint)
+{
+    // CJK基本汉字
+    if (codepoint >= 0x4E00U && codepoint <= 0x9FA5U)
+        return 1;
+    // CJK标点符号（全角空格、顿号、书名号等）
+    if (codepoint >= 0x3000U && codepoint <= 0x303FU)
+        return 1;
+    // 全角字母、数字、符号 FF01‑FFEF
+    if (codepoint >= 0xFF01U && codepoint <= 0xFFEFU)
+        return 1;
+
+    return 0;
+}
+
+/**
+ * @brief 自定义UTF8长度
+ * 汉字、全角字符=2；半角ASCII=1；其余=1
+ * @param utf8 以'\0'结尾UTF‑8字符串
+ * @return 自定义计数长度
+ */
+int getUtf8CharNum(const char *utf8)
+{
+    if (utf8 == NULL)
+        return 0;
+
+    int len = 0;
+    size_t pos = 0;
+    size_t total = strlen(utf8);
+    const uint8_t *data = (const uint8_t *)utf8;
+
+    while (pos < total)
+    {
+        uint8_t first = data[pos];
+        int byte_cnt = 1;
+        uint32_t codepoint = 0;
+        if ((first & 0x80) == 0x00)
+        {
+            /* 1字节 ASCII 半角 */
+            codepoint = first;
+            byte_cnt = 1;
+        }
+        else if ((first & 0xE0) == 0xC0)
+        {
+            if (pos + 1 >= total)
+                break;
+            byte_cnt = 2;
+            codepoint = ((first & 0x1FU) << 6U) | (data[pos + 1] & 0x3FU);
+        }
+        else if ((first & 0xF0) == 0xE0)
+        {
+            if (pos + 2 >= total)
+                break;
+            byte_cnt = 3;
+            codepoint = ((first & 0x0FU) << 12U)
+                      | ((data[pos + 1] & 0x3FU) << 6U)
+                      | (data[pos + 2] & 0x3FU);
+        }
+        else if ((first & 0xF8) == 0xF0)
+        {
+            if (pos + 3 >= total)
+                break;
+            byte_cnt = 4;
+            codepoint = ((first & 0x07U) << 18U)
+                      | ((data[pos + 1] & 0x3FU) << 12U)
+                      | ((data[pos + 2] & 0x3FU) << 6U)
+                      | (data[pos + 3] & 0x3FU);
+        }
+        else
+        {
+            /* 非法字节跳过 */
+            pos++;
+            continue;
+        }
+
+        if (is_double_unit(codepoint))
+            len += 2;
+        else
+            len += 1;
+        pos += byte_cnt;
+    }
+    return len;
 }
 
 #endif

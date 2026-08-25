@@ -86,3 +86,5 @@ void PutWinText(int x, int y, char fontPrio, int color, char *str, BOOL hitFlag,
 
 BOOL getStringFromIndexWithDelim_body(char *src, char *delim, int index,
                                       char *buf, int buflen);
+
+int getUtf8CharNum(const char *);

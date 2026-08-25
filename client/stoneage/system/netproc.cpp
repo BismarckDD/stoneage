@@ -2853,8 +2853,6 @@ void delCharStart(void) {
   SETSENDING;
 }
 
-// ??????
-//   ??： 0 ... ??? / 1 ... ???? / -1 ... ?????? / -2 ... ?????????
 int delCharProc(void) {
   if (netproc_sending == NETPROC_RECEIVED) {
     netproc_sending = NETPROC_NOTSEND;
@@ -2864,9 +2862,7 @@ int delCharProc(void) {
       return -2;
     }
   }
-
   SETTIMEOUT2(NET_ERRMSG_DELETECHARTIMEOUT);
-
   return 0;
 }
 

@@ -172,11 +172,21 @@ static char *gButtonList[] = {
     "确  定", "取  消",
     "上一页", "下一页" };
 
+const int attrColor[4][2] =
+{
+    {SYSTEM_PAL_GREEN, SYSTEM_PAL_GREEN2},
+    {SYSTEM_PAL_AQUA, SYSTEM_PAL_AQUA2},
+    {SYSTEM_PAL_RED, SYSTEM_PAL_RED2},
+    {SYSTEM_PAL_YELLOW, SYSTEM_PAL_YELLOW2}
+};
+
 char data[256];
 char msg[256];
 
+const char cPlzInputIdPass[] = "请输入您的帐号与密码！";
 const char cCheckingIn[] = "签入中";
 const char cLoginingGame[] = "登入游戏中，请稍候！";
+const char cCharDeleting[] = "人物删除中";
 
 // 账号密码界面(启动后第一个页面)的生成和控制逻辑
 void idPasswordProc(void)
@@ -234,11 +244,11 @@ void idPasswordProc(void)
     else if (ret < 0)
     {
         SubProcNo = 100;
-        strcpy(msg, "请输入您的帐号与密码！");
+        strcpy(msg, cPlzInputIdPass);
     }
     if (SubProcNo == 3)
     {
-        w = (strlen(cLoginingGame) + 3) * 9 / 64 + 2;
+        w = (getUtf8CharNum(cLoginingGame) + 3) * 9 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -271,8 +281,8 @@ void idPasswordProc(void)
             {
                 if (iWGS == 7)
                     isWGS7 = 1; // Nuke 0615: Avoid 7's lock
-                wsprintf(msg, "%s(%d)", cLoginingGame, iWGS);
-                int len = strlen(msg);
+                sprintf(msg, "%s(%d)", cLoginingGame, iWGS);
+                int len = getUtf8CharNum(msg);
                 int xx = (w * 64 - len * 8) / 2;
                 int yy = (h * 48 - 16) / 2;
                 StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
@@ -499,7 +509,7 @@ int commonMsgWin(char *msg)
         commonMsgWinProcNo = 1;
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
             fontId[i] = -2;
-        w = strlen(msg) * 8 / 64 + 2;
+        w = getUtf8CharNum(msg) * 8 / 64 + 2;
         h = (36 + 32) / 48;
         if (h < 2)
             h = 2;
@@ -527,10 +537,10 @@ int commonMsgWin(char *msg)
 
     if (ptActMenuWin && ptActMenuWin->hp >= 1)
     {
-        int len = strlen(msg) + 1;
-        int xx = (w * 64 - len * 8) / 2;
+        int len = getUtf8CharNum(msg) + 1;
+        int xx = (w * 64 - len * 16) / 2;
         StockFontBuffer(x + xx, y + 30, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
-        xx = (w * 64 - strlen("ＯＫ") * 8) / 2;
+        xx = (w * 64 - getUtf8CharNum("ＯＫ") * 8) / 2;
         fontId[0] = StockFontBuffer(x + xx, y + 56, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "ＯＫ", 2);
     }
     return ret;
@@ -726,10 +736,8 @@ void SelectServerProc(void)
     }
     // 标题画面的底图。当前版本使用全屏缩放绘制接口。
     StockDispBufferScaled(SCREEN_WIDTH_CENTER, SCREEN_HEIGHT_CENTER, DISP_PRIO_BG, CG_TITLE);
-#if 0
-    StockFontBuffer(620, 580, FONT_PRIO_BACK, FONT_PAL_BLUE, "体验版！", 0);
-#endif
 }
+// SELECT SERVER WINDOW
 ACTION *ptActSelectServerWin = NULL;
 
 inline void initServerSelectionBox(void)
@@ -972,7 +980,7 @@ int connecGameServer(void)
         connectGameServerProcNo = 1;
         sprintf_s(sServerConnectingStr, "%s服务器连线中",
             gmsv[selectServerIndex].name);
-        w = (strlen(sServerConnectingStr) * 9 + 63) / 64;
+        w = (getUtf8CharNum(sServerConnectingStr) * 9 + 63) / 64;
         if (w < 2)
             w = 2;
         h = (16 + 47) / 48;
@@ -1019,7 +1027,7 @@ int connecGameServer(void)
     }
     if (ptActMenuWin && ptActMenuWin->hp >= 1)
     {
-        int len = strlen(msg);
+        int len = getUtf8CharNum(msg);
         int xx = (w * 64 - len * 8) / 2;
         int yy = (h * 48 - 16) / 2;
         StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
@@ -1037,12 +1045,7 @@ void selectCharacterProc(void)
     static char msg[256];
     static int btnGraId[] = {-2, -2, -2, -2, -2, -2, -2};
     int btnUseFlag = 0;
-    int attrColor[4][2] =
-        {
-            {SYSTEM_PAL_GREEN, SYSTEM_PAL_GREEN2},
-            {SYSTEM_PAL_AQUA, SYSTEM_PAL_AQUA2},
-            {SYSTEM_PAL_RED, SYSTEM_PAL_RED2},
-            {SYSTEM_PAL_YELLOW, SYSTEM_PAL_YELLOW2}};
+
     int x1, y1, x2, y2;
 
     extern TCHAR 登陆错误内容[];
@@ -1098,9 +1101,7 @@ void selectCharacterProc(void)
         SubProcNo++;
     }
     if (SubProcNo == 11)
-    {
         btnUseFlag = 2;
-    }
     if (SubProcNo == 20)
     {
         // cary 按下删除人物后
@@ -1157,7 +1158,7 @@ void selectCharacterProc(void)
     }
     if (SubProcNo == 301)
     {
-        if (commonMsgWin("人物无法删除。"))
+        if (commonMsgWin("人物无法删除."))
             SubProcNo = 10;
     }
     ret = selGraId(btnGraId, sizeof(btnGraId) / sizeof(int));
@@ -1293,29 +1294,29 @@ void selectCharacterProc(void)
             if (existCharacterListEntry(i))
             {
                 // 这里的ii,ix,iy是什么意思？
-                StockDispBuffer(169 + i * (304 + ii) + ix, 84 + iy, DISP_PRIO_CHAR, chartable[i].faceGraNo, 0);
-                x = (144 - strlen(chartable[i].name) * 9) / 2;
-                StockFontBuffer(93 + i * (304 + ii) + x + ix, 127 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, chartable[i].name, 0);
-                sprintf_s(msg, "%3d", chartable[i].level);
-                StockFontBuffer(104 + i * (304 + ii) + ix, 152 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
-                sprintf_s(msg, "%3d", chartable[i].hp);
-                StockFontBuffer(104 + i * (304 + ii) + ix, 174 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
-                sprintf_s(msg, "%3d", chartable[i].str);
-                StockFontBuffer(104 + i * (304 + ii) + ix, 196 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
-                sprintf_s(msg, "%3d", chartable[i].def);
-                StockFontBuffer(104 + i * (304 + ii) + ix, 218 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
-                sprintf_s(msg, "%3d", chartable[i].agi);
-                StockFontBuffer(104 + i * (304 + ii) + ix, 240 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
-                sprintf_s(msg, "%3d", chartable[i].app);
-                StockFontBuffer(104 + i * (304 + ii) + ix, 262 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
-                sprintf_s(msg, "%8d", chartable[i].dp);
-                StockFontBuffer(188 + i * (304 + ii) + ix, 262 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
+                StockDispBuffer(88 + i * (304 + ii) + ix, iy, DISP_PRIO_CHAR, chartable[i].faceGraNo, 0);
+                int offset_by_name = (144 - strlen(chartable[i].name) * 9) / 2; // char name
+                StockFontBuffer(13 + i * (304 + ii) + offset_by_name + ix, 48 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, chartable[i].name, 0);
+                sprintf_s(msg, "%3d", chartable[i].level); // level
+                StockFontBuffer(24 + i * (304 + ii) + ix, 70 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
+                sprintf_s(msg, "%3d", chartable[i].hp);  // hp
+                StockFontBuffer(24 + i * (304 + ii) + ix, 92 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
+                sprintf_s(msg, "%3d", chartable[i].str); // strong
+                StockFontBuffer(24 + i * (304 + ii) + ix, 114 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
+                sprintf_s(msg, "%3d", chartable[i].def); // defence
+                StockFontBuffer(24 + i * (304 + ii) + ix, 136 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
+                sprintf_s(msg, "%3d", chartable[i].agi); // aiglity
+                StockFontBuffer(24 + i * (304 + ii) + ix, 158 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
+                sprintf_s(msg, "%3d", chartable[i].app); //
+                StockFontBuffer(24 + i * (304 + ii) + ix, 180 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
+                sprintf_s(msg, "%8d", chartable[i].dp); // dp
+                StockFontBuffer(108 + i * (304 + ii) + ix, 180 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
                 for (j = 0; j < 4; j++)
                 {
                     if (chartable[i].attr[j] > 0)
                     {
-                        x1 = 208 + i * (304 + ii) + ix;
-                        y1 = 177 + j * 22 + iy;
+                        x1 = 128 + i * (304 + ii) + ix;
+                        y1 = 92 + j * 22 + iy;
                         x2 = x1 + chartable[i].attr[j] * 8;
                         y2 = y1 + 8;
                         StockBoxDispBuffer(x1, y1, x2, y2, DISP_PRIO_IME2, attrColor[j][0], 1);
@@ -1324,15 +1325,15 @@ void selectCharacterProc(void)
                     }
                 }
                 login = chartable[i].login;
-                if (login >= 1000) login = 9999;
+                if (login >= 1000) login = 999;
                 sprintf_s(msg, "%4d", login);
-                StockFontBuffer(156 + i * (304 + ii) + ix, 284 + iy,
+                StockFontBuffer(76 + i * (304 + ii) + ix, 224 + iy,
                                 FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
                 btnGraId[3 + i] =
-                    StockDispBuffer(100 + i * (304 + ii) + ix, 342 + iy,
+                    StockDispBuffer(20 + i * (304 + ii) + ix, 282 + iy,
                                     DISP_PRIO_CHAR, CG_CHR_SEL_LOGIN_BTN, btnUseFlag);
                 btnGraId[5 + i] =
-                    StockDispBuffer(230 + i * (304 + ii) + ix, 342 + iy,
+                    StockDispBuffer(150 + i * (304 + ii) + ix, 282 + iy,
                                     DISP_PRIO_CHAR, CG_CHR_SEL_DEL_BTN, btnUseFlag);
             }
 #endif
@@ -1343,12 +1344,14 @@ void selectCharacterProc(void)
                     StockDispBuffer(160 + b * (304 + ii) + ix,
                                     342 + iy, DISP_PRIO_CHAR, CG_CHR_SEL_NEW_BTN, btnUseFlag);
 #else
+// 创建新角色的按钮
                 btnGraId[1 + i] =
-                    StockDispBuffer(160 + i * (304 + ii) + ix,
-                                    342 + iy, DISP_PRIO_CHAR, CG_CHR_SEL_NEW_BTN, btnUseFlag);
+                    StockDispBuffer(80 + i * (304 + ii) + ix,
+                                    282 + iy, DISP_PRIO_CHAR, CG_CHR_SEL_NEW_BTN, btnUseFlag);
 #endif
             }
         }
+// 后退按钮
         btnGraId[0] =
             StockDispBuffer(320 + backX, 432 + iy, DISP_PRIO_CHAR, CG_CHR_SEL_BACK_BTN, btnUseFlag);
     }
@@ -1425,26 +1428,15 @@ void initDeleteCharacter(void)
     deleteCharacterProcNo = 0;
 }
 
-// ?????
-//
-//  ??：     0 ... ???
-//                 1 ... ????
-//                -1 ... ??????
-//                -2 ... ???
 int deleteCharacter(void)
 {
     static ACTION *ptActMenuWin = NULL;
     static int x, y, w, h;
     int ret = 0;
-    static char msg[] = "人物删除中";
-
-    // ???
     if (deleteCharacterProcNo == 0)
     {
         deleteCharacterProcNo = 1;
-
-        // ??????
-        w = strlen(msg) * 9 / 64 + 2;
+        w = strlen(cCharDeleting) * 9 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -1457,16 +1449,13 @@ int deleteCharacter(void)
 #endif
     }
 
-    // ??????
     if (deleteCharacterProcNo == 1)
     {
         delCharStart();
         deleteCharacterProcNo++;
     }
     else if (deleteCharacterProcNo == 2)
-    {
         ret = delCharProc();
-    }
 
     if (ret != 0)
     {
@@ -14438,9 +14427,7 @@ int DelCharGraColorWin(void)
     int i;
     static int x, y, w, h;
     int ret = 0;
-    char msg[][8] = {
-        " 确定 ",
-        " 取消 "};
+    char msg[][16] = { " 确定 ", " 取消 "};
     // 初始化
     if (selCharGraColorWinProcNo == 0)
     {
@@ -14452,10 +14439,6 @@ int DelCharGraColorWin(void)
         h = 2;
         x = 250;
         y = 180;
-
-        w = 2;
-        x = 250;
-
         ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
 #ifdef _NEW_RESOMODE // 800 600模式
         x = ptActMenuWin->x;
@@ -14471,36 +14454,17 @@ int DelCharGraColorWin(void)
     }
     // 判断是否按下文字
     id = selFontId(fontId, sizeof(fontId) / sizeof(int));
-    // 按下确定
     if (id == 0)
-    {
+    {   // 按下确定
         ret = 1;
         bErr = FALSE;
         play_se(217, 320, 240);
-
-        /*
-        char sztemp[32];
-        CopyMemory(sztemp,szPassword,32);
-        ecb_crypt("f;encor1c",sztemp,32,DES_DECRYPT);
-
-        if( passwd.cnt==strlen(sztemp) && !strncmp( sztemp, passwd.buffer, passwd.cnt)){
-        ret = 1;
-        bErr = FALSE;
-        play_se( 217, 320, 240 );
-        }else{
-        passwd.cnt = 0;
-        passwd.cursor=0;
-        bErr = TRUE;
-        }
-        */
     }
-    else
-        // 按下取消
-        if (id == 1)
-        {
-            ret = 2;
-            play_se(217, 320, 240); // click声
-        }
+    else if (id == 1)
+    {
+        ret = 2;
+        play_se(217, 320, 240); // click声
+    }
     // 已经输入结果
     if (ret != 0)
     {
@@ -14521,15 +14485,12 @@ int DelCharGraColorWin(void)
             ShowBottomLineString(FONT_PAL_WHITE, "取消删除人物");
     if (ptActMenuWin != NULL)
     {
-        // ?????
         if (ptActMenuWin->hp >= 1)
         {
             for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
-            {
 
                 fontId[i] = StockFontBuffer(x + 20 + i * 48, y + 64,
                                             FONT_PRIO_FRONT, FONT_PAL_YELLOW, msg[i], 2);
-            }
             if (bErr)
                 StockFontBuffer(x + 20, y + 20, FONT_PRIO_FRONT, FONT_PAL_WHITE, "输入错误请再试", 0);
             else
