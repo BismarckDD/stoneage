@@ -101,13 +101,13 @@ INLINE char *MAGIC_getChar(int index, MAGIC_DATACHAR element) {
   return MAGIC_magic[index].string[element].string;
 }
 
-INLINE BOOL MAGIC_setChar(int index, MAGIC_DATACHAR element, char *new) {
+INLINE BOOL MAGIC_setChar(int index, MAGIC_DATACHAR element, char *new_char) {
   if (!MAGIC_CHECKINDEX(index))
     return FALSE;
   if (!MAGIC_CHECKCHARDATAINDEX(element))
     return FALSE;
   strncpysafe(MAGIC_magic[index].string[element].string,
-             sizeof(MAGIC_magic[index].string[element].string), new);
+             sizeof(MAGIC_magic[index].string[element].string), new_char);
   return TRUE;
 }
 

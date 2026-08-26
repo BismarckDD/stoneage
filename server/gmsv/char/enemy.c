@@ -79,13 +79,13 @@ INLINE char *ENEMY_getChar(int index, ENEMY_DATACHAR element) {
   return ENEMY_enemy[index].chardata[element].string;
 }
 
-INLINE BOOL ENEMY_setChar(int index, ENEMY_DATACHAR element, char *new) {
+INLINE BOOL ENEMY_setChar(int index, ENEMY_DATACHAR element, char *new_char) {
   if (!ENEMY_CHECKINDEX(index))
     return FALSE;
   if (!ENEMY_CHECKCHARDATAINDEX(element))
     return FALSE;
   strncpysafe(ENEMY_enemy[index].chardata[element].string,
-             sizeof(ENEMY_enemy[index].chardata[element].string), new);
+             sizeof(ENEMY_enemy[index].chardata[element].string), new_char);
   return TRUE;
 }
 
@@ -128,13 +128,13 @@ INLINE char *ENEMYTEMP_getChar(int index, ENEMYTEMP_DATACHAR element) {
 }
 
 INLINE BOOL ENEMYTEMP_setChar(int index, ENEMYTEMP_DATACHAR element,
-                              char *new) {
+                              char *new_char) {
   if (!ENEMYTEMP_CHECKINDEX(index))
     return FALSE;
   if (!ENEMYTEMP_CHECKCHARDATAINDEX(element))
     return FALSE;
   strncpysafe(ENEMYTEMP_enemy[index].chardata[element].string,
-             sizeof(ENEMYTEMP_enemy[index].chardata[element].string), new);
+             sizeof(ENEMYTEMP_enemy[index].chardata[element].string), new_char);
   return TRUE;
 }
 
@@ -178,13 +178,13 @@ INLINE char *GROUP_getChar(int index, GROUP_DATACHAR element) {
   return GROUP_group[index].chardata[element].string;
 }
 
-INLINE BOOL GROUP_setChar(int index, GROUP_DATACHAR element, char *new) {
+INLINE BOOL GROUP_setChar(int index, GROUP_DATACHAR element, char *new_char) {
   if (!GROUP_CHECKINDEX(index))
     return FALSE;
   if (!GROUP_CHECKCHARDATAINDEX(element))
     return FALSE;
   strncpysafe(GROUP_group[index].chardata[element].string,
-             sizeof(GROUP_group[index].chardata[element].string), new);
+             sizeof(GROUP_group[index].chardata[element].string), new_char);
   return TRUE;
 }
 
@@ -1858,7 +1858,7 @@ int NPC_getFusionTableForBase(int char_index, int petindex1, int petindex2) {
     print("ANDY err base1=%d\n", base1);
     return -1;
   }
-  return EVOLUTION_getFusionTable(char_index, base2, base1); // get new pet IDNO
+  return EVOLUTION_getFusionTable(char_index, base2, base1);
 #else
   return -1;
 #endif

@@ -41,6 +41,7 @@ WorkSpace gSaacWorkSpace;
  */
 static char sTcpBuf[CHARDATASIZE];
 static char sDebugFun[256];
+static char token[512];
 
 #ifdef _SAVE_ZIP
 int SAVEZIP = 0;
@@ -513,7 +514,7 @@ int main(int argc, char **argv) {
   /* TCPSTRUCT */
   do {
     int tcpr;
-    if ((tcpr = tcpstruct_init(NULL, g_saac_config.port, SAAC_SELECT_TIMEOUT_MS,
+    if ((tcpr = tcpstruct_init(NULL, g_saac_config.port, 0,
                                CHARDATASIZE * 16 * MAXCONNECTION,
                                1 /* DEBUG */)) == 0) {
       // break 是TCP INIT 成功
@@ -556,7 +557,6 @@ int main(int argc, char **argv) {
   logErr("\n服务端版本: <%s>\n", SERVER_VERSION);
   logErr("\n开始工作.....\n");
 
-  int itime = 0;
   int new_ti, i, j;
   static BOOL lottery = FALSE;
   static time_t main_loop_time;
@@ -685,16 +685,13 @@ int main(int argc, char **argv) {
     for (i = 0; i < MAXCONNECTION; i++) {
       if (!gs[i].use)
         continue;
-      // 不断再循环这个过程
-      // print("%d\n", i);
       const int read_bytes = tcpstruct_readline_chop(i, sTcpBuf, sizeof(sTcpBuf) - 1);
       if (read_bytes > 0) {
         sTcpBuf[read_bytes] = 0;
         int rc = SaacServer_ServerDispatchMessage(i, sTcpBuf, sDebugFun);
         // print("rc: %d\n", rc);
         if (rc < 0) {
-          logOut("line :%s;%d\n", sTcpBuf, strlen(sTcpBuf));
-          char token[256];
+          logOut("line :%s;%ld\n", sTcpBuf, strlen(sTcpBuf));
           struct tm now;
           time_t timep;
           time(&timep);
@@ -716,7 +713,11 @@ int main(int argc, char **argv) {
         logout_game_server(i);
       } else if (read_bytes == 0) {
       }
-    } // while 
+    }
+
+    /* tcpstruct_accept() remains non-blocking so queued startup data can be
+     * flushed at full speed. Block only after all buffered work is drained. */
+    tcpstruct_idle_wait(SAAC_SELECT_TIMEOUT_MS);
   }
 
   return 0;
@@ -847,7 +848,7 @@ int consumeMemBufList(int top,                  // top: 链表头节点索引(mb
 // 从ti所在的链接中读取之多max_len个字节
 int getLineReadBuffer(int ti, char *buf, int max_len) {
   int top = g_con[ti].mbtop_ri;
-  int len = 0, breakflag = 0;
+  int len = 0;
   int flag = TRUE;
   while (flag) {
     // 2026.08.21 这里有一个修复

@@ -78,9 +78,9 @@ static inline char *sa_fgets_text(char *buffer, int size, FILE *stream) {
       exit(code);                                                              \
   }
 
-// #define mj_sprintf(format, arg...)                                             \
-//   ((sizeof(format) == 4) ? sprintf(format, ##arg)                              \
-//                          : snprintf(format, sizeof(format), ##arg))
+/* #define mj_sprintf(format, arg...)                                          \
+   ((sizeof(format) == 4) ? sprintf(format, ##arg)                             \
+                          : snprintf(format, sizeof(format), ##arg)) */
 
 #define min(x, y)                                                              \
   ({                                                                           \

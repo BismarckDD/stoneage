@@ -195,6 +195,7 @@ int fmdealfoodindex[MAX_FAMILY];
 int fmpkindex[MAX_FAMILY];
 FMPOINT fmpoint[MAX_FMPOINT];
 FMSMEMO fmsmemo;
+char fm_pk_list[FMPKLIST_MAXNUM][255];
 
 // Arminius: sort family & output the sorted list
 // Make a sorted index (fmindex) for the family data (family)

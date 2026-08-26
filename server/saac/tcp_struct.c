@@ -144,9 +144,6 @@ int tcpstruct_accept(int *tis, int ticount) {
               if (rr < 0) {
                 g_con[i].closed_by_remote = 1;
               } else {
-#ifdef _DEBUG
-                printf("发送内容:%s\n", send_buf);
-#endif
                 consumeMemBufList(g_con[i].mbtop_wi, send_buf, l, 1, 0);
               }
             }
@@ -266,6 +263,58 @@ int tcpstruct_write(const int ti, const char *buf, const int len) {
   if (ti < 0 || ti >= MAXCONNECTION || g_con[ti].use == 0)
     return TCPSTRUCT_EINVCIND;
   return appendWriteBuffer(ti, buf, len);
+}
+
+static int mem_buffer_has_data(int top) {
+  int visited = 0;
+  while (top >= 0 && top < g_mem_buffer_size && visited < g_mem_buffer_size) {
+    if (g_mem_buffer[top].len > 0)
+      return 1;
+    top = g_mem_buffer[top].next;
+    visited++;
+  }
+  return 0;
+}
+
+int tcpstruct_idle_wait(const int timeout_ms) {
+  fd_set rfds, wfds, efds;
+  struct timeval timeout;
+  int i;
+  int maxfd = g_main_sock_fd;
+
+  if (timeout_ms <= 0)
+    return 0;
+
+  /* Buffered input must be dispatched before sleeping. */
+  for (i = 0; i < MAXCONNECTION; i++) {
+    if (!g_con[i].use)
+      continue;
+    // 读缓冲区有数据，就不再WAIT
+    if (mem_buffer_has_data(g_con[i].mbtop_ri))
+      return 0;
+  }
+
+  FD_ZERO(&rfds);
+  FD_ZERO(&wfds);
+  FD_ZERO(&efds);
+  FD_SET(g_main_sock_fd, &rfds);
+  FD_SET(g_main_sock_fd, &efds);
+  for (i = 0; i < MAXCONNECTION; i++) {
+    if (!g_con[i].use || g_con[i].fd < 0 || g_con[i].closed_by_remote)
+      continue;
+    FD_SET(g_con[i].fd, &rfds);
+    FD_SET(g_con[i].fd, &efds);
+    /* A writable socket wakes immediately, so reconnect initialization data
+     * is flushed at full speed. Backpressure still blocks without spinning. */
+    if (mem_buffer_has_data(g_con[i].mbtop_wi))
+      FD_SET(g_con[i].fd, &wfds);
+    if (g_con[i].fd > maxfd)
+      maxfd = g_con[i].fd;
+  }
+
+  timeout.tv_sec = timeout_ms / 1000;
+  timeout.tv_usec = (timeout_ms % 1000) * 1000;
+  return select(maxfd + 1, &rfds, &wfds, &efds, &timeout);
 }
 
 int tcpstruct_connect(const char *addr, const int port) {

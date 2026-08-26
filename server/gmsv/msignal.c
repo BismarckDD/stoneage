@@ -99,7 +99,8 @@ extern time_t initTime;
 #endif
 extern int player_online;
 extern int player_maxonline;
-char saacretfunc[255] = "";
+static char saacrecvfunc_buf[255] = "";
+char *saacrecvfunc = saacrecvfunc_buf;
 static char saacsendfunc_buf[255] = "";
 char *saacsendfunc = saacsendfunc_buf;
 int cliretfunc = 0;
@@ -132,7 +133,7 @@ void sigshutdown(int number) {
     logerr(buff);
     sprintf(buff, "最高在线: %d\n", player_maxonline);
     logerr(buff);
-    sprintf(buff, "SAAC接收: %s\n", saacretfunc);
+    sprintf(buff, "SAAC接收: %s\n", saacrecvfunc);
     logerr(buff);
     sprintf(buff, "SAAC发送: %s\n", saacsendfunc);
     logerr(buff);

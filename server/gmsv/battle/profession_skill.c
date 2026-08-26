@@ -313,14 +313,14 @@ INLINE char *PROFESSION_SKILL_getChar(int index,
 
 INLINE BOOL PROFESSION_SKILL_setChar(int index,
                                      PROFESSION_SKILL_DATACHAR element,
-                                     char *new) {
+                                     char *new_char) {
   if (!PROFESSION_SKILL_CHECKINDEX(index))
     return FALSE;
   if (!PROFESSION_SKILL_CHECKCHARDATAINDEX(element))
     return FALSE;
 
   strncpysafe(PROFESSION_skill[index].string[element].string,
-             sizeof(PROFESSION_skill[index].string[element].string), new);
+             sizeof(PROFESSION_skill[index].string[element].string), new_char);
   return TRUE;
 }
 

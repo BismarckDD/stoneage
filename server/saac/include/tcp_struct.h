@@ -16,6 +16,9 @@
 
 int tcpstruct_write(int ti, const char *buf, int len);
 
+/* Wait only when there is no buffered input or output to process. */
+int tcpstruct_idle_wait(int timeout_ms);
+
 /*
  * 初始化 TCP 连接
  * @param addr: 服务器地址

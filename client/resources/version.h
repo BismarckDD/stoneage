@@ -68,7 +68,6 @@
 
 #define _NEW_SYSTEM_MENU                // 新系统菜单 2011/12/21
 #define _PTTERN_SEPARATION_BIN          // 分离补丁加载
-//#define _SFUMATO                      // 二次渲染 未完善，需美术资源配合
 #define _SPECIAL_LOGO                   // 新登陆图
 #define _CHANNEL_ALL_SERV               // 增加星球频道 2011/12/21
 #define _EXTEND_FONT_PAL                // 扩展字体颜色色板 2011/12/22

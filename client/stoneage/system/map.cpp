@@ -1,6 +1,6 @@
-﻿#include <direct.h>
+﻿#include "systeminc/system.h"
 //
-#include "systeminc/system.h"
+#include <direct.h>
 //
 #include "systeminc/map.h"
 #include "game/anim_tbl.h"
@@ -138,9 +138,6 @@ typedef struct TAG_CHAR_PARTS_PRIORITY
     short type;
     TAG_CHAR_PARTS_PRIORITY *pre;
     TAG_CHAR_PARTS_PRIORITY *next;
-#ifdef _SFUMATO
-    int sfumato;
-#endif
 } CHAR_PARTS_PRIORITY;
 
 #define MAX_CHAR_PRIO_BUF 2048
@@ -3781,9 +3778,6 @@ void setPartsPrio(int graNo, int x, int y, int dx, int dy, float mx, float my, i
     charPrioBuf[charPrioCnt].pre = NULL;
     charPrioBuf[charPrioCnt].next = NULL;
     charPrioBuf[charPrioCnt].depth = y;
-#ifdef _SFUMATO
-    charPrioBuf[charPrioCnt].sfumato = 0;
-#endif
     if (charPrioCnt == 0)
         addCharPartsPrio(&charPrioBufTop, &charPrioBuf[charPrioCnt]);
     else
@@ -3810,12 +3804,7 @@ void setPartsPrio(int graNo, int x, int y, int dx, int dy, float mx, float my, i
     charPrioCnt++;
 }
 
-// ????????????
-#ifdef _SFUMATO
-void setCharPrio(int graNo, int x, int y, int dx, int dy, float mx, float my, int sfumato)
-#else
 void setCharPrio(int graNo, int x, int y, int dx, int dy, float mx, float my)
-#endif
 {
     int i;
     CHAR_PARTS_PRIORITY *ptc, *prePtc;
@@ -3837,9 +3826,6 @@ void setCharPrio(int graNo, int x, int y, int dx, int dy, float mx, float my)
     charPrioBuf[charPrioCnt].next = NULL;
     charPrioBuf[charPrioCnt].depth = y;
 
-#ifdef _SFUMATO
-    charPrioBuf[charPrioCnt].sfumato = sfumato;
-#endif
 
     if (charPrioCnt == 0)
         addCharPartsPrio(&charPrioBufTop, &charPrioBuf[charPrioCnt]);
@@ -3996,59 +3982,14 @@ void stockCharParts(void)
     for (i = 0; i < charPrioCnt && pt != NULL; i++, pt = pt->next)
     {
         if (pt->type == CHAR_PARTS_PRIO_TYPE_ANI) {
-#ifdef _SFUMATO
-            StockDispBuffer2(pt->x + pt->dx, pt->y + pt->dy, 0, pt->graNo, 0, pt->sfumato);
-#else
             StockDispBuffer2(pt->x + pt->dx, pt->y + pt->dy, 0, pt->graNo, 0);
-#endif
         }
         else {
-#ifdef _SFUMATO
-            StockDispBuffer2(pt->x + pt->dx, pt->y + pt->dy, DISP_PRIO_PARTS, pt->graNo, 0, pt->sfumato);
-#else
             StockDispBuffer2(pt->x + pt->dx, pt->y + pt->dy, DISP_PRIO_PARTS, pt->graNo, 0);
-#endif
         }
-#if 0
-        // ?????
-        if (pt->type == CHAR_PARTS_PRIO_TYPE_CHAR)
-            break;
-#endif
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
-// ??????
-//
-#if 0    // ???????????????????
-//
-// NPC?????????????
-// ???????????????????
-//
-//   ??：TRUE  ... ????
-//           FALSE ... ??䥺?
-BOOL checkNpcEvent(int gx, int gy, int dx, int dy)
-{
-    int x, y, ev;
-
-    x = gx - mapAreaX1;
-    y = gy - mapAreaY1;
-
-    ev = (event[(y + dy) * mapAreaWidth + (x + dx)] & 0x0fff);
-    // ??NPC
-    if (ev == EVENT_NPC)
-    {
-        // ????
-        resetMap();
-        return TRUE;
-    }
-
-    return FALSE;
-}
-#endif
-
-///////////////////////////////////////////////////////////////////////////
-// ??????????
 //
 void drawAutoMap(int x, int y)
 {

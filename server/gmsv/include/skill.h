@@ -90,7 +90,7 @@ char* SKILL_makeStringFromSkillData( Skill* sk );
 BOOL  SKILL_makeSkillFromStringToArg( char* src, Skill* sk );
 
 int SKILL_getInt( Skill* skill, int element);
-int SKILL_setInt( Skill* skill, int element, int new);
+int SKILL_setInt( Skill* skill, int element, int new_char);
 
 #ifdef _CHAR_PROFESSION			// WON ADD 人物职业
 char* SKILL_makeSkillStatusString( Skill* skill, int char_index, int skill_num );

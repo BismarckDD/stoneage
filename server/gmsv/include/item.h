@@ -341,7 +341,7 @@ INLINE int _ITEM_setInt(char *file, int line, int index,
                         ITEM_DATA_ENUM item_data_enum, int data);
 INLINE char *ITEM_getChar(int index, ITEM_CHAR_DATA_ENUM item_data_enum);
 INLINE BOOL ITEM_setChar(int index, ITEM_CHAR_DATA_ENUM item_data_enum,
-                         char *new);
+                         char *new_char);
 INLINE int ITEM_getWorkInt(int index, ITEM_WORKDATAINT item_data_enum);
 INLINE int ITEM_setWorkInt(int index, ITEM_WORKDATAINT item_data_enum,
                            int data);

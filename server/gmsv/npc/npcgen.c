@@ -156,12 +156,13 @@ static NPC_Correspondfunction correspondfunction[] = {
     {NPC_TEMPLATEBATTLEPROPERTY, CHAR_BATTLEPROPERTY},
 #endif
 };
+
 /*------------------------------------------------------------
  * 楮醒戊疋□允月
- * 娄醒
- *  ch      Char*           平乓仿犯□正
- * 忒曰袄
- *  卅仄
+ * 参数
+ *  Char *ch, NPC_Template *temp
+ * 返回值
+ *  无
  ------------------------------------------------------------*/
 static void NPC_copyFunction(Char *ch, NPC_Template *temp) {
   int i;

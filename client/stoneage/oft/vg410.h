@@ -137,10 +137,6 @@ typedef struct {
 #define ATR_WARRIOR_EFFECT(a) a->warrioreffect
 // #endif
 
-#ifdef _SFUMATO
-#define ATR_SFUMATO(a) a->sfumato // ������Ⱦͼ��ɫ��
-#endif
-
 #define ATR_VCT_NO(a) ((ATR_EQU *)a->pYobi)->vct_no
 #define ATR_STIMER(a) ((ATR_EQU *)a->pYobi)->stimer
 #define ATR_BODY_WORK(b, a) ((ATR_EQU *)a->pYobi)->body_work[b]

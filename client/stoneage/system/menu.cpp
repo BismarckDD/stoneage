@@ -1819,10 +1819,7 @@ void AnimDisp(ACTION *pAct)
                                         ATR_H_POS(pAct) = (int)fX;
                                         ATR_V_POS(pAct) = (int)fY;
                                         setCharPrio(pAct->bmpNo, pAct->x, pAct->y, 0, 0, pAct->mx, pAct->my
-#ifdef _SFUMATO
-                                            , pAct->sfumato
-#endif
-                                            );
+                                        );
                                         switch (ATR_CHR_ACT(pAct))
                                         {
                                         case 0:        // 攻击

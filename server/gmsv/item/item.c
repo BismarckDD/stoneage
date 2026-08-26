@@ -585,13 +585,13 @@ INLINE char *ITEM_getChar(int index, ITEM_CHAR_DATA_ENUM element) {
   return ITEM_gExists[index].item.string[element].string;
 }
 
-INLINE BOOL ITEM_setChar(int index, ITEM_CHAR_DATA_ENUM element, char *new) {
+INLINE BOOL ITEM_setChar(int index, ITEM_CHAR_DATA_ENUM element, char *new_char) {
   if (!ITEM_CHECKINDEX(index))
     return FALSE;
   if (!ITEM_CHECKCHARDATAINDEX(element))
     return FALSE;
   strncpysafe(ITEM_gExists[index].item.string[element].string,
-             sizeof(ITEM_gExists[index].item.string[element].string), new);
+             sizeof(ITEM_gExists[index].item.string[element].string), new_char);
   return TRUE;
 }
 
@@ -1539,13 +1539,13 @@ BOOL ITEM_makeItem(ITEM_Item *item, int number) {
     return FALSE;
   }
   memcpy(item, &ITEM_gTable[ITEM_gIndex[number].index].item,
-         sizeof(ITEM_Item)); // new
+         sizeof(ITEM_Item));
   for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
     int randomvalue;
     randomvalue =
-        RAND(0, ITEM_gTable[ITEM_gIndex[number].index].randomdata[i]); // new
+        RAND(0, ITEM_gTable[ITEM_gIndex[number].index].randomdata[i]);
     item->data[i] = ITEM_gTable[ITEM_gIndex[number].index].item.data[i] +
-                    randomvalue; // new
+                    randomvalue;
   }
   item->data[ITEM_LEAKLEVEL] = 0;
   return TRUE;
@@ -2211,7 +2211,7 @@ int ITEMTBL_getInt(int ItemID, ITEM_DATA_ENUM datatype) {
     return -1;
   if (ITEM_CHECKITEMTABLE(ItemID) == FALSE)
     return -1;
-  return ITEM_gTable[ITEM_gIndex[ItemID].index].item.data[datatype]; // new
+  return ITEM_gTable[ITEM_gIndex[ItemID].index].item.data[datatype];
 }
 
 char *ITEMTBL_getChar(int ItemID, ITEM_CHAR_DATA_ENUM datatype) {
@@ -2221,7 +2221,7 @@ char *ITEMTBL_getChar(int ItemID, ITEM_CHAR_DATA_ENUM datatype) {
     return "\0";
   return ITEM_gTable[ITEM_gIndex[ItemID].index]
       .item.string[datatype]
-      .string; // new
+      .string;
 }
 
 INLINE BOOL ITEM_CHECKITEMTABLE(int number) {
@@ -2231,7 +2231,7 @@ INLINE BOOL ITEM_CHECKITEMTABLE(int number) {
           ITEM_sIndexLen);
     return FALSE;
   }
-  return ITEM_gIndex[number].use; // new
+  return ITEM_gIndex[number].use;
 }
 #ifdef _TAKE_ITEMDAMAGE
 int ITEM_getItemDamageCrusheED(int item_index) {

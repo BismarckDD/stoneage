@@ -53,6 +53,8 @@ char rbmess[1024 * 256];
 #define LISTENQ 32
 #define SERV_PORT 8000
 
+const char cszServerBusy[64] = "服务器繁忙，请稍候再试。";
+
 #ifdef _NEW_SERVER_
 BOOL bNewServer = TRUE;
 #else
@@ -189,7 +191,7 @@ typedef struct tagCONNECT {
   struct timeval lastCDsendtime; /* */
   struct timeval lastCharSaveTime; /* 上次角色存档时间 */
   struct timeval lastprocesstime; /* */
-  struct timeval lastreadtime; /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+  struct timeval lastreadtime; /* */
 
 // Nuke start 08/27 : For acceleration avoidance
 // WALK_TOLERANCE: Permit n W messages in a second (3: is the most restricted)
@@ -481,7 +483,6 @@ static int appendRB(int fd, char *buf, int size) {
   if (fd != acfd) {
 #endif
     if (Connect[fd].rbuse + size > RBSIZE) {
-      // print( "appendRB:OTHER(%d) err buffer over \n", fd );
       return -1;
     }
   } else {
@@ -1644,10 +1645,10 @@ void chardatasavecheck(void) {
 }
 
 /*------------------------------------------------------------
- * fd 互 valid
- * 娄醒
+ * 判断 fd 是否合法
+ * 输入
  *  fd          int         fd
- * 忒曰袄
+ * 输出
  *  valid   TRUE(1)
  *  invalid FALSE(0)
  ------------------------------------------------------------*/
@@ -1679,28 +1680,14 @@ ANY_THREAD int getfdFromCdkey(const char *cd) {
 }
 
 ANY_THREAD int getfdFromCharaIndex(int char_index) {
-#if 1
-  int ret;
   if (!CHAR_CHECKINDEX(char_index))
     return -1;
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
     return -1;
-  ret = CHAR_getWorkInt(char_index, CHAR_WORKFD);
+  int ret = CHAR_getWorkInt(char_index, CHAR_WORKFD);
   if (ret < 0 || ret >= ConnectLen)
     return -1;
   return ret;
-#else
-  int i;
-  for (i = 0; i < ConnectLen; i++) {
-    CONNECT_LOCK(i);
-    if (Connect[i].use == TRUE && Connect[i].char_index == char_index) {
-      CONNECT_UNLOCK(i);
-      return i;
-    }
-    CONNECT_UNLOCK(i);
-  }
-  return -1;
-#endif
 }
 
 ANY_THREAD int getcdkeyFromCharaIndex(int char_index, char *out, int outlen) {
@@ -1759,7 +1746,7 @@ ANY_THREAD int getFdidFromCharaIndex(int charind) {
   return -1;
 }
 
-// 连接是否是命令行连接.
+// 连接是否是客户端连接.
 ANY_THREAD BOOL CONNECT_isCLI(const int fd) {
   int a;
   CONNECT_LOCK(fd);
@@ -1768,7 +1755,7 @@ ANY_THREAD BOOL CONNECT_isCLI(const int fd) {
   return a;
 }
 
-// 连接是否是客户端连接.
+// 连接是否是SAAC连接.
 ANY_THREAD BOOL CONNECT_isAC(const int fd) {
   int a;
   CONNECT_LOCK(fd);
@@ -1827,8 +1814,6 @@ void closeAllConnectionandSaveData(void) {
         clilogin = TRUE;
       CONNECT_endOne_debug(i);
       // Nuke +1 0901: Why close
-      // print("closed in closeAllConnectionandSaveData");
-
       if (clilogin) {
         CONNECT_setUse(i, TRUE);
         CONNECT_setState(i, WHILECLOSEALLSOCKETSSAVE);
@@ -1865,13 +1850,6 @@ void CONNECT_SysEvent_Loop(void) {
         NPC_reloadNPC();
         MAPPOINT_resetMapWarpPoint(1);
         MAPPOINT_loadMapWarpPoint();
-      }
-    }
-#endif
-#ifdef _LUCK_STAR
-    if (getLuckStarTime() > 0) {
-      if (chikulatime % getLuckStarTime() == 0) { // ÿСʱ
-        LuckStar();
       }
     }
 #endif
@@ -2262,7 +2240,7 @@ static void netloop_idle_block(const struct timeval *st,
   fd_set rfds, efds;
   int i, maxfd;
   long remain;
-
+  // 获取当前的et
   gettimeofday(&et, NULL);
   remain = (long)looptime_us - time_diff_us(et, *st);
   if (remain > NETLOOP_IDLE_BLOCK_MAX_US)
@@ -2292,8 +2270,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
   static unsigned int total_item_use = 0;
   static int petcnt = 0;
   struct timeval st, et;
-  unsigned int looptime_us;
-  looptime_us = getOnelooptime_ms() * 1000;
+  unsigned int looptime_us = getOnelooptime_ms() * 1000;
 
   int ret, loop_num;
   struct timeval tmv; /*timeval*/
@@ -2345,7 +2322,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
     if (sockfd == -1 && errno == EINTR) {
       print("accept err:%s\n", strerror(errno));
     } else if (sockfd > 1000) {
-      print("sockfd:%d\n", sockfd);
+      print("IMPROPER SOCK_FD :%d\n", sockfd);
       close(sockfd);
     } else if (sockfd != -1) {
       unsigned long sinip;
@@ -2371,27 +2348,21 @@ SINGLETHREAD BOOL netloop_faster(void) {
           print("可使用宠物数已满!!");
           cono = 0;
         }
-
-      // print("CO");
-
       {
         float fs = 0.0;
         if ((fs = ((float)Connect[acfd].rbuse / AC_RBSIZE)) > 0.6) {
           print("andy AC rbuse: %3.2f [%4d]\n", fs, Connect[acfd].rbuse);
-          if (fs > 0.78)
-            cono = 0;
+          if (fs > 0.78) cono = 0;
         }
       }
-
       memcpy(&sinip, &sin.sin_addr, 4);
       // Nuke *1 0126: Resource protection
 
       if ((cono == 0) || (acceptmore <= 0) || isThereThisIP(sinip)) {
         // Nuke +2 Errormessage
-        char mess[64] = "E伺服器忙线中，请稍候再试。";
         if (!from_acsv)
-          write(sockfd, mess, strlen(mess) + 1);
-        print("accept but drop[cono:%d,acceptmore:%d]\n", cono, acceptmore);
+          write(sockfd, cszServerBusy, strlen(cszServerBusy) + 1);
+        print("DROP sock [cono:%d,acceptmore:%d]\n", cono, acceptmore);
         close(sockfd);
       }
 #ifdef _SAME_IP_ONLINE_NUM
@@ -2415,11 +2386,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
         char mess[64] = "A"; // Nuke +2 Errormessage
         if (bNewServer) {
           mess[0] = 'N';
-
         } else
           mess[0] = '$';
-
-        //char mess[1024]="E伺服器忙线中，请稍候再试。";
         if (!from_acsv) {
 #ifdef _NO_FULLPLAYER_ATT
           if (sockfd - player_online >= getNoFullPlayer()) {
@@ -2474,7 +2442,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
           int flag = 1;
           int result = setsockopt(sockfd, IPPROTO_TCP, TCP_NODELAY,
                                   (char *)&flag, sizeof(int));
-
           if (result < 0) {
             close(sockfd);
             print("setsockopt TCP_NODELAY failed:%s\n", strerror(errno));
@@ -2491,9 +2458,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
             continue;
           if (Connect[i].char_index != -1)
             continue;
-          const char mess[64] = "服务器繁忙，请稍候再试。";
           if (!from_acsv)
-            write(i, mess, strlen(mess) + 1);
+            write(i, cszServerBusy, strlen(cszServerBusy) + 1);
           close(i);
           // Nuke +1 0901: Why close
         }
@@ -2504,6 +2470,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
   gettimeofday(&st, NULL);
   int sweep_did_work = 0;
 
+  // netloop_faster里还有一层循环
   while (TRUE) {
     int j;
     // ttom+1 for the debug
@@ -2813,13 +2780,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
 
         if ((i_tto % 60) == 0) {
           i_tto = 0;
-          print("."); // 这个point就是从这里打印出来的
+          print("."); // GMSV中大量的point就是从这里打印出来的
         }
         i_tto++;
 
         // andy add 2003/0212------------------------------------------
         CONNECT_SysEvent_Loop();
-
         //------------------------------------------------------------
       } // switch()
 
@@ -2841,19 +2807,16 @@ SINGLETHREAD BOOL netloop_faster(void) {
       break;
     case 2:
       counter++;
-
       if (counter >= 3) {
         counter = 0;
         fdremember = fdremembercopy + 1;
         flag_ac = 0;
       }
-
       break;
     default:
       fdremember++;
       break;
     }
-
 #else
     fdremember++;
 
@@ -2918,7 +2881,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
       errno = 0;
       char buf[1024 * 128];
       memset(buf, 0, sizeof(buf));
-
       ret = read(fdremember, buf, sizeof(buf));
 
       if (ret > 0 && sizeof(buf) <= ret) {
@@ -2927,7 +2889,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
               (CONNECT_getCtype(fdremember) == AC) ? "SAAC" : "其它", ret,
               sizeof(buf));
 #else
-        print("读取(%s)缓冲长度:%d - %d !!\n",
+        print("读取(%s)缓冲长度:%d - %ld!!\n",
               (fdremember == acfd) ? "SAAC" : "其它", ret, sizeof(buf));
 #endif
       }
@@ -3533,12 +3495,14 @@ int getEqRandenemy(int fd) {
 #endif
 
 #ifdef _CHIKULA_STONE
+//
 void setChiStone(int fd, int nums) {
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
   Connect[fd].chistone = nums;
 }
+//
 int getChiStone(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return -1;
@@ -3604,10 +3568,8 @@ void RescueEntryBTime(int char_index, int fd, unsigned int lowTime,
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
-  int NowTime = (int)time(NULL);
-
-  Connect[fd].CBTime = NowTime;
-  // Connect[fd].CBTime+battletime
+  int now_time = (int) time(NULL);
+  Connect[fd].CBTime = now_time;
 }
 
 BOOL CheckDefBTime(int char_index, int fd, unsigned int lowTime,

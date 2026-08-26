@@ -11921,11 +11921,6 @@ void set_bc(void)
         //?????
         ATR_LIFE(a1) = get_bc_num();
 
-#ifdef _SFUMATO
-        ATR_SFUMATO(a1) = 0xff0000;    
-#endif
-
-        //??????
         ATR_MAX_LIFE(a1) = get_bc_num();
 #ifdef _BATTLESKILL                // (不可开) Syu ADD 战斗技能介面
         ATR_MAX_MANA(a1) = pc.maxMp ;

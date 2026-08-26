@@ -21,8 +21,8 @@ BOOL setNewTime(void) {
 }
 static long era = (long)912766409 + 5400;
 void RealTimeToLSTime(long t, LSTIME *lstime) {
-  long lsseconds = t - era; /* LS葭  井日及  醒 */
-  long lsdays;              /* LS葭  井日及  醒 */
+  long lsseconds = t - era; // LS Time in seconds.
+  long lsdays;              // LS Time in days.
 
   lstime->year =
       (int)(lsseconds / (LSTIME_SECONDS_PER_DAY * LSTIME_DAYS_PER_YEAR));
@@ -148,7 +148,6 @@ void Assess_SysEfficacy_sub(int flg, int loop) {
     EndClock = clock();
     if (EndClock < SubStartClock)
       return;
-
     switch (loop) {
     case 1: // Net_TotalClock
       Net_TotalClock += (int)(EndClock - SubStartClock);

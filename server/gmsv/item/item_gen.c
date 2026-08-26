@@ -235,8 +235,8 @@ int ITEM_initItemIngCache(void) {
   return TRUE;
 }
 
+char tk[1024];
 void init_item_atom_callback(int *line_num, const char *line) {
-  char tk[1024];
   getStringFromIndexWithDelim(line, ",", 1, tk, sizeof(tk));
   snprintf(item_atoms[*line_num].name, sizeof(item_atoms[*line_num].name), "%s", tk);
   item_atoms[*line_num].name_hash = hashpjw(tk);

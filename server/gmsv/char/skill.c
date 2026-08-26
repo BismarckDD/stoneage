@@ -115,9 +115,9 @@ INLINE int SKILL_getInt(Skill *skill, int element) {
   return value;
 }
 
-INLINE int SKILL_setInt(Skill *skill, int element, int new) {
+INLINE int SKILL_setInt(Skill *skill, int element, int new_skill) {
   int buf = SKILL_getInt(skill, element);
-  skill->data[element] = new;
+  skill->data[element] = new_skill;
   return buf;
 }
 

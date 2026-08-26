@@ -310,10 +310,6 @@ bool GameMain(void)
 #endif
 #endif
 
-#ifdef _STONEAGE_NG
-
-#else
-
 #ifdef _OPTIMIZATIONFLIP_
         if (endProcTime > TimeGetTime())
         {
@@ -339,10 +335,8 @@ bool GameMain(void)
 #else
         NowTime = TimeGetTime(); //获取当前的时间戳(ms)
         nowtime = nowttime1;
-        //nowtime ^= 0xffffbcde;
         static DWORD OldTime = nowttime1;
         if (NowTime > (nowtime + ProcTime)){
-            //OldTime^= 0x855ff55f;
             if (OldTime != nowtime){
                 OldTime = nowtime;
                 if (NoDrawCnt < NO_DRAW_MAX_CNT){
@@ -353,7 +347,6 @@ bool GameMain(void)
                     else
                         nowtime += (SystemTime);
                     nowttime1 = nowtime;
-                    //_itoa_s( nowtime^0xffffbcde, sz, 10);
                     nowtime = 0;
                     NoDrawCnt++;
                     Sleep(0);
@@ -361,7 +354,6 @@ bool GameMain(void)
                 }
             }
         }
-#endif
 #endif
         nowtime = 0;
         //cary AI的切换
@@ -620,7 +612,6 @@ bool GameMain(void)
         while (endloopTime > TimeGetTime()){
             std::this_thread::sleep_for(std::chrono::microseconds(10));
         }
-
 #else
         nowttime1 += SystemTime;
         nowtime = 0;
@@ -629,30 +620,16 @@ bool GameMain(void)
 #endif
         SurfaceDate++;
     }
-
     return false;
 }
 
 void DisplayFrameRate(void)
 {
-  // ??????
   if (TimeGetTime() - DrawFrameTime >= 1000){
-    // ??????????
     FrameRate = DrawFrameCnt;
-    // ???????
     DrawFrameTime = TimeGetTime();
-    // ????????????
     DrawFrameCnt = 0;
   }
-}
-
-void PutLogo(void)
-{
-    DispBuffer.DispCnt = 0;
-    StockDispBuffer(400, 300, DISP_PRIO_TOP, CG_LOGO, 0);
-    ClearBackSurface();    // ???????????????
-    PutBmp();            // ????????????????
-    Flip();                //
 }
 
 bool GameInit(void)
@@ -660,22 +637,9 @@ bool GameInit(void)
   InitDInput();
 #ifdef _REMAKE_20
   DisableCheated();
-#ifndef _STONDEBUG_
-  RegisterHotKey(hWnd, 0, MOD_ALT, VK_TAB);
-  RegisterHotKey(hWnd, 1, MOD_ALT, VK_ESCAPE);
-  InitialInputScript();
-  DisableInputScript();
-#endif
   RestoreLibrary();
   InitRestore();
   SetTimer(hWnd, 0, 55, NULL);
-#endif
-#ifdef _STONDEBUG_
-#ifdef _READ16BITBMP
-  QueryPerformanceFrequency(&tf);
-  iTotalProcTime = 0;
-  iTotalRunCount = 0;
-#endif
 #endif
   util_Init();
   if (InitDirectDraw() == FALSE){

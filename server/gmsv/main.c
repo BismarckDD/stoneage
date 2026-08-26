@@ -166,6 +166,7 @@ void main_loop(void) {
 #ifdef _EPOLL_ET_MODE
     System_Loop();
 #else
+    // 2026.08.25 修复CPU使用率过高的问题
     netloop_faster();
 #endif
     Assess_SysEfficacy_sub(1, 1);

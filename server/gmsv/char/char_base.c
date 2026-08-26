@@ -1622,7 +1622,7 @@ INLINE char *_CHAR_getChar(char *file, int line, int index,
 }
 
 INLINE BOOL _CHAR_setChar(char *file, int line, int index,
-                          CHAR_DATACHAR element, const char *new) {
+                          CHAR_DATACHAR element, const char *new_char) {
   if (!CHAR_CHECKINDEX(index)) {
     print("err _CHAR_setChar %s:%d !\n", file, line);
     return FALSE;
@@ -1632,7 +1632,7 @@ INLINE BOOL _CHAR_setChar(char *file, int line, int index,
     return FALSE;
   }
   strncpysafe(CHAR_chara[index].string[element].string,
-             sizeof(CHAR_chara[index].string[element].string), new);
+             sizeof(CHAR_chara[index].string[element].string), new_char);
   return TRUE;
 }
 
@@ -1659,7 +1659,7 @@ INLINE char *_CHAR_getWorkChar(char *file, int line, int index,
 }
 
 INLINE BOOL _CHAR_setWorkChar(char *file, int line, int index,
-                              CHAR_WORKDATACHAR element, const char *new) {
+                              CHAR_WORKDATACHAR element, const char *new_char) {
   if (!CHAR_CHECKINDEX(index)) {
     print("err %s:%d \n", file, line);
     return FALSE;
@@ -1669,7 +1669,7 @@ INLINE BOOL _CHAR_setWorkChar(char *file, int line, int index,
     return FALSE;
   }
   strncpysafe(CHAR_chara[index].workchar[element].string,
-             sizeof(CHAR_chara[index].workchar[element].string), new);
+             sizeof(CHAR_chara[index].workchar[element].string), new_char);
   return TRUE;
 }
 
@@ -1906,7 +1906,7 @@ int CHAR_getCharSkill(int index, int sindex) {
     return -1;
 }
 
-int CHAR_setCharSkill(int index, int sindex, int new) {
+int CHAR_setCharSkill(int index, int sindex, int new_char) {
   CHAR_HaveSkill *hskill;
 
   if (!CHAR_CHECKINDEX(index))
@@ -1915,7 +1915,7 @@ int CHAR_setCharSkill(int index, int sindex, int new) {
     return -1;
 
   hskill = CHAR_getCharHaveSkill(index, sindex);
-  SKILL_setInt(&hskill->skill, SKILL_IDENTITY, new);
+  SKILL_setInt(&hskill->skill, SKILL_IDENTITY, new_char);
   return TRUE;
 }
 #endif
@@ -1928,17 +1928,17 @@ INLINE int CHAR_getCharHaveTitle(int char_index, int tindex) {
   return CHAR_chara[char_index].indexOfHaveTitle[tindex];
 }
 
-INLINE int CHAR_setCharHaveTitle(int char_index, int tindex, int new) {
+INLINE int CHAR_setCharHaveTitle(int char_index, int tindex, int new_char) {
   int ret;
   if (!CHAR_CHECKINDEX(char_index))
     return 0;
   if (!CHAR_CHECKTITLEINDEX(tindex))
     return 0;
-  if (new != -1)
-    if (TITLE_getTitleIndex(new) == -1)
+  if (new_char != -1)
+    if (TITLE_getTitleIndex(new_char) == -1)
       return 0;
   ret = CHAR_getCharHaveTitle(char_index, tindex);
-  CHAR_chara[char_index].indexOfHaveTitle[tindex] = new;
+  CHAR_chara[char_index].indexOfHaveTitle[tindex] = new_char;
   return ret;
 }
 
@@ -1950,7 +1950,7 @@ INLINE int CHAR_getCharPet(int char_index, int petindex) {
   return CHAR_chara[char_index].unionTable.indexOfPet[petindex];
 }
 
-INLINE int CHAR_setCharPet(int char_index, int petindex, int new) {
+INLINE int CHAR_setCharPet(int char_index, int petindex, int new_char) {
   int ret;
   if (!CHAR_CHECKINDEX(char_index))
     return -1;
@@ -1960,11 +1960,11 @@ INLINE int CHAR_setCharPet(int char_index, int petindex, int new) {
 
 // CoolFish: 2001/10/12
 #ifdef _UNIQUE_P_I
-  if (new != -1)
-    CHAR_setPetUniCode(new);
+  if (new_char != -1)
+    CHAR_setPetUniCode(new_char);
 #endif
 
-  CHAR_chara[char_index].unionTable.indexOfPet[petindex] = new;
+  CHAR_chara[char_index].unionTable.indexOfPet[petindex] = new_char;
   return ret;
 }
 
@@ -1976,7 +1976,7 @@ INLINE int CHAR_getCharPoolPet(int char_index, int petindex) {
   return CHAR_chara[char_index].indexOfPoolPet[petindex];
 }
 
-INLINE int CHAR_setCharPoolPet(int char_index, int petindex, int new) {
+INLINE int CHAR_setCharPoolPet(int char_index, int petindex, int new_char) {
   int ret;
   if (!CHAR_CHECKINDEX(char_index))
     return -1;
@@ -1984,7 +1984,7 @@ INLINE int CHAR_setCharPoolPet(int char_index, int petindex, int new) {
     return -1;
   ret = CHAR_getCharPoolPet(char_index, petindex);
 
-  CHAR_chara[char_index].indexOfPoolPet[petindex] = new;
+  CHAR_chara[char_index].indexOfPoolPet[petindex] = new_char;
   return ret;
 }
 #ifdef _PETFOLLOW_NEW_
@@ -2101,7 +2101,7 @@ INLINE int _CHAR_getPetSkill(char *file, int line, int petindex,
 }
 
 INLINE int _CHAR_setPetSkill(char *file, int line, int petindex,
-                             int havepetskillindex, int new) {
+                             int havepetskillindex, int new_char) {
   int ret;
   if (!CHAR_CHECKINDEX(petindex)) {
     print("err %s:%d from %s:%d\n", __FILE__, __LINE__, file, line);
@@ -2112,7 +2112,7 @@ INLINE int _CHAR_setPetSkill(char *file, int line, int petindex,
     return -1;
   }
   ret = CHAR_getPetSkill(petindex, havepetskillindex);
-  CHAR_chara[petindex].unionTable.indexOfPetskill[havepetskillindex] = new;
+  CHAR_chara[petindex].unionTable.indexOfPetskill[havepetskillindex] = new_char;
   return ret;
 }
 

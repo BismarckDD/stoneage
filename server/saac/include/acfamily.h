@@ -32,9 +32,9 @@
 #define FMMAXGOLD 1000000000 // 家族基金上限
 
 // shan 20011207
-#define MAXRECVPOP 5000000 // 家族声望转移上限
+#define MAXRECVPOP 5000000    // 家族声望转移上限
 // CoolFish: 2001/11/26
-// #define MAXRECVPOP			2500000		// 家族声望转移上限
+// #define MAXRECVPOP 2500000 // 家族声望转移上限
 
 typedef enum {
   fmindex,
@@ -256,7 +256,6 @@ void addFmPayPoint(int fmindex, char *fmname, int paypoint);
 #ifdef _AC_SEND_FM_PK // WON ADD 庄园对战列表储存在AC
 void load_fm_pk_list(void);
 void save_fm_pk_list(void);
-char fm_pk_list[FMPKLIST_MAXNUM][255];
 #endif
 
 #endif // __ACFAMILY_H__

@@ -610,7 +610,7 @@ void SaacClient_ACAuctionSold_send(int fd, char *data) {
   Send(ws, fd, ws->work);
 }
 
-extern char saacretfunc[255];
+extern char saacrecvfunc[255];
 #ifdef _ABSOLUTE_DEBUG
 extern int lastfunctime;
 #endif
@@ -619,12 +619,12 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
   char funcname[255];
   strncpysafe(ws->work, ws->work_buf_size, line);
   if (SplitString(ws->work, ws) < 2) {
-    saacretfunc[0] = '\0';
+    saacrecvfunc[0] = '\0';
     return -1;
   }
   GetMessageInfo(&msgid, funcname, sizeof(funcname), ws->token_list);
   SAAC_LOG_RECV(funcname, "msgid=%u fd=%d", msgid, fd);
-  strcpy(saacretfunc, funcname);
+  strcpy(saacrecvfunc, funcname);
 #ifdef _ABSOLUTE_DEBUG
   lastfunctime = 1;
 #endif
