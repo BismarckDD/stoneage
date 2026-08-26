@@ -105,12 +105,12 @@ struct ACTION {
   float vx, vy;             // ??
 
   // 属性
-  short earth; // 佋 
-  short water; // ? 
-  short fire;  // ? 
-  short wind;  // ? 
+  short earth; // 地
+  short water; // 水属性
+  short fire;  // 火属性
+  short wind;  // 风属性
                // rader使用
-  int dirCnt;  // ???????
+  int dirCnt;  // 
                // gemini使用
   int spd;     // 移动的速度(0~63)( ?????? )
   int crs; // 方向(0~31)(正上方为0,顺时钟方向) ?( ???? )( ??????
@@ -132,8 +132,8 @@ struct ACTION {
   // shan add +1
   char fmname[33]; // 家族名称
   // Robin 0728 ride Pet
-  int onRide;
-  char petName[16 + 1];
+  int onRide;            // 
+  char petName[16 + 1];  // PET名称.
   int petLevel;
   int petHp;
   int petMaxHp;
@@ -192,10 +192,6 @@ struct ACTION {
 #endif
 #ifdef _MOUSE_DBL_CLICK
   int index; // 禁断!! Server中的charaindex
-#endif
-
-#ifdef _SFUMATO
-  int sfumato; // 二次渲染图层色彩
 #endif
 };
 

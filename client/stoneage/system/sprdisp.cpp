@@ -56,23 +56,12 @@ void DrawAlpha(LPDIRECTDRAWSURFACE lpSurface, int ox, int oy, int offsetx,
 extern int displayBpp;
 void DrawStaturated(LPDIRECTDRAWSURFACE lpSurface, int ox, int oy, int offsetx,
                     int offsety, int ow, int oh, bool bLastOne);
-#ifdef _SFUMATO
-void DrawGray(LPDIRECTDRAWSURFACE lpSurface, int ox, int oy, int offsetx,
-              int offsety, int ow, int oh, bool bLastOne, int iGrayType,
-              int sfumato);
-#else
 void DrawGray(LPDIRECTDRAWSURFACE lpSurface, int ox, int oy, int offsetx,
               int offsety, int ow, int oh, bool bLastOne, int iGrayType);
-#endif
 void DrawAlphaChannel(SURFACE_INFO *surface_info, BYTE *AlphaData, int ox,
                       int oy, int offsetx, int offsety, int ow, int oh,
                       bool bLastOne);
 
-#ifdef _SFUMATO
-void DrawSfumato(LPDIRECTDRAWSURFACE lpSurface, int ox, int oy, int offsetx,
-                 int offsety, int ow, int oh, bool bLastOne, int iGrayType,
-                 int sfumato);
-#endif
 #endif
 void DrawStaturated(LPDIRECTDRAWSURFACE lpSurface, int ox, int oy, int offsetx,
                     int offsety, int ow, int oh, bool bLastOne);
@@ -704,12 +693,7 @@ int StockDispBufferScaled(int x, int y, UCHAR dispPrio, int bmpNo) {
   return id;
 }
 
-#ifdef _SFUMATO
-int StockDispBuffer2(int x, int y, UCHAR dispPrio, int bmpNo, BOOL hitFlag,
-                     int sfumato /* = 0*/)
-#else
 int StockDispBuffer2(int x, int y, UCHAR dispPrio, int bmpNo, BOOL hitFlag)
-#endif
 {
   short dx, dy;
   int BmpNo;
@@ -746,9 +730,6 @@ int StockDispBuffer2(int x, int y, UCHAR dispPrio, int bmpNo, BOOL hitFlag)
     if (adrntruebuff[pDispInfo->bmpNo - OLD_GRAPHICS_START].staturated == 1)
       pDispInfo->DrawEffect = 2;
   }
-#endif
-#ifdef _SFUMATO
-  pDispInfo->sfumato = sfumato;
 #endif
   return DispBuffer.DispCnt++;
 }
@@ -855,9 +836,6 @@ void StockTaskDispBuffer(void) {
     }
 #endif
     pActLoop->hitDispNo = DispBuffer.DispCnt;
-#ifdef _SFUMATO
-    pDispInfo->sfumato = pActLoop->sfumato;
-#endif
     DispBuffer.DispCnt++;
     pDispSort++;
     pDispInfo++;
@@ -2531,235 +2509,6 @@ void DrawAlphaChannel(SURFACE_INFO *surface_info, BYTE *AlphaData, int ox,
 }
 #endif
 
-#ifdef _SFUMATO
-void DrawSfumato(LPDIRECTDRAWSURFACE lpSurface, int ox, int oy, int offsetx,
-                 int offsety, int ow, int oh, bool bLastOne, int iGrayType,
-                 int sfumato) {
-  static DDSURFACEDESC ddsdSource, ddsdOverlayer;
-  int surfacePitch1, surfacePitch2, nColorOverlayer;
-  int i, j, w = SURFACE_WIDTH, h = SURFACE_HEIGHT, subx, dx = 0, dy = 0;
-  int R, G, B, Gray, g;
-  bool odd = false;
-  RECT rect;
-
-  if (ox >= lpDraw->xSize || ox + w <= 0 || oy >= lpDraw->ySize || oy + h <= 0)
-    return;
-  if (bLastOne) {
-    w = ow - offsetx;
-    h = oh - offsety;
-  }
-  if (ox + w >= lpDraw->xSize) {
-    w = lpDraw->xSize - ox;
-  }
-  if (oy + h >= lpDraw->ySize)
-    h = lpDraw->ySize - oy;
-  if (ox < 0) {
-    w = w + ox;
-    if (w < 0)
-      return;
-    dx = ox * -1;
-    ox = 0;
-  }
-  if (oy < 0) {
-    h = h + oy;
-    if (h < 0)
-      return;
-    dy = oy * -1;
-    oy = 0;
-  }
-  subx = ox;
-
-  if (iGrayType == 3)
-    g = 6;
-  else if (iGrayType == 4)
-    g = 5;
-
-  ZeroMemory(&ddsdSource, sizeof(DDSURFACEDESC));
-  ddsdSource.dwSize = sizeof(DDSURFACEDESC);
-  ZeroMemory(&ddsdOverlayer, sizeof(DDSURFACEDESC));
-  ddsdOverlayer.dwSize = sizeof(DDSURFACEDESC);
-  if (lpDraw->lpBACKBUFFERSYS->Lock(NULL, &ddsdSource, DDLOCK_WAIT, NULL) !=
-      DD_OK)
-    return;
-  if (lpSurface->Lock(NULL, &ddsdOverlayer, DDLOCK_WAIT, NULL) != DD_OK) {
-    lpDraw->lpBACKBUFFERSYS->Unlock(NULL);
-    return;
-  }
-#ifdef _HI_COLOR_32
-  if (displayBpp == 32) {
-    void *ptSourceDest, *ptOverLayerDest;
-    surfacePitch1 = ddsdSource.lPitch >> 2;
-    surfacePitch2 = ddsdOverlayer.lPitch >> 2;
-    ptSourceDest = (DWORD *)(ddsdSource.lpSurface) + oy * surfacePitch1 + ox;
-    ptOverLayerDest =
-        (DWORD *)(ddsdOverlayer.lpSurface) + dy * surfacePitch2 + dx;
-
-    // 565 显示模式
-    if (gBitRShift == 2) {
-      for (j = 0; j < h; j++) {
-        if (oy >= 0) {
-          for (i = 0; i < w; i++) {
-            if (subx >= 0) {
-              nColorOverlayer = *(DWORD *)ptOverLayerDest;
-              if (nColorOverlayer != DEF_COLORKEY) {
-                R = (nColorOverlayer & 0xff0000) >> 16;
-                G = (nColorOverlayer & 0x00ff00) >> 8;
-                B = (nColorOverlayer & 0x0000ff);
-                Gray = (R * 3 + G * 6 + B) / 10;
-                *(DWORD *)ptSourceDest = (DWORD)(Gray << 16 | Gray << 8 | Gray);
-              }
-            } else
-              subx++;
-            ptSourceDest = (DWORD *)ptSourceDest + 1;
-            ptOverLayerDest = (DWORD *)ptOverLayerDest + 1;
-          }
-          ptSourceDest = (DWORD *)ptSourceDest + surfacePitch1 - w;
-          ptOverLayerDest = (DWORD *)ptOverLayerDest + surfacePitch2 - w;
-          subx = ox;
-        } else {
-          ptSourceDest = (DWORD *)ptSourceDest + surfacePitch1;
-          ptOverLayerDest = (DWORD *)ptOverLayerDest + surfacePitch2;
-          oy++;
-        }
-      }
-    }
-    // 555 显示模式
-    else {
-      for (j = 0; j < h; j++) {
-        if (oy >= 0) {
-          for (i = 0; i < w; i++) {
-            if (subx >= 0) {
-              nColorOverlayer = *(DWORD *)ptOverLayerDest;
-              if (nColorOverlayer != DEF_COLORKEY) {
-                R = (nColorOverlayer & 0xff0000) >> 16;
-                G = (nColorOverlayer & 0x00ff00) >> 8;
-                B = (nColorOverlayer & 0x0000ff);
-
-                if (sfumato > 0) {
-                  int x = G - R;
-                  int y = G - B;
-                  if ((R > 0x30 && G > 0x30 &&
-                       B > 0x30) /* &&(R < 0xf0 && G < 0xf0 && B < 0xf0) */
-                      && (x > -40 && x < 40) && (y > -40 && y < 40)) {
-                    R = (nColorOverlayer & 0xff0000) >>
-                        8; // 原本要右移11左移3,简化成右移8
-                    G = (nColorOverlayer & 0x00ff00) >>
-                        3; // 原本要右移5左移2,简化成右移3
-                    B = (nColorOverlayer & 0x0000ff) << 3;
-
-                    int OR = (sfumato & 0xff0000) >> 8;
-                    int OG = (sfumato & 0x00ff00) >> 3;
-                    int OB = (sfumato & 0x0000ff) << 3;
-
-                    R = (((((OR - R) * 12) >> 5) + R) << 8) & 0xff0000;
-                    G = (((((OG - G) * 12) >> 5) + G) << 3) & 0x00ff00;
-                    B = (((((OB - B) * 12) >> 5) + B) >> 3) & 0x0000ff;
-                    *(DWORD *)ptSourceDest = (DWORD)(B | G | R);
-
-                  } else {
-                    *(DWORD *)ptSourceDest = nColorOverlayer;
-                  }
-                } else {
-                  *(DWORD *)ptSourceDest = nColorOverlayer;
-                }
-              }
-            } else
-              subx++;
-            ptSourceDest = (DWORD *)ptSourceDest + 1;
-            ptOverLayerDest = (DWORD *)ptOverLayerDest + 1;
-          }
-          ptSourceDest = (DWORD *)ptSourceDest + surfacePitch1 - w;
-          ptOverLayerDest = (DWORD *)ptOverLayerDest + surfacePitch2 - w;
-          subx = ox;
-        } else {
-          ptSourceDest = (DWORD *)ptSourceDest + surfacePitch1;
-          ptOverLayerDest = (DWORD *)ptOverLayerDest + surfacePitch2;
-          oy++;
-        }
-      }
-    }
-  } else
-#endif
-      if (displayBpp == 16) {
-    void *ptSourceDest, *ptOverLayerDest;
-    surfacePitch1 = ddsdSource.lPitch >> 1;
-    surfacePitch2 = ddsdOverlayer.lPitch >> 1;
-    ptSourceDest = (WORD *)(ddsdSource.lpSurface) + oy * surfacePitch1 + ox;
-    ptOverLayerDest =
-        (WORD *)(ddsdOverlayer.lpSurface) + dy * surfacePitch2 + dx;
-
-    // 565 显示模式
-    if (gBitRShift == 2) {
-      for (j = 0; j < h; j++) {
-        if (oy >= 0) {
-          for (i = 0; i < w; i++) {
-            if (subx >= 0) {
-              nColorOverlayer = *(WORD *)ptOverLayerDest;
-              if (nColorOverlayer != DEF_COLORKEY) {
-                R = (nColorOverlayer & 0xf800) >> 11;
-                G = (nColorOverlayer & 0x07e0) >> 6;
-                B = nColorOverlayer & 0x001f;
-                Gray = (R * 3 + G * 6 + B) / 10;
-                *(WORD *)ptSourceDest = (WORD)(Gray << 11 | Gray << g | Gray);
-              }
-            } else
-              subx++;
-            ptSourceDest = (WORD *)ptSourceDest + 1;
-            ptOverLayerDest = (WORD *)ptOverLayerDest + 1;
-          }
-          ptSourceDest = (WORD *)ptSourceDest + surfacePitch1 - w;
-          ptOverLayerDest = (WORD *)ptOverLayerDest + surfacePitch2 - w;
-          subx = ox;
-        } else {
-          ptSourceDest = (WORD *)ptSourceDest + surfacePitch1;
-          ptOverLayerDest = (WORD *)ptOverLayerDest + surfacePitch2;
-          oy++;
-        }
-      }
-    }
-    // 555 显示模式
-    else {
-      for (j = 0; j < h; j++) {
-        if (oy >= 0) {
-          for (i = 0; i < w; i++) {
-            if (subx >= 0) {
-              nColorOverlayer = *(WORD *)ptOverLayerDest;
-              if (nColorOverlayer != DEF_COLORKEY) {
-                R = nColorOverlayer >> 10;
-                G = (nColorOverlayer & 0x03e0) >> 5;
-                B = nColorOverlayer & 0x001f;
-                Gray = (R * 3 + G * 6 + B) / 10;
-                *(WORD *)ptSourceDest = (WORD)(Gray << 10 | Gray << g | Gray);
-              }
-            } else
-              subx++;
-            ptSourceDest = (WORD *)ptSourceDest + 1;
-            ptOverLayerDest = (WORD *)ptOverLayerDest + 1;
-          }
-          ptSourceDest = (WORD *)ptSourceDest + surfacePitch1 - w;
-          ptOverLayerDest = (WORD *)ptOverLayerDest + surfacePitch2 - w;
-          subx = ox;
-        } else {
-          ptSourceDest = (WORD *)ptSourceDest + surfacePitch1;
-          ptOverLayerDest = (WORD *)ptOverLayerDest + surfacePitch2;
-          oy++;
-        }
-      }
-    }
-  }
-  lpSurface->Unlock(NULL);
-  lpDraw->lpBACKBUFFERSYS->Unlock(NULL);
-  rect.left = ox;
-  rect.top = oy;
-  rect.right = ox + w;
-  rect.bottom = oy + h;
-  lpDraw->lpBACKBUFFER->BltFast(ox, oy, lpDraw->lpBACKBUFFERSYS, &rect,
-                                DDBLTFAST_WAIT);
-
-  return;
-}
-#endif
-
 void ablend_565(unsigned char *lpAlpha, unsigned int iAlpPitch,
                 unsigned char *lpSrc, unsigned int iSrcX, unsigned int iSrcY,
                 unsigned int iSrcPitch, unsigned char *lpDst,
@@ -2838,229 +2587,117 @@ void ablend_565(unsigned char *lpAlpha, unsigned int iAlpPitch,
         paddw mm0, mm3;
         psrlw mm0, 5;
         pmullw mm7, mm1;    // mm7=sr?*a?
-
         pand mm4, MASKG;    // g16: mm4=00g0 00g0 00g0 00g0 green
-
         pmullw mm5, mm2;    // r7: mm5=dr?*(31-a?)
-
         por mm0, mm4;       // mm0=00gb 00gb 00gb 00gb
-
         add eax, 4;         // move to next 4 alphas
-
         add esi, 8;         // move to next 4 pixels in src
-
         add edi, 8;         // move to next 4 pixels in dst
-
         movd mm1, [eax];    // mm1=00 00 00 00 a3 a2 a1 a0
-
         paddw mm5, mm7;     // r8: mm5=sr?*a?+dr?*(31-a?)
-
         paddw mm5, SIXTEEN; // r9: mm5=(mm5+16) red
-
         pxor mm2, mm2;      // mm2=0;
-
         movq mm7, mm5;      // r10: mm7=mm5 red
-
         psrlw mm5, 5;       // r11: mm5=mm5>>5 red
-
         movq mm4, [esi];    // g1: mm4=src3 src2 src1 src0
-
         paddw mm5, mm7;     // r12: mm5=mm7+mm5 red
-
         punpcklbw mm1, mm2; // mm1=00a3 00a2 00a1 00a0
-
         psrlw mm5, 5;       // r13: mm5=mm5>>5 red
-
         psllw mm5, 11;      // r14: mm5=mm5<<10 red
-
         por mm0, mm5;       // mm0=0rgb 0rgb 0rgb 0rgb
-
         sub ebx, 4;         // polished off 4 pixels
-
         movq[edi - 8], mm0;  // dst=0rgb 0rgb 0rgb 0rgb
-
         jmp loopqword;     // go back to start
-
     copyback:
-
         movq[edi], mm4;    // copy source to destination
-
     leavefront:
-
         add edi, 8;         // advance destination by 4 pixels
-
         add eax, 4;         // advance alpha by 4
-
         add esi, 8;         // advance source by 4 pixels
-
         sub ebx, 4;         // decrease pixel count by 4
-
         jmp primeloop;
-
     checkback:
-
         test ebx, 0xFF;     // check if 0 pixels left
-
         jz nextline;       // done with this span
-
     // backalign: //work out back end pixels
-
         movq mm5, [edi];              // g2: mm5=dst3 dst2 dst1 dst0
-
         psrlw mm1, 2;         // mm1=a?>>2 nuke out lower 2 bits
-
         movq mm7, MASKSHIFTG; // g3: mm7=shift 1 bit green mask
-
         psrlw mm4, 1;      // g3a: move src green down by 1 so that we won't overflow
-
         movq mm0, mm1;     // mm0=00a3 00a2 00a1 00a0
-
         psrlw mm5, 1;      // g3b: move dst green down by 1 so that we won't overflow
-
         psrlw mm1, 1;      // mm1=a?>>1 nuke out lower 1 bits
-
         pand mm4, mm7;     // g5: mm4=sg3 sg2 sg1 sg0
-
         movq mm2, SIXONES; // g4: mm2=63
-
         pand mm5, mm7;     // g7: mm5=dg3 dg2 dg1 dg0
-
         movq mm3, [esi];   // b1: mm3=src3 src2 src1 src0
-
         psubsb mm2, mm0;   // g6: mm2=63-a3 63-a2 63-a1 63-a0
-
         movq mm7, MASKB;   // b2: mm7=BLUE MASK
-
         pmullw mm4, mm0;   // g8: mm4=sg?*a?
-
         movq mm0, [edi];   // b3: mm0=dst3 dst2 dst1 dst0
-
         pmullw mm5, mm2;   // g9: mm5=dg?*(1-a?)
-
         movq mm2, mm7;     // b4: mm2=fiveones
-
         pand mm3, mm7;     // b4: mm3=sr3 sr2 sr1 sr0
-
         pmullw mm3, mm1;   // b6: mm3=sb?*a?
-
         pand mm0, mm7;     // b5: mm0=db3 db2 db1 db0
-
         movq mm7, [esi];   // r1: mm7=src3 src2 src1 src0
-
         paddw mm4, mm5;    // g10: mm4=sg?*a?+dg?*(1-a?)
-
         pand mm7, MASKR;   // r2: mm7=sr3 sr2 sr1 sr0
-
         psubsb mm2, mm1;   // b5a: mm2=31-a3 31-a2 31-a1 31-a0
-
         paddw mm4, FIVETWELVE; // g11: mm4=(i+512) green
-
         pmullw mm0, mm2;       // b7: mm0=db?*(1-a?)
-
         movq mm5, mm4;         // g12: mm5=(i+512) green
-
         psrlw mm7, 11;         // r4: shift src red down to position 0
-
         psrlw mm4, 6;          // g13: mm4=(i+512)>>6
-
         paddw mm4, mm5;        // g14: mm4=(i+512)+((i+512)>>6) green
-
         paddw mm0, mm3;        // b8: mm0=sb?*a?+db?*(1-a?)
-
         movq mm5, [edi];       // r3: mm5=dst3 dst2 dst1 dst0
-
         paddw mm0, SIXTEEN;    // b9: mm0=(i+16) blue
-
         pand mm5, MASKR;       // r5: mm5=dr3 dr2 dr1 dr0
-
         psrlw mm4, 5;          // g15: mm4=0?g0 0?g0 0?g0 0?g0 green
-
         movq mm3, mm0;         // b10: mm3=(i+16) blue
-
         psrlw mm0, 5;          // b11: mm0=(i+16)>>5 blue
-
         psrlw mm5, 11;         // r6: shift dst red down to position 0
-
         paddw mm0, mm3;        // b12: mm0=(i+16)+(i+16)>>5 blue
-
         psrlw mm0, 5;          // b13: mm0=000r 000r 000r 000r blue
-
         pmullw mm7, mm1;       // mm7=sr?*a?
-
         pand mm4, MASKG;       // g16: mm4=00g0 00g0 00g0 00g0 green
-
         pmullw mm5, mm2;       // r7: mm5=dr?*(31-a?)
-
         por mm0, mm4;          // mm0=00gb 00gb 00gb 00gb
-
         add eax, 4;            // move to next 4 alphas
-
     // stall
-
         paddw mm5, mm7;                  // r8: mm5=sr?*a?+dr?*(31-a?)
-
         paddw mm5, SIXTEEN;     // r9: mm5=(i+16) red
-
         movq mm7, mm5;          // r10: mm7=(i+16) red
-
         psrlw mm5, 5;           // r11: mm5=(i+16)>>5 red
-
         paddw mm5, mm7;         // r12: mm5=(i+16)+((i+16)>>5) red
-
         psrlw mm5, 5;           // r13: mm5=(i+16)+((i+16)>>5)>>5 red
-
         psllw mm5, 11;          // r14: mm5=mm5<<10 red
-
         por mm0, mm5;           // mm0=0rgb 0rgb 0rgb 0rgb
-
         test ebx, 2;            // check if there are 2 pixels
-
         jz oneendpixel;        // goto one pixel if that's it
-
         movd[edi], mm0;        // dst=0000 0000 0rgb 0rgb
-
         psrlq mm0, 32;          // mm0>>32
-
         add edi, 4;             // edi=edi+4
-
         sub ebx, 2;             // saved 2 pixels
-
         jz nextline;           // all done goto next line
-
     oneendpixel:                     // work on last pixel
-
         movd edx, mm0;          // edx=0rgb
-
         mov[edi], dx;          // dst=0rgb
-
     nextline:                     // goto next line
-
         dec ecx;               // nuke one line
-
         jz done;               // all done
-
         mov eax, lpLinearAlpBp; // alpha
-
         mov esi, lpLinearSrcBp; // src
-
         mov edi, lpLinearDstBp; // dst
-
         add eax, iAlpPitch;     // inc alpha ptr by 1 line
-
         add esi, iSrcPitch;     // inc src ptr by 1 line
-
         add edi, iDstPitch;     // inc dst ptr by 1 line
-
         mov lpLinearAlpBp, eax; // save new alpha base ptr
-
         mov ebx, iDstW;         // ebx=span width to copy
-
         mov lpLinearSrcBp, esi; // save new src base ptr
-
         mov lpLinearDstBp, edi; // save new dst base ptr
-
         jmp primeloop;         // start the next span
-
     done:
         emms
   }
@@ -3113,7 +2750,6 @@ MainLoop:
     punpcklbw mm3,mm7; // mm3=32位Bit到64位Bit    MM3=00FF 0058 005C 0058
     psubb mm1,mm0;  // mm1=255-src alpha bit   MM1=00FF 00FF 00FF 00FF MM0=0071
                   // 0071 0071 0071   MM1=008E 008E 008E 008E
-
     pmullw mm2,mm0; // mm2=src*srcAlpha      MM2= 0071 0000 0000 0008   MM0=0071
                    // 0071 FF71 0071    MM2= 31E1 0000 0000 0388
     pmullw mm3,mm1; // mm3=dst*(255-srcAlpha)  MM3= 00FF 0058 005C 0058  MM1=008F

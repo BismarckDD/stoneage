@@ -1,6 +1,9 @@
 ﻿#define __BATTLE_MAP_CPP__
+//
 #include "systeminc/system.h"
+//
 #include "game/battle_map.h"
+//
 #include "mylua/winlua.h"
 #include "sdk/caryime.h"
 
@@ -36,7 +39,7 @@ const char *BattleMapFile[] = {
 };
 
 // 水晶地表战斗地图编号
-static int iCrystalBattleMap[4][3] = { // 绿                // 蓝 // 红 // 黄
+static int iCrystalBattleMap[4][3] = { // 绿 // 蓝 // 红 // 黄
     {29060, 29061, 29062},
     {29058, 29059, 29066},
     {29063, 29064, 29065},
@@ -58,7 +61,6 @@ BOOL ReadBattleMap(const int battleMapNo) {
     BattleMapNo = 0;
   else 
     BattleMapNo = battleMapNo;
-  // ??????????????
   if ((fp = fopen(BattleMapFile[BattleMapNo], "rb")) == NULL) {
     sprintf_s(msg, "%s读取失败。", BattleMapFile[battleMapNo]);
     MessageBoxNew(hWnd, msg, "战场地图错误", MB_OK | MB_ICONSTOP);
@@ -239,7 +241,6 @@ void DrawBattleMap(void) {
     by = 0;
     short x0, y0;
     long w, h;
-    // ???????
     x0 = bx;
     y0 = by;
     w = rect.right - rect.left;
@@ -315,18 +316,16 @@ void DrawBattleMap(void) {
   case 2:
     d6 = 0;
     for (d7 = 0; d7 < 480 + DISPLACEMENT_Y; d7 += RASTER_CLEARANCE / 2) {
-
-      rect.top = d7;                             // 
-      rect.bottom = rect.top + RASTER_CLEARANCE; //?
-
-      d0 = piyo_tbl[(d6 + piyo_point) & 63] / 2; //?
-      if (d0 < 0) {                              //??????
+      rect.top = d7;                              // 计算矩形框的top
+      rect.bottom = rect.top + RASTER_CLEARANCE;  // 计算矩形框的bottom
+      d0 = piyo_tbl[(d6 + piyo_point) & 63] / 2;  // 
+      if (d0 < 0) {                               // 
         rect.left = 0 - d0;
-        rect.right = 640 + DISPLACEMENT_X + d0; //?
+        rect.right = 640 + DISPLACEMENT_X + d0;   //
         d0 = 0;
       } else {
         rect.left = 0;
-        rect.right = 640 + DISPLACEMENT_X - d0; //?
+        rect.right = 640 + DISPLACEMENT_X - d0;   //
       }
 #ifdef D3D_ENGINE
       destrect.left = d0;

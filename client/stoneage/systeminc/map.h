@@ -136,11 +136,7 @@ void goFrontPartyCharacter( int, int, int );
 
 void initCharPartsPrio( void );
 void setPartsPrio( int, int, int, int, int, float, float, int);
-#ifdef _SFUMATO
-void setCharPrio( int, int, int, int, int, float, float, int );
-#else
 void setCharPrio( int, int, int, int, int, float, float);
-#endif
 void stockCharParts( void );
 
 

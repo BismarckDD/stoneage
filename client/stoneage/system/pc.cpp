@@ -98,9 +98,6 @@ void initPcAll(void) {
   pc.iTheaterMode = 0;
   pc.iSceneryNumber = -1;
 #endif
-#ifdef _SFUMATO
-  pc.sfumato = 0; // 二次渲染图层色彩
-#endif
 }
 
 void initPc(void) {
@@ -245,9 +242,6 @@ void setPcGraNo(int graNo, int dir) {
 
   pc.ptAct->anim_chr_no = graNo;
   pc.ptAct->anim_ang = dir;
-#ifdef _SFUMATO
-  pc.ptAct->sfumato = pc.sfumato; // 二次渲染图层色彩
-#endif
 }
 
 // PC???ID?
@@ -447,15 +441,13 @@ void updataPcAct(void) {
   pc.ptAct->level = pc.level;
   pc.ptAct->hp = pc.hp;
   pc.ptAct->maxHp = pc.maxHp;
-#ifdef _SFUMATO
-  pc.ptAct->sfumato = pc.sfumato; // 二次渲染图层色彩
-#endif
 }
 
-// PC???????????
+
+//
 void setPcLeader(void) { pc.status |= CHR_STATUS_LEADER; }
 
-// PC????????????????
+// PC
 void delPcLeader(void) { pc.status &= (~CHR_STATUS_LEADER); }
 
 // PC???????????????

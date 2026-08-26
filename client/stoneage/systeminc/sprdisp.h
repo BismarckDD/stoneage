@@ -39,9 +39,6 @@ struct DISP_INFO {
 #ifdef _READ16BITBMP
   char DrawEffect; // 0:无特别处理 1:alpha 2:饱和处理 3:石化 4:中毒
 #endif
-#ifdef _SFUMATO
-  int sfumato; // 二次渲染图层色彩
-#endif
 };
 
 typedef struct {
@@ -84,12 +81,7 @@ void SortDispBuffer(void);
 void PutBmp(void);
 int StockDispBuffer(int x, int y, UCHAR prio, int bmpNo, BOOL hitFlag);
 int StockDispBufferScaled(int x, int y, UCHAR prio, int bmpNo);
-#ifdef _SFUMATO
-int StockDispBuffer2(int x, int y, UCHAR dispPrio, int bmpNo, BOOL hitFlag,
-                     int sfumato /* = 0*/);
-#else
 int StockDispBuffer2(int x, int y, UCHAR dispPrio, int bmpNo, BOOL hitFlag);
-#endif
 void StockTaskDispBuffer(void);
 void StockTaskDispBuffer2(int prio1, int prio2);
 void StockBoxDispBuffer(int x1, int y1, int x2, int y2, UCHAR dispPrio,

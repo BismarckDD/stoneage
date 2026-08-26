@@ -358,11 +358,7 @@ typedef struct {
   int newfame; // 讨伐魔军积分
   short ftype;
 #endif
-
   int debugmode;
-#ifdef _SFUMATO
-  int sfumato; // 二次渲染图层色彩
-#endif
 #ifdef _NEW_ITEM_
   int 道具栏状态;
 #endif

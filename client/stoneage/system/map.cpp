@@ -5863,30 +5863,24 @@ void mapEffectKamiFubuki(void)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
-// ??????????????????䴘?????
-//
+// 将地图映射到游戏？
 void camMapToGamen(float sx, float sy, float *ex, float *ey)
 {
-    float x0, y0, x, y, tx = (float)(SURFACE_WIDTH >> 1), ty = (float)(SURFACE_HEIGHT >> 1);
-
+    float x0, y0, x, y;
+    float tx = (float)(SURFACE_WIDTH >> 1);
+    float ty = (float)(SURFACE_HEIGHT >> 1);
     x0 = (sx - viewPointX) / GRID_SIZE;
     y0 = (sy - viewPointY) / GRID_SIZE;
     x = +x0 * tx + y0 * tx;
     y = -x0 * ty + y0 * ty;
-    //?䴘?
     *ex = x + viewOffsetX;
     *ey = y + viewOffsetY;
 }
 
-//
-// ?䴘????????(????????)????
-//
+// 将地图映射到游戏？
 void camGamenToMap(float sx, float sy, float *ex, float *ey)
 {
     float x0, y0, x, y;
-
-    // ?䴘?
     x0 = sx - viewOffsetX;
     y0 = sy - viewOffsetY;
     x = x0 - (float)SURFACE_WIDTH / (float)SURFACE_HEIGHT * y0;

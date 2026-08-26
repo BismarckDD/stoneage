@@ -21,9 +21,9 @@ extern DWORD PauseAI;
 #define BATTLE_BP_ENEMY_SURPRISAL    ( 1 << 4 )        // ??自?▄?????自???????
 #define BATTLE_BP_PLAYER_SURPRISAL    ( 1 << 5 )        // ??????自?▄?????
 
-// ??????????
-#define BATTLE_BUF_SIZE    4
-#define BATTLE_COMMAND_SIZE            4096
+//
+#define BATTLE_BUF_SIZE 4
+#define BATTLE_COMMAND_SIZE 4096
 // ???????更??
 extern char BattleCmd[ BATTLE_COMMAND_SIZE ];
 extern char BattleCmdBak[ BATTLE_BUF_SIZE ][ BATTLE_COMMAND_SIZE ];

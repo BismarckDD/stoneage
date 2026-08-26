@@ -350,19 +350,15 @@ ACTION *createWaterAnimation(int graNo, int gx, int gy, int dispprio) {
 }
 
 #endif
-// ????????????
+
 ACTION *createCharAction(int graNo, int gx, int gy, int dir) {
   ACTION *ptAct;
   float mx, my;
-  /* ?????????? */
   ptAct = GetAction(PRIO_CHR, sizeof(CHAREXTRA));
   if (ptAct == NULL)
     return NULL;
-  // ???
   ptAct->func = charProc;
-  // ????????
   ptAct->anim_chr_no = graNo;
-  // ??
   ptAct->anim_no = ANIM_STAND;
   // ?????????( ??? )( ??????? )
   ptAct->anim_ang = dir;
@@ -375,16 +371,16 @@ ACTION *createCharAction(int graNo, int gx, int gy, int dir) {
   ptAct->nextGx = gx; // ???????????
   ptAct->nextGy = gy;
   ptAct->bufCount = 0;
-  ptAct->gx = gx; // ???????????佋?
-  ptAct->gy = gy;
-  ptAct->mx = (float)gx * GRID_SIZE; // ????
-  ptAct->my = (float)gy * GRID_SIZE;
+  ptAct->gx = gx; // 
+  ptAct->gy = gy; // 
+  ptAct->mx = (float)gx * GRID_SIZE; // 地图上的坐标
+  ptAct->my = (float)gy * GRID_SIZE; // 地图上的坐标
   ptAct->vx = 0; // ??
   ptAct->vy = 0;
   // ??
   camMapToGamen(ptAct->mx, ptAct->my, &mx, &my);
-  ptAct->x = (int)(mx + .5);
-  ptAct->y = (int)(my + .5);
+  ptAct->x = (int)(mx + .5); // 屏幕坐标y
+  ptAct->y = (int)(my + .5); // 屏幕坐标y
   return ptAct;
 }
 
@@ -1236,9 +1232,6 @@ void drawCharStatus(ACTION *ptAct) {
       }
     }
   }
-  // ???????
-  //????????????
-  //??????????
   if ((status & CHR_STATUS_LEADER) != 0 && ext->ptActLeaderMark == NULL &&
       ((status & CHR_STATUS_BATTLE) == 0 || (status & CHR_STATUS_WATCH) == 0)) {
     // ??????????????
@@ -1292,20 +1285,16 @@ void drawCharStatus(ACTION *ptAct) {
     else
       delCharUseMagic(ptAct);
   } else if (ext->ptActMagicEffect != NULL) {
-    // ?????????????
     ext->ptActMagicEffect->x = ptAct->x;
     ext->ptActMagicEffect->y = ptAct->y;
     ext->ptActMagicEffect->mx = ptAct->mx;
     ext->ptActMagicEffect->my = ptAct->my;
-    // ?????????
     if (pattern(ext->ptActMagicEffect, ANM_NOMAL_SPD, ANM_NO_LOOP) == 0) {
-      // ??????????????
       setCharPrio(ext->ptActMagicEffect->bmpNo, ext->ptActMagicEffect->x,
                   ext->ptActMagicEffect->y + 1, 0, 0, ext->ptActMagicEffect->mx,
                   ext->ptActMagicEffect->my
       );
     } else {
-      // ????????????
       DeathAction(ext->ptActMagicEffect);
       ext->ptActMagicEffect = NULL;
     }
@@ -1682,9 +1671,6 @@ void drawCharStatus(ACTION *ptAct) {
                       ext->ptmFamilyIcon->y, 0,
                       -(y1 / 2 + _FANILYTEXIAOY_) + 100, ext->ptmFamilyIcon->mx,
                       ext->ptmFamilyIcon->my
-#ifdef _SFUMATO
-                      , ptAct->sfumato
-#endif
                       );
         }
       }
@@ -3640,44 +3626,33 @@ BOOL petCircleInProc(ACTION *ptAct) {
   return FALSE;
 }
 
-// ??????????????
 void petProc(ACTION *ptAct) {
   float mx, my;
   int animLoop;
   PETEXTRA *pe = (PETEXTRA *)ptAct->pYobi;
 
   switch (pe->mode) {
-  // ?????：?????
   case 0:
     if (!petMoveProc(ptAct)) {
       return;
     }
     break;
-
-  // ?????：
-  // ???????????：?
   case 1:
     if (!uprisePetProc(ptAct)) {
       return;
     }
     break;
-
-  // ?????：?????
   case 2:
     if (!petCircleOutProc(ptAct)) {
       return;
     }
     break;
-
-  // ????：??????
   case 3:
     if (!petCircleInProc(ptAct)) {
       return;
     }
     break;
   }
-
-  // ??
   camMapToGamen(ptAct->mx, ptAct->my, &mx, &my);
   ptAct->x = (int)(mx + .5);
   ptAct->y = (int)(my + .5);

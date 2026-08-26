@@ -52,34 +52,34 @@ char BattleCmdBak[BATTLE_BUF_SIZE][BATTLE_COMMAND_SIZE];
 int BattleCmdReadPointer;
 int BattleCmdWritePointer;
 
-// ?????
+// 战斗状态
 char BattleStatus[BATTLE_COMMAND_SIZE];
-// ???????????
+// 战斗状态回溯
 char BattleStatusBak[BATTLE_BUF_SIZE][BATTLE_COMMAND_SIZE];
-// ??????????
+//
 int BattleStatusReadPointer;
 int BattleStatusWritePointer;
-// ???
+// 当前的战斗位置.
 int BattleMyNo = 0;
-// ?????
+// 当前的MP.
 int BattleMyMp;
-// ?????
+// 战斗中是否允许逃跑
 int BattleEscFlag = FALSE;
-// ????????????
+//  
 int BattlePetStMenCnt;
-// ?????
+// 
 int BattleBpFlag = FALSE;
-// ?????
+//
 int BattleCmdNo = -1;
 // ?
 int BattleJujutuNo;
 // ??
 int BattleWazaNo;
-// ??????????
+// 战斗宠物是否有后备？有后备才可以换上.
 int battlePetNoBak = -2;
-// ???????????
+// 战斗宠物是否有后备？
 int battlePetNoBak2 = -2;
-// ?????
+// 战斗中物品
 int BattleItemNo;
 // ??????????
 int battlePlayerEscFlag = FALSE;
@@ -92,17 +92,17 @@ BOOL BattleCntDownRest;
 BOOL SendToServer;
 #endif
 int BattleCliTurnNo;
-// ???????????
+//
 int BattleSvTurnNo;
 
 #ifdef _HUNDRED_KILL
 BOOL BattleHundredFlag = FALSE;
 #endif
 
-// ??????????
+// 战斗结束是否展示战斗结果
 BOOL BattleResultWndFlag = FALSE;
 
-// ???????
+// 
 DWORD BattleCntDown;
 DWORD BattleIntervalCnt;
 int AI;
@@ -131,8 +131,6 @@ int battleWazaTargetBak = -1;     // ????
 // ??????????????
 static ACTION *pActInfoWnd;
 static ACTION *pActWnd = NULL;
-
-// ????????
 static int buttonX, buttonY, buttonA;
 
 #ifdef _BATTLESKILL // (不可开) Syu ADD 战斗技能介面
@@ -168,12 +166,9 @@ void InitBattleMenu(void) {
 
   battleMenuFlag = FALSE;  // ??????????
   battleMenuReturn = TRUE; // ????????????
-  //    battleButtonBak = -1;                // ???????
   battleButtonBak2 = -1; // ????????
   BattleEscFlag = FALSE; // ????????
-  // ??????????
   BattleResultWndFlag = FALSE;
-  // ?????????
   ClearBattleButton();
   // ?????????????
   battleButtonBak = 0;
@@ -2955,71 +2950,7 @@ void BattleButtonWaza(void) {
               }
             }
           }
-          /*
-          #ifndef __AI
-                              //cary 宠物的自动战斗
-                              if( !PauseAI && AI!=AI_NONE &&
-          FALSE==battleTargetSelectFlag){ if( (BattleIntervalCnt==0 &&
-          (BattleCntDown-TimeGetTime())<=29000) ||
-          BattleIntervalCnt<TimeGetTime()){ BattleIntervalCnt =
-          TimeGetTime()+500; int first = -1; int firstattack = -1; DWORD ai =
-          AI; if( ai == AI_SELECT){ if( pet[ battlePetNoBak ].maxHp*3/10 > pet[
-          battlePetNoBak ].hp) ai = AI_GUARD; else ai = AI_ATTACK;
-                                      }
-                                      for( i = 0 ; i < pet[ battlePetNoBak
-          ].maxSkill ; i++ ){ if( petSkill[ battlePetNoBak ][ i ].useFlag ==
-          TRUE && petSkill[ battlePetNoBak ][ i ].field != PETSKILL_FIELD_MAP ){
-                                              if( first == -1)
-                                                  first = i;
-                                              if( ai == AI_ATTACK){
-                                                  if( petSkill[ battlePetNoBak
-          ][ i ].skillId!=2 && firstattack==-1) firstattack = i; if( petSkill[
-          battlePetNoBak ][ i ].skillId == 1){ #ifdef _BATTLESKILL // (不可开)
-          Syu ADD 战斗技能介面 BattleSetWazaHitBox( i , 0 );
-
-          #else
-                                                      BattleSetWazaHitBox( i );
-          #endif
-                                                      break;
-                                                  }
-                                              }else if( ai == AI_GUARD){
-                                                  if( petSkill[ battlePetNoBak
-          ][ i ].skillId == 2){ #ifdef _BATTLESKILL                // (不可开)
-          Syu ADD 战斗技能介面 BattleSetWazaHitBox( i , 0 ); #else
-                                                      BattleSetWazaHitBox( i );
-          #endif
-                                                      break;
-                                                  }
-                                              }
-                                          }
-                                      }
-                                      if( i==pet[ battlePetNoBak ].maxSkill){
-                                          if( ai==AI_ATTACK && firstattack!=-1)
-                                              first = firstattack;
-                                          if( first == -1){
-                                              // ??????????????
-                                              battleTargetSelectFlag = TRUE;
-                                              // ???????????
-                                              DeathAction( pActWnd );
-                                              pActWnd = NULL;
-                                              // ?????????
-                                              ClearBattleButton();
-                                              // ?????
-                                              //play_se( 217, 320, 240 );
-                                          }else
-          #ifdef _BATTLESKILL                // (不可开) Syu ADD 战斗技能介面
-                                              BattleSetWazaHitBox( first , 0 );
-          #else
-                                              BattleSetWazaHitBox( first );
-          #endif
-                                      }
-                                  }
-                              }
-          #endif
-          */
-          // ?????????
           if (pActWnd != NULL) {
-            // ?
             x = pActWnd->x + 40;
             y = pActWnd->y + 32;
             // ??????
@@ -3030,9 +2961,7 @@ void BattleButtonWaza(void) {
             StockFontBuffer(x - 28, y, FONT_PRIO_FRONT, 0, moji, 0);
             y += 26;
             x += 18;
-            // ?
             for (i = 0; i < pet[battlePetNoBak].maxSkill; i++) {
-              // ????????
               if (petSkill[battlePetNoBak][i].useFlag == TRUE) {
                 int color = FONT_PAL_GRAY;
 #ifdef _NEWFONT_
