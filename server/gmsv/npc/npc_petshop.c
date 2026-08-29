@@ -195,7 +195,7 @@ void NPC_PetShop_selectWindow( int meindex, int toindex, int num,int select)
 	
 	//print("\n NPC_PetShop_selectWindow num:%d select:%d  ", num, select);
 	if( fd == -1 ) {
-		fprint( "getfd err\n");
+		printEx( "getfd err\n");
 		return;
 	}
 	if (CHAR_getWorkInt(toindex, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE){
@@ -928,7 +928,7 @@ void NPC_PetDel2( int meindex, int talker, int select, char *token)
 	int fd = getfdFromCharaIndex( talker );
 
 	if( fd == -1 ) {
-		fprint( "err\n");
+		printEx( "err\n");
 		return;
 	}
 	// 矢永玄犯□正  凳［矢永玄      仃  木
@@ -952,7 +952,7 @@ void NPC_PetDel2( int meindex, int talker, int select, char *token)
 	// 坞五毛茧允［蟆卞茧仄化民尼永弁仄化中月及匹］仇仇匹坞中化中卅中及反云井仄中
 	emptyindex = CHAR_getCharPoolPetElement( talker);
 	if( emptyindex == -1 ) {
-		fprint( "err\n");
+		printEx( "err\n");
 		return;
 	}
 
@@ -1019,7 +1019,7 @@ void NPC_PetDel3( int meindex, int talker, int select, char *token)
 	if( !CHAR_CHECKINDEX( petindex) ) return;
 	emptyindex = CHAR_getCharPetElement( talker);
 	if( emptyindex == -1 ) {
-		fprint( "err\n");
+		printEx( "err\n");
 		return;
 	}
 
@@ -1250,7 +1250,7 @@ void NPC_DepotPet_Add( int meindex, int talker, int select, char *token)
 	int fd = getfdFromCharaIndex( talker );
 
 	if( fd == -1 ) {
-		fprint( "err\n");
+		printEx( "err\n");
 		return;
 	}
 	// 矢永玄犯□正  凳［矢永玄      仃  木
@@ -1286,7 +1286,7 @@ void NPC_DepotPet_Add( int meindex, int talker, int select, char *token)
 	// 坞五毛茧允［蟆卞茧仄化民尼永弁仄化中月及匹］仇仇匹坞中化中卅中及反云井仄中
 	emptyindex = CHAR_getCharDepotPetElement( talker);
 	if( emptyindex == -1 ) {
-		fprint( "err\n");
+		printEx( "err\n");
 		return;
 	}
 
@@ -1395,7 +1395,7 @@ void NPC_DepotPet_Get( int meindex, int talker, int select, char *token)
 
 	emptyindex = CHAR_getCharPetElement( talker);
 	if( emptyindex == -1 ) {
-		fprint( "err\n");
+		printEx( "err\n");
 		return;
 	}
 

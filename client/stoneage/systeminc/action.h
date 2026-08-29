@@ -105,17 +105,14 @@ struct ACTION {
   float vx, vy;             // ??
 
   // 属性
-  short earth; // 地
-  short water; // 水属性
-  short fire;  // 火属性
-  short wind;  // 风属性
-               // rader使用
-  int dirCnt;  // 
-               // gemini使用
-  int spd;     // 移动的速度(0~63)( ?????? )
-  int crs; // 方向(0~31)(正上方为0,顺时钟方向) ?( ???? )( ??????
-           // )
-  int h_mini;          // ??
+  short earth;         // 地
+  short water;         // 水属性
+  short fire;          // 火属性
+  short wind;          // 风属性
+  int dirCnt;
+  int spd;             // 移动的速度(0~63)( ?????? )
+  int crs;             // 方向(0~31)(正上方为0,顺时钟方向) 
+  int h_mini;          //
   int v_mini;          // ?
                        // pattern使用
   int anim_chr_no;     // 人物的编号(anim_tbl.h的编号)
@@ -124,15 +121,15 @@ struct ACTION {
   int anim_no_bak;     // 上一次的人物编号
   int anim_ang;        // 动作的方向(0~7)(下0)
   int anim_ang_bak;    // 上一次的方向
-  int anim_cnt;        // 第几张frame
+  int anim_cnt;        // 这是第几帧？frame
   int anim_frame_cnt;  // 这张frame停留时间
   int anim_x;          // X座标(Sprbin+Adrnbin)
   int anim_y;          // Y座标(Sprbin+Adrnbin)
   int anim_hit;        // ???
   // shan add +1
-  char fmname[33]; // 家族名称
+  char fmname[33];     // 家族名称
   // Robin 0728 ride Pet
-  int onRide;            // 
+  int onRide;          // 是否在骑宠状态.
   char petName[16 + 1];  // PET名称.
   int petLevel;
   int petHp;

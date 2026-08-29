@@ -2604,12 +2604,9 @@ case 5:
   sprintf_s(m, "P|%s", dest);
 #endif
   if (bNewServer) {
-    CHAR szOutBuffer[1280 + 1] = {0};
-    WORD wLanguageID = MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED);
-    LCID Locale = MAKELCID(wLanguageID, SORT_CHINESE_PRCP);
-    int iRet =
-        LCMapString(Locale, LCMAP_SIMPLIFIED_CHINESE, m, -1, szOutBuffer, 1280);
-    lssproto_TK_send(sockfd, x, y, szOutBuffer, color, NowMaxVoice);
+    // Input and the GMSV protocol are UTF-8. LCMapStringA interprets these
+    // bytes using the process ANSI code page and corrupts Chinese text.
+    lssproto_TK_send(sockfd, x, y, m, color, NowMaxVoice);
   } else
     old_lssproto_TK_send(sockfd, x, y, m, color, NowMaxVoice);
 }
@@ -2626,10 +2623,14 @@ void lssproto_TK_recv(int fd, int index, char *message, int color) {
   ACTION *ptAct;
   int fontsize = 0;
 #ifdef _MESSAGE_FRONT_
-  msg1[0] = 0xA1;
-  msg1[1] = 0xF4;
-  msg1[2] = 0;
-  msg = msg1 + 2;
+  // U+25C6 BLACK DIAMOND encoded as UTF-8. The old CP936 bytes made this a
+  // mixed-encoding string and prevented the display boundary from decoding
+  // the UTF-8 chat body.
+  msg1[0] = (char)0xE2;
+  msg1[1] = (char)0x97;
+  msg1[2] = (char)0x86;
+  msg1[3] = 0;
+  msg = msg1 + 3;
 #endif
   // ????????????????????
   if (logOutFlag)
@@ -2706,13 +2707,13 @@ void lssproto_TK_recv(int fd, int index, char *message, int color) {
       pc.gold -= 200;
 #ifdef _FONT_SIZE
 #ifdef _MESSAGE_FRONT_
-    StockChatBufferLineExt(msg - 2, color, fontsize);
+    StockChatBufferLineExt(msg1, color, fontsize);
 #else
     StockChatBufferLineExt(msg, color, fontsize);
 #endif
 #else
 #ifdef _MESSAGE_FRONT_
-    StockChatBufferLine(msg - 2, color);
+    StockChatBufferLine(msg1, color);
 #else
     StockChatBufferLine(msg, color);
 #endif
@@ -3283,6 +3284,13 @@ void lssproto_WN_recv(int fd, int windowtype, int buttontype, int seqno,
                       int objindex, char *data) {
   if (logOutFlag)
     return;
+
+  // The server protocol is UTF-8, but the legacy NPC/window subsystem uses
+  // CP936 byte counts and fixed-size buffers throughout. Convert at its
+  // boundary so wrapping, copying and ANSI GDI rendering share one encoding.
+  const std::string windowText = Utf8ToGbk(data);
+  if (!windowText.empty())
+    strcpy(data, windowText.c_str()); // CP936 output is no larger than UTF-8.
 
   if (strstr(data, "否则家族在七天之后会消失唷！")) {
     if (TimeGetTime() - MsgCooltime > 300000)

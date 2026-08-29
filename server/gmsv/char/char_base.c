@@ -2278,7 +2278,7 @@ int CHAR_initCharOneArray(Char *ch) {
         CharMakeSequenceNumber = 0;
     }
   } else {
-    fprint("Error: Char[%d] full\n", mode);
+    printEx("Error: Char[%d] full\n", mode);
   }
   return ret ? i : -1;
 }
@@ -2349,7 +2349,7 @@ BOOL CHAR_checksetdata(void) {
       strings[stringnum++] = CHAR_setchardata[i];
   }
   if (!checkStringsUnique(strings, stringnum, 1)) {
-    fprint("set????data is overlapped.\nIt is not allowed\n");
+    printEx("set????data is overlapped.\nIt is not allowed\n");
     return FALSE;
   }
   return TRUE;
@@ -2393,7 +2393,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2409,7 +2409,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2422,7 +2422,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2440,7 +2440,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2459,7 +2459,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
 
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2478,7 +2478,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2496,7 +2496,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2513,7 +2513,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2533,7 +2533,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2553,7 +2553,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     if (strstr(petstring, "name:") == NULL ||
         strstr(petstring, "ownt:") == NULL) {
       LodBadPetString("petstring", "poolpet string buffer err:", petnum);
-      fprint("ANDY err poolpet string buffer err:\n%s\n", petstring);
+      printEx("ANDY err poolpet string buffer err:\n%s\n", petstring);
       goto RETURN;
     }
 
@@ -2564,7 +2564,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
                linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
-      fprint("err chardata buffer over\n");
+      printEx("err chardata buffer over\n");
       goto RETURN;
     }
   }
@@ -2580,7 +2580,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
 
     if (strlength > sizeof(CHAR_dataString)) {
       LodBadPetString("DATAENDCHECKPOINT", "err chardata buffer over", -1);
-      fprint("err chardata buffer over:DATAENDCHECKPOINT !\n");
+      printEx("err chardata buffer over:DATAENDCHECKPOINT !\n");
       goto MAKESTRINGERR;
     }
   }
@@ -2799,7 +2799,7 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
         goto NEXT;
       } else {
         LodBadPetString(data, "错误总计", petnumber);
-        fprint("错误[宠物字符串]无法作成\n");
+        printEx("错误[宠物字符串]无法作成\n");
         return FALSE;
       }
     }
@@ -2815,13 +2815,13 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
       if (ret == TRUE) {
         int petindex = PET_initCharOneArray(&ch);
         if (petindex < 0) {
-          fprint("错误 宠物 无法作成\n");
+          printEx("错误 宠物 无法作成\n");
         }
         one->indexOfPoolPet[petnumber] = petindex;
         goto NEXT;
       } else {
         LodBadPetString(data, "err *total", petnumber);
-        fprint("错误 合成宠物字符串 无法作成\n");
+        printEx("错误 合成宠物字符串 无法作成\n");
         return FALSE;
       }
     }
@@ -2878,7 +2878,7 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
                sizeof(CHAR_petdataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_petdataString)) {
-      fprint("err petdata buffer over\n");
+      printEx("err petdata buffer over\n");
       return "\0";
     }
   }
@@ -2901,7 +2901,7 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
                sizeof(CHAR_petdataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_petdataString)) {
-      fprint("错误 宠物数据缓冲不足\n");
+      printEx("错误 宠物数据缓冲不足\n");
       return "\0";
     }
   }
@@ -2918,7 +2918,7 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
                sizeof(CHAR_petdataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_petdataString)) {
-      fprint("错误 宠物数据缓冲不足\n");
+      printEx("错误 宠物数据缓冲不足\n");
       return "\0";
     }
   }
@@ -2939,7 +2939,7 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
 
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_petdataString)) {
-      fprint("错误 宠物数据缓冲不足\n");
+      printEx("错误 宠物数据缓冲不足\n");
       return "\0";
     }
   }
@@ -2975,7 +2975,7 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
 
   if (strstr(src, "name:") == NULL || strstr(src, "ownt:") == NULL) { // findE
     LodBadPetString(src, "make name err", ti);
-    fprint("err PetString make name err\n");
+    printEx("err PetString make name err\n");
     return -1;
   }
 
@@ -3054,7 +3054,7 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
         }
       }
       if (!found) {
-        // fprint( "makePetFromString err?: %s : %s [%s] \n" , src, buff,
+        // printEx( "makePetFromString err?: %s : %s [%s] \n" , src, buff,
         // petfirstToken );
       }
     } else {
@@ -3064,7 +3064,7 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
 
   if (findE == 0) { // findE
     LodBadPetString(src, "make charstr err", ti);
-    fprint("err PetString make charstr err\n");
+    printEx("err PetString make charstr err\n");
     return -1;
   }
 
@@ -3294,9 +3294,9 @@ BOOL CHAR_CanCureFlg(int char_index, char *arg) {
 #endif
 
 INLINE int CHAR_AddMaxExp(int char_index, int addexp) {
-  int Myexp = CHAR_getInt(char_index, CHAR_EXP);
-  Myexp = min(Myexp + addexp, 1224160000);
-  CHAR_setInt(char_index, CHAR_EXP, Myexp);
+  int expirence = CHAR_getInt(char_index, CHAR_EXP);
+  expirence = min(expirence + addexp, 19911001);
+  CHAR_setInt(char_index, CHAR_EXP, expirence);
   return addexp;
 }
 

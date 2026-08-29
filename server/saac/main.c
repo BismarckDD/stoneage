@@ -14,6 +14,7 @@
 #include "saac_config.h"
 #include "saac_server.h"
 #include "tcp_struct.h"
+#include "tcp_transport.h"
 #include "util.h"
 #include "utils/util_time.h"
 #ifdef _SEND_EFFECT // WON ADD 送下雪、下雨等特效
@@ -78,8 +79,8 @@ void sigusr1(int a) {
   f = fopen("./unlock.arg", "r");
 
   if (f) {
-    memset(key, 0, 4096);
-    fread(key, 4096, 1, f);
+    memset(key, 0, sizeof(key));
+    fread(key, sizeof(key), 1, f);
     for (i = 0; i < strlen(key); i++)
       if (key[i] == '\n')
         key[i] = '\0';
@@ -98,7 +99,7 @@ void sigusr1(int a) {
       break;
     case 'C': // check player lock
       GetMemLockState(getHash(&key[1]) & 0xff, &key[1], buf);
-      sprintf(key, "echo \"%s\" > ./sigusr1.result", buf);
+      snprintf(key, sizeof(key), "echo \"%s\" > ./sigusr1.result", buf);
       system(key);
       break;
 #ifdef _SEND_EFFECT // WON ADD 送下雪、下雨等特效
@@ -729,7 +730,7 @@ int get_rotate_count(void) {
           g_saac_config.log_rotate_interval;
 }
 
-int appendReadBuffer(int index, char *data, int len) {
+int appendReadBuffer(int index, const char *data, int len) {
   int top = g_con[index].mbtop_ri;
   for (;;) {
     int nextind = g_mem_buffer[top].next;
@@ -740,7 +741,7 @@ int appendReadBuffer(int index, char *data, int len) {
   return appendMemBufList(top, data, len);
 }
 
-int appendWriteBuffer(int index, char *data, int len) {
+int appendWriteBuffer(int index, const char *data, int len) {
   int top = g_con[index].mbtop_wi;
   for (;;) {
     int nextind = g_mem_buffer[top].next;
@@ -752,7 +753,7 @@ int appendWriteBuffer(int index, char *data, int len) {
 }
 
 // 
-int appendMemBufList(int top, char *data, int len) {
+int appendMemBufList(int top, const char *data, int len) {
   int fr = getFreeMem();
   int rest = len;
   int data_topaddr = 0;
@@ -761,7 +762,6 @@ int appendMemBufList(int top, char *data, int len) {
     logErr("appendMemBufList() len:%d / fr:%d err !! \n", len, fr);
     return -1;
   }
-  data[len] = 0;
   for (;;) {
     int blanksize = sizeof(g_mem_buffer[0].buf) - g_mem_buffer[top].len;
     int cpsize = (rest <= blanksize) ? rest : blanksize;
@@ -777,7 +777,8 @@ int appendMemBufList(int top, char *data, int len) {
       if ((newmb = allocateMemBuf()) == TCPSTRUCT_EMBFULL) {
         FILE *fp;
         if ((fp = fopen("badsysinfo.txt", "a+")) != NULL) {
-          fprintf(fp, "find newmb == TCPSTRUCT_EMBFULL err data:%s !!\n", data);
+          fprintf(fp, "find newmb == TCPSTRUCT_EMBFULL err data:%.*s !!\n",
+                  len, data);
           fclose(fp);
         }
         logErr("appendMemBufList: 内存缓冲区已满, 丢弃 %d 字节数据\n", rest);
@@ -962,9 +963,7 @@ void checkGSUCheck(char *id) {
 }
 
 void set_nodelay(int sock) {
-  int flag = 1;
-  int result =
-      setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char *)&flag, sizeof(int));
+  int result = sa_tcp_set_nodelay(sock);
   if (result < 0) {
     logErr("不能设置延迟.\n");
   } else {

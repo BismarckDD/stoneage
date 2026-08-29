@@ -28,7 +28,7 @@ OBJ=$(SRC:.c=.o)
 
 UTILS_SRC=utils/md5.c utils/util_string.c utils/util_file.c utils/util_time.c
 UTILS_OBJ=$(UTILS_SRC:.c=.o)
-SERVERUTIL_SRC=server_util.c workspace.c
+SERVERUTIL_SRC=server_util.c tcp_buffer.c tcp_transport.c workspace.c
 SERVERUTIL_OBJ=$(SERVERUTIL_SRC:.c=.o)
 SAACSERVER_SRC=saac_server_send.c saac_server_recv.c
 SAACSERVER_OBJ=$(SAACSERVER_SRC:.c=.o)

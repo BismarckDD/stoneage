@@ -1039,14 +1039,14 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   Char ch;
   int per;
   if (CHAR_makeCharFromStringToArg(data, &ch) == FALSE) {
-    fprint("制作人物错误！\n");
+    printEx("制作人物错误！\n");
     goto MAKECHARDATAERROR;
   }
   char cdkey[16];
   CONNECT_getCdkey(clifd, cdkey, sizeof(cdkey));
 
   if (strcmp(cdkey, ch.string[CHAR_CDKEY].string) != 0) {
-    fprint("\n人物账号和登陆账号不对应：%s:%s\n", cdkey,
+    printEx("\n人物账号和登陆账号不对应：%s:%s\n", cdkey,
            ch.string[CHAR_CDKEY].string);
     goto MAKECHARDATAERROR;
   }
@@ -1054,7 +1054,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   CHAR_setCharFuncTable(&ch);
   char_index = CHAR_initCharOneArray(&ch);
   if (char_index == -1) {
-    fprint("制作人物错误！\n");
+    printEx("制作人物错误！\n");
     // CHAR_endCharData(&ch);
     goto MAKECHARDATAERROR;
   }
@@ -1322,7 +1322,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
       OBJTYPE_CHARA, char_index, CHAR_getInt(char_index, CHAR_X),
       CHAR_getInt(char_index, CHAR_Y), CHAR_getInt(char_index, CHAR_FLOOR));
   if (objindex == -1) {
-    fprint("始化对象错误！\n");
+    printEx("始化对象错误！\n");
     goto DELETECHARDATA;
   }
 
@@ -5043,8 +5043,16 @@ void CHAR_sendCDArroundChar_Main(int fl, int x, int y, int objindex,
   for (i = x - CHAR_CDSEESIZ / 2; i <= x + CHAR_CDSEESIZ / 2; i++) {
     for (j = y - CHAR_CDSEESIZ / 2; j <= y + CHAR_CDSEESIZ / 2; j++) {
       OBJECT object;
+      int object_chain_count = 0;
       for (object = MAP_getTopObj(fl, i, j); object;
            object = NEXT_OBJECT(object)) {
+
+        if (++object_chain_count > OBJECT_getNum()) {
+          print("[WARP_TRACE] object-chain loop stage=send-cd floor=%d x=%d "
+                "y=%d source_obj=%d current_obj=%d\n",
+                fl, i, j, objindex, GET_OBJINDEX(object));
+          break;
+        }
 
         int objindexwk = GET_OBJINDEX(object);
         if (OBJECT_getType(objindexwk) == OBJTYPE_CHARA) {
@@ -5158,6 +5166,15 @@ void CHAR_sendArroundCharaData(int char_index) {
   char introduction[512 * 2];
   char c_msg[1024 * 4];
   int strpos = 0;
+  int objects_seen = 0;
+  int characters_seen = 0;
+  int npcs_seen = 0;
+  int invisible_characters = 0;
+  int invisible_npcs = 0;
+  int encoded_objects = 0;
+  int encoded_npcs = 0;
+  int encode_failed = 0;
+  int message_full = 0;
   char cabuf[128 * 2];
   fd = getfdFromCharaIndex(char_index);
   if (fd == -1)
@@ -5184,11 +5201,25 @@ void CHAR_sendArroundCharaData(int char_index) {
         int introlen;
         int objindex = GET_OBJINDEX(object);
         int c_index = OBJECT_getIndex(objindex);
+        int is_npc = FALSE;
+
+        objects_seen++;
+        if (OBJECT_getType(objindex) == OBJTYPE_CHARA &&
+            CHAR_CHECKINDEX(c_index)) {
+          characters_seen++;
+          is_npc = CHAR_getInt(c_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER &&
+                   CHAR_getInt(c_index, CHAR_WHICHTYPE) != CHAR_TYPEPET;
+          if (is_npc)
+            npcs_seen++;
+        }
 
         if (OBJECT_getType(objindex) == OBJTYPE_NOUSE)
           continue;
         if (OBJECT_getType(objindex) == OBJTYPE_CHARA &&
             !CHAR_getFlg(OBJECT_getIndex(objindex), CHAR_ISVISIBLE)) {
+          invisible_characters++;
+          if (is_npc)
+            invisible_npcs++;
           if (!CHAR_CHECKINDEX(OBJECT_getIndex(objindex))) {
             printf("自动删除一个问题对象！");
             endObjectOne(objindex);
@@ -5389,29 +5420,69 @@ void CHAR_sendArroundCharaData(int char_index) {
           introduction[introlen] = ',';
           introduction[introlen + 1] = '\0';
 
-          if ((introlen + strpos) > sizeof(c_msg))
+          if ((introlen + strpos) > sizeof(c_msg)) {
+            message_full++;
             break;
+          }
 
           strncpysafe(&c_msg[strpos], sizeof(c_msg) - strpos, introduction);
           strpos += strlen(introduction);
+          encoded_objects++;
+          if (is_npc)
+            encoded_npcs++;
+        } else {
+          encode_failed++;
         }
       }
     }
   }
 
   dchop(c_msg, ",");
-  if (strlen(c_msg) == 0)
+  if (strlen(c_msg) == 0) {
+    print("[NPC_SEND_TRACE] char=%d fd=%d objects=%d characters=%d npcs=%d "
+          "invisible=%d invisible_npcs=%d encoded=0 encoded_npcs=0 "
+          "encode_failed=%d message_full=%d c_bytes=0 wb=-1 ca=-1\n",
+          char_index, fd, objects_seen, characters_seen, npcs_seen,
+          invisible_characters, invisible_npcs, encode_failed, message_full);
     return;
+  }
   GmsvServer_C_send(fd, c_msg);
+  NETTRACE_armWrite(fd);
+  {
+    int write_size, ca_size;
+    CONNECT_getPendingBufferSizes(fd, &write_size, &ca_size);
+    print("[NPC_SEND_TRACE] char=%d fd=%d objects=%d characters=%d npcs=%d "
+          "invisible=%d invisible_npcs=%d encoded=%d encoded_npcs=%d "
+          "encode_failed=%d message_full=%d c_bytes=%d wb=%d ca=%d\n",
+          char_index, fd, objects_seen, characters_seen, npcs_seen,
+          invisible_characters, invisible_npcs, encoded_objects, encoded_npcs,
+          encode_failed, message_full, strpos, write_size, ca_size);
+  }
 }
 
 BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int floor,
                                int x, int y) {
   int objindex;
   int per;
+  int is_player = CHAR_CHECKINDEX(char_index) &&
+                  CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER;
+  int old_floor = CHAR_CHECKINDEX(char_index)
+                      ? CHAR_getInt(char_index, CHAR_FLOOR)
+                      : -1;
+  int old_x = CHAR_CHECKINDEX(char_index) ? CHAR_getInt(char_index, CHAR_X) : -1;
+  int old_y = CHAR_CHECKINDEX(char_index) ? CHAR_getInt(char_index, CHAR_Y) : -1;
+  int trace_fd = is_player ? getfdFromCharaIndex(char_index) : -1;
+  if (is_player)
+    print("[WARP_TRACE] begin char=%d fd=%d from=%d,%d,%d to=%d,%d,%d "
+          "caller=%s:%d\n",
+          char_index, trace_fd, old_floor, old_x, old_y, floor, x, y, file,
+          line);
   clearStayEncount(getfdFromCharaIndex(char_index));
   objindex = CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX);
   if (!MAP_IsValidCoordinate(floor, x, y)) {
+    if (is_player)
+      print("[WARP_TRACE] invalid-destination char=%d to=%d,%d,%d\n",
+            char_index, floor, x, y);
     //    print( "error: invalid Coordinate fl[%d] x[%d] y[%d] %s:%d from
     //    %s:%d\n",
     //          floor, x, y, __FILE__, __LINE__, file, line);
@@ -5422,8 +5493,14 @@ BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int floor,
     CHAR_CheckUserItem(char_index);
   }
 #endif
+  if (is_player)
+    print("[WARP_TRACE] before-remove-old char=%d obj=%d at=%d,%d,%d\n",
+          char_index, objindex, old_floor, old_x, old_y);
   CHAR_sendCDArroundChar_Main(OBJECT_getFloor(objindex), OBJECT_getX(objindex),
                               OBJECT_getY(objindex), objindex, TRUE);
+  if (is_player)
+    print("[WARP_TRACE] after-remove-old char=%d obj=%d\n", char_index,
+          objindex);
 
   CHAR_setInt(char_index, CHAR_FLOOR, floor);
   CHAR_setInt(char_index, CHAR_X, x);
@@ -5433,9 +5510,16 @@ BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int floor,
     of = OBJECT_setFloor(objindex, floor);
     ox = OBJECT_setX(objindex, x);
     oy = OBJECT_setY(objindex, y);
+    if (is_player)
+      print("[WARP_TRACE] before-map-objmove char=%d obj=%d from=%d,%d,%d "
+            "to=%d,%d,%d\n",
+            char_index, objindex, of, ox, oy, floor, x, y);
     if (!MAP_objmove(objindex, of, ox, oy, floor, x, y)) {
-      fprint("ERROR MAP_OBJMOVE objindex=%d\n", objindex);
+      printEx("ERROR MAP_OBJMOVE objindex=%d\n", objindex);
     }
+    if (is_player)
+      print("[WARP_TRACE] after-map-objmove char=%d obj=%d\n", char_index,
+            objindex);
   }
   per = ENCOUNT_getEncountPercentMin(char_index, floor, x, y);
   if (per != -1) {
@@ -5451,6 +5535,44 @@ BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int floor,
 #endif
 
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
+    int view_objects = 0;
+    int view_characters = 0;
+    int view_npcs = 0;
+    int scan_x, scan_y;
+    int scan_guard = 0;
+    int scan_limit = OBJECT_getNum() + 1;
+    for (scan_x = x - CHAR_DEFAULTSEESIZ / 2;
+         scan_x <= x + CHAR_DEFAULTSEESIZ / 2; scan_x++) {
+      for (scan_y = y - CHAR_DEFAULTSEESIZ / 2;
+           scan_y <= y + CHAR_DEFAULTSEESIZ / 2; scan_y++) {
+        OBJECT scan_object;
+        for (scan_object = MAP_getTopObj(floor, scan_x, scan_y); scan_object;
+             scan_object = NEXT_OBJECT(scan_object)) {
+          int scan_objindex = GET_OBJINDEX(scan_object);
+          view_objects++;
+          if (OBJECT_getType(scan_objindex) == OBJTYPE_CHARA) {
+            int scan_charindex = OBJECT_getIndex(scan_objindex);
+            view_characters++;
+            if (CHAR_CHECKINDEX(scan_charindex) &&
+                CHAR_getInt(scan_charindex, CHAR_WHICHTYPE) !=
+                    CHAR_TYPEPLAYER &&
+                CHAR_getInt(scan_charindex, CHAR_WHICHTYPE) != CHAR_TYPEPET)
+              view_npcs++;
+          }
+          if (++scan_guard > scan_limit) {
+            print("[NPC_VIEW_TRACE] object-chain-guard char=%d floor=%d "
+                  "at=%d,%d objects=%d\n",
+                  char_index, floor, scan_x, scan_y, view_objects);
+            scan_object = NULL;
+            break;
+          }
+        }
+      }
+    }
+    print("[NPC_VIEW_TRACE] char=%d fd=%d floor=%d x=%d y=%d objects=%d "
+          "characters=%d npcs=%d\n",
+          char_index, getfdFromCharaIndex(char_index), floor, x, y,
+          view_objects, view_characters, view_npcs);
     CAflush(char_index);
     {
       int i;
@@ -5468,7 +5590,9 @@ BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int floor,
     }
     if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
         BATTLE_CHARMODE_NONE) {
+      print("[WARP_TRACE] before-send-around-data char=%d\n", char_index);
       CHAR_sendArroundCharaData(char_index);
+      print("[WARP_TRACE] after-send-around-data char=%d\n", char_index);
     }
   }
 
@@ -5487,7 +5611,10 @@ BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int floor,
     if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) == CHAR_PARTY_LEADER) {
       CHAR_sendLeader(objindex, 1);
     }
+    print("[WARP_TRACE] before-send-map char=%d to=%d,%d,%d\n", char_index,
+          floor, x, y);
     MAP_sendArroundChar(char_index);
+    print("[WARP_TRACE] after-send-map char=%d\n", char_index);
     CHAR_setWorkChar(char_index, CHAR_WORKWALKARRAY, "");
     if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_CLIENT) {
       CHAR_setFlg(char_index, CHAR_ISWARP, 1);
@@ -5534,6 +5661,7 @@ BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int floor,
       CHAR_sendAngelMark(objindex, 1);
     }
 #endif
+    print("[WARP_TRACE] player-post-processing-complete char=%d\n", char_index);
 
   } else if (OBJECT_getType(objindex) == OBJTYPE_CHARA) {
     MAP_sendArroundChar(char_index);
@@ -5589,6 +5717,9 @@ BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int floor,
     GmsvServer_CHAREFFECT_send(getfdFromCharaIndex(char_index), msg);
   }
 #endif
+  if (is_player)
+    print("[WARP_TRACE] complete char=%d fd=%d at=%d,%d,%d\n", char_index,
+          trace_fd, floor, x, y);
   return TRUE;
 }
 
@@ -7236,7 +7367,7 @@ BOOL CHAR_setMyPosition_main(int index, int x, int y, int setdir, BOOL CAFlg) {
       oy = OBJECT_setY(objindex, y);
 
       if (!MAP_objmove(objindex, of, ox, oy, fl, x, y)) {
-        fprint("ERROR MAP_OBJMOVE objindex=%d\n", objindex);
+        printEx("ERROR MAP_OBJMOVE objindex=%d\n", objindex);
         return FALSE;
       }
     }
@@ -8051,53 +8182,35 @@ BOOL CHAR_initEffectSetting(char *filename) {
   char line[256];
   int linenum = 0;
   int effectreadlen = 0;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    f = fopen(filename, "r");
-  }
+  f = fopen(filename, "r");
   if (f == NULL) {
     errorprint;
     return FALSE;
   }
   CHAR_effectnum = 0;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */
     if (line[0] == '\n')
       continue; /* none    */
     chomp(line);
-
     CHAR_effectnum++;
   }
 
   if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("Seek Error\n");
+    printEx("Seek Error\n");
     fclose(f);
     return FALSE;
   }
 
   CHAR_effect = allocateMemory(sizeof(CHAR_effectsetting) * CHAR_effectnum);
   if (CHAR_effect == NULL) {
-    fprint("Can't allocate Memory %d\n",
+    printEx("Can't allocate Memory %ld\n",
            sizeof(CHAR_effectsetting) * CHAR_effectnum);
     fclose(f);
     return FALSE;
   }
-  /* 赓渝祭 */
   {
     int i;
     for (i = 0; i < CHAR_effectnum; i++) {
@@ -8113,57 +8226,38 @@ BOOL CHAR_initEffectSetting(char *filename) {
     }
   }
 
-  /*  引凶  心  允    */
   linenum = 0;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */
     if (line[0] == '\n')
       continue; /* none    */
     chomp(line);
-
-    /*  垫毛帮溥允月    */
-    /*  引内 tab 毛 " " 卞  五晶尹月    */
     replaceString(line, '\t', ' ');
-    /*    粮仄凶 " " 毛夫午勾卞允月 */
     deleteSequentChar(line, " ");
-
-    /*  仇仇引匹帮溥仄化｝燮  互 旦矢□旦分匀凶日 */
-    /*    引卅中    */
     if (line[0] == ' ')
       continue;
-
     {
       char token[256];
       int ret;
-
-      /*  夫午勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, " ", 1, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
+        printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       CHAR_effect[effectreadlen].floor = atoi(token);
-
       /*  2勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, " ", 2, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
+        printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
-
       CHAR_effect[effectreadlen].effect = atoi(token);
-
       /*  3勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, " ", 3, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
+        printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
 
@@ -8172,7 +8266,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
       /*  4勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, " ", 4, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
+        printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       strncpysafe(CHAR_effect[effectreadlen].month,
@@ -8181,7 +8275,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
       /*  5勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, " ", 5, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
+        printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       strncpysafe(CHAR_effect[effectreadlen].day,
@@ -8190,7 +8284,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
       /*  6勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, " ", 6, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
+        printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       strncpysafe(CHAR_effect[effectreadlen].hour,
@@ -8199,7 +8293,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
       /*  7勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, " ", 7, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
+        printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       strncpysafe(CHAR_effect[effectreadlen].min,
@@ -8208,7 +8302,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
       /*  8勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, " ", 8, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件秩序错误:%s 第%d行\n", filename, linenum);
+        printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       strncpysafe(CHAR_effect[effectreadlen].expire,

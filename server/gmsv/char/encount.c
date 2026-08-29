@@ -91,7 +91,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
   }
 
   if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("寻找错误\n");
+    printEx("寻找错误\n");
     fclose(f);
     return FALSE;
   }
@@ -99,7 +99,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
   ENCOUNT_table =
       allocateMemory(sizeof(struct tagENCOUNT_Table) * ENCOUNT_encountnum);
   if (ENCOUNT_table == NULL) {
-    fprint("无法分配内存 %d\n", sizeof(ENCOUNT_table) * ENCOUNT_encountnum);
+    printEx("无法分配内存 %d\n", sizeof(ENCOUNT_table) * ENCOUNT_encountnum);
     fclose(f);
     return FALSE;
   }
@@ -192,7 +192,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  夫午勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].index = atoi(token);
@@ -200,7 +200,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  2勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 2, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].floor = atoi(token);
@@ -208,7 +208,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  3勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 3, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       x1 = atoi(token);
@@ -216,7 +216,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  4勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 4, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       y1 = atoi(token);
@@ -224,7 +224,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  5勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 5, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
 
@@ -233,7 +233,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  6勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 6, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       y2 = atoi(token);
@@ -246,7 +246,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  7户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 7, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].encountprob_min = atoi(token);
@@ -254,7 +254,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  8户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 8, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].encountprob_max = atoi(token);
@@ -270,14 +270,14 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  9勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 9, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       {
         int maxnum = atoi(token);
         /* 醒及恳癫岭及民尼永弁 */
         if (maxnum < 1 || maxnum > ENCOUNT_ENEMYMAXCREATENUM) {
-          fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+          printEx("文件语法错误:%s 第%d行\n", filename, linenum);
           continue;
         }
         ENCOUNT_table[encount_readlen].enemymaxnum = maxnum;
@@ -285,7 +285,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       /*  10户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 10, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].zorder = atoi(token);
@@ -299,7 +299,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
              i < CREATEPROB_TOKEN + ENCOUNT_GROUPMAXNUM * 2; i++) {
           ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
           if (ret == FALSE) {
-            fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+            printEx("文件语法错误:%s 第%d行\n", filename, linenum);
             continue;
           }
           if (strlen(token) != 0) {
@@ -318,7 +318,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
         if (checkRedundancy(
                 ENCOUNT_table[encount_readlen].groupid,
                 arraysizeof(ENCOUNT_table[encount_readlen].groupid))) {
-          fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+          printEx("文件语法错误:%s 第%d行\n", filename, linenum);
           continue;
         }
       }
@@ -326,21 +326,21 @@ BOOL ENCOUNT_initEncount(char *filename) {
 #ifdef _ADD_ENCOUNT // WON ADD 增加敌遭遇触发修件
       ret = getStringFromIndexWithDelim(line, ",", 31, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].event_now = atoi(token);
 
       ret = getStringFromIndexWithDelim(line, ",", 32, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].event_end = atoi(token);
 
       ret = getStringFromIndexWithDelim(line, ",", 33, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].enemy_group = atoi(token);

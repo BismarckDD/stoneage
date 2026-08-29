@@ -889,8 +889,8 @@ void CHAR_ItemUse(int char_index, int to_char_index, int haveitem_index) {
   }
 #endif
 
-  char *voidname = ITEM_getChar(item_index, ITEM_USEFUNC);
 #ifdef _ITEM_LUA
+  char *voidname = ITEM_getChar(item_index, ITEM_USEFUNC);
   if (strstr(voidname, "ITEM_USE_LUA")) {
     usefunc = (void (*)(int, int, int))ITEM_Lua;
   } else

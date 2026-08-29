@@ -1105,64 +1105,47 @@ ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY, int titleNo, int wndT
 #endif
     pAct = GetAction(PRIO_JIKI, sizeof(WINDOW_DISP));
     if (pAct == NULL) return NULL;
-
-    // ???
     pAct->func = WindowDisp;
-    // ?
     pAct->dispPrio = DISP_PRIO_MENU;
-    // ?????
     pAct->atr |= ACT_ATR_HIT;
-    // ???
     pAct->atr |= ACT_ATR_HIDE;
-
-    // ???????
     pYobi = (WINDOW_DISP *)pAct->pYobi;
     // ????
     pAct->x = x;
     pAct->y = y;
     pYobi->titleX = x + (sizeX * 64) / 2;
     pYobi->titleY = pAct->y + 27;
-    // ??????
     pYobi->sizeX = sizeX;
     pYobi->sizeY = sizeY;
-    // ???????
     pYobi->titleNo = titleNo;
     pYobi->boxDispPrio = DISP_PRIO_MENU;
-    // ??????????
     if (wndType == 0) pYobi->wndType = CG_WND_G_0;
     else if (wndType == 1) pYobi->wndType = CG_WND_G_0;
     else if (wndType == 2) pYobi->wndType = CG_WND_G_0;
     else if (wndType == 3) pYobi->wndType = CG_WND_G_0;
     else if (wndType == 4){
         pYobi->wndType = -2;
-        // ??????
         pYobi->yesDispNo = -2;
         pYobi->noDispNo = -2;
         pYobi->boxDispPrio = DISP_PRIO_YES_NO_WND;
     }
     else pYobi->wndType = -1;
-
-    // YesNo ??????
+    // YesNo
     pYobi->yesNoResult = -1;
-
-    // ??????
     if (wndType >= 2) pYobi->hitFlag = FALSE;
     else pYobi->hitFlag = TRUE;
-
-    // ???
-    // ????????????????
     if (wndType == -1 || wndType == 4){
         pYobi->mx = sizeX / 2 + pAct->x;
         pYobi->my = sizeY / 2 + pAct->y;
     }
-    else{    // ????????
+    else
+    {
         pYobi->mx = (sizeX * 64) / 2 + pAct->x;
         pYobi->my = (sizeY * 48) / 2 + pAct->y;
     }
     // ??
     pAct->dx = (pYobi->mx - pAct->x) / WINDOW_CREATE_FRAME;
     pAct->dy = (pYobi->my - pAct->y) / WINDOW_CREATE_FRAME;
-
     return pAct;
 }
 
@@ -10286,26 +10269,20 @@ void MenuProc(void)
 
     if (TaskBarFlag == TRUE){
         x = taskBarX, y = taskBarY;
-
         taskBarFontNo[0] = StockDispBuffer(x, y, DISP_PRIO_IME3, CG_TASK_BAR_MAP_UP + ((MenuToggleFlag & JOY_CTRL_M) ? 1 : 0), 2);
-        taskBarFontNo[1] = StockDispBuffer(x + 24, y, DISP_PRIO_IME3, CG_TASK_BAR_STATUS_UP + ((MenuToggleFlag & JOY_CTRL_S) ? 1 : 0), 2);
-        taskBarFontNo[2] = StockDispBuffer(x + 48, y, DISP_PRIO_IME3, CG_TASK_BAR_PET_UP + ((MenuToggleFlag & JOY_CTRL_P) ? 1 : 0), 2);
-        taskBarFontNo[4] = StockDispBuffer(x + 72, y, DISP_PRIO_IME3, CG_TASK_BAR_ITEM_UP + ((MenuToggleFlag & JOY_CTRL_I) ? 1 : 0), 2);
-        taskBarFontNo[5] = StockDispBuffer(x + 95, y, DISP_PRIO_IME3, CG_TASK_BAR_MAIL_UP + ((MenuToggleFlag & JOY_CTRL_E) ? 1 : 0), 2);
-        taskBarFontNo[6] = StockDispBuffer(x + 118, y, DISP_PRIO_IME3, CG_TASK_BAR_ALBUM_UP + ((MenuToggleFlag & JOY_CTRL_A) ? 1 : 0), 2);
-        taskBarFontNo[3] = StockDispBuffer(x + 140, y, DISP_PRIO_IME3, CG_TASK_BAR_SYSTEM_UP + ((MenuToggleFlag & JOY_ESC) ? 1 : 0), 2);
+        taskBarFontNo[1] = StockDispBuffer(x, y, DISP_PRIO_IME3, CG_TASK_BAR_STATUS_UP + ((MenuToggleFlag & JOY_CTRL_S) ? 1 : 0), 2);
+        taskBarFontNo[2] = StockDispBuffer(x, y, DISP_PRIO_IME3, CG_TASK_BAR_PET_UP + ((MenuToggleFlag & JOY_CTRL_P) ? 1 : 0), 2);
+        taskBarFontNo[4] = StockDispBuffer(x, y, DISP_PRIO_IME3, CG_TASK_BAR_ITEM_UP + ((MenuToggleFlag & JOY_CTRL_I) ? 1 : 0), 2);
+        taskBarFontNo[5] = StockDispBuffer(x, y, DISP_PRIO_IME3, CG_TASK_BAR_MAIL_UP + ((MenuToggleFlag & JOY_CTRL_E) ? 1 : 0), 2);
+        taskBarFontNo[6] = StockDispBuffer(x, y, DISP_PRIO_IME3, CG_TASK_BAR_ALBUM_UP + ((MenuToggleFlag & JOY_CTRL_A) ? 1 : 0), 2);
+        taskBarFontNo[3] = StockDispBuffer(x, y, DISP_PRIO_IME3, CG_TASK_BAR_SYSTEM_UP + ((MenuToggleFlag & JOY_ESC) ? 1 : 0), 2);
     }
 
-    if (MenuToggleFlag & JOY_ESC
-    
-        ){
+    if (MenuToggleFlag & JOY_ESC){
         int w = 7;
         int h = 8;
-        // ????????
         switch (systemWndNo){
-
-        case 0:    // ???? ??????
-
+        case 0:
             if (pActMenuWnd == NULL){
 #ifdef _NEW_SYSTEM_MENU
                 x = (lpDraw->xSize - w * 64) / 2;
@@ -10318,10 +10295,10 @@ void MenuProc(void)
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 break;
             }
-            else{
+            else
+            {
                 if (pActMenuWnd->hp <= 0) break;
             }
-
             // ????????
             if (mouse.onceState & MOUSE_LEFT_CRICK){
                 // ???????
@@ -10337,68 +10314,49 @@ void MenuProc(void)
                     play_se(202, 320, 240);
                     break;
                 }
-                // ??????
                 if (HitFontNo == systemWndFontNo[1]){
-                    // ??????
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
                     systemWndNo = 2;
-                    // ????????
                     play_se(202, 320, 240);
                     break;
                 }
-                // ?????
                 if (HitFontNo == systemWndFontNo[4]){
-                    // ??????
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
                     systemWndNo = 4;
-                    // ????????
                     play_se(202, 320, 240);
                     break;
                 }
-                // ?????
                 if (HitFontNo == systemWndFontNo[3]){
-                    // ??????
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
                     systemWndNo = 3;
-                    // ????????
                     play_se(202, 320, 240);
                     break;
                 }
-                // ??????
                 if (HitFontNo == systemWndFontNo[5]){
-                    // ??????
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
                     systemWndNo = 6;
-                    // ????????
                     play_se(202, 320, 240);
                     break;
                 }
                 //原地登出
                 if (HitFontNo == systemWndFontNo[6]){
-                    // ??????
 #ifdef __PHONEMESSAGE
                     CleanSMS();
 #endif
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
                     systemWndNo = 7;
-                    // ????????
                     play_se(202, 320, 240);
-
                     break;
                 }
-                // ???
                 if (HitFontNo == systemWndFontNo[2]){
-                    // ??????
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
-                    // ???????????
                     MenuToggleFlag ^= JOY_ESC;
-                    // ????????
                     play_se(203, 320, 240);
                     break;
                 }
@@ -10568,10 +10526,7 @@ void MenuProc(void)
 #endif
                 break;
             }
-            // ?
             x = pActMenuWnd->x + 28;
-
-            // ?????????
             y = pActMenuWnd->y + 54;
 #ifdef _CHAR_NEWLOGOUT
             systemWndFontNo[0] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, "    回记录点    ", 2);    y += 34;//y += 40;
@@ -10644,15 +10599,12 @@ void MenuProc(void)
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 break;
             }
-            else{
+            else
+            {
                 if (pActMenuWnd->hp <= 0) break;
             }
-
-            // ????????
             if (mouse.onceState & MOUSE_LEFT_CRICK){
-                // ????
                 if (HitFontNo == systemWndFontNo[0]){
-                    // ??????
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
 #ifdef _CHAR_NEWLOGOUT
@@ -10843,9 +10795,7 @@ void MenuProc(void)
 
             break;
 
-        case 3:    // ???? ??????
-
-            // ?????????
+        case 3:
             if (pActMenuWnd == NULL){
                 // ?????????
                 x = (lpDraw->xSize - 4 * 64) / 2;
@@ -10854,11 +10804,10 @@ void MenuProc(void)
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 break;
             }
-            else{
+            else
+            {
                 if (pActMenuWnd->hp <= 0) break;
             }
-
-            // ?????????????
             if (mouse.autoState & MOUSE_LEFT_CRICK){
                 // ???????
                 if (HitFontNo == systemWndFontNo[0]){
@@ -11079,29 +11028,21 @@ void MenuProc(void)
             x = pActMenuWnd->x + 18;
             y = pActMenuWnd->y + 58;
 
-            // ?????
             for (i = 0; i < 8; i++){
-                // ????
                 chatRegistryStr[i].x = x + 2;
                 chatRegistryStr[i].y = y;
                 StockFontBuffer2(&chatRegistryStr[i]); y += 43;
-                // ???????
                 if (MakeHitBox(chatRegistryStr[i].x - 4, chatRegistryStr[i].y - 3,
                     chatRegistryStr[i].x + 234 + 3, chatRegistryStr[i].y + 16 + 3, DISP_PRIO_IME3) == TRUE){
-                    // ????????
                     if (mouse.onceState & MOUSE_LEFT_CRICK){
-                        // ???????
                         GetKeyInputFocus(&chatRegistryStr[i]);
                         play_se(217, 320, 240); // ?????
                     }
                 }
             }
-            // ?????
             systemWndFontNo[3] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, y + 5, DISP_PRIO_IME3, CG_RETURN_BTN, 2);
-
             break;
-
-        case 6:    // ?????
+        case 6:
 
             // ?????????
             if (pActMenuWnd == NULL){
@@ -11250,23 +11191,15 @@ void MenuProc(void)
 
 
     if (MenuToggleFlag & JOY_CTRL_S){
-
-        // ????????
         switch (statusWndNo){
-
-        case 0:    // ??????
-
-            // ?????????
+        case 0:
             if (pActMenuWnd == NULL){
-                // ?????????
-
                 pActMenuWnd = MakeWindowDisp(4, 4, 272, 360, 0, -1);
 #ifdef _CHARTITLE_STR_
                 extern void 设置称号取消窗口();
                 extern BOOL 获取称号取消窗口();
                 if(获取称号取消窗口()) 设置称号取消窗口();
 #endif
-                // ??????
                 for (i = 0; i < MENU_STATUS_0; i++) statusWndFontNo[i] = -2;
                 for (i = 0; i < MENU_STATUS_0; i++) statusWndBtnFlag[i] = 0;
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
@@ -11274,9 +11207,7 @@ void MenuProc(void)
 #endif
             }
             else{
-                // ??????????????
                 if (pActMenuWnd->hp > 0){
-                    // ???????????????
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
                     if ( SkillWndflag == true ) {
                         SkillWndfunc2();
@@ -11290,7 +11221,7 @@ void MenuProc(void)
                     StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx-1, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my+34, DISP_PRIO_MENU, CG_NEW_STATUS_WND, 1 );
 #else
 #ifdef _NEW_CHARDATA_
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20, DISP_PRIO_MENU,    55266, 1);
+                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20, DISP_PRIO_MENU, CG_NEW_STATUS_WND, 1);
 #else
                     StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_MENU, CG_STATUS_WND, 1);
 #endif

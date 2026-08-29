@@ -2,6 +2,7 @@
 
 #include "tcp_struct.h"
 #include "main.h"
+#include "tcp_transport.h"
 
 #ifndef _WIN32
 #include <arpa/inet.h>
@@ -9,6 +10,19 @@
 
 // Forward declaration (defined in main.c)
 extern int releaseMemBuf(const int index);
+static int mem_buffer_has_data(int top);
+
+static void saac_session_attach(SaacSession *session, int fd,
+                                const struct sockaddr_in *peer) {
+  session->fd = fd;
+  session->closed_by_remote = 0;
+  if (peer != NULL)
+    memcpy(&session->remoteaddr, peer, sizeof(*peer));
+}
+
+static void saac_session_mark_remote_closed(SaacSession *session) {
+  session->closed_by_remote = 1;
+}
 
 int tcpstruct_init(char *addr, int p, int timeout_ms, int mem_use, int db) {
 
@@ -22,7 +36,7 @@ int tcpstruct_init(char *addr, int p, int timeout_ms, int mem_use, int db) {
   memset(g_mem_buffer, 0, g_mem_buffer_size * sizeof(MemBuffer));
   // 初始化 g_con, 和每个用户的连接
   g_mem_buffer_size = mem_use / sizeof(MemBuffer);
-  g_con = (Connection *)calloc(1, MAXCONNECTION * sizeof(Connection));
+  g_con = (SaacSession *)calloc(1, MAXCONNECTION * sizeof(SaacSession));
   if (g_con == NULL) {
     free(g_mem_buffer);
     return TCPSTRUCT_ENOMEM;
@@ -38,6 +52,9 @@ int tcpstruct_init(char *addr, int p, int timeout_ms, int mem_use, int db) {
   /* socket */
   g_main_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (g_main_sock_fd < 0)
+    return TCPSTRUCT_ESOCK;
+  sa_tcp_set_reuseaddr(g_main_sock_fd);
+  if (sa_tcp_set_nonblocking(g_main_sock_fd) < 0)
     return TCPSTRUCT_ESOCK;
 
   /* bind */
@@ -73,99 +90,90 @@ int tcpstruct_accept1(void) {
 }
 
 int tcpstruct_accept(int *tis, int ticount) {
-  int i, k, num = 0;
-  int sret = 0;
+  SaTcpPollItem items[MAXCONNECTION + 1];
+  int i, k;
   int accepted = 0;
-  struct timeval t;
-  fd_set rfds, wfds, efds;
-  FD_ZERO(&rfds);
-  FD_ZERO(&wfds);
-  FD_ZERO(&efds);
+  int poll_result;
+
+  memset(items, 0, sizeof(items));
+  items[0].fd = g_main_sock_fd;
+  items[0].want_read = 1;
 
   for (i = 0; i < MAXCONNECTION; i++) {
+    items[i + 1].fd = -1;
     if (g_con[i].use && g_con[i].fd >= 0 && g_con[i].closed_by_remote == 0) {
-      FD_SET(g_con[i].fd, &rfds);
-      FD_SET(g_con[i].fd, &wfds);
-      FD_SET(g_con[i].fd, &efds);
+      items[i + 1].fd = g_con[i].fd;
+      items[i + 1].want_read = 1;
+      items[i + 1].want_write = mem_buffer_has_data(g_con[i].mbtop_wi);
+    }
+  }
 
-      int j = 1, k;
+  poll_result = sa_tcp_poll(items, MAXCONNECTION + 1, 0);
+  if (poll_result < 0)
+    return sa_tcp_error_is_interrupted() ? 0 : TCPSTRUCT_EBUG;
 
-      t = select_timeout;
-      sret = select(g_con[i].fd + 1, &rfds, (fd_set *)NULL, &efds, &t);
-      if (sret > 0) {
-        if ((g_con[i].fd >= 0) && FD_ISSET(g_con[i].fd, &rfds)) {
-          int fr = getFreeMem();
-          int rr, readsize;
-          if (fr <= 0) {
-            fprintf(stderr, "连接%d内存不足, 标记远程关闭(fd=%d)\n", i, g_con[i].fd);
-            g_con[i].closed_by_remote = 1;
-          } else {
-            memset(g_temp_buffer, 0, sizeof(g_temp_buffer));
-            if (fr > sizeof(g_temp_buffer)) {
-              readsize = sizeof(g_temp_buffer);
-            } else {
-              readsize = fr - 1;
-            }
-            rr = read(g_con[i].fd, g_temp_buffer, readsize);
-            if (rr <= 0) {
-              fprintf(stderr, "连接%d读取返回%d, 标记远程关闭(fd=%d)\n", i, rr, g_con[i].fd);
-              g_con[i].closed_by_remote = 1;
-            } else {
-              appendReadBuffer(i, g_temp_buffer, rr);
-            }
-          }
+  for (i = 0; i < MAXCONNECTION; i++) {
+    SaTcpPollItem *item = &items[i + 1];
+    int send_rounds = 1;
+    if (item->fd < 0)
+      continue;
+    if (item->error) {
+      saac_session_mark_remote_closed(&g_con[i]);
+      continue;
+    }
+    if (item->readable) {
+      int fr = getFreeMem();
+      int rr, readsize;
+      if (fr <= 1) {
+        fprintf(stderr, "连接%d内存不足, 标记远程关闭(fd=%d)\n", i,
+                g_con[i].fd);
+        saac_session_mark_remote_closed(&g_con[i]);
+      } else {
+        readsize = fr > (int)sizeof(g_temp_buffer) ? (int)sizeof(g_temp_buffer)
+                                                   : fr - 1;
+        rr = sa_tcp_read(g_con[i].fd, g_temp_buffer, readsize);
+        if (rr == 0 || (rr < 0 && !sa_tcp_error_is_would_block() &&
+                       !sa_tcp_error_is_interrupted())) {
+          saac_session_mark_remote_closed(&g_con[i]);
+        } else if (rr > 0 && appendReadBuffer(i, g_temp_buffer, rr) < 0) {
+          saac_session_mark_remote_closed(&g_con[i]);
         }
       }
-
-      if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) > 0.50) {
-        j = 2;
-      } else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) >
-                 0.40) {
-        j = 3;
-      } else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) >
-                 0.30) {
-        j = 4;
-      } else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) >
-                 0.20) {
-        j = 5;
-      }
-
-      for (k = 0; k < j; k++) {
-        t = select_timeout;
-        sret = select(g_con[i].fd + 1, (fd_set *)NULL, &wfds, (fd_set *)NULL, &t);
-        if (sret > 0) {
-          if ((g_con[i].fd >= 0) && FD_ISSET(g_con[i].fd, &wfds)) {
-            char send_buf[4096];
-            memset(send_buf, 0, sizeof(send_buf));
-            int l = consumeMemBufList(g_con[i].mbtop_wi, send_buf,
-                                      sizeof(send_buf), 0, 1);
-            if (l > 0) {
-              int rr = write(g_con[i].fd, send_buf, l);
-              if (rr < 0) {
-                g_con[i].closed_by_remote = 1;
-              } else {
-                consumeMemBufList(g_con[i].mbtop_wi, send_buf, l, 1, 0);
-              }
-            }
-          }
-        }
+    }
+    if (!item->writable || g_con[i].closed_by_remote)
+      continue;
+    if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) > 0.50)
+      send_rounds = 2;
+    else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) > 0.40)
+      send_rounds = 3;
+    else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) > 0.30)
+      send_rounds = 4;
+    else if ((float)getFreeMem() / (CHARDATASIZE * 16 * MAXCONNECTION) > 0.20)
+      send_rounds = 5;
+    for (k = 0; k < send_rounds; k++) {
+      char send_buf[4096];
+      int length = consumeMemBufList(g_con[i].mbtop_wi, send_buf,
+                                     sizeof(send_buf), 0, 1);
+      int written;
+      if (length <= 0)
+        break;
+      written = sa_tcp_write(g_con[i].fd, send_buf, length);
+      if (written > 0) {
+        consumeMemBufList(g_con[i].mbtop_wi, NULL, written, 1, 0);
+      } else if (written < 0 && !sa_tcp_error_is_would_block() &&
+                 !sa_tcp_error_is_interrupted()) {
+        saac_session_mark_remote_closed(&g_con[i]);
+        break;
+      } else {
+        break;
       }
     }
   }
 
-  for (i = 0; i < ticount; i++) {
-    int asret;
-    struct timeval t;
-    t = select_timeout;
-    FD_ZERO(&rfds);
-    FD_ZERO(&wfds);
-    FD_ZERO(&efds);
-    FD_SET(g_main_sock_fd, &rfds);
-    FD_SET(g_main_sock_fd, &wfds);
-    FD_SET(g_main_sock_fd, &efds);
-    asret = select(g_main_sock_fd + 1, &rfds, &wfds, &efds, &t);
-    // Nuke 20040610: add asret>0 to avoid signal interrupt in select
-    if ((asret > 0) && FD_ISSET(g_main_sock_fd, &rfds)) {
+  if (items[0].error)
+    return TCPSTRUCT_ESOCK;
+  if (items[0].readable) {
+    for (i = 0; i < ticount; i++) {
       struct sockaddr_in c;
       int len, newsockfd;
       int newcon;
@@ -177,12 +185,12 @@ int tcpstruct_accept(int *tis, int ticount) {
         continue;
       newsockfd = accept(g_main_sock_fd, (struct sockaddr *)&c, &len);
       if (newsockfd < 0) {
-        releaseMemBuf(newcon);
-        continue;
+        tcpstruct_close(newcon);
+        break;
       }
       set_nodelay(newsockfd);
-      g_con[newcon].fd = newsockfd;
-      memcpy(&g_con[newcon].remoteaddr, &c, sizeof(c));
+      sa_tcp_set_nonblocking(newsockfd);
+      saac_session_attach(&g_con[newcon], newsockfd, &c);
       tis[accepted] = newcon;
       accepted++;
     }
@@ -197,7 +205,7 @@ int tcpstruct_close(int ti) {
   if (g_con[ti].use == 0) {
     return TCPSTRUCT_ECLOSEAGAIN;
   }
-  close(g_con[ti].fd);
+  sa_tcp_close(g_con[ti].fd);
   g_con[ti].use = 0;
   g_con[ti].fd = -1;
 
@@ -277,10 +285,8 @@ static int mem_buffer_has_data(int top) {
 }
 
 int tcpstruct_idle_wait(const int timeout_ms) {
-  fd_set rfds, wfds, efds;
-  struct timeval timeout;
+  SaTcpPollItem items[MAXCONNECTION + 1];
   int i;
-  int maxfd = g_main_sock_fd;
 
   if (timeout_ms <= 0)
     return 0;
@@ -294,27 +300,21 @@ int tcpstruct_idle_wait(const int timeout_ms) {
       return 0;
   }
 
-  FD_ZERO(&rfds);
-  FD_ZERO(&wfds);
-  FD_ZERO(&efds);
-  FD_SET(g_main_sock_fd, &rfds);
-  FD_SET(g_main_sock_fd, &efds);
+  memset(items, 0, sizeof(items));
+  items[0].fd = g_main_sock_fd;
+  items[0].want_read = 1;
   for (i = 0; i < MAXCONNECTION; i++) {
+    items[i + 1].fd = -1;
     if (!g_con[i].use || g_con[i].fd < 0 || g_con[i].closed_by_remote)
       continue;
-    FD_SET(g_con[i].fd, &rfds);
-    FD_SET(g_con[i].fd, &efds);
+    items[i + 1].fd = g_con[i].fd;
+    items[i + 1].want_read = 1;
     /* A writable socket wakes immediately, so reconnect initialization data
      * is flushed at full speed. Backpressure still blocks without spinning. */
     if (mem_buffer_has_data(g_con[i].mbtop_wi))
-      FD_SET(g_con[i].fd, &wfds);
-    if (g_con[i].fd > maxfd)
-      maxfd = g_con[i].fd;
+      items[i + 1].want_write = 1;
   }
-
-  timeout.tv_sec = timeout_ms / 1000;
-  timeout.tv_usec = (timeout_ms % 1000) * 1000;
-  return select(maxfd + 1, &rfds, &wfds, &efds, &timeout);
+  return sa_tcp_poll(items, MAXCONNECTION + 1, timeout_ms);
 }
 
 int tcpstruct_connect(const char *addr, const int port) {
@@ -334,22 +334,25 @@ int tcpstruct_connect(const char *addr, const int port) {
   if (inet_aton(addr, &svaddr.sin_addr) == 0) {
     he = gethostbyname(addr);
     if (he == NULL) {
+      sa_tcp_close(s);
       return TCPSTRUCT_EHOST;
     }
     memcpy(&svaddr.sin_addr.s_addr, he->h_addr, sizeof(struct in_addr));
   }
   r = connect(s, (struct sockaddr *)&svaddr, sizeof(svaddr));
   if (r < 0) {
+    sa_tcp_close(s);
     return TCPSTRUCT_ECONNECT;
   }
   set_nodelay(s);
+  sa_tcp_set_nonblocking(s);
   newti = findregBlankCon();
   if (newti < 0) {
     fprintf(stderr, "连接失败: newti:%d\n", newti);
+    sa_tcp_close(s);
     return TCPSTRUCT_ECFULL;
   }
-  g_con[newti].fd = s;
-  memcpy(&g_con[newti].remoteaddr, &svaddr, sizeof(struct sockaddr_in));
+  saac_session_attach(&g_con[newti], s, &svaddr);
   return newti;
 }
 

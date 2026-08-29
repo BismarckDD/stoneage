@@ -435,7 +435,7 @@ static BOOL CHAR_useChatMagic(int char_index, char *data, BOOL isDebug) {
 #endif
   char *p = CHAR_getChar(char_index, CHAR_CDKEY);
   if (!p) {
-    fprint("err nothing cdkey\n");
+    printEx("err nothing cdkey\n");
     return FALSE;
   }
 

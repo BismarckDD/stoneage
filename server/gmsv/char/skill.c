@@ -90,8 +90,7 @@ BOOL SKILL_makeSkillFromStringToArg(char *src, Skill *sk) {
         goto NEXT;
       }
     }
-
-    fprint("3??? : %s[%s]\n", linebuf, first);
+    printEx(": %s[%s]\n", linebuf, first);
 
   NEXT:
     readindex++;

@@ -3818,7 +3818,6 @@ int CG_NEW_STATUS_WND;
 int CG_NEWITEM_WND;
 int CG_TRADE_WND;
 int CG_TRADE_VIEWWND;
-// ??????
 int CG_WND_G_0;
 int CG_WND_G_1;
 int CG_WND_G_2;
@@ -3828,7 +3827,6 @@ int CG_WND_G_5;
 int CG_WND_G_6;
 int CG_WND_G_7;
 int CG_WND_G_8;
-// ???????
 int CG_WND2_G_0;
 int CG_WND2_G_1;
 int CG_WND2_G_2;
@@ -3838,45 +3836,31 @@ int CG_WND2_G_5;
 int CG_WND2_G_6;
 int CG_WND2_G_7;
 int CG_WND2_G_8;
-// ???????
 int CG_WND3_G_7;
 int CG_WND3_G_8;
 int CG_WND3_G_9;
-// ?????
 int CG_BTL_PET_CHANGE_WND;
-// ????????
 int CG_PET_WND_VIEW;
 int CG_PET_WND_DETAIL;
 int CG_NAME_CHANGE_WND;
-// ?????????
 int CG_ITEM_WND_1;
 int CG_JUJUTU_WND;
 int CG_ITEM_WND_SELECT_WND;
 int CG_STATUS_WND_GROUP_WND;
-// ????????
 int CG_MAP_WND;
-// ??????????
 int CG_STATUS_WND;
-// ????????
 int CG_MAIL_WND;
 int CG_MAIL_WND_SEND_WND;
 int CG_MAIL_WND_PET_SEND_WND;
 int CG_MAIL_WND_HISTORY_WND;
-// ?????????
 int CG_ALBUM_WND;
-// ????????????
 int CG_CHAT_REGISTY_WND;
-// ????????
 int CG_COMMON_WIN_YORO;
 int CG_FIELD_HELP_WND;
-// ??????????
 int CG_MSG_WND;
 int CG_PET_WAZA_WND;
-// ?????????????
 int CG_ITEMSHOP_WIN;
-// ??????????
 int CG_SKILLSHOP_WIN;
-// ??????????
 int CG_ITEMSHOP_KOSU_WIN;
 int CG_FAMILY_DETAIL_WIN;
 int CG_FAMILY_BANK_WIN;
@@ -3951,7 +3935,7 @@ void SetAnimTbl() {
     CG_FIELD_CHATROOM_PANEL = 26427;      // 聊天室介面
     CG_FIELD_SV_SELL_PANEL = 35221;       // 摆摊介面(卖方)
     CG_FIELD_SV_SELL_PRICE_PANEL = 35223; // 输入售价视窗
-    CG_NEW_STATUS_WND = 26386;
+    CG_NEW_STATUS_WND = 26386;            // 认为26386是人物状态的背景图片
 #ifdef _PET_ITEM
     CG_NEWITEM_WND = 26455; // 人物装备栏位视窗(有标签)
 #else

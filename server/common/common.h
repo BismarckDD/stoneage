@@ -12,6 +12,12 @@
 #include <string.h>
 #include <time.h>
 
+
+
+#define MAX_DIRPATH_LEN 256
+#define MAX_FILEPATH_LEN 288
+#define MAX_BUF_LEN 288
+
 /* 将 fgets() 读到的文本行规范为不含 CR/LF 的内容。
  * 兼容 LF、CRLF 和旧数据包中的 CRCRLF。 */
 static inline char *sa_normalize_text_line(char *line) {
@@ -105,7 +111,7 @@ static inline char *sa_fgets_text(char *buffer, int size, FILE *stream) {
 #define arraysizeof(x) (sizeof(x) / sizeof(x[0]))
 #define errorprint                                                             \
   {                                                                            \
-    fprint("%s\n", strerror(errno));                                           \
+    printEx("%s\n", strerror(errno));                                           \
   }
 
 #define logErr(format, args...) fprintf(stderr, format, ##args)
@@ -142,12 +148,9 @@ static inline char *sa_fgets_text(char *buffer, int size, FILE *stream) {
   } while (0);
 #ifdef __GNUC__
 #define print(format, arg...) fprintf(stderr, format, ##arg)
-#define fprint(format, arg...)                                                \
-  fprintf(stderr, "%s:%d:", __FILE__, __LINE__),                            \
+#define printEx(format, arg...)                                                \
+  fprintf(stderr, "%s:%d:", __FILE__, __LINE__),                               \
       fprintf(stderr, format, ##arg)
-#define printErr(format, arg...) fprintf(stderr, format, ##arg)
-#define printErrX(format, arg...)                                              \
-  fprintf(stderr, "%s:%d:", format, __FILE__, __LINE__, ##arg)
 #endif // __GUNC__
 
 /* SAAC-GMSV 通信日志宏 */

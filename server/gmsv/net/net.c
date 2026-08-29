@@ -2,6 +2,8 @@
 #include "version.h"
 // common libs
 #include "gmsv_server.h"
+#include "tcp_buffer.h"
+#include "tcp_transport.h"
 #include "saac_client.h"
 #include "util.h"
 #include "utils/util_time.h"
@@ -19,6 +21,7 @@
 
 #ifndef _WIN32
 #include <arpa/inet.h>
+#include <pthread.h>
 #include <unistd.h>
 #endif
 
@@ -30,9 +33,6 @@ extern int getConnectnum(void);
 #include "char_talk.h"
 #include "pet_event.h"
 #include "petmail.h"
-#ifdef _ALLBLUES_LUA
-#include "mylua/function.h"
-#endif
 #ifdef _AUTO_PK
 #include "npc_autopk.h"
 #endif
@@ -41,11 +41,149 @@ extern int getConnectnum(void);
 #include "readmap.h"
 extern Player_Diy_Map PlayerDiyMap[Player_Diy_Map_NUM];
 #endif
-#ifdef _GMSV_DEBUG
-extern char *DebugMainFunction;
-#endif
 
 char rbmess[1024 * 256];
+
+typedef struct NetWatchState {
+  char stage[48];
+  char command[32];
+  int fd;
+  time_t since;
+  unsigned long sequence;
+  int active;
+} NetWatchState;
+
+static pthread_mutex_t g_netwatch_mutex = PTHREAD_MUTEX_INITIALIZER;
+static NetWatchState g_netwatch_state;
+static int g_netwatch_started = FALSE;
+static int g_nettrace_write_fd = -1;
+static unsigned int g_nettrace_poll_count = 0;
+
+void NETTRACE_armWrite(int fd) {
+  g_nettrace_write_fd = fd;
+  g_nettrace_poll_count = 0;
+}
+
+static void nettrace_poll_result(SaTcpPollItem *items, int poll_result) {
+  int fd = g_nettrace_write_fd;
+  int write_size = -1, ca_size = -1;
+  if (fd < 0 || fd >= ConnectLen || items == NULL)
+    return;
+  CONNECT_getPendingBufferSizes(fd, &write_size, &ca_size);
+  g_nettrace_poll_count++;
+  if (g_nettrace_poll_count <= 5 || items[fd].writable ||
+      (g_nettrace_poll_count % 50) == 0) {
+    print("[TCP_WRITE_TRACE] phase=poll fd=%d poll_result=%d count=%u "
+          "wb=%d ca=%d want_write=%d writable=%d error=%d\n",
+          fd, poll_result, g_nettrace_poll_count, write_size, ca_size,
+          items[fd].want_write, items[fd].writable, items[fd].error);
+  }
+}
+
+static void netwatch_copy_command(char *destination, size_t destination_size,
+                                  const char *message) {
+  size_t i = 0;
+  if (destination_size == 0)
+    return;
+  if (message != NULL) {
+    while (message[i] != '\0' && message[i] != ' ' && message[i] != '\t' &&
+           message[i] != '\r' && message[i] != '\n' &&
+           i + 1 < destination_size) {
+      unsigned char c = (unsigned char)message[i];
+      destination[i] = (c >= 32 && c < 127) ? (char)c : '?';
+      i++;
+    }
+  }
+  destination[i] = '\0';
+}
+
+void NETWATCH_set(const char *stage, int fd, const char *message) {
+  pthread_mutex_lock(&g_netwatch_mutex);
+  snprintf(g_netwatch_state.stage, sizeof(g_netwatch_state.stage), "%s",
+           stage != NULL ? stage : "unknown");
+  netwatch_copy_command(g_netwatch_state.command,
+                        sizeof(g_netwatch_state.command), message);
+  g_netwatch_state.fd = fd;
+  g_netwatch_state.since = time(NULL);
+  g_netwatch_state.sequence++;
+  g_netwatch_state.active = TRUE;
+  pthread_mutex_unlock(&g_netwatch_mutex);
+}
+
+void NETWATCH_idle(void) {
+  pthread_mutex_lock(&g_netwatch_mutex);
+  g_netwatch_state.active = FALSE;
+  g_netwatch_state.sequence++;
+  pthread_mutex_unlock(&g_netwatch_mutex);
+}
+
+static void netwatch_run(void) {
+  unsigned long last_sequence = 0;
+  time_t last_report = 0;
+  for (;;) {
+    NetWatchState snapshot;
+    time_t now;
+#ifdef _WIN32
+    sa_sleep(1);
+#else
+    usleep(1);
+#endif
+    pthread_mutex_lock(&g_netwatch_mutex);
+    snapshot = g_netwatch_state;
+    pthread_mutex_unlock(&g_netwatch_mutex);
+    now = time(NULL);
+    if (!snapshot.active || now - snapshot.since < 3)
+      continue;
+    if (snapshot.sequence == last_sequence && now - last_report < 5)
+      continue;
+    fprintf(stderr,
+            "\n[NET_STALL] stage=%s fd=%d command=%s elapsed=%lld sec "
+            "sequence=%lu\n",
+            snapshot.stage, snapshot.fd,
+            snapshot.command[0] != '\0' ? snapshot.command : "-",
+            (long long)(now - snapshot.since), snapshot.sequence);
+    fflush(stderr);
+    last_sequence = snapshot.sequence;
+    last_report = now;
+  }
+}
+
+#ifdef _WIN32
+static unsigned __stdcall netwatch_thread(void *unused) {
+  (void)unused;
+  netwatch_run();
+  return 0;
+}
+#else
+static void *netwatch_thread(void *unused) {
+  (void)unused;
+  netwatch_run();
+  return NULL;
+}
+#endif
+
+void NETWATCH_start(void) {
+  if (g_netwatch_started)
+    return;
+  g_netwatch_started = TRUE;
+#ifdef _WIN32
+  {
+    uintptr_t thread = _beginthreadex(NULL, 0, netwatch_thread, NULL, 0, NULL);
+    if (thread != 0)
+      CloseHandle((HANDLE)thread);
+    else
+      fprintf(stderr, "[NET_STALL] failed to start watchdog thread\n");
+  }
+#else
+  {
+    pthread_t thread;
+    if (pthread_create(&thread, NULL, netwatch_thread, NULL) == 0)
+      pthread_detach(thread);
+    else
+      fprintf(stderr, "[NET_STALL] failed to start watchdog thread\n");
+  }
+#endif
+}
 
 #define MAXSIZE 64000
 #define MAXEPS 256
@@ -166,7 +304,9 @@ int SetTimer_net(char *FileName, char *FuncName, unsigned int EspTime) {
 }
 #endif
 
-typedef struct tagCONNECT {
+/* GMSV session: owns login/gameplay state and references its transport by the
+ * legacy socket-fd slot. TCP readiness and platform I/O live in common. */
+typedef struct tagGmsvSession {
   BOOL use;
   char *rb;
   int rbuse;
@@ -298,9 +438,17 @@ typedef struct tagCONNECT {
 #ifdef _NEW_FUNC_DECRYPT
   int newerrnum;
 #endif
-} CONNECT;
+} GmsvSession;
 
-CONNECT *Connect;
+GmsvSession *Connect;
+
+static int gmsv_session_is_pollable(const GmsvSession *session) {
+  return session->use && session->state != WHILECLOSEALLSOCKETSSAVE;
+}
+
+static int gmsv_session_wants_write(const GmsvSession *session) {
+  return session->wbuse > 0;
+}
 
 #define SINGLETHREAD
 #define MUTLITHREAD
@@ -319,12 +467,8 @@ pthread_mutex_t MTIO_servstate_m;
 #define CONNECT_UNLOCK(i) pthread_mutex_unlock(&Connect[i].mutex);
 
 void SetTcpBuf(int fd, fd_set *fds) {
-  int yes = 1;
-  int result = fcntl(fd, F_SETFL, O_NONBLOCK);
-  setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, (char *)&yes,
-             sizeof yes); // reuse fix
-  setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, (char *)&yes,
-             sizeof yes); // reuse fix
+  int result = sa_tcp_configure_connected(fd);
+  sa_tcp_set_reuseaddr(fd);
 
   if (fd == -1) {
     perror("accept");
@@ -455,7 +599,8 @@ ANY_THREAD void SERVSTATE_setDsptime(int a) {
   SERVSTATE_UNLOCK();
 }
 
-static int appendWB(int fd, char *buf, int size) {
+static int appendWB(int fd, const char *buf, int size) {
+  int capacity;
 #ifdef _OTHER_SAAC_LINK
   if (CONNECT_getCtype(fd) != AC) {
 #else
@@ -471,9 +616,14 @@ static int appendWB(int fd, char *buf, int size) {
       return -1;
     }
   }
-  memcpy(Connect[fd].wb + Connect[fd].wbuse, buf, size);
-  Connect[fd].wbuse += size;
-  return size;
+  capacity =
+#ifdef _OTHER_SAAC_LINK
+      CONNECT_getCtype(fd) == AC ? AC_WBSIZE : WBSIZE;
+#else
+      fd == acfd ? AC_WBSIZE : WBSIZE;
+#endif
+  return sa_tcp_buffer_append(Connect[fd].wb, &Connect[fd].wbuse, capacity,
+                              buf, size);
 }
 
 static int appendRB(int fd, char *buf, int size) {
@@ -496,9 +646,14 @@ static int appendRB(int fd, char *buf, int size) {
       return -1;
     }
   }
-  memcpy(Connect[fd].rb + Connect[fd].rbuse, buf, size);
-  Connect[fd].rbuse += size;
-  return size;
+  return sa_tcp_buffer_append(
+      Connect[fd].rb, &Connect[fd].rbuse,
+#ifdef _OTHER_SAAC_LINK
+      CONNECT_getCtype(fd) == AC ? AC_RBSIZE : RBSIZE,
+#else
+      fd == acfd ? AC_RBSIZE : RBSIZE,
+#endif
+      buf, size);
 }
 
 static int shiftWB(int fd, int len) {
@@ -507,8 +662,7 @@ static int shiftWB(int fd, int len) {
     return -1;
   }
 
-  memmove(Connect[fd].wb, Connect[fd].wb + len, Connect[fd].wbuse - len);
-  Connect[fd].wbuse -= len;
+  sa_tcp_buffer_consume(Connect[fd].wb, &Connect[fd].wbuse, len);
 
   if (Connect[fd].wbuse < 0) {
     print("shiftWB:wbuse err\n");
@@ -524,8 +678,7 @@ static int shiftRB(int fd, int len) {
     return -1;
   }
 
-  memmove(Connect[fd].rb, Connect[fd].rb + len, Connect[fd].rbuse - len);
-  Connect[fd].rbuse -= len;
+  sa_tcp_buffer_consume(Connect[fd].rb, &Connect[fd].rbuse, len);
 
   if (Connect[fd].rbuse < 0) {
     print("shiftRB:rbuse err\n");
@@ -581,7 +734,7 @@ SINGLETHREAD int lsrpcClientWriteFunc(int fd, const char *buf, int size) {
 
 static int logRBuseErr = 0;
 SINGLETHREAD BOOL GetOneLine_fix(int fd, char *buf, int max) {
-  int i;
+  int result;
 
   if (Connect[fd].rbuse == 0)
     return FALSE;
@@ -591,16 +744,13 @@ SINGLETHREAD BOOL GetOneLine_fix(int fd, char *buf, int max) {
     return FALSE;
   }
 
-  for (i = 0; i < Connect[fd].rbuse && i < (max - 1); i++) {
-    if (Connect[fd].rb[i] == '\n') {
-      memcpy(buf, Connect[fd].rb, i + 1);
-      buf[i + 1] = '\0';
-      shiftRB(fd, i + 1);
-      logRBuseErr = 0;
-      Connect[fd].check_rb_oneline_b = 0;
-      Connect[fd].check_rb_time = 0;
-      return TRUE;
-    }
+  result = sa_tcp_buffer_read_line(Connect[fd].rb, &Connect[fd].rbuse, buf,
+                                   max, TRUE);
+  if (result > 0) {
+    logRBuseErr = 0;
+    Connect[fd].check_rb_oneline_b = 0;
+    Connect[fd].check_rb_time = 0;
+    return TRUE;
   }
 
   if (fd == acfd) {
@@ -852,18 +1002,18 @@ ANY_THREAD BOOL _CONNECT_endOne(char *file, int fromline, int sockfd, int line) 
 SINGLETHREAD BOOL initConnect(int size) {
   int i, j;
   ConnectLen = size;
-  Connect = calloc(1, sizeof(CONNECT) * size);
+  Connect = calloc(1, sizeof(GmsvSession) * size);
 
   if (Connect == NULL)
     return FALSE;
 
   for (i = 0; i < size; i++) {
-    memset(&Connect[i], 0, sizeof(CONNECT));
+    memset(&Connect[i], 0, sizeof(GmsvSession));
     Connect[i].char_index = -1;
     Connect[i].rb = calloc(1, RBSIZE);
 
     if (Connect[i].rb == NULL) {
-      fprint("calloc err\n");
+      printEx("calloc err\n");
 
       for (j = 0; j < i; j++) {
         free(Connect[j].rb);
@@ -877,7 +1027,7 @@ SINGLETHREAD BOOL initConnect(int size) {
     Connect[i].wb = calloc(1, WBSIZE);
 
     if (Connect[i].wb == NULL) {
-      fprint("calloc err\n");
+      printEx("calloc err\n");
 
       for (j = 0; j < i; j++) {
         free(Connect[j].rb);
@@ -892,7 +1042,7 @@ SINGLETHREAD BOOL initConnect(int size) {
   }
 
   print("预约 %d 接连...分配 %.2f MB 空间...", size,
-        (sizeof(CONNECT) * size + RBSIZE * size + WBSIZE * size) / 1024.0 /
+        (sizeof(GmsvSession) * size + RBSIZE * size + WBSIZE * size) / 1024.0 /
             1024.0);
 
   SERVSTATE_initserverState();
@@ -916,7 +1066,7 @@ BOOL CONNECT_acfdInitRB(int fd) {
   Connect[fd].rb = realloc(Connect[fd].rb, AC_RBSIZE);
 
   if (Connect[fd].rb == NULL) {
-    fprint("realloc err\n");
+    printEx("realloc err\n");
     return FALSE;
   }
 
@@ -929,7 +1079,7 @@ BOOL CONNECT_acfdInitRB(int fd) {
   Connect[fd].rb = realloc(Connect[acfd].rb, AC_RBSIZE);
 
   if (Connect[acfd].rb == NULL) {
-    fprint("realloc err\n");
+    printEx("realloc err\n");
     return FALSE;
   }
 
@@ -943,7 +1093,7 @@ BOOL CONNECT_acfdInitWB(int fd) {
   Connect[fd].wb = realloc(Connect[fd].wb, AC_WBSIZE);
 
   if (Connect[fd].wb == NULL) {
-    fprint("realloc err\n");
+    printEx("realloc err\n");
     return FALSE;
   }
 
@@ -956,7 +1106,7 @@ BOOL CONNECT_acfdInitWB(int fd) {
   Connect[fd].wb = realloc(Connect[acfd].wb, AC_WBSIZE);
 
   if (Connect[acfd].wb == NULL) {
-    fprint("realloc err\n");
+    printEx("realloc err\n");
     return FALSE;
   }
 
@@ -1013,6 +1163,21 @@ ANY_THREAD BOOL CONNECT_appendCAbuf(int fd, char *data, int size) {
   // ModEpollOut(fd);
 #endif
   return TRUE;
+}
+
+void CONNECT_getPendingBufferSizes(int fd, int *write_size, int *ca_size) {
+  if (write_size != NULL)
+    *write_size = -1;
+  if (ca_size != NULL)
+    *ca_size = -1;
+  if (fd < 0 || fd >= ConnectLen)
+    return;
+  CONNECT_LOCK(fd);
+  if (write_size != NULL)
+    *write_size = Connect[fd].wbuse;
+  if (ca_size != NULL)
+    *ca_size = Connect[fd].CAbufsiz;
+  CONNECT_UNLOCK(fd);
 }
 
 ANY_THREAD static int CONNECT_getCAbuf(int fd, char *out, int outmax,
@@ -2229,41 +2394,39 @@ char keepupnologin[256] = "";
 #endif
 struct timeval speedst, speedet;
 
-/* 空闲节流: 一轮连接槽位扫描无任何读写事件时, 聚合全部活跃连接
- * 做一次阻塞 select 等待数据或超时, 消除空闲期的零超时轮询风暴.
- * 只监听可读/异常: 已连接套接字的发送缓冲几乎总可写, 监听 wfds 会立即返回变回忙等 */
+/* 聚合连接轮询：每轮只调用一次 select，然后按原有的公平顺序
+ * 消费 readiness 快照。只有存在待发数据时才监听可写，避免可写
+ * socket 使事件循环立即返回。这个边界也可以在后续替换为
+ * libuv/libevent，而不改动上层协议派发和游戏 tick。 */
 #define NETLOOP_IDLE_BLOCK_MAX_US 20000
 
-static void netloop_idle_block(const struct timeval *st,
-                               unsigned int looptime_us) {
-  struct timeval et, tmv;
-  fd_set rfds, efds;
-  int i, maxfd;
-  long remain;
-  // 获取当前的et
-  gettimeofday(&et, NULL);
-  remain = (long)looptime_us - time_diff_us(et, *st);
-  if (remain > NETLOOP_IDLE_BLOCK_MAX_US)
-    remain = NETLOOP_IDLE_BLOCK_MAX_US;
-  if (remain <= 0)
-    return;
+static int netloop_poll_connections(const struct timeval *st,
+                                    unsigned int looptime_us, int may_block,
+                                    SaTcpPollItem *items) {
+  struct timeval et;
+  int i, timeout_ms = 0;
+  long remain = 0;
 
-  FD_ZERO(&rfds);
-  FD_ZERO(&efds);
-  FD_SET(bindedfd, &rfds);
-  maxfd = bindedfd;
-  /* 连接槽位下标即 socket fd, 与主扫描路径一致 */
   for (i = 0; i < ConnectLen; i++) {
-    if (Connect[i].use && Connect[i].state != WHILECLOSEALLSOCKETSSAVE) {
-      FD_SET(i, &rfds);
-      FD_SET(i, &efds);
-      if (i > maxfd)
-        maxfd = i;
+    memset(&items[i], 0, sizeof(items[i]));
+    items[i].fd = -1;
+    if (gmsv_session_is_pollable(&Connect[i])) {
+      items[i].fd = i;
+      items[i].want_read = 1;
+      items[i].want_write = gmsv_session_wants_write(&Connect[i]);
     }
   }
-  tmv.tv_sec = remain / 1000000;
-  tmv.tv_usec = remain % 1000000;
-  select(maxfd + 1, &rfds, (fd_set *)NULL, &efds, &tmv);
+
+  if (may_block) {
+    gettimeofday(&et, NULL);
+    remain = (long)looptime_us - time_diff_us(et, *st);
+    if (remain > NETLOOP_IDLE_BLOCK_MAX_US)
+      remain = NETLOOP_IDLE_BLOCK_MAX_US;
+    if (remain < 0)
+      remain = 0;
+    timeout_ms = (int)((remain + 999) / 1000);
+  }
+  return sa_tcp_poll(items, ConnectLen, timeout_ms);
 }
 
 SINGLETHREAD BOOL netloop_faster(void) {
@@ -2280,8 +2443,11 @@ SINGLETHREAD BOOL netloop_faster(void) {
   //    static unsigned int nu_time=0;
   unsigned int casend_interval_us, cdsend_interval_us;
   fd_set rfds, wfds, efds;
+  SaTcpPollItem ready[ConnectLen];
   int allowerrornum = getAllowerrornum();
   int acwritesize = getAcwriteSize();
+
+  NETWATCH_set("netloop", -1, NULL);
 
 #ifdef _AC_PIORITY
   static int flag_ac = 1;
@@ -2306,7 +2472,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
   FD_SET(bindedfd, &wfds);
   FD_SET(bindedfd, &efds);
   tmv.tv_sec = tmv.tv_usec = 0;
+  NETWATCH_set("listener_select", bindedfd, NULL);
   ret = select(bindedfd + 1, &rfds, &wfds, &efds, &tmv);
+  NETWATCH_set("netloop", -1, NULL);
   if (ret < 0 && (errno != EINTR)) {
     ;
   }
@@ -2315,7 +2483,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
     int addrlen = sizeof(struct sockaddr_in);
     int sockfd;
 
+    NETWATCH_set("accept", bindedfd, NULL);
     sockfd = accept(bindedfd, (struct sockaddr *)&sin, &addrlen);
+    NETWATCH_set("netloop", -1, NULL);
 
     SetTcpBuf(sockfd, &rfds);
 
@@ -2469,6 +2639,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
   loop_num = 0;
   gettimeofday(&st, NULL);
   int sweep_did_work = 0;
+  NETWATCH_set("connection_poll", -1, NULL);
+  ret = netloop_poll_connections(&st, looptime_us, FALSE, ready);
+  nettrace_poll_result(ready, ret);
+  NETWATCH_set("netloop", -1, NULL);
+  if (ret < 0 && errno != EINTR)
+    print("select connections failed:%s\n", strerror(errno));
 
   // netloop_faster里还有一层循环
   while (TRUE) {
@@ -2785,7 +2961,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
         i_tto++;
 
         // andy add 2003/0212------------------------------------------
+        NETWATCH_set("CONNECT_SysEvent_Loop", -1, NULL);
         CONNECT_SysEvent_Loop();
+        NETWATCH_set("netloop", -1, NULL);
         //------------------------------------------------------------
       } // switch()
 
@@ -2823,8 +3001,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #endif
 
     if (fdremember == ConnectLen) {
-      if (!sweep_did_work)
-        netloop_idle_block(&st, looptime_us);
+      NETWATCH_set("connection_poll", -1, NULL);
+      ret = netloop_poll_connections(&st, looptime_us, !sweep_did_work, ready);
+      nettrace_poll_result(ready, ret);
+      NETWATCH_set("netloop", -1, NULL);
+      if (ret < 0 && errno != EINTR)
+        print("select connections failed:%s\n", strerror(errno));
       sweep_did_work = 0;
       fdremember = 0;
     }
@@ -2865,23 +3047,14 @@ SINGLETHREAD BOOL netloop_faster(void) {
       totalacfd++;
 
 #endif
-    /* read select */
-    FD_ZERO(&rfds);
-    FD_ZERO(&wfds);
-    FD_ZERO(&efds);
-
-    FD_SET(fdremember, &rfds);
-    FD_SET(fdremember, &wfds);
-    FD_SET(fdremember, &efds);
-    tmv.tv_sec = tmv.tv_usec = 0;
-    ret = select(fdremember + 1, &rfds, &wfds, &efds, &tmv);
-
-    if (ret > 0 && FD_ISSET(fdremember, &rfds)) {
+    if (sa_tcp_take_readable(&ready[fdremember])) {
       sweep_did_work = 1;
       errno = 0;
       char buf[1024 * 128];
       memset(buf, 0, sizeof(buf));
-      ret = read(fdremember, buf, sizeof(buf));
+      NETWATCH_set("tcp_read", fdremember, NULL);
+      ret = sa_tcp_read(fdremember, buf, sizeof(buf));
+      NETWATCH_set("netloop", -1, NULL);
 
       if (ret > 0 && sizeof(buf) <= ret) {
 #ifdef _OTHER_SAAC_LINK
@@ -2894,7 +3067,10 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #endif
       }
 
-      if ((ret == -1 && errno != EINTR) || ret == 0) {
+      if (ret < 0 && (sa_tcp_error_is_interrupted() ||
+                      sa_tcp_error_is_would_block())) {
+        /* Readiness may be stale; retry only after a new poll event. */
+      } else if (ret <= 0) {
 #ifdef _OTHER_SAAC_LINK
         if (CONNECT_getCtype(fdremember) == AC)
 #else
@@ -2960,17 +3136,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
         }
       }
 
-    } else if (ret < 0 && errno != EINTR) {
-#ifdef _OTHER_SAAC_LINK
-      if (CONNECT_getCtype(fdremember) == AC &&
-          CONNECT_getCtype(fdremember) != SQL)
-#else
-      if (fdremember != acfd)
-#endif
-      {
-        // print("\n读取连接错误:%d %s\n", errno, strerror(errno));
-        continue;
-      }
     }
 
     for (j = 0; j < 3; j++) {
@@ -2985,19 +3150,26 @@ SINGLETHREAD BOOL netloop_faster(void) {
         if (fdremember == acfd)
 #endif
         {
+          NETWATCH_set("SAAC_dispatch", fdremember, rbmess);
           if (SaacClient_ClientDispatchMessage(fdremember, rbmess) < 0) {
             print("\n从SAAC读取数据出错!!!\n");
           }
+          NETWATCH_set("netloop", -1, NULL);
         }
 #ifdef _OTHER_SAAC_LINK
         else if (CONNECT_getCtype(fdremember) == SQL) {
+          NETWATCH_set("SQL_dispatch", fdremember, rbmess);
           if (SaacClient_ClientDispatchMessage(fdremember, rbmess) < 0) {
             print("\n点卷服务器数据出错!!!\n");
           }
+          NETWATCH_set("netloop", -1, NULL);
         }
 #endif
         else {
-          int retval = GmsvServer_ServerDispatchMessage(fdremember, rbmess);
+          int retval;
+          NETWATCH_set("client_dispatch", fdremember, rbmess);
+          retval = GmsvServer_ServerDispatchMessage(fdremember, rbmess);
+          NETWATCH_set("netloop", -1, NULL);
           if (retval == -1) {
             if (++Connect[fdremember].errornum > allowerrornum)
               break;
@@ -3065,17 +3237,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
     }
 
     if (Connect[fdremember].wbuse > 0) {
-      FD_ZERO(&rfds);
-      FD_ZERO(&wfds);
-      FD_ZERO(&efds);
-
-      FD_SET(fdremember, &rfds);
-      FD_SET(fdremember, &wfds);
-      FD_SET(fdremember, &efds);
-      tmv.tv_sec = tmv.tv_usec = 0;
-      ret = select(fdremember + 1, &rfds, &wfds, &efds, &tmv);
-
-      if (ret > 0 && FD_ISSET(fdremember, &wfds)) {
+      if (sa_tcp_take_writable(&ready[fdremember])) {
+        int trace_write_before = Connect[fdremember].wbuse;
         sweep_did_work = 1;
         // Nuke start 0907: Protect gmsv
 
@@ -3086,19 +3249,34 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #endif
         {
           // printf("向SAAC发送内容:%s\n", Connect[fdremember].wb);
-          ret = write(fdremember, Connect[fdremember].wb,
-                      (Connect[fdremember].wbuse < acwritesize)
-                          ? Connect[fdremember].wbuse
-                          : acwritesize);
+          NETWATCH_set("tcp_write_SAAC", fdremember, NULL);
+          ret = sa_tcp_write(fdremember, Connect[fdremember].wb,
+                             (Connect[fdremember].wbuse < acwritesize)
+                                 ? Connect[fdremember].wbuse
+                                 : acwritesize);
         } else {
-          ret = write(fdremember, Connect[fdremember].wb,
-                      (Connect[fdremember].wbuse < 1024 * 64)
-                          ? Connect[fdremember].wbuse
-                          : 1024 * 64);
-          sendspeed += ret;
+          NETWATCH_set("tcp_write_client", fdremember, NULL);
+          ret = sa_tcp_write(fdremember, Connect[fdremember].wb,
+                             (Connect[fdremember].wbuse < 1024 * 64)
+                                 ? Connect[fdremember].wbuse
+                                 : 1024 * 64);
+          if (ret > 0)
+            sendspeed += ret;
         }
+        NETWATCH_set("netloop", -1, NULL);
+        if (fdremember == g_nettrace_write_fd) {
+          print("[TCP_WRITE_TRACE] phase=write fd=%d requested=%d ret=%d "
+                "errno=%d would_block=%d\n",
+                fdremember, trace_write_before, ret, errno,
+                ret < 0 ? sa_tcp_error_is_would_block() : 0);
+        }
+        NETWATCH_set("netloop", -1, NULL);
         // Nuke end
-        if (ret == -1 && errno != EINTR) {
+        if (ret < 0 && (sa_tcp_error_is_interrupted() ||
+                        sa_tcp_error_is_would_block())) {
+          /* Keep the queued bytes and retry after a new writable event. */
+          continue;
+        } else if (ret < 0) {
 #ifdef _NETLOG_
           char cdkey[16];
           char charname[32];
@@ -3119,24 +3297,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
           continue;
         } else if (ret > 0) {
           shiftWB(fdremember, ret);
-        }
-      } else if (ret < 0 && errno != EINTR) {
-#ifdef _NETLOG_
-        char cdkey[16];
-        char charname[32];
-        CONNECT_getCharname(fdremember, charname, 32);
-        CONNECT_getCdkey(fdremember, cdkey, 16);
-        char token[128];
-        sprintf(token, "发送封包写入连接错误:%d %s\n", errno, strerror(errno));
-        LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
-#endif
-#ifdef _OTHER_SAAC_LINK
-        if (CONNECT_getCtype(fdremember) != AC && CONNECT_getCtype(fdremember) != SQL)
-#else
-        if (fdremember != acfd)
-#endif
-        {
-          CONNECT_endOne_debug(fdremember);
+          if (fdremember == g_nettrace_write_fd) {
+            print("[TCP_WRITE_TRACE] phase=after_shift fd=%d remaining=%d\n",
+                  fdremember, Connect[fdremember].wbuse);
+            if (Connect[fdremember].wbuse == 0)
+              g_nettrace_write_fd = -1;
+          }
         }
       }
     }
@@ -3622,6 +3788,12 @@ BOOL OtherSaacConnect(void) {
       print("失败\n");
       return FALSE;
     } else {
+      if (sa_tcp_configure_connected(osfd) < 0) {
+        sa_tcp_close(osfd);
+        osfd = -1;
+        print("配置非阻塞连接失败\n");
+        return FALSE;
+      }
       print("完成\n");
       initConnectOne(osfd, NULL, 0);
       if (!CONNECT_acfdInitRB(osfd) || !CONNECT_acfdInitWB(osfd) ||

@@ -105,8 +105,8 @@ void delFontBuffer(CHAT_BUFFER *chatbuffer) {
   chatbuffer->NextChatBuffer = NULL;
 }
 
-void NewStockFontBuffer(CHAT_BUFFER *chatbuffer, int x, unsigned char color,
-                        char *str, int size) {
+static void NewStockFontBufferGbk(CHAT_BUFFER *chatbuffer, int x,
+                                  unsigned char color, char *str, int size) {
   if (!str[0]) {
     return;
   }
@@ -127,8 +127,8 @@ void NewStockFontBuffer(CHAT_BUFFER *chatbuffer, int x, unsigned char color,
       strcpy(chatbuffer->buffer, outText);
       chatbuffer->NextChatBuffer =
           (CHAT_BUFFER *)calloc(1, sizeof(CHAT_BUFFER));
-      NewStockFontBuffer(chatbuffer->NextChatBuffer, x + fontsize.cx, color,
-                         temp, size);
+      NewStockFontBufferGbk(chatbuffer->NextChatBuffer, x + fontsize.cx, color,
+                            temp, size);
     } else {
       int cnt_int = 0;
       int i = 1;
@@ -159,13 +159,23 @@ void NewStockFontBuffer(CHAT_BUFFER *chatbuffer, int x, unsigned char color,
       }
       chatbuffer->NextChatBuffer =
           (CHAT_BUFFER *)calloc(1, sizeof(CHAT_BUFFER));
-      NewStockFontBuffer(chatbuffer->NextChatBuffer, x, color, temp, size);
+      NewStockFontBufferGbk(chatbuffer->NextChatBuffer, x, color, temp, size);
     }
   } else {
     chatbuffer->color = color;
     chatbuffer->x = x;
     strcpy(chatbuffer->buffer, str);
   }
+}
+
+void NewStockFontBuffer(CHAT_BUFFER *chatbuffer, int x, unsigned char color,
+                        char *str, int size) {
+  // Font buffers are rendered through the ANSI GDI path. Protocol and input
+  // strings are UTF-8, so convert once before expression parsing/recursion.
+  std::string displayText = ToDisplayGbk(str);
+  if (displayText.empty())
+    return;
+  NewStockFontBufferGbk(chatbuffer, x, color, &displayText[0], size);
 }
 #endif
 

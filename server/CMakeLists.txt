@@ -33,6 +33,8 @@ set(COMMON_UTIL_SOURCES
   common/utils/util_string.c
   common/utils/util_time.c
   common/server_util.c
+  common/tcp_buffer.c
+  common/tcp_transport.c
   common/workspace.c
   common/windows_compat.c)
 
@@ -163,6 +165,16 @@ endif()
 
 include(CTest)
 if(BUILD_TESTING)
+  add_executable(tcp_buffer_test
+    tests/tcp_buffer_test.c
+    common/tcp_buffer.c)
+  target_include_directories(tcp_buffer_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/common")
+  target_compile_definitions(tcp_buffer_test PRIVATE
+    ${STONEAGE_WINDOWS_DEFINITIONS})
+  target_compile_options(tcp_buffer_test PRIVATE ${STONEAGE_GNU_OPTIONS})
+  add_test(NAME tcp_buffer_test COMMAND tcp_buffer_test)
+
   add_executable(protocol_security_test
     tests/protocol_security_test.c
     common/server_util.c

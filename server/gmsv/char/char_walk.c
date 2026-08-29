@@ -325,11 +325,6 @@ static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
       of = OBJECT_setFloor(objindex, CHAR_getInt(char_index, CHAR_FLOOR));
       ox = OBJECT_setX(objindex, CHAR_getInt(char_index, CHAR_X));
       oy = OBJECT_setY(objindex, CHAR_getInt(char_index, CHAR_Y));
-      if (!MAP_objmove(objindex, of, ox, oy, ff, fx, fy)) {
-        /*  仇氏卅氏升丹仄方丹手卅中    */
-        //             fprint( "ERROR MAP_OBJMOVE objindex=%d(%s)\n",objindex,
-        //             CHAR_getUseName( char_index ) );
-      }
     }
 
     CHAR_setInt(char_index, CHAR_WALKCOUNT,
@@ -1780,11 +1775,6 @@ CHAR_WALKRET CHAR_walk_jc(int char_index, int of, int ox, int oy, int dir) {
       of = OBJECT_setFloor(objindex, CHAR_getInt(char_index, CHAR_FLOOR));
       ox = OBJECT_setX(objindex, CHAR_getInt(char_index, CHAR_X));
       oy = OBJECT_setY(objindex, CHAR_getInt(char_index, CHAR_Y));
-      if (!MAP_objmove(objindex, of, ox, oy, ff, fx, fy)) {
-        /*  仇氏卅氏升丹仄方丹手卅中    */
-        fprint("ERROR MAP_OBJMOVE objindex=%d(%s)\n", objindex,
-               CHAR_getUseName(char_index));
-      }
     }
 
     CHAR_setInt(char_index, CHAR_WALKCOUNT,

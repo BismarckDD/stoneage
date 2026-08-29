@@ -152,7 +152,7 @@ BOOL PROFESSION_initSkill(char *filename) {
   }
 
   if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("Seek Error\n");
+    printEx("Seek Error\n");
     fclose(f);
     return FALSE;
   }
@@ -166,7 +166,7 @@ BOOL PROFESSION_initSkill(char *filename) {
       sizeof(struct tagProfessionkill) * profession_skill_num + 1);
 
   if (PROFESSION_skill == NULL) {
-    fprint("无法分配内存 %d\n",
+    printEx("无法分配内存 %d\n",
            sizeof(struct tagProfessionkill) * profession_skill_num);
     fclose(f);
     return FALSE;
@@ -220,7 +220,7 @@ BOOL PROFESSION_initSkill(char *filename) {
           line, ",", PROFESSION_SKILL_DATACHARNUM + PROFESSION_SKILL_ID + 1,
           token, sizeof(token));
       if (ret == FALSE) {
-        fprint("Syntax Error file:%s line:%d\n", filename, linenum);
+        printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         break;
       }
       skill_readlen = atoi(token);
@@ -230,7 +230,7 @@ BOOL PROFESSION_initSkill(char *filename) {
         ret =
             getStringFromIndexWithDelim(line, ",", i + 1, token, sizeof(token));
         if (ret == FALSE) {
-          fprint("Syntax Error file:%s line:%d\n", filename, linenum);
+          printEx("Syntax Error file:%s line:%d\n", filename, linenum);
           break;
         }
         PROFESSION_SKILL_setChar(skill_readlen, i, token);
@@ -242,7 +242,7 @@ BOOL PROFESSION_initSkill(char *filename) {
                                           token, sizeof(token));
 
         if (ret == FALSE) {
-          fprint("文件语法错误:%s 第%d行\n", filename,
+          printEx("文件语法错误:%s 第%d行\n", filename,
                  linenum);
           break;
         }

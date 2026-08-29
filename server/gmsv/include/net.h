@@ -80,6 +80,14 @@ void endConnect(void);
   _CONNECT_endOne(__FILE__, __LINE__, sockfd, lin)
 BOOL _CONNECT_endOne(char *file, int fromline, int sockfd, int lin);
 BOOL netloop_faster(void);
+
+/* Independent main-loop watchdog.  The worker thread only observes these
+ * labels, so it can still report when the game thread itself is blocked. */
+void NETWATCH_start(void);
+void NETWATCH_set(const char *stage, int fd, const char *message);
+void NETWATCH_idle(void);
+void CONNECT_getPendingBufferSizes(int fd, int *write_size, int *ca_size);
+void NETTRACE_armWrite(int fd);
 int lsrpcClientWriteFunc(int fd, const char *buf, int size);
 char *GetOneLine(int fd);
 BOOL initConnectOne(int sockfd, struct sockaddr_in *sin, int len);

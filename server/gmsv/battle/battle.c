@@ -19,6 +19,7 @@
 #include "handletime.h"
 #include "log.h"
 #include "magic.h"
+#include "net.h"
 #include "npc_npcenemy.h"
 #include "npcutil.h"
 #include "object.h"
@@ -793,11 +794,11 @@ int BATTLE_DeleteBattle(int battleindex) {
   int i, j;
   BATTLE *pBattle;
   if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
-    fprint("err:battle index error\n");
+    printEx("err:battle index error\n");
     return BATTLE_ERR_BATTLEINDEX;
   }
   if (BATTLE_WatchUnLink(battleindex) == FALSE) {
-    fprint("err:battle link 不脱离\n");
+    printEx("err:battle link 不脱离\n");
   }
 
   pBattle = &BattleArray[battleindex];
@@ -3170,18 +3171,18 @@ int BATTLE_WatchLink(int topbattleindex, int battleindex)
   BATTLE *pWork, *pTop;
 
   if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
-    fprint("err:battle index 奇怪(%d)\n", battleindex);
+    printEx("err:battle index 奇怪(%d)\n", battleindex);
     return FALSE;
   }
   if (BATTLE_CHECKINDEX(topbattleindex) == FALSE) {
-    fprint("err:battle index 奇怪(%d)\n", topbattleindex);
+    printEx("err:battle index 奇怪(%d)\n", topbattleindex);
     return FALSE;
   }
 
   pTop = &BattleArray[topbattleindex];
 
   if (BATTLE_CHECKADDRESS(pTop) == FALSE) {
-    fprint("err:battle address 奇怪(%p)\n", pTop);
+    printEx("err:battle address 奇怪(%p)\n", pTop);
     return FALSE;
   }
 
@@ -3189,7 +3190,7 @@ int BATTLE_WatchLink(int topbattleindex, int battleindex)
 
   if (pWork) {
     if (BATTLE_CHECKADDRESS(pWork) == FALSE) {
-      fprint("err:battle address 奇怪(%p)\n", pWork);
+      printEx("err:battle address 奇怪(%p)\n", pWork);
       return FALSE;
     }
   }
@@ -3219,7 +3220,7 @@ int BATTLE_WatchUnLink(int battleindex)
   BATTLE *pTop;
 
   if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
-    fprint("err:battle index 奇怪(%d)\n", battleindex);
+    printEx("err:battle index 奇怪(%d)\n", battleindex);
     return FALSE;
   }
 
@@ -3228,7 +3229,7 @@ int BATTLE_WatchUnLink(int battleindex)
 
   if (pTop) {
     if (BATTLE_CHECKADDRESS(pTop) == FALSE) {
-      fprint("err:battle address 奇怪(%p)\n", pTop);
+      printEx("err:battle address 奇怪(%p)\n", pTop);
     } else {
       // 勾卅亢卅云仄
       pTop->pNext = BattleArray[battleindex].pNext;
@@ -3236,7 +3237,7 @@ int BATTLE_WatchUnLink(int battleindex)
   }
   if (BattleArray[battleindex].pNext) {
     if (BATTLE_CHECKADDRESS(BattleArray[battleindex].pNext) == FALSE) {
-      fprint("err:battle address 奇怪(%p)\n", BattleArray[battleindex].pNext);
+      printEx("err:battle address 奇怪(%p)\n", BattleArray[battleindex].pNext);
     } else {
       BattleArray[battleindex].pNext->pBefore = pTop;
     }
@@ -3277,7 +3278,7 @@ int BATTLE_CreateForWatcher(int char_index, int topbattleindex) {
   BattleArray[battleindex].turn = BattleArray[topbattleindex].turn;
 
   if (BATTLE_WatchLink(topbattleindex, battleindex) == FALSE) {
-    fprint("err:battle link error(%d),(%d)\n", topbattleindex, battleindex);
+    printEx("err:battle link error(%d),(%d)\n", topbattleindex, battleindex);
     goto BATTLE_CreateForWatcher_End;
   }
 
@@ -3677,44 +3678,12 @@ int BATTLE_GetExp(int char_index)
           -1) {
     getexp = 0;
   }
-#ifdef _GET_BATTLE_EXP
-  // addexp += getexp * getBattleexp();
-#endif
-
   int badindex = -1;
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
     badindex = char_index;
   } else if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
     badindex = CHAR_getWorkInt(char_index, CHAR_WORKPLAYERINDEX);
   }
-  if (CHAR_CHECKINDEX(badindex) == TRUE) {
-#ifdef _VIP_BATTLE_EXP
-    if (CHAR_getInt(badindex, CHAR_VIPTIME) > 0
-#ifdef _FMPOINT_WELFARE
-        || (CHAR_getWorkInt(badindex, CHAR_WORKFMFLOOR) == 1041 &&
-            CHAR_getInt(badindex, CHAR_FMLEADERFLAG) != FMMEMBER_NONE &&
-            CHAR_getInt(badindex, CHAR_FMLEADERFLAG) != FMMEMBER_APPLY) ||
-        (CHAR_getWorkInt(badindex, CHAR_WORKFMFLOOR) == 2031 &&
-         CHAR_getInt(badindex, CHAR_FMLEADERFLAG) != FMMEMBER_NONE &&
-         CHAR_getInt(badindex, CHAR_FMLEADERFLAG) != FMMEMBER_APPLY) ||
-        (CHAR_getWorkInt(badindex, CHAR_WORKFMFLOOR) == 3031 &&
-         CHAR_getInt(badindex, CHAR_FMLEADERFLAG) != FMMEMBER_NONE &&
-         CHAR_getInt(badindex, CHAR_FMLEADERFLAG) != FMMEMBER_APPLY) ||
-        (CHAR_getWorkInt(badindex, CHAR_WORKFMFLOOR) == 4031 &&
-         CHAR_getInt(badindex, CHAR_FMLEADERFLAG) != FMMEMBER_NONE &&
-         CHAR_getInt(badindex, CHAR_FMLEADERFLAG) != FMMEMBER_APPLY)
-#endif
-#ifdef _PLAYER_TITLE
-    //|| CHAR_getInt( badindex, CHAR_TITLE_LV) >= 20
-#endif
-    ) {
-      addexp *= getVipBattleexp();
-    }
-#endif
-    // addexp = (addexp * FreePlayerExp(badindex)) / 100;
-
-  }
-
 #ifdef _ITEM_ADDEQUIPEXP
   if (CHAR_CHECKINDEX(midx)) {
     for (i = 0; i < CHAR_EQUIPPLACENUM; i++) {
@@ -3753,9 +3722,7 @@ int BATTLE_GetExp(int char_index)
   if (CHAR_getInt(char_index, CHAR_LV) >= CHAR_MAXUPLEVEL)
     addexp = 0;
   CHAR_setWorkInt(char_index, CHAR_WORKGETEXP, addexp); //回存CHAR_WORKGETEXP
-
   CHAR_AddMaxExp(char_index, addexp);
-
   return addexp;
 }
 #else
@@ -4403,12 +4370,14 @@ static int BATTLE_Finish(int battleindex) {
   BATTLE *pBattle;
   BATTLE_ENTRY *pEntry;
   int i, char_index, j;
+  char watch_detail[32];
   if (BATTLE_CHECKINDEX(battleindex) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
 
   if (BattleArray[battleindex].winside == -1 &&
       BattleArray[battleindex].type == BATTLE_TYPE_P_vs_E &&
       BattleArray[battleindex].WinFunc != NULL) {
+    NETWATCH_set("BATTLE_Finish.WinFunc", battleindex, NULL);
     BattleArray[battleindex].WinFunc(battleindex,
                                      BattleArray[battleindex].createindex);
   }
@@ -4432,7 +4401,9 @@ static int BATTLE_Finish(int battleindex) {
         int fl = 0, x = 0, y = 0;
         CHAR_getElderPosition(CHAR_getInt(lostindex, CHAR_LASTTALKELDER), &fl,
                               &x, &y);
+        NETWATCH_set("BATTLE_Finish.PK_warp", lostindex, NULL);
         CHAR_warpToSpecificPoint(lostindex, fl, x, y);
+        NETWATCH_set("BATTLE_Finish.PK_party", lostindex, NULL);
         CHAR_DischargeParty(lostindex, 0);
         CHAR_setWorkInt(winindex, CHAR_WORK_BATTLEPK, FALSE);
         CHAR_setWorkInt(lostindex, CHAR_WORK_BATTLEPK, FALSE);
@@ -4450,9 +4421,11 @@ static int BATTLE_Finish(int battleindex) {
                     CHAR_FLOOR) == 50000) {
       if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
         if (BattleArray[battleindex].winside == -1) {
+          NETWATCH_set("BATTLE_Finish.TradePK", battleindex, NULL);
           TRADE_HandleTradeForPK(&BattleArray[battleindex].TradeList[0],
                                  &BattleArray[battleindex].TradeList[1]);
         } else if (BattleArray[battleindex].winside == 1) {
+          NETWATCH_set("BATTLE_Finish.TradePK", battleindex, NULL);
           TRADE_HandleTradeForPK(&BattleArray[battleindex].TradeList[1],
                                  &BattleArray[battleindex].TradeList[0]);
         }
@@ -4522,7 +4495,11 @@ static int BATTLE_Finish(int battleindex) {
       if (CHAR_CHECKINDEX(char_index) == FALSE)
         continue;
 
+      snprintf(watch_detail, sizeof(watch_detail), "battle=%d,side=%d,slot=%d",
+               battleindex, j, i);
+      NETWATCH_set("BATTLE_Finish.GetProfit", char_index, watch_detail);
       BATTLE_GetProfit(battleindex, j, i); // 包括取得经验值
+      NETWATCH_set("BATTLE_Finish.Exit", char_index, watch_detail);
       BATTLE_Exit(char_index, battleindex);
     }
   }
@@ -4530,27 +4507,34 @@ static int BATTLE_Finish(int battleindex) {
   } else {
     pBattle = BattleArray[battleindex].pNext;
     for (; pBattle; pBattle = pBattle->pNext) {
+      NETWATCH_set("BATTLE_Finish.WatchExit", pBattle->battleindex, NULL);
       if (BATTLE_CHECKADDRESS(pBattle) == FALSE) {
-        fprint("err:battle address 奇怪(%p)\n", pBattle);
+        printEx("err:battle address 奇怪(%p)\n", pBattle);
         break;
       }
       for (i = BATTLE_ENTRY_MAX - 1; i >= 0; i--) {
         char_index = pBattle->Side[0].Entry[i].char_index;
         if (CHAR_CHECKINDEX(char_index) == FALSE)
           continue;
+        snprintf(watch_detail, sizeof(watch_detail),
+                 "battle=%d,watch=%d,slot=%d", battleindex,
+                 pBattle->battleindex, i);
+        NETWATCH_set("BATTLE_Finish.WatcherExit", char_index, watch_detail);
         BATTLE_Exit(char_index, pBattle->battleindex);
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_FINAL);
       }
     }
     pBattle = BattleArray[battleindex].pNext;
     for (; pBattle; pBattle = pBattle->pNext) {
+      NETWATCH_set("BATTLE_Finish.DeleteWatch", pBattle->battleindex, NULL);
       if (BATTLE_CHECKADDRESS(pBattle) == FALSE) {
-        fprint("err:battle address 奇怪(%p)\n", pBattle);
+        printEx("err:battle address 奇怪(%p)\n", pBattle);
         break;
       }
       BATTLE_DeleteBattle(pBattle->battleindex);
     }
   }
+  NETWATCH_set("BATTLE_Finish.DeleteMain", battleindex, NULL);
   BATTLE_DeleteBattle(battleindex);
   return 0;
 }
@@ -4857,7 +4841,7 @@ static int BATTLE_Command(int battleindex) {
   pWatchBattle = pBattle->pNext;
   for (; pWatchBattle; pWatchBattle = pWatchBattle->pNext) {
     if (BATTLE_CHECKADDRESS(pWatchBattle) == FALSE) {
-      fprint("err:观战battle address错误(%p)\n", pWatchBattle);
+      printEx("err:观战battle address错误(%p)\n", pWatchBattle);
       break;
     }
 
@@ -4965,7 +4949,9 @@ int BATTLE_Loop(void) {
     BattleArray[i].tv_usec = NowTime.tv_usec;
 #endif
     if (BattleArray[i].type == BATTLE_TYPE_WATCH) { // 若是观战模式
+      NETWATCH_set("BATTLE_CountAlive", i, NULL);
       if (BATTLE_CountAlive(i, 0) == 0) {
+        NETWATCH_set("BATTLE_FinishSet", i, NULL);
         BATTLE_FinishSet(i);
       }
     }
@@ -4974,30 +4960,39 @@ int BATTLE_Loop(void) {
     case BATTLE_MODE_NONE: // 未战斗
       break;
     case BATTLE_MODE_INIT: // 战斗初始化
+      NETWATCH_set("BATTLE_Init", i, NULL);
       BATTLE_Init(i);
       break;
     case BATTLE_MODE_BATTLE: // Server内部战斗中
+      NETWATCH_set("BATTLE_Command", i, NULL);
       BATTLE_Command(i);
       break;
     case BATTLE_MODE_FINISH: // 战斗结束
+      NETWATCH_set("BATTLE_Finish", i, NULL);
       BATTLE_Finish(i);
       break;
     case BATTLE_MODE_STOP: // 战斗中断
+      NETWATCH_set("BATTLE_Stop", i, NULL);
       BATTLE_Stop(i);
       break;
     case BATTLE_MODE_WATCHBC: // 观战中...
+      NETWATCH_set("BATTLE_WatchBC", i, NULL);
       BATTLE_WatchBC(i);
       break;
     case BATTLE_MODE_WATCHPRE:
+      NETWATCH_set("BATTLE_WatchPre", i, NULL);
       BATTLE_WatchPre(i);
       break;
     case BATTLE_MODE_WATCHWAIT:
+      NETWATCH_set("BATTLE_WatchWait", i, NULL);
       BATTLE_WatchWait(i);
       break;
     case BATTLE_MODE_WATCHMOVIE:
+      NETWATCH_set("BATTLE_WatchMovie", i, NULL);
       BATTLE_WatchMovie(i);
       break;
     case BATTLE_MODE_WATCHAFTER:
+      NETWATCH_set("BATTLE_WatchAfter", i, NULL);
       BATTLE_WatchAfter(i);
       break;
     }
@@ -6469,53 +6464,6 @@ void Pet_Check_Die(int petindex) {
   return;
 }
 #endif
-/*
-int BATTLE_AddProfit( int battleindex,	int *pBidList)
-{
-        if( BATTLE_CHECKINDEX( battleindex ) == FALSE )return
-BATTLE_ERR_BATTLEINDEX;
-
-        if(	BattleArray[battleindex].dpbattle == 1 ){
-                return BATTLE_AddDuelPoint( battleindex, pBidList );
-        }else{
-#ifdef _SHARE_EXP
-                if(getExpShare()==1 && BattleArray[battleindex].type ==
-BATTLE_TYPE_P_vs_E){
-
-                        if (pBidList[0] >= SIDE_OFFSET || pBidList[0] <0)
-                                return BATTLE_AddExpItem( battleindex, pBidList
-);
-
-                        int aAttackList[BATTLE_ENTRY_MAX+1];
-                        int i = 0;
-                        int k = 0;
-                        for(i=0;i<BATTLE_ENTRY_MAX;i++){
-                                if( CHAR_CHECKINDEX(
-BattleArray[battleindex].Side[0].Entry[i].char_index ) == FALSE )continue; if(
-BATTLE_CanMoveCheck( BattleArray[battleindex].Side[0].Entry[i].char_index ) ==
-FALSE ){ continue;
-                                }
-                                if( CHAR_getInt(
-BattleArray[battleindex].Side[0].Entry[i].char_index, CHAR_HP ) <= 0 ){
-                                        continue;
-                                }
-                                aAttackList[k++] =
-BattleArray[battleindex].Side[0].Entry[i].bid;
-                        }
-
-                        aAttackList[k] = -1;
-                        return BATTLE_AddExpItem( battleindex, aAttackList );
-                }else{
-                        return BATTLE_AddExpItem( battleindex, pBidList );
-                }
-#else
-                                        int aAttackList[BATTLE_ENTRY_MAX+1];
-                return BATTLE_AddExpItem( battleindex, pBidList );
-#endif
-        }
-
-}
-*/
 
 int BATTLE_AddProfit(int battleindex, int *pBidList) {
   if (BATTLE_CHECKINDEX(battleindex) == FALSE)
@@ -6590,14 +6538,6 @@ int BATTLE_TargetCheckDead(int battleindex, int defNo) {
           BATTLE_CHARMODE_RESCUE ||
       CHAR_getFlg(defindex, CHAR_ISATTACKED) == FALSE ||
       CHAR_getFlg(defindex, CHAR_ISDIE) == FALSE) {
-    // BATTLE_CHARMODE_RESCUE 5
-    /*
-                    print("\n [ %d, %d, %d, %d]",
-                            CHAR_getWorkInt( defindex, CHAR_WORKBATTLEMODE ),
-                            CHAR_getWorkInt( defindex, CHAR_WORKBATTLEMODE ),
-                            CHAR_getFlg( defindex, CHAR_ISATTACKED ),
-                            CHAR_getFlg( defindex, CHAR_ISDIE ));
-    */
     return FALSE;
   }
   return TRUE;

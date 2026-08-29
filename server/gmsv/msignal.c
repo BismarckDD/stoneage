@@ -30,7 +30,7 @@ void logerr(char *token) {
   FILE *fp = fopen(tmp, "a+");
   fwrite(token, strlen(token), 1, fp);
   fclose(fp);
-  printf(token);
+  print(token);
 }
 
 void dump() {

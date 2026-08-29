@@ -1,8 +1,10 @@
-﻿//
+﻿#define __BATTLE_MENU_CPP__
+//
 #include "systeminc/system.h"
 //
-#include "game/anim_tbl.h"
 #include "game/battle_menu.h"
+//
+#include "game/anim_tbl.h"
 #include "game/battle_proc.h"
 #include "proto/lssproto_cli.h"
 #include "proto/protocol.h"
@@ -29,7 +31,6 @@ enum {
 
 #define BATTLE_MENU (1 << 0)
 #define BATTLE_MENU_PET (1 << 1)
-
 #define BATTLE_MENU_SUU 9
 #define BATTLE_MENU_FONTS 9
 #define BATTLE_MENU_JUJUTSU_FONTS 6
@@ -47,88 +48,31 @@ enum {
 #define BATTLE_CNT_DOWN_TIME _BATTLE_TIME_ // 每局战斗时间
 #endif
 
-char BattleCmd[BATTLE_COMMAND_SIZE];
-char BattleCmdBak[BATTLE_BUF_SIZE][BATTLE_COMMAND_SIZE];
-int BattleCmdReadPointer;
-int BattleCmdWritePointer;
-
-// 战斗状态
-char BattleStatus[BATTLE_COMMAND_SIZE];
-// 战斗状态回溯
-char BattleStatusBak[BATTLE_BUF_SIZE][BATTLE_COMMAND_SIZE];
-//
-int BattleStatusReadPointer;
-int BattleStatusWritePointer;
-// 当前的战斗位置.
-int BattleMyNo = 0;
-// 当前的MP.
-int BattleMyMp;
-// 战斗中是否允许逃跑
-int BattleEscFlag = FALSE;
-//  
-int BattlePetStMenCnt;
-// 
-int BattleBpFlag = FALSE;
-//
 int BattleCmdNo = -1;
-// ?
 int BattleJujutuNo;
-// ??
 int BattleWazaNo;
-// 战斗宠物是否有后备？有后备才可以换上.
-int battlePetNoBak = -2;
-// 战斗宠物是否有后备？
-int battlePetNoBak2 = -2;
-// 战斗中物品
-int BattleItemNo;
-// ??????????
 int battlePlayerEscFlag = FALSE;
-// ??????????
-int BattleAnimFlag;
-// ??????
-BOOL BattleTurnReceiveFlag;
-#ifdef PK_SYSTEM_TIMER_BY_ZHU
-BOOL BattleCntDownRest;
-BOOL SendToServer;
-#endif
-int BattleCliTurnNo;
-//
-int BattleSvTurnNo;
-
-#ifdef _HUNDRED_KILL
-BOOL BattleHundredFlag = FALSE;
-#endif
-
-// 战斗结束是否展示战斗结果
-BOOL BattleResultWndFlag = FALSE;
-
-// 
 DWORD BattleCntDown;
 DWORD BattleIntervalCnt;
-int AI;
-DWORD PauseAI;
-// ??????????????
 BOOL BattleCntDownFlag = FALSE;
 
 // ???????
-static BOOL battleButtonFlag[BATTLE_BUTTON_SUU];
+static BOOL sBattleButtonFlag[BATTLE_BUTTON_SUU];
 static int battleButtonDispNo[BATTLE_BUTTON_SUU];
 static int battleMenuJujutsuFontNo[BATTLE_MENU_JUJUTSU_FONTS];
 static int battleMenuItemFontNo[BATTLE_MENU_ITEM_FONTS];
 static int battleMenuPetFontNo[BATTLE_MENU_PET_FONTS];
 static int battleMenuWazaFontNo[BATTLE_MENU_WAZA_FONTS];
-int battleMenuFlag = FALSE;           // ??????????????????
 static int battleMenuReturn = FALSE;  // ????????????
 static int battlePetMenuFlag = FALSE; // ???????????
 int battlePetButtonFlag = FALSE;      // ??????????????
 static int battleTimeUpFlag = FALSE;
 static int battleTargetSelectFlag = FALSE;
-int battleMenuFlag2 = FALSE;      // ??????????
 int battleButtonBak = -1;         // ???????
+int battleButtonFlag = FALSE;
 static int battleButtonBak2 = -1; // ????????
 int battleWazaTargetBak = -1;     // ????
 
-// ??????????????
 static ACTION *pActInfoWnd;
 static ACTION *pActWnd = NULL;
 static int buttonX, buttonY, buttonA;
@@ -148,29 +92,32 @@ extern BOOL g_bUseAlpha;
 
 void InitBattleMenu(void) {
   int i;
-  // ???
+  //
   for (i = 0; i < BATTLE_BUTTON_SUU; i++)
     battleButtonDispNo[i] = -2;
-  // 
+  //
   for (i = 0; i < BATTLE_MENU_JUJUTSU_FONTS; i++)
     battleMenuJujutsuFontNo[i] = -2;
-  // ????
+  //
   for (i = 0; i < BATTLE_MENU_ITEM_FONTS; i++)
     battleMenuItemFontNo[i] = -2;
-  // ???
+  //
   for (i = 0; i < BATTLE_MENU_PET_FONTS; i++)
     battleMenuPetFontNo[i] = -2;
   // ?
   for (i = 0; i < BATTLE_MENU_WAZA_FONTS; i++)
     battleMenuWazaFontNo[i] = -2;
 
-  battleMenuFlag = FALSE;  // ??????????
-  battleMenuReturn = TRUE; // ????????????
-  battleButtonBak2 = -1; // ????????
-  BattleEscFlag = FALSE; // ????????
+  BattleEscFlag = FALSE;
+  BattleBpFlag = FALSE;
+  battlePetNoBak = -2;
+  battlePetNoBak2 = -2;
+  battleMenuFlag = FALSE;
+  battleMenuFlag2 = FALSE;
+  battleMenuReturn = TRUE;
+  battleButtonBak2 = -1;
   BattleResultWndFlag = FALSE;
   ClearBattleButton();
-  // ?????????????
   battleButtonBak = 0;
 #ifdef __AI
   extern int AI_First;
@@ -189,15 +136,11 @@ void InitBattleMenu(void) {
   }
 }
 
-// ????????? ********************************************/
 int CheckBattle1P2P(void) {
-  int i, cnt = 0;
-  // ?????
-  for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-    // ??????????
+  int cnt = 0;
+  for (int i = 0; i < BATTLKPKPLYAERNUM; ++i) {
     if (p_party[i]->func == NULL)
       continue;
-    // ???????
     if (((ATR_EQU *)p_party[i]->pYobi)->pet_ok == TRUE)
       cnt++;
   }
@@ -277,16 +220,10 @@ void ClearBoxFlag(void) {
   }
 }
 
-// ?????????? ***************************************************/
 int CheckBattelTarget(void) {
-  int i;
-  // ?????????????
-  for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-    // ??????????
+  for (int i = 0; i < BATTLKPKPLYAERNUM; ++i) {
     if (p_party[i]->func == NULL)
       continue;
-    // ??????
-
     if (!(p_party[i]->atr & ACT_ATR_HIT_BOX) &&
         !(p_party[i]->atr & ACT_ATR_HIT_BOX_ALL1) &&
         !(p_party[i]->atr & ACT_ATR_HIT_BOX_ALL2) &&
@@ -305,45 +242,29 @@ int CheckBattelTarget(void) {
 #ifdef _CANT_ATK
     if (!((pc.sideNo * 10) <= i && ((pc.sideNo + 1) * 10) > i))
 #endif
-      // ???????
       if (p_party[i]->hitDispNo == HitDispNo)
         return i;
   }
-  // ????????
   return -1;
 }
 
-// ?????????  *****************************************************/
 void ClearBattleButton(void) {
   // ????
-  memset(battleButtonFlag, 0, sizeof(battleButtonFlag));
+  memset(sBattleButtonFlag, 0, sizeof(battleButtonFlag));
 }
 
-// ???????????????? *******************************************/
 void BattleButtonOff(void) {
   play_se(217, 320, 240);
-  // ???????????
   DeathAction(pActWnd);
-  pActWnd = NULL; // ????????????
-  // ???????????????
-  battleTargetSelectFlag = FALSE;
-  // ?????
-  BattleCmdNo = -1;
-
-#ifdef _BATTLESKILL // (不可开) Syu ADD 战斗技能介面
-  wonflag = 0;
-#endif
-
-  // ?????????
-  ClearBattleButton();
-  // ????????
+  pActWnd = NULL; // 
+  battleTargetSelectFlag = FALSE; // 清除目标选择
+  BattleCmdNo = -1;     // ???
+  ClearBattleButton(); // 清除战斗菜单栏
   ClearBoxFlag();
 }
 
-// ?????????? *******************************************************/
 void InitItem2(int x, int y) {
   int i, j = 0, k = 0;
-  // ????????
   for (i = MAX_ITEMSTART; i < MAX_ITEM; i++) {
     ItemBuffer[i].defX = x + 32 + j;
     ItemBuffer[i].defY = y + 56 + 48 + 48 + 48 - 160 + k;
@@ -366,21 +287,17 @@ void InitItem2(int x, int y) {
   }
 }
 
+// 2026.08.27 HP框画
 void HpMeterDisp(int no) {
   int meterX = p_party[no]->x;
   int meterY = p_party[no]->y - 80;
   int graNo;
-  // ??????????????
   if (p_party[no]->func == NULL || p_party[no]->hp <= 0)
     return;
-  // ?????
   if (p_party[no]->atr & ACT_ATR_TRAVEL)
     return;
-  // ??
   if (no == BattleMyNo) {
-    // ?
     StockDispBuffer(meterX, meterY, DISP_PRIO_IME1, CG_BATTLE_BAR_PLAYER_2, 0);
-    // ??
     StockBoxDispBuffer(meterX - 21, meterY - 3,
                        meterX - 21 +
                            (int)(((double)p_party[BattleMyNo]->hp /
@@ -393,21 +310,6 @@ void HpMeterDisp(int no) {
                                   (double)p_party[BattleMyNo]->maxHp) *
                                  40.0),
                        meterY - 2, DISP_PRIO_IME2, SYSTEM_PAL_GREEN, 2);
-    // ??
-#ifdef _BATTLESKILL // (不可开) Syu ADD 战斗技能介面
-    StockBoxDispBuffer(meterX - 21, meterY + 1,
-                       meterX - 21 +
-                           (int)(((double)p_party[BattleMyNo]->mp /
-                                  (double)p_party[BattleMyNo]->maxMp) *
-                                 40.0),
-                       meterY + 1, DISP_PRIO_IME2, SYSTEM_PAL_YELLOW, 2);
-    StockBoxDispBuffer(meterX - 21, meterY + 2,
-                       meterX - 21 +
-                           (int)(((double)p_party[BattleMyNo]->mp /
-                                  (double)p_party[BattleMyNo]->maxMp) *
-                                 40.0),
-                       meterY + 2, DISP_PRIO_IME2, SYSTEM_PAL_YELLOW, 2);
-#else
     StockBoxDispBuffer(
         meterX - 21, meterY + 1,
         meterX - 21 +
@@ -418,14 +320,11 @@ void HpMeterDisp(int no) {
         meterX - 21 +
             (int)(((double)p_party[BattleMyNo]->mp / pc.maxMp) * 40.0),
         meterY + 2, DISP_PRIO_IME2, SYSTEM_PAL_YELLOW, 2);
-#endif
     // cary 秀出骑宠的宠物血量
     if (p_party[BattleMyNo]->onRide > 0) {
       meterY += 25;
       meterX += 20;
-      // ?
       StockDispBuffer(meterX, meterY, DISP_PRIO_IME1, CG_BATTLE_BAR_PET_2, 0);
-      // ?????????
       StockBoxDispBuffer(meterX - 21, meterY - 1,
                          meterX - 21 +
                              (int)(((double)p_party[BattleMyNo]->petHp /
@@ -440,7 +339,7 @@ void HpMeterDisp(int no) {
                                    40.0),
                          meterY + 0, DISP_PRIO_IME2, SYSTEM_PAL_GREEN, 2);
     }
-  } else { // ????
+  } else {
     if (no == BattleMyNo + 5)
       graNo = CG_BATTLE_BAR_PET_2;
     else
@@ -518,7 +417,7 @@ void BattleButtonAttack( void )
     if( HitDispNo == battleButtonDispNo[ 0 ] || battleButtonBak2 == 0 ){
 
         if( mouse.onceState & MOUSE_LEFT_CRICK || battleButtonBak2 == 0 ){
-            bak = battleButtonFlag[ 0 ];
+            bak = sBattleButtonFlag[ 0 ];
             BattleButtonOff();
 
             if( bak == FALSE ){
@@ -527,7 +426,7 @@ void BattleButtonAttack( void )
 
                 BattleCmdNo = BATTLE_ATTACK;
 
-                battleButtonFlag[ 0 ] = TRUE;
+                sBattleButtonFlag[ 0 ] = TRUE;
 
                 battleButtonBak = 0;
 
@@ -594,7 +493,7 @@ void BattleButtonAttack(void) {
   if (HitDispNo == battleButtonDispNo[0] || battleButtonBak2 == 0) {
 
     if (mouse.onceState & MOUSE_LEFT_CRICK || battleButtonBak2 == 0) {
-      bak = battleButtonFlag[0];
+      bak = sBattleButtonFlag[0];
       BattleButtonOff();
 
       if (bak == FALSE) {
@@ -603,7 +502,7 @@ void BattleButtonAttack(void) {
 
         BattleCmdNo = BATTLE_ATTACK;
 
-        battleButtonFlag[0] = TRUE;
+        sBattleButtonFlag[0] = TRUE;
 
         battleButtonBak = 0;
 
@@ -658,30 +557,23 @@ void BattleButtonJujutsu(void) {
 #ifdef _MAGIC_NOCAST
     if (NoCastFlag == FALSE) {
 #endif
-
       if (mouse.onceState & MOUSE_LEFT_CRICK || battleButtonBak2 == 1) {
-        bak = battleButtonFlag[1];
+        bak = sBattleButtonFlag[1];
         BattleButtonOff();
-
         if (bak == FALSE) {
-
-          battleButtonFlag[1] = TRUE;
-
+          sBattleButtonFlag[1] = TRUE;
           BattleCmdNo = BATTLE_JUJUTU;
-
           for (i = 0; i < BATTLE_MENU_JUJUTSU_FONTS; i++)
             battleMenuJujutsuFontNo[i] = -2;
-#ifdef _NEW_WIN_POS_
-          pActWnd = MakeWindowDisp(520, 140, 271, 281, 0, -1, FALSE);
-#else
-        pActWnd = MakeWindowDisp(380, 140, 271, 281, 0, -1, FALSE);
-#endif
+          pActWnd = MakeWindowDisp(lpDraw->xSize - 280,
+                                   140,
+                                   271,
+                                   281, 0, -1,
+                                   FALSE);
           battleButtonBak = 1;
-
           battleButtonBak2 = -1;
         }
       }
-
       strcpy(OneLineInfoStr, "吟唱咒术。");
 #ifdef _MAGIC_NOCAST
     } else {
@@ -691,11 +583,11 @@ void BattleButtonJujutsu(void) {
   }
 #ifdef _MAGIC_NOCAST
   if (!(NoCastFlag == FALSE)) {
-    battleButtonFlag[1] = FALSE;
+    sBattleButtonFlag[1] = FALSE;
   }
 #endif
 
-  if (battleButtonFlag[1] == TRUE) {
+  if (sBattleButtonFlag[1] == TRUE) {
 
     if (pActWnd != NULL) {
 
@@ -1174,46 +1066,30 @@ void BattleButtonCapture(void) // 捕捉宠物
 {
   int i, bak;
   if (HitDispNo == battleButtonDispNo[2] || battleButtonBak2 == 2) {
-    // ?????????
+    // 检查当前宠物数量
     if (CheckPetSuu() >= 5) {
-      // ??????
       strcpy(OneLineInfoStr, "不能再捕获更多的宠物了。");
-      // ?????????
       if (mouse.onceState & MOUSE_LEFT_CRICK) {
-        // ???
         play_se(220, 320, 240);
       }
-      // ????????
       battleButtonBak2 = -1;
     } else {
-      // ??????
       strcpy(OneLineInfoStr, "捕捉。");
-      // ?????????
       if (mouse.onceState & MOUSE_LEFT_CRICK || battleButtonBak2 == 2) {
-        bak = battleButtonFlag[2]; // ??????
-        BattleButtonOff();         // ????????????
-        // ?????????
+        bak = sBattleButtonFlag[2]; // ??????
+        BattleButtonOff();         // 禁用所有Button. 
         if (bak == FALSE) {
-          // ??????????????
           battleTargetSelectFlag = TRUE;
-          // ?????
           BattleCmdNo = BATTLE_CAPTURE;
-          // ?????????
-          battleButtonFlag[2] = TRUE;
-          // ????????
+          sBattleButtonFlag[2] = TRUE;
           battleButtonBak = 2;
-          // ????????
           battleButtonBak2 = -1;
-          // ???????
           for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-            // ??????????
             if (p_party[i]->func == NULL)
               continue;
-            // ????
             if (((ATR_EQU *)p_party[i]->pYobi)->group_flg ==
                 ((ATR_EQU *)p_party[BattleMyNo]->pYobi)->group_flg)
               continue;
-            // ????
             if (i == BattleMyNo)
               continue;
             // ??????
@@ -1229,7 +1105,7 @@ void BattleButtonCapture(void) // 捕捉宠物
 }
 
 void BattleButtonHelp(void) {
-  if (HitDispNo == battleButtonDispNo[3] && battleButtonFlag[3] == FALSE) {
+  if (HitDispNo == battleButtonDispNo[3] && sBattleButtonFlag[3] == FALSE) {
 
     strcpy(OneLineInfoStr, "求救。");
     if (mouse.onceState & MOUSE_LEFT_CRICK) {
@@ -1256,12 +1132,12 @@ void BattleButtonHelp(void) {
 }
 
 void BattleButtonGuard(void) {
-  if (HitDispNo == battleButtonDispNo[4] && battleButtonFlag[4] == FALSE) {
+  if (HitDispNo == battleButtonDispNo[4] && sBattleButtonFlag[4] == FALSE) {
 
     if (mouse.onceState & MOUSE_LEFT_CRICK) {
       BattleButtonOff();
 
-      battleButtonFlag[4] = TRUE;
+      sBattleButtonFlag[4] = TRUE;
 
       if (bNewServer)
         lssproto_B_send(sockfd, "G");
@@ -1289,43 +1165,30 @@ void BattleButtonItem(void) {
   char moji[256];
   int x, y;
   if (HitDispNo == battleButtonDispNo[5] || battleButtonBak2 == 5) {
-
     if (mouse.onceState & MOUSE_LEFT_CRICK || battleButtonBak2 == 5) {
-      bak = battleButtonFlag[5];
+      bak = sBattleButtonFlag[5];
       BattleButtonOff();
-
       if (bak == FALSE) {
-
-        battleButtonFlag[5] = TRUE;
-
+        sBattleButtonFlag[5] = TRUE;
         BattleCmdNo = BATTLE_ITEM;
-
         for (i = 0; i < BATTLE_MENU_ITEM_FONTS; i++)
           battleMenuItemFontNo[i] = -2;
-
-#ifdef _NEW_WIN_POS_
-        pActWnd = MakeWindowDisp(520, 160, 271, 281, 0, -1, FALSE);
-#ifdef _NEW_ITEM_
-        道具栏页数 = 0;
-#endif
-#else
-        pActWnd = MakeWindowDisp(380, 160, 271, 281, 0, -1, FALSE);
-#endif
+        // 道具栏标题
+        pActWnd = MakeWindowDisp(lpDraw->xSize - 280, // 全宽280
+                                 160,                 // 上面菜单时160
+                                 271, 281, 0, -1,     // 
+                                 FALSE);
+        // 这个是下面的道具框？
         InitItem2(pActWnd->x, pActWnd->y);
-
         battleButtonBak = 5;
-
         battleButtonBak2 = -1;
       }
     }
-
     strcpy(OneLineInfoStr, "使用道具。");
   }
 
-  if (battleButtonFlag[5] == TRUE) {
-
+  if (sBattleButtonFlag[5] == TRUE) {
     if (pActWnd != NULL) {
-
       if (pActWnd->hp > 0) {
 #ifdef _READ16BITBMP
         if (g_bUseAlpha)
@@ -1355,72 +1218,18 @@ void BattleButtonItem(void) {
 #endif
           x = pActWnd->x + 16;
           y = pActWnd->y + 191 + 7;
-#ifdef _NEW_ITEM_
-          for (i = 0; i < 3; i++) {
-            if (i == 道具栏页数) {
-              StockDispBuffer(513, 182 + i * 56, DISP_PRIO_IME3, 55113 + i, 1);
-            } else {
-              BOOL flg = FALSE;
-              if (i) {
-                if (pc.道具栏状态 & 1 << i) {
-                  flg = TRUE;
-                  if (DuelFlag) {
-                    flg = FALSE;
-                  }
-                }
-              } else
-                flg = TRUE;
-              if (flg) {
-                StockDispBuffer(518, 182 + i * 56, DISP_PRIO_IME3, 55110 + i,
-                                1);
-                if (MakeHitBox(508, 154 + i * 56, 508 + 20, 151 + i * 56 + 60,
-                               DISP_PRIO_IME4)) {
-                  if (mouse.onceState & MOUSE_LEFT_CRICK) {
-                    道具栏页数 = i;
-
-#ifdef _MAPITEMNO_
-                    if (nowFloor == 12345)
-                      StockChatBufferLine("该地图战斗下不允许使用扩展包裹！",
-                                          FONT_PAL_RED);
-#endif
-                  }
-                }
-              } else
-                StockDispBuffer(518, 182 + i * 56, DISP_PRIO_IME3, 55107 + i,
-                                1);
-            }
-          }
-#ifdef _MAPITEMNO_
-          if (nowFloor == 12345)
-            道具栏页数 = 0;
-#endif
-#endif
           for (i = MAX_ITEM - 1; i >= MAX_ITEMSTART; i--) {
-#ifdef _NEW_ITEM_
-            int 道具起始 = MAX_ITEMSTART + MAX_MAXHAVEITEM * 道具栏页数;
-            int 道具结束 = 道具起始 + MAX_MAXHAVEITEM;
-            if (i >= MAX_ITEMSTART) {
-              if (i < 道具起始 || i >= 道具结束)
-                continue;
-            }
-#endif
             if (MakeHitBox(ItemBuffer[i].defX - 24, ItemBuffer[i].defY - 24,
                            ItemBuffer[i].defX + 25, ItemBuffer[i].defY + 23,
                            DISP_PRIO_IME3) == TRUE) {
-
               if (pc.item[i].useFlag == TRUE) {
                 int color = FONT_PAL_WHITE;
-
                 char *splitPoint = pc.item[i].memo;
-
                 if (pc.transmigration == 0 && pc.level < pc.item[i].level)
                   color = FONT_PAL_RED;
-
                 StockFontBuffer(pActWnd->x + 16, pActWnd->y + 332 - 160,
                                 FONT_PRIO_FRONT, color, pc.item[i].name, 0);
-
-                while (1) {
-
+                while (true) {
                   if (strlen(splitPoint) > 28) {
                     strncpy_s(moji, splitPoint, 28);
                     moji[28] = NULL;
@@ -1449,16 +1258,12 @@ void BattleButtonItem(void) {
                   if (pc.item[i].useFlag != TRUE ||
                       pc.item[i].field == ITEM_FIELD_MAP ||
                       pc.transmigration == 0 && pc.level < pc.item[i].level) {
-
                     play_se(220, 320, 240);
                   } else {
                     BattleItemNo = i;
-
                     switch (pc.item[i].target) {
                     case ITEM_TARGET_MYSELF:
-
                       p_party[BattleMyNo]->atr |= ACT_ATR_HIT_BOX;
-
                       battleTargetSelectFlag = TRUE;
 
                       DeathAction(pActWnd);
@@ -1647,7 +1452,6 @@ void BattleButtonItem(void) {
                       pActWnd = NULL;
 
                       ClearBattleButton();
-
                       BattleCmdNo = BATTLE_ITEM;
 
                       play_se(217, 320, 240);
@@ -1724,17 +1528,18 @@ void BattleButtonPet(void) {
   if (HitDispNo == battleButtonDispNo[6] || battleButtonBak2 == 6) {
 
     if (mouse.onceState & MOUSE_LEFT_CRICK || battleButtonBak2 == 6) {
-      bak = battleButtonFlag[6];
+      bak = sBattleButtonFlag[6];
       BattleButtonOff();
 
       if (bak == FALSE) {
 
-        battleButtonFlag[6] = TRUE;
+        sBattleButtonFlag[6] = TRUE;
 
         for (i = 0; i < BATTLE_MENU_PET_FONTS; i++)
           battleMenuPetFontNo[i] = -2;
 #ifdef _NEW_WIN_POS_
-        pActWnd = MakeWindowDisp(520, 160, 271, 281, 0, -1, FALSE);
+        pActWnd = MakeWindowDisp(lpDraw->xSize - 280, 160, 271, 281, 0, -1,
+                                 FALSE);
 #else
         pActWnd = MakeWindowDisp(380, 160, 271, 281, 0, -1, FALSE);
 #endif
@@ -1747,7 +1552,7 @@ void BattleButtonPet(void) {
     strcpy(OneLineInfoStr, "更换宠物。");
   }
 
-  if (battleButtonFlag[6] == TRUE) {
+  if (sBattleButtonFlag[6] == TRUE) {
     if (pActWnd != NULL) {
       if (pActWnd->hp > 0) {
 
@@ -2259,11 +2064,11 @@ void BattleButtonPPLSKILL(void) {
 #endif
 
 void BattleButtonEscape(void) {
-  if (HitDispNo == battleButtonDispNo[7] && battleButtonFlag[7] == FALSE) {
+  if (HitDispNo == battleButtonDispNo[7] && sBattleButtonFlag[7] == FALSE) {
 
     if (mouse.onceState & MOUSE_LEFT_CRICK) {
       BattleButtonOff();
-      battleButtonFlag[7] = TRUE;
+      sBattleButtonFlag[7] = TRUE;
       // ??
       if (bNewServer)
         lssproto_B_send(sockfd, "E");
@@ -2809,12 +2614,12 @@ void BattleButtonWaza(void) {
   if (HitDispNo == battleButtonDispNo[8] || battlePetButtonFlag == TRUE) {
     // ?????????
     if (mouse.onceState & MOUSE_LEFT_CRICK || battlePetButtonFlag == TRUE) {
-      bak = battleButtonFlag[8]; // ??????
+      bak = sBattleButtonFlag[8]; // ??????
       BattleButtonOff();         // ????????????
       // ?????????
       if (bak == FALSE) {
         // ?????????
-        battleButtonFlag[8] = TRUE; // 打开技能选项盒
+        sBattleButtonFlag[8] = TRUE; // 打开技能选项盒
         // ?????????
         battleWazaTargetBak = -1;
         // ?????
@@ -2832,7 +2637,7 @@ void BattleButtonWaza(void) {
     strcpy(OneLineInfoStr, "使用技能。");
   }
   // ????????
-  if (battleButtonFlag[8] == TRUE) {
+  if (sBattleButtonFlag[8] == TRUE) {
     // ?????????
     if (pActWnd != NULL) {
       // ??????????????
@@ -3416,7 +3221,6 @@ void BattleTargetSelect(void) {
 static int Ordinal[] = {4 + 15, 2 + 15, 0 + 15, 1 + 15, 3 + 15, 4 + 10, 2 + 10,
                         0 + 10, 1 + 10, 3 + 10, 4 + 5,  2 + 5,  0 + 5,  1 + 5,
                         3 + 5,  4,      2,      0,      1,      3};
-// ?????????? ***************************************************/
 #ifdef _AI_OTHER
 #ifdef _AI_CAPTURE
 extern int AI_OtherSetting[2];
@@ -3509,138 +3313,18 @@ void BattleCntDownDisp(void) {
     return;
 #endif
 
-  // ?????????
-  /*//人物ai
-  #ifndef __AI
-      //cary 自动战斗
-      if( AI!=AI_NONE && !PauseAI){
-          if( battleMenuFlag&BATTLE_MENU && battleTargetSelectFlag){
-              if( (BattleIntervalCnt==0 && BattleCntDownRest<=28000) ||
-  (BattleIntervalCnt!=0 && BattleIntervalCnt<TimeGetTime())){ BattleIntervalCnt
-  = TimeGetTime()+500;
-                  // ??????
-                  int targetNo = GetBattelTarget();
-                  char moji[256];
-                  sprintf_s( moji, "H|%X", targetNo );
-                  // ??
-                  if( bNewServer)
-                      lssproto_B_send( sockfd, moji );
-                  else
-                      old_lssproto_B_send( sockfd, moji );
-                  battleTargetSelectFlag = FALSE;
-                  battleMenuReturn = TRUE;
-                  // ????????
-                  play_se( 203, 320, 240 );
-                  // ????????
-                  battleButtonBak = battleButtonBak2;
-                  // ???????????????
-                  if( pActInfoWnd){
-                      DeathAction( pActInfoWnd );
-                      pActInfoWnd = NULL;
-                  }
-              }
-          }else if( battleMenuFlag&BATTLE_MENU_PET && battleTargetSelectFlag){
-              if( (BattleIntervalCnt==0 && BattleCntDownRest<=28000) ||
-  BattleIntervalCnt<TimeGetTime()){ int no; int targetNo = GetBattelTarget();
-                  char moji[256];
-                  switch( petSkill[ battlePetNoBak ][ BattleWazaNo ].target ){
-                  case PETSKILL_TARGET_MYSELF:                // ??
-                  case PETSKILL_TARGET_OTHER:                    //
-  ????) case PETSKILL_TARGET_OTHERWITHOUTMYSELF:    //
-  ??????) case PETSKILL_TARGET_WITHOUTMYSELFANDPET:    //
-  ??????
-                      // ???
-                      sprintf_s( moji,"W|%X|%X", BattleWazaNo, targetNo );
-                      // ??
-                      if( bNewServer)
-                          lssproto_B_send( sockfd, moji );
-                      else
-                          old_lssproto_B_send( sockfd, moji );
-                      // ?????
-                      play_se( 217, 320, 240 );
-                      break;
-
-                  case PETSKILL_TARGET_ALLMYSIDE:    // 
-                      // ????????
-                      if( BattleMyNo < 10 ) no = BATTLKPKPLYAERNUM + 0;
-                      else no = BATTLKPKPLYAERNUM + 1;
-                      // ???
-                      sprintf_s( moji,"W|%X|%X", BattleWazaNo, no );
-                      // ??
-                      if( bNewServer)
-                          lssproto_B_send( sockfd, moji );
-                      else
-                          old_lssproto_B_send( sockfd, moji );
-                      // ?????
-                      play_se( 217, 320, 240 );
-                      break;
-
-                  case PETSKILL_TARGET_ALLOTHERSIDE:    // ?
-                      // ????????
-                      if( BattleMyNo < 10 ) no = BATTLKPKPLYAERNUM + 1;
-                      else no = BATTLKPKPLYAERNUM + 0;
-                      // ???
-                      sprintf_s( moji,"W|%X|%X", BattleWazaNo, no );
-                      // ??
-                      if( bNewServer)
-                          lssproto_B_send( sockfd, moji );
-                      else
-                          old_lssproto_B_send( sockfd, moji );
-                      // ?????
-                      play_se( 217, 320, 240 );
-                      break;
-
-                  case PETSKILL_TARGET_ALL:    // ?
-                      // ???
-                      sprintf_s( moji,"W|%X|%X", BattleWazaNo, BATTLKPKPLYAERNUM
-  + 2 );
-                      // ??
-                      if( bNewServer)
-                          lssproto_B_send( sockfd, moji );
-                      else
-                          old_lssproto_B_send( sockfd, moji );
-                      // ?????
-                      play_se( 217, 320, 240 );
-                      break;
-                  }
-                  // ??????
-                  battleTargetSelectFlag = FALSE;
-                  battleMenuReturn = TRUE;
-                  // ????????
-                  play_se( 203, 320, 240 );
-                  // ????????
-                  battleButtonBak = battleButtonBak2;
-                  // ???????????????
-                  if( pActInfoWnd){
-                      DeathAction( pActInfoWnd );
-                      pActInfoWnd = NULL;
-                  }
-              }
-          }
-      }
-  #endif
-  */
-
 #ifndef PK_SYSTEM_TIMER_BY_ZHU
   if (BattleCntDownRest <= 0) {
 #else
   if (BattleCntDownRest == TRUE) {
 #endif
-    // ??????
     BattleCntDownFlag = FALSE;
     BattleCntDownRest = 0;
-    // ????????
     ClearBoxFlag();
-    // ???????????
     DeathAction(pActWnd);
-    // ????????????
     pActWnd = NULL;
-    // ?????????
     ClearBattleButton();
-    // ?????????????????
-
     if (battleMenuFlag & BATTLE_MENU && battleMenuReturn == FALSE) {
-      // ???????????
       if (bNewServer)
         lssproto_B_send(sockfd, "N");
       else
@@ -3876,29 +3560,6 @@ void BattleMenuProc(void) {
         buttonA--;
         buttonX -= buttonA;
       }
-      /*
-      #ifndef __AI
-                  if( !PauseAI && AI!=AI_NONE && battleButtonBak==-1 &&
-      (BattleCntDown-TimeGetTime())<=29500){ DWORD ai = AI; if( ai ==
-      AI_SELECT){ if( p_party[ BattleMyNo ]->maxHp*3/10 < p_party[ BattleMyNo
-      ]->hp) ai = AI_ATTACK; else if( p_party[ BattleMyNo ]->maxHp*15/100 <
-      p_party[ BattleMyNo ]->hp) ai = AI_GUARD; else ai = AI_ESCAPE;
-                      }
-                      BattleIntervalCnt = TimeGetTime() + 500;
-                      if( ai==AI_ATTACK && battleButtonDispNo[ 0 ]!=-2){
-                          mouse.onceState = MOUSE_LEFT_CRICK;
-                          HitDispNo = battleButtonDispNo[ 0 ];
-                      }else if( ai==AI_GUARD && battleButtonDispNo[ 4 ]!=-2){
-                          mouse.onceState = MOUSE_LEFT_CRICK;
-                          HitDispNo = battleButtonDispNo[ 4 ];
-                      }else if( ai==AI_ESCAPE && battleButtonDispNo[ 7 ]!=-2){
-                          mouse.onceState = MOUSE_LEFT_CRICK;
-                          HitDispNo = battleButtonDispNo[ 7 ];
-                      }
-                  }
-      #endif
-      */
-
       BattleButtonAttack();
       BattleButtonJujutsu();
       BattleButtonCapture();
@@ -3938,54 +3599,54 @@ void BattleMenuProc(void) {
 #ifdef _BATTLESKILL // (不可开) Syu ADD 战斗技能介面
     battleButtonDispNo[0] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BATTLE_ATT_UP - battleButtonFlag[0], 2);
+                        CG_BATTLE_ATT_UP - sBattleButtonFlag[0], 2);
     battleButtonDispNo[1] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BATTLE_JUJUTSU_UP - battleButtonFlag[1], 2);
+                        CG_BATTLE_JUJUTSU_UP - sBattleButtonFlag[1], 2);
     battleButtonDispNo[2] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BATTLE_CAPTURE_UP - battleButtonFlag[2], 2);
+                        CG_BATTLE_CAPTURE_UP - sBattleButtonFlag[2], 2);
     battleButtonDispNo[3] = StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
                                             CG_BATTLE_HELP_UP - helpFlag, 2);
     battleButtonDispNo[4] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BATTLE_DEF_UP - battleButtonFlag[4], 2);
+                        CG_BATTLE_DEF_UP - sBattleButtonFlag[4], 2);
     battleButtonDispNo[5] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BATTLE_ITEM_UP - battleButtonFlag[5], 2);
+                        CG_BATTLE_ITEM_UP - sBattleButtonFlag[5], 2);
     battleButtonDispNo[6] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BATTLE_PET_UP - battleButtonFlag[6], 2);
+                        CG_BATTLE_PET_UP - sBattleButtonFlag[6], 2);
     battleButtonDispNo[7] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BATTLE_ESCAPE_UP - battleButtonFlag[7], 2);
+                        CG_BATTLE_ESCAPE_UP - sBattleButtonFlag[7], 2);
     battleButtonDispNo[9] = StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
                                             CG_BATTLE_PROSKL_UP - wonflag, 2);
     StockDispBuffer(buttonX, buttonY, DISP_PRIO_MENU, CG_BATTLE_PANEL, 0);
 #else
     battleButtonDispNo[0] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BTL_BUTTON_ATTACK_UP + battleButtonFlag[0], 2);
+                        CG_BTL_BUTTON_ATTACK_UP + sBattleButtonFlag[0], 2);
     battleButtonDispNo[1] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BTL_BUTTON_JUJUTU_UP + battleButtonFlag[1], 2);
+                        CG_BTL_BUTTON_JUJUTU_UP + sBattleButtonFlag[1], 2);
     battleButtonDispNo[2] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BTL_BUTTON_CAPTURE_UP + battleButtonFlag[2], 2);
+                        CG_BTL_BUTTON_CAPTURE_UP + sBattleButtonFlag[2], 2);
     battleButtonDispNo[3] = StockDispBuffer(
         buttonX, buttonY, DISP_PRIO_IME3, CG_BTL_BUTTON_HELP_UP + helpFlag, 2);
     battleButtonDispNo[4] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BTL_BUTTON_GUARD_UP + battleButtonFlag[4], 2);
+                        CG_BTL_BUTTON_GUARD_UP + sBattleButtonFlag[4], 2);
     battleButtonDispNo[5] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BTL_BUTTON_ITEM_UP + battleButtonFlag[5], 2);
+                        CG_BTL_BUTTON_ITEM_UP + sBattleButtonFlag[5], 2);
     battleButtonDispNo[6] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BTL_BUTTON_PET_UP + battleButtonFlag[6], 2);
+                        CG_BTL_BUTTON_PET_UP + sBattleButtonFlag[6], 2);
     battleButtonDispNo[7] =
         StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                        CG_BTL_BUTTON_ESCAPE_UP + battleButtonFlag[7], 2);
+                        CG_BTL_BUTTON_ESCAPE_UP + sBattleButtonFlag[7], 2);
     StockDispBuffer(buttonX, buttonY, DISP_PRIO_MENU, CG_BTL_BUTTON_BASE, 0);
 #endif
 
@@ -4128,7 +3789,7 @@ void BattleMenuProc(void) {
     } else {
       battleButtonDispNo[8] =
           StockDispBuffer(buttonX, buttonY, DISP_PRIO_IME3,
-                          CG_PET_BTL_BUTTON_WAZA_UP + battleButtonFlag[8], 2);
+                          CG_PET_BTL_BUTTON_WAZA_UP + sBattleButtonFlag[8], 2);
     }
     StockDispBuffer(buttonX, buttonY, DISP_PRIO_MENU, CG_PET_BTL_BUTTON_BASE,
                     0);

@@ -197,6 +197,11 @@ FMPOINT fmpoint[MAX_FMPOINT];
 FMSMEMO fmsmemo;
 char fm_pk_list[FMPKLIST_MAXNUM][255];
 
+// 用在本文件内
+static char dirname[MAX_DIRPATH_LEN];
+static char filename[MAX_FILEPATH_LEN];
+static char buf[MAX_BUF_LEN];
+
 // Arminius: sort family & output the sorted list
 // Make a sorted index (fmindex) for the family data (family)
 #ifdef _NEW_MANOR_LAW
@@ -793,6 +798,7 @@ void DelFMMaintainSort(int index) {
 #endif
 }
 
+
 // 从档案读取家族资料（启动时读取）
 int readFamily(const char *dir) {
   char dirname[256];
@@ -818,7 +824,6 @@ int readFamily(const char *dir) {
     return -1;
   }
 
-  char filename[256];
   struct stat s;
   for (i = 0; i < MAX_FAMILY; i++) {
     // FILE *fp;
@@ -870,7 +875,6 @@ int readFamily(const char *dir) {
 int writeFamily(const char *dir) {
   int i = 0, j = 0, k = 0;
   FILE *fp;
-  char filename[256];
   for (i = 0; i < MAX_FAMILY; i++) {
     if (db_familyupdate[i] == 0)
       continue;
@@ -979,7 +983,6 @@ int writeFamily(const char *dir) {
 
 // 从档案读取家族庄园（启动时读取）
 int readFMPoint(const char *dir) {
-  char dirname[256];
   int i = 0;
   {
     char tmp[256];
@@ -999,7 +1002,6 @@ int readFMPoint(const char *dir) {
     if (p_dirent == NULL)
       break;
     if (p_dirent->d_name[0] != '.') {
-      char filename[256];
       FILE *fp;
       struct stat s;
       snprintf(filename, sizeof(filename), "%s/%s", dirname, p_dirent->d_name);
@@ -1056,7 +1058,6 @@ int readFMPoint(const char *dir) {
 int writeFMPoint(const char *dir) {
   int i = 0;
   FILE *fp;
-  char filename[256];
   sprintf(filename, "%s/db_fmpoint", dir);
   if (db_fmpointupdate == 0)
     return 0;
@@ -1111,7 +1112,6 @@ int readFMSMemo(const char *dir) {
     if (de == NULL)
       break;
     if (de->d_name[0] != '.') {
-      char filename[256];
       FILE *fp;
       struct stat s;
       snprintf(filename, sizeof(filename), "%s/%s", dirname, de->d_name);
@@ -1153,7 +1153,6 @@ int readFMSMemo(const char *dir) {
 int writeFMSMemo(const char *dir) {
   int i = 0;
   FILE *fp;
-  char filename[256];
   sprintf(filename, "%s/db_fmsmemo", dir);
   if (db_fmsmemoupdate == 0)
     return 0;
@@ -1506,7 +1505,6 @@ int ACJoinFM(int fd, int index, char *fmname, int fmindex, char *charname,
 #endif
       // 通知族长有玩家愿意加入
       if (family[index].fmmemberindex[0].onlineflag > 0) {
-        char buf[256];
         sprintf(buf, "(%s lv:%d)正要求加入您的家族喔！目前家族人数：%4d人",
                 charname, charlv, family[index].fmjoinnum);
         SaacServer_ACFMAnnounce_send(family[index].fmmemberindex[0].onlineflag,
@@ -1537,7 +1535,6 @@ int ACLeaveFM(int index, char *fmname, int fmindex, char *charname,
       db_familyupdate[index] = 1;
       // 通知族长有玩家已离开家族
       if (family[index].fmmemberindex[0].onlineflag > 0) {
-        char buf[256];
         sprintf(buf, "(%s)已经离开您的家族了！目前家族人数：%4d人", charname,
                 family[index].fmjoinnum);
         SaacServer_ACFMAnnounce_send(family[index].fmmemberindex[0].onlineflag,
@@ -2304,7 +2301,6 @@ int ACMemberJoinFM(int index, char *fmname, int fmindex, char *charname,
     }
 #endif
     if (family[index].fmmemberindex[charindex].onlineflag > 0) {
-      char buf[256];
       // 通知玩家
 #ifdef _FMVER21
       if (family[index].fmmemberindex[charindex].charflag != FMMEMBER_APPLY)
@@ -2457,7 +2453,6 @@ int ACMemberLeaveFM(int index, char *fmname, int fmindex, char *charname,
     if (family[index].fmmemberindex[charindex].charflag <= 0)
       return -1;
     if (family[index].fmmemberindex[charindex].onlineflag > 0) {
-      char buf[256];
 #ifdef _PERSONAL_FAME // Arminius: 家族个人声望
       SaacServer_ACFMCharLogin_send(
           family[index].fmmemberindex[charindex].onlineflag, FAILED, index,
@@ -2588,7 +2583,6 @@ int ACFMAssignOcp(int index, char *fmname, int fmindex, char *charname,
                   int charindex, int result) {
 #ifdef _FMVER21
   int floor, count = 0, i = 0;
-  char buf[256];
   if (CheckFM(&index, fmname, fmindex) < 0)
     return -1;
   floor = ACgetFMFloor(fmindex);
@@ -2804,7 +2798,6 @@ int ACgetFMInfoFromChar(char *fmname, int *fmindex, char *charname,
 // 阅读家族留言
 int ACFMReadMemo(int index, int *dataindex, char *data) {
   int i = 0;
-  char buf[256];
   strcpy(data, "");
   if (index == -1) {
     return -1;
@@ -2822,7 +2815,6 @@ int ACFMReadMemo(int index, int *dataindex, char *data) {
     return -1;
   *dataindex = family[index].memonowwritenum;
   for (i = 0; i < family[index].memonum; i++) {
-    strcpy(buf, "");
     sprintf(buf, "%s|", family[index].memolist[i]);
     strcat(data, buf);
   }
@@ -3423,11 +3415,10 @@ void setFamilyFileDataToArg(int index, char *data) {
     sprintf(memberdata, "%s%d", FMMEMBERINDEX, i);
     if (strcmp(data, memberdata) == 0) {
       for (j = 1; j < memberdatamaxint + memberdatamaxchar; j++) {
-        char databuf[256];
-        easyGetTokenFromBuf(value, " ", j, databuf, sizeof(databuf));
-        if (strcmp(databuf, "") == 0)
+        easyGetTokenFromBuf(value, " ", j, buf, sizeof(buf));
+        if (strcmp(buf, "") == 0)
           continue;
-        setMemberFileDataToArg(index, i, databuf);
+        setMemberFileDataToArg(index, i, buf);
       }
       return;
     }
@@ -3795,7 +3786,6 @@ int ACGMFixFMData(int index, char *fmname, char *charid, char *cmd,
 int ChangeFMLeader(int index, char *fmname, int fmindex) {
   int i = 0;
   int tmpindex = 0;
-  char buf[256];
   if (CheckFM(&index, fmname, fmindex) < 0)
     return -1;
   for (i = 0; i < MAX_MEMBERNUM; i++) {
@@ -3821,12 +3811,11 @@ int ChangeFMLeader(int index, char *fmname, int fmindex) {
     return -1;
   logErr("ChangeFMLeader_2 tmpindex:%d\n", tmpindex);
   if (family[index].fmmemberindex[tmpindex].onlineflag > 0) {
-    char tmpbuf[256];
-    sprintf(tmpbuf, "您已经退出家族了～\n族长职位已让给%s，辛苦你了！",
+    sprintf(buf, "您已经退出家族了～\n族长职位已让给%s，辛苦你了！",
             family[index].fmmemberindex[0].charname);
     SaacServer_ACFMAnnounce_send(
         family[index].fmmemberindex[tmpindex].onlineflag, SUCCESSFUL, fmname,
-        fmindex, index, 4, tmpbuf,
+        fmindex, index, 4, buf,
         family[index].fmmemberindex[tmpindex].charfdid);
   }
   ACMemberLeaveFM(index, fmname, fmindex,
@@ -3858,15 +3847,12 @@ void FMPK_InitList(void) {
   }
 }
 void FMPK_LoadList() {
-  char buf[256];
   int i;
-  char *filename = "data/family/fm_pk_list.txt";
+  snprintf(filename, sizeof(filename), "data/family/fm_pk_list.txt");
   FILE *fp;
-
   FMPK_InitList();
   if (!(fp = fopen(filename, "r")))
     return;
-
   for (i = 0; i < FMPKLIST_MAXNUM; i++) {
     if (fscanf(fp, "%s", buf) == EOF)
       break;
@@ -3878,7 +3864,7 @@ void FMPK_LoadList() {
 }
 void FMPK_BackUpList() {
   int i;
-  char *filename = "data/family/fm_pk_list.txt";
+  snprintf(filename, sizeof(filename), "data/family/fm_pk_list.txt");
   FILE *fp;
   if (!(fp = fopen(filename, "w")))
     return;
@@ -3909,12 +3895,9 @@ int FMPK_SetData(int ti, int Pkflg, char *Data, int sizes) {
 #endif
 
 int readOneFamilyFromTi(int ti) {
-  char filename[256];
   struct stat s;
-
   snprintf(filename, sizeof(filename), "%s/Family.%d", g_saac_config.familydir,
            ti);
-
   if (stat(filename, &s) < 0)
     return 0;
   if (!(s.st_mode & S_IFREG)) {
@@ -3934,7 +3917,6 @@ int readOneFamily(char *filename, int i) {
   FILE *fp = NULL;
   int j;
   int m = 0, fmnum1 = 0, fmnum2 = 0;
-
   if ((fp = fopen(filename, "r")) == NULL)
     return 0;
   if (fgets(line, sizeof(line), fp) == NULL)
@@ -3997,13 +3979,12 @@ void addFmPayPoint(int fmindex, char *fmname, int paypoint) {
 #ifdef _AC_SEND_FM_PK // WON ADD 庄园对战列表储存在AC
 void load_fm_pk_list() {
   int i;
-  const char *filename = "data/family/fm_pk_list.txt";
+  snprintf(filename, sizeof(filename), "data/family/fm_pk_list.txt");
   FILE *fp;
   if (!(fp = fopen(filename, "r"))) {
     return;
   }
   for (i = 0; i < FMPKLIST_MAXNUM; i++) {
-    char buf[256];
     if (fscanf(fp, "%s", buf) == EOF)
       break;
     buf[strlen(buf) + 1] = 0;
@@ -4014,7 +3995,7 @@ void load_fm_pk_list() {
 
 void save_fm_pk_list() {
   int i;
-  const char *filename = "data/family/fm_pk_list.txt";
+  snprintf(filename, sizeof(filename), "data/family/fm_pk_list.txt");
   FILE *fp;
   if (!(fp = fopen(filename, "w"))) {
     return;

@@ -98,7 +98,7 @@ BOOL MAP_readMapConfFile(char *filename) {
     file = fopen(filename, "r");
   }
   if (file == NULL) {
-    fprint("无法打开文件 %s\n", filename);
+    printEx("无法打开文件 %s\n", filename);
     return FALSE;
   }
   while (fgets(line, sizeof(line), file)) {
@@ -122,14 +122,14 @@ BOOL MAP_readMapConfFile(char *filename) {
   MAP_imagedatanum = maximagenumber + 1;
   MAP_imagedata = allocateMemory(sizeof(MAP_ImageData) * MAP_imagedatanum);
   if (MAP_imagedata == NULL) {
-    fprint("map image data is NULL, data num=%d\n", MAP_imagedatanum);
+    printEx("map image data is NULL, data num=%d\n", MAP_imagedatanum);
     return FALSE;
   }
 
   for (i = 0; i < arraysizeof(MAP_imgfilt); i++)
     MAP_imgfilt[i] = -1;
   if (fseek(file, 0, SEEK_SET) != 0) {
-    fprint("无法查找 SEEK_SET %s\n", strerror(errno));
+    printEx("无法查找 SEEK_SET %s\n", strerror(errno));
     return FALSE;
   }
   while (fgets(line, sizeof(line), file)) {
@@ -220,7 +220,7 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
     file = fopen(filename, "r");
   }
   if (file == NULL) {
-    fprint("无法打开 %s\n", filename);
+    printEx("无法打开 %s\n", filename);
     return FALSE;
   }
 
@@ -420,7 +420,7 @@ BOOL MAP_readMapOne(char *filename) {
   BOOL invaliddata = FALSE;
 
   if (MAP_mapnum_index >= MAP_mapnum) {
-    fprint("这里没有足够空间装载地图数组.\n");
+    printEx("这里没有足够空间装载地图数组.\n");
     return FALSE;
   }
   mapindex = MAP_mapnum_index;
@@ -472,26 +472,26 @@ BOOL MAP_readMapOne(char *filename) {
   ysiz = ntohs(data[0]);
   tile = allocateMemory(sizeof(unsigned short) * xsiz * ysiz);
   if (tile == NULL) {
-    fprint("无法为地图分配内存：%s, xsiz:%d, ysiz:%d\n",
+    printEx("无法为地图分配内存：%s, xsiz:%d, ysiz:%d\n",
            filename, xsiz, ysiz);
     goto FREEOBJHP;
   }
 
   obj = allocateMemory(sizeof(unsigned short) * xsiz * ysiz);
   if (obj == NULL) {
-    fprint("无法分配内存给对象\n");
+    printEx("无法分配内存给对象\n");
     goto FREETILE;
   }
 
   olink = allocateMemory(sizeof(MAP_Objlink *) * xsiz * ysiz);
   if (olink == NULL) {
-    fprint("无法分配内存给链接\n");
+    printEx("无法分配内存给链接\n");
     goto FREEOBJ;
   }
 
   ret = fread(tile, sizeof(unsigned short) * xsiz * ysiz, 1, f);
   if (ret != 1) {
-    fprint("Map tile read failed: file=%s map=%d size=%dx%d "
+    printEx("Map tile read failed: file=%s map=%d size=%dx%d "
            "expected=%zu offset=%lld eof=%d ioerror=%d\n",
            filename, id, xsiz, ysiz,
            sizeof(unsigned short) * (size_t)xsiz * (size_t)ysiz,
@@ -502,14 +502,14 @@ BOOL MAP_readMapOne(char *filename) {
     tile[i] = ntohs(tile[i]);
 
     if (!IsValidImagenumber(tile[i])) {
-      fprint("地图的图片有问题:%d x:%d y:%d 数量:%d\n", id, i % xsiz,
+      printEx("地图的图片有问题:%d x:%d y:%d 数量:%d\n", id, i % xsiz,
              (int)(i / xsiz), tile[i]);
       invaliddata = TRUE;
     }
   }
   ret = fread(obj, sizeof(short) * xsiz * ysiz, 1, f);
   if (ret != 1) {
-    fprint("Map object read failed: file=%s map=%d size=%dx%d "
+    printEx("Map object read failed: file=%s map=%d size=%dx%d "
            "expected=%zu offset=%lld eof=%d ioerror=%d\n",
            filename, id, xsiz, ysiz,
            sizeof(short) * (size_t)xsiz * (size_t)ysiz,
@@ -519,7 +519,7 @@ BOOL MAP_readMapOne(char *filename) {
   for (i = 0; i < xsiz * ysiz; i++) {
     obj[i] = ntohs(obj[i]);
     if (!IsValidImagenumber(obj[i])) {
-      fprint("地图的图片有问题:%d x:%d y:%d 数量:%d\n", id, i % xsiz,
+      printEx("地图的图片有问题:%d x:%d y:%d 数量:%d\n", id, i % xsiz,
              (int)(i / xsiz), obj[i]);
       invaliddata = TRUE;
     }
@@ -646,7 +646,7 @@ BOOL MAP_readMapDir(char *dirname) {
   memset(MAP_idjumptbl, -1, sizeof(MAP_idjumptbl));
   filenum = rgetFileName(dirname, filenames, arraysizeof(filenames));
   if (filenum == -1) {
-    fprint("dirname is illegal: %s.\n", dirname);
+    printEx("dirname is illegal: %s.\n", dirname);
     return FALSE;
   }
   for (i = 0; i < filenum; i++)
@@ -658,7 +658,7 @@ BOOL MAP_readMapDir(char *dirname) {
     return FALSE;
   }
   if (!MAP_initMapArray(MAX_MAP_FILES)) {
-    fprint("初始化地图数字失败.\n");
+    printEx("初始化地图数字失败.\n");
     return FALSE;
   }
 
@@ -803,8 +803,15 @@ char *MAP_getdataFromRECT(int floor, RECT *seekr, RECT *realr) {
     for (j = realr->x; j < realr->x + realr->width; j++) {
       OBJECT object;
       BOOL found = FALSE;
+      int object_chain_count = 0;
       for (object = MAP_getTopObj(floor, j, i); object;
            object = NEXT_OBJECT(object)) {
+        if (++object_chain_count > OBJECT_getNum()) {
+          print("[WARP_TRACE] object-chain loop stage=map-data floor=%d x=%d "
+                "y=%d current_obj=%d\n",
+                floor, j, i, GET_OBJINDEX(object));
+          break;
+        }
         int o = GET_OBJINDEX(object);
         if (OBJECT_getType(o) == OBJTYPE_CHARA) {
           int etype;
@@ -894,8 +901,15 @@ char *MAP_getChecksumFromRECT(int floor, RECT *seekr, RECT *realr, int *tilesum,
     for (j = realr->x; j < realr->x + realr->width; j++) {
       OBJECT object;
       // BOOL found = FALSE;
+      int object_chain_count = 0;
       for (object = MAP_getTopObj(floor, j, i); object;
            object = NEXT_OBJECT(object)) {
+        if (++object_chain_count > OBJECT_getNum()) {
+          print("[WARP_TRACE] object-chain loop stage=map-checksum floor=%d "
+                "x=%d y=%d current_obj=%d\n",
+                floor, j, i, GET_OBJINDEX(object));
+          break;
+        }
         int o = GET_OBJINDEX(object);
         if (OBJECT_getType(o) == OBJTYPE_CHARA) {
           int etype;

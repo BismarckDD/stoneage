@@ -175,7 +175,7 @@ BOOL ITEM_MedicineInit(ITEM_Item *itm) {
     }
     *q = '\0';
     if (q == cmd || *p != SEPARATORI) {
-      fprint("ITEM_medicineInit: error(c)? invalid:%s(%d)\n", effectarg,
+      printEx("ITEM_medicineInit: error(c)? invalid:%s(%d)\n", effectarg,
              effectCount);
       return FALSE;
     }
@@ -188,7 +188,7 @@ BOOL ITEM_MedicineInit(ITEM_Item *itm) {
     if (ITEM_isValidEffect(cmd, value)) {
       effectCount++;
     } else {
-      fprint("ITEM_medicineInit: error(v)? invalid:%s(%d)\n", effectarg,
+      printEx("ITEM_medicineInit: error(v)? invalid:%s(%d)\n", effectarg,
              effectCount);
       return FALSE;
     }
@@ -293,7 +293,7 @@ void ITEM_MedicineUsed(int char_index, int to_char_index, int item_index) {
     CHAR_sendStatusString(char_index, "P");
 
   } else
-    fprint("ITEM_medicineUsed: error? cannot be used.\n");
+    printEx("ITEM_medicineUsed: error? cannot be used.\n");
 #undef ID_BUF_LEN_MAX
 #undef SEPARATORI
 }

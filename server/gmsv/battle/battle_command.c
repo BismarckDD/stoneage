@@ -545,7 +545,7 @@ void BATTLE_ActSettingSend(int battleindex) {
 
     // 仇及失玉伊旦互恳仄中井民尼永弁
     if (BATTLE_CHECKADDRESS(pBattle) == FALSE) {
-      fprint("err:观战battle address错误(%p)\n", pBattle);
+      printEx("err:观战battle address错误(%p)\n", pBattle);
       break;
     }
     // 蝈够卞霜耨
@@ -905,7 +905,7 @@ void BATTLE_CharSendAll(int battleindex) {
   for (; pBattle; pBattle = pBattle->pNext) {
     // 仇及失玉伊旦互恳仄中井民尼永弁
     if (BATTLE_CHECKADDRESS(pBattle) == FALSE) {
-      fprint("err:观战battle address错误(%p)\n", pBattle);
+      printEx("err:观战battle address错误(%p)\n", pBattle);
       break;
     }
 
@@ -1082,7 +1082,7 @@ void BATTLE_CharSendOne(int battleindex, int mychar_index) {
   pBattle = BattleArray[battleindex].pNext;
   for (; pBattle; pBattle = pBattle->pNext) {
     if (BATTLE_CHECKADDRESS(pBattle) == FALSE) {
-      fprint("err:观战battle address错误(%p)\n", pBattle);
+      printEx("err:观战battle address错误(%p)\n", pBattle);
       break;
     }
 

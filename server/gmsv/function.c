@@ -842,8 +842,7 @@ BOOL initFunctionTable(void) {
       strings[stringnum++] =
           correspondStringAndFunctionTable[i].functionName.string;
     if (!checkStringsUnique(strings, stringnum, 1)) {
-      fprint("Function Name Table is overlapped.\n");
-      fprint("It is not allowed\n");
+      printEx("函数表已经覆盖了，这不被允许!\n");
       return FALSE;
     }
   }

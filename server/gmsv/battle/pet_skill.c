@@ -371,7 +371,7 @@ BOOL PETSKILL_initPetskill(char *filename) {
   }
 
   if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("寻找失败\n");
+    printEx("寻找失败\n");
     fclose(f);
     return FALSE;
   }
@@ -384,7 +384,7 @@ BOOL PETSKILL_initPetskill(char *filename) {
   PETSKILL_petskill =
       allocateMemory(sizeof(struct tagPetskill) * PETSKILL_petskillnum);
   if (PETSKILL_petskill == NULL) {
-    fprint("无法分配内存 %d\n",
+    printEx("无法分配内存 %d\n",
            sizeof(struct tagPetskill) * PETSKILL_petskillnum);
     fclose(f);
     return FALSE;
@@ -440,7 +440,7 @@ BOOL PETSKILL_initPetskill(char *filename) {
       ret = getStringFromIndexWithDelim(line, ",", PETSKILL_STARTINTNUM, token,
                                         sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         break;
       }
       petskill_readlen = atoi(token);
@@ -451,7 +451,7 @@ BOOL PETSKILL_initPetskill(char *filename) {
         ret =
             getStringFromIndexWithDelim(line, ",", i + 1, token, sizeof(token));
         if (ret == FALSE) {
-          fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+          printEx("文件语法错误:%s 第%d行\n", filename, linenum);
           break;
         }
         PETSKILL_setChar(petskill_readlen, i, token);
@@ -462,7 +462,7 @@ BOOL PETSKILL_initPetskill(char *filename) {
            i < PETSKILL_DATAINTNUM + PETSKILL_STARTINTNUM; i++) {
         ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
         if (ret == FALSE) {
-          fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+          printEx("文件语法错误:%s 第%d行\n", filename, linenum);
           break;
         }
         if (strlen(token) != 0) {
@@ -986,8 +986,8 @@ int PETSKILL_Vary(int cindex, int tindex, int id, char *data) {
 
   pszOption = PETSKILL_getChar(id, PETSKILL_OPTION);
 
-  if (pszOption == "\0") {
-    print("\n pszOption==NULL");
+  if (strcmp(pszOption, "\0") == 0) {
+    print("pszOption == NULL.\n");
     return FALSE;
   }
   if ((pszP = strstr(pszOption, "攻%")) != NULL) {
@@ -1060,8 +1060,8 @@ int PETSKILL_WildViolentAttack(int char_index, int toindex, int array,
 
   pszOption = PETSKILL_getChar(array, PETSKILL_OPTION);
 
-  if (pszOption == "\0") {
-    print("\n pszOption == NULL ");
+  if (strcmp(pszOption, "\0") == 0) {
+    print("pszOption == NULL.\n");
     return FALSE;
   }
   // 读取攻值
@@ -1090,9 +1090,7 @@ int PETSKILL_WildViolentAttack(int char_index, int toindex, int array,
   if ((pszP = strstr(pszOption, "避")) != NULL) {
     sscanf(pszP + 2, "%d", &iDuck);
   }
-  //       膜恳毛忡绣
   CHAR_SETWORKINT_HIGH(char_index, CHAR_WORKBATTLECOM3, iDuck);
-
   return TRUE;
 }
 #endif

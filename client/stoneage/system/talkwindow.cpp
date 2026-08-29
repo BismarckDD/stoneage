@@ -7,6 +7,7 @@
 #include "systeminc/font.h"
 #include "systeminc/mouse.h"
 #include "systeminc/tool.h"
+#include "systeminc/text_encoding.h"
 
 #ifdef _TALK_WINDOW
 
@@ -218,7 +219,9 @@ void CTalkWindow::DrawSkin(BOOL bShowCursor)
         else pCBL = pCBL->next;
     }
     // 显示输入的文字
-    strcpy(szBuffer,MyChatBuffer.buffer);
+    const std::string inputText = Utf8ToGbk(MyChatBuffer.buffer);
+    strcpy_s(szBuffer, inputText.empty() ? MyChatBuffer.buffer
+                                         : inputText.c_str());
     color = MyChatBuffer.color;
     SetTextColor(m_hdcBackBuffer,0);
 #ifdef _CHANNEL_MODIFY
@@ -256,7 +259,9 @@ void CTalkWindow::AddString(char *szString,int color)
     if(m_hTalkWindow){
         // 游戏一开始没字串,所以要先把 m_iline 累加到 MAX_TALK_WINDOW_LINE 才进行显示框的移动
         if(m_iline <= MAX_TALK_WINDOW_LINE) m_iline++;
-        strcpy(m_pCBLString->ChatBuffer.buffer,szString);
+        const std::string displayText = Utf8ToGbk(szString);
+        strcpy_s(m_pCBLString->ChatBuffer.buffer,
+                 displayText.empty() ? szString : displayText.c_str());
         m_pCBLString->ChatBuffer.color = color;
         m_pCBLString->bUse = TRUE;
         // 游戏一开始都没有字串,所以要当 m_iline 值大于等于 MAX_TALK_WINDOW_LINE 时才进行显示框的移动

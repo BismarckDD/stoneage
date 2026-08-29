@@ -156,7 +156,7 @@ BOOL MAGIC_initMagic(char *filename) {
 
   MAGIC_magic = allocateMemory(sizeof(struct tagMagic) * sMagicNum);
   if (MAGIC_magic == NULL) {
-    fprint("无法分配内存 %d\n", sizeof(struct tagMagic) * sMagicNum);
+    printEx("无法分配内存 %ld\n", sizeof(struct tagMagic) * sMagicNum);
     fclose(f);
     return FALSE;
   }
@@ -194,7 +194,6 @@ BOOL MAGIC_initMagic(char *filename) {
     {
       char token[256];
       int ret;
-
 #ifdef _MAGIC_OPTIMUM
       if (getStringFromIndexWithDelim(line, ",",
                                       MAGIC_DATACHARNUM + MAGIC_ID + 1, token,
@@ -222,7 +221,7 @@ BOOL MAGIC_initMagic(char *filename) {
         }
 #else
         if (ret == FALSE) {
-          fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+          printEx("文件语法错误:%s 第%d行\n", filename, linenum);
           break;
         }
         if (strlen(token) != 0) {
@@ -277,7 +276,7 @@ BOOL ATTMAGIC_initMagic(char *filename) {
   // Calculate the number of attack magics
   ATTMAGIC_magicnum = ftell(file) / sizeof(struct tagAttMagic);
   if (ATTMAGIC_magicnum % 2) {
-    fprint("打开文件失败\n");
+    printEx("打开文件失败\n");
     fclose(file);
     return FALSE;
   }
@@ -286,7 +285,7 @@ BOOL ATTMAGIC_initMagic(char *filename) {
   ATTMAGIC_magic =
       allocateMemory(sizeof(struct tagAttMagic) * ATTMAGIC_magicnum);
   if (NULL == ATTMAGIC_magic) {
-    fprint("无法分配内存 %d\n",
+    printEx("无法分配内存 %d\n",
            sizeof(struct tagAttMagic) * ATTMAGIC_magicnum);
     fclose(file);
     return FALSE;

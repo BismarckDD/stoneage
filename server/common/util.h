@@ -8,6 +8,8 @@
 #include "utils/util_time.h"
 #include "utils/md5.h"
 
+#define MAX_DIRPATH_LEN 256
+#define MAX_FILEPATH_LEN 288
 BOOL strtolchecknum(char *text, void *number, int base, CTYPE type);
 int strcmptail(const char *text, const char *suffix);
 int textToInt(const char *text);

@@ -486,7 +486,7 @@ int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *item) {
         if (initfunc) {
           if (initfunc(&ITEM_gExists[Sindex].item) == FALSE) {
             ITEM_gExists[Sindex].use = FALSE;
-            fprint("Error:Can't init item\n");
+            printEx("Error:Can't init item\n");
             return -1;
           }
         }
@@ -496,7 +496,7 @@ int _ITEM_initExistItemsOne(char *file, int line, ITEM_Item *item) {
       return Sindex;
     }
   }
-  fprint("InitExistOne结束.\n");
+  printEx("InitExistOne结束.\n");
   return -1;
 }
 
@@ -747,7 +747,7 @@ BOOL ITEM_checksetdata(void) {
       ITEM_setMemData.dumpchar;
 
   if (!checkStringsUnique(strings, num, 1)) {
-    fprint("ITEM_set????data is overlapped.\nIt is not allowed\n");
+    printEx("ITEM_set????data is overlapped.\nIt is not allowed\n");
     return FALSE;
   }
 #else
@@ -760,7 +760,7 @@ BOOL ITEM_checksetdata(void) {
       ITEM_setMemData.dumpchar;
 
   if (!checkStringsUnique(strings, arraysizeof(strings), 1)) {
-    fprint("ITEM_set????data is overlapped.\nIt is not allowed\n");
+    printEx("ITEM_set????data is overlapped.\nIt is not allowed\n");
     return FALSE;
   }
 #endif
@@ -1144,7 +1144,7 @@ void callbackReadItemConfigFile2(int *line_num, const char *line) {
       print("Duplicate ItemId %d.ignore.\n", item_id);
     } else {
       if (item.string[ITEM_SECRETNAME].string[0] == '\0') {
-        fprint("ERROR: ID %d item doesn't have secretname\n", item_id);
+        printEx("ERROR: ID %d item doesn't have secretname\n", item_id);
         memcpy(&item.string[ITEM_SECRETNAME].string,
                &item.string[ITEM_NAME].string,
                sizeof(item.string[ITEM_NAME].string));
@@ -1189,12 +1189,12 @@ BOOL ITEM_readItemConfFile(char *filename) {
     ITEM_endExistItemsIndexArray(ITEM_gIndex);
   ITEM_gIndex = allocateMemory(sizeof(ITEM_Index) * ITEM_sIndexLen);
   if (ITEM_gTable == NULL) {
-    fprint("gItemTable is not allocated. %d\n",
+    printEx("gItemTable is not allocated. %d\n",
            sizeof(ITEM_Table) * ITEM_sTableLen);
     return FALSE;
   }
   if (ITEM_gIndex == NULL) {
-    fprint("gItemIndex is not allocated. %d\n",
+    printEx("gItemIndex is not allocated. %d\n",
            sizeof(ITEM_Index) * ITEM_sIndexLen);
     return FALSE;
   }

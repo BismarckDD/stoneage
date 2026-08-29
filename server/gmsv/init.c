@@ -19,6 +19,7 @@
 #include "magic_base.h"
 #include "msignal.h"
 #include "net.h"
+#include "tcp_transport.h"
 #include "npc_quiz.h"
 #include "object.h"
 #include "pet_skill.h"
@@ -595,6 +596,10 @@ BOOL init(int argc, char **argv, char **env) {
     print("连接 SAAC 失败：%s:%u。请确认 SAAC 已启动且端口配置正确。\n",
           getAccountservername(), getAccountserverport());
     goto CLOSEBIND;
+  }
+  if (sa_tcp_configure_connected(acfd) < 0) {
+    print("配置 SAAC 非阻塞连接失败。\n");
+    goto CLOSEAC;
   }
 #ifdef _EPOLL_ET_MODE
   if (epoll_add_acfd(acfd) == -1)

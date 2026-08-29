@@ -285,14 +285,14 @@ BOOL TITLE_initTitleName(char *filename) {
   }
 
   if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("寻找错误\n");
+    printEx("寻找错误\n");
     fclose(f);
     return FALSE;
   }
 
   TITLE_table = allocateMemory(sizeof(struct tagTITLE_Table) * TITLE_titlenum);
   if (TITLE_table == NULL) {
-    fprint("无法分配内存 %d\n", sizeof(TITLE_table) * TITLE_titlenum);
+    printEx("无法分配内存 %d\n", sizeof(TITLE_table) * TITLE_titlenum);
     fclose(f);
     return FALSE;
   }
@@ -346,7 +346,7 @@ BOOL TITLE_initTitleName(char *filename) {
       /*  夫午勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       TITLE_table[title_readlen].index = atoi(token);
@@ -354,11 +354,11 @@ BOOL TITLE_initTitleName(char *filename) {
       /*  2勾户及玄□弁件毛苇月    */
       ret = getStringFromIndexWithDelim(line, ",", 2, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       if (strlen(token) > sizeof(TITLE_table[title_readlen].name) - 1) {
-        fprint("警告! 头衔名称结束文件:%s 第%d行\n", filename, linenum);
+        printEx("警告! 头衔名称结束文件:%s 第%d行\n", filename, linenum);
       }
       strncpysafe(TITLE_table[title_readlen].name,
                  sizeof(TITLE_table[title_readlen].name), token);
@@ -537,7 +537,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
   }
 
   if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("Seek Error\n");
+    printEx("Seek Error\n");
     fclose(f);
     return FALSE;
   }
@@ -545,7 +545,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
   TITLE_ConfigTable =
       allocateMemory(sizeof(struct tagTITLE_configTable) * TITLE_titlecfgnum);
   if (TITLE_ConfigTable == NULL) {
-    fprint("Can't allocate Memory %d\n",
+    printEx("Can't allocate Memory %d\n",
            sizeof(TITLE_ConfigTable) * TITLE_titlecfgnum);
     fclose(f);
     return FALSE;
@@ -559,7 +559,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
   }
   TITLE_configbuf = allocateMemory(sizeof(TITLE_CONFIGBUF) * TITLE_titlecfgnum);
   if (TITLE_configbuf == NULL) {
-    fprint("Can't allocate Memory %d\n",
+    printEx("Can't allocate Memory %d\n",
            sizeof(TITLE_CONFIGBUF) * TITLE_titlecfgnum);
     fclose(f);
     return FALSE;
@@ -603,7 +603,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
           char buf[64];
           ret = getStringFromIndexWithDelim(token, "=", 2, buf, sizeof(buf));
           if (ret == FALSE) {
-            fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+            printEx("文件语法错误:%s 第%d行\n", filename, linenum);
             TITLE_initTitleData(titlecfg_readlen);
             errflg = TRUE;
             break;
@@ -624,7 +624,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
           }
           /* 由仿丢□正互  卅及毛隙烂今木凶 */
           if (j == arraysizeof(TITLE_param)) {
-            fprint("头衔配置语法错误：%s 第%d条，未知字段：%s\n", filename,
+            printEx("头衔配置语法错误：%s 第%d条，未知字段：%s\n", filename,
                    linenum, token);
             TITLE_initTitleData(titlecfg_readlen);
             errflg = TRUE;
@@ -633,7 +633,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
           /* 羁寞］尕羁寞互绣箕允月井譬屯月 */
           comppos = charInclude(token, "<>=");
           if (comppos == -1) {
-            fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+            printEx("文件语法错误:%s 第%d行\n", filename, linenum);
             TITLE_initTitleData(titlecfg_readlen);
             errflg = TRUE;
             break;
@@ -648,7 +648,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
               }
             }
             if (j == 3) {
-              fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+              printEx("文件语法错误:%s 第%d行\n", filename, linenum);
               TITLE_initTitleData(titlecfg_readlen);
               errflg = TRUE;
               break;
@@ -656,7 +656,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
               ret = TITLE_getParamData(titlecfg_readlen, i - 1,
                                        &token[comppos + 2]);
               if (!ret) {
-                fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+                printEx("文件语法错误:%s 第%d行\n", filename, linenum);
                 TITLE_initTitleData(titlecfg_readlen);
                 errflg = TRUE;
                 break;
@@ -670,7 +670,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
             ret = TITLE_getParamData(titlecfg_readlen, i - 1,
                                      &token[comppos + 1]);
             if (!ret) {
-              fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+              printEx("文件语法错误:%s 第%d行\n", filename, linenum);
               TITLE_initTitleData(titlecfg_readlen);
               errflg = TRUE;
               break;
@@ -687,12 +687,11 @@ BOOL TITLE_initTitleConfig(char *filename) {
           }
         }
       }
-      /* 惫寞  隙烂互  井匀凶 or 卅氏井仄日及巨仿□*/
       if (errflg) {
         continue;
       }
       if (TITLE_ConfigTable[titlecfg_readlen].title == -1) {
-        fprint("头衔配置语法错误：%s 第%d条缺少 TITLE 字段\n", filename,
+        printEx("头衔配置语法错误：%s 第%d条缺少 TITLE 字段\n", filename,
                linenum);
         TITLE_initTitleData(titlecfg_readlen);
       } else {
@@ -701,11 +700,8 @@ BOOL TITLE_initTitleConfig(char *filename) {
     }
   }
   fclose(f);
-
   TITLE_titlecfgnum = titlecfg_readlen;
-
   print("有效头衔配置数是 %d...", TITLE_titlecfgnum);
-
   return TRUE;
 }
 /*------------------------------------------------------------

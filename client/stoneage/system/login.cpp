@@ -3748,6 +3748,23 @@ char shopWindow5Msg[2][39]; // ???????????????
 char shopWindow6Msg[2][39]; // ???????????????
 
 short nowUserItemCnt;
+
+static int GetEmptyPlayerItemSlotCount(void)
+{
+    int emptyCount = 0;
+#ifdef _NEW_ITEM_
+    const int itemLimit = 判断玩家道具数量();
+#else
+    const int itemLimit = MAX_ITEM;
+#endif
+
+    for (int i = MAX_ITEMSTART; i < itemLimit; ++i)
+    {
+        if (pc.item[i].useFlag == 0)
+            ++emptyCount;
+    }
+    return emptyCount;
+}
 char shopWindow7Msg[2][39]; // ???????????????
 char shopWindow8Msg[2][39]; // ???????????????
 
@@ -4671,6 +4688,34 @@ void openServerWindowProc(void)
 #endif
 }
 
+static int Utf8SafePrefixLength(const char *text, int maxBytes)
+{
+    int offset = 0;
+    while (text[offset] != '\0' && offset < maxBytes)
+    {
+        const unsigned char lead = (unsigned char)text[offset];
+        int length;
+        if (lead < 0x80)
+            length = 1;
+        else if (lead >= 0xC2 && lead <= 0xDF)
+            length = 2;
+        else if (lead >= 0xE0 && lead <= 0xEF)
+            length = 3;
+        else if (lead >= 0xF0 && lead <= 0xF4)
+            length = 4;
+        else
+            return -1;
+
+        if (offset + length > maxBytes)
+            break;
+        for (int i = 1; i < length; ++i)
+            if (((unsigned char)text[offset + i] & 0xC0) != 0x80)
+                return -1;
+        offset += length;
+    }
+    return offset;
+}
+
 void getStrSplit(char *dist, char *src, int distSize, int line, int strLen)
 {
     int i, j;
@@ -4689,16 +4734,27 @@ void getStrSplit(char *dist, char *src, int distSize, int line, int strLen)
         {
             if (strlen(ptMsg) > (unsigned int)strLen)
             {
-                strncpy_s(dis, strLen + 1, ptMsg, strLen);
-                if (GetStrLastByte(dis) != 3)
+                const int utf8Length = Utf8SafePrefixLength(ptMsg, strLen);
+                if (utf8Length >= 0)
                 {
-                    dis[strLen] = '\0';
-                    ptMsg += strLen;
+                    memcpy(dis, ptMsg, utf8Length);
+                    dis[utf8Length] = '\0';
+                    ptMsg += utf8Length;
                 }
                 else
                 {
-                    dis[strLen - 1] = '\0';
-                    ptMsg += (strLen - 1);
+                    // Compatibility for legacy local CP936 strings.
+                    strncpy_s(dis, strLen + 1, ptMsg, strLen);
+                    if (GetStrLastByte(dis) != 3)
+                    {
+                        dis[strLen] = '\0';
+                        ptMsg += strLen;
+                    }
+                    else
+                    {
+                        dis[strLen - 1] = '\0';
+                        ptMsg += (strLen - 1);
+                    }
                 }
                 j++;
                 dis += distSize;
@@ -6466,19 +6522,10 @@ void serverWindowType5(void)
     }
     if (shopWindowProcNo == 10)
     {
-        int i, j;
-
-#ifdef _NEW_ITEM_
-        for (i = MAX_ITEMSTART, j = 0; i < 判断玩家道具数量(); i++)
-        {
-#else
-        for (i = MAX_ITEMSTART, j = 0; i < MAX_ITEM; i++)
-        {
-#endif
-            if (pc.item[i].useFlag == 0)
-                j++;
-        }
-        nowUserItemCnt = j;
+        // Do not carry the previous shop session's cached capacity into a new
+        // conversation.  The item packet may have changed while the shop was
+        // closed (move, drop, trade, bank, etc.).
+        nowUserItemCnt = GetEmptyPlayerItemSlotCount();
 
         initShopWindow2();
         shopWindowProcNo++;
@@ -6996,6 +7043,10 @@ int shopWindow2(void)
             {
                 selShopItemNo = selId;
                 sealItemCnt = 1;
+                // Capacity is mutable while this window is open.  Re-read it
+                // before rejecting the purchase, otherwise a stale zero makes
+                // every merchant report that the inventory is full.
+                nowUserItemCnt = GetEmptyPlayerItemSlotCount();
                 if (nowUserItemCnt <= 0)
                 {
                     ret = 4;

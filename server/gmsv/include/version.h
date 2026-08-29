@@ -15,6 +15,7 @@
 /*Server 版本控制*/
 #define _NEW_SERVER_
 #define _SERVER_NUMS
+#define _CHAR_NEWLOGOUT  // 新登出协议：0 原地登出，1 回记录点
 
 #define UNIQUE_KEYCODEITEM 100
 #define UNIQUE_KEYCODEPET  "i"
@@ -312,6 +313,7 @@
 #define _FIX_FAMILY_PK_LIMIT     // (可开放) WON 将可挑战庄园的由前十大改为前二十大
 //特殊活动功能
 #define _NEWOPEN_MAXEXP          // (可开) ANDY MAX经验值
+#define _OBJSEND_C               // 与当前客户端一致：C协议首字段发送对象类型
 #define _CHAR_FIXDATADEF         // (可开放) ANDY 修正人物资料初始
 #define _NPC_EXCHANGEMANTRANS    // (可开) Change 替exchangeman加入判断转生
 #define _ADD_NEWEVENT

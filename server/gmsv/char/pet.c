@@ -11,6 +11,24 @@
 #include "object.h"
 #include "petmail.h"
 #include "readmap.h"
+#include <stdarg.h>
+
+static void PET_CaptureTrace(const char *format, ...) {
+  FILE *fp;
+  va_list ap;
+  time_t now = time(NULL);
+
+  fp = fopen("capture_debug.log", "a");
+  if (fp == NULL)
+    return;
+  fprintf(fp, "[%lld] ", (long long)now);
+  va_start(ap, format);
+  vfprintf(fp, format, ap);
+  va_end(ap);
+  fputc('\n', fp);
+  fflush(fp);
+  fclose(fp);
+}
 
 int PET_DEBUG_initPetOne(int char_index) {
   Char ch;
@@ -236,34 +254,37 @@ int PET_dropPetFLXY(int char_index, int havepetindex, int fl, int x, int y) {
   return _PET_dropPet(char_index, havepetindex, fl, x, y);
 }
 
+
+const char *cInitTable[CHAR_FUNCTABLENUM] = {
+    "",              /* CHAR_INITFUNC */
+    "",              /* CHAR_WALKPREFUNC */
+    "",              /* CHAR_WALKPOSTFUNC */
+    "",              /* CHAR_PREOVERFUNC */
+    "",              /* CHAR_POSTOVERFUNC */
+    "core_PetWatch", /* CHAR_WATCHFUNC */
+    "",              /* CHAR_LOOPFUNC */
+    "",              /* CHAR_DYINGFUNC */
+    "core_PetTalk",  /* CHAR_TALKEDFUNC */
+    "",              /* CHAR_PREATTACKEDFUNC */
+    "",              /* CHAR_POSTATTACKEDFUNC */
+    "",              /* CHAR_OFFFUNC */
+    "",              /* CHAR_LOOKEDFUNC */
+    "",              /* CHAR_ITEMPUTFUNC */
+    "",              /* CHAR_SPECIALTALKEDFUNC */
+    "",              /* CHAR_WINDOWTALKEDFUNC */
+    "",              /* CHAR_TYPELUANPC */
+#ifdef _USER_CHARLOOPS
+    "",              /* CHAR_LOOPFUNCTEMP1 */
+    "",              /* CHAR_LOOPFUNCTEMP2 */
+    "",              /* CHAR_BATTLEPROPERTY */
+#endif
+};
+
 int PET_initCharOneArray(Char *ch) {
   int i;
-  char *tmp[CHAR_FUNCTABLENUM] = {
-      "",              /*  CHAR_INITFUNC */
-      "",              /*  CHAR_WALKPREFUNC    */
-      "",              /*  CHAR_WALKPOSTFUNC   */
-      "",              /*  CHAR_PREOVERFUNC    */
-      "",              /*  CHAR_PREOVERFUNC    */
-      "core_PetWatch", /*  CHAR_WATCHFUNC  */
-      "",              /*  CHAR_LOOPFUNC */
-      "",              /*  CHAR_DYINGFUNC */
-      "core_PetTalk",  /*  CHAR_TALKEDFUNC */
-      "",              /*  CHAR_PREATTACKEDFUNC    */
-      "",              /*  CHAR_POSTATTACKEDFUNC    */
-      "",              /*  CHAR_OFFFUNC    */
-      "",              /*  CHAR_LOOKEDFUNC */
-      "",              /*  CHAR_ITEMPUTFUNC    */
-      "",              /*  CHAR_SPECIALTALKEDFUNC    */
-      "",              /*  CHAR_WINDOWTALKEDFUNC    */
-#ifdef _USER_CHARLOOPS
-      "", // CHAR_LOOPFUNCTEMP1,
-      "", // CHAR_LOOPFUNCTEMP2,
-      "", // CHAR_BATTLEPROPERTY,
-#endif
-  };
   for (i = 0; i < CHAR_FUNCTABLENUM; i++) {
     strncpysafe(ch->charfunctable[i].string, sizeof(ch->charfunctable[i]),
-               tmp[i]);
+               cInitTable[i] != NULL ? cInitTable[i] : "");
   }
   if (ch->data[CHAR_MAILMODE] != CHAR_PETMAIL_NONE) {
     strncpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
@@ -283,7 +304,6 @@ int PET_initCharOneArray(Char *ch) {
   }
 #endif
   int petindex = CHAR_initCharOneArray(ch);
-
   return petindex;
 }
 
@@ -294,12 +314,25 @@ int PET_createPetFromCharaIndex(int char_index, int enemy_index) {
   char szPet[128];
   int i;
 
+  PET_CaptureTrace(
+      "pet.create enter owner=%d enemy=%d ownerValid=%d enemyValid=%d "
+      "sizeofChar=%llu local=%p",
+      char_index, enemy_index, CHAR_CHECKINDEX(char_index),
+      CHAR_CHECKINDEX(enemy_index), (unsigned long long)sizeof(Char),
+      (void *)&CharNew);
+
   havepetelement = CHAR_getCharPetElement(char_index);
+  PET_CaptureTrace("pet.create slot owner=%d slot=%d", char_index,
+                   havepetelement);
   if (havepetelement < 0)
     return -1;
   memset(&CharNew, 0, sizeof(Char));
+  PET_CaptureTrace("pet.create memset done owner=%d enemy=%d", char_index,
+                   enemy_index);
   if (!CHAR_getDefaultChar(&CharNew, 31010))
     return -1;
+  PET_CaptureTrace("pet.create default done owner=%d enemy=%d", char_index,
+                   enemy_index);
   CharNew.data[CHAR_BASEBASEIMAGENUMBER] = CharNew.data[CHAR_BASEIMAGENUMBER] =
       CHAR_getInt(enemy_index, CHAR_BASEIMAGENUMBER);
   CharNew.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
@@ -341,7 +374,11 @@ int PET_createPetFromCharaIndex(int char_index, int enemy_index) {
   strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              CHAR_getChar(enemy_index, CHAR_NAME));
+  PET_CaptureTrace("pet.create copy done owner=%d enemy=%d", char_index,
+                   enemy_index);
   newindex = PET_initCharOneArray(&CharNew);
+  PET_CaptureTrace("pet.create init done owner=%d enemy=%d pet=%d", char_index,
+                   enemy_index, newindex);
   if (newindex < 0) {
     return -1;
   }
@@ -359,6 +396,8 @@ int PET_createPetFromCharaIndex(int char_index, int enemy_index) {
 #endif
   CHAR_setWorkInt(newindex, CHAR_WORKPLAYERINDEX, char_index);
   CHAR_setCharPet(char_index, havepetelement, newindex);
+  PET_CaptureTrace("pet.create attach done owner=%d slot=%d pet=%d", char_index,
+                   havepetelement, newindex);
   CHAR_setChar(newindex, CHAR_OWNERCDKEY, CHAR_getChar(char_index, CHAR_CDKEY));
   CHAR_setChar(newindex, CHAR_OWNERCHARANAME,
                CHAR_getChar(char_index, CHAR_NAME));
@@ -367,6 +406,8 @@ int PET_createPetFromCharaIndex(int char_index, int enemy_index) {
   snprintf(szPet, sizeof(szPet), "W%d", havepetelement);
   CHAR_sendStatusString(char_index, szPet);
 
+  PET_CaptureTrace("pet.create return owner=%d enemy=%d pet=%d", char_index,
+                   enemy_index, newindex);
   return newindex;
 }
 

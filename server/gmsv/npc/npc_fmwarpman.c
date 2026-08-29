@@ -808,7 +808,7 @@ static void NPC_FMWarpMan_selectWindow( int meindex, int toindex, int num,int se
 	int floor = CHAR_getWorkInt(meindex, NPC_WORK_WARPFLOOR);
 	int fd = getfdFromCharaIndex( toindex);	
 	if( fd == -1 ) {
-		fprint( "getfd err\n");
+		printEx( "GET FD ERROR!!!\n");
 		return;
 	}
 	if(NPC_Util_GetArgStr( meindex, npcarg, sizeof(npcarg))==NULL){

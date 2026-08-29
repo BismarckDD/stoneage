@@ -202,8 +202,8 @@ int NPC_readCreateFile(char *filename) {
     switch (line[0]) {
     case '{':
       if (start == ON) {
-        fprint("Find {. But already START state. %s:%d\n", filename, linenum);
-        fprint("退出\n");
+        printEx("Find {. But already START state. %s:%d\n", filename, linenum);
+        printEx("退出\n");
         goto FCLOSERETURNFALSE;
 
       } else {
@@ -267,7 +267,7 @@ int NPC_readCreateFile(char *filename) {
           }
 
           if (NPC_create_readindex >= NPC_createnum) {
-            fprint("NPC create capacity exceeded in file: %s\n", filename);
+            printEx("NPC create capacity exceeded in file: %s\n", filename);
             goto FCLOSERETURNFALSE;
           }
           memcpy(&NPC_create[NPC_create_readindex], &cr, sizeof(NPC_Create));
@@ -290,7 +290,7 @@ int NPC_readCreateFile(char *filename) {
         deflurd[1] = FALSE;
         start = OFF;
       } else {
-        fprint("未解决 '}' at %s:%d\n", filename, linenum);
+        printEx("未解决 '}' at %s:%d\n", filename, linenum);
         goto FCLOSERETURNFALSE;
       }
       break;
@@ -387,7 +387,7 @@ int NPC_readCreateFile(char *filename) {
 
         /*  雁钗瞬民尼永弁  */
         if (enemyreadindex >= arraysizeof(cr.templateindex)) {
-          fprint("Too many enemy entries in %s:%d (max:%d)\n", filename,
+          printEx("Too many enemy entries in %s:%d (max:%d)\n", filename,
                  linenum, arraysizeof(cr.templateindex));
           goto FCLOSERETURNFALSE;
         }
@@ -413,10 +413,10 @@ int NPC_readCreateFile(char *filename) {
           }
           enemyreadindex++;
         } else
-          fprint("没有这种模块:\n[%s(%d)%s] enemy:%s\n", filename, linenum,
+          printEx("没有这种模块:\n[%s(%d)%s] enemy:%s\n", filename, linenum,
                  secondToken, enemyname);
       } else {
-        fprint("没有这种登陆 %s %s:%d\n", firstToken, filename, linenum);
+        printEx("没有这种登陆 %s %s:%d\n", firstToken, filename, linenum);
       }
     }
     }
@@ -451,7 +451,7 @@ BOOL NPC_readNPCCreateFiles(char *topdirectory, int createsize) {
       ;
   }
   if (!NPC_initCreateArray(createsize)) {
-    fprint("开启创建数组错误\n");
+    printEx("开启创建数组错误\n");
     freeMemory(filenames);
     return FALSE;
   }
@@ -459,7 +459,7 @@ BOOL NPC_readNPCCreateFiles(char *topdirectory, int createsize) {
   for (i = 0; i < filenum; i++) {
     if (NPC_IsNPCCreateFile(filenames[i].string)) {
       if (NPC_readCreateFile(filenames[i].string) == FALSE) {
-        fprint("Failed to read NPC create file: %s\n", filenames[i].string);
+        printEx("Failed to read NPC create file: %s\n", filenames[i].string);
         freeMemory(filenames);
         return FALSE;
       }

@@ -137,12 +137,12 @@ int MAPPOINT_setMapWarpFrom(int warp_point_idx, char *line) {
 
 int MAPPOINT_setMapWarpGoal(int warp_point_idx, char *line) {
   if (MAPPOINT_CHECKINDEX(warp_point_idx)) {
-    print("放置传送点获得 :%s!!\n", line);
+    print("设置传送点出口 :%s!!\n", line);
     return -1;
   }
-  if (GetPoint(line, &map_warp_point[warp_point_idx].ofloor,
-               &map_warp_point[warp_point_idx].ox,
-               &map_warp_point[warp_point_idx].oy) == -1) {
+  if (GetPoint(line, &map_warp_point[warp_point_idx].floor,
+               &map_warp_point[warp_point_idx].x,
+               &map_warp_point[warp_point_idx].y) == -1) {
     return -1;
   }
   return 1;
@@ -242,27 +242,39 @@ void callbackReadMapWarpPoint(int *warp_point_idx, const char *line) {
 int MAPPOINT_loadMapWarpPoint() {
   char filename[256];
   sprintf(filename, "%s/mapwarp.txt", getMapdir());
-  get_file_lines(filename, &map_warp_point_num, callbackReadMapWarpPoint);
+  int loaded_count =
+      get_file_lines(filename, &map_warp_point_num, callbackReadMapWarpPoint);
   print("初始化 %d 地图传送点...", map_warp_point_num);
+  return loaded_count > 0 ? 1 : 0;
 }
 
 void MAPPOINT_MapWarpHandle(int char_index, int warp_point_idx, int ofl, int ox,
                             int oy) {
   int floor, x, y;
+  print("[WARP_TRACE] map-point begin char=%d point=%d from=%d,%d,%d\n",
+        char_index, warp_point_idx, ofl, ox, oy);
   if (MAPPOINT_getMapWarpGoal(warp_point_idx, ofl, ox, oy, &floor, &x, &y) ==
       -1) {
-    print("获取传送点( %d, %d,%d,%d)错误!!\n", warp_point_idx, ofl, ox, oy);
+    print("获取传送点(%d, %d, %d, %d)错误!!!!\n", warp_point_idx, ofl, ox, oy);
     return;
   }
   if (floor == 777)
     return;
+  print("[WARP_TRACE] map-point resolved char=%d point=%d to=%d,%d,%d\n",
+        char_index, warp_point_idx, floor, x, y);
   CHAR_warpToSpecificPoint(char_index, floor, x, y);
+  print("[WARP_TRACE] map-point player-complete char=%d point=%d\n",
+        char_index, warp_point_idx);
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) == CHAR_PARTY_LEADER) {
     int i;
     for (i = 1; i < getPartyNum(char_index); i++) {
       int index = CHAR_getWorkInt(char_index, i + CHAR_WORKPARTYINDEX1);
       if (CHAR_CHECKINDEX(index)) {
+        print("[WARP_TRACE] map-point party-member begin leader=%d member=%d\n",
+              char_index, index);
         CHAR_warpToSpecificPoint(index, floor, x, y);
+        print("[WARP_TRACE] map-point party-member complete leader=%d member=%d\n",
+              char_index, index);
       }
     }
   }

@@ -95,11 +95,15 @@ void main_loop(void) {
   signal(SIGUSR2, sigusr2);
   print("succeed.\n");
 #endif
-#ifdef _MAP_WARP_POINT
-  print("Init map warp point...");
-  MAPPOINT_InitMapWarpPoint();
-  print("succeed.\n");
+#ifdef __MAP_WARP_POINT
+  print("初始化地图传送点......");
+  if (!MAPPOINT_InitMapWarpPoint()) {
+    print("失败.\n");
+    return;
+  }
+  print("成功.\n");
   if (!MAPPOINT_loadMapWarpPoint()) {
+    print("失败.\n");
     return;
   }
 #endif
@@ -151,7 +155,9 @@ void main_loop(void) {
   print("succeed.\n");
 #endif
 
+  NETWATCH_start();
   while (TRUE) {
+    NETWATCH_set("main_time_update", -1, NULL);
 #ifdef _ASSESS_SYSEFFICACY
     Assess_SysEfficacy(0);
 #endif
@@ -172,31 +178,41 @@ void main_loop(void) {
     Assess_SysEfficacy_sub(1, 1);
     Assess_SysEfficacy_sub(0, 2);
     //
+    NETWATCH_set("NPC_generateLoop", -1, NULL);
     NPC_generateLoop(FALSE);
     Assess_SysEfficacy_sub(1, 2);
     Assess_SysEfficacy_sub(0, 3);
+    NETWATCH_set("BATTLE_Loop", -1, NULL);
     BATTLE_Loop();
     Assess_SysEfficacy_sub(1, 3);
     Assess_SysEfficacy_sub(0, 4);
+    NETWATCH_set("CHAR_Loop", -1, NULL);
     CHAR_Loop();
     Assess_SysEfficacy_sub(1, 4);
+    NETWATCH_set("PETMAIL_proc", -1, NULL);
     PETMAIL_proc();
+    NETWATCH_set("family_proc", -1, NULL);
     family_proc();
+    NETWATCH_set("chardatasavecheck", -1, NULL);
     chardatasavecheck();
 #ifdef _ANGEL_SUMMON
+    NETWATCH_set("AngelReadyProc", -1, NULL);
     AngelReadyProc();
 #endif
     tmOld = tmNow;
     if (tmOld.tm_sec != tmNow.tm_sec) {
+      NETWATCH_set("CHAR_checkEffectLoop", -1, NULL);
       CHAR_checkEffectLoop();
     }
     if (SERVSTATE_getShutdown() > 0) {
+      NETWATCH_set("ShutdownProc", -1, NULL);
       ShutdownProc();
     }
     tmOld = tmNow;
 #ifdef _ASSESS_SYSEFFICACY
     Assess_SysEfficacy(1);
 #endif
+    NETWATCH_idle();
 #endif
   }
 }

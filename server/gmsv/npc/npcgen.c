@@ -26,6 +26,17 @@ int all_nosee = 0;     /* ㄠ及凛｛蝈化及衬毛 no_see 卞 */
 int all_nobody = 0;    /* ㄠ及凛｛蝈化及衬毛 no_body 卞 */
 int one_loop_born = 1; /* 每个LOOP生成NPC的数量限制 */
 
+typedef enum {
+  NPC_GEN_OK = 0,
+  NPC_GEN_INVALID_CONFIG,
+  NPC_GEN_NO_POSITION,
+  NPC_GEN_DEFAULT_CHAR_FAILED,
+  NPC_GEN_CHAR_ARRAY_FULL,
+  NPC_GEN_OBJECT_ARRAY_FULL
+} NPC_GenerateResult;
+
+static NPC_GenerateResult npc_generate_result = NPC_GEN_OK;
+
 /*------------------------------------------------------------
  * 衬毛丹心分允桦赭毛瑁烂允月
  * 娄醒
@@ -51,7 +62,7 @@ static BOOL NPC_searchCreatePoint(NPC_Create *cr, int nobody, int nosee,
   height = cr->intdata[NPC_CREATEBORNRIGHTDOWNY] -
            cr->intdata[NPC_CREATEBORNLEFTUPY] + 1;
   if (width <= 0 || height <= 0 || width > INT_MAX / height) {
-    fprint("Invalid NPC create area: floor=%d x=%d y=%d width=%d height=%d\n",
+    printEx("Invalid NPC create area: floor=%d x=%d y=%d width=%d height=%d\n",
            floor, x, y, width, height);
     return FALSE;
   }
@@ -180,6 +191,7 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
   NPC_Template *template;
   NPC_Create *cr;
 
+  npc_generate_result = NPC_GEN_OK;
   if (NPC_CHECKCREATEINDEX(createindex) && 0 <= createtemplateindex &&
       createtemplateindex <
           arraysizeof(NPC_create[createindex].templateindex) &&
@@ -189,15 +201,18 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
     template = &NPC_template[NPC_create[createindex]
                                  .templateindex[createtemplateindex]];
   } else {
+    npc_generate_result = NPC_GEN_INVALID_CONFIG;
     return FALSE;
   }
   if (NPC_searchCreatePoint(cr, template->intdata[NPC_TEMPLATEMAKEATNOBODY],
                             template->intdata[NPC_TEMPLATEMAKEATNOSEE], &sp,
                             template->intdata[NPC_TEMPLATEISFLYING]) == FALSE) {
+    npc_generate_result = NPC_GEN_NO_POSITION;
     return FALSE;
   }
 
   if (CHAR_getDefaultChar(&one, template->intdata[NPC_TEMPLATETYPE]) == FALSE) {
+    npc_generate_result = NPC_GEN_DEFAULT_CHAR_FAILED;
     return FALSE;
   }
   one.data[CHAR_FLOOR] = sp.floor;
@@ -280,6 +295,7 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
     Object obj;
     char_index = CHAR_initCharOneArray(&one);
     if (char_index == -1) {
+      npc_generate_result = NPC_GEN_CHAR_ARRAY_FULL;
       return FALSE;
     }
     if (template->intdata[NPC_TEMPLATEISFLYING])
@@ -291,6 +307,7 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
     obj.floor = CHAR_getInt(char_index, CHAR_FLOOR);
     objindex = initObjectOne(&obj);
     if (objindex == -1) {
+      npc_generate_result = NPC_GEN_OBJECT_ARRAY_FULL;
       CHAR_endCharOneArray(char_index);
       return FALSE;
     } else {
@@ -317,6 +334,10 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
 void NPC_generateLoop(BOOL checkall) {
   int i, j;
   int npcCreated = 0;
+  int templateAttempts = 0;
+  int timeRejected = 0;
+  int invalidEnemyCount = 0;
+  int failureCounts[NPC_GEN_OBJECT_ARRAY_FULL + 1] = {0};
   static int npcCreateIndex = 0;
   static struct timeval lastNpcGenerationTime;
   if (checkall == FALSE) {
@@ -327,7 +348,7 @@ void NPC_generateLoop(BOOL checkall) {
     }
   }
   if (NPC_create == NULL || NPC_createnum <= 0) {
-    fprint("NPC NPC_create is null or create_num:%d.\n", NPC_createnum);
+    printEx("NPC NPC_create is null or create_num:%d.\n", NPC_createnum);
     return;
   }
   for (i = 0; i < NPC_createnum; i++) {
@@ -337,27 +358,44 @@ void NPC_generateLoop(BOOL checkall) {
     const int cEnemyNpcNum = NPC_getCreateInt(npcCreateIndex, NPC_CREATEENEMYNUM);
     if (cEnemyNpcNum < 0 ||
         cEnemyNpcNum > arraysizeof(NPC_create[npcCreateIndex].templateindex)) {
-      fprint("Invalid enemy count: npcCreateIndex=%d count=%d max=%d\n",
+      printEx("Invalid enemy count: npcCreateIndex=%d count=%d max=%d\n",
             npcCreateIndex, cEnemyNpcNum,
             arraysizeof(NPC_create[npcCreateIndex].templateindex));
+      invalidEnemyCount++;
       // 这个index的NPC没有属于敌人的范畴
       ++npcCreateIndex;
       continue;
     }
     for (j = 0; j < cEnemyNpcNum; j++) {
-      // fprint("j:%d npcCreateIndex:%d.\n", j, npcCreateIndex);
+      templateAttempts++;
       if (NPC_createCheckGenerateFromTime(npcCreateIndex) == TRUE) {
         if (NPC_generateNPC(npcCreateIndex, j) == TRUE) {
           ++npcCreated;
           NPC_createInitTime(npcCreateIndex);
           NPC_createIncreaseEnemynum(npcCreateIndex);
+        } else if (npc_generate_result >= NPC_GEN_INVALID_CONFIG &&
+                   npc_generate_result <= NPC_GEN_OBJECT_ARRAY_FULL) {
+          failureCounts[npc_generate_result]++;
         }
+      } else {
+        timeRejected++;
       }
     }
     ++npcCreateIndex;
-    // fprint("npcCreateIndex: %d, npCreated: %d\n", npcCreateIndex, npcCreated);
     if (checkall == FALSE && npcCreated >= one_loop_born) {
       break;
     }
+  }
+  if (checkall == TRUE) {
+    print("[NPC_GEN_TRACE] rules=%d template_attempts=%d generated=%d "
+          "time_rejected=%d invalid_enemy_count=%d invalid_config=%d "
+          "no_position=%d default_char_failed=%d char_array_full=%d "
+          "object_array_full=%d\n",
+          NPC_createnum, templateAttempts, npcCreated, timeRejected,
+          invalidEnemyCount, failureCounts[NPC_GEN_INVALID_CONFIG],
+          failureCounts[NPC_GEN_NO_POSITION],
+          failureCounts[NPC_GEN_DEFAULT_CHAR_FAILED],
+          failureCounts[NPC_GEN_CHAR_ARRAY_FULL],
+          failureCounts[NPC_GEN_OBJECT_ARRAY_FULL]);
   }
 }

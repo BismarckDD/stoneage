@@ -832,10 +832,6 @@ static void NPC_NewWarpMan_selectWindow(int meindex, int toindex, int num,
 // ANDY_RE
 int CheckWarpMsg(int meindex, int talkerindex, char *npcarg, char *TalkStr) {
   char buf[1024];
-  char buf2[256];
-  int i = 1;
-  int flg = 0;
-
   if (NPC_Util_GetStrFromStrWithDelim(npcarg, "warp_msg", buf, sizeof(buf)) ==
       NULL)
     return 0;

@@ -75,13 +75,9 @@ BOOL CHAR_JoinParty_Main(int char_index, int targetindex) {
     firstflg = TRUE;
   }
   CHAR_setWorkInt(toindex, parray + CHAR_WORKPARTYINDEX1, char_index);
-
   CHAR_setWorkChar(char_index, CHAR_WORKWALKARRAY, "");
-
   CHAR_setWorkInt(char_index, CHAR_WORKPARTYMODE, CHAR_PARTY_CLIENT);
-
   CHAR_setWorkInt(char_index, CHAR_WORKPARTYINDEX1, toindex);
-
   if (firstflg) {
     CHAR_sendStatusString(toindex, "N0");
   }
@@ -121,14 +117,12 @@ BOOL CHAR_JoinParty_Main_New(int char_index, int targetindex, int flg) {
   int toindex;
   int parray;
 
-  /* 褪互中凶日娄匀舰曰请允 */
   if (CHAR_getWorkInt(targetindex, CHAR_WORKPARTYMODE) == CHAR_PARTY_NONE) {
     toindex = targetindex;
   } else {
     toindex = CHAR_getPartyIndex(targetindex, 0);
   }
   if (!CHAR_CHECKINDEX(toindex)) {
-    //	print( " %s:%d err\n", __FILE__, __LINE__);
     return FALSE;
   }
 
@@ -143,13 +137,9 @@ BOOL CHAR_JoinParty_Main_New(int char_index, int targetindex, int flg) {
     firstflg = TRUE;
   }
   CHAR_setWorkInt(toindex, parray + CHAR_WORKPARTYINDEX1, char_index);
-
   CHAR_setWorkChar(char_index, CHAR_WORKWALKARRAY, "");
-
   CHAR_setWorkInt(char_index, CHAR_WORKPARTYMODE, CHAR_PARTY_CLIENT);
-
   CHAR_setWorkInt(char_index, CHAR_WORKPARTYINDEX1, toindex);
-
   if (firstflg) {
     CHAR_sendStatusString(toindex, "N0");
   }
@@ -307,9 +297,6 @@ BOOL CHAR_JoinParty(int char_index) {
       targetindex = toindex;
       cnt = 0;
       if (!NPC_BusCheckJoinParty(toindex, char_index, TRUE)) {
-        /* 椭瘀毛  凶今卅井匀凶［醮棉  月及反蔽歹月［谛棉及质  手仄卅中［
-         * 支支仇仄中及匹［
-         */
         break;
       }
       { // Arminius 7.10 Airplane

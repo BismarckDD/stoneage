@@ -716,6 +716,10 @@ int getCharType(ACTION *ptAct) {
     return 0;
   if (!人物屏蔽开关)
     return 0;
+  // 人物屏蔽只作用于场景中的其他角色。本机角色必须持续生成动画帧，
+  // 否则角色仍可移动并带动镜头，但 bmpNo 会被 pattern() 清零而不可见。
+  if (ptAct == pc.ptAct)
+    return 0;
   CHAREXTRA *ext;
   int no;
   if (ptAct == NULL)

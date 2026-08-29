@@ -157,7 +157,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 							strcat( NPC_sendbuf, memberlist[fmindex_wk].memo[i]);
 							strcat( NPC_sendbuf, "\n");
 						}
-						sprintf(tmp, "%d\n", dengonindex);
+						snprintf(tmp, sizeof(tmp), "%d\n", dengonindex);
 						strcat( NPC_sendbuf, tmp);
 					}
 					if(dengonindex < 6){
@@ -171,8 +171,8 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 							strcat( NPC_sendbuf, memberlist[fmindex_wk].memo[i]);
 							strcat( NPC_sendbuf, "\n");
 						}
-						sprintf(tmp, "%d\n", dengonindex);
-						strcat( NPC_sendbuf, tmp);
+						snprintf(tmp, sizeof(tmp), "%d\n", dengonindex);
+						strcat(NPC_sendbuf, tmp);
 					}
 					
 					GmsvServer_WN_send( fd, WINDOW_FMMESSAGETYPE_DENGON,

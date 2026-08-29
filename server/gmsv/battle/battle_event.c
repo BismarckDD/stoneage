@@ -17,6 +17,7 @@
 #include "pet.h"
 #include "pet_skill.h"
 #include <math.h>
+#include <stdarg.h>
 #include "util.h"
 #ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
 #include "item.h"
@@ -43,6 +44,24 @@
 float gKawashiPara = 0.02;  // 闪避
 float gCounterPara = 0.08;  // 反击
 float gCriticalPara = 0.09; // 暴击
+
+/* Flush every capture breadcrumb so a crash cannot strand it in a buffer. */
+static void BATTLE_CaptureTrace(const char *format, ...) {
+  FILE *fp;
+  va_list ap;
+  time_t now = time(NULL);
+
+  fp = fopen("capture_debug.log", "a");
+  if (fp == NULL)
+    return;
+  fprintf(fp, "[%lld] ", (long long)now);
+  va_start(ap, format);
+  vfprintf(fp, format, ap);
+  va_end(ap);
+  fputc('\n', fp);
+  fflush(fp);
+  fclose(fp);
+}
 
 float gBattleDamageModyfy;
 int gBattleDuckModyfy;
@@ -3945,6 +3964,19 @@ BOOL BATTLE_Capture(int battleindex, int attackNo, int defNo) {
   attackindex = BATTLE_No2Index(battleindex, attackNo);
   defindex = BATTLE_No2Index(battleindex, defNo);
 
+  BATTLE_CaptureTrace(
+      "enter battle=%d attackNo=%d defNo=%d attack=%d def=%d battleValid=%d "
+      "attackValid=%d defValid=%d",
+      battleindex, attackNo, defNo, attackindex, defindex,
+      BATTLE_CHECKINDEX(battleindex), CHAR_CHECKINDEX(attackindex),
+      CHAR_CHECKINDEX(defindex));
+  if (!BATTLE_CHECKINDEX(battleindex) || !CHAR_CHECKINDEX(attackindex) ||
+      !CHAR_CHECKINDEX(defindex)) {
+    BATTLE_CaptureTrace("abort invalid index battle=%d attack=%d def=%d",
+                        battleindex, attackindex, defindex);
+    return FALSE;
+  }
+
   szBuffer[0] = 0;
 
   if (BATTLE_CaptureItemCheck(attackindex, defindex) == FALSE) {
@@ -3953,8 +3985,16 @@ BOOL BATTLE_Capture(int battleindex, int attackNo, int defNo) {
     flg = 0;
   }
   CHAR_setWorkInt(attackindex, CHAR_WORKMODCAPTURE, 0);
+  BATTLE_CaptureTrace("check complete battle=%d attack=%d def=%d result=%d per=%.2f",
+                      battleindex, attackindex, defindex, flg,
+                      flg ? per : 0.0f);
   if (flg == 1) {
+    BATTLE_CaptureTrace("create begin battle=%d attack=%d def=%d",
+                        battleindex, attackindex, defindex);
     pindex = PET_createPetFromchar_index(attackindex, defindex);
+    BATTLE_CaptureTrace("create end battle=%d attack=%d def=%d pet=%d petValid=%d",
+                        battleindex, attackindex, defindex, pindex,
+                        CHAR_CHECKINDEX(pindex));
     if (pindex == -1) {
       // snprintf( szBuffer, sizeof(szBuffer),
       // 历史注释的原始编码已损坏，无法可靠恢复。
@@ -4012,7 +4052,19 @@ BOOL BATTLE_Capture(int battleindex, int attackNo, int defNo) {
       CHAR_setInt(attackindex, CHAR_GETPETCOUNT,
                   CHAR_getInt(attackindex, CHAR_GETPETCOUNT) + 1);
 
-      BATTLE_Exit(defindex, battleindex);
+      BATTLE_CaptureTrace(
+          "exit begin battle=%d def=%d defUse=%d defBattleMode=%d pet=%d",
+          battleindex, defindex, CHAR_getCharUse(defindex),
+          CHAR_getWorkInt(defindex, CHAR_WORKBATTLEMODE), pindex);
+      {
+        int exitResult = BATTLE_Exit(defindex, battleindex);
+        BATTLE_CaptureTrace(
+            "exit end battle=%d def=%d exitResult=%d defValid=%d defUse=%d "
+            "pet=%d petValid=%d",
+            battleindex, defindex, exitResult, CHAR_CHECKINDEX(defindex),
+            CHAR_CHECKINDEX(defindex) ? CHAR_getCharUse(defindex) : -1, pindex,
+            CHAR_CHECKINDEX(pindex));
+      }
       CHAR_complianceParameter(pindex);
       CHAR_setInt(pindex, CHAR_VARIABLEAI, 0);
       ai = CHAR_DEFAULTMAXAI - CHAR_getWorkInt(pindex, CHAR_WORKFIXAI);
@@ -4031,6 +4083,8 @@ BOOL BATTLE_Capture(int battleindex, int attackNo, int defNo) {
              flg);
     BATTLESTR_ADD(szCommand);
   }
+  BATTLE_CaptureTrace("return battle=%d attack=%d def=%d result=%d",
+                      battleindex, attackindex, defindex, flg);
   return (flg) ? (TRUE) : (FALSE);
 }
 
@@ -5672,7 +5726,7 @@ void BATTLE_Steal(int battleindex, int attackNo, int defNo) {
         i = RAND(0, j - 1);
         if (i >= 0) {
           if (0 <= itemtbl[i] && itemtbl[i] < CHAR_STARTITEMARRAY) {
-            fprint("err:要盗取装备品(%d)\n", itemtbl[i]);
+            printEx("err:要盗取装备品(%d)\n", itemtbl[i]);
           } else {
             item_index = CHAR_getItemIndex(defindex, itemtbl[i]);
           }

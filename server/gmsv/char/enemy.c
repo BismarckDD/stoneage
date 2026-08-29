@@ -196,7 +196,7 @@ void enemytemp_callback(int *line_num, const char* line) {
   for (i = 0; i < E_T_DATACHARNUM; i++) {
     ret = getStringFromIndexWithDelim(line, ",", i + 1, token, sizeof(token));
     if (ret == FALSE) {
-      fprint("文件语法错误:%s 第%d行\n", line, i);
+      printEx("文件语法错误:%s 第%d行\n", line, i);
       continue;
     }
     ENEMYTEMP_setChar(*line_num, E_T_NAME + i, token);
@@ -206,7 +206,7 @@ void enemytemp_callback(int *line_num, const char* line) {
        i < E_T_DATAINTNUM + ENEMYTEMP_STARTINTNUM; i++) {
     ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
     if (ret == FALSE) {
-      fprint("文件语法错误:%s 第%d行\n", line, i);
+      printEx("文件语法错误:%s 第%d行\n", line, i);
       break;
     }
     if (strlen(token) != 0) {
@@ -248,7 +248,7 @@ BOOL ENEMYTEMP_initEnemy(const char *filename) {
   ENEMYTEMP_enemy =
       allocateMemory(sizeof(struct tagENEMYTEMP_Table) * ENEMYTEMP_enemynum);
   if (ENEMYTEMP_enemy == NULL) {
-    fprint("无法分配内存 %d\n",
+    printEx("无法分配内存 %d\n",
            sizeof(struct tagENEMYTEMP_Table) * ENEMYTEMP_enemynum);
     return FALSE;
   }
@@ -302,20 +302,20 @@ void enemy_callback(int *line_num, const char *line) {
   int ret;
   ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
   if (ret == FALSE) {
-    fprint("文件语法错误:%s 第%d行\n", line, *line_num);
+    printEx("文件语法错误:%s 第%d行\n", line, *line_num);
     return;
   }
   ENEMY_setChar(*line_num, ENEMY_NAME, token);
   ret = getStringFromIndexWithDelim(line, ",", 2, token, sizeof(token));
   if (ret == FALSE) {
-    fprint("文件语法错误:%s 第%d行\n", line, *line_num);
+    printEx("文件语法错误:%s 第%d行\n", line, *line_num);
     return;
   }
   ENEMY_setChar(*line_num, ENEMY_TACTICSOPTION, token);
 #ifdef _BATTLENPC_WARP_PLAYER
   ret = getStringFromIndexWithDelim(line, ",", 3, token, sizeof(token));
   if (ret == FALSE) {
-    fprint("文件语法错误:%s 第%d行\n", line, *line_num);
+    printEx("文件语法错误:%s 第%d行\n", line, *line_num);
     return;
   }
   ENEMY_setChar(*line_num, ENEMY_ACT_CONDITION, token);
@@ -330,7 +330,7 @@ void enemy_callback(int *line_num, const char *line) {
   for (i = ENEMY_STARTINTNUM; i < ENEMY_DATAINTNUM + ENEMY_STARTINTNUM; i++) {
     ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
     if (ret == FALSE) {
-      fprint("文件语法错误:%s 第%d行\n", line, i);
+      printEx("文件语法错误:%s 第%d行\n", line, i);
       break;
     }
     ENEMY_setInt(*line_num, i - ENEMY_STARTINTNUM, atoi(token));
@@ -344,7 +344,7 @@ void enemy_callback(int *line_num, const char *line) {
     }
   }
   if (i == ENEMYTEMP_enemynum) {
-    fprint("文件语法错误:%s 第%d行\n", line, i);
+    printEx("文件语法错误:%s 第%d行\n", line, i);
     return;
   }
   ENEMY_enemy[*line_num].enemytemparray = i;
@@ -369,7 +369,7 @@ BOOL ENEMY_initEnemy(const char *filename) {
   ENEMY_enemy =
       allocateMemory(sizeof(struct tagENEMY_EnemyTable) * ENEMY_enemynum);
   if (ENEMY_enemy == NULL) {
-    fprint("无法分配内存 %d\n",
+    printEx("无法分配内存 %d\n",
            sizeof(struct tagENEMY_EnemyTable) * ENEMY_enemynum);
     return FALSE;
   }
@@ -467,14 +467,14 @@ BOOL GROUP_initGroup(const char *filename) {
   }
 
   if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("寻找失败\n");
+    printEx("寻找失败\n");
     fclose(f);
     return FALSE;
   }
 
   GROUP_group = allocateMemory(sizeof(struct tagGROUP_Table) * GROUP_groupnum);
   if (GROUP_group == NULL) {
-    fprint("无法分配内存 %d\n", sizeof(struct tagGROUP_Table) * GROUP_groupnum);
+    printEx("无法分配内存 %d\n", sizeof(struct tagGROUP_Table) * GROUP_groupnum);
     fclose(f);
     return FALSE;
   }
@@ -524,7 +524,7 @@ BOOL GROUP_initGroup(const char *filename) {
       }
       ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+        printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       GROUP_setChar(group_readlen, GROUP_NAME, token);
@@ -533,7 +533,7 @@ BOOL GROUP_initGroup(const char *filename) {
            i++) {
         ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
         if (ret == FALSE) {
-          fprint("文件语法错误:%s 第%d行\n", filename, linenum);
+          printEx("文件语法错误:%s 第%d行\n", filename, linenum);
           break;
         }
         if (strlen(token) != 0) {
@@ -563,13 +563,13 @@ BOOL GROUP_initGroup(const char *filename) {
           }
         }
         if (enemycnt == 0) {
-          fprint("团队设定中敌人尚未设定 文件:%s 第%d行\n", filename, linenum);
+          printEx("团队设定中敌人尚未设定 文件:%s 第%d行\n", filename, linenum);
           continue;
           ;
         }
         if (checkRedundancy(&GROUP_group[group_readlen].intdata[ENEMY_ID1],
                             CREATEPROB1 - ENEMY_ID1)) {
-          fprint("团队设定中敌人重复设定 文件:%s 第%d行\n", filename, linenum);
+          printEx("团队设定中敌人重复设定 文件:%s 第%d行\n", filename, linenum);
           continue;
           ;
         }
@@ -1303,8 +1303,6 @@ int *ENEMY_getEnemy(int char_index, int x, int y) {
     for (j = 0; j < found - 1; j++) {
       aaa += wr[j];
       if (wr[j] != 0 && r < aaa) {
-        //  print("\nj=%d enemyid=%d wr[j]=%d aaa=%d r=%d r_max=%d
-        //  ",j,work[j],wr[j],aaa,r,r_max);
         break;
       }
     }
@@ -1366,20 +1364,17 @@ int *ENEMY_getEnemy(int char_index, int x, int y) {
 int ENEMY_createPetFromEnemyIndex(int char_index, int array) {
   Char CharNew;
   int new_index;
-  int *p;
   int tp[E_T_DATAINTNUM];
-  int tarray, i;
-  int havepetelement;
-  int level;
+  int level, i;
   int enemyrank;
   if (!ENEMY_CHECKINDEX(array))
     return -1;
-  havepetelement = CHAR_getCharPetElement(char_index);
+  int havepetelement = CHAR_getCharPetElement(char_index);
   if (havepetelement < 0)
     return -1;
 
-  p = ENEMY_enemy[array].intdata;
-  tarray = ENEMYTEMP_getEnemyTempArray(array);
+  int *p = ENEMY_enemy[array].intdata;
+  int tarray = ENEMYTEMP_getEnemyTempArray(array);
   if (!ENEMYTEMP_CHECKINDEX(tarray))
     return -1;
   for (i = 0; i < E_T_DATAINTNUM; i++) {

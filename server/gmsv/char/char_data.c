@@ -655,14 +655,14 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
   }
 
   if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("Seek Error\n");
+    printEx("Seek Error\n");
     fclose(f);
     return FALSE;
   }
 
   CHAR_invarea = allocateMemory(sizeof(CHAR_invincibleArea) * CHAR_invareanum);
   if (CHAR_invarea == NULL) {
-    fprint("Can't allocate Memory %d\n",
+    printEx("Can't allocate Memory %ld\n",
            sizeof(CHAR_invincibleArea) * CHAR_invareanum);
     fclose(f);
     return FALSE;
@@ -707,7 +707,7 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
 
       ret = getStringFromIndexWithDelim(line, " ", 1, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("Syntax Error file:%s line:%d\n", filename, linenum);
+        printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         continue;
       } else {
         static struct CHAR_charareakindtbl {
@@ -742,7 +742,7 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
       CHAR_invarea[invreadlen].kind = kind;
       ret = getStringFromIndexWithDelim(line, " ", 2, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename,
+        printEx("文件语法错误:%s 第%d行\n", filename,
                linenum);
         continue;
       } else
@@ -750,7 +750,7 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
 
       ret = getStringFromIndexWithDelim(line, " ", 3, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("文件语法错误:%s 第%d行\n", filename,
+        printEx("文件语法错误:%s 第%d行\n", filename,
                linenum);
         continue;
       } else
@@ -771,18 +771,6 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
   fclose(f);
   CHAR_invareanum = invreadlen;
   print("有效不可战斗有效数是 %d...", CHAR_invareanum);
-
-#ifdef DEBUG
-  {
-    int i;
-    for (i = 0; i < CHAR_invareanum; i++)
-      print("kind(%d) %d(%d,%d)-(%d,%d)\n", CHAR_invarea[i].kind,
-            CHAR_invarea[i].floor, CHAR_invarea[i].area.x,
-            CHAR_invarea[i].area.y, CHAR_invarea[i].area.width,
-            CHAR_invarea[i].area.height);
-  }
-#endif /*DEBUG*/
-
   return TRUE;
 }
 
@@ -827,18 +815,7 @@ BOOL CHAR_initAppearPosition(char *filename) {
   char line[256];
   int linenum = 0;
   int appearreadlen = 0;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    f = fopen(filename, "r");
-  }
+  f = fopen(filename, "r");
   if (f == NULL) {
     errorprint;
     return FALSE;
@@ -861,14 +838,14 @@ BOOL CHAR_initAppearPosition(char *filename) {
   }
 
   if (fseek(f, 0, SEEK_SET) == -1) {
-    fprint("Seek Error\n");
+    printEx("Seek Error\n");
     fclose(f);
     return FALSE;
   }
 
   CHAR_appear = allocateMemory(sizeof(CHAR_appearposition) * CHAR_appearnum);
   if (CHAR_appear == NULL) {
-    fprint("Can't allocate Memory %d\n",
+    printEx("Can't allocate Memory %ld\n",
            sizeof(CHAR_appearposition) * CHAR_appearnum);
     fclose(f);
     return FALSE;
@@ -904,13 +881,13 @@ BOOL CHAR_initAppearPosition(char *filename) {
       int ret;
       ret = getStringFromIndexWithDelim(line, " ", 1, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("Syntax Error file:%s line:%d\n", filename, linenum);
+        printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         continue;
       }
       CHAR_appear[appearreadlen].floor = atoi(token);
       ret = getStringFromIndexWithDelim(line, " ", 2, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("Syntax Error file:%s line:%d\n", filename, linenum);
+        printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         continue;
       }
 
@@ -918,7 +895,7 @@ BOOL CHAR_initAppearPosition(char *filename) {
 
       ret = getStringFromIndexWithDelim(line, " ", 3, token, sizeof(token));
       if (ret == FALSE) {
-        fprint("Syntax Error file:%s line:%d\n", filename, linenum);
+        printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         continue;
       }
 
@@ -1308,10 +1285,17 @@ int CHAR_LevelUpCheck(int char_index, int toindex) {
 
 #ifdef _NEWOPEN_MAXEXP
       if (level >= CHAR_MAXUPLEVEL) {
+        /* At the configured level cap neither level nor EXP can change here.
+         * Continuing would test the same exp >= nextexp condition forever and
+         * block the entire GMSV main loop during BATTLE_GetProfit. */
+        break;
       } else {
         if (CHAR_HandleExp(char_index) != -1) {
           exp = CHAR_getInt(char_index, CHAR_EXP);
           CHAR_setInt(char_index, CHAR_LV, level + 1);
+        } else {
+          /* A failed EXP conversion also makes no forward progress. */
+          break;
         }
       }
 #else
