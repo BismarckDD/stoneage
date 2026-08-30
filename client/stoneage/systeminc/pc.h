@@ -33,13 +33,21 @@ CHARLISTTABLE：登录界面的角色列表
 #define MAX_CHARACTER 2
 #define CHAR_NAME_LEN 16
 #define CHAR_FREENAME_LEN 32
+#define CHAR_NAME_BUFFER_SIZE (CHAR_NAME_LEN * 4 + 1)
+#define CHAR_FREENAME_BUFFER_SIZE (CHAR_FREENAME_LEN * 4 + 1)
 #define MAGIC_NAME_LEN 28
 #define MAGIC_MEMO_LEN 72
 #define ITEM_NAME_LEN 28
 #define ITEM_NAME2_LEN 16
 #define ITEM_MEMO_LEN 84
+#define ITEM_NAME_BUFFER_SIZE (ITEM_NAME_LEN * 4 + 1)
+#define ITEM_NAME2_BUFFER_SIZE (ITEM_NAME2_LEN * 4 + 1)
+#define ITEM_MEMO_BUFFER_SIZE (ITEM_MEMO_LEN * 4 + 1)
 #define PET_NAME_LEN 16
 #define PET_FREENAME_LEN 32
+// 2026.08.30. PET_NAME_BUFFER_SIZE 需要用 PET_NAME_LEN * 4 + 1;
+// 因为要适配PET_NAME采用UTF8编码的修改
+#define PET_NAME_BUFFER_SIZE (PET_NAME_LEN * 4 + 1)
 #define CHAR_FMNAME_LEN 33 // 家族名称
 #ifdef _CHAR_PROFESSION    // WON ADD 人物职业
 #define PROFESSION_MEMO_LEN 84
@@ -235,9 +243,9 @@ typedef struct {
   short target;                       // 
   short deadTargetFlag;               // ??????????
   short sendFlag;                     // ??????????
-  char name[ITEM_NAME_LEN * 2 + 1];   // ????
-  char name2[ITEM_NAME2_LEN * 2 + 1]; // ?????
-  char memo[ITEM_MEMO_LEN * 2 + 1];   // ??
+  char name[ITEM_NAME_BUFFER_SIZE];
+  char name2[ITEM_NAME2_BUFFER_SIZE];
+  char memo[ITEM_MEMO_BUFFER_SIZE];
   char damage[20];
 #ifdef _PET_ITEM
   char type;
@@ -276,8 +284,8 @@ typedef struct {
 #endif
   int titleNo;
   int dp;
-  char name[CHAR_NAME_LEN + 1];
-  char freeName[CHAR_FREENAME_LEN + 1];
+  char name[CHAR_NAME_BUFFER_SIZE];
+  char freeName[CHAR_FREENAME_BUFFER_SIZE];
   short nameColor;
 #ifdef _ANGEL_SUMMON
   unsigned status;
@@ -299,7 +307,7 @@ typedef struct {
   int pcNameColor;
   short transmigration;
   char chusheng[61];
-  char familyName[CHAR_NAME_LEN + 1];
+  char familyName[CHAR_NAME_BUFFER_SIZE];
   int familyleader;
   int channel;
   int quickChannel;
@@ -307,7 +315,7 @@ typedef struct {
   int ridePetNo; // 宠物形像
   int learnride;
   unsigned int lowsride;
-  char ridePetName[CHAR_FREENAME_LEN + 1];
+  char ridePetName[CHAR_FREENAME_BUFFER_SIZE];
   int ridePetLevel;
   int familySprite;
   int baseGraNo;
@@ -468,8 +476,8 @@ typedef struct {
 #else
   unsigned short status; // ?????(??????)
 #endif
-  char name[CHAR_NAME_LEN + 1];    // ?
-  char freeName[PET_NAME_LEN + 1]; // ???????
+  char name[PET_NAME_BUFFER_SIZE];
+  char freeName[PET_NAME_BUFFER_SIZE];
   short useFlag;                   // ??????????????
   short changeNameFlag;            // ?????????
 #ifdef _PET_ITEM
@@ -496,8 +504,8 @@ typedef struct {
   short field;
   short target;
   short deadTargetFlag;
-  char name[MAGIC_NAME_LEN + 1];
-  char memo[MAGIC_MEMO_LEN + 1];
+  char name[MAGIC_NAME_LEN * 4 + 1];
+  char memo[MAGIC_MEMO_LEN * 4 + 1];
 } MAGIC;
 
 typedef struct {
@@ -507,7 +515,7 @@ typedef struct {
   int maxHp;
   int hp;
   int mp;
-  char name[CHAR_NAME_LEN + 1];
+  char name[CHAR_NAME_BUFFER_SIZE];
   ACTION *ptAct;
 } PARTY;
 
@@ -518,7 +526,7 @@ typedef struct {
   short transmigration;
   int dp;
   int graNo;
-  char name[CHAR_NAME_LEN + 1];
+  char name[CHAR_NAME_BUFFER_SIZE];
 #ifdef _MAILSHOWPLANET // (可开放) Syu ADD 显示名片星球
   char planetname[64];
 #endif
@@ -533,7 +541,7 @@ typedef struct {
 typedef struct {
   short useFlag;
   BATTLE_RESULT_CHR resChr[RESULT_CHR_EXP];
-  char item[RESULT_ITEM_COUNT][RESULT_ITEM_NAME_LEN + 1];
+  char item[RESULT_ITEM_COUNT][RESULT_ITEM_NAME_LEN * 4 + 1];
 } BATTLE_RESULT_MSG;
 
 typedef struct {
@@ -541,8 +549,8 @@ typedef struct {
   short skillId;
   short field;
   short target;
-  char name[SKILL_NAME_LEN + 1];
-  char memo[SKILL_MEMO_LEN + 1];
+  char name[SKILL_NAME_LEN * 4 + 1];
+  char memo[SKILL_MEMO_LEN * 4 + 1];
 } PET_SKILL;
 
 #ifdef _CHAR_PROFESSION // WON ADD 人物职业
@@ -551,8 +559,8 @@ typedef struct {
   short skillId;
   short target;
   short kind;
-  char name[PROFESSION_MEMO_LEN + 1];
-  char memo[PROFESSION_MEMO_LEN + 1];
+  char name[PROFESSION_MEMO_LEN * 4 + 1];
+  char memo[PROFESSION_MEMO_LEN * 4 + 1];
   int icon;
   int costmp;
   int skill_level;
@@ -563,7 +571,7 @@ typedef struct {
 #endif
 
 typedef struct {
-  char name[CHAR_NAME_LEN + 1]; // 名字
+  char name[CHAR_NAME_BUFFER_SIZE]; // 名字
   short level;                  // 等级
   int login;                    // 登录状态？
   int faceGraNo; // 头像图形

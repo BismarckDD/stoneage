@@ -136,6 +136,9 @@ BOOL IsSurfaceExpired(SURFACE_INFO *surface);
 void DrawSurfaceFromPalette(SURFACE_INFO *surface_info);
 #endif
 void PaletteChange(int palNo, int time);
+void ClientRuntimeLog(const char *category, const char *format, ...);
+LONG WINAPI ClientCrashExceptionFilter(EXCEPTION_POINTERS *exceptionPointers);
+void InstallClientCrashHandler(void);
 void DrawAutoMapping(int x, int y, unsigned char *autoMap, int w, int h);
 int getAutoMapColor(unsigned int GraphicNo);
 int getNearestColorIndex(COLORREF color, PALETTEENTRY *palette, int entry);

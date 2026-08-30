@@ -4,6 +4,9 @@
 #include "systeminc/loadrealbin.h"
 #include "systeminc/map.h"
 
+#include <dbghelp.h>
+#include <stdarg.h>
+
 #define PAL_CHANGE_INTERVAL_WIN 120
 #define PAL_CHANGE_INTERVAL_FULL 60
 int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
@@ -68,6 +71,112 @@ const char *palFileName[] = {
 };
 
 const int MAX_PAL = sizeof(palFileName) / sizeof(palFileName[0]);
+
+static bool GetClientLogDirectory(char *directory, size_t directorySize) {
+  char modulePath[MAX_PATH] = {0};
+  DWORD moduleLength = GetModuleFileNameA(NULL, modulePath, MAX_PATH);
+  if (moduleLength == 0 || moduleLength >= MAX_PATH)
+    return false;
+
+  char *separator = strrchr(modulePath, '\\');
+  if (separator == NULL)
+    separator = strrchr(modulePath, '/');
+  if (separator == NULL)
+    return false;
+  *separator = '\0';
+
+  if (sprintf_s(directory, directorySize, "%s\\logs", modulePath) < 0)
+    return false;
+  CreateDirectoryA(directory, NULL);
+  return true;
+}
+
+void ClientRuntimeLog(const char *category, const char *format, ...) {
+  char logDirectory[MAX_PATH] = {0};
+  char logPath[MAX_PATH] = {0};
+  if (GetClientLogDirectory(logDirectory, sizeof(logDirectory))) {
+    sprintf_s(logPath, "%s\\client-runtime.log", logDirectory);
+  } else {
+    strcpy_s(logDirectory, "logs");
+    strcpy_s(logPath, "logs\\client-runtime.log");
+    CreateDirectoryA(logDirectory, NULL);
+  }
+
+  FILE *fp = NULL;
+  if (fopen_s(&fp, logPath, "a") != 0 || fp == NULL)
+    return;
+
+  SYSTEMTIME now;
+  GetLocalTime(&now);
+  fprintf(fp, "%04u-%02u-%02u %02u:%02u:%02u.%03u [%s] ", now.wYear,
+          now.wMonth, now.wDay, now.wHour, now.wMinute, now.wSecond,
+          now.wMilliseconds, category != NULL ? category : "runtime");
+
+  va_list args;
+  va_start(args, format);
+  vfprintf(fp, format, args);
+  va_end(args);
+  fputc('\n', fp);
+  fclose(fp);
+}
+
+LONG WINAPI ClientCrashExceptionFilter(
+    EXCEPTION_POINTERS *exceptionPointers) {
+  static LONG handlingCrash = 0;
+  if (InterlockedExchange(&handlingCrash, 1) != 0)
+    return EXCEPTION_EXECUTE_HANDLER;
+
+  DWORD exceptionCode = 0;
+  void *exceptionAddress = NULL;
+  if (exceptionPointers != NULL && exceptionPointers->ExceptionRecord != NULL) {
+    exceptionCode = exceptionPointers->ExceptionRecord->ExceptionCode;
+    exceptionAddress = exceptionPointers->ExceptionRecord->ExceptionAddress;
+  }
+
+  char logDirectory[MAX_PATH] = {0};
+  char dumpPath[MAX_PATH] = {0};
+  SYSTEMTIME now;
+  GetLocalTime(&now);
+  bool dumpWritten = false;
+  DWORD dumpError = ERROR_PATH_NOT_FOUND;
+
+  if (GetClientLogDirectory(logDirectory, sizeof(logDirectory))) {
+    sprintf_s(dumpPath,
+              "%s\\crash_%04u%02u%02u_%02u%02u%02u_%03u.dmp",
+              logDirectory, now.wYear, now.wMonth, now.wDay, now.wHour,
+              now.wMinute, now.wSecond, now.wMilliseconds);
+    HANDLE dumpFile = CreateFileA(dumpPath, GENERIC_WRITE, 0, NULL,
+                                  CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);
+    if (dumpFile != INVALID_HANDLE_VALUE) {
+      MINIDUMP_EXCEPTION_INFORMATION dumpInfo;
+      dumpInfo.ThreadId = GetCurrentThreadId();
+      dumpInfo.ExceptionPointers = exceptionPointers;
+      dumpInfo.ClientPointers = FALSE;
+      dumpWritten = MiniDumpWriteDump(
+                        GetCurrentProcess(), GetCurrentProcessId(), dumpFile,
+                        MiniDumpWithIndirectlyReferencedMemory,
+                        exceptionPointers != NULL ? &dumpInfo : NULL, NULL,
+                        NULL) != FALSE;
+      if (!dumpWritten)
+        dumpError = GetLastError();
+      CloseHandle(dumpFile);
+    } else {
+      dumpError = GetLastError();
+    }
+  }
+
+  ClientRuntimeLog(
+      "crash",
+      "exception=0x%08lX address=%p thread=%lu dumpWritten=%d dumpError=%lu dump=%s",
+      exceptionCode, exceptionAddress, GetCurrentThreadId(), dumpWritten ? 1 : 0,
+      dumpWritten ? ERROR_SUCCESS : dumpError,
+      dumpPath[0] != '\0' ? dumpPath : "unavailable");
+  return EXCEPTION_EXECUTE_HANDLER;
+}
+
+void InstallClientCrashHandler(void) {
+  SetUnhandledExceptionFilter(ClientCrashExceptionFilter);
+}
 // 是不是有
 int getBitCount(int bit) {
   int i, j, k;
@@ -559,9 +668,14 @@ BOOL InitPalette(void) {
 }
 
 void PaletteChange(int palNo, int time) {
-  // ????????
-  if (palNo >= MAX_PAL)
+  if (palNo < 0 || palNo >= MAX_PAL) {
+    ClientRuntimeLog("palette", "ignored invalid palette=%d validRange=0..%d",
+                     palNo, MAX_PAL - 1);
     return;
+  }
+  if (PalState.palNo != palNo)
+    ClientRuntimeLog("palette", "request old=%d new=%d transition=%d",
+                     PalState.palNo, palNo, time);
   // ?????
   PalState.palNo = palNo;
   // ???????
@@ -601,6 +715,12 @@ void PaletteProc(void) {
   if (palNoBak != PalState.palNo) {
     // ????????????
     fp = fopen(palFileName[PalState.palNo], "rb");
+    if (fp == NULL) {
+      ClientRuntimeLog("palette", "failed to open palette=%d file=%s",
+                       PalState.palNo, palFileName[PalState.palNo]);
+      openFlag = FALSE;
+      return;
+    }
     // ?????????
     for (i = 16; i < 240; i++) {
       pal[i].peBlue = fgetc(fp);
@@ -3055,8 +3175,36 @@ char g_szChannelTitle[][13] = {"[普]",
 };
 extern int TalkMode;
 #endif
-// ????????????????? ////////////////////////////////////////
+
+static BOOL TextOutUtf8(HDC dc, int x, int y, const char *text,
+                        int byteLength) {
+  if (text == NULL || byteLength <= 0)
+    return TRUE;
+
+  UINT sourceCodePage = CP_UTF8;
+  DWORD conversionFlags = MB_ERR_INVALID_CHARS;
+  int wideLength = MultiByteToWideChar(sourceCodePage, conversionFlags, text,
+                                       byteLength, NULL, 0);
+  if (wideLength <= 0) {
+    // Some legacy menu labels and NPC data files are still CP936. They are
+    // decoded only at the display boundary; UTF-8 is never converted to GBK.
+    sourceCodePage = 936;
+    conversionFlags = 0;
+    wideLength = MultiByteToWideChar(sourceCodePage, conversionFlags, text,
+                                     byteLength, NULL, 0);
+  }
+  if (wideLength <= 0)
+    return FALSE;
+
+  std::wstring wideText(wideLength, L'\0');
+  if (MultiByteToWideChar(sourceCodePage, conversionFlags, text, byteLength,
+                          &wideText[0], wideLength) <= 0)
+    return FALSE;
+  return TextOutW(dc, x, y, wideText.data(), wideLength);
+}
+
 void PutText(char fontPrio) {
+#define TextOut TextOutUtf8
   HDC hDc;
 #ifdef _READ16BITBMP
   HDC hDcSys;
@@ -3461,6 +3609,7 @@ void PutText(char fontPrio) {
     lpDraw->lpBACKBUFFERSYS->ReleaseDC(hDcSys);
   }
 #endif
+#undef TextOut
 }
 
 //---------------------------------------------------------------------------//

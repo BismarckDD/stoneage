@@ -88,3 +88,8 @@ BOOL getStringFromIndexWithDelim_body(char *src, char *delim, int index,
                                       char *buf, int buflen);
 
 int getUtf8CharNum(const char *);
+int getUtf8SequenceLength(const char *text, size_t remainingBytes);
+BOOL isValidUtf8(const char *text);
+size_t getUtf8PrefixBytes(const char *text, int maxDisplayWidth);
+BOOL copyUtf8WithLimit(char *destination, size_t destinationSize,
+                       const char *source, int maxDisplayWidth);

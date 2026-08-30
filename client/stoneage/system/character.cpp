@@ -2723,21 +2723,21 @@ void setNpcCharObj(int id, int graNo, int gx, int gy, int dir, char *fmname,
     charObj[no].status |= CHR_STATUS_W;
   if (height != 0)
     charObj[no].status |= CHR_STATUS_H;
-  if (strlen(name) <= CHAR_NAME_LEN)
-    strcpy(charObj[no].name, name);
+  copyUtf8WithLimit(charObj[no].name, sizeof(charObj[no].name), name,
+                    CHAR_NAME_LEN);
   // shan add code
-  if (strlen(fmname) <= CHAR_FMNAME_LEN)
-    strcpy(charObj[no].fmname, fmname);
+  copyUtf8WithLimit(charObj[no].fmname, sizeof(charObj[no].fmname), fmname,
+                    CHAR_FMNAME_LEN);
   if (charType != CHAR_TYPEPET) {
-    if (strlen(freeName) <= CHAR_FREENAME_LEN)
-      strcpy(charObj[no].freeName, freeName);
+    copyUtf8WithLimit(charObj[no].freeName, sizeof(charObj[no].freeName),
+                      freeName, CHAR_FREENAME_LEN);
   } else {
-    if (strlen(freeName) <= PET_FREENAME_LEN)
-      strcpy(charObj[no].freeName, freeName);
+    copyUtf8WithLimit(charObj[no].freeName, sizeof(charObj[no].freeName),
+                      freeName, PET_FREENAME_LEN);
   }
   // Robin 0730
-  if (strlen(petname) <= CHAR_FREENAME_LEN)
-    strcpy(charObj[no].petName, petname);
+  copyUtf8WithLimit(charObj[no].petName, sizeof(charObj[no].petName), petname,
+                    CHAR_FREENAME_LEN);
   charObj[no].petLevel = petlevel;
 
   charObj[no].charType = getAtrCharType(charType);
@@ -2753,26 +2753,30 @@ void setNpcCharObj(int id, int graNo, int gx, int gy, int dir, char *fmname,
   charObj[no].ptAct->anim_chr_no = graNo;
   charObj[no].ptAct->level = level;
   charObj[no].ptAct->atr |= charObj[no].charType;
-  if (strlen(name) <= CHAR_NAME_LEN)
-    strcpy(charObj[no].ptAct->name, name);
+  copyUtf8WithLimit(charObj[no].ptAct->name,
+                    sizeof(charObj[no].ptAct->name), name, CHAR_NAME_LEN);
   // shan add
   if (charType == CHAR_TYPEPLAYER) {
-    if (strlen(fmname) <= CHAR_FMNAME_LEN)
-      strcpy(charObj[no].ptAct->fmname, fmname);
+    copyUtf8WithLimit(charObj[no].ptAct->fmname,
+                      sizeof(charObj[no].ptAct->fmname), fmname,
+                      CHAR_FMNAME_LEN);
   } else {
     strcpy(charObj[no].ptAct->fmname, " ");
   }
 
   if (charType != CHAR_TYPEPET) {
-    if (strlen(freeName) <= CHAR_FREENAME_LEN)
-      strcpy(charObj[no].ptAct->freeName, freeName);
+    copyUtf8WithLimit(charObj[no].ptAct->freeName,
+                      sizeof(charObj[no].ptAct->freeName), freeName,
+                      CHAR_FREENAME_LEN);
   } else {
-    if (strlen(freeName) <= PET_FREENAME_LEN)
-      strcpy(charObj[no].ptAct->freeName, freeName);
+    copyUtf8WithLimit(charObj[no].ptAct->freeName,
+                      sizeof(charObj[no].ptAct->freeName), freeName,
+                      PET_FREENAME_LEN);
   }
   // Robin 0730
-  if (strlen(petname) <= CHAR_FREENAME_LEN)
-    strcpy(charObj[no].ptAct->petName, petname);
+  copyUtf8WithLimit(charObj[no].ptAct->petName,
+                    sizeof(charObj[no].ptAct->petName), petname,
+                    CHAR_FREENAME_LEN);
   charObj[no].ptAct->petLevel = petlevel;
 
   charObj[no].ptAct->itemNameColor = nameColor;
@@ -2821,10 +2825,10 @@ BOOL setReturnPetObj(int id, int graNo, int gx, int gy, int dir, char *name,
     charObj[no].status |= CHR_STATUS_W;
   if (height != 0)
     charObj[no].status |= CHR_STATUS_H;
-  if (strlen(name) <= CHAR_NAME_LEN)
-    strcpy(charObj[no].name, name);
-  if (strlen(freeName) <= PET_FREENAME_LEN)
-    strcpy(charObj[no].freeName, freeName);
+  copyUtf8WithLimit(charObj[no].name, sizeof(charObj[no].name), name,
+                    CHAR_NAME_LEN);
+  copyUtf8WithLimit(charObj[no].freeName, sizeof(charObj[no].freeName),
+                    freeName, PET_FREENAME_LEN);
   charObj[no].charType = getAtrCharType(charType);
   return TRUE;
 }

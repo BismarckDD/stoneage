@@ -328,14 +328,6 @@ char *lssproto_escapeString(char *a) {
   for (i = 0, c = 0; a[i] != '\0'; i++) {
     if (a[i] == -1) {
       lssproto.escapework[c++] = ' ';
-    } else if (IsDBCSLeadByteEx(936, a[i])) {
-      lssproto.escapework[c++] = a[i++];
-      if (a[i] == '\0') {
-        c--;
-        lssproto.escapework[c++] = ' ';
-        break;
-      }
-      lssproto.escapework[c++] = a[i];
     } else if (a[i] == '\\') {
       lssproto.escapework[c++] = '\\';
       lssproto.escapework[c++] = 'y';
@@ -359,14 +351,7 @@ char *lssproto_descapeString(char *a) {
   lssproto.escapework[0] = '\0';
   int c = 0;
   for (int i = 0, c = 0; a[i] != '\0'; i++) {
-    if (IsDBCSLeadByteEx(936, a[i])) {
-      lssproto.escapework[c++] = a[i++];
-      if (a[i] == '\0') {
-        c--;
-        break;
-      }
-      lssproto.escapework[c++] = a[i];
-    } else if (a[i] == '\\') {
+    if (a[i] == '\\') {
       if (a[i + 1] == '\0') {
         lssproto.escapework[c++] = a[i];
         break;

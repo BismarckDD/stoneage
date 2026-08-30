@@ -3,6 +3,9 @@
 #include "version.h"
 #include "proto/autil.h"
 
+#define UTF8_CHAR_NAME_BUFFER_SIZE 65
+#define UTF8_FREE_NAME_BUFFER_SIZE 129
+
 #ifdef __ACTION_CPP__
 #define EXTERN
 #else
@@ -13,15 +16,15 @@
 enum {
   PRIO_TOP,        // 最优先
   PRIO_CHR,        // 同Char
-  PRIO_BG,         /* ??     */
-  PRIO_JIKI,       /* ?     */
-  PRIO_ENEMY,      /*          */
-  PRIO_ENEMY_TAMA, /*      */
-  PRIO_JIKI_TAMA,  /* ?     */
-  PRIO_ITEM,       /* ????    */
-  PRIO_BOSS,       /* ??        */
+  PRIO_BG,
+  PRIO_JIKI,
+  PRIO_ENEMY,
+  PRIO_ENEMY_TAMA,
+  PRIO_JIKI_TAMA,
+  PRIO_ITEM,
+  PRIO_BOSS,
   PRIO_GAME_OVER,  /* GAME OVER */
-  PRIO_BTM = 255   /* ??     */
+  PRIO_BTM = 255
 };
 
 // Action状态
@@ -30,27 +33,24 @@ enum {
   ACT_STATE_DEAD     // 死亡状态
 };
 // 属性
-#define ACT_ATR_HIDE (1 << 1) // 不显示/*  */
-#define ACT_ATR_HIT (1 << 2)  // 可以被点选/* ????? */
-#define ACT_ATR_HIT_BOX                                                        \
-  (1 << 3) // 可以被点选的外框/* ??? + ???? */
-#define ACT_ATR_INFO (1 << 4) // 显示出相关讯息/* ?????? */
-#define ACT_ATR_HIDE2                                                          \
-  (1 << 5) // 不显示 + 可以被点选/* +????? */
-#define ACT_ATR_BTL_CMD_END                                                    \
-  (1 << 6) // 战斗指令输入完成旗标,未完成输入的玩家会动,完成则不会动/*
-           // ????????? */
-#define ACT_ATR_TYPE_PC (1 << 7)       // 玩家/* ?? */
-#define ACT_ATR_TYPE_OTHER_PC (1 << 8) // 别的玩家/* ??? */
-#define ACT_ATR_TYPE_PET (1 << 9)      /* ??? */
-#define ACT_ATR_TYPE_ITEM (1 << 10)    /* ???? */
-#define ACT_ATR_TYPE_GOLD (1 << 11)    /* ?? */
-#define ACT_ATR_TYPE_OTHER (1 << 12)   /* ??????伡???? */
+#define ACT_ATR_HIDE (1 << 1) // 不显示
+#define ACT_ATR_HIT (1 << 2)  // 可以被点选
+#define ACT_ATR_HIT_BOX (1 << 3) // 可以被点选的外框
+#define ACT_ATR_INFO (1 << 4) // 显示出相关讯息
+#define ACT_ATR_HIDE2 (1 << 5) // 不显示 + 可以被点选
+// 战斗指令输入完成旗标,未完成输入的玩家会动,完成则不会动
+#define ACT_ATR_BTL_CMD_END (1 << 6)
+#define ACT_ATR_TYPE_PC (1 << 7)       // 玩家
+#define ACT_ATR_TYPE_OTHER_PC (1 << 8) // 别的玩家
+#define ACT_ATR_TYPE_PET (1 << 9)      //
+#define ACT_ATR_TYPE_ITEM (1 << 10)    //
+#define ACT_ATR_TYPE_GOLD (1 << 11)    //
+#define ACT_ATR_TYPE_OTHER (1 << 12)   //
 #define ACT_ATR_HIT_BOX_ALL1 (1 << 13) // 可以被点选 + 外框显示1
 #define ACT_ATR_HIT_BOX_ALL2 (1 << 14) // 可以被点选 + 外框显示2
 #define ACT_ATR_HIT_BOX_ALL3 (1 << 15) // 可以被点选 + 外框显示3
 #define ACT_ATR_HIT_BOX_ALL4 (1 << 16) // 可以被点选 + 外框显示3
-#define ACT_ATR_TRAVEL (1 << 17)       /* ??? */
+#define ACT_ATR_TRAVEL (1 << 17)       //
 
 #define ACT_ATR_HIT_BOX_COL1 (1 << 18) // 左上第一列
 #define ACT_ATR_HIT_BOX_COL2 (1 << 19) // 左上第二列
@@ -75,8 +75,8 @@ struct ACTION {
   int dir;                       // 方向
   int delta;                     // 合成向量
 
-  char name[29];     // 名字
-  char freeName[33]; // free name
+  char name[UTF8_CHAR_NAME_BUFFER_SIZE];
+  char freeName[UTF8_FREE_NAME_BUFFER_SIZE];
   int hp;
 #ifdef _PET_ITEM
   int iOldHp;
@@ -86,8 +86,8 @@ struct ACTION {
   int maxMp;
   int level;
   int status;
-  int itemNameColor; /* ?????? */
-  int charNameColor; // ?????????????
+  int itemNameColor;
+  int charNameColor;
 
   int bmpNo;     // 图号
   int bmpNo_bak; // 备份图号
@@ -105,16 +105,15 @@ struct ACTION {
   float vx, vy;             // ??
 
   // 属性
-  short earth;         // 地
+  short earth;         // 地属性
   short water;         // 水属性
   short fire;          // 火属性
   short wind;          // 风属性
   int dirCnt;
-  int spd;             // 移动的速度(0~63)( ?????? )
-  int crs;             // 方向(0~31)(正上方为0,顺时钟方向) 
+  int spd;             // 移动的速度(0~63)
+  int crs;             // 方向(0~31)(正上方为0, 顺时钟方向) 
   int h_mini;          //
-  int v_mini;          // ?
-                       // pattern使用
+  int v_mini;          //
   int anim_chr_no;     // 人物的编号(anim_tbl.h的编号)
   int anim_chr_no_bak; // 上一次的人物编号
   int anim_no;         // 人物的动作编号
@@ -127,10 +126,10 @@ struct ACTION {
   int anim_y;          // Y座标(Sprbin+Adrnbin)
   int anim_hit;        // ???
   // shan add +1
-  char fmname[33];     // 家族名称
+  char fmname[UTF8_FREE_NAME_BUFFER_SIZE];
   // Robin 0728 ride Pet
   int onRide;          // 是否在骑宠状态.
-  char petName[16 + 1];  // PET名称.
+  char petName[UTF8_CHAR_NAME_BUFFER_SIZE];
   int petLevel;
   int petHp;
   int petMaxHp;

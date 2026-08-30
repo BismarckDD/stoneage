@@ -1414,6 +1414,7 @@ void ChatBufferToFontBuffer( void )
 /*             ?：?
 /*             ??：?
 /*******************************************************************************/
+#if 0
 int GetStrLastByte( char *str )
 {
     int byte = 0;
@@ -1439,6 +1440,22 @@ int GetStrLastByte( char *str )
     }
     return byte;
 }
+#endif
+
+int GetStrLastByte(char *str)
+{
+    int lastBytes = 0;
+    const size_t total = strlen(str);
+    size_t offset = 0;
+    while (offset < total) {
+        const int length = getUtf8SequenceLength(str + offset, total - offset);
+        if (length == 0)
+            return 3;
+        lastBytes = length;
+        offset += length;
+    }
+    return lastBytes;
+}
 
 /*******************************************************************************/
 /* ??????????????
@@ -1449,14 +1466,15 @@ int GetStrWidth( char *str )
 {
     int width = 0;
     // ??????????
-    while(!( *str == '\0' ) ){
-        if(IsDBCSLeadByteEx(936, *str)){
-            str += 2;
-            width += FONT_SIZE; // 全形的size
-        }else{
-            str ++;
-            width += FONT_SIZE>>1; // 半形的size
-        }
+    while (*str != '\0') {
+        const size_t remaining = strlen(str);
+        const int bytes = getUtf8SequenceLength(str, remaining);
+        if (bytes == 0)
+            break;
+        char character[5] = {0};
+        memcpy(character, str, bytes);
+        width += getUtf8CharNum(character) > 1 ? FONT_SIZE : FONT_SIZE >> 1;
+        str += bytes;
     }
     return width;
 }

@@ -19,6 +19,29 @@ extern char g_szChannelTitle[][13];
 extern int TalkMode;
 #endif
 
+static BOOL TextOutUtf8(HDC dc, int x, int y, const char *text,
+                        int byteLength) {
+    if (text == NULL || byteLength <= 0)
+        return TRUE;
+    UINT sourceCodePage = CP_UTF8;
+    DWORD conversionFlags = MB_ERR_INVALID_CHARS;
+    int wideLength = MultiByteToWideChar(sourceCodePage, conversionFlags, text,
+                                         byteLength, NULL, 0);
+    if (wideLength <= 0) {
+        sourceCodePage = 936;
+        conversionFlags = 0;
+        wideLength = MultiByteToWideChar(sourceCodePage, conversionFlags, text,
+                                         byteLength, NULL, 0);
+    }
+    if (wideLength <= 0)
+        return FALSE;
+    std::wstring wideText(wideLength, L'\0');
+    if (MultiByteToWideChar(sourceCodePage, conversionFlags, text, byteLength,
+                            &wideText[0], wideLength) <= 0)
+        return FALSE;
+    return TextOutW(dc, x, y, wideText.data(), wideLength);
+}
+
 CTalkWindow::CTalkWindow() {};
 CTalkWindow::~CTalkWindow()
 {
@@ -180,6 +203,7 @@ void CTalkWindow::LoadSkin(char *szSkinPath)
 
 void CTalkWindow::DrawSkin(BOOL bShowCursor)
 {
+#define TextOut TextOutUtf8
     int j;
     char szBuffer[STR_BUFFER_SIZE + 1];
     unsigned char color;
@@ -219,9 +243,7 @@ void CTalkWindow::DrawSkin(BOOL bShowCursor)
         else pCBL = pCBL->next;
     }
     // 显示输入的文字
-    const std::string inputText = Utf8ToGbk(MyChatBuffer.buffer);
-    strcpy_s(szBuffer, inputText.empty() ? MyChatBuffer.buffer
-                                         : inputText.c_str());
+    strcpy_s(szBuffer, MyChatBuffer.buffer);
     color = MyChatBuffer.color;
     SetTextColor(m_hdcBackBuffer,0);
 #ifdef _CHANNEL_MODIFY
@@ -252,6 +274,7 @@ void CTalkWindow::DrawSkin(BOOL bShowCursor)
     hdc = GetDC(m_hTalkWindow);
     BitBlt(hdc,0,0,SKIN_WIDTH,SKIN_HEIGHT,m_hdcBackBuffer,0,0,SRCCOPY);
     ReleaseDC(m_hTalkWindow,hdc);
+#undef TextOut
 }
 
 void CTalkWindow::AddString(char *szString,int color)
@@ -259,9 +282,7 @@ void CTalkWindow::AddString(char *szString,int color)
     if(m_hTalkWindow){
         // 游戏一开始没字串,所以要先把 m_iline 累加到 MAX_TALK_WINDOW_LINE 才进行显示框的移动
         if(m_iline <= MAX_TALK_WINDOW_LINE) m_iline++;
-        const std::string displayText = Utf8ToGbk(szString);
-        strcpy_s(m_pCBLString->ChatBuffer.buffer,
-                 displayText.empty() ? szString : displayText.c_str());
+        strcpy_s(m_pCBLString->ChatBuffer.buffer, szString);
         m_pCBLString->ChatBuffer.color = color;
         m_pCBLString->bUse = TRUE;
         // 游戏一开始都没有字串,所以要当 m_iline 值大于等于 MAX_TALK_WINDOW_LINE 时才进行显示框的移动

@@ -94,8 +94,8 @@ struct CHAROBJ {
 #endif
   int classNo;                          // ????????
   int money;                            // ???
-  char name[CHAR_NAME_LEN + 1];         // 
-  char freeName[CHAR_FREENAME_LEN + 1]; // ???????
+  char name[CHAR_NAME_BUFFER_SIZE];
+  char freeName[CHAR_FREENAME_BUFFER_SIZE];
   char info[64];                        // ????????????ACTION???????????
   int battleNo;                         // ?
   short sideNo;                         // ??????????????
@@ -105,9 +105,9 @@ struct CHAROBJ {
   ACTION *ptAct;
   int charNameColor; // ????????????
   // shan add
-  char fmname[CHAR_FMNAME_LEN + 1]; // 家族名称
+  char fmname[CHAR_FREENAME_BUFFER_SIZE];
   // Robin
-  char petName[CHAR_FREENAME_LEN + 1];
+  char petName[CHAR_FREENAME_BUFFER_SIZE];
   int petLevel;
   // #ifdef _CHAR_PROFESSION            // WON ADD 人物职业
   //     int profession_class;

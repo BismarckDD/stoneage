@@ -1247,7 +1247,7 @@ void selectCharacterProc(void)
             if (existCharacterListEntry(i))
             {
                 StockDispBuffer(169 + b * (304 + ii) + ix, 84 + iy, DISP_PRIO_CHAR, chartable[i].faceGraNo, 0);
-                x = (144 - strlen(chartable[i].name) * 9) / 2;
+                x = (144 - getUtf8CharNum(chartable[i].name) * 9) / 2;
                 StockFontBuffer(93 + b * (304 + ii) + x + ix, 127 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, chartable[i].name, 0);
                 sprintf_s(msg, "%3d", chartable[i].level);
                 StockFontBuffer(104 + b * (304 + ii) + ix, 152 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
@@ -1295,7 +1295,7 @@ void selectCharacterProc(void)
             {
                 // 这里的ii,ix,iy是什么意思？
                 StockDispBuffer(88 + i * (304 + ii) + ix, iy, DISP_PRIO_CHAR, chartable[i].faceGraNo, 0);
-                int offset_by_name = (144 - strlen(chartable[i].name) * 9) / 2; // char name
+                int offset_by_name = (144 - getUtf8CharNum(chartable[i].name) * 9) / 2; // char name
                 StockFontBuffer(13 + i * (304 + ii) + offset_by_name + ix, 48 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, chartable[i].name, 0);
                 sprintf_s(msg, "%3d", chartable[i].level); // level
                 StockFontBuffer(24 + i * (304 + ii) + ix, 70 + iy, FONT_PRIO_BACK, FONT_PAL_WHITE, msg, 0);
@@ -1436,7 +1436,7 @@ int deleteCharacter(void)
     if (deleteCharacterProcNo == 0)
     {
         deleteCharacterProcNo = 1;
-        w = strlen(cCharDeleting) * 9 / 64 + 2;
+        w = getUtf8CharNum(cCharDeleting) * 9 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -1474,7 +1474,7 @@ int deleteCharacter(void)
             int len;
             int xx, yy;
 
-            len = strlen(msg);
+            len = getUtf8CharNum(msg);
             xx = (w * 64 - len * 8) / 2;
             yy = (h * 48 - 16) / 2;
             StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
@@ -1519,7 +1519,7 @@ int downloadCharList(void)
         strcpy(msg, "人物名单取得中");
 
         // ??????
-        w = strlen(msg) * 8 / 64 + 2;
+        w = getUtf8CharNum(msg) * 8 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -1560,7 +1560,7 @@ int downloadCharList(void)
             int len;
             int xx, yy;
 
-            len = strlen(msg);
+            len = getUtf8CharNum(msg);
             xx = (w * 64 - len * 8) / 2;
             yy = (h * 48 - 16) / 2;
             StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
@@ -1580,7 +1580,7 @@ int downloadpkList(void)
     {
         downloadpkListProcNo = 1;
         strcpy(msg, "星系列表取得中");
-        w = strlen(msg) * 8 / 64 + 2;
+        w = getUtf8CharNum(msg) * 8 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -1618,7 +1618,7 @@ int downloadpkList(void)
         {
             int len;
             int xx, yy;
-            len = strlen(msg);
+            len = getUtf8CharNum(msg);
             xx = (w * 64 - len * 8) / 2;
             yy = (h * 48 - 16) / 2;
             StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
@@ -3144,7 +3144,7 @@ int createChar(void)
     if (createCharProcNo == 0)
     {
         createCharProcNo++;
-        w = (strlen(msg) * 9 + 63) / 64;
+        w = (getUtf8CharNum(msg) * 9 + 63) / 64;
         if (w < 2)
             w = 2;
         h = 2;
@@ -3183,7 +3183,7 @@ int createChar(void)
     {
         if (ptActMenuWin->hp >= 1)
         {
-            int len = strlen(msg) / 2;
+            int len = getUtf8CharNum(msg) / 2;
             int xx = (w * 64 - len * 17) / 2;
             int yy = (h * 48 - 16) / 2;
             StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
@@ -3450,7 +3450,7 @@ int charLogin(void)
     if (charLoginProcNo == 0)
     {
         charLoginProcNo = 1;
-        w = strlen(cCheckingIn) * 9 / 64 + 2;
+        w = getUtf8CharNum(cCheckingIn) * 9 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -3481,7 +3481,7 @@ int charLogin(void)
 
     if (ptActMenuWin && ptActMenuWin->hp >= 1)
     {
-        int len = strlen(msg);
+        int len = getUtf8CharNum(msg);
         int xx = (w * 64 - len * 8) / 2;
         int yy = (h * 48 - 16) / 2;
         StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, cCheckingIn, 0);
@@ -3642,7 +3642,7 @@ int charLogout(void)
     if (charLogoutProcNo == 0)
     {
         charLogoutProcNo = 1;
-        w = strlen(msg) * 9 / 64 + 2;
+        w = getUtf8CharNum(msg) * 9 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
             h = 2;
@@ -3678,7 +3678,7 @@ int charLogout(void)
         {
             int len;
             int xx, yy;
-            len = strlen(msg);
+            len = getUtf8CharNum(msg);
             xx = (w * 64 - len * 8) / 2;
             yy = (h * 48 - 16) / 2;
             StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
@@ -4718,66 +4718,54 @@ static int Utf8SafePrefixLength(const char *text, int maxBytes)
 
 void getStrSplit(char *dist, char *src, int distSize, int line, int strLen)
 {
-    int i, j;
-    int flag;
-    char *ptMsg;
-    char *dis;
-    dis = dist;
-    if (distSize - 1 < strLen)
-        strLen = distSize - 1;
+    if (dist == NULL || src == NULL || distSize <= 0 || line <= 0)
+        return;
 
-    for (i = 0, j = 0; i < line && j < line; i++, j++, dis += distSize)
+    for (int i = 0; i < line; ++i)
+        dist[i * distSize] = '\0';
+
+    int sourceLine = 1;
+    int outputLine = 0;
+    while (outputLine < line)
     {
-        flag = getStringToken(src, '\n', i + 1, sizeof(msg) - 1, msg);
-        ptMsg = msg;
-        while (1)
-        {
-            if (strlen(ptMsg) > (unsigned int)strLen)
-            {
-                const int utf8Length = Utf8SafePrefixLength(ptMsg, strLen);
-                if (utf8Length >= 0)
-                {
-                    memcpy(dis, ptMsg, utf8Length);
-                    dis[utf8Length] = '\0';
-                    ptMsg += utf8Length;
-                }
-                else
-                {
-                    // Compatibility for legacy local CP936 strings.
-                    strncpy_s(dis, strLen + 1, ptMsg, strLen);
-                    if (GetStrLastByte(dis) != 3)
-                    {
-                        dis[strLen] = '\0';
-                        ptMsg += strLen;
-                    }
-                    else
-                    {
-                        dis[strLen - 1] = '\0';
-                        ptMsg += (strLen - 1);
-                    }
-                }
-                j++;
-                dis += distSize;
-                if (j >= line)
-                    break;
-            }
-            else
-            {
-                strcpy(dis, ptMsg);
-                break;
-            }
-        }
+        const int isLastSourceLine =
+            getStringToken(src, '\n', sourceLine++, sizeof(msg) - 1, msg);
+        const char *remaining = msg;
 
-        if (flag == 1)
+        // strLen is a display-width limit (ASCII=1, CJK/full-width=2), not a
+        // byte limit.  Treating it as bytes made UTF-8 Chinese wrap 50% too
+        // early and displaced selectable rows and the bottom buttons.
+        do
         {
-            j++;
-            dis += distSize;
+            size_t copyBytes = getUtf8PrefixBytes(remaining, strLen);
+            if (copyBytes == 0 && *remaining != '\0')
+            {
+                // Invalid legacy input: keep progressing without splitting a
+                // valid UTF-8 sequence. Display conversion handles the legacy
+                // compatibility case at the final Win32 boundary.
+                const int legacyBytes = Utf8SafePrefixLength(remaining, strLen);
+                if (legacyBytes < 0)
+                    copyBytes = min(strlen(remaining), (size_t)(distSize - 1));
+                else
+                    copyBytes = (size_t)legacyBytes;
+            }
+            if (copyBytes > (size_t)(distSize - 1))
+            {
+                const int bufferPrefix =
+                    Utf8SafePrefixLength(remaining, distSize - 1);
+                copyBytes = bufferPrefix > 0 ? (size_t)bufferPrefix : 0;
+            }
+
+            char *output = dist + outputLine * distSize;
+            memcpy(output, remaining, copyBytes);
+            output[copyBytes] = '\0';
+            ++outputLine;
+            remaining += copyBytes;
+        } while (*remaining != '\0' && outputLine < line);
+
+        if (isLastSourceLine == 1)
             break;
-        }
     }
-    // ????????NULL????
-    for (; j < line; j++, dis += distSize)
-        dis[0] = '\0';
 }
 
 // ????????
@@ -5828,17 +5816,17 @@ void serverWindowType2(void)
                             FONT_PRIO_FRONT, FONT_PAL_WHITE, msgWN[0], 0);
             for (i = 1, j = 1; i <= MAX_PET; i++)
             {
-                len = strlen(pet[i - 1].name);
+                len = getUtf8CharNum(pet[i - 1].name);
                 if (pet[i - 1].useFlag != 0)
                 {
-                    len = strlen(pet[i - 1].freeName);
+                    len = getUtf8CharNum(pet[i - 1].freeName);
                     if (len > 0)
                     {
                         strcpy(msgWN[1], pet[i - 1].freeName);
                     }
                     else
                     {
-                        len = strlen(pet[i - 1].name);
+                        len = getUtf8CharNum(pet[i - 1].name);
                         strcpy(msgWN[1], pet[i - 1].name);
                     }
                     StockFontBuffer(winX + 42, winY + 21 + (j + 1) * 21, // modified by zhuo 62改成42
@@ -5955,7 +5943,7 @@ void serverWindowType3(void)
                 {
                     msgWN[1][0] = '\0';
                 }
-                len = strlen(msgWN[1]);
+                len = getUtf8CharNum(msgWN[1]);
                 if (len > 0)
                 {
                     x1 = winX + 41;
@@ -6026,7 +6014,7 @@ void serverWindowType3(void)
                 {
                     msgWN[1][0] = '\0';
                 }
-                len = strlen(msgWN[1]);
+                len = getUtf8CharNum(msgWN[1]);
                 if (len > 0)
                 {
                     StockFontBuffer(winX + 152 + (144 - len * 9) / 2, winY + 21 + (i + 1) * 21,
@@ -6155,7 +6143,7 @@ void serverWindowType4(void)
             {
                 msgWN[1][0] = '\0';
             }
-            len = strlen(msgWN[1]);
+            len = getUtf8CharNum(msgWN[1]);
             if (len > 0)
             {
                 x1 = winX + 257;
@@ -6214,17 +6202,17 @@ void serverWindowType4(void)
             // ???
             for (i = 1; i <= MAX_PET; i++)
             {
-                len = strlen(pet[i - 1].name);
+                len = getUtf8CharNum(pet[i - 1].name);
                 if (pet[i - 1].useFlag != 0)
                 {
-                    len = strlen(pet[i - 1].freeName);
+                    len = getUtf8CharNum(pet[i - 1].freeName);
                     if (len > 0)
                     {
                         strcpy(msgWN[1], pet[i - 1].freeName);
                     }
                     else
                     {
-                        len = strlen(pet[i - 1].name);
+                        len = getUtf8CharNum(pet[i - 1].name);
                         strcpy(msgWN[1], pet[i - 1].name);
                     }
                     StockFontBuffer(winX + 44 + (144 - len * 9) / 2, winY + 21 + (i + 1) * 21,
@@ -6247,7 +6235,7 @@ void serverWindowType4(void)
                 {
                     msgWN[1][0] = '\0';
                 }
-                len = strlen(msgWN[1]);
+                len = getUtf8CharNum(msgWN[1]);
                 if (len > 0)
                 {
                     StockFontBuffer(winX + 260 + (144 - len * 9) / 2, winY + 21 + (i + 1) * 21,
@@ -6419,17 +6407,17 @@ void serverWindowType9(void)
                             FONT_PRIO_FRONT, FONT_PAL_WHITE, msgWN[0], 0);
             for (i = 1, j = 1; i <= MAX_PET; i++)
             {
-                len = strlen(pet[i - 1].name);
+                len = getUtf8CharNum(pet[i - 1].name);
                 if (pet[i - 1].useFlag != 0)
                 {
-                    len = strlen(pet[i - 1].freeName);
+                    len = getUtf8CharNum(pet[i - 1].freeName);
                     if (len > 0)
                     {
                         strcpy(msgWN[1], pet[i - 1].freeName);
                     }
                     else
                     {
-                        len = strlen(pet[i - 1].name);
+                        len = getUtf8CharNum(pet[i - 1].name);
                         strcpy(msgWN[1], pet[i - 1].name);
                     }
                     StockFontBuffer(winX + 62, winY + 21 + (j + 1) * 21,
@@ -6850,10 +6838,10 @@ int shopWindow1(void)
         {
             int xx;
 
-            xx = (w * 64 - strlen(shopWindow1Title) / 2 * 17) / 2;
+            xx = (w * 64 - getUtf8CharNum(shopWindow1Title) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 12, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Title, 0);
 
-            xx = (w * 64 - strlen(shopWindow1Msg) / 2 * 17) / 2;
+            xx = (w * 64 - getUtf8CharNum(shopWindow1Msg) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 32, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Msg, 0);
 
             btnId[0] =
@@ -7073,7 +7061,7 @@ int shopWindow2(void)
         if (ptActMenuWin->hp >= 1)
         {
             int xx;
-            xx = (w - strlen(shopWindow1Title) / 2 * 17) / 2;
+            xx = (w - getUtf8CharNum(shopWindow1Title) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 18, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Title, 0);
             for (i = 0; i < sizeof(shopWindow2Msg) / sizeof(shopWindow2Msg[0]); i++)
             {
@@ -7340,7 +7328,7 @@ int shopWindow3(void)
         if (ptActMenuWin->hp >= 1)
         {
             int xx;
-            xx = (w - strlen(shopWindow3Msg) / 2 * 17) / 2;
+            xx = (w - getUtf8CharNum(shopWindow3Msg) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 20, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow3Msg, 0);
             StockFontBuffer(x + 16, y + 52, FONT_PRIO_FRONT, FONT_PAL_WHITE,
                             sealItem[selShopItemNo].name, 0);
@@ -7828,7 +7816,7 @@ int shopWindow7(void)
             int xx;
 
             // ????????
-            xx = (w - strlen(shopWindow1Title) / 2 * 17) / 2;
+            xx = (w - getUtf8CharNum(shopWindow1Title) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 18, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Title, 0);
 
             // ?????????
@@ -8134,7 +8122,7 @@ int shopWindow10(void)
         if (ptActMenuWin->hp >= 1)
         { // userItem
             int xx;
-            xx = (w - strlen(shopWindow3Msg) / 2 * 17) / 2;
+            xx = (w - getUtf8CharNum(shopWindow3Msg) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 20, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow3Msg, 0);
             StockFontBuffer(x + 16, y + 52, FONT_PRIO_FRONT, FONT_PAL_WHITE,
                             userItem[selShopItemNo].name, 0);
@@ -8554,7 +8542,7 @@ int profession_windows_1(void)
         {
             int xx;
 
-            xx = (w - strlen(ProfessionShopTitle) / 2 * 17) / 2;
+            xx = (w - getUtf8CharNum(ProfessionShopTitle) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 18, FONT_PRIO_FRONT, FONT_PAL_WHITE, ProfessionShopTitle, 0);
 
             for (i = 0; i < sizeof(ProfessionShopMsg) / sizeof(ProfessionShopMsg[0]); i++)
@@ -9003,7 +8991,7 @@ int profession_windows_12(void)
         {
             int xx;
 
-            xx = (w - strlen(ProfessionShopTitle2) / 2 * 17) / 2;
+            xx = (w - getUtf8CharNum(ProfessionShopTitle2) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 18, FONT_PRIO_FRONT, FONT_PAL_WHITE, ProfessionShopTitle2, 0);
 
             for (i = 0; i < sizeof(ProfessionShopMsg2) / sizeof(ProfessionShopMsg2[0]); i++)
@@ -9456,7 +9444,7 @@ int skillShopWindow1(void)
         {
             int xx;
 
-            xx = (w - strlen(shopWindow1Title) / 2 * 17) / 2;
+            xx = (w - getUtf8CharNum(shopWindow1Title) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 18, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Title, 0);
 
             for (i = 0; i < sizeof(shopWindow2Msg) / sizeof(shopWindow2Msg[0]); i++)
@@ -9636,14 +9624,14 @@ int skillShopWindow2(void)
             {
                 if (pet[i].useFlag != 0)
                 {
-                    len = strlen(pet[i].freeName);
+                    len = getUtf8CharNum(pet[i].freeName);
                     if (len > 0)
                     {
                         strcpy(msgWN[1], pet[i].freeName);
                     }
                     else
                     {
-                        len = strlen(pet[i].name);
+                        len = getUtf8CharNum(pet[i].name);
                         strcpy(msgWN[1], pet[i].name);
                     }
                     StockFontBuffer(x + 62, y + 28 + (j + 1) * 26,
@@ -10197,10 +10185,10 @@ int poolShopWindow1(void)
         {
             int xx;
 
-            xx = (w * 64 - strlen(shopWindow1Title) / 2 * 17) / 2;
+            xx = (w * 64 - getUtf8CharNum(shopWindow1Title) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 12, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Title, 0);
 
-            xx = (w * 64 - strlen(shopWindow1Msg) / 2 * 17) / 2;
+            xx = (w * 64 - getUtf8CharNum(shopWindow1Msg) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 32, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Msg, 0);
 
             btnId[0] =
@@ -10391,7 +10379,7 @@ int poolShopWindow2(void)
             int xx;
 
             // ????????
-            xx = (w - strlen(shopWindow1Title) / 2 * 17) / 2;
+            xx = (w - getUtf8CharNum(shopWindow1Title) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 18, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Title, 0);
 
             // ?????????
@@ -10735,7 +10723,7 @@ int poolShopWindow4(void)
 
         if (ptActMenuWin->hp >= 1)
         {
-            int xx = (w - strlen(shopWindow1Title) / 2 * 17) / 2;
+            int xx = (w - getUtf8CharNum(shopWindow1Title) / 2 * 17) / 2;
             StockFontBuffer(x + xx, y + 18, FONT_PRIO_FRONT, FONT_PAL_WHITE, shopWindow1Title, 0);
 
             if (!itemMaxFlag)
@@ -14505,13 +14493,13 @@ int DelCharGraColorWin(void)
     }
     // 判断是否按下文字
     id = selFontId(fontId, sizeof(fontId) / sizeof(int));
-    if (id == 0)
-    {   // 按下确定
+    if (id == 0) // 按确定
+    {
         ret = 1;
         bErr = FALSE;
         play_se(217, 320, 240);
     }
-    else if (id == 1)
+    else if (id == 1) // 按取消
     {
         ret = 2;
         play_se(217, 320, 240); // click声
@@ -14534,21 +14522,17 @@ int DelCharGraColorWin(void)
         // 取消
         if (id == 1)
             ShowBottomLineString(FONT_PAL_WHITE, "取消删除人物");
-    if (ptActMenuWin != NULL)
+    if (ptActMenuWin && ptActMenuWin->hp >= 1)
     {
-        if (ptActMenuWin->hp >= 1)
-        {
-            for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
-
-                fontId[i] = StockFontBuffer(x + 20 + i * 48, y + 64,
-                                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, msg[i], 2);
-            if (bErr)
-                StockFontBuffer(x + 20, y + 20, FONT_PRIO_FRONT, FONT_PAL_WHITE, "输入错误请再试", 0);
-            else
-                StockFontBuffer(x + 20, y + 20, FONT_PRIO_FRONT, FONT_PAL_WHITE, "请输入安全码", 0);
-            StockFontBuffer2(&passwd);
-            FlashKeyboardCursor(); // ???????????
-        }
+        for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
+            fontId[i] = StockFontBuffer(x + 20 + i * 48, y + 64,
+                                        FONT_PRIO_FRONT, FONT_PAL_YELLOW, msg[i], 2);
+        if (bErr)
+            StockFontBuffer(x + 20, y + 20, FONT_PRIO_FRONT, FONT_PAL_WHITE, "输入错误请再试", 0);
+        else
+            StockFontBuffer(x + 20, y + 20, FONT_PRIO_FRONT, FONT_PAL_WHITE, "请输入安全码", 0);
+        StockFontBuffer2(&passwd);
+        FlashKeyboardCursor();
     }
     return ret;
 }
@@ -17848,7 +17832,7 @@ void BMWindowType(void)
                 char *sp = BMItem[i].iName;
                 int j = 0;
                 int ip = 0;
-                char cp;
+                int lineChars = 0;
                 char Tmp[256] = "";
                 char *iip;
 
@@ -17856,31 +17840,30 @@ void BMWindowType(void)
 
                 while (1)
                 {
-                    cp = BMItem[i].iName[ip++];
+                    const int charBytes = getUtf8SequenceLength(
+                        BMItem[i].iName + ip,
+                        strlen(BMItem[i].iName + ip));
 
-                    if (cp == NULL)
+                    if (BMItem[i].iName[ip] == '\0')
                     {
                         *iip = '\0';
                         StockFontBuffer(x + 20, y + 205 + j * 20, FONT_PRIO_FRONT, FONT_PAL_WHITE, Tmp, 1);
                         break;
                     }
 
-                    if (IsDBCSLeadByteEx(936, cp))
-                    {
-                        *iip++ = cp;
-                        *iip++ = BMItem[i].iName[ip++];
-                    }
-                    else
-                    {
-                        *iip++ = cp;
-                    }
+                    const int copyBytes = charBytes > 0 ? charBytes : 1;
+                    memcpy(iip, BMItem[i].iName + ip, copyBytes);
+                    iip += copyBytes;
+                    ip += copyBytes;
+                    lineChars++;
 
-                    if ((iip - Tmp) >= 33)
+                    if ((iip - Tmp) >= 33 || lineChars >= 16)
                     {
                         *iip = '\0';
                         StockFontBuffer(x + 20, y + 205 + j * 20, FONT_PRIO_FRONT, FONT_PAL_WHITE, Tmp, 1);
                         strcpy(Tmp, "");
                         iip = Tmp;
+                        lineChars = 0;
                         j++;
                     }
                 }

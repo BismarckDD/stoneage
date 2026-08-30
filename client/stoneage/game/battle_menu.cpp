@@ -69,7 +69,6 @@ int battlePetButtonFlag = FALSE;      // ??????????????
 static int battleTimeUpFlag = FALSE;
 static int battleTargetSelectFlag = FALSE;
 int battleButtonBak = -1;         // ???????
-int battleButtonFlag = FALSE;
 static int battleButtonBak2 = -1; // ????????
 int battleWazaTargetBak = -1;     // ????
 
@@ -126,13 +125,12 @@ void InitBattleMenu(void) {
   if (AI != AI_NONE)
     battleButtonBak = -1;
 #endif
-  pActWnd = NULL; // ????????????
+  pActWnd = NULL; //
   pActInfoWnd = NULL;
-  // ?????????????
   if (battlePetNoBak != -2) {
-    battlePetButtonFlag = FALSE; // ????????
+    battlePetButtonFlag = FALSE; //
   } else {
-    battlePetButtonFlag = TRUE; // ????????
+    battlePetButtonFlag = TRUE; //
   }
 }
 
@@ -150,32 +148,24 @@ int CheckBattle1P2P(void) {
     return 1;
 }
 
-// ??????????????? ********************************************/
+// 
 void CheckBattleAnimFlag(void) {
-  int i;
-  // ????????????????????????????
+  // 客户端的回合编号和服务器的回合编号不等
   if (BattleCliTurnNo != BattleSvTurnNo) {
-    // ?????
-    for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-      // ???????
+    for (int i = 0; i < BATTLKPKPLYAERNUM; i++) {
       p_party[i]->atr |= ACT_ATR_BTL_CMD_END;
     }
     return;
   }
-  // ?????
-  for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-    // ???????
+  for (int i = 0; i < BATTLKPKPLYAERNUM; i++) {
     if ((BattleAnimFlag >> i) & 0x00000001)
       p_party[i]->atr |= ACT_ATR_BTL_CMD_END;
   }
 }
 
-// ?????????????? ********************************************/
+// 
 void InitBattleAnimFlag(void) {
-  int i;
-  // ?????
-  for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-    // ???????
+  for (int i = 0; i < BATTLKPKPLYAERNUM; ++i) {
     p_party[i]->atr &= ~ACT_ATR_BTL_CMD_END;
   }
 }
@@ -190,16 +180,11 @@ int CheckPetSuu(void) {
   return cnt;
 }
 
-// ???????? *****************************************************/
+//
 void ClearBoxFlag(void) {
-  int i;
-  // ????????
-  for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-    // ??????????
+  for (int i = 0; i < BATTLKPKPLYAERNUM; ++i) {
     if (p_party[i]->func == NULL)
       continue;
-    // ?????????????
-
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_COL1;
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_COL2;
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_COL3;
@@ -208,14 +193,12 @@ void ClearBoxFlag(void) {
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_COL6;
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_COL7;
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_COL8;
-
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX;
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_ALL1;
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_ALL2;
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_ALL3;
     p_party[i]->atr &= ~ACT_ATR_HIT_BOX_ALL4;
     p_party[i]->atr |= ACT_ATR_HIT;
-    // ???????
     p_party[i]->hitDispNo = -2;
   }
 }
@@ -248,9 +231,9 @@ int CheckBattelTarget(void) {
   return -1;
 }
 
+// 将每一个Button的状态都置0
 void ClearBattleButton(void) {
-  // ????
-  memset(sBattleButtonFlag, 0, sizeof(battleButtonFlag));
+  memset(sBattleButtonFlag, 0, sizeof(sBattleButtonFlag));
 }
 
 void BattleButtonOff(void) {
@@ -258,7 +241,7 @@ void BattleButtonOff(void) {
   DeathAction(pActWnd);
   pActWnd = NULL; // 
   battleTargetSelectFlag = FALSE; // 清除目标选择
-  BattleCmdNo = -1;     // ???
+  BattleCmdNo = -1;     // 
   ClearBattleButton(); // 清除战斗菜单栏
   ClearBoxFlag();
 }

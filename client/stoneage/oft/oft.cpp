@@ -4183,12 +4183,7 @@ void get_name(ACTION *a1)
         //????
         if (d0 == '|')
             break;
-        if (IsDBCSLeadByteEx(936, d0))
-        {
-            *a2++ = d0;
-            *a2++ = BattleCmd[command_point++];
-        }
-        else
+        if ((size_t)(a2 - ATR_HANDLE(a1)) < sizeof(a1->name) - 1)
             *a2++ = d0;
     }
     //????
@@ -4404,13 +4399,7 @@ void get_command_asc(void)
         //????
         if (d0 == '|')
             break;
-        if (IsDBCSLeadByteEx(936, d0))
-        {
-            *a2++ = d0;
-            *a2++ = BattleCmd[command_point++];
-        }
-        else
-            *a2++ = d0;
+        *a2++ = d0;
     }
     //????
     *a2 = 0;
@@ -11838,12 +11827,10 @@ void get_bc_asc(ACTION *a1, int flg)
         //????
         if (d0 == '|')
             break;
-        if (IsDBCSLeadByteEx(936, d0))
-        {
-            *a2++ = d0;
-            *a2++ = BattleStatus[bc_pointer++];
-        }
-        else
+        const size_t capacity = flg == 0 ? sizeof(a1->name)
+                                         : sizeof(a1->freeName);
+        const char *start = flg == 0 ? ATR_HANDLE(a1) : ATR_TITLE(a1);
+        if ((size_t)(a2 - start) < capacity - 1)
             *a2++ = d0;
     }
     //????
@@ -11873,12 +11860,7 @@ void get_bc_asc_ridepet(ACTION *a1)
         //????
         if (d0 == '|')
             break;
-        if (IsDBCSLeadByteEx(936, d0))
-        {
-            *a2++ = d0;
-            *a2++ = BattleStatus[bc_pointer++];
-        }
-        else
+        if ((size_t)(a2 - ATR_PETNAME(a1)) < sizeof(a1->petName) - 1)
             *a2++ = d0;
     }
     //????

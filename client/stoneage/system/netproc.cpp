@@ -11,6 +11,7 @@
 #include "other/md5_encrypt.h"
 #include "systeminc/action.h"
 #include "systeminc/character.h"
+#include "systeminc/directdraw.h"
 #include "systeminc/field.h"
 #include "systeminc/handletime.h"
 #include "systeminc/login.h"
@@ -814,6 +815,10 @@ void lssproto_S_recv(int fd, char *data) {
     int fl, maxx, maxy, gx, gy;
 
     floorChangeFlag = TRUE;
+    ClientRuntimeLog("action",
+                     "map-change C received: currentFloor=%d id=%d action=%p login=%d proc=%d warp=%d",
+                     nowFloor, pc.id, pc.ptAct, loginFlag, ProcNo,
+                     warpEffectFlag);
     if (!loginFlag && ProcNo == PROC_GAME) {
       if (!warpEffectFlag) {
         SubProcNo = 200;
@@ -836,6 +841,25 @@ void lssproto_S_recv(int fd, char *data) {
     nowFloorGxSize = maxx;
     nowFloorGySize = maxy;
     resetCharObj();
+    // A map change destroys the local player's ACTION above.  Do not depend
+    // on a later C/CA round trip to recreate it: movement coordinates are
+    // already active at this point, which otherwise leaves an invisible
+    // player that can still walk and move the camera.
+    if (!loginFlag && ProcNo == PROC_GAME && pc.ptAct == NULL && pc.id != 0) {
+      createPc(pc.graNo, gx, gy, pc.dir);
+      if (pc.ptAct != NULL) {
+        updataPcAct();
+        ClientRuntimeLog(
+            "action",
+            "map-change recreated local action: floor=%d id=%d pos=(%d,%d) gra=%d dir=%d action=%p",
+            fl, pc.id, gx, gy, pc.graNo, pc.dir, pc.ptAct);
+      } else {
+        ClientRuntimeLog(
+            "action",
+            "map-change failed to recreate local action: floor=%d id=%d pos=(%d,%d) gra=%d dir=%d",
+            fl, pc.id, gx, gy, pc.graNo, pc.dir);
+      }
+    }
     mapEmptyFlag = FALSE;
     nowEncountPercentage = minEncountPercentage;
     nowEncountExtra = 0;
@@ -905,12 +929,11 @@ void lssproto_S_recv(int fd, char *data) {
 #endif
       getStringToken(data, S_DELIM, 30, sizeof(name) - 1, name);
       makeStringFromEscaped(name);
-      if (strlen(name) <= CHAR_NAME_LEN)
-        strcpy_s(pc.name, name);
+      copyUtf8WithLimit(pc.name, sizeof(pc.name), name, CHAR_NAME_LEN);
       getStringToken(data, S_DELIM, 31, sizeof(freeName) - 1, freeName);
       makeStringFromEscaped(freeName);
-      if (strlen(freeName) <= CHAR_FREENAME_LEN)
-        strcpy_s(pc.freeName, freeName);
+      copyUtf8WithLimit(pc.freeName, sizeof(pc.freeName), freeName,
+                        CHAR_FREENAME_LEN);
 #ifdef _NEW_ITEM_
       pc.道具栏状态 = getIntegerToken(data, S_DELIM, 32);
 #endif
@@ -1012,15 +1035,14 @@ void lssproto_S_recv(int fd, char *data) {
             getStringToken(data, S_DELIM, i, sizeof(name) - 1,
                            name); // 0x01000000
             makeStringFromEscaped(name);
-            if (strlen(name) <= CHAR_NAME_LEN)
-              strcpy_s(pc.name, name);
+            copyUtf8WithLimit(pc.name, sizeof(pc.name), name, CHAR_NAME_LEN);
             i++;
           } else if (mask == 0x04000000) {
             getStringToken(data, S_DELIM, i, sizeof(freeName) - 1,
                            freeName); // 0x02000000
             makeStringFromEscaped(freeName);
-            if (strlen(freeName) <= CHAR_FREENAME_LEN)
-              strcpy_s(pc.freeName, freeName);
+            copyUtf8WithLimit(pc.freeName, sizeof(pc.freeName), freeName,
+                              CHAR_FREENAME_LEN);
             i++;
           } else if (mask == 0x08000000) // ( 1 << 27 )
           {
@@ -1082,8 +1104,8 @@ void lssproto_S_recv(int fd, char *data) {
     data++;
     getStringToken(data, S_DELIM, 1, sizeof(familyName) - 1, familyName);
     makeStringFromEscaped(familyName);
-    if (strlen(familyName) <= CHAR_NAME_LEN)
-      strcpy_s(pc.familyName, familyName);
+    copyUtf8WithLimit(pc.familyName, sizeof(pc.familyName), familyName,
+                      CHAR_NAME_LEN);
     pc.familyleader = getIntegerToken(data, S_DELIM, 2);
     pc.channel = getIntegerToken(data, S_DELIM, 3);
     pc.familySprite = getIntegerToken(data, S_DELIM, 4);
@@ -1150,23 +1172,23 @@ void lssproto_S_recv(int fd, char *data) {
         pet[no].fusion = getIntegerToken(data, S_DELIM, 21);
         getStringToken(data, S_DELIM, 22, sizeof(name) - 1, name); // 0x00080000
         makeStringFromEscaped(name);
-        if (strlen(name) <= PET_NAME_LEN)
-          strcpy(pet[no].name, name);
+        copyUtf8WithLimit(pet[no].name, sizeof(pet[no].name), name,
+                          PET_NAME_LEN);
         getStringToken(data, S_DELIM, 23, sizeof(freeName) - 1,
                        freeName); // 0x00100000
         makeStringFromEscaped(freeName);
-        if (strlen(freeName) <= PET_NAME_LEN)
-          strcpy(pet[no].freeName, freeName);
+        copyUtf8WithLimit(pet[no].freeName, sizeof(pet[no].freeName),
+                          freeName, PET_NAME_LEN);
 #else
         getStringToken(data, S_DELIM, 21, sizeof(name) - 1, name); // 0x00080000
         makeStringFromEscaped(name);
-        if (strlen(name) <= PET_NAME_LEN)
-          strcpy(pet[no].name, name);
+        copyUtf8WithLimit(pet[no].name, sizeof(pet[no].name), name,
+                          PET_NAME_LEN);
         getStringToken(data, S_DELIM, 22, sizeof(freeName) - 1,
                        freeName); // 0x00100000
         makeStringFromEscaped(freeName);
-        if (strlen(freeName) <= PET_NAME_LEN)
-          strcpy(pet[no].freeName, freeName);
+        copyUtf8WithLimit(pet[no].freeName, sizeof(pet[no].freeName),
+                          freeName, PET_NAME_LEN);
 #endif
 #ifdef _PETCOM_
         pet[no].oldhp = getIntegerToken(data, S_DELIM, 24);
@@ -1250,15 +1272,16 @@ void lssproto_S_recv(int fd, char *data) {
               getStringToken(data, S_DELIM, i, sizeof(name) - 1,
                              name); // 0x00080000
               makeStringFromEscaped(name);
-              if (strlen(name) <= PET_NAME_LEN)
-                strcpy(pet[no].name, name);
+              copyUtf8WithLimit(pet[no].name, sizeof(pet[no].name), name,
+                                PET_NAME_LEN);
               i++;
             } else if (mask == 0x00100000) {
               getStringToken(data, S_DELIM, i, sizeof(freeName) - 1,
                              freeName); // 0x00100000
               makeStringFromEscaped(freeName);
-              if (strlen(freeName) <= PET_NAME_LEN)
-                strcpy(pet[no].freeName, freeName);
+              copyUtf8WithLimit(pet[no].freeName,
+                                sizeof(pet[no].freeName), freeName,
+                                PET_NAME_LEN);
               i++;
             }
 #ifdef _PETCOM_
@@ -1326,14 +1349,12 @@ void lssproto_S_recv(int fd, char *data) {
         magic[no].deadTargetFlag = 0;
       getStringToken(data, S_DELIM, 5, sizeof(name) - 1, name);
       makeStringFromEscaped(name);
-      if (strlen(name) <= sizeof(magic[no].name) - 1) {
-        strcpy_s(magic[no].name, name);
-      }
+      copyUtf8WithLimit(magic[no].name, sizeof(magic[no].name), name,
+                        MAGIC_NAME_LEN);
       getStringToken(data, S_DELIM, 6, sizeof(memo) - 1, memo);
       makeStringFromEscaped(memo);
-      if (strlen(memo) <= sizeof(magic[no].memo) - 1) {
-        strcpy_s(magic[no].memo, memo);
-      }
+      copyUtf8WithLimit(magic[no].memo, sizeof(magic[no].memo), memo,
+                        MAGIC_MEMO_LEN);
     }
   } break;
   case 'N': {
@@ -1399,9 +1420,8 @@ void lssproto_S_recv(int fd, char *data) {
       party[no].mp = getIntegerToken(data, S_DELIM, 6);         // 0x00000020
       getStringToken(data, S_DELIM, 7, sizeof(name) - 1, name); // 0x00000040
       makeStringFromEscaped(name);
-      if (strlen(name) <= sizeof(party[no].name) - 1)
-        strcpy(party[no].name, name);
-      else
+      if (!copyUtf8WithLimit(party[no].name, sizeof(party[no].name), name,
+                             CHAR_NAME_LEN))
         strcpy(party[no].name, "???");
     } else {
       mask = 2;
@@ -1427,9 +1447,8 @@ void lssproto_S_recv(int fd, char *data) {
             getStringToken(data, S_DELIM, i, sizeof(name) - 1,
                            name); // 0x00000040
             makeStringFromEscaped(name);
-            if (strlen(name) <= sizeof(party[no].name) - 1)
-              strcpy(party[no].name, name);
-            else
+            if (!copyUtf8WithLimit(party[no].name, sizeof(party[no].name),
+                                   name, CHAR_NAME_LEN))
               strcpy(party[no].name, "???");
             i++;
           }
@@ -1498,19 +1517,19 @@ void lssproto_S_recv(int fd, char *data) {
         continue;
       }
       pc.item[i].useFlag = 1;
-      if (strlen(temp) <= ITEM_NAME_LEN)
-        strcpy(pc.item[i].name, temp);
+      copyUtf8WithLimit(pc.item[i].name, sizeof(pc.item[i].name), temp,
+                        ITEM_NAME_LEN);
       getStringToken(data, '|', no + 2, sizeof(temp) - 1, temp);
       makeStringFromEscaped(temp);
-      if (strlen(temp) <= ITEM_NAME2_LEN)
-        strcpy(pc.item[i].name2, temp);
+      copyUtf8WithLimit(pc.item[i].name2, sizeof(pc.item[i].name2), temp,
+                        ITEM_NAME2_LEN);
       pc.item[i].color = getIntegerToken(data, '|', no + 3);
       if (pc.item[i].color < 0)
         pc.item[i].color = 0;
       getStringToken(data, '|', no + 4, sizeof(temp) - 1, temp);
       makeStringFromEscaped(temp);
-      if (strlen(temp) <= ITEM_MEMO_LEN)
-        strcpy(pc.item[i].memo, temp);
+      copyUtf8WithLimit(pc.item[i].memo, sizeof(pc.item[i].memo), temp,
+                        ITEM_MEMO_LEN);
       pc.item[i].graNo = getIntegerToken(data, '|', no + 5);
       pc.item[i].field = getIntegerToken(data, '|', no + 6);
       pc.item[i].target = getIntegerToken(data, '|', no + 7);
@@ -1590,8 +1609,8 @@ void lssproto_S_recv(int fd, char *data) {
   } break;
 #ifdef _CHAR_PROFESSION // WON ADD 人物职业
   case 'S': {
-    char name[CHAR_NAME_LEN + 1];
-    char memo[PROFESSION_MEMO_LEN + 1];
+    char name[CHAR_NAME_BUFFER_SIZE];
+    char memo[PROFESSION_MEMO_LEN * 4 + 1];
     int i, count = 0;
 
     data++;
@@ -1612,13 +1631,15 @@ void lssproto_S_recv(int fd, char *data) {
       memset(name, 0, sizeof(name));
       getStringToken(data, S_DELIM, 8 + count, sizeof(name) - 1, name);
       makeStringFromEscaped(name);
-      if (strlen(name) <= CHAR_NAME_LEN)
-        strcpy(profession_skill[i].name, name);
+      copyUtf8WithLimit(profession_skill[i].name,
+                        sizeof(profession_skill[i].name), name,
+                        CHAR_NAME_LEN);
       memset(memo, 0, sizeof(memo));
       getStringToken(data, S_DELIM, 9 + count, sizeof(memo) - 1, memo);
       makeStringFromEscaped(memo);
-      if (strlen(memo) <= PROFESSION_MEMO_LEN)
-        strcpy(profession_skill[i].memo, memo);
+      copyUtf8WithLimit(profession_skill[i].memo,
+                        sizeof(profession_skill[i].memo), memo,
+                        PROFESSION_MEMO_LEN);
     }
 #ifdef _SKILLSORT
     SortSkill();
@@ -1666,19 +1687,22 @@ void lssproto_S_recv(int fd, char *data) {
         continue;
       }
       pet[nPetIndex].item[i].useFlag = 1;
-      if (strlen(szData) <= ITEM_NAME_LEN)
-        strcpy(pet[nPetIndex].item[i].name, szData);
+      copyUtf8WithLimit(pet[nPetIndex].item[i].name,
+                        sizeof(pet[nPetIndex].item[i].name), szData,
+                        ITEM_NAME_LEN);
       getStringToken(data, '|', no + 2, sizeof(szData) - 1, szData);
       makeStringFromEscaped(szData);
-      if (strlen(szData) <= ITEM_NAME2_LEN)
-        strcpy(pet[nPetIndex].item[i].name2, szData);
+      copyUtf8WithLimit(pet[nPetIndex].item[i].name2,
+                        sizeof(pet[nPetIndex].item[i].name2), szData,
+                        ITEM_NAME2_LEN);
       pet[nPetIndex].item[i].color = getIntegerToken(data, '|', no + 3);
       if (pet[nPetIndex].item[i].color < 0)
         pet[nPetIndex].item[i].color = 0;
       getStringToken(data, '|', no + 4, sizeof(szData) - 1, szData);
       makeStringFromEscaped(szData);
-      if (strlen(szData) <= ITEM_MEMO_LEN)
-        strcpy(pet[nPetIndex].item[i].memo, szData);
+      copyUtf8WithLimit(pet[nPetIndex].item[i].memo,
+                        sizeof(pet[nPetIndex].item[i].memo), szData,
+                        ITEM_MEMO_LEN);
       pet[nPetIndex].item[i].graNo = getIntegerToken(data, '|', no + 5);
       pet[nPetIndex].item[i].field = getIntegerToken(data, '|', no + 6);
       pet[nPetIndex].item[i].target = getIntegerToken(data, '|', no + 7);
@@ -1758,6 +1782,8 @@ void lssproto_MC_recv(int fd, int fl, int x1, int y1, int x2, int y2,
 
       pal = atoi(strPal);
       if (pal >= 0) {
+        ClientRuntimeLog("map", "MC floor=%d name=%s palette=%d timeZoneMode=%d login=%d",
+                         fl, floorName, pal, TimeZonePalChangeFlag, loginFlag);
         if (TimeZonePalChangeFlag == TRUE || loginFlag) {
           palNo = pal;
           palTime = 0;
@@ -1821,6 +1847,8 @@ void lssproto_M_recv(int fd, int fl, int x1, int y1, int x2, int y2,
 
       pal = atoi(strPal);
       if (pal >= 0) {
+        ClientRuntimeLog("map", "MC2 floor=%d name=%s palette=%d timeZoneMode=%d login=%d",
+                         fl, floorName, pal, TimeZonePalChangeFlag, loginFlag);
         if (TimeZonePalChangeFlag == TRUE || loginFlag) {
           palNo = pal;
           palTime = 0;
@@ -2434,6 +2462,8 @@ void lssproto_CD_recv(int fd, char *data) {
     if (id == -1)
       break;
 
+    ClientRuntimeLog("action", "CD delete id=%d selfId=%d self=%d floor=%d action=%p",
+                     id, pc.id, id == pc.id, nowFloor, pc.ptAct);
     delCharObj(id);
 
 #ifdef MAX_AIRPLANENUM
@@ -3000,10 +3030,10 @@ void lssproto_AB_recv(int fd, char *data) {
       break;
 
     makeStringFromEscaped(name);
-    nameLen = strlen(name);
-    if (0 < nameLen && nameLen <= CHAR_NAME_LEN) {
-      strcpy(addressBook[i].name, name);
-    }
+    nameLen = getUtf8CharNum(name);
+    if (nameLen > 0)
+      copyUtf8WithLimit(addressBook[i].name, sizeof(addressBook[i].name),
+                        name, CHAR_NAME_LEN);
     addressBook[i].level = getIntegerToken(data, '|', no + 3);
     addressBook[i].dp = getIntegerToken(data, '|', no + 4);
     addressBook[i].onlineFlag = (short)getIntegerToken(data, '|', no + 5);
@@ -3070,10 +3100,10 @@ void lssproto_ABI_recv(int fd, int num, char *data) {
 
   getStringToken(data, '|', 2, sizeof(name) - 1, name);
   makeStringFromEscaped(name);
-  nameLen = strlen(name);
-  if (0 < nameLen && nameLen <= CHAR_NAME_LEN) {
-    strcpy(addressBook[num].name, name);
-  }
+  nameLen = getUtf8CharNum(name);
+  if (nameLen > 0)
+    copyUtf8WithLimit(addressBook[num].name,
+                      sizeof(addressBook[num].name), name, CHAR_NAME_LEN);
   addressBook[num].level = getIntegerToken(data, '|', 3);
   addressBook[num].dp = getIntegerToken(data, '|', 4);
   addressBook[num].onlineFlag = (short)getIntegerToken(data, '|', 5);
@@ -3211,22 +3241,19 @@ void lssproto_I_recv(int fd, char *data) {
       continue;
     }
     pc.item[i].useFlag = 1;
-    if (strlen(name) <= ITEM_NAME_LEN) {
-      strcpy(pc.item[i].name, name);
-    }
+    copyUtf8WithLimit(pc.item[i].name, sizeof(pc.item[i].name), name,
+                      ITEM_NAME_LEN);
     getStringToken(data, '|', no + 3, sizeof(name2) - 1, name2); // 第二个道具名
     makeStringFromEscaped(name2);
-    if (strlen(name2) <= ITEM_NAME2_LEN) {
-      strcpy(pc.item[i].name2, name2);
-    }
+    copyUtf8WithLimit(pc.item[i].name2, sizeof(pc.item[i].name2), name2,
+                      ITEM_NAME2_LEN);
     pc.item[i].color = getIntegerToken(data, '|', no + 4); // 颜色
     if (pc.item[i].color < 0)
       pc.item[i].color = 0;
     getStringToken(data, '|', no + 5, sizeof(memo) - 1, memo); // 道具介绍
     makeStringFromEscaped(memo);
-    if (strlen(memo) <= ITEM_MEMO_LEN) {
-      strcpy(pc.item[i].memo, memo);
-    }
+    copyUtf8WithLimit(pc.item[i].memo, sizeof(pc.item[i].memo), memo,
+                      ITEM_MEMO_LEN);
     pc.item[i].graNo = getIntegerToken(data, '|', no + 6); // 道具形像
     pc.item[i].field = getIntegerToken(data, '|', no + 7); //
     pc.item[i].target = getIntegerToken(data, '|', no + 8);
@@ -3284,13 +3311,6 @@ void lssproto_WN_recv(int fd, int windowtype, int buttontype, int seqno,
                       int objindex, char *data) {
   if (logOutFlag)
     return;
-
-  // The server protocol is UTF-8, but the legacy NPC/window subsystem uses
-  // CP936 byte counts and fixed-size buffers throughout. Convert at its
-  // boundary so wrapping, copying and ANSI GDI rendering share one encoding.
-  const std::string windowText = Utf8ToGbk(data);
-  if (!windowText.empty())
-    strcpy(data, windowText.c_str()); // CP936 output is no larger than UTF-8.
 
   if (strstr(data, "否则家族在七天之后会消失唷！")) {
     if (TimeGetTime() - MsgCooltime > 300000)

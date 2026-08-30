@@ -277,10 +277,7 @@ char *makeStringFromEscaped(char *src) {
   int srclen = strlen(src);
   int searchindex = 0;
   for (int i = 0; i < srclen; i++) {
-    if (IsDBCSLeadByteEx(936, src[i])) {
-      src[searchindex++] = src[i++];
-      src[searchindex++] = src[i];
-    } else {
+    {
       if (src[i] == '\\') {
         int j;
         i++;
@@ -314,13 +311,7 @@ char *makeEscapeString(char *src, char *dest, int sizeofdest) {
   for (int i = 0; i < srclen; i++) {
     if (destindex + 1 >= sizeofdest)
       break;
-    if (IsDBCSLeadByteEx(936, src[i])) {
-      if (destindex + 2 < sizeofdest) {
-        dest[destindex++] = src[i++];
-        dest[destindex++] = src[i];
-      } else
-        break;
-    } else {
+    {
       BOOL dirty = FALSE;
       char escapechar = '\0';
       for (int j = 0; j < sizeof(escapeChar) / sizeof(escapeChar[0]); j++)

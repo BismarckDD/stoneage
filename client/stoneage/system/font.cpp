@@ -13,12 +13,30 @@ int FontZenkauWidth;
 int FontHankakuWidth;
 int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
 
-static std::string ToDisplayGbk(const char *utf8) {
-  if (utf8 == NULL || utf8[0] == '\0')
-    return std::string();
-  const std::string converted = Utf8ToGbk(utf8);
-  // Keep legacy resource strings visible while remaining data files migrate.
-  return converted.empty() ? std::string(utf8) : converted;
+static BOOL GetUtf8TextExtent(HDC dc, const char *text, int byteLength,
+                              SIZE *size) {
+  if (text == NULL || byteLength <= 0) {
+    size->cx = 0;
+    size->cy = 0;
+    return TRUE;
+  }
+  UINT sourceCodePage = CP_UTF8;
+  DWORD conversionFlags = MB_ERR_INVALID_CHARS;
+  int wideLength = MultiByteToWideChar(sourceCodePage, conversionFlags, text,
+                                       byteLength, NULL, 0);
+  if (wideLength <= 0) {
+    sourceCodePage = 936;
+    conversionFlags = 0;
+    wideLength = MultiByteToWideChar(sourceCodePage, conversionFlags, text,
+                                     byteLength, NULL, 0);
+  }
+  if (wideLength <= 0)
+    return FALSE;
+  std::wstring wideText(wideLength, L'\0');
+  if (MultiByteToWideChar(sourceCodePage, conversionFlags, text, byteLength,
+                          &wideText[0], wideLength) <= 0)
+    return FALSE;
+  return GetTextExtentPoint32W(dc, wideText.data(), wideLength, size);
 }
 
 #ifdef _SUNDAY_STR_SEARCH
@@ -36,8 +54,7 @@ int StockFontBufferExt(int x, int y, char fontPrio, int color, const char *str,
   FontBuffer[FontCnt].color = color;
   FontBuffer[FontCnt].hitFlag = hitFlag;
 
-  const std::string displayText = ToDisplayGbk(str);
-  strcpy_s(FontBuffer[FontCnt].str, displayText.c_str());
+  strcpy_s(FontBuffer[FontCnt].str, str);
   FontBuffer[FontCnt].size = size;
   return FontCnt++;
 }
@@ -57,8 +74,7 @@ int StockFontBuffer(int x, int y, char fontPrio, int color,
   FontBuffer[FontCnt].fontPrio = fontPrio;
   FontBuffer[FontCnt].color = color;
   FontBuffer[FontCnt].hitFlag = hitFlag;
-  const std::string displayText = ToDisplayGbk(str);
-  strcpy_s(FontBuffer[FontCnt].str, displayText.c_str());
+  strcpy_s(FontBuffer[FontCnt].str, str);
   return FontCnt++;
 }
 #endif
@@ -85,9 +101,8 @@ void CreatFontHdc() {
 }
 int getTextLength(char *str) {
   SIZE font_size;
-  const std::string displayText = ToDisplayGbk(str);
-  GetTextExtentPoint32(FontSizeHdc, displayText.c_str(), displayText.size(),
-                       (LPSIZE)&font_size);
+  if (!GetUtf8TextExtent(FontSizeHdc, str, (int)strlen(str), &font_size))
+    font_size.cx = 0;
   return font_size.cx;
 }
 
@@ -105,8 +120,8 @@ void delFontBuffer(CHAT_BUFFER *chatbuffer) {
   chatbuffer->NextChatBuffer = NULL;
 }
 
-static void NewStockFontBufferGbk(CHAT_BUFFER *chatbuffer, int x,
-                                  unsigned char color, char *str, int size) {
+static void NewStockFontBufferUtf8(CHAT_BUFFER *chatbuffer, int x,
+                                   unsigned char color, char *str, int size) {
   if (!str[0]) {
     return;
   }
@@ -120,15 +135,14 @@ static void NewStockFontBufferGbk(CHAT_BUFFER *chatbuffer, int x,
       memcpy(outText, str, strl);
       outText[strl] = 0x0;
       SIZE fontsize;
-      GetTextExtentPoint32(FontSizeHdc, (LPCSTR)outText, strl,
-                           (LPSIZE)&fontsize);
+      GetUtf8TextExtent(FontSizeHdc, outText, strl, &fontsize);
       chatbuffer->color = color;
       chatbuffer->x = x;
       strcpy(chatbuffer->buffer, outText);
       chatbuffer->NextChatBuffer =
           (CHAT_BUFFER *)calloc(1, sizeof(CHAT_BUFFER));
-      NewStockFontBufferGbk(chatbuffer->NextChatBuffer, x + fontsize.cx, color,
-                            temp, size);
+      NewStockFontBufferUtf8(chatbuffer->NextChatBuffer, x + fontsize.cx,
+                             color, temp, size);
     } else {
       int cnt_int = 0;
       int i = 1;
@@ -149,8 +163,7 @@ static void NewStockFontBufferGbk(CHAT_BUFFER *chatbuffer, int x,
         memcpy(outText, temp, i);
         outText[i] = 0x0;
         SIZE fontsize;
-        GetTextExtentPoint32(FontSizeHdc, (LPCSTR)outText, i,
-                             (LPSIZE)&fontsize);
+        GetUtf8TextExtent(FontSizeHdc, outText, i, &fontsize);
         chatbuffer->color = color;
         chatbuffer->x = x;
         strcpy(chatbuffer->buffer, outText);
@@ -159,7 +172,7 @@ static void NewStockFontBufferGbk(CHAT_BUFFER *chatbuffer, int x,
       }
       chatbuffer->NextChatBuffer =
           (CHAT_BUFFER *)calloc(1, sizeof(CHAT_BUFFER));
-      NewStockFontBufferGbk(chatbuffer->NextChatBuffer, x, color, temp, size);
+      NewStockFontBufferUtf8(chatbuffer->NextChatBuffer, x, color, temp, size);
     }
   } else {
     chatbuffer->color = color;
@@ -170,12 +183,9 @@ static void NewStockFontBufferGbk(CHAT_BUFFER *chatbuffer, int x,
 
 void NewStockFontBuffer(CHAT_BUFFER *chatbuffer, int x, unsigned char color,
                         char *str, int size) {
-  // Font buffers are rendered through the ANSI GDI path. Protocol and input
-  // strings are UTF-8, so convert once before expression parsing/recursion.
-  std::string displayText = ToDisplayGbk(str);
-  if (displayText.empty())
+  if (str == NULL || str[0] == '\0')
     return;
-  NewStockFontBufferGbk(chatbuffer, x, color, &displayText[0], size);
+  NewStockFontBufferUtf8(chatbuffer, x, color, str, size);
 }
 #endif
 
@@ -246,8 +256,7 @@ void StockFontBuffer2(STR_BUFFER *strBuffer) {
         FontBuffer[FontCnt].str[i] = '*';
       FontBuffer[FontCnt].str[i] = NULL;
     } else {
-      const std::string displayText = ToDisplayGbk(strBuffer->buffer);
-      strcpy_s(FontBuffer[FontCnt].str, displayText.c_str());
+      strcpy_s(FontBuffer[FontCnt].str, strBuffer->buffer);
     }
 #ifdef _NEWFONT_
     char strtemp[512];

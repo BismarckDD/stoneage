@@ -371,6 +371,13 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   }
 #endif
   SetErrorMode(SEM_NOGPFAULTERRORBOX | SEM_NOOPENFILEERRORBOX);
+  InstallClientCrashHandler();
+  char startupModule[MAX_PATH] = {0};
+  char startupWorkingDirectory[MAX_PATH] = {0};
+  GetModuleFileNameA(NULL, startupModule, MAX_PATH);
+  GetCurrentDirectoryA(MAX_PATH, startupWorkingDirectory);
+  ClientRuntimeLog("startup", "exe=%s cwd=%s", startupModule,
+                   startupWorkingDirectory);
   CreateMutex(NULL, FALSE, SA_MUTE);
 
   获取机器码();
@@ -484,7 +491,11 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
 
   // 进入主循环:登录,选择服务器,选择橘色,地图和战斗都由该函数按ProcNo进行Dispatch。
   /* !!! 2026.08.18 */
-  GameMain();
+  __try {
+    GameMain();
+  } __except (ClientCrashExceptionFilter(GetExceptionInformation())) {
+    // The exception report and minidump are written by the filter above.
+  }
 
 #ifdef __NEW_CLIENT
   CloseHandle(hProcessSnap);

@@ -76,18 +76,10 @@ int SendPhoneMsg(char pid[16], char ppw[16], char pps[], char pms[])
     if(!dv)  return 2;
     //和Jason讨论后,新订的文字上限为66bytes!!  Feb. 5,2002
     //保留16bytes给玩家名称用!                 Feb.22,2002
-    int x=0,mc=0;
-    do
-    {
-        if(IsDBCSLeadByteEx(936, pms[x]))
-            x+=2;
-        else
-            x++;
-        mc++;
-    }while(x < lstrlen(pms));
+    int mc = getUtf8CharNum(pms);
     if((mc<1) || (mc>50)) return 3;
     char extpms[120];
-    if(lstrlen(pc.name)>16)
+    if(getUtf8CharNum(pc.name)>16)
         return 3;
     else
 
@@ -111,7 +103,7 @@ int SendPhoneMsg(char pid[16], char ppw[16], char pps[], char pms[])
             else
             {
             //    if(isspace(*pInTmp))
-                if(*pInTmp==0x20&&(!IsDBCSLeadByteEx(936, *pInTmp)))
+                if(*pInTmp==0x20)
                     *pOutTmp++  =  '+';
                 else
                 {

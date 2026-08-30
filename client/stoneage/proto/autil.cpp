@@ -1006,4 +1006,90 @@ int getUtf8CharNum(const char *utf8)
     return len;
 }
 
+int getUtf8SequenceLength(const char *text, size_t remainingBytes)
+{
+    if (text == NULL || remainingBytes == 0)
+        return 0;
+    const uint8_t lead = (uint8_t)text[0];
+    int length = 0;
+    if (lead <= 0x7F) length = 1;
+    else if (lead >= 0xC2 && lead <= 0xDF) length = 2;
+    else if (lead >= 0xE0 && lead <= 0xEF) length = 3;
+    else if (lead >= 0xF0 && lead <= 0xF4) length = 4;
+    else return 0;
+    if ((size_t)length > remainingBytes)
+        return 0;
+    for (int i = 1; i < length; ++i)
+        if (((uint8_t)text[i] & 0xC0) != 0x80)
+            return 0;
+    if (length == 3) {
+        const uint8_t second = (uint8_t)text[1];
+        if ((lead == 0xE0 && second < 0xA0) ||
+            (lead == 0xED && second >= 0xA0))
+            return 0;
+    } else if (length == 4) {
+        const uint8_t second = (uint8_t)text[1];
+        if ((lead == 0xF0 && second < 0x90) ||
+            (lead == 0xF4 && second >= 0x90))
+            return 0;
+    }
+    return length;
+}
+
+BOOL isValidUtf8(const char *text)
+{
+    if (text == NULL)
+        return FALSE;
+    size_t offset = 0;
+    const size_t total = strlen(text);
+    while (offset < total) {
+        const int length = getUtf8SequenceLength(text + offset, total - offset);
+        if (length == 0)
+            return FALSE;
+        offset += length;
+    }
+    return TRUE;
+}
+
+size_t getUtf8PrefixBytes(const char *text, int maxDisplayWidth)
+{
+    if (text == NULL || maxDisplayWidth <= 0)
+        return 0;
+    size_t offset = 0;
+    int width = 0;
+    const size_t total = strlen(text);
+    while (offset < total) {
+        const int length = getUtf8SequenceLength(text + offset, total - offset);
+        if (length == 0)
+            break;
+        char character[5] = {0};
+        memcpy(character, text + offset, length);
+        const int characterWidth = getUtf8CharNum(character);
+        if (width + characterWidth > maxDisplayWidth)
+            break;
+        width += characterWidth;
+        offset += length;
+    }
+    return offset;
+}
+
+BOOL copyUtf8WithLimit(char *destination, size_t destinationSize,
+                       const char *source, int maxDisplayWidth)
+{
+    if (destination == NULL || destinationSize == 0 || source == NULL)
+        return FALSE;
+    if (!isValidUtf8(source)) {
+        destination[0] = '\0';
+        return FALSE;
+    }
+    const size_t bytes = getUtf8PrefixBytes(source, maxDisplayWidth);
+    if (source[bytes] != '\0' || bytes >= destinationSize) {
+        destination[0] = '\0';
+        return FALSE;
+    }
+    memcpy(destination, source, bytes);
+    destination[bytes] = '\0';
+    return TRUE;
+}
+
 #endif

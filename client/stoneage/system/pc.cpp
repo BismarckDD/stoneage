@@ -4,6 +4,7 @@
 #include "systeminc/pc.h"
 #include "game/anim_tbl.h"
 #include "systeminc/character.h"
+#include "systeminc/directdraw.h"
 #include "systeminc/field.h"
 #include "systeminc/loadsprbin.h"
 #include "systeminc/login.h"
@@ -180,6 +181,7 @@ void initPc(void) {
 }
 
 void createPc(int graNo, int gx, int gy, int dir) {
+  ACTION *oldPtAct = pc.ptAct;
   pc.graNo = graNo;
   pc.dir = dir;
   if (pc.ptAct == NULL) {
@@ -192,11 +194,16 @@ void createPc(int graNo, int gx, int gy, int dir) {
     setPcWarpPoint(gx, gy);
     setPcPoint();
   }
+  ClientRuntimeLog("action",
+                   "createPc id=%d floor=%d pos=(%d,%d) gra=%d dir=%d old=%p new=%p",
+                   pc.id, nowFloor, gx, gy, graNo, dir, oldPtAct, pc.ptAct);
 }
 
 // PC???????
 void resetPc(void) {
   int i;
+  ClientRuntimeLog("action", "resetPc id=%d floor=%d pos=(%d,%d) action=%p",
+                   pc.id, nowFloor, nowGx, nowGy, pc.ptAct);
   if (pc.ptAct != NULL) {
 #ifdef _ITEM_FIREWORK
     if (((CHAREXTRA *)pc.ptAct->pYobi)->pActFirework[0]) {
@@ -353,22 +360,18 @@ void setPcParam(char *name, char *freeName, int level, char *petname,
 #ifdef _GM_IDENTIFY // Rog ADD GM识别
   int gmnameLen;
 #endif
-  nameLen = strlen(name);
-  if (nameLen <= CHAR_NAME_LEN) {
-    strcpy(pc.name, name);
-  }
+  nameLen = getUtf8CharNum(name);
+  copyUtf8WithLimit(pc.name, sizeof(pc.name), name, CHAR_NAME_LEN);
 
-  freeNameLen = strlen(freeName);
-  if (freeNameLen <= CHAR_FREENAME_LEN) {
-    strcpy(pc.freeName, freeName);
-  }
+  freeNameLen = getUtf8CharNum(freeName);
+  copyUtf8WithLimit(pc.freeName, sizeof(pc.freeName), freeName,
+                    CHAR_FREENAME_LEN);
 
   pc.level = level;
 
-  petnameLen = strlen(petname);
-  if (petnameLen <= CHAR_FREENAME_LEN) {
-    strcpy(pc.ridePetName, petname);
-  }
+  petnameLen = getUtf8CharNum(petname);
+  copyUtf8WithLimit(pc.ridePetName, sizeof(pc.ridePetName), petname,
+                    CHAR_FREENAME_LEN);
 
   pc.ridePetLevel = petlevel;
 
@@ -385,17 +388,14 @@ void setPcParam(char *name, char *freeName, int level, char *petname,
   if (pc.ptAct == NULL)
     return;
 
-  if (nameLen <= CHAR_NAME_LEN) {
-    strcpy(pc.ptAct->name, name);
-  }
-  if (freeNameLen <= CHAR_FREENAME_LEN) {
-    strcpy(pc.ptAct->freeName, freeName);
-  }
+  copyUtf8WithLimit(pc.ptAct->name, sizeof(pc.ptAct->name), name,
+                    CHAR_NAME_LEN);
+  copyUtf8WithLimit(pc.ptAct->freeName, sizeof(pc.ptAct->freeName), freeName,
+                    CHAR_FREENAME_LEN);
   pc.ptAct->level = level;
 
-  if (petnameLen <= CHAR_FREENAME_LEN) {
-    strcpy(pc.ptAct->petName, petname);
-  }
+  copyUtf8WithLimit(pc.ptAct->petName, sizeof(pc.ptAct->petName), petname,
+                    CHAR_FREENAME_LEN);
   pc.ptAct->petLevel = petlevel;
 
   pc.ptAct->itemNameColor = nameColor;
@@ -432,12 +432,10 @@ void updataPcAct(void) {
   if (pc.ptAct == NULL)
     return;
 
-  if (strlen(pc.name) <= CHAR_NAME_LEN) {
-    strcpy(pc.ptAct->name, pc.name);
-  }
-  if (strlen(pc.freeName) <= CHAR_FREENAME_LEN) {
-    strcpy(pc.ptAct->freeName, pc.freeName);
-  }
+  copyUtf8WithLimit(pc.ptAct->name, sizeof(pc.ptAct->name), pc.name,
+                    CHAR_NAME_LEN);
+  copyUtf8WithLimit(pc.ptAct->freeName, sizeof(pc.ptAct->freeName), pc.freeName,
+                    CHAR_FREENAME_LEN);
   pc.ptAct->level = pc.level;
   pc.ptAct->hp = pc.hp;
   pc.ptAct->maxHp = pc.maxHp;
@@ -961,9 +959,9 @@ int setCharacterList(char *name, char *opt) {
 #endif
   memset(&chartable[index], 0, sizeof(CHARLISTTABLE));
 
-  if (strlen(name) <= CHAR_NAME_LEN) {
-    strcpy(chartable[index].name, name);
-  } else {
+  if (!copyUtf8WithLimit(chartable[index].name,
+                         sizeof(chartable[index].name), name,
+                         CHAR_NAME_LEN)) {
     strcpy(chartable[index].name, "???");
   }
   chartable[index].faceGraNo = getIntegerToken(opt, '|', 2);
@@ -1035,6 +1033,12 @@ BOOL TalkToNPC(void) {
   float tmpX, tmpY;
   int dir;
   static unsigned int talkSendTime = 0;
+  if (pc.ptAct == NULL) {
+    ClientRuntimeLog("action",
+                     "TalkToNPC skipped: pc.ptAct=NULL id=%d floor=%d pos=(%d,%d) target=(%d,%d)",
+                     pc.id, nowFloor, nowGx, nowGy, mouseMapGx, mouseMapGy);
+    return FALSE;
+  }
   if (windowTypeWN == WINDOW_MESSAGETYPE_ITEMSHOPMENU ||
       windowTypeWN == WINDOW_MESSAGETYPE_ITEMSHOPMAIN ||
       windowTypeWN == WINDOW_MESSAGETYPE_LIMITITEMSHOPMAIN)

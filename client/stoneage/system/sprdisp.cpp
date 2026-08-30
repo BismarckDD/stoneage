@@ -736,6 +736,9 @@ int StockDispBuffer2(int x, int y, UCHAR dispPrio, int bmpNo, BOOL hitFlag)
 
 // 储存所有要播放的Image，依Act的状况来设定
 void StockTaskDispBuffer(void) {
+  static bool grayLogged[BATTLKPKPLYAERNUM] = {false};
+  if (ProcNo != PROC_BATTLE)
+    memset(grayLogged, 0, sizeof(grayLogged));
   ACTION *pActLoop; /* ???????? */
   DISP_SORT *pDispSort = DispBuffer.DispSort + DispBuffer.DispCnt;
   DISP_INFO *pDispInfo = DispBuffer.DispInfo + DispBuffer.DispCnt;
@@ -824,6 +827,14 @@ void StockTaskDispBuffer(void) {
               (ATR_PLACE_NO(pActLoop) >= 2 * MAX_BATTLE_ROW_CHARS &&
                ATR_PLACE_NO(pActLoop) < 4 * MAX_BATTLE_ROW_CHARS)) {
             pDispInfo->DrawEffect = 5;
+            int place = ATR_PLACE_NO(pActLoop);
+            if (place >= 0 && place < BATTLKPKPLYAERNUM && !grayLogged[place]) {
+              ClientRuntimeLog("battle-gray",
+                               "place=%d level=%d actNo=%d bmpNo=%d status=%d",
+                               place, pActLoop->level, pActLoop->actNo,
+                               pActLoop->bmpNo, pActLoop->status);
+              grayLogged[place] = true;
+            }
           }
         }
       }

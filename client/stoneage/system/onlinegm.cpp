@@ -406,7 +406,7 @@ int SendProblemMsg(char pid[16], char ppw[16], char pdb[] , char pinput[])
                 *pOutTmp++  =  *pInTmp;
             else
             {
-                if(*pInTmp==0x20&&(!IsDBCSLeadByteEx(936, *pInTmp)))
+                if(*pInTmp==0x20)
                     *pOutTmp++  =  '+';
                 else
                 {
