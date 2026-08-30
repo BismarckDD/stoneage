@@ -367,21 +367,15 @@ void HpMeterDisp(int no) {
   }
 }
 
-// ?
-// ************************************************************************/
 void BattleNameDisp(void) {
 
   int i;
   int color = FONT_PAL_WHITE;
-  // ????????
   if (nameOverTheHeadFlag != TRUE)
     return;
-  // ?????????????
   for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-    // ??????????
     if (p_party[i]->func == NULL)
       continue;
-    // ??
     if (i == BattleMyNo || i == (BattleMyNo + 5))
       color = FONT_PAL_YELLOW;
     else
@@ -393,84 +387,6 @@ void BattleNameDisp(void) {
   }
 }
 
-/*
-void BattleButtonAttack( void )
-{
-    int i, j, bak;
-    if( HitDispNo == battleButtonDispNo[ 0 ] || battleButtonBak2 == 0 ){
-
-        if( mouse.onceState & MOUSE_LEFT_CRICK || battleButtonBak2 == 0 ){
-            bak = sBattleButtonFlag[ 0 ];
-            BattleButtonOff();
-
-            if( bak == FALSE ){
-
-                battleTargetSelectFlag = TRUE;
-
-                BattleCmdNo = BATTLE_ATTACK;
-
-                sBattleButtonFlag[ 0 ] = TRUE;
-
-                battleButtonBak = 0;
-
-                battleButtonBak2 = -1;
-                int hitBoxAll;
-                int k;
-                if( BattleBpFlag & BATTLE_BP_BOOMERANG ){
-
-                    hitBoxAll = ACT_ATR_HIT_BOX_ALL1;
-                    j = 0;
-
-                    for( i = 0 ; i < BATTLESIDENUM * 2 ; i++ ){
-
-                        if( !( j <= BattleMyNo && BattleMyNo < j + 5 ) ){
-
-                            for( k = j ; k < j + 5 ; k++ ){
-
-                                if( p_party[ k ]->func == NULL ) continue;
-
-                                if( p_party[ k ]->hp <= 0 ) continue;
-
-                                if( p_party[ k ]->atr & ACT_ATR_TRAVEL )
-continue;
-
-                                p_party[ k ]->atr |= hitBoxAll;
-                            }
-
-                            hitBoxAll <<= 1;
-                        }
-                        j += 5;
-                    }
-                    for( i = 0 ; i < BATTLESIDENUM * 2 ; i++ ){
-                        for(j = i * 5; j < (i + 1) * 5; j ++){
-                            if( p_party[ j ]->func == NULL ) continue;
-
-                            if( p_party[ j ]->hp <= 0 ) continue;
-
-                            if( p_party[ j ]->atr & ACT_ATR_TRAVEL ) continue;
-
-                            p_party[ j ]->atr |= (ACT_ATR_HIT_BOX_COL1 << i);
-                        }
-                    }
-                }else{
-
-                    for( i = 0 ; i < BATTLKPKPLYAERNUM ; i++ ){
-
-                        if( i == BattleMyNo ) continue;
-
-                        if( p_party[ i ]->func == NULL ) continue;
-
-                        if( p_party[ i ]->hp <= 0 ) continue;
-
-                        p_party[ i ]->atr |= ACT_ATR_HIT_BOX;
-                    }
-                }
-            }
-        }
-        strcpy( OneLineInfoStr,"攻击。");
-    }
-}
-*/
 void BattleButtonAttack(void) {
   int i, j, k, bak, hitBoxAll;
   if (HitDispNo == battleButtonDispNo[0] || battleButtonBak2 == 0) {
@@ -3054,24 +2970,16 @@ void BattleTargetSelect(void) {
         case PETSKILL_TARGER_DEATH:
 #endif
           sprintf_s(moji, "W|%X|%X", BattleWazaNo, targetNo);
-
           if (bNewServer)
             lssproto_B_send(sockfd, moji);
           else
             old_lssproto_B_send(sockfd, moji);
-
           play_se(217, 320, 240);
           break;
 
         case PETSKILL_TARGET_ALLMYSIDE:
-
-          if (BattleMyNo < 10)
-            no = 20;
-          else
-            no = 21;
-
+          no = (BattleMyNo < 10) ? 21 : 20;
           sprintf_s(moji, "W|%X|%X", BattleWazaNo, no);
-
           if (bNewServer)
             lssproto_B_send(sockfd, moji);
           else
@@ -3079,33 +2987,22 @@ void BattleTargetSelect(void) {
 
           play_se(217, 320, 240);
           break;
-
         case PETSKILL_TARGET_ALLOTHERSIDE:
-
-          if (BattleMyNo < 10)
-            no = 21;
-          else
-            no = 20;
-
+          no = (BattleMyNo < 10) ? 21 : 20;
           sprintf_s(moji, "W|%X|%X", BattleWazaNo, no);
-
           if (bNewServer)
             lssproto_B_send(sockfd, moji);
           else
             old_lssproto_B_send(sockfd, moji);
-
           play_se(217, 320, 240);
           break;
 
         case PETSKILL_TARGET_ALL:
-
           sprintf_s(moji, "W|%X|%X", BattleWazaNo, 22);
-
           if (bNewServer)
             lssproto_B_send(sockfd, moji);
           else
             old_lssproto_B_send(sockfd, moji);
-
           play_se(217, 320, 240);
           break;
 #ifdef _BATTLESKILL
@@ -3312,25 +3209,19 @@ void BattleCntDownDisp(void) {
         lssproto_B_send(sockfd, "N");
       else
         old_lssproto_B_send(sockfd, "N");
-      // ?????????????????
       if (battlePetNoBak == -1 || p_party[BattleMyNo + 5]->hp <= 0) {
-        // ??????
+        //
       } else {
-        // ??????????
         if (bNewServer)
           lssproto_B_send(sockfd, "W|FF|FF");
         else
           old_lssproto_B_send(sockfd, "W|FF|FF");
       }
     } else {
-      // ????????
       if ((battleMenuFlag & BATTLE_MENU && battleMenuReturn == TRUE) ||
           (battleMenuFlag & BATTLE_MENU_PET && battleMenuReturn == FALSE)) {
-        // ?????????????????
         if (battlePetNoBak == -1 || p_party[BattleMyNo + 5]->hp <= 0) {
-          // ??????
         } else {
-          // ??????????
           if (bNewServer)
             lssproto_B_send(sockfd, "W|FF|FF");
           else
@@ -3387,48 +3278,9 @@ void BattleCntDownDisp(void) {
   }
 }
 
-#ifdef PK_SYSTEM_TIMER_BY_ZHU
-void BattleDown(void) {
-  BattleCntDownFlag = FALSE;
-  ClearBoxFlag();
-  // ???????????
-  DeathAction(pActWnd);
-  // ????????????
-  pActWnd = NULL;
-  // ?????????
-  ClearBattleButton();
-  // ?????????????????
-  // ????????
-  if ((battleMenuFlag & BATTLE_MENU && battleMenuReturn == TRUE) ||
-      (battleMenuFlag & BATTLE_MENU_PET && battleMenuReturn == FALSE)) {
-    // ?????????????????
-    if (battlePetNoBak == -1 || p_party[BattleMyNo + 5]->hp <= 0) {
-      // ??????
-    } else {
-      // ??????????
-      if (bNewServer)
-        lssproto_B_send(sockfd, "W|FF|FF");
-      else
-        old_lssproto_B_send(sockfd, "W|FF|FF");
-    }
-  }
-  // ??????
-  battleTargetSelectFlag = FALSE;
-  battleMenuReturn = TRUE;
-  // ????????
-  play_se(203, 320, 240);
-  // ????????
-  battleButtonBak = battleButtonBak2;
-  // ???????????????
-  DeathAction(pActInfoWnd);
-  pActInfoWnd = NULL;
-}
-#endif
-
 // 修复战斗AI转换的BUG
 #ifdef _FIX_BATTLE_AI
 void battleMenuFix(void) {
-  // battlePetMenuFlag = FALSE;
   battleMenuFlag &= ~BATTLE_MENU_PET;
 }
 #endif
@@ -3436,16 +3288,12 @@ void battleMenuFix(void) {
 void BattleMenuProc(void) {
   char moji[256];
   int i;
-
   if (BattleMyNo >= BATTLKPKPLYAERNUM) {
-
     if (bNewServer)
       lssproto_B_send(sockfd, "N");
     else
       old_lssproto_B_send(sockfd, "N");
-
     InitBattleAnimFlag();
-
     SubProcNo++;
     return;
   }

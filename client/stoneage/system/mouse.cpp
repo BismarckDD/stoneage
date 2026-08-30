@@ -1,4 +1,8 @@
-﻿#include "systeminc/system.h"
+﻿#define __MOUSE_CPP__
+#include "systeminc/system.h"
+//
+#include "systeminc/mouse.h"
+//
 #include "game/anim_tbl.h"
 #include "game/battle_menu.h"
 #include "systeminc/ime_sa.h"
@@ -8,30 +12,17 @@
 #include "systeminc/menu.h"
 #include "systeminc/pc.h"
 
-// ???????刪叉???
 #define MOUSE_HIT_SIZE_X 48
 #define MOUSE_HIT_SIZE_Y 48
-// ??????????????
 #define MOUSE_AUTO_REPEATE_TIME 100
 
 // Robin
-MOUSE mouse;
-// ????????????????吻????????
-int HitFontNo;
-// ????????????牙吻???????
-int HitDispNo;
-// ??????更??
-char OneLineInfoStr[256];
-
-int oneLineInfoFlag = 1;
-// 牙?????
-int BoxColor;
 extern int transmigrationEffectFlag;
 
 // Init mouse icon related.
 void MouseInit(void) {
   memset(&mouse, 0, sizeof(MOUSE));
-  mouse.itemNo = -1; // ????吻????
+  mouse.itemNo = -1;
 }
 
 // ????????ㄅ????? //////////////////////////////////////////////
@@ -267,8 +258,6 @@ void CheckGroupSelect(int no) {
   }
 }
 
-#if 1
-// 牙????????????
 UCHAR BoxColorTbl[] = {
     // 255, 255, 255, 255, 255,
     // 8,8,8,8,8,
@@ -279,17 +268,7 @@ UCHAR BoxColorTbl[] = {
     // 250,250,250,250,250,
     // 8,8,8,8,8,
 };
-#else
-UCHAR BoxColorTbl[] = {
-    255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255, 255,
-    255, 255, 255, 255, 255, 255, 7,   7,   7,   7,   7,   7,   7,   7,
-    7,   7,   248, 248, 248, 248, 248, 248, 248, 248, 248, 248, 0,   0,
-    0,   0,   0,   0,   0,   0,   0,   0,   248, 248, 248, 248, 248, 248,
-    248, 248, 248, 248, 7,   7,   7,   7,   7,   7,   7,   7,   7,   7,
-};
-#endif
 
-/* ???????????刪叉 **************************************************/
 void HitMouseCursor(void) {
   int i;                              // ???????
   int strWidth;                       // 更???????
@@ -300,47 +279,27 @@ void HitMouseCursor(void) {
   DISP_SORT *pDispSort = DispBuffer.DispSort + DispBuffer.DispCnt - 1;
   DISP_INFO *pDispInfo;
 
-  // 牙?????阪?
-  if (!transmigrationEffectFlag)
-    oneLineInfoFlag = 1;
-  else
-    oneLineInfoFlag = 0;
-
   if (cnt >= sizeof(BoxColorTbl) - 1)
     cnt = 0;
   else
     cnt++;
-
-  // 牙?????　叉
   BoxColor = BoxColorTbl[cnt];
 #ifdef _ITEM_PATH
   ITEMPATHFLAG = FALSE;
 #endif
-  /* ????牙?????????????????????????可??*/
   for (i = 0; i < FontCnt; i++) {
-
-    // ???刪叉??????
     if (FontBuffer[i].hitFlag == 0)
       continue;
-
-    // 更???????????????
-
     strWidth = GetStrWidth(FontBuffer[i].str);
 
     // ?????刪叉
-    if (mouse.nowPoint.x <= FontBuffer[i].x + strWidth + 2 &&
-        FontBuffer[i].x - 2 <= mouse.nowPoint.x &&
-
-        mouse.nowPoint.y <= FontBuffer[i].y + FONT_SIZE + 2 &&
-
-        FontBuffer[i].y - 2 <= mouse.nowPoint.y) {
-
-      // ???????吻?????
+    if ((mouse.nowPoint.x <= FontBuffer[i].x + strWidth + 2) &&
+        (mouse.nowPoint.x >= FontBuffer[i].x - 2) &&
+        (mouse.nowPoint.y <= FontBuffer[i].y + FONT_SIZE + 2) &&
+        (mouse.nowPoint.y >= FontBuffer[i].y - 2))
+    {
       HitFontNo = i;
-
-      // ?????牙???
       if (FontBuffer[i].hitFlag == 2) {
-        // ????牙????????????
         StockBoxDispBuffer(FontBuffer[i].x - 3,
 #ifdef _NEWFONT_
                            FontBuffer[i].y - 2,
@@ -359,35 +318,20 @@ void HitMouseCursor(void) {
         SortDispBuffer();
       }
       HitDispNo = -1;
-      // ??????
       mouse.level = DISP_PRIO_MENU;
-      // ?????????
-      if (TaskBarFlag == FALSE && oneLineInfoFlag) {
+      if (TaskBarFlag == FALSE && !transmigrationEffectFlag) {
         ShowBottomLineString(itemNameColor, OneLineInfoStr);
-        // the third StockFontBuffer( 8, 460, FONT_PRIO_FRONT, itemNameColor,
-        // OneLineInfoStr, 0 );
       }
-      // 更?????
-      OneLineInfoStr[0] = NULL;
-      return; // ??????????????刪叉????
+      OneLineInfoStr[0] = '\0';
+      return; //
     }
   }
-  // ???????吻???????
   HitFontNo = -1;
 
-  /* ???牙?????????牙??！????????? */
   for (i = DispBuffer.DispCnt - 1; i >= 0; i--, pDispSort--) {
-    // 牙????向????????????
     pDispInfo = DispBuffer.DispInfo + pDispSort->no;
-
-    // ???刪叉??????
     if (pDispInfo->hitFlag == 0)
       continue;
-
-    // ????????????㎝
-    // if( SpriteInfo[ pDispInfo->bmpNo ].lpSurfaceInfo == NULL ) continue;
-    // ?????????????????????????
-    // ?????????
     if (LoadBmp(pDispInfo->bmpNo) == FALSE)
       continue;
 
@@ -542,20 +486,19 @@ void HitMouseCursor(void) {
                 DISP_PRIO_BOX, BoxColor, 0);
 #endif
           }
-
-        // ????︻??????佃?︻??
         if (pDispInfo->hitFlag >= 3)
           CheckGroupSelect(pDispInfo->hitFlag);
         SortDispBuffer(); // 牙???????
       }
 
-      // ?????????
+      // 2026.08.30: 主角的 OneLineStr 总是
+      // 自己：【家族】，名称，称号，等级，生命值，气力，【坐骑名称】，【坐骑等级】
+      // 其他：【家族】，名称，称号，【坐骑名称】，【坐骑等级】
       if (TaskBarFlag == FALSE) {
-        // ?????????????
         if (pDispInfo->pAct != NULL) {
-          // ??????牙????
           if (pDispInfo->pAct->atr & ACT_ATR_INFO) {
             if (ProcNo == PROC_GAME) {
+              // 2026.08.30: 设置在平时场景下的OneLineInfoStr.
 #ifdef _MOUSE_SHOW_INFO_FOR_HEAD
               int left = GetStrWidth(pDispInfo->pAct->name) / 2;
               itemNameColor = pDispInfo->pAct->itemNameColor;
@@ -564,477 +507,260 @@ void HitMouseCursor(void) {
                               pDispInfo->pAct->name, 0);
 #endif
 
-              // 更???
-              // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d  騵ㄩ%4d/%4d",
-              // pDispInfo->pAct->name, pDispInfo->pAct->level,
-              // pDispInfo->pAct->hp, pDispInfo->pAct->maxHp );
-              // ??????牙????
-              // ???????
               if (pDispInfo->pAct->atr & ACT_ATR_TYPE_PC) {
-                // ?〈?　叉
                 itemNameColor = pDispInfo->pAct->itemNameColor;
-                // ????
                 if (pDispInfo->pAct->freeName[0] != NULL) {
-                  // shan add
-                  // sprintf_s( OneLineInfoStr,"%s [%s] Lvㄩ%d  騵ㄩ%dㄞ%d
-                  // ㄩ%d", pDispInfo->pAct->name, pDispInfo->pAct->freeName,
-                  // pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                  // pDispInfo->pAct->maxHp, pc.mp );
                   if (pDispInfo->pAct->petName[0] != NULL)
                     if (pc.familyName[0] != NULL)
-                      sprintf_s(
-                          OneLineInfoStr,
-                          "{%s} %s [%s] Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d   %s  "
-                          "Lvㄩ%d",
+                      sprintf_s(OneLineInfoStr,
+                          "{%s} %s [%s] Lv:%d HP:%d/%d MP:%d,  %s Lv:%d",
                           pc.familyName, pDispInfo->pAct->name,
                           pDispInfo->pAct->freeName, pDispInfo->pAct->level,
                           pDispInfo->pAct->hp, pDispInfo->pAct->maxHp, pc.mp,
                           pDispInfo->pAct->petName, pDispInfo->pAct->petLevel);
-                    else
-                      sprintf_s(
-                          OneLineInfoStr,
-                          "%s  [%s]  Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d   %s  "
-                          "Lvㄩ%d",
-                          pDispInfo->pAct->name, pDispInfo->pAct->freeName,
-                          pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                          pDispInfo->pAct->maxHp, pc.mp,
-                          pDispInfo->pAct->petName, pDispInfo->pAct->petLevel);
+                    else // 没有家族称谓
+                      sprintf_s(OneLineInfoStr,
+                        "%s [%s] Lv:%d HP:%d/%d MP:%d,  %s Lv:%d",
+                        pDispInfo->pAct->name, pDispInfo->pAct->freeName,
+                        pDispInfo->pAct->level, pDispInfo->pAct->hp,
+                        pDispInfo->pAct->maxHp, pc.mp,
+                        pDispInfo->pAct->petName, pDispInfo->pAct->petLevel);
                   else if (pc.familyName[0] != NULL)
                     sprintf_s(OneLineInfoStr,
-                              "{%s} %s [%s] Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d",
-                              pc.familyName, pDispInfo->pAct->name,
-                              pDispInfo->pAct->freeName, pDispInfo->pAct->level,
-                              pDispInfo->pAct->hp, pDispInfo->pAct->maxHp,
-                              pc.mp);
+                      "{%s} %s [%s] Lv:%d HP:%d/%d MP:%d",
+                      pc.familyName, pDispInfo->pAct->name,
+                      pDispInfo->pAct->freeName, pDispInfo->pAct->level,
+                      pDispInfo->pAct->hp, pDispInfo->pAct->maxHp, pc.mp);
                   else
-                    sprintf_s(OneLineInfoStr,
-                              "%s  [%s]  Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d",
-                              pDispInfo->pAct->name, pDispInfo->pAct->freeName,
-                              pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                              pDispInfo->pAct->maxHp, pc.mp);
+                    sprintf_s(OneLineInfoStr, "%s [%s] Lv:%d HP:%d/%d MP:%d",
+                      pDispInfo->pAct->name, pDispInfo->pAct->freeName,
+                      pDispInfo->pAct->level, pDispInfo->pAct->hp,
+                      pDispInfo->pAct->maxHp, pc.mp);
                 } else {
-                  // shan add
-                  // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d  騵ㄩ%dㄞ%d
-                  // ㄩ%d", pDispInfo->pAct->name, pDispInfo->pAct->level,
-                  // pDispInfo->pAct->hp, pDispInfo->pAct->maxHp, pc.mp );
                   if (pDispInfo->pAct->petName[0] != NULL)
                     if (pc.familyName[0] != NULL)
                       sprintf_s(OneLineInfoStr,
-                                "{%s} %s Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d   %s  "
-                                "Lvㄩ%d",
-                                pc.familyName, pDispInfo->pAct->name,
-                                pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                                pDispInfo->pAct->maxHp, pc.mp,
-                                pDispInfo->pAct->petName,
-                                pDispInfo->pAct->petLevel);
+                          "{%s} %s Lv:%d HP:%d/%d MP:%d, %s Lv:%d",
+                          pc.familyName, pDispInfo->pAct->name,
+                          pDispInfo->pAct->level, pDispInfo->pAct->hp,
+                          pDispInfo->pAct->maxHp, pc.mp,
+                          pDispInfo->pAct->petName,
+                          pDispInfo->pAct->petLevel);
                     else
-                      sprintf_s(
-                          OneLineInfoStr,
-                          "%s  Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d   %s  Lvㄩ%d",
+                      sprintf_s(OneLineInfoStr,
+                          "%s Lv:%d HP:%d/%d MP:%d,  %s Lv:%d",
                           pDispInfo->pAct->name, pDispInfo->pAct->level,
                           pDispInfo->pAct->hp, pDispInfo->pAct->maxHp, pc.mp,
                           pDispInfo->pAct->petName, pDispInfo->pAct->petLevel);
                   else if (pc.familyName[0] != NULL)
-                    sprintf_s(OneLineInfoStr,
-                              "{%s} %s Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d",
-                              pc.familyName, pDispInfo->pAct->name,
-                              pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                              pDispInfo->pAct->maxHp, pc.mp);
+                    sprintf_s(OneLineInfoStr, "{%s} %s Lv:%d HP%d/%d MP:%d",
+                        pc.familyName, pDispInfo->pAct->name,
+                        pDispInfo->pAct->level, pDispInfo->pAct->hp,
+                        pDispInfo->pAct->maxHp, pc.mp);
                   else
-                    sprintf_s(
-                        OneLineInfoStr, "%s  Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d",
+                    sprintf_s(OneLineInfoStr, "%s Lv:%d HP:%d/%d MP:%d",
                         pDispInfo->pAct->name, pDispInfo->pAct->level,
-                        pDispInfo->pAct->hp, pDispInfo->pAct->maxHp, pc.mp);
+                        pDispInfo->pAct->hp, pDispInfo->pAct->maxHp,
+                        pc.mp);
                 }
-              } else
-                // 兝????????
-                if (pDispInfo->pAct->atr & ACT_ATR_TYPE_OTHER_PC) {
+              } else if (pDispInfo->pAct->atr & ACT_ATR_TYPE_OTHER_PC) {
+                // 2026.08.30: OTHER_PC 就是 其他玩家，看不到具体的生命
 #ifdef _MOUSE_DBL_CLICK
-                  if (mouseDblRightOn) {
-                    openServerWindow(WINDOW_MESSAGETYPE_MOUSEGETNAME, 0, 0, 0,
-                                     pDispInfo->pAct->name);
-                    return;
-                  }
+                if (mouseDblRightOn) {
+                  openServerWindow(WINDOW_MESSAGETYPE_MOUSEGETNAME, 0, 0, 0,
+                                   pDispInfo->pAct->name);
+                  return;
+                }
 #endif
-                  // ?〈?　叉
-                  itemNameColor = pDispInfo->pAct->itemNameColor;
-                  // ????
-                  if (pDispInfo->pAct->freeName[0] != NULL) {
-                    // shan add
-                    // sprintf_s( OneLineInfoStr,"%s [%s]  Lvㄩ%d",
-                    // pDispInfo->pAct->name, pDispInfo->pAct->freeName,
-                    // pDispInfo->pAct->level );
-                    if (pDispInfo->pAct->petName[0] != NULL)
-                      if (pDispInfo->pAct->fmname[0] != NULL)
-                        sprintf_s(
-                            OneLineInfoStr, "{%s} %s [%s]  Lvㄩ%d   %s  Lvㄩ%d",
-                            pDispInfo->pAct->fmname, pDispInfo->pAct->name,
-                            pDispInfo->pAct->freeName, pDispInfo->pAct->level,
-                            pDispInfo->pAct->petName,
-                            pDispInfo->pAct->petLevel);
-                      else
-                        sprintf_s(
-                            OneLineInfoStr, "%s  [%s]  Lvㄩ%d   %s  Lvㄩ%d",
-                            pDispInfo->pAct->name, pDispInfo->pAct->freeName,
-                            pDispInfo->pAct->level, pDispInfo->pAct->petName,
-                            pDispInfo->pAct->petLevel);
-                    else if (pDispInfo->pAct->fmname[0] != NULL)
-                      sprintf_s(OneLineInfoStr, "{%s} %s [%s]  Lvㄩ%d",
-                                pDispInfo->pAct->fmname, pDispInfo->pAct->name,
-                                pDispInfo->pAct->freeName,
-                                pDispInfo->pAct->level);
+                itemNameColor = pDispInfo->pAct->itemNameColor;
+                if (pDispInfo->pAct->freeName[0] != NULL) {
+                  if (pDispInfo->pAct->petName[0] != NULL)
+                    if (pDispInfo->pAct->fmname[0] != NULL)
+                      sprintf_s(OneLineInfoStr, "{%s} %s [%s] Lv:%d,  %s Lv:%d",
+                          pDispInfo->pAct->fmname, pDispInfo->pAct->name,
+                          pDispInfo->pAct->freeName, pDispInfo->pAct->level,
+                          pDispInfo->pAct->petName, pDispInfo->pAct->petLevel);
                     else
-                      sprintf_s(OneLineInfoStr, "%s  [%s]  Lvㄩ%d",
-                                pDispInfo->pAct->name,
-                                pDispInfo->pAct->freeName,
-                                pDispInfo->pAct->level);
-                  } else {
-                    // shan add
-                    // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d",
-                    // pDispInfo->pAct->name, pDispInfo->pAct->level );
-                    if (pDispInfo->pAct->petName[0] != NULL)
-                      if (pDispInfo->pAct->fmname[0] != NULL)
-                        sprintf_s(OneLineInfoStr, "{%s} %s Lvㄩ%d  %s Lvㄩ%d",
-                                  pDispInfo->pAct->fmname,
-                                  pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                  pDispInfo->pAct->petName,
-                                  pDispInfo->pAct->petLevel);
-                      else
-                        sprintf_s(OneLineInfoStr, "%s  Lvㄩ%d   %s  Lvㄩ%d",
-                                  pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                  pDispInfo->pAct->petName,
-                                  pDispInfo->pAct->petLevel);
-                    else if (pDispInfo->pAct->fmname[0] != NULL)
-                      sprintf_s(OneLineInfoStr, "{%s} %s  Lvㄩ%d",
-                                pDispInfo->pAct->fmname, pDispInfo->pAct->name,
-                                pDispInfo->pAct->level);
+                      sprintf_s(OneLineInfoStr, "%s [%s] Lv:%d,  %s Lv:%d",
+                          pDispInfo->pAct->name, pDispInfo->pAct->freeName,
+                          pDispInfo->pAct->level, pDispInfo->pAct->petName,
+                          pDispInfo->pAct->petLevel);
+                  else if (pDispInfo->pAct->fmname[0] != NULL)
+                    sprintf_s(OneLineInfoStr, "{%s} %s [%s]  Lv:%d",
+                        pDispInfo->pAct->fmname, pDispInfo->pAct->name,
+                        pDispInfo->pAct->freeName,
+                        pDispInfo->pAct->level);
+                  else
+                    sprintf_s(OneLineInfoStr, "%s [%s] Lv:%d",
+                        pDispInfo->pAct->name, pDispInfo->pAct->freeName,
+                        pDispInfo->pAct->level);
+                } else {
+                  if (pDispInfo->pAct->petName[0] != NULL)
+                    if (pDispInfo->pAct->fmname[0] != NULL)
+                      sprintf_s(OneLineInfoStr, "{%s} %s Lv:%d,  %s Lv:%d",
+                          pDispInfo->pAct->fmname, pDispInfo->pAct->name,
+                          pDispInfo->pAct->level,
+                          pDispInfo->pAct->petName,
+                          pDispInfo->pAct->petLevel);
                     else
-                      sprintf_s(OneLineInfoStr, "%s  Lvㄩ%d",
-                                pDispInfo->pAct->name, pDispInfo->pAct->level);
-                  }
-                } else
-                  // ?????
-                  if (pDispInfo->pAct->atr & ACT_ATR_TYPE_PET) {
-                    // ????
-                    if (pDispInfo->pAct->freeName[0] != NULL) {
-                      sprintf_s(OneLineInfoStr, "%s  Lvㄩ%d",
-                                pDispInfo->pAct->freeName,
-                                pDispInfo->pAct->level);
-                    } else {
-                      sprintf_s(OneLineInfoStr, "%s  Lvㄩ%d",
-                                pDispInfo->pAct->name, pDispInfo->pAct->level);
-                    }
-                  } else
-                    // ??????
-                    if (pDispInfo->pAct->atr & ACT_ATR_TYPE_ITEM) {
-                      // ?〈?　叉
-                      itemNameColor = pDispInfo->pAct->itemNameColor;
-                      sprintf_s(OneLineInfoStr, "%s", pDispInfo->pAct->name);
+                      sprintf_s(OneLineInfoStr, "%s Lv:%d,  %s Lv:%d",
+                          pDispInfo->pAct->name, pDispInfo->pAct->level,
+                          pDispInfo->pAct->petName,
+                          pDispInfo->pAct->petLevel);
+                  else if (pDispInfo->pAct->fmname[0] != NULL)
+                    sprintf_s(OneLineInfoStr, "{%s} %s Lv:%d",
+                        pDispInfo->pAct->fmname, pDispInfo->pAct->name,
+                        pDispInfo->pAct->level);
+                  else
+                    sprintf_s(OneLineInfoStr, "%s Lv:%d", pDispInfo->pAct->name,
+                        pDispInfo->pAct->level);
+                }
+              } else if (pDispInfo->pAct->atr & ACT_ATR_TYPE_PET) {
+                if (pDispInfo->pAct->freeName[0] != NULL) {
+                  sprintf_s(OneLineInfoStr, "%s Lv:%d",
+                      pDispInfo->pAct->freeName, pDispInfo->pAct->level);
+                } else {
+                  sprintf_s(OneLineInfoStr, "%s Lv:%d", pDispInfo->pAct->name,
+                      pDispInfo->pAct->level);
+                }
+              } else if (pDispInfo->pAct->atr & ACT_ATR_TYPE_ITEM) {
+                itemNameColor = pDispInfo->pAct->itemNameColor;
+                sprintf_s(OneLineInfoStr, "%s", pDispInfo->pAct->name);
 #ifdef _ITEM_PATH
-                      ITEMPATHFLAG = TRUE;
+                ITEMPATHFLAG = TRUE;
 #endif
-                    } else
-                      // ????
-                      if (pDispInfo->pAct->atr & ACT_ATR_TYPE_GOLD) {
-                        sprintf_s(OneLineInfoStr, "%s", pDispInfo->pAct->name);
-                      } else
-                        // ??兝?????????即?
-                        if (pDispInfo->pAct->atr & ACT_ATR_TYPE_OTHER) {
-                          sprintf_s(OneLineInfoStr, "%s",
-                                    pDispInfo->pAct->name);
-                        }
-            } else
-              // ·卯??
-              if (ProcNo == PROC_BATTLE) {
-                // ?????
-                if (pDispInfo->pAct->atr & ACT_ATR_TYPE_PET) {
-                  // ????
+              } else if (pDispInfo->pAct->atr & ACT_ATR_TYPE_GOLD) {
+                sprintf_s(OneLineInfoStr, "%s", pDispInfo->pAct->name);
+              } else if (pDispInfo->pAct->atr & ACT_ATR_TYPE_OTHER) {
+                sprintf_s(OneLineInfoStr, "%s", pDispInfo->pAct->name);
+              }
+            } else if (ProcNo == PROC_BATTLE) {
+              // 2026.08.30: 战斗场景下
+              if (pDispInfo->pAct->atr & ACT_ATR_TYPE_PET) {
+                if (pDispInfo->pAct->freeName[0] != NULL) {
+                  sprintf_s(OneLineInfoStr, "%s Lv:%d",
+                            pDispInfo->pAct->freeName, pDispInfo->pAct->level);
+                } else {
+                  sprintf_s(OneLineInfoStr, "%s Lv:%d", pDispInfo->pAct->name,
+                            pDispInfo->pAct->level);
+                }
+              } else if (pDispInfo->pAct->atr & ACT_ATR_TYPE_ITEM) {
+                sprintf_s(OneLineInfoStr, "%s", pDispInfo->pAct->name);
+              } else if (BattleMyNo < BATTLKPKPLYAERNUM) {
+                if (((ATR_EQU *)pDispInfo->pAct->pYobi)->place_no ==
+                    BattleMyNo) {
                   if (pDispInfo->pAct->freeName[0] != NULL) {
-                    sprintf_s(OneLineInfoStr, "%s  Lvㄩ%d",
-                              pDispInfo->pAct->freeName,
-                              pDispInfo->pAct->level);
-                  } else {
-                    sprintf_s(OneLineInfoStr, "%s  Lvㄩ%d",
-                              pDispInfo->pAct->name, pDispInfo->pAct->level);
-                  }
-                } else
-                  // ??????
-                  if (pDispInfo->pAct->atr & ACT_ATR_TYPE_ITEM) {
-                    // ?〈?　叉
-                    // itemNameColor = pDispInfo->pAct->itemNameColor;
-                    sprintf_s(OneLineInfoStr, "%s", pDispInfo->pAct->name);
-                  } else
-                    // ?·?????????
-                    if (BattleMyNo < BATTLKPKPLYAERNUM) {
-                      // 希???????牙
-                      if (((ATR_EQU *)pDispInfo->pAct->pYobi)->place_no ==
-                          BattleMyNo) {
-                        // ????
-                        if (pDispInfo->pAct->freeName[0] != NULL) {
-                          // Robin 0728 ride Pet
-                          if (pDispInfo->pAct->onRide == 1)
-                            sprintf_s(
-                                OneLineInfoStr,
-                                "%s [%s] Lvㄩ%d 騵ㄩ%dㄞ%d ㄩ%d  %s Lvㄩ%d "
-                                "騵ㄩ%dㄞ%d",
-                                pDispInfo->pAct->name,
-                                pDispInfo->pAct->freeName,
-                                pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                                pDispInfo->pAct->maxHp, pDispInfo->pAct->mp,
-                                pDispInfo->pAct->petName,
-                                pDispInfo->pAct->petLevel,
-                                pDispInfo->pAct->petHp,
-                                pDispInfo->pAct->petMaxHp);
-                          else
-                            sprintf_s(
-                                OneLineInfoStr,
-                                "%s [%s]  Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d",
+                    // Robin 0728 ride Pet
+                    if (pDispInfo->pAct->onRide == 1)
+                      sprintf_s(OneLineInfoStr,
+                          "%s [%s] Lv:%d HP:%d/%d MP:%d,  %s Lv:%d HP:%d/%d",
+                          pDispInfo->pAct->name, pDispInfo->pAct->freeName,
+                          pDispInfo->pAct->level, pDispInfo->pAct->hp,
+                          pDispInfo->pAct->maxHp, pDispInfo->pAct->mp,
+                          pDispInfo->pAct->petName, pDispInfo->pAct->petLevel,
+                          pDispInfo->pAct->petHp, pDispInfo->pAct->petMaxHp);
+                    else
+                      sprintf_s(OneLineInfoStr, "%s [%s] Lv:%d HP:%d/%d MP:%d",
                                 pDispInfo->pAct->name,
                                 pDispInfo->pAct->freeName,
                                 pDispInfo->pAct->level, pDispInfo->pAct->hp,
                                 pDispInfo->pAct->maxHp, pDispInfo->pAct->mp);
-                        } else {
-                          // shan add
-                          // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d  騵ㄩ%dㄞ%d
-                          // ㄩ%d", pDispInfo->pAct->name,
-                          // pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                          // pDispInfo->pAct->maxHp, BattleMyMp ); sprintf_s(
-                          // OneLineInfoStr,"%s  Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d",
-                          // pDispInfo->pAct->name, pDispInfo->pAct->level,
-                          // pDispInfo->pAct->hp, pDispInfo->pAct->maxHp,
-                          // pDispInfo->pAct->mp );
-                          // Robin 0728
-                          if (pDispInfo->pAct->onRide == 1)
-                            sprintf_s(
-                                OneLineInfoStr,
-                                "%s  Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d   %s  Lvㄩ%d  "
-                                "騵ㄩ%dㄞ%d",
+                  } else {
+                    if (pDispInfo->pAct->onRide == 1)
+                      sprintf_s(OneLineInfoStr,
+                          "%s Lv/%d HP:%d/%d MP:%d,  %s Lv:%d HP:%d/%d",
+                          pDispInfo->pAct->name, pDispInfo->pAct->level,
+                          pDispInfo->pAct->hp, pDispInfo->pAct->maxHp,
+                          pDispInfo->pAct->mp, pDispInfo->pAct->petName,
+                          pDispInfo->pAct->petLevel,
+                          pDispInfo->pAct->petHp,
+                          pDispInfo->pAct->petMaxHp);
+                    else
+                      sprintf_s(OneLineInfoStr, "%s Lv:%d HP:%d/%d MP:%d",
+                          pDispInfo->pAct->name, pDispInfo->pAct->level,
+                          pDispInfo->pAct->hp, pDispInfo->pAct->maxHp,
+                          pDispInfo->pAct->mp);
+                  }
+                } else if (((ATR_EQU *)p_party[BattleMyNo]->pYobi)->group_flg ==
+                           ((ATR_EQU *)pDispInfo->pAct->pYobi)->group_flg) {
+                  if (pDispInfo->pAct->freeName[0] != NULL) {
+                    // Robin 0728
+                    if (pDispInfo->pAct->onRide == 1)
+                      sprintf_s(OneLineInfoStr,
+                          "%s [%s] Lv:%d HP:%d/%d,  %s Lv:%d HP:%d/%d",
+                          pDispInfo->pAct->name, pDispInfo->pAct->freeName,
+                          pDispInfo->pAct->level, pDispInfo->pAct->hp,
+                          pDispInfo->pAct->maxHp, pDispInfo->pAct->petName,
+                          pDispInfo->pAct->petLevel, pDispInfo->pAct->petHp,
+                          pDispInfo->pAct->petMaxHp);
+                    else
+                      sprintf_s(OneLineInfoStr, "%s [%s] Lv:%d HP:%d/%d",
+                          pDispInfo->pAct->name,
+                          pDispInfo->pAct->freeName,
+                          pDispInfo->pAct->level, pDispInfo->pAct->hp,
+                          pDispInfo->pAct->maxHp);
+                  } else {
+                    if (pDispInfo->pAct->onRide == 1)
+                      sprintf_s(OneLineInfoStr,
+                          "%s Lv:%d HP:%d/%d,  %s Lv:%d HP:%d/%d",
+                          pDispInfo->pAct->name, pDispInfo->pAct->level,
+                          pDispInfo->pAct->hp, pDispInfo->pAct->maxHp,
+                          pDispInfo->pAct->petName, pDispInfo->pAct->petLevel,
+                          pDispInfo->pAct->petHp, pDispInfo->pAct->petMaxHp);
+                    else
+                      sprintf_s(OneLineInfoStr, "%s Lv:%d HP:%d/%d",
+                          pDispInfo->pAct->name, pDispInfo->pAct->level,
+                          pDispInfo->pAct->hp, pDispInfo->pAct->maxHp);
+                  }
+                } else {
+                  if (pDispInfo->pAct->freeName[0] != NULL) {
+                    if (pDispInfo->pAct->onRide == 1)
+                      sprintf_s(OneLineInfoStr, "%s [%s] Lv:%d,  %s Lv:%d",
+                          pDispInfo->pAct->name, pDispInfo->pAct->freeName,
+                          pDispInfo->pAct->level, pDispInfo->pAct->petName,
+                          pDispInfo->pAct->petLevel);
+                    else
+                      sprintf_s(OneLineInfoStr, "%s [%s] Lv:%d",
+                                pDispInfo->pAct->name,
+                                pDispInfo->pAct->freeName,
+                                pDispInfo->pAct->level);
+                  } else {
+                    if (pDispInfo->pAct->onRide == 1)
+                      sprintf_s(OneLineInfoStr, "%s Lv:%d,  %s Lv:%d",
                                 pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                pDispInfo->pAct->hp, pDispInfo->pAct->maxHp,
-                                pDispInfo->pAct->mp, pDispInfo->pAct->petName,
-                                pDispInfo->pAct->petLevel,
-                                pDispInfo->pAct->petHp,
-                                pDispInfo->pAct->petMaxHp);
-                          else
-                            sprintf_s(
-                                OneLineInfoStr,
-                                "%s  Lvㄩ%d  騵ㄩ%dㄞ%d  ㄩ%d",
-                                pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                pDispInfo->pAct->hp, pDispInfo->pAct->maxHp,
-                                pDispInfo->pAct->mp);
-                        }
-                      } else
-                        // ?????牙
-                        if (((ATR_EQU *)p_party[BattleMyNo]->pYobi)
-                                ->group_flg ==
-                            ((ATR_EQU *)pDispInfo->pAct->pYobi)->group_flg) {
-                          // 更???
-                          // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d 騵ㄩ%4d/%4d",
-                          // pDispInfo->pAct->name, pDispInfo->pAct->level,
-                          // pDispInfo->pAct->hp, pDispInfo->pAct->maxHp );
-                          // ????
-                          if (pDispInfo->pAct->freeName[0] != NULL) {
-                            // shan add
-                            // sprintf_s( OneLineInfoStr,"%s [%s]  Lvㄩ%d
-                            // 騵ㄩ%dㄞ%d", pDispInfo->pAct->name,
-                            // pDispInfo->pAct->freeName,
-                            // pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                            // pDispInfo->pAct->maxHp );
-                            // Robin 0728
-                            if (pDispInfo->pAct->onRide == 1)
-                              sprintf_s(OneLineInfoStr,
-                                        "%s [%s]  Lvㄩ%d  騵ㄩ%dㄞ%d   %s "
-                                        "Lvㄩ%d  騵ㄩ%dㄞ%d",
-                                        pDispInfo->pAct->name,
-                                        pDispInfo->pAct->freeName,
-                                        pDispInfo->pAct->level,
-                                        pDispInfo->pAct->hp,
-                                        pDispInfo->pAct->maxHp,
-                                        pDispInfo->pAct->petName,
-                                        pDispInfo->pAct->petLevel,
-                                        pDispInfo->pAct->petHp,
-                                        pDispInfo->pAct->petMaxHp);
-                            else
-                              sprintf_s(
-                                  OneLineInfoStr, "%s [%s]  Lvㄩ%d  騵ㄩ%dㄞ%d",
-                                  pDispInfo->pAct->name,
-                                  pDispInfo->pAct->freeName,
-                                  pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                                  pDispInfo->pAct->maxHp);
-                          } else {
-                            // shan add
-                            // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d
-                            // 騵ㄩ%dㄞ%d", pDispInfo->pAct->name,
-                            // pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                            // pDispInfo->pAct->maxHp );
-                            // Robin 0728
-                            if (pDispInfo->pAct->onRide == 1)
-                              sprintf_s(
-                                  OneLineInfoStr,
-                                  "%s  Lvㄩ%d  騵ㄩ%dㄞ%d   %s Lvㄩ%d "
-                                  "騵ㄩ%dㄞ%d",
-                                  pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                  pDispInfo->pAct->hp, pDispInfo->pAct->maxHp,
-                                  pDispInfo->pAct->petName,
-                                  pDispInfo->pAct->petLevel,
-                                  pDispInfo->pAct->petHp,
-                                  pDispInfo->pAct->petMaxHp);
-                            else
-                              sprintf_s(
-                                  OneLineInfoStr, "%s  Lvㄩ%d  騵ㄩ%dㄞ%d",
-                                  pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                  pDispInfo->pAct->hp, pDispInfo->pAct->maxHp);
-                          }
-                        } else { // ????
-                          // ????
-                          if (pDispInfo->pAct->freeName[0] != NULL) {
-                            // shan add
-                            // sprintf_s( OneLineInfoStr,"%s [%s]  Lvㄩ%d",
-                            // pDispInfo->pAct->name, pDispInfo->pAct->freeName,
-                            // pDispInfo->pAct->level );
-                            // Robin
-                            if (pDispInfo->pAct->onRide == 1)
-#ifdef _STONDEBUG_
-                              sprintf_s(
-                                  OneLineInfoStr,
-                                  "%s [%s]  Lvㄩ%d 騵ㄩ%d   %s  Lvㄩ%d 騵ㄩ%d",
-                                  pDispInfo->pAct->name,
-                                  pDispInfo->pAct->freeName,
-                                  pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                                  pDispInfo->pAct->petName,
-                                  pDispInfo->pAct->petLevel,
-                                  pDispInfo->pAct->petHp);
-#else
-                              sprintf_s(OneLineInfoStr,
-                                        "%s [%s]  Lvㄩ%d   %s  Lvㄩ%d",
-                                        pDispInfo->pAct->name,
-                                        pDispInfo->pAct->freeName,
-                                        pDispInfo->pAct->level,
-                                        pDispInfo->pAct->petName,
-                                        pDispInfo->pAct->petLevel);
-#endif
-                            else
-#ifdef _STONDEBUG_
-                              sprintf_s(
-                                  OneLineInfoStr, "%s [%s]  Lvㄩ%d  騵ㄩ%dㄞ%d",
-                                  pDispInfo->pAct->name,
-                                  pDispInfo->pAct->freeName,
-                                  pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                                  pDispInfo->pAct->maxHp);
-#else
-                              sprintf_s(OneLineInfoStr, "%s [%s]  Lvㄩ%d",
-                                        pDispInfo->pAct->name,
-                                        pDispInfo->pAct->freeName,
-                                        pDispInfo->pAct->level);
-#endif
-                          } else {
-                            // shan add
-                            // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d",
-                            // pDispInfo->pAct->name, pDispInfo->pAct->level );
-                            // Robin
-                            if (pDispInfo->pAct->onRide == 1)
-#ifdef _STONDEBUG_
-                              sprintf_s(
-                                  OneLineInfoStr,
-                                  "%s  Lvㄩ%d 騵ㄩ%d  %s  Lvㄩ%d 騵ㄩ%d",
-                                  pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                  pDispInfo->pAct->hp, pDispInfo->pAct->petName,
-                                  pDispInfo->pAct->petLevel,
-                                  pDispInfo->pAct->petHp);
-#else
-                              sprintf_s(
-                                  OneLineInfoStr, "%s  Lvㄩ%d   %s  Lvㄩ%d",
-                                  pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                  pDispInfo->pAct->petName,
-                                  pDispInfo->pAct->petLevel);
-#endif
-                            else
-#ifdef _STONDEBUG_
-                              sprintf_s(
-                                  OneLineInfoStr, "%s  Lvㄩ%d  騵ㄩ%dㄞ%d",
-                                  pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                  pDispInfo->pAct->hp, pDispInfo->pAct->maxHp);
-#else
-                              sprintf_s(OneLineInfoStr, "%s  Lvㄩ%d",
-                                        pDispInfo->pAct->name,
-                                        pDispInfo->pAct->level);
-#endif
-                          }
-                        }
-                    } else { // ?·?????
-#ifdef _STONDEBUG_
-                      // ????
-                      if (pDispInfo->pAct->freeName[0] != NULL) {
-                        // shan add
-                        // sprintf_s( OneLineInfoStr,"%s [%s]  Lvㄩ%d
-                        // 騵ㄩ%dㄞ%d", pDispInfo->pAct->name,
-                        // pDispInfo->pAct->freeName, pDispInfo->pAct->level,
-                        // pDispInfo->pAct->hp, pDispInfo->pAct->maxHp );
-                        sprintf_s(OneLineInfoStr, "%s [%s]  Lvㄩ%d  騵ㄩ%dㄞ%d",
-                                  pDispInfo->pAct->name,
-                                  pDispInfo->pAct->freeName,
-                                  pDispInfo->pAct->level, pDispInfo->pAct->hp,
-                                  pDispInfo->pAct->maxHp);
-                        // sprintf_s( OneLineInfoStr,"%s [%s]  Lvㄩ%d",
-                        // pDispInfo->pAct->name, pDispInfo->pAct->freeName,
-                        // pDispInfo->pAct->level );
-                      } else {
-                        // shan add
-                        // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d  騵ㄩ%dㄞ%d",
-                        // pDispInfo->pAct->name, pDispInfo->pAct->level,
-                        // pDispInfo->pAct->hp, pDispInfo->pAct->maxHp );
-                        sprintf_s(OneLineInfoStr, "%s  Lvㄩ%d  騵ㄩ%dㄞ%d",
-                                  pDispInfo->pAct->name, pDispInfo->pAct->level,
-                                  pDispInfo->pAct->hp, pDispInfo->pAct->maxHp);
-                        // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d",
-                        // pDispInfo->pAct->name, pDispInfo->pAct->level );
-                      }
-#else
-                      // ????
-                      if (pDispInfo->pAct->freeName[0] != NULL) {
-                        // sprintf_s( OneLineInfoStr,"%s [%s]  Lvㄩ%d
-                        // 騵ㄩ%dㄞ%d", pDispInfo->pAct->name,
-                        // pDispInfo->pAct->freeName, pDispInfo->pAct->level,
-                        // pDispInfo->pAct->hp, pDispInfo->pAct->maxHp );
-                        //  shan add
-                        sprintf_s(OneLineInfoStr, "%s [%s]  Lvㄩ%d",
-                                  pDispInfo->pAct->name,
-                                  pDispInfo->pAct->freeName,
-                                  pDispInfo->pAct->level);
-                      } else {
-                        // sprintf_s( OneLineInfoStr,"%s  Lvㄩ%d  騵ㄩ%dㄞ%d",
-                        // pDispInfo->pAct->name, pDispInfo->pAct->level,
-                        // pDispInfo->pAct->hp, pDispInfo->pAct->maxHp );
-                        //  shan add
-                        sprintf_s(OneLineInfoStr, "%s  Lvㄩ%d",
-                                  pDispInfo->pAct->name,
-                                  pDispInfo->pAct->level);
-                      }
-#endif
-                    }
+                                pDispInfo->pAct->petName,
+                                pDispInfo->pAct->petLevel);
+                    else
+                      sprintf_s(OneLineInfoStr, "%s  Lv:%d",
+                                pDispInfo->pAct->name, pDispInfo->pAct->level);
+                  }
+                }
+              } else { //
+                if (pDispInfo->pAct->freeName[0] != NULL) {
+                  sprintf_s(OneLineInfoStr, "%s [%s]  Lv:%d",
+                            pDispInfo->pAct->name, pDispInfo->pAct->freeName,
+                            pDispInfo->pAct->level);
+                } else {
+                  sprintf_s(OneLineInfoStr, "%s Lv:%d", pDispInfo->pAct->name,
+                            pDispInfo->pAct->level);
+                }
               }
+            }
           }
         }
-        if (oneLineInfoFlag)
+        if (!transmigrationEffectFlag)
           ShowBottomLineString(itemNameColor, OneLineInfoStr);
       }
-      // 更?????
-      OneLineInfoStr[0] = NULL;
-
-      // ??????
+      OneLineInfoStr[0] = '\0';
       mouse.level = pDispSort->dispPrio;
       return;
     }
   }
-  // ??????
   mouse.level = DISP_PRIO_TILE;
-  // ???????吻???????
   HitDispNo = -1;
 
-  // ?????????
   if (TaskBarFlag == FALSE) {
     ShowBottomLineString(itemNameColor, OneLineInfoStr);
   }
-  // 更?????
-  OneLineInfoStr[0] = NULL;
+  OneLineInfoStr[0] = '\0';
 }

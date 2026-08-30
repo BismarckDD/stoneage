@@ -1,4 +1,7 @@
 ﻿#include "systeminc/system.h"
+//
+#include "systeminc/menu.h"
+//
 #include "systeminc/font.h"
 #include "sdk/caryime.h"
 #include "game/anim_tbl.h"
@@ -11,7 +14,6 @@
 #include "systeminc/loadsprbin.h"
 #include "systeminc/savedata.h"
 #include "systeminc/t_music.h"
-#include "systeminc/menu.h"
 #include "systeminc/tool.h"
 #include "systeminc/map.h"
 #include "systeminc/field.h"
@@ -482,7 +484,7 @@ int ResultWndTimer;                            // ???????????
 #define TASK_BAR    7
 #define TASK_BAR_X 320
 #define TASK_BAR_Y 468 + DISPLACEMENT_Y 
-BOOL TaskBarFlag = FALSE;    // ????????
+BOOL TaskBarFlag = FALSE;    // 2026.08.30 这个是干啥的？
 // Terry add 2003/12/16 for 交易视窗开启时,显示物品说明不显示输入法
 BOOL bShowItemExplain = FALSE;
 // end
@@ -495,10 +497,10 @@ unsigned int MenuToggleFlag;
 #define CHAR_MAX_DETAIL 8
 char CharDetail[CHAR_MAX_DETAIL][16] ; 
 char DetailDesc[CHAR_MAX_DETAIL][64] = {
-    "地魔法抗性　：" ,
-    "水魔法抗性　：" ,
-    "火魔法抗性　：" ,    
-    "风魔法抗性　：" ,
+    "地魔法抗性  ：" ,
+    "水魔法抗性  ：" ,
+    "火魔法抗性  ：" ,    
+    "风魔法抗性  ：" ,
     "地魔法熟练度：" ,
     "水魔法熟练度：" ,
     "火魔法熟练度：" ,    
@@ -548,9 +550,7 @@ int RIDEPET_getPETindex_New(int PetNo, int learnCode);
 #endif
 
 static char *monoStereoStr[] = { "       单声道       ", "       立体声       " };
-
 static char *mouseCursor[] = { "     正  常     ", "     平  滑     " };
-
 #define WINDOW_CREATE_FRAME 10    // ??????????????
 
 // ????????????????
@@ -977,10 +977,10 @@ void WindowDisp(ACTION *pAct)
             else pAct->actNo = 2;
         }
         break;
-    case 1:    // ?????
+    case 1:
         pAct->hp = 1;
         break;
-    case 2:    // ??????
+    case 2:
         for (j = 0; j < pYobi->sizeY; j++){
             // 
             if (j == 0){
@@ -9005,11 +9005,11 @@ void InitItem3(int x, int y)
     }
 }
 // CoolFish: End 
+// 2026.08.30 为什么要dispPrio >= 0?
 BOOL MakeHitBox(int x1, int y1, int x2, int y2, int dispPrio)
 {
     if (mouse.nowPoint.x <= x2 && x1 <= mouse.nowPoint.x &&
         mouse.nowPoint.y <= y2 && y1 <= mouse.nowPoint.y){
-        // ???????
         if (dispPrio >= 0){
             StockBoxDispBuffer(x1, y1, x2, y2, dispPrio, BoxColor, 0);
         }
@@ -20096,9 +20096,6 @@ void MenuProc(void)
                             for (i = ShowPoint; i < ShowPoint + 5 && i < 21; i++)   //交易清单修正 xiezi
                             {
                                 if (mytradelist[i] == -1) break;
-                                //说明框用的HitBox暂时不做
-                                //                                if( MakeHitBox( x + 10 , y + 226 + j * 29, x + 280  , y + 244 + j * 29 , DISP_PRIO_IME3 ) == TRUE ){
-                                //                                }
                                 sprintf_s(moji, "%c", tradeList[mytradelist[i]].kind);
                                 //显示道具
                                 if (strcmp(moji, "I") == 0)
@@ -20110,10 +20107,6 @@ void MenuProc(void)
                                     sprintf_s(moji, "x%d", tradeList[mytradelist[i]].pilenum);
                                     StockFontBuffer(x + 180, y + 228 + j * 29, FONT_PRIO_FRONT, 0, moji, 0);
 #endif
-#ifdef _NPC_ITEMUP
-                                    //if( MakeHitBox( x + 10 , y + 226 + j * 29, x + 280  , y + 244 + j * 29 , DISP_PRIO_IME3 ) == TRUE )
-                                    //    ShowItemup(tradeList[mytradelist[i]].itemup,x+160,y + 246 + j * 29);
-#endif                    
                                     sprintf_s(moji, "%s", tradeList[mytradelist[i]].damage);
                                     StockFontBuffer(x + 220, y + 228 + j * 29, FONT_PRIO_FRONT, 0, moji, 0);
                                     j++;
@@ -20169,9 +20162,6 @@ void MenuProc(void)
                             for (i = ShowPoint; i < ShowPoint + 5 && i < 21; i++)   //交易清单修正 xiezi
                             {
                                 if (opptradelist[i] == -1) break;
-                                //说明框用的HitBox暂时不做
-                                //                                if( MakeHitBox( x + 10 , y + 37 + j * 29, x + 280  , y + 55 + j * 29 , DISP_PRIO_IME3 ) == TRUE ){
-                                //                                }
                                 sprintf_s(moji, "%c", tradeList[opptradelist[i]].kind);
                                 //显示道具
                                 if (strcmp(moji, "I") == 0)
@@ -20180,20 +20170,11 @@ void MenuProc(void)
                                     int opptradlist = opptradelist[i];
                                     // Terry modify for 都用原名 2004/6/9
                                     sprintf_s(moji, "%s", tradeList[opptradlist].name);
-                                    //                                    sprintf_s( moji , "%s" , tradeList[ opptradlist].freename ) ; 
-                                    //                                    if( strcmp( tradeList[opptradlist].name, tradeList[opptradlist].freename ) ){
-                                    //                                        sprintf_s( moji , "[%s]" , tradeList[ opptradlist].freename ) ; 
-                                    //                                        colors = 6;
-                                    //                                    }
                                     StockFontBuffer(x + 12, y + 40 + j * 29, FONT_PRIO_FRONT, colors, moji, 0);
 #ifdef _ITEM_PILENUMS
                                     sprintf_s(moji, "x%d", tradeList[opptradelist[i]].pilenum);
                                     StockFontBuffer(x + 180, y + 40 + j * 29, FONT_PRIO_FRONT, 0, moji, 0);
 #endif
-#ifdef _NPC_ITEMUP 
-                                    //if( MakeHitBox( x + 10 , y + 37 + j * 29, x + 280  , y + 55 + j * 29 , DISP_PRIO_IME3 ) == TRUE )
-                                    //    ShowItemup(tradeList[opptradelist[i - 22]].itemup,x+160,y + 57 + j * 29);
-#endif                                
 
                                     sprintf_s(moji, "%s", tradeList[opptradelist[i]].damage);
                                     StockFontBuffer(x + 220, y + 40 + j * 29, FONT_PRIO_FRONT, 0, moji, 0);
