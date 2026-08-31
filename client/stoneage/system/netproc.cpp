@@ -2643,6 +2643,9 @@ case 5:
 
 // ???? ///////////////////////////////////////////////////////////
 void lssproto_TK_recv(int fd, int index, char *message, int color) {
+  // Normalize before adding the UTF-8 chat marker or splitting protocol fields.
+  std::string normalizedMessage = NormalizeChatTextUtf8(message);
+  message = const_cast<char *>(normalizedMessage.c_str());
   char id[2];
 #ifdef _MESSAGE_FRONT_
   char msg1[2024];

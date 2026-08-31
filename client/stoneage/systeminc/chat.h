@@ -2,7 +2,7 @@
 #define __CHAT_H__
 
 // cary 256 -> 260
-#define STR_BUFFER_SIZE 260 // ???????????
+#define STR_BUFFER_SIZE 260 //
 #ifdef _NEW_RESOMODE
 #ifdef _SA_LIAOTIAN_
 #define MAX_CHAT_LINE 200 // 聊天行数限制
@@ -12,10 +12,10 @@
 #else
 #define MAX_CHAT_LINE 20 // 聊天行数限制
 #endif
-#define DEF_CHAT_LINE 20    // ?????????
-#define MAX_CHAT_HISTORY 64 // ???????????
-#define DEF_VOICE 3         // ????????
-#define MAX_VOICE 10        // ???????
+#define DEF_CHAT_LINE 20    // 默认聊天行数
+#define MAX_CHAT_HISTORY 64 // 最大64条聊天记录
+#define DEF_VOICE 3         // 默认声音大小
+#define MAX_VOICE 10        // 最大声音大小
 
 #define NORMAL_TYPE 0
 #define BLIND_TYPE 1
@@ -54,9 +54,9 @@ struct CHAT_BUFFER {
 };
 
 typedef struct {
-  char str[MAX_CHAT_HISTORY][STR_BUFFER_SIZE + 1]; // ????????????
-  int newNo;                                       // ????????????
-  int nowNo;                                       // ?????????????
+  char str[MAX_CHAT_HISTORY][STR_BUFFER_SIZE + 1]; //
+  int newNo;                                       //
+  int nowNo;                                       //
 } CHAT_HISTORY;
 
 // onlinegm问题输入纪录
@@ -100,20 +100,13 @@ void ChatProc(void);
 // ??????????? **************************************************/
 void FlashKeyboardCursor(void);
 
+// 键盘按键对于聊天记录的
 void KeyboardLeft();
 void KeyboardRight();
-
-/* ???????? ************************************************************/
 void KeyboardReturn(void);
-
-// ?????? ***************************************************************/
 void KeyboardBackSpace(void);
-
-// ?????????
-// ****************************************************************/
+// 聊天的历史记录:
 BOOL SaveChatHistoryStr(int no);
-// ????????????
-// ****************************************************************/
 BOOL LoadChatHistoryStr(void);
 
 BOOL LoadReadSayShield(void);
@@ -129,10 +122,6 @@ int GetCharByte(char c);
 
 #ifdef _FRIENDCHANNEL // ROG ADD 好友频道
 void StrToNowStrBuffer(char *str);
-#endif
-
-#ifdef __ONLINEGM
-int StrToNowStrBuffer2(char *str);
 #endif
 
 #endif // __CHAT_H__

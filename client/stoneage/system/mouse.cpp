@@ -361,6 +361,16 @@ void HitMouseCursor(void) {
 #endif
         hitFlag = TRUE;
     } else {
+      // World character x/y is the projected map position (feet). Sprite
+      // padding and animation offsets can move the old bitmap-bottom hit box
+      // away from that position, so retain it and also accept the foot area.
+      if (ProcNo == PROC_GAME &&
+          (pDispInfo->pAct->atr & ACT_ATR_INFO) &&
+          mouse.nowPoint.x >= pDispInfo->pAct->x - MOUSE_HIT_SIZE_X / 2 &&
+          mouse.nowPoint.x <= pDispInfo->pAct->x + MOUSE_HIT_SIZE_X / 2 &&
+          mouse.nowPoint.y >= pDispInfo->pAct->y - MOUSE_HIT_SIZE_Y / 2 &&
+          mouse.nowPoint.y <= pDispInfo->pAct->y + MOUSE_HIT_SIZE_Y / 2)
+        hitFlag = TRUE;
       // ?????刪叉????????
 #ifndef __CARYTEST
       if (mouse.nowPoint.x <= pDispInfo->x +

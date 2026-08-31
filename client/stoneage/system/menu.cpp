@@ -121,8 +121,8 @@ int UpDownflag = 0;
 #define CAHT_REGISTY_STR_FILE_NAME "data\\chatreg.dat"     //
 static int systemWndFontNo[MENU_SYSTEM_0]; // 按ESC之后生成的系统菜单.
 unsigned int systemWndNo;                  // 当前选中的系统菜单选项.
-STR_BUFFER chatRegistryStr[MAX_CHAT_REGISTY_STR];        // ??????????????
-int MouseCursorFlag = FALSE;                            // ???????
+STR_BUFFER chatRegistryStr[MAX_CHAT_REGISTY_STR];
+int MouseCursorFlag = FALSE;
 
 #ifdef _TRADETALKWND                // (不可开) Syu ADD 交易新增对话框架
 char talkmsg[4][256];                    //四行的暂存Buffer
@@ -1935,80 +1935,45 @@ BOOL LoadMailHistory(void)
 BOOL SaveChatRegistyStr(void)
 {
     FILE *fp;
-
-    // ????????????
     if ((fp = fopen(CAHT_REGISTY_STR_FILE_NAME, "r+b")) == NULL){
-#ifdef _STONDEBUG_        
-        MessageBoxNew( hWnd, "记录聊天的登录文字失败！１", "确定", MB_OK | MB_ICONSTOP );
-#endif
         return FALSE;
     }
-
-    // ???????
     if (fwrite(chatRegistryStr, sizeof(STR_BUFFER), MAX_CHAT_REGISTY_STR, fp) < MAX_CHAT_REGISTY_STR){
-
-#ifdef _STONDEBUG_        
-        MessageBoxNew( hWnd, "记录聊天的登录文字失败！２", "确定", MB_OK | MB_ICONSTOP );
-#endif
         fclose(fp);// ????????
         return FALSE;
     }
 #ifdef _TALK_WINDOW
     fwrite(&g_bTalkWindow,sizeof(BOOL),1,fp);
 #endif
-    // ????????
     fclose(fp);
-
     return TRUE;
 }
 
-// ??????????? ****************************************************************/
 BOOL LoadChatRegistyStr(void)
 {
     FILE *fp;
     int i;
-
-    // ???????????
     if ((fp = fopen(CAHT_REGISTY_STR_FILE_NAME, "rb")) == NULL){
-        // ???????
         if ((fp = fopen(CAHT_REGISTY_STR_FILE_NAME, "wb")) != NULL){
-#ifdef _STONDEBUG_        
-            MessageBoxNew( hWnd, "建立聊天的登录文字档案！", "确定", MB_OK );
-#endif
-            // ??????????????????
             for (i = 0; i < 8; i++){
-                // ??? ??
                 chatRegistryStr[i].buffer[0] = NULL;
                 chatRegistryStr[i].cnt = 0;
                 chatRegistryStr[i].cursor = 0;
-                // ????
                 chatRegistryStr[i].len = MAX_CHAT_REGISTY_STR_LEN;
-                // ????
                 chatRegistryStr[i].lineLen = 0;
-                // ?????
                 chatRegistryStr[i].lineDist = 20;
-                // ???
                 chatRegistryStr[i].color = 0;
-                // ????
-                // ??????
                 chatRegistryStr[i].fontPrio = FONT_PRIO_FRONT;
             }
-            // ???????
             fwrite(chatRegistryStr, sizeof(STR_BUFFER), MAX_CHAT_REGISTY_STR, fp);
 #ifdef _TALK_WINDOW
             fwrite(&g_bTalkWindow,sizeof(BOOL),1,fp);
 #endif
-            fclose(fp);    // ????????
+            fclose(fp);
         }
         return FALSE;
     }
-
-    // ??????
     if (fread(chatRegistryStr, sizeof(STR_BUFFER), MAX_CHAT_REGISTY_STR, fp) < MAX_CHAT_REGISTY_STR){
-
-#ifdef _STONDEBUG_        
-        MessageBoxNew( hWnd, "载入聊天的登录文字资料失败！１", "确定", MB_OK | MB_ICONSTOP );
-#endif
         fclose(fp);    // ????????
         return FALSE;
     }
@@ -2018,9 +1983,9 @@ BOOL LoadChatRegistyStr(void)
 #endif
     // ????????
     fclose(fp);
-
     return TRUE;
 }
+
 #ifdef __ALBUM_47
 int MAX_PET_TBL;
 #endif
@@ -10873,7 +10838,6 @@ void MenuProc(void)
                     break;
                 }
             }
-            // ?
             x = pActMenuWnd->x + 56;
             y = pActMenuWnd->y + 64;
             sprintf_s(moji, "◆  目前的音量 %3d  ◆", t_music_bgm_volume);
@@ -10889,21 +10853,14 @@ void MenuProc(void)
             systemWndFontNo[3] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, "      加    快      ", 2);    y += 40;
             systemWndFontNo[4] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, "      减    慢      ", 2);    y += 52;
             systemWndFontNo[2] = StockFontBuffer(x, y, FONT_PRIO_FRONT, FONT_PAL_AQUA, "      回上一页      ", 2);    y += 40;
-
             break;
-
-        case 5:    // ????
-
-            // ?????????
+        case 5:
             if (pActMenuWnd == NULL){
-                // ?????????
                 x = (lpDraw->xSize - 272) / 2;
                 y = (lpDraw->ySize - 430) / 2;
                 pActMenuWnd = MakeWindowDisp(x, y, 272, 430, CG_WND_TITLE_CHAT, -1, FALSE);
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
-                // ???????
                 GetKeyInputFocus(&chatRegistryStr[0]);
-
                 break;
             }
             else{
@@ -10932,7 +10889,6 @@ void MenuProc(void)
                     break;
                 }
             }
-            // ?
             x = pActMenuWnd->x + 18;
             y = pActMenuWnd->y + 58;
 

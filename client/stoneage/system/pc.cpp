@@ -1007,7 +1007,6 @@ void getItem(void) {
   if (!checkCharObjPoint(mouseMapGx, mouseMapGy,
                          CHAROBJ_TYPE_NPC | CHAROBJ_TYPE_ITEM |
                              CHAROBJ_TYPE_MONEY))
-    //        CHAROBJ_TYPE_ITEM|CHAROBJ_TYPE_MONEY))
     return;
 
   tmpX = (float)(mouseMapGx - nowGx);
@@ -1017,7 +1016,6 @@ void getItem(void) {
   dir = (int)(tmpDir / 45);
 
   if (piSendTime + FIELD_BTN_PUSH_WAIT < TimeGetTime()) {
-    // ??????
     if (bNewServer) {
       lssproto_PI_send(sockfd, nowGx, nowGy, dir);
     } else
@@ -1059,14 +1057,13 @@ BOOL TalkToNPC(void) {
     if (pc.ptAct->anim_ang != dir) {
       char dir2[2];
       setPcDir(dir);
-
       dir2[0] = cnvServDir(dir, 1);
       dir2[1] = '\0';
-
       walkSendForServer(nowGx, nowGy, dir2);
     }
     char dest[1024], m[1024];
     extern STR_BUFFER chatRegistryStr[];
+    // 2026.08.31: chatRegistryStr是从哪里来的?
     if (chatRegistryStr[7].cnt > 0)
       makeEscapeString(chatRegistryStr[7].buffer, dest, sizeof(dest));
     else

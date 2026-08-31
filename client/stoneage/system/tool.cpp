@@ -63,23 +63,13 @@ static int copyStringUntilDelim(unsigned char *, char delim, int,
 
 inline unsigned char *searchDelimPoint(unsigned char *src,
                                        unsigned char delim) {
-  unsigned char *pt = src;
-  while (true) {
-    if (*pt == '\0')
-      return (unsigned char *)0;
-    if (*pt < 0x80) {
-      if (*pt == delim) {
-        pt++;
-        return pt;
-      }
-      pt++;
-    } else {
-      pt++;
-      if (*pt == '\0')
-        return (unsigned char *)0;
-      pt++;
-    }
+  // ASCII delimiters cannot occur inside a UTF-8 multi-byte sequence.
+  // The old GBK pair-skip could swallow the separator after a UTF-8 character.
+  for (unsigned char *pt = src; *pt != '\0'; ++pt) {
+    if (*pt == delim)
+      return pt + 1;
   }
+  return NULL;
 }
 
 /*
@@ -112,57 +102,25 @@ int getStringToken(char *src, char delim, int count, int maxlen, char *out) {
 }
 
 /*
-  更????更????更?????????????????????
-
   char *src : ??更??
   char delim : ????
   int maxlen : ????????
   char *out : ?
 
-  ??π  0ㄩ????????
-  1:更??Ψ????
-  */
+*/
 static int copyStringUntilDelim(unsigned char *src, char delim, int maxlen,
                                 unsigned char *out) {
   int i;
-
-  for (i = 0; i < maxlen; i++) {
-    if (src[i] < 0x80) {
-      // 1byte更????
-
-      if (src[i] == delim) {
-        // ??更??????
-        out[i] = '\0';
-        return 0;
-      }
-
-      // ???更?????
-      out[i] = src[i];
-
-      // Ψ更?????
-      if (out[i] == '\0')
-        return 1;
-    } else {
-      // 2byte更????
-
-      // ???更?????
-      out[i] = src[i];
-
-      i++;
-      if (i >= maxlen) // ????????????
-        break;
-
-      // ???更?????
-      out[i] = src[i];
-
-      // Ψ更???????????????????
-      if (out[i] == '\0')
-        return 1;
+  for (i = 0; i < maxlen; ++i) {
+    if (src[i] == (unsigned char)delim) {
+      out[i] = '\0';
+      return 0;
     }
+    out[i] = src[i];
+    if (out[i] == '\0')
+      return 1;
   }
-
   out[i] = '\0';
-
   return 1;
 }
 

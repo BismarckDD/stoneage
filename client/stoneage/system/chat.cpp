@@ -1,4 +1,8 @@
-﻿#include "systeminc/system.h"
+﻿#define __CHAT_CPP__
+#include "systeminc/system.h"
+//
+#include "systeminc/chat.h"
+//
 #include "systeminc/font.h"
 #include "systeminc/text_encoding.h"
 #include "sdk/caryime.h"
@@ -11,7 +15,6 @@
 #include "proto/lssproto_cli.h"
 #include "proto/protocol.h"
 #include "systeminc/netmain.h"
-#include "systeminc/chat.h"
 #ifdef _TALK_WINDOW
 #include "systeminc/talkwindow.h"
 #endif
@@ -19,21 +22,16 @@
 #include <atlconv.h>
 extern INPUT_HISTORY InputHistory ;
 extern STR_BUFFER SubBuffer; 
+extern STR_BUFFER idKey;
+extern STR_BUFFER passwd;
 
 #ifdef __ONLINEGM
 extern BOOL OnlineGmFlag;
 #endif
 
-// ?????????
 CHAT_BUFFER ChatBuffer[ MAX_CHAT_LINE ];
-
-// ?????????
 STR_BUFFER MyChatBuffer;
-
-// ???????????????????
 STR_BUFFER *pNowStrBuffer = NULL;
-
-// ??????????
 int NowChatLine = 0;
 // ????
 int NowMaxChatLine = DEF_CHAT_LINE;
@@ -47,7 +45,7 @@ int CursorFlashCnt = 0;
 // ??????????
 int ChatLineSmoothY = 0 ;
 
-#define CAHT_HISTORY_STR_FILE_NAME     "data\\chathis.dat"     // ??????????????
+#define CAHT_HISTORY_STR_FILE_NAME "data\\chathis.dat"
 // ???????????
 CHAT_HISTORY ChatHistory;
 
@@ -63,12 +61,6 @@ void KeyboardTab( void );
 FILE *chatLogFile = NULL;
 char chatLogFileName[256];
 void openChatLogFile( void );
-
-/*
-#ifdef _TELLCHANNEL                // (不可开) ROG ADD 密语频道
-char ReTellName[] = "";
-#endif 
-*/
 
 void InitChat( void )
 {
@@ -190,19 +182,13 @@ BOOL SaveChatHistoryStr( int no )
         fclose( fp );// ????????
         return FALSE;
     }
-    
-    // ????????????????????
     fseek( fp, sizeof( ChatHistory.str[ 0 ] ) * MAX_CHAT_HISTORY, SEEK_SET );
-    // ??????
     if( fwrite( &no, sizeof( int ), 1, fp ) < 1 ){
     
         fclose( fp );// ????????
         return FALSE;
     }
-    
-    // ????????
     fclose( fp );
-    
     return TRUE;
 }
 
@@ -346,10 +332,9 @@ BOOL LoadReadNameShield( void )
     char szName[]="ShieldName";
     unsigned int nSize;
     char* pBuffer =    (char*)EncryptFileName((char*)szName,nSize);
-    if( !pBuffer )
-        return FALSE;
+    if( !pBuffer ) return FALSE;
 
-    unsigned int nRead = 0;        //已经读了的
+    unsigned int nRead = 0;
     BOOL bRead = FALSE;
     int i = 0;
     static char szName_[20] = "";
@@ -430,39 +415,41 @@ void StrToNowStrBuffer( char *str )
 
 void StrToNowStrBuffer1( char *str )
 {
-    int strLen = strlen(str);
-    if(strLen > 86) strLen = 86;
-    for(int i = 0; i < strLen; i++){
-        if(IsDBCSLeadByteEx(936, str[i])){
-            StockStrBufferDBChar(str + i);
-            i++;
-        }else{
-            StockStrBufferChar(str[i]);
+    if (str == NULL || pNowStrBuffer == NULL)
+        return;
+    // Quick phrases and recalled chat are already UTF-8, unlike IME input.
+    // Snapshot the source in case it aliases the destination input buffer.
+    const std::string text(str);
+    const size_t limit = text.size() < 86 ? text.size() : 86;
+    for (size_t i = 0; i < limit;) {
+        const int bytes = getUtf8SequenceLength(text.c_str() + i, text.size() - i);
+        if (bytes == 0 || i + bytes > limit)
+            break;
+        if (bytes == 1) {
+            StockStrBufferChar(text[i]);
+        } else {
+            const int count = pNowStrBuffer->cnt;
+            const int cursor = pNowStrBuffer->cursor;
+            if (cursor > count || count + bytes > pNowStrBuffer->len ||
+                count + bytes >= STR_BUFFER_SIZE)
+                break;
+            // Preserve the same field restrictions as StockStrBufferDBChar.
+            if (pNowStrBuffer == &idKey || pNowStrBuffer == &passwd)
+                return;
+            char *buffer = pNowStrBuffer->buffer;
+            if (pNowStrBuffer == &petNameChange &&
+                getUtf8CharNum(buffer) >= PET_NAME_LEN)
+                break;
+            memmove(buffer + cursor + bytes, buffer + cursor, count - cursor + 1);
+            memcpy(buffer + cursor, text.data() + i, bytes);
+            pNowStrBuffer->cnt += bytes;
+            pNowStrBuffer->cursor += bytes;
+            CursorFlashCnt = 20;
         }
+        i += bytes;
     }
 }
 
-int StrToNowStrBuffer2( char *str )
-{
-    int strLen,i;
-    strLen=strlen(str);
-    if(strLen>70){
-        if(IsDBCSLeadByteEx(936, str[68]))
-            strLen = 69;
-        else
-            strLen = 70;
-    }
-    for(i=0;i<strLen;i++){
-        if(IsDBCSLeadByteEx(936, str[i])){
-            StockStrBufferDBChar(str+i);
-            i++;
-        }else
-            StockStrBufferChar(str[i]);
-    }
-    return i;
-}
-
-/* ???????? ************************************************************/
 void ChatProc( void )
 {
     // ???????????
@@ -663,14 +650,11 @@ void KeyboardTab( void )
         // ???????????
         if( joy_con[ 1 ] & JOY_RSHIFT || joy_con[ 1 ] & JOY_LSHIFT ){
             i--;
-            // ????????
             if( i < 0 ) i = MAX_CHAT_REGISTY_STR - 1;
         }else{
             i++;
-            // ????????
             if( i >= MAX_CHAT_REGISTY_STR ) i = 0;
         }
-        // ???????
         GetKeyInputFocus( &chatRegistryStr[ i ] );
     }
     
@@ -1073,8 +1057,6 @@ void KeyboardReturn( void )
     CursorFlashCnt = 20;
     
 }
-extern STR_BUFFER idKey;
-extern STR_BUFFER passwd;
 extern STR_BUFFER selCharName;
 /*    将单一字元储放至目前的输入String buffer
 parameter:    c:    字元                    */
@@ -1143,6 +1125,21 @@ void StockStrBufferDBChar(char *lpc)
 
 
 
+// Keep line breaks on code-point boundaries. GetStrLastByte()==3 also
+// describes a complete Chinese UTF-8 character, not just a broken DBCS pair.
+static size_t ChatLinePrefixBytes(const char *text, size_t byteLimit)
+{
+    const size_t total = strlen(text);
+    size_t offset = 0;
+    while (offset < total) {
+        int bytes = getUtf8SequenceLength(text + offset, total - offset);
+        if (bytes == 0) bytes = 1; // Preserve unsupported legacy bytes.
+        if (offset + bytes > byteLimit) break;
+        offset += bytes;
+    }
+    return offset;
+}
+
 #ifdef _FONT_SIZE
 void StockChatBufferLine( char *str, unsigned char color )
 {
@@ -1161,16 +1158,9 @@ void StockChatBufferLine( char *str_, unsigned char color )
     char strtemp[1024];
     delFontBuffer(&ChatBuffer[ NowChatLine ]);
     int splitPoint = 0;
-    char splitStr[ STR_BUFFER_SIZE + 1 ];
     unsigned int MyChatBufferLen = _FONTDATALEN_;
     if( strlen( str ) > MyChatBufferLen ){
-        strncpy_s( splitStr, str, MyChatBufferLen );
-        *( splitStr + MyChatBufferLen ) = NULL;
-        if( GetStrLastByte( splitStr ) == 3 ){ 
-            splitPoint = MyChatBufferLen - 1;
-            *( splitStr + MyChatBufferLen - 1 ) = NULL; 
-        }else
-            splitPoint = MyChatBufferLen;
+        splitPoint = (int)ChatLinePrefixBytes(str, MyChatBufferLen);
         strncpy_s( strtemp, str, splitPoint );
         strtemp[splitPoint]=0;
         NewStockFontBuffer(&ChatBuffer[ NowChatLine ],0,color,strtemp,fontsize);
@@ -1198,7 +1188,6 @@ void StockChatBufferLine( char *str_, unsigned char color )
     }
 #else
     int splitPoint = 0;
-    char splitStr[ STR_BUFFER_SIZE + 1 ];
 #ifdef _NEWFONT_
     unsigned int MyChatBufferLen = 87;
 #else
@@ -1209,15 +1198,11 @@ void StockChatBufferLine( char *str_, unsigned char color )
         MyChatBufferLen = (int)(MyChatBufferLen*((float)FONT_SIZE/(float)fontsize));
     }
 #endif
-    
+    // Reserve space for the terminator and always fit one UTF-8 character.
+    if (MyChatBufferLen < 4) MyChatBufferLen = 4;
+    if (MyChatBufferLen > STR_BUFFER_SIZE) MyChatBufferLen = STR_BUFFER_SIZE;
     if( strlen( str ) > MyChatBufferLen ){
-        strncpy_s( splitStr, str, MyChatBufferLen );
-        *( splitStr + MyChatBufferLen ) = NULL;
-        if( GetStrLastByte( splitStr ) == 3 ){ 
-            splitPoint = MyChatBufferLen - 1;
-            *( splitStr + MyChatBufferLen - 1 ) = NULL; 
-        }else
-            splitPoint = MyChatBufferLen;
+        splitPoint = (int)ChatLinePrefixBytes(str, MyChatBufferLen);
         strncpy_s( ChatBuffer[ NowChatLine ].buffer, str, splitPoint );
 
         *( ChatBuffer[ NowChatLine ].buffer + splitPoint ) = NULL; 

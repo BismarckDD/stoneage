@@ -54,6 +54,34 @@ inline std::string GbkToUtf8(const char *text)
     return result;
 }
 
+// Old NPC data can supply a CP936 speaker name while the server appends
+// a UTF-8 colon and UTF-8 dialogue. Decode those fields independently.
+inline std::string NormalizeChatTextUtf8(const char *text)
+{
+    if (text == NULL || text[0] == '\0')
+        return std::string();
+    const std::string input(text);
+    if (!Utf8ToWide(text).empty())
+        return input;
+    const std::string separator("\xEF\xBC\x9A"); // U+FF1A
+    const size_t split = input.find(separator);
+    if (split != std::string::npos) {
+        std::string name = input.substr(0, split);
+        std::string body = input.substr(split + separator.size());
+        if (!name.empty() && Utf8ToWide(name.c_str()).empty()) {
+            const std::string converted = GbkToUtf8(name.c_str());
+            if (!converted.empty()) name = converted;
+        }
+        if (!body.empty() && Utf8ToWide(body.c_str()).empty()) {
+            const std::string converted = GbkToUtf8(body.c_str());
+            if (!converted.empty()) body = converted;
+        }
+        return name + separator + body;
+    }
+    const std::string converted = GbkToUtf8(text);
+    return converted.empty() ? input : converted;
+}
+
 inline BOOL SetWindowTextUtf8(HWND window, const char *text)
 {
     const std::wstring wideText = Utf8ToWide(text);
