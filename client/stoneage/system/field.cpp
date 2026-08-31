@@ -706,7 +706,6 @@ void StreetVendorWndfunc(bool bReset,char *data)
                 if (ShowSellItem[i].usage)
                 {
 #ifdef _NEWFONT_
-                    extern int getTextLength(char * str);
                     char tempstr[128];
                     if (ShowSellItem[i].kind == 0){
                         if (ShowSellItem[i].price == 0){
@@ -1287,7 +1286,6 @@ void StreetVendorBuyWndfunc(char *data)
                     if (ShowVendorItem[i].kind == 0)
                     {
 #ifdef _NEWFONT_
-                        extern int getTextLength(char * str);
                         char tempstr[128];
                         if (ShowVendorItem[i].price == 0){
                             StockFontBuffer(x + 20, y + 22 + 28 * j, FONT_PRIO_FRONT, FONT_PAL_WHITE, ShowVendorItem[i].name, 0);
@@ -1311,7 +1309,6 @@ void StreetVendorBuyWndfunc(char *data)
                     else
                     {
 #ifdef _NEWFONT_
-                        extern int getTextLength(char * str);
                         char tempstr[128];
                         if (ShowVendorItem[i].price == 0){
                             StockFontBuffer(x + 20, y + 22 + 28 * j, FONT_PRIO_FRONT, FONT_PAL_WHITE, ShowVendorItem[i].name, 0);

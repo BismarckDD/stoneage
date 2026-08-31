@@ -128,7 +128,6 @@
     <ClCompile Include="stoneage\proto\lssproto_util.cpp" />
     <ClCompile Include="stoneage\oft\oft.cpp" />
     <ClCompile Include="stoneage\oft\sys2.cpp" />
-    <ClCompile Include="stoneage\oft\tekecess.cpp" />
     <ClCompile Include="stoneage\oft\work.cpp" />
     <ClCompile Include="stoneage\other\ItemsMall.cpp" />
     <ClCompile Include="stoneage\other\md5_encrypt.cpp" />

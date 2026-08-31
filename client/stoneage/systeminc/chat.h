@@ -25,7 +25,7 @@
 #define HOOK_TYPE 3
 #endif
 
-typedef struct {
+struct STR_BUFFER {
   char buffer[STR_BUFFER_SIZE]; // 
   unsigned char len;            //
   unsigned char lineLen;        //
@@ -38,21 +38,20 @@ typedef struct {
   int fontPrio;                 //
   BOOL filterFlag;              //
   int hitFontNo;                //
+};
 
-} STR_BUFFER;
-
-typedef struct _CHAT_BUFFER {
+struct CHAT_BUFFER {
   char buffer[STR_BUFFER_SIZE + 1]; // ??????????
   unsigned char color;
 #ifdef _MO_CHAT_EXPRESSION
   int BmpNo;
   int x;
-  _CHAT_BUFFER *NextChatBuffer;
+  CHAT_BUFFER *NextChatBuffer;
 #endif
 #ifdef _FONT_SIZE
   int fontsize;
 #endif
-} CHAT_BUFFER;
+};
 
 typedef struct {
   char str[MAX_CHAT_HISTORY][STR_BUFFER_SIZE + 1]; // ????????????
@@ -73,14 +72,8 @@ typedef struct {
 extern STR_BUFFER *pNowStrBuffer;
 extern CHAT_BUFFER ChatBuffer[];
 extern STR_BUFFER MyChatBuffer;
-
-// ??????????
 extern int NowChatLine;
-
-// ??????????
 extern int NowMaxChatLine;
-
-// ?????
 extern int NowMaxVoice;
 
 // 将单位字元放至目前输入StringBuffer
@@ -96,7 +89,6 @@ void StockChatBufferLineExt(char *str, unsigned char color, int fontsize);
 #endif
 void ClearChatBuffer(void);
 int GetStrLastByte(char *str);
-int GetStrWidth(char *str);
 void GetKeyInputFocus(STR_BUFFER *pStrBuffer);
 
 /* ????????? **********************************************************/

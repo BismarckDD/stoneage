@@ -60,6 +60,11 @@ void NewStockFontBuffer(CHAT_BUFFER *chatbuffer, int x, unsigned char color,
 void delFontBuffer(CHAT_BUFFER *chatbuffer);
 #endif
 void CreatFontHdc();
+
+int getTextLength(const char *str);
+// Measure text with the same font and UTF-8/legacy CP936 decoding rules used
+// by the renderer. This keeps clickable text bounds aligned with glyphs.
+BOOL GetFontTextExtent(const char *str, SIZE *size);
 #ifdef _FONT_SIZE
 int StockFontBufferExt(int x, int y, char fontPrio, int color,
                        const char *str,

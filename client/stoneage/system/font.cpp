@@ -13,8 +13,11 @@ int FontZenkauWidth;
 int FontHankakuWidth;
 int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
 
-static BOOL GetUtf8TextExtent(HDC dc, const char *text, int byteLength,
-                              SIZE *size) {
+// 返回
+static BOOL GetUtf8TextExtent(HDC hdc,           // 上下文？
+                              const char *text,  // UTF8 文本
+                              int byteLength,    // text 的字节长度
+                              SIZE *size) {      // size: 返回值, 这段文字占用的像素
   if (text == NULL || byteLength <= 0) {
     size->cx = 0;
     size->cy = 0;
@@ -36,7 +39,7 @@ static BOOL GetUtf8TextExtent(HDC dc, const char *text, int byteLength,
   if (MultiByteToWideChar(sourceCodePage, conversionFlags, text, byteLength,
                           &wideText[0], wideLength) <= 0)
     return FALSE;
-  return GetTextExtentPoint32W(dc, wideText.data(), wideLength, size);
+  return GetTextExtentPoint32W(hdc, wideText.data(), wideLength, size);
 }
 
 #ifdef _SUNDAY_STR_SEARCH
@@ -99,11 +102,27 @@ void CreatFontHdc() {
     exit(0);
   }
 }
-int getTextLength(char *str) {
+
+
+// 2026.08.31: 返回像素级宽度，而不是字符串长度
+int getTextLength(const char *str) {
   SIZE font_size;
-  if (!GetUtf8TextExtent(FontSizeHdc, str, (int)strlen(str), &font_size))
+  if (!GetFontTextExtent(str, &font_size))
     font_size.cx = 0;
   return font_size.cx;
+}
+
+BOOL GetFontTextExtent(const char *str, SIZE *size) {
+  if (size == NULL)
+    return FALSE;
+  size->cx = 0;
+  size->cy = 0;
+  if (str == NULL || str[0] == '\0')
+    return TRUE;
+  // 还和FontSizeHdc有关系？
+  if (FontSizeHdc == NULL)
+    return FALSE;
+  return GetUtf8TextExtent(FontSizeHdc, str, (int)strlen(str), size);
 }
 
 #ifdef _MO_CHAT_EXPRESSION
@@ -258,7 +277,6 @@ void StockFontBuffer2(STR_BUFFER *strBuffer) {
     } else {
       strcpy_s(FontBuffer[FontCnt].str, strBuffer->buffer);
     }
-#ifdef _NEWFONT_
     char strtemp[512];
     char *ptempstr;
     if (strBuffer->filterFlag == BLIND_TYPE) {
@@ -271,11 +289,8 @@ void StockFontBuffer2(STR_BUFFER *strBuffer) {
     } else {
       memcpy(strtemp, ptempstr, strBuffer->cursor);
       strtemp[strBuffer->cursor] = 0;
-      strBuffer->imeX = strBuffer->x + GetStrWidth(strtemp);
+      strBuffer->imeX = strBuffer->x + getTextLength(strtemp);
     }
-#else
-    strBuffer->imeX = strBuffer->x + strBuffer->cursor * (FONT_SIZE >> 1);
-#endif
     strBuffer->imeY = strBuffer->y;
     strBuffer->hitFontNo = FontCnt++;
   }

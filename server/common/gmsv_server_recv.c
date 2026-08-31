@@ -2250,9 +2250,35 @@ void GmsvServer_KN_recv(int fd, int havepetindex, char *data) {
   CHECKFD;
   char_index = CONNECT_getCharaindex(fd);
 
-  // Robin 04/26 debug
-  if (strlen(data) > 16)
+  if (data == NULL)
     return;
+
+  // PET_NAME_LEN is a character limit, not a byte limit.  Count UTF-8 code
+  // points so Chinese names are not restricted to five characters.
+  {
+    const unsigned char *p = (const unsigned char *)data;
+    int characters = 0;
+    while (*p != '\0') {
+      int bytes;
+      if (*p < 0x80)
+        bytes = 1;
+      else if ((*p & 0xe0) == 0xc0)
+        bytes = 2;
+      else if ((*p & 0xf0) == 0xe0)
+        bytes = 3;
+      else if ((*p & 0xf8) == 0xf0)
+        bytes = 4;
+      else
+        return;
+      for (int i = 1; i < bytes; ++i) {
+        if (p[i] == '\0' || (p[i] & 0xc0) != 0x80)
+          return;
+      }
+      p += bytes;
+      if (++characters > 16)
+        return;
+    }
+  }
 
   // CoolFish: Prevent Trade Cheat 2001/4/18
   if (CHAR_getWorkInt(char_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE)

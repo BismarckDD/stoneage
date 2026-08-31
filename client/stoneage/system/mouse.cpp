@@ -269,12 +269,13 @@ UCHAR BoxColorTbl[] = {
     // 8,8,8,8,8,
 };
 
+
+// 2026.08.31 是什么Hit到MouseCursor呢？
 void HitMouseCursor(void) {
-  int i;                              // ???????
-  int strWidth;                       // 更???????
-  int hitFlag = FALSE;                // ???刪叉???
-  static int cnt = 0;                 // ?????
-  int itemNameColor = FONT_PAL_WHITE; // ?????
+  int i;                              // 
+  int hitFlag = FALSE;                //
+  static int cnt = 0;                 //
+  int itemNameColor = FONT_PAL_WHITE; //
 
   DISP_SORT *pDispSort = DispBuffer.DispSort + DispBuffer.DispCnt - 1;
   DISP_INFO *pDispInfo;
@@ -290,12 +291,17 @@ void HitMouseCursor(void) {
   for (i = 0; i < FontCnt; i++) {
     if (FontBuffer[i].hitFlag == 0)
       continue;
-    strWidth = GetStrWidth(FontBuffer[i].str);
+    SIZE textExtent = {0, FONT_SIZE};
+    if (!GetFontTextExtent(FontBuffer[i].str, &textExtent)) {
+      textExtent.cx = getTextLength(FontBuffer[i].str);
+      textExtent.cy = FONT_SIZE;
+    }
+    const int strWidth = textExtent.cx;
+    const int strHeight = textExtent.cy > 0 ? textExtent.cy : FONT_SIZE;
 
-    // ?????刪叉
     if ((mouse.nowPoint.x <= FontBuffer[i].x + strWidth + 2) &&
         (mouse.nowPoint.x >= FontBuffer[i].x - 2) &&
-        (mouse.nowPoint.y <= FontBuffer[i].y + FONT_SIZE + 2) &&
+        (mouse.nowPoint.y <= FontBuffer[i].y + strHeight + 2) &&
         (mouse.nowPoint.y >= FontBuffer[i].y - 2))
     {
       HitFontNo = i;
@@ -308,9 +314,9 @@ void HitMouseCursor(void) {
 #endif
                            FontBuffer[i].x + strWidth + 2,
 #ifdef _NEWFONT_
-                           FontBuffer[i].y + FONT_SIZE + 6,
+                           FontBuffer[i].y + strHeight + 6,
 #else
-                           FontBuffer[i].y + FONT_SIZE + 4,
+                           FontBuffer[i].y + strHeight + 4,
 #endif
 
                            DISP_PRIO_BOX2, BoxColor, 0);
@@ -500,7 +506,7 @@ void HitMouseCursor(void) {
             if (ProcNo == PROC_GAME) {
               // 2026.08.30: 设置在平时场景下的OneLineInfoStr.
 #ifdef _MOUSE_SHOW_INFO_FOR_HEAD
-              int left = GetStrWidth(pDispInfo->pAct->name) / 2;
+              int left = getTextLength(pDispInfo->pAct->name) / 2;
               itemNameColor = pDispInfo->pAct->itemNameColor;
               StockFontBuffer(pDispInfo->x + 20 - left, pDispInfo->y - 10,
                               FONT_PRIO_FRONT, itemNameColor,

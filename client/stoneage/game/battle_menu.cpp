@@ -382,7 +382,7 @@ void BattleNameDisp(void) {
       color = FONT_PAL_WHITE;
     char token[256];
     sprintf_s(token, "%s LV%d", p_party[i]->name, p_party[i]->level);
-    StockFontBuffer(p_party[i]->x - GetStrWidth(token) / 2, p_party[i]->y - 10,
+    StockFontBuffer(p_party[i]->x - getTextLength(token) / 2, p_party[i]->y - 10,
                     FONT_PRIO_BACK, color, token, 0);
   }
 }

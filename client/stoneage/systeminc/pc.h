@@ -455,18 +455,18 @@ enum {
 #endif
 };
 
-typedef struct {
+struct PET {
   int index;                    // 位置
-  int graNo;                    // ???
-  int hp, maxHp;                // ??????
-  int mp, maxMp;                // ??????
-  int exp, maxExp;              // ?????????????
+  int graNo;                    // 图片
+  int hp, maxHp;                // 生命值/最大生命值
+  int mp, maxMp;                // 魔法值/最大魔法值
+  int exp, maxExp;              // 经验值/
   int level;                    // ???
-  int atk, def;                 // ??????????
-  int quick;                    // ?
-  int ai;                       // ?
-  int earth, water, fire, wind; // 佋???
-  int maxSkill;                 // ?????
+  int atk, def;                 // 攻击、防御
+  int quick;                    // 速度
+  int ai;                       // AI？
+  int earth, water, fire, wind; //
+  int maxSkill;                 //
   int trn;                      // 宠物转生数
 #ifdef _SHOW_FUSION
   int fusion; // low word: 宠蛋旗标, hi word: 物种编码
@@ -496,9 +496,9 @@ typedef struct {
   int blessquick;
   int blessdef;
 #endif
-} PET;
+};
 
-typedef struct {
+struct MAGIC {
   short useFlag;
   int mp;
   short field;
@@ -506,7 +506,7 @@ typedef struct {
   short deadTargetFlag;
   char name[MAGIC_NAME_LEN * 4 + 1];
   char memo[MAGIC_MEMO_LEN * 4 + 1];
-} MAGIC;
+};
 
 typedef struct {
   short useFlag;

@@ -934,14 +934,14 @@ void damage_num(ACTION *a0)
             StockFontBuffer(ATR_H_POS(a0) - d0, ATR_V_POS(a0), FONT_PRIO_BACK, FONT_PAL_GREEN, szMojHp, 0);
             break;
         }
-        d0 = GetStrWidth(szMoji) >> 1;
+        d0 = getTextLength(szMoji) >> 1;
         StockFontBuffer(ATR_H_POS(a0) - d0, ATR_V_POS(a0), FONT_PRIO_BACK, d1, szMoji, 0);
 
         if (ATR_MPDAMAGE(a0) != 0 || ATR_MPDFLG(a0) == 1)//伤害
             StockFontBuffer(ATR_H_POS(a0) - d0, ATR_V_POS(a0) + 12, FONT_PRIO_BACK, FONT_PAL_YELLOW, szMojMp, 0);
         if (ATR_RIDE_FLAG(a0) == 1)
         {
-            dx = GetStrWidth(szMojiP) >> 1;
+            dx = getTextLength(szMojiP) >> 1;
             StockFontBuffer(ATR_H_POS(a0) - dx, ATR_V_POS(a0) + 60, FONT_PRIO_BACK, d1, szMojiP, 0);
         }
         break;

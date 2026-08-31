@@ -7154,7 +7154,6 @@ int shopWindow2(void)
                     StockFontBuffer(x + 242, y + 118 + i * 21, FONT_PRIO_FRONT, color, tmsg, 0);
 #else
 #ifdef _NEWFONT_
-                    extern int getTextLength(char *str);
                     sprintf_s(tmsg, "%8dＦ", sealItem[j + i].costfame);
                     StockFontBuffer(x + 242, y + 118 + i * 21, FONT_PRIO_FRONT, color, tmsg, 0);
                     sprintf_s(tmsg, "%8dＳ", sealItem[j + i].price);
@@ -11536,13 +11535,13 @@ void familyListWN(void)
                 sprintf_s(buf, "%4d:%s", (pagenum - 1) * 10 + 1 + i, familyList[i].name);
                 StockFontBuffer(x + 15, y + 110 + (i * 20), FONT_PRIO_FRONT, j, buf, 0);
 
-                StockFontBuffer(x + 240 - GetStrWidth(familyList[i].leadername) / 2, y + 110 + (i * 20), FONT_PRIO_FRONT, j, familyList[i].leadername, 0);
+                StockFontBuffer(x + 240 - getTextLength(familyList[i].leadername) / 2, y + 110 + (i * 20), FONT_PRIO_FRONT, j, familyList[i].leadername, 0);
 
                 sprintf_s(buf, "%d", familyList[i].popu);
-                StockFontBuffer(x + 335 - GetStrWidth(buf) / 2, y + 110 + (i * 20), FONT_PRIO_FRONT, j, buf, 0);
+                StockFontBuffer(x + 335 - getTextLength(buf) / 2, y + 110 + (i * 20), FONT_PRIO_FRONT, j, buf, 0);
 
                 sprintf_s(buf, "%d", (familyList[i].DP / 100));
-                StockFontBuffer(x + 400 - GetStrWidth(buf) / 2, y + 110 + (i * 20), FONT_PRIO_FRONT, j, buf, 0);
+                StockFontBuffer(x + 400 - getTextLength(buf) / 2, y + 110 + (i * 20), FONT_PRIO_FRONT, j, buf, 0);
 
                 fontId[i] = StockFontBuffer(x + 15, y + 110 + (i * 20), FONT_PRIO_FRONT, j, str, 2);
 

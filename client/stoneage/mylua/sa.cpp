@@ -313,11 +313,10 @@ static int SAtimeGetTime(lua_State *L) {
   return 1;
 }
 
-extern int getTextLength(char *str);
 static int Lua_getTextLength(lua_State *L) {
   size_t l;
   const char *str = luaL_checklstring(L, 1, &l);
-  int ret = getTextLength((char *)str);
+  int ret = getTextLength(str);
   lua_pushinteger(L, ret);
   return 1;
 }

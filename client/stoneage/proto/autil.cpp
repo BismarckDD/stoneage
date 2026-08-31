@@ -707,7 +707,6 @@ void rtrim(char *str) {
 #ifdef _FONT_STYLE_
 
 WM_STR wmstr[25];
-extern int getTextLength(char *str);
 void getstrstyle(char *str, int index, int pos, int flg, WM_STR wm[]) {
   char *stemp, *etemp;
   if (flg)
@@ -809,7 +808,6 @@ void PutTitleText(int x, int y, char fontPrio, TITLE_STR str, BOOL hitFlag) {
   }
 }
 
-extern int getTextLength(char *str);
 void getTitlestyle(char *str, int pos, int flg, TITLE_STR *wm) {
   char *stemp, *etemp;
   if (flg)

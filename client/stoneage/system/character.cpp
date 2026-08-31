@@ -1354,11 +1354,11 @@ void drawCharStatus(ACTION *ptAct) {
       sprintf_s(msg, "%s", ptAct->freeName);
     else {
       sprintf_s(msg, "%s", ptAct->fmname);
-      StockFontBuffer(ptAct->x - GetStrWidth(msg) / 2, ptAct->y - 23,
+      StockFontBuffer(ptAct->x - getTextLength(msg) / 2, ptAct->y - 23,
                       FONT_PRIO_BACK, ptAct->charNameColor, msg, 0);
       sprintf_s(msg, "%s", ptAct->name);
     }
-    StockFontBuffer(ptAct->x - GetStrWidth(msg) / 2, ptAct->y - 10,
+    StockFontBuffer(ptAct->x - getTextLength(msg) / 2, ptAct->y - 10,
                     FONT_PRIO_BACK, ptAct->charNameColor, msg, 0);
   }
 
@@ -1380,7 +1380,7 @@ void drawCharStatus(ACTION *ptAct) {
 
       count2++;
       sprintf_s(msg, "ＧＭ");
-      StockFontBuffer(ptAct->x - GetStrWidth(msg) / 2, ptAct->y - 110,
+      StockFontBuffer(ptAct->x - getTextLength(msg) / 2, ptAct->y - 110,
                       FONT_PRIO_BACK, count1, msg, 1);
     }
   }
@@ -1390,7 +1390,7 @@ void drawCharStatus(ACTION *ptAct) {
   int i;
   sprintf_s(msg, ptAct->gm_name);
   for (i = 2; i > 0; i--)
-    StockFontBuffer(ptAct->x - GetStrWidth(msg) / 2, ptAct->y - 110 - i,
+    StockFontBuffer(ptAct->x - getTextLength(msg) / 2, ptAct->y - 110 - i,
                     FONT_PRIO_BACK, i, msg, 1);
 #endif
 

@@ -989,6 +989,10 @@ void KeyboardReturn( void )
     
     // ??? **********************************
     if( pNowStrBuffer == &petNameChange ){
+        // Unlike the chat branch above, this branch historically relied on
+        // insertion preserving the old terminator.  Explicitly terminate it
+        // before the protocol encoder reads the name.
+        petNameChange.buffer[petNameChange.cnt] = '\0';
         // ??????
         DeathAction( pActMenuWnd3 );
         pActMenuWnd3 = NULL;
@@ -1081,6 +1085,11 @@ void StockStrBufferChar(char c)
         if(pNowStrBuffer==NULL || (cnt=pNowStrBuffer->cnt) >= pNowStrBuffer->len)
             return;
         char *buffer=pNowStrBuffer->buffer;
+        if (pNowStrBuffer == &petNameChange) {
+            if (c == '|' || c == '\\' ||
+                getUtf8CharNum(buffer) >= PET_NAME_LEN)
+                return;
+        }
          if(pNowStrBuffer==&idKey || pNowStrBuffer==&passwd){
             /*if(!(('0'<=c && c<='9') || ('A'<=c && c<='Z') || ('a'<=c && c<='z')))
                 return;*/
@@ -1115,6 +1124,9 @@ void StockStrBufferDBChar(char *lpc)
     if(pNowStrBuffer==NULL || (cnt=pNowStrBuffer->cnt) > pNowStrBuffer->len-byte)
         return;
     char *buffer=pNowStrBuffer->buffer;
+    if (pNowStrBuffer == &petNameChange &&
+        getUtf8CharNum(buffer) >= PET_NAME_LEN)
+        return;
     if(pNowStrBuffer==&idKey || pNowStrBuffer==&passwd)
         return;
     else{
@@ -1457,38 +1469,6 @@ int GetStrLastByte(char *str)
     return lastBytes;
 }
 
-/*******************************************************************************/
-/* ??????????????
-/* ??      ????
-/*******************************************************************************/
-#ifndef _NEWFONT_
-int GetStrWidth( char *str )
-{
-    int width = 0;
-    // ??????????
-    while (*str != '\0') {
-        const size_t remaining = strlen(str);
-        const int bytes = getUtf8SequenceLength(str, remaining);
-        if (bytes == 0)
-            break;
-        char character[5] = {0};
-        memcpy(character, str, bytes);
-        width += getUtf8CharNum(character) > 1 ? FONT_SIZE : FONT_SIZE >> 1;
-        str += bytes;
-    }
-    return width;
-}
-#else
-extern int getTextLength(char * str);
-int GetStrWidth( char *str )
-{
-    return getTextLength(str);
-}
-#endif
-
-/*******************************************************************************/
-/* ??????
-/*******************************************************************************/
 void GetKeyInputFocus( STR_BUFFER *pStrBuffer )
 {    
     pNowStrBuffer = pStrBuffer;
