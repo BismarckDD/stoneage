@@ -114,10 +114,10 @@ void InitBattleMenu(void) {
   battleMenuFlag = FALSE;
   battleMenuFlag2 = FALSE;
   battleMenuReturn = TRUE;
+  battleButtonBak = 0;
   battleButtonBak2 = -1;
   BattleResultWndFlag = FALSE;
   ClearBattleButton();
-  battleButtonBak = 0;
 #ifdef __AI
   extern int AI_First;
   AI_First = 1;
@@ -170,7 +170,7 @@ void InitBattleAnimFlag(void) {
   }
 }
 
-// ????????? *******************************************************/
+//
 int CheckPetSuu(void) {
   int i, cnt = 0;
   for (i = 0; i < 5; i++) {

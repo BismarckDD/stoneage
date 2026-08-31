@@ -19,7 +19,7 @@ LPDIRECTINPUTDEVICE2 pDInputDevice2;
 #endif
 char joy_flg = FALSE;
 char keyboad_flg = FALSE;
-int    slow_flg = 0;
+int slow_flg = 0;
 int flash_vct_no = 0;
 int quake_flg = 0;
 int quake_vct_no = 0;

@@ -945,35 +945,25 @@ void LockAndOkfunction()
 }
 #endif
 
-// ?????????? ***************************************************/
 void WindowDisp(ACTION *pAct)
 {
-    // ???????
     WINDOW_DISP *pYobi = (WINDOW_DISP *)pAct->pYobi;
     int i, j;
     int x = pAct->x + 32, y = pAct->y + 24;
     // ????
     switch (pAct->actNo){
-
-    case 0:    // ????????
-
+    case 0:
         StockBoxDispBuffer(pYobi->mx - pYobi->nowX,
             pYobi->my - pYobi->nowY,
             pYobi->mx + pYobi->nowX,
             pYobi->my + pYobi->nowY,
             pYobi->boxDispPrio, SYSTEM_PAL_BLACK, 0);
-        // ????
         pYobi->nowX += pAct->dx;
         pYobi->nowY += pAct->dy;
-        // ????????
         pYobi->cnt++;
-        // ????????
         if (pYobi->cnt >= WINDOW_CREATE_FRAME){
-            // ?????
             if (pYobi->wndType == -1) pAct->actNo = 1;
-            else
-                // ????????
-            if (pYobi->wndType == -2) pAct->actNo = 3;
+            else if (pYobi->wndType == -2) pAct->actNo = 3;
             else pAct->actNo = 2;
         }
         break;
@@ -1001,15 +991,10 @@ void WindowDisp(ACTION *pAct)
                     x += 64; // ????
                 }
             }
-            else
-                // ?
-            if (j == pYobi->sizeY - 1){
+            else if (j == pYobi->sizeY - 1){
                 for (i = 0; i < pYobi->sizeX; i++){
-                    // ?
                     if (i == 0) StockDispBuffer(x, y, DISP_PRIO_MENU, pYobi->wndType + 6, pYobi->hitFlag);
-                    // ?
                     else if (i == pYobi->sizeX - 1) StockDispBuffer(x, y, DISP_PRIO_MENU, pYobi->wndType + 8, pYobi->hitFlag);
-                    // ??
 #ifdef _READ16BITBMP
                     else if(g_bUseAlpha){
                         if(pYobi->wndType == CG_WND_G_0) StockDispBuffer( x, y, DISP_PRIO_MENU, pYobi->wndType + 7, pYobi->hitFlag );
@@ -1022,11 +1007,8 @@ void WindowDisp(ACTION *pAct)
                 }
             }
             else
-                // ??
             for (i = 0; i < pYobi->sizeX; i++){
-                // ?
                 if (i == 0) StockDispBuffer(x, y, DISP_PRIO_MENU, pYobi->wndType + 3, pYobi->hitFlag);
-                // ?
 #ifdef _READ16BITBMP
                 else if(g_bUseAlpha){
                     if( i == pYobi->sizeX - 1 ){
@@ -1094,9 +1076,7 @@ ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY, int titleNo, int wndT
     if (fixType == TRUE){
         if (x > 320){
             x += DISPLACEMENT_X;
-        }
-        else if (x > 40)
-        {
+        } else if (x > 40) {
             x += DISPLACEMENT_X / 2;
         }
         if (y > 40)
@@ -1509,22 +1489,12 @@ void AnimDisp(ACTION *pAct)
             gemini(pAct);
             // ???????
             pattern(pAct, pAct->dy, ANM_LOOP);
-        }
-        // ?????
-        else{
-            // ???????????
+        } else {
             pAct->level = FALSE;
-            // ??????
             play_se(204, 320, 240);
-
-            // ??????????????
             if (pAct->delta == 1){
-                // ???????
                 pAct->actNo = ANIM_DISP_MIX_PET_MOJI;
-                // ??
                 pAct->anim_no = ANIM_STAND;
-
-                // ?????????
                 pAct->spd = 10;//Rnd( 6, 12 );
                 // ???????????
                 pAct->dy = 14 - pAct->spd;
@@ -11056,17 +11026,10 @@ void MenuProc(void)
             else{
                 if (pActMenuWnd->hp <= 0) break;
             }
-
-            // ??????????
             if (HitFontNo == systemWndFontNo[0]){
-                // ???
                 if (MouseCursorFlag == TRUE){
-                    // ??????
                     strcpy(OneLineInfoStr, "两色的滑鼠游标，反应较快。");
-
-                    // ????????
                     if (mouse.onceState & MOUSE_LEFT_CRICK){
-                        // ??????????
 #ifdef _TALK_WINDOW
                         g_iCursorCount = ShowCursor( FALSE );
 #else
@@ -11076,10 +11039,9 @@ void MenuProc(void)
                         play_se(217, 320, 240);    // ?????
                     }
                 }
-                else{
-                    // ??????
+                else
+                {
                     strcpy(OneLineInfoStr, "普通的滑鼠游标。");
-                    // ????????
                     if (mouse.onceState & MOUSE_LEFT_CRICK){
                         // ??????????
 #ifdef _TALK_WINDOW

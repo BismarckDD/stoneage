@@ -1,7 +1,6 @@
-#ifndef _OHTA_H_
-#define _OHTA_H_
+#ifndef __OHTA_H__
+#define __OHTA_H__
 
-/* ×Ô™C×÷³É *******************************************************************/
-ACTION *MakeJiki( void ); 
+ACTION *MakeJiki(void);
 
-#endif
+#endif // __OHTA_H__

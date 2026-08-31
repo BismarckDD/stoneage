@@ -1,10 +1,10 @@
 ﻿#pragma once
 
 #include "version.h"
-#include "proto/autil.h"
+#include "proto/autil.h" // 需要引入 TILE_STR
 
-#define UTF8_CHAR_NAME_BUFFER_SIZE 65
-#define UTF8_FREE_NAME_BUFFER_SIZE 129
+#define UTF8_CHAR_NAME_BUFFER_SIZE 65   // 16 * 4 + 1 最多支持16个字符
+#define UTF8_FREE_NAME_BUFFER_SIZE 129  // 32 * 4 + 1 最多支持32个字符
 
 #ifdef __ACTION_CPP__
 #define EXTERN
@@ -16,13 +16,13 @@
 enum {
   PRIO_TOP,        // 最优先
   PRIO_CHR,        // 同Char
-  PRIO_BG,
+  PRIO_BG,         // 背景图片
   PRIO_JIKI,
   PRIO_ENEMY,
   PRIO_ENEMY_TAMA,
   PRIO_JIKI_TAMA,
   PRIO_ITEM,
-  PRIO_BOSS,
+  PRIO_BOSS,       //
   PRIO_GAME_OVER,  /* GAME OVER */
   PRIO_BTM = 255
 };
@@ -36,22 +36,22 @@ enum {
 #define ACT_ATR_HIDE (1 << 1) // 不显示
 #define ACT_ATR_HIT (1 << 2)  // 可以被点选
 #define ACT_ATR_HIT_BOX (1 << 3) // 可以被点选的外框
-#define ACT_ATR_INFO (1 << 4) // 显示出相关讯息
-#define ACT_ATR_HIDE2 (1 << 5) // 不显示 + 可以被点选
+#define ACT_ATR_INFO (1 << 4)          // 显示出相关讯息
+#define ACT_ATR_HIDE2 (1 << 5)         // 不显示 + 可以被点选
 // 战斗指令输入完成旗标,未完成输入的玩家会动,完成则不会动
 #define ACT_ATR_BTL_CMD_END (1 << 6)
 #define ACT_ATR_TYPE_PC (1 << 7)       // 玩家
 #define ACT_ATR_TYPE_OTHER_PC (1 << 8) // 别的玩家
-#define ACT_ATR_TYPE_PET (1 << 9)      //
-#define ACT_ATR_TYPE_ITEM (1 << 10)    //
-#define ACT_ATR_TYPE_GOLD (1 << 11)    //
+#define ACT_ATR_TYPE_PET (1 << 9)      // 宠物
+#define ACT_ATR_TYPE_ITEM (1 << 10)    // 物品
+#define ACT_ATR_TYPE_GOLD (1 << 11)    // 
 #define ACT_ATR_TYPE_OTHER (1 << 12)   //
 #define ACT_ATR_HIT_BOX_ALL1 (1 << 13) // 可以被点选 + 外框显示1
 #define ACT_ATR_HIT_BOX_ALL2 (1 << 14) // 可以被点选 + 外框显示2
 #define ACT_ATR_HIT_BOX_ALL3 (1 << 15) // 可以被点选 + 外框显示3
 #define ACT_ATR_HIT_BOX_ALL4 (1 << 16) // 可以被点选 + 外框显示3
 #define ACT_ATR_TRAVEL (1 << 17)       //
-
+//
 #define ACT_ATR_HIT_BOX_COL1 (1 << 18) // 左上第一列
 #define ACT_ATR_HIT_BOX_COL2 (1 << 19) // 左上第二列
 #define ACT_ATR_HIT_BOX_COL3 (1 << 20) // 右下第一列
@@ -100,9 +100,9 @@ struct ACTION {
   int nextGx, nextGy;       // 下一个座标
   int bufGx[10], bufGy[10]; // 从目前座标到下一个座标之间座标的buffer
   short bufCount;           // 设定目前要走到那一个座标
-  short walkFlag;           // ??????????????????????
+  short walkFlag;           //
   float mx, my;             // 地图座标
-  float vx, vy;             // ??
+  float vx, vy;             //
 
   // 属性
   short earth;         // 地属性
@@ -124,7 +124,7 @@ struct ACTION {
   int anim_frame_cnt;  // 这张frame停留时间
   int anim_x;          // X座标(Sprbin+Adrnbin)
   int anim_y;          // Y座标(Sprbin+Adrnbin)
-  int anim_hit;        // ???
+  int anim_hit;        //
   // shan add +1
   char fmname[UTF8_FREE_NAME_BUFFER_SIZE];
   // Robin 0728 ride Pet
@@ -170,9 +170,7 @@ struct ACTION {
 #ifdef _CHAR_PROFESSION // WON ADD 人物职业
   int profession_class;
 #endif
-  // #ifdef _BATTLESKILL                // (不可开) Syu ADD 战斗技能介面
   int warrioreffect;
-// #endif
 #ifdef _GM_IDENTIFY // Rog ADD GM识别
   char gm_name[33];
 #endif
@@ -194,6 +192,8 @@ struct ACTION {
 EXTERN ACTION *pActTop;
 EXTERN ACTION *pActBtm;
 EXTERN ACTION *pJiki;
+
+#undef EXTERN
 
 ACTION *GetAction(UCHAR prio, UINT yobiSize);
 
