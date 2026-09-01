@@ -121,31 +121,23 @@ BOOL NPC_AirInit(int meindex) {
   if (onewayflg == -1)
     onewayflg = FALSE; // default
   CHAR_setWorkInt(meindex, NPC_WORK_ONEWAYFLG, onewayflg);
-
   CHAR_setInt(meindex, CHAR_WHICHTYPE, CHAR_TYPEBUS);
-
   CHAR_setWorkInt(meindex, NPC_WORK_MODE, 0);
   CHAR_setWorkInt(meindex, NPC_WORK_ROUTEPOINT, 2);
   CHAR_setWorkInt(meindex, NPC_WORK_ROUNDTRIP, 0);
   CHAR_setWorkInt(meindex, NPC_WORK_CURRENTROUTE, 0);
-
   CHAR_setInt(meindex, CHAR_LOOPINTERVAL, NPC_AIR_WAITINGMODE_WAITTIME);
-
-  /* 蜇箕及凛棉毛本永玄 */
   CHAR_setWorkInt(meindex, NPC_WORK_CURRENTTIME, NowTime.tv_sec);
 
   for (i = 0; i < getPartyNum(meindex); i++) {
     CHAR_setWorkInt(meindex, CHAR_WORKPARTYINDEX1 + i, -1);
   }
 
-  /* 伙□玄瑁烂允月 */
   {
     int rev;
     int r = CHAR_getWorkInt(meindex, NPC_WORK_ROUTEMAX);
     CHAR_setWorkInt(meindex, NPC_WORK_CURRENTROUTE, RAND(1, r));
-    // print( "route:%d\n",CHAR_getWorkInt( meindex, NPC_WORK_CURRENTROUTE));
 
-    /*   欠旦正□玄 */
     rev = NPC_Util_GetNumFromStrWithDelim(argstr, "reverse");
     if (rev == 1) {
       int num = NPC_AirGetRoutePointNum(meindex, argstr);
@@ -310,9 +302,6 @@ static void NPC_Air_walk(int meindex) {
   int ret;
   int i;
   int npc_wave = CHAR_getWorkInt(meindex, NPC_WORK_RUNWAVE);
-
-  /* 汹仁楮溢 */
-  /* 谗邋仄凶凛及质   */
   start.x = CHAR_getInt(meindex, CHAR_X);
   start.y = CHAR_getInt(meindex, CHAR_Y);
   end.x = CHAR_getWorkInt(meindex, NPC_WORK_ROUTETOX);

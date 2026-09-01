@@ -1,5 +1,7 @@
 #include "version.h"
+//
 #include "npc_door.h"
+//
 #include "anim_tbl.h"
 #include "char.h"
 #include "handletime.h"
@@ -13,11 +15,9 @@
 
 static int NPC_Door_isOpen(int meindex);
 
-#define NPC_DOOR_OPENMSG "玉失互｝夫日中凶!"
-#define NPC_DOOR_CLOSEMSG "玉失毛｝仄户凶!"
-#define NPC_DOOR_CANTOPENMSG                                                   \
-  "井亢互丐歹卅中及匹｝玉失毛夫日仁仇午互\
-匹五卅中!"
+#define NPC_DOOR_OPENMSG "请通过!"
+#define NPC_DOOR_CLOSEMSG "你不允许通过!"
+#define NPC_DOOR_CANTOPENMSG "尚未达到通过的条件!"
 
 #define ROPEGRAPHIC 9259
 
@@ -99,7 +99,7 @@ BOOL NPC_DoorInit(int meindex) {
     switch (closeg) {
     case 11900:
       dir = 6;
-      break; /* 霁及玉失 夫分曰仄凶 */
+      break;
     case 11902:
       dir = 0;
       break; /*          夫分曰丹尹 */

@@ -1204,8 +1204,35 @@ BOOL _MAP_objmove(char *file, int line, int objindex, int ofloor, int ox,
     c = c->next;
   }
   if (!pointer) {
-    //    print( "\n%s:%d:错误( %d,%d,%d )->(%d,%d,%d)\n", __FILE__, __LINE__,
-    //    ofloor, ox, oy, nfloor, nx, ny );
+    // 诊断：物体在旧格(ofloor,ox,oy)的 olink 中找不到，说明
+    // 物体记录坐标与地图 olink 网格不一致。扫描整张旧地图定位其真实挂点。
+    int found = FALSE;
+    int scan_x, scan_y;
+    int scan_xsiz = MAP_map[oldmapindex].xsiz;
+    int scan_ysiz = MAP_map[oldmapindex].ysiz;
+    MAP_Objlink *s;
+    for (scan_y = 0; scan_y < scan_ysiz && !found; scan_y++) {
+      for (scan_x = 0; scan_x < scan_xsiz; scan_x++) {
+        for (s = MAP_map[oldmapindex].olink[scan_y * scan_xsiz + scan_x]; s;
+             s = s->next) {
+          if (s->objindex == objindex) {
+            print("%s:%d:[MAP_OBJMOVE_FAIL] objindex=%d 期望旧格(%d,%d,%d)"
+                  "未找到,实际挂在(%d,%d,%d);目标(%d,%d,%d) caller=%s:%d\n",
+                  __FILE__, __LINE__, objindex, ofloor, ox, oy,
+                  oldmapindex, scan_x, scan_y, nfloor, nx, ny, file, line);
+            found = TRUE;
+            break;
+          }
+        }
+      }
+    }
+    if (!found) {
+      print("%s:%d:[MAP_OBJMOVE_FAIL] objindex=%d 旧格(%d,%d,%d)未找到,"
+            "且整张旧地图均无该 object 的 olink(可能已被移除/从未上图);"
+            "目标(%d,%d,%d) caller=%s:%d\n",
+            __FILE__, __LINE__, objindex, ofloor, ox, oy,
+            nfloor, nx, ny, file, line);
+    }
     return FALSE;
   }
   {

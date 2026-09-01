@@ -327,6 +327,15 @@ static int CHAR_findEmptyItemBoxFromChar(Char *ch) {
     item_index = ch->indexOfExistItems[i];
     if (item_index == -1)
       return i;
+    /*
+     * Old or mismatched clients could leave a non--1 value in an otherwise
+     * empty slot.  Such an index does not refer to a live item and must not
+     * make the inventory look permanently full.
+     */
+    if (!ITEM_CHECKINDEX(item_index)) {
+      ch->indexOfExistItems[i] = -1;
+      return i;
+    }
   }
 
   return -1;

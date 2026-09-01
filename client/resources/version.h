@@ -595,6 +595,8 @@ unsigned int TimeGetTime(void);
 #define LABEL_STR_                 //标记重定义输出[普][密]
 
 #ifdef _SA_VERSION_25
+#define _ITEM_EQUITSPACE              // 人物扩展装备栏：腰带、盾、鞋
+#define _EQUIT_NEWGLOVE               // 人物手套栏
 #define _DEFAULT_PKEY "shiqi"         // 默认的密钥
 #define _RUNNING_KEY  "shiqi.hk"      // 运行中密钥
 #define _SYSTEM_SLEEP_   6            // 游戏速度设置
@@ -608,7 +610,8 @@ unsigned int TimeGetTime(void);
 #define _LUA_PATCH_ ".//lua"  //LUA路径
 #define _LUA_KEY_ "6A68673107B8C5B829815A507FF5C274"   //LUA加密密钥
 #endif
-#define _MAGIC_ITEM_                 // 法宝功能
+// 服务端物品协议没有实现 _MAGIC_ITEM_ 的额外字段，保持关闭以避免物品包错位。
+// #define _MAGIC_ITEM_                 // 法宝功能
 #define _ICONBUTTONS_                // 转盘
 #define _BATTLE_TIME_  99000    
 #define _PET_2TRANS                  // (可开) Change 宠物2转

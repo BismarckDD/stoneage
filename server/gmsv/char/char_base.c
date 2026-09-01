@@ -4130,7 +4130,7 @@ int CHAR_getCharDepotPetElement(int char_index) {
 }
 #endif
 
-#ifdef _RIDE_CF
+#if defined(_RIDE_CF) && defined(_NEW_RIDEPETS)
 int CHAR_Ride_CF_init() {
   FILE *fp;
   int i = 0;

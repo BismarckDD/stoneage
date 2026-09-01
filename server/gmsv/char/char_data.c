@@ -822,18 +822,12 @@ BOOL CHAR_initAppearPosition(char *filename) {
   }
   CHAR_appearnum = 0;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */
     if (line[0] == '\n')
       continue; /* none    */
     chomp(line);
-
     CHAR_appearnum++;
   }
 
@@ -892,15 +886,12 @@ BOOL CHAR_initAppearPosition(char *filename) {
       }
 
       CHAR_appear[appearreadlen].x = atoi(token);
-
       ret = getStringFromIndexWithDelim(line, " ", 3, token, sizeof(token));
       if (ret == FALSE) {
         printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         continue;
       }
-
       CHAR_appear[appearreadlen].y = atoi(token);
-
       appearreadlen++;
     }
   }
@@ -1182,6 +1173,9 @@ static int LevelUpTbl[] = {
 };
 
 int CHAR_GetLevel() { return arraysizeof(LevelUpTbl) - 1; }
+
+
+// 2026.09.01 获得下一级所需的经验值
 int CHAR_GetLevelExp(int char_index, int level) {
 #ifdef _NEWOPEN_MAXEXP
 #ifdef _USER_EXP_CF
@@ -1218,7 +1212,12 @@ int CHAR_GetLevelExp(int char_index, int level) {
     }
   }
   return getNeedLevelUpTbls(level);
+#else
 #endif
+  if (level >= arraysizeof(LevelUpTbl)) {
+    return -1;
+  }
+  return LevelUpTbl[level] - LevelUpTbl[level-1];
 #else
   if (level >= arraysizeof(LevelUpTbl)) {
     return -1;

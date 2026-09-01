@@ -2210,7 +2210,7 @@ int CHAR_getfindEmptyDepotPet(int char_index);
 BOOL CHAR_CheckDepotPet(int char_index);
 #endif
 
-#ifdef _RIDE_CF
+#if defined(_RIDE_CF) && defined(_NEW_RIDEPETS)
 int CHAR_Ride_CF_init();
 #endif
 

@@ -17,36 +17,36 @@
 #include "npcutil.h"
 #include "object.h"
 #include "readmap.h"
-static void NPC_WarpMan_selectWindow(int meindex, int toindex, int num,
+static void NPC_WarpMan_selectWindow(int npc_index, int toindex, int num,
                                      int select);
 // ANDY_END
-BOOL NPC_GetDuelPointCheck(int meindex, int talker);
-BOOL NPC_PARTY_CHAECK(int meindex, int talkerindex);
-void NPC_ERR_DiSP(int meindex, int talker, int errNO);
+BOOL NPC_GetDuelPointCheck(int npc_index, int talker);
+BOOL NPC_PARTY_CHAECK(int npc_index, int talkerindex);
+void NPC_ERR_DiSP(int npc_index, int talker, int errNO);
 #ifdef _NEW_ITEM_
 
 extern int CheckCharMaxItem(int charindex);
 #endif
 BOOL NPC_BigSmallLastCheck(int point1, int mypoint, int flg);
 
-// BOOL NPC_ItemCheck(int meindex,int talker,int itemNo,int flg);
+// BOOL NPC_ItemCheck(int npc_index,int talker,int itemNo,int flg);
 int NPC_FloorUse(int talker, int floor);
-BOOL NPC_WarpMsg(int meindex, int talker, char *buf);
-BOOL NPC_NpcWarpMsg(int meindex, int talker, char *arg);
+BOOL NPC_WarpMsg(int npc_index, int talker, char *buf);
+BOOL NPC_NpcWarpMsg(int npc_index, int talker, char *arg);
 int NPC_FloorUseOtherFloor(int char_index, char *buf);
 
 #ifdef _NPC_ADDLEVELUP
-void NPC_LevelAndTransUp(int meindex, int charindex, int level, int skillpoint,
+void NPC_LevelAndTransUp(int npc_index, int charindex, int level, int skillpoint,
                          int exp, int ridepet);
 #endif
 
 #define WARPMAN_STANDBY 3000
 #define WARPMAN_WAIT 150
 // ANDY_ADD
-int CheckWarpMsg(int meindex, int talkerindex, char *npcarg, char *TalkStr);
+int CheckWarpMsg(int npc_index, int talkerindex, char *npcarg, char *TalkStr);
 
 #ifdef _TREASURE_BOX
-BOOL NPC_TreasureEventRunMsg(int meindex);
+BOOL NPC_TreasureEventRunMsg(int npc_index);
 #endif
 
 BOOL NPC_TreasureRandItemGet(int meidex, int talker, int rand_j, char *buf);
@@ -57,7 +57,7 @@ enum {
   NPC_TIME_DEAD = CHAR_NPCWORKINT3,
   NPC_TIME_MODE = CHAR_NPCWORKINT4,
 
-  NPC_TIME_EVENTMODE = CHAR_NPCWORKINT6, // 1
+  NPC_TIME_EVENTMODE = CHAR_NPCWORKINT6,
   NPC_TIME_EVENTTIME = CHAR_NPCWORKINT7,
   NPC_TIME_EVENONBBI = CHAR_NPCWORKINT8,
   NPC_TIME_EVENOFFDBBI = CHAR_NPCWORKINT9,
@@ -71,7 +71,7 @@ enum {
 };
 
 #ifdef _NEW_WARPMAN
-static void NPC_NewWarpMan_selectWindow(int meindex, int toindex, int num,
+static void NPC_NewWarpMan_selectWindow(int npc_index, int toindex, int num,
                                         int select, char *TalkStr);
 
 enum { WARP_MAN = 0, NEW_WARPMAN, NEW_WARPMAN_END };
@@ -80,39 +80,39 @@ enum { WARP_MAN = 0, NEW_WARPMAN, NEW_WARPMAN_END };
 // Robin 0518
 // BOOL checkend = FALSE;
 
-BOOL NPC_WarpManInit(int meindex) {
+BOOL NPC_WarpManInit(int npc_index) {
   char npcarg[NPC_UTIL_GETARGSTR_BUFSIZE];
   char buff2[256];
   char buf[1024];
   int fl, x, y;
 
-  if (NPC_Util_GetArgStr(meindex, npcarg, sizeof(npcarg)) == NULL) {
+  if (NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg)) == NULL) {
     print("WarpMan:GetArgStrErr");
     return FALSE;
   }
-  CHAR_setInt(meindex, CHAR_WHICHTYPE, CHAR_TYPEWARPMAN);
+  CHAR_setInt(npc_index, CHAR_WHICHTYPE, CHAR_TYPEWARPMAN);
 #ifdef _NEW_WARPMAN
   if (strstr(npcarg, "NEWWARPMAN")) {
     // timeman 功能
-    CHAR_setWorkInt(meindex, NPC_TIME_MODE, 1);
+    CHAR_setWorkInt(npc_index, NPC_TIME_MODE, 1);
     if (NPC_Util_GetStrFromStrWithDelim(npcarg, "NEWTIME", buff2,
                                         sizeof(buff2)) != NULL) {
-      CHAR_setInt(meindex, CHAR_LOOPINTERVAL, 60 * 1000);
+      CHAR_setInt(npc_index, CHAR_LOOPINTERVAL, 60 * 1000);
     }
 #ifdef _TREASURE_BOX
-    CHAR_setWorkInt(meindex, NPC_TIME_EVENTMODE, NPC_EVENTMODE_NONE);
+    CHAR_setWorkInt(npc_index, NPC_TIME_EVENTMODE, NPC_EVENTMODE_NONE);
     if (NPC_Util_GetStrFromStrWithDelim(npcarg, "TREASURE_BOX", buff2,
                                         sizeof(buff2)) != NULL) {
       if (strstr(buff2, "ON") != NULL) {
-        CHAR_setWorkInt(meindex, NPC_TIME_EVENTMODE, NPC_EVENTMODE_EVENT);
-        CHAR_setWorkInt(meindex, NPC_TIME_EVENTTIME, NowTime.tv_sec);
+        CHAR_setWorkInt(npc_index, NPC_TIME_EVENTMODE, NPC_EVENTMODE_EVENT);
+        CHAR_setWorkInt(npc_index, NPC_TIME_EVENTTIME, NowTime.tv_sec);
         if (NPC_Util_GetStrFromStrWithDelim(npcarg, "TREASURE_ONBBI", buff2,
                                             sizeof(buff2)) != NULL)
-          CHAR_setWorkInt(meindex, NPC_TIME_EVENONBBI, atoi(buff2));
+          CHAR_setWorkInt(npc_index, NPC_TIME_EVENONBBI, atoi(buff2));
         if (NPC_Util_GetStrFromStrWithDelim(npcarg, "TREASURE_OFFDBBI", buff2,
                                             sizeof(buff2)) != NULL)
-          CHAR_setWorkInt(meindex, NPC_TIME_EVENOFFDBBI, atoi(buff2));
-        CHAR_setWorkInt(meindex, NPC_TIME_EVENTNUM, 0);
+          CHAR_setWorkInt(npc_index, NPC_TIME_EVENOFFDBBI, atoi(buff2));
+        CHAR_setWorkInt(npc_index, NPC_TIME_EVENTNUM, 0);
       }
     }
 
@@ -123,7 +123,7 @@ BOOL NPC_WarpManInit(int meindex) {
     if (NPC_Util_GetStrFromStrWithDelim(npcarg, "WARP", buf, sizeof(buf)) ==
         NULL) {
       char filename[256];
-      if (NPC_Util_CheckAssignArgFile(meindex, filename) != NULL)
+      if (NPC_Util_CheckAssignArgFile(npc_index, filename) != NULL)
         print("NPC WARPMAN Error! file:%s\n", filename);
       return FALSE;
     }
@@ -135,7 +135,7 @@ BOOL NPC_WarpManInit(int meindex) {
     y = atoi(buff2);
     if (MAP_IsValidCoordinate(fl, x, y) == FALSE) {
       char filename[256];
-      NPC_Util_CheckAssignArgFile(meindex, filename);
+      NPC_Util_CheckAssignArgFile(npc_index, filename);
       print("\nWarp NPC: filename:%s\n 3.Invalid warpman ERR %d %d %d",
             filename, fl, x, y);
       return FALSE;
@@ -146,7 +146,7 @@ BOOL NPC_WarpManInit(int meindex) {
   return TRUE;
 }
 
-void NPC_WarpManTalked(int meindex, int talkerindex, char *szMes, int color) {
+void NPC_WarpManTalked(int npc_index, int talkerindex, char *szMes, int color) {
   char npcarg[NPC_UTIL_GETARGSTR_BUFSIZE];
   char token[256];
   int RunType = -1;
@@ -155,11 +155,11 @@ void NPC_WarpManTalked(int meindex, int talkerindex, char *szMes, int color) {
   if (CHAR_getInt(talkerindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER) {
     return;
   }
-  if (NPC_Util_isFaceToFace(meindex, talkerindex, 2) == FALSE) {
-    if (NPC_Util_isFaceToChara(talkerindex, meindex, 1) == FALSE)
+  if (NPC_Util_isFaceToFace(npc_index, talkerindex, 2) == FALSE) {
+    if (NPC_Util_isFaceToChara(talkerindex, npc_index, 1) == FALSE)
       return;
   }
-  if (NPC_Util_GetArgStr(meindex, npcarg, sizeof(npcarg)) == NULL) {
+  if (NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg)) == NULL) {
     print("GetArgStrErr");
     return;
   }
@@ -167,23 +167,23 @@ void NPC_WarpManTalked(int meindex, int talkerindex, char *szMes, int color) {
 #ifdef _NEW_WARPMAN
   if (strstr(npcarg, "NEWWARPMAN")) {
 #ifdef _TREASURE_BOX
-    if (CHAR_getWorkInt(meindex, NPC_TIME_EVENTMODE) == NPC_EVENTMODE_OPEN)
+    if (CHAR_getWorkInt(npc_index, NPC_TIME_EVENTMODE) == NPC_EVENTMODE_OPEN)
       return;
 #endif
-    NPC_NewWarpMan_selectWindow(meindex, talkerindex, 0, -1, szMes);
+    NPC_NewWarpMan_selectWindow(npc_index, talkerindex, 0, -1, szMes);
     return;
   } else {
-    if (NPC_PARTY_CHAECK(meindex, talkerindex) == FALSE) { // 有组队
-      NPC_ERR_DiSP(meindex, talkerindex, 1);
+    if (NPC_PARTY_CHAECK(npc_index, talkerindex) == FALSE) { // 有组队
+      NPC_ERR_DiSP(npc_index, talkerindex, 1);
       return;
     }
 
-    RunType = CheckWarpMsg(meindex, talkerindex, npcarg, szMes);
+    RunType = CheckWarpMsg(npc_index, talkerindex, npcarg, szMes);
     if (RunType != 0) {
       if (RunType == 1) {
         if (NPC_Util_GetStrFromStrWithDelim(npcarg, "nomal_msg", token,
                                             sizeof(token)) != NULL) {
-          CHAR_talkToCli(talkerindex, meindex, token, CHAR_COLORWHITE);
+          CHAR_talkToCli(talkerindex, npc_index, token, CHAR_COLORWHITE);
         }
       }
       return;
@@ -191,16 +191,16 @@ void NPC_WarpManTalked(int meindex, int talkerindex, char *szMes, int color) {
   }
 #else
 
-  if (NPC_PARTY_CHAECK(meindex, talkerindex) == FALSE) { // 有组队
-    NPC_ERR_DiSP(meindex, talkerindex, 1);
+  if (NPC_PARTY_CHAECK(npc_index, talkerindex) == FALSE) { // 有组队
+    NPC_ERR_DiSP(npc_index, talkerindex, 1);
     return;
   }
-  RunType = CheckWarpMsg(meindex, talkerindex, npcarg, szMes);
+  RunType = CheckWarpMsg(npc_index, talkerindex, npcarg, szMes);
   if (RunType != 0) {
     if (RunType == 1) {
       if (NPC_Util_GetStrFromStrWithDelim(npcarg, "nomal_msg", token,
                                           sizeof(token)) != NULL) {
-        CHAR_talkToCli(talkerindex, meindex, token, CHAR_COLORWHITE);
+        CHAR_talkToCli(talkerindex, npc_index, token, CHAR_COLORWHITE);
       }
     }
     return;
@@ -211,14 +211,14 @@ void NPC_WarpManTalked(int meindex, int talkerindex, char *szMes, int color) {
   CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANTTRD, 0);
   if (strstr(npcarg, "DR") != NULL) {
     CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANTSEC, -1);
-    if (NPC_GetDuelPointCheck(meindex, talkerindex) == FALSE)
+    if (NPC_GetDuelPointCheck(npc_index, talkerindex) == FALSE)
       return;
   } else {
-    NPC_WarpMan_selectWindow(meindex, talkerindex, 0, -1);
+    NPC_WarpMan_selectWindow(npc_index, talkerindex, 0, -1);
   }
 }
 
-static void NPC_WarpMan_selectWindow(int meindex, int toindex, int num,
+static void NPC_WarpMan_selectWindow(int npc_index, int toindex, int num,
                                      int select) {
 
   char npcarg[NPC_UTIL_GETARGSTR_BUFSIZE];
@@ -231,14 +231,14 @@ static void NPC_WarpMan_selectWindow(int meindex, int toindex, int num,
   int fd = getfdFromCharaIndex(toindex);
   char tmp[64];
 
-  if (NPC_Util_GetArgStr(meindex, npcarg, sizeof(npcarg)) == NULL) {
+  if (NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg)) == NULL) {
     print("GetArgStrErr");
     CHAR_setWorkInt(toindex, CHAR_WORKSHOPRELEVANT, 0);
     return;
   }
 
-  if (NPC_PARTY_CHAECK(meindex, toindex) == FALSE) {
-    NPC_ERR_DiSP(meindex, toindex, 1);
+  if (NPC_PARTY_CHAECK(npc_index, toindex) == FALSE) {
+    NPC_ERR_DiSP(npc_index, toindex, 1);
     return;
   }
 
@@ -265,7 +265,7 @@ static void NPC_WarpMan_selectWindow(int meindex, int toindex, int num,
 
   NPC_Util_GetStrFromStrWithDelim(npcarg, "FREE", buf, sizeof(buf));
 
-  if ((NPC_ActionPassCheck(meindex, toindex, buf) == TRUE) ||
+  if ((NPC_ActionPassCheck(npc_index, toindex, buf) == TRUE) ||
       (strstr(buf, "ALLFREE") != NULL)) {
     if (NPC_Util_GetStrFromStrWithDelim(npcarg, "FreeMsg", buf2,
                                         sizeof(buf2)) == NULL)
@@ -309,7 +309,7 @@ static void NPC_WarpMan_selectWindow(int meindex, int toindex, int num,
           GmsvServer_WN_send(
               fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
               CHAR_WINDOWTYPE_WINDOWWARPMAN_MAIN,
-              CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), token);
+              CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX), token);
           return;
         }
       } else {
@@ -320,7 +320,7 @@ static void NPC_WarpMan_selectWindow(int meindex, int toindex, int num,
           GmsvServer_WN_send(
               fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
               CHAR_WINDOWTYPE_WINDOWWARPMAN_MAIN,
-              CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), token);
+              CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX), token);
           return;
         } else {
           money = atoi(tmp);
@@ -345,15 +345,15 @@ static void NPC_WarpMan_selectWindow(int meindex, int toindex, int num,
       CHAR_setWorkInt(toindex, CHAR_WORKSHOPRELEVANT, -1);
       GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
                          CHAR_WINDOWTYPE_WINDOWWARPMAN_MAIN,
-                         CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), token);
+                         CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX), token);
     }
   }
   GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_YESNO,
                      CHAR_WINDOWTYPE_WINDOWWARPMAN_MAIN,
-                     CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), token);
+                     CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX), token);
 }
 
-void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
+void NPC_WarpManWindowTalked(int npc_index, int talkerindex, int seqno,
                              int select, char *data) {
   char npcarg[NPC_UTIL_GETARGSTR_BUFSIZE];
   char buf[NPC_UTIL_GETARGSTR_BUFSIZE];
@@ -367,9 +367,9 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
 #endif
   char buff2[256];
   int fd = getfdFromCharaIndex(talkerindex);
-  if (NPC_Util_CharDistance(talkerindex, meindex) > 2)
+  if (NPC_Util_CharDistance(talkerindex, npc_index) > 2)
     return;
-  if (NPC_Util_GetArgStr(meindex, npcarg, sizeof(npcarg)) == NULL) {
+  if (NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg)) == NULL) {
     print("GetArgStrErr");
     return;
   }
@@ -406,8 +406,8 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
       CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT, -1);
       return;
     }
-    if (NPC_PARTY_CHAECK(meindex, talkerindex) == FALSE) {
-      NPC_ERR_DiSP(meindex, talkerindex, 1);
+    if (NPC_PARTY_CHAECK(npc_index, talkerindex) == FALSE) {
+      NPC_ERR_DiSP(npc_index, talkerindex, 1);
       return;
     }
 #ifdef _NEW_WARPMAN
@@ -422,14 +422,14 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
   case WARP_MAN:
     if (select != WINDOW_BUTTONTYPE_YES)
       return;
-    if (NPC_PARTY_CHAECK(meindex, talkerindex) == FALSE) {
-      NPC_ERR_DiSP(meindex, talkerindex, 1);
+    if (NPC_PARTY_CHAECK(npc_index, talkerindex) == FALSE) {
+      NPC_ERR_DiSP(npc_index, talkerindex, 1);
       return;
     }
 #else
   if (select != WINDOW_BUTTONTYPE_YES)
     return;
-  if (NPC_PARTY_CHAECK(meindex, talkerindex) == FALSE)
+  if (NPC_PARTY_CHAECK(npc_index, talkerindex) == FALSE)
     return;
 #endif
 
@@ -440,7 +440,7 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
       CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT, -1);
       if (NPC_Util_GetStrFromStrWithDelim(npcarg, "CancelMsg", buff2,
                                           sizeof(buff2)) != NULL) {
-        CHAR_talkToCli(talkerindex, meindex, buff2, CHAR_COLORYELLOW);
+        CHAR_talkToCli(talkerindex, npc_index, buff2, CHAR_COLORYELLOW);
       }
       return;
     }
@@ -451,8 +451,8 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
         checkp = FALSE;
       }
     }
-    if (checkp == TRUE && NPC_PARTY_CHAECK(meindex, talkerindex) == FALSE) {
-      NPC_ERR_DiSP(meindex, talkerindex, 1);
+    if (checkp == TRUE && NPC_PARTY_CHAECK(npc_index, talkerindex) == FALSE) {
+      NPC_ERR_DiSP(npc_index, talkerindex, 1);
       CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT, -1);
       return;
     }
@@ -463,7 +463,7 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
   }
 #endif
 
-  if (Action_RunDoEventAction(meindex, talkerindex, npcarg) == FALSE) {
+  if (Action_RunDoEventAction(npc_index, talkerindex, npcarg) == FALSE) {
     CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT, -1);
     return;
   }
@@ -481,7 +481,7 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
   if (CHAR_getWorkInt(talkerindex, CHAR_WORKSHOPRELEVANTTRD) <= 0) {
     CHAR_setWorkInt(talkerindex, CHAR_WORKWARPCHECK, FALSE);
 #ifdef _NEW_WARPMAN
-    NPC_WarpMsg(meindex, talkerindex, npcarg);
+    NPC_WarpMsg(npc_index, talkerindex, npcarg);
 #else
     if (fl == 0 && x == 0 && y == 0) {
     } else {
@@ -491,7 +491,7 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
   } else {
     if (CHAR_getInt(talkerindex, CHAR_GOLD) <
         CHAR_getWorkInt(talkerindex, CHAR_WORKSHOPRELEVANTTRD)) {
-      NPC_ERR_DiSP(meindex, talkerindex, 2);
+      NPC_ERR_DiSP(npc_index, talkerindex, 2);
       return;
     }
     CHAR_DelGold(talkerindex,
@@ -499,7 +499,7 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
 
     CHAR_setWorkInt(talkerindex, CHAR_WORKWARPCHECK, FALSE);
 #ifdef _NEW_WARPMAN
-    NPC_WarpMsg(meindex, talkerindex, npcarg);
+    NPC_WarpMsg(npc_index, talkerindex, npcarg);
 #else
     if (fl == 0 && x == 0 && y == 0) {
     } else {
@@ -508,7 +508,7 @@ void NPC_WarpManWindowTalked(int meindex, int talkerindex, int seqno,
 #endif
   }
 #ifdef _NEW_WARPMAN
-  NPC_NpcWarpMsg(meindex, talkerindex, npcarg);
+  NPC_NpcWarpMsg(npc_index, talkerindex, npcarg);
 #else
 }
 #endif
@@ -534,7 +534,7 @@ BOOL NPC_BigSmallLastCheck(int point1, int mypoint, int flg) {
   return FALSE;
 }
 
-BOOL NPC_GetDuelPointCheck(int meindex, int talker) {
+BOOL NPC_GetDuelPointCheck(int npc_index, int talker) {
 
   int fdid = getFdidFromCharaIndex(talker);
   char dbkey[256];
@@ -544,44 +544,44 @@ BOOL NPC_GetDuelPointCheck(int meindex, int talker) {
 
   CHAR_makeDBKey(talker, dbkey, sizeof(dbkey));
   SaacClient_DBGetEntryRank_send(acfd, DB_DUELPOINT, dbkey, fdid,
-                                 CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
+                                 CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX));
 
   return TRUE;
 }
 
 void NPC_GetDuelRank(int rank, int fdid, int objindex) {
   int talker;
-  int meindex;
+  int npc_index;
 
   rank++;
   talker = getCharindexFromFdid(fdid);
   if (talker == -1)
     return;
 
-  meindex = OBJECT_getIndex(objindex);
-  if (!CHAR_CHECKINDEX(meindex))
+  npc_index = OBJECT_getIndex(objindex);
+  if (!CHAR_CHECKINDEX(npc_index))
     return;
 
   CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, rank);
 
-  NPC_WarpMan_selectWindow(meindex, talker, 0, -1);
+  NPC_WarpMan_selectWindow(npc_index, talker, 0, -1);
 }
 
-BOOL NPC_PARTY_CHAECK(int meindex, int talker) {
+BOOL NPC_PARTY_CHAECK(int npc_index, int talker) {
   if (CHAR_getWorkInt(talker, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE) {
     return FALSE;
   }
   return TRUE;
 }
 
-void NPC_ERR_DiSP(int meindex, int talker, int errNO) {
+void NPC_ERR_DiSP(int npc_index, int talker, int errNO) {
   char token[1024];
   int i = 0;
   int otherindex;
   int fd = getfdFromCharaIndex(talker);
   char npcarg[NPC_UTIL_GETARGSTR_BUFSIZE];
 
-  if (NPC_Util_GetArgStr(meindex, npcarg, sizeof(npcarg)) == NULL) {
+  if (NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg)) == NULL) {
     print("GetArgStrErr");
     return;
   }
@@ -601,7 +601,7 @@ void NPC_ERR_DiSP(int meindex, int talker, int errNO) {
           GmsvServer_WN_send(
               fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
               CHAR_WINDOWTYPE_WINDOWWARPMAN_ERR,
-              CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), token);
+              CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX), token);
         }
       }
       return;
@@ -615,7 +615,7 @@ void NPC_ERR_DiSP(int meindex, int talker, int errNO) {
   }
   GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
                      CHAR_WINDOWTYPE_WINDOWWARPMAN_ERR,
-                     CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), token);
+                     CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX), token);
 }
 
 int NPC_FloorUse(int char_index, int floor) {
@@ -655,7 +655,7 @@ int NPC_FloorUseOtherFloor(int warp, char *buf) {
   return players;
 }
 
-BOOL NPC_WarpMsg(int meindex, int talker, char *arg) {
+BOOL NPC_WarpMsg(int npc_index, int talker, char *arg) {
   char buf[256];
   int fl = 0, x = 0, y = 0;
   int parent = -1;
@@ -739,7 +739,7 @@ BOOL NPC_WarpMsg(int meindex, int talker, char *arg) {
 }
 
 #ifdef _NEW_WARPMAN
-static void NPC_NewWarpMan_selectWindow(int meindex, int toindex, int num,
+static void NPC_NewWarpMan_selectWindow(int npc_index, int toindex, int num,
                                         int select, char *TalkStr) {
   char npcarg[NPC_UTIL_GETARGSTR_BUFSIZE];
   char token[1024];
@@ -749,17 +749,17 @@ static void NPC_NewWarpMan_selectWindow(int meindex, int toindex, int num,
   BOOL tenflg = FALSE;
   int talkNo = 1, RunType = -1;
 
-  if (NPC_Util_GetArgStr(meindex, npcarg, sizeof(npcarg)) == NULL) {
+  if (NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg)) == NULL) {
     print("GetArgStrErr");
     return;
   }
 
   if (NPC_Util_GetStrFromStrWithDelim(npcarg, "NEWTIME", buf1, sizeof(buf1)) !=
       NULL) {
-    if (CHAR_getWorkInt(meindex, NPC_TIME_MODE) <= 0) {
+    if (CHAR_getWorkInt(npc_index, NPC_TIME_MODE) <= 0) {
       if (NPC_Util_GetStrFromStrWithDelim(npcarg, "Time_Msg", token,
                                           sizeof(token)) != NULL) {
-        CHAR_talkToCli(toindex, meindex, token, CHAR_COLORYELLOW);
+        CHAR_talkToCli(toindex, npc_index, token, CHAR_COLORYELLOW);
       }
       return;
     }
@@ -772,7 +772,7 @@ static void NPC_NewWarpMan_selectWindow(int meindex, int toindex, int num,
                                      sizeof(buf)) != FALSE) {
     if (strstr(buf, buf1) != NULL) {
       // 检查对话  暗语
-      RunType = CheckWarpMsg(meindex, toindex, buf, TalkStr);
+      RunType = CheckWarpMsg(npc_index, toindex, buf, TalkStr);
       if (RunType > 1) {
         return;
       } else if (RunType != 0) {
@@ -786,7 +786,7 @@ static void NPC_NewWarpMan_selectWindow(int meindex, int toindex, int num,
       }
 
       // 检查玩家是否附合条件
-      if ((NPC_ActionPassCheck(meindex, toindex, token) == TRUE) ||
+      if ((NPC_ActionPassCheck(npc_index, toindex, token) == TRUE) ||
           (strstr(token, "ALLFREE") != NULL)) {
         CHAR_setWorkInt(toindex, CHAR_WORKSHOPRELEVANT, talkNo - 1);
 
@@ -818,19 +818,19 @@ static void NPC_NewWarpMan_selectWindow(int meindex, int toindex, int num,
     }
     if (NPC_Util_GetStrFromStrWithDelim(npcarg, "NomalMsg", token,
                                         sizeof(token)) != NULL) {
-      CHAR_talkToCli(toindex, meindex, token, CHAR_COLORWHITE);
+      CHAR_talkToCli(toindex, npc_index, token, CHAR_COLORWHITE);
       return;
     }
   }
 
   // 送讯息给 CLI
   GmsvServer_WN_send(fd, windowtype, buttontype, windowno,
-                     CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX), token);
+                     CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX), token);
 }
 
 #endif
 // ANDY_RE
-int CheckWarpMsg(int meindex, int talkerindex, char *npcarg, char *TalkStr) {
+int CheckWarpMsg(int npc_index, int talkerindex, char *npcarg, char *TalkStr) {
   char buf[1024];
   if (NPC_Util_GetStrFromStrWithDelim(npcarg, "warp_msg", buf, sizeof(buf)) ==
       NULL)
@@ -841,8 +841,8 @@ int CheckWarpMsg(int meindex, int talkerindex, char *npcarg, char *TalkStr) {
       NULL) {
     if (strstr(buf, "FALSE") != NULL) {
     } else {
-      if (NPC_PARTY_CHAECK(meindex, talkerindex) == FALSE) {
-        NPC_ERR_DiSP(meindex, talkerindex, 1);
+      if (NPC_PARTY_CHAECK(npc_index, talkerindex) == FALSE) {
+        NPC_ERR_DiSP(npc_index, talkerindex, 1);
         return 2;
       }
     }
@@ -850,14 +850,14 @@ int CheckWarpMsg(int meindex, int talkerindex, char *npcarg, char *TalkStr) {
 
   if (NPC_Util_GetStrFromStrWithDelim(npcarg, "FREE", buf, sizeof(buf)) == NULL)
     return 2;
-  if ((NPC_ActionPassCheck(meindex, talkerindex, buf) == FALSE)) {
+  if ((NPC_ActionPassCheck(npc_index, talkerindex, buf) == FALSE)) {
     if (NPC_Util_GetStrFromStrWithDelim(npcarg, "NomalMsg", buf, sizeof(buf)) !=
         NULL) {
-      CHAR_talkToCli(talkerindex, meindex, buf, CHAR_COLORWHITE);
+      CHAR_talkToCli(talkerindex, npc_index, buf, CHAR_COLORWHITE);
     }
     return 2;
   } else {
-    if (Action_RunDoEventAction(meindex, talkerindex, npcarg) == FALSE) {
+    if (Action_RunDoEventAction(npc_index, talkerindex, npcarg) == FALSE) {
 
       CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT, -1);
       return 3;
@@ -871,21 +871,21 @@ int CheckWarpMsg(int meindex, int talkerindex, char *npcarg, char *TalkStr) {
 
     if (NPC_Util_GetStrFromStrWithDelim(npcarg, "FreeMsg", buf, sizeof(buf)) !=
         NULL) {
-      CHAR_talkToCli(talkerindex, meindex, buf, CHAR_COLORWHITE);
+      CHAR_talkToCli(talkerindex, npc_index, buf, CHAR_COLORWHITE);
     }
 
-    NPC_WarpMsg(meindex, talkerindex, npcarg);
-    NPC_NpcWarpMsg(meindex, talkerindex, npcarg);
+    NPC_WarpMsg(npc_index, talkerindex, npcarg);
+    NPC_NpcWarpMsg(npc_index, talkerindex, npcarg);
     return 4;
   }
   return 0;
 }
 
-BOOL NPC_NpcWarpMsg(int meindex, int talker, char *arg) {
+BOOL NPC_NpcWarpMsg(int npc_index, int talker, char *arg) {
   char buf[256];
   int fl = 0, x = 0, y = 0;
 
-  if (CHAR_CHECKINDEX(meindex) == FALSE)
+  if (CHAR_CHECKINDEX(npc_index) == FALSE)
     return FALSE;
 
   if (NPC_Util_GetStrFromStrWithDelim(arg, "NPCPOINT", buf, sizeof(buf)) ==
@@ -898,34 +898,34 @@ BOOL NPC_NpcWarpMsg(int meindex, int talker, char *arg) {
     return FALSE;
   }
 
-  CHAR_warpToSpecificPoint(meindex, fl, x, y);
+  CHAR_warpToSpecificPoint(npc_index, fl, x, y);
 
   return TRUE;
 }
 
-void NPC_WarpManLoop(int meindex) {
+void NPC_WarpManLoop(int npc_index) {
   int born, dead;
   char npcarg[NPC_UTIL_GETARGSTR_BUFSIZE];
-  if (!CHAR_CHECKINDEX(meindex))
+  if (!CHAR_CHECKINDEX(npc_index))
     return;
 
-  if (NPC_Util_GetArgStr(meindex, npcarg, sizeof(npcarg)) == NULL) {
+  if (NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg)) == NULL) {
     print("WarpMan:GetArgStrErr");
     return;
   }
   if (!strstr(npcarg, "NEWWARPMAN"))
     return;
 
-  if (NPC_getTimeData(meindex, npcarg, &born, &dead, 200) != FALSE) {
-    NPC_TimeDefineDo(meindex, born, dead, NPC_TIME_MODE);
-    CHAR_sendCToArroundCharacter(CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
+  if (NPC_getTimeData(npc_index, npcarg, &born, &dead, 200) != FALSE) {
+    NPC_TimeDefineDo(npc_index, born, dead, NPC_TIME_MODE);
+    CHAR_sendCToArroundCharacter(CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX));
   }
 }
 
 void NPC_WarpManWatch(int meobjindex, int objindex, CHAR_ACTION act, int x,
                       int y, int dir, int *opt, int optlen) {
   int born, dead;
-  int meindex, index;
+  int npc_index, index;
 
   char npcarg[NPC_UTIL_GETARGSTR_BUFSIZE];
 
@@ -936,48 +936,48 @@ void NPC_WarpManWatch(int meobjindex, int objindex, CHAR_ACTION act, int x,
     return;
   if (CHAR_getInt(index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
     return;
-  meindex = OBJECT_getIndex(meobjindex);
-  if (!CHAR_CHECKINDEX(meindex))
+  npc_index = OBJECT_getIndex(meobjindex);
+  if (!CHAR_CHECKINDEX(npc_index))
     return;
 
-  if (NPC_Util_GetArgStr(meindex, npcarg, sizeof(npcarg)) == NULL) {
+  if (NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg)) == NULL) {
     print("WarpMan:GetArgStrErr");
     return;
   }
   if (!strstr(npcarg, "NEWWARPMAN"))
     return;
 #ifdef _TREASURE_BOX
-  if (CHAR_getWorkInt(meindex, NPC_TIME_EVENTMODE) == NPC_EVENTMODE_OPEN) {
-    if (CHAR_getWorkInt(meindex, NPC_TIME_EVENTTIME) < NowTime.tv_sec) {
+  if (CHAR_getWorkInt(npc_index, NPC_TIME_EVENTMODE) == NPC_EVENTMODE_OPEN) {
+    if (CHAR_getWorkInt(npc_index, NPC_TIME_EVENTTIME) < NowTime.tv_sec) {
       // 变回宝箱
-      CHAR_setWorkInt(meindex, NPC_TIME_EVENTMODE, NPC_EVENTMODE_EVENT);
+      CHAR_setWorkInt(npc_index, NPC_TIME_EVENTMODE, NPC_EVENTMODE_EVENT);
       // 变图
-      CHAR_setInt(meindex, CHAR_BASEBASEIMAGENUMBER,
-                  CHAR_getWorkInt(meindex, NPC_TIME_EVENOFFDBBI));
-      CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
-                  CHAR_getWorkInt(meindex, NPC_TIME_EVENOFFDBBI));
-      NPC_TreasureEventRunMsg(meindex); // 是否warp
-      CHAR_sendCToArroundCharacter(CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
+      CHAR_setInt(npc_index, CHAR_BASEBASEIMAGENUMBER,
+                  CHAR_getWorkInt(npc_index, NPC_TIME_EVENOFFDBBI));
+      CHAR_setInt(npc_index, CHAR_BASEIMAGENUMBER,
+                  CHAR_getWorkInt(npc_index, NPC_TIME_EVENOFFDBBI));
+      NPC_TreasureEventRunMsg(npc_index); // 是否warp
+      CHAR_sendCToArroundCharacter(CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX));
     }
   }
 #endif
-  if (NPC_getTimeData(meindex, npcarg, &born, &dead, 200) != FALSE) {
-    NPC_TimeDefineDo(meindex, born, dead, NPC_TIME_MODE);
-    CHAR_sendCToArroundCharacter(CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
+  if (NPC_getTimeData(npc_index, npcarg, &born, &dead, 200) != FALSE) {
+    NPC_TimeDefineDo(npc_index, born, dead, NPC_TIME_MODE);
+    CHAR_sendCToArroundCharacter(CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX));
   }
 }
 
 #ifdef _TREASURE_BOX
-BOOL NPC_TreasureEventRunMsg(int meindex) {
+BOOL NPC_TreasureEventRunMsg(int npc_index) {
   char buf[256];
   char npcarg[NPC_UTIL_GETARGSTR_BUFSIZE];
 
   int fl, x, y;
 
-  if (!CHAR_CHECKINDEX(meindex))
+  if (!CHAR_CHECKINDEX(npc_index))
     return FALSE;
 
-  if (NPC_Util_GetArgStr(meindex, npcarg, sizeof(npcarg)) == NULL) {
+  if (NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg)) == NULL) {
     print("WarpMan:GetArgStrErr");
     return FALSE;
   }
@@ -986,9 +986,9 @@ BOOL NPC_TreasureEventRunMsg(int meindex) {
                                       sizeof(buf)) == NULL)
     return FALSE;
 
-  if (CHAR_getWorkInt(meindex, NPC_TIME_EVENTNUM) < atoi(buf))
+  if (CHAR_getWorkInt(npc_index, NPC_TIME_EVENTNUM) < atoi(buf))
     return FALSE;
-  CHAR_setWorkInt(meindex, NPC_TIME_EVENTNUM, 0);
+  CHAR_setWorkInt(npc_index, NPC_TIME_EVENTNUM, 0);
 
   if (NPC_Util_GetStrFromStrWithDelim(npcarg, "TREASURE_POINT", buf,
                                       sizeof(buf)) == NULL)
@@ -1000,7 +1000,7 @@ BOOL NPC_TreasureEventRunMsg(int meindex) {
     return FALSE;
   }
 
-  CHAR_warpToSpecificPoint(meindex, fl, x, y);
+  CHAR_warpToSpecificPoint(npc_index, fl, x, y);
   return TRUE;
 }
 
@@ -1027,7 +1027,6 @@ BOOL NPC_TreasureRandItemGet(int meidex, int talker, int rand_j, char *buf) {
   item_index = ITEM_makeItemAndRegist(atoi(buff2));
   if (item_index == -1)
     return FALSE;
-  /*失奶  丞及馨笛(  涛失奶  丞  卞中木化仄引丹  */
   ret = CHAR_addItemSpecificItemIndex(talker, item_index);
   if (!CHAR_CHECKITEMINDEX(talker, ret)) {
     print("npc_exchangeman.c: additem error item_index[%d]\n", item_index);
@@ -1059,7 +1058,7 @@ BOOL NPC_TreasureRandItemGet(int meidex, int talker, int rand_j, char *buf) {
 
 #ifdef _NPC_ADDLEVELUP // (不可开) ANDY 外部测试机用来增加玩家等级
 extern tagRidePetTable ridePetTable[296];
-void NPC_LevelAndTransUp(int meindex, int charindex, int level, int skillpoint,
+void NPC_LevelAndTransUp(int npc_index, int charindex, int level, int skillpoint,
                          int exp, int ridepet) {
   char szBuffer[256] = "";
   if (!CHAR_CHECKINDEX(charindex))

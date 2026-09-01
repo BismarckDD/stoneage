@@ -228,21 +228,21 @@ enum {
 #define ITEM_FLAG_UPINSLAY_MIX (1 << 7) // 凿孔
 #endif
 
-typedef struct {
-  int color; // ?
-  int graNo; // ???
-  int level; // ???????
+struct ITEM {
+  int color; // 颜色: 白色/绿色
+  int graNo; // 物品图片
+  int level; // 等级？
 #ifdef _ITEM_PILENUMS
   int pile;
 #endif
 #ifdef _ALCHEMIST // #ifdef _ITEMSET7_TXT
   char alch[4 + 200];
 #endif
-  short useFlag;                      // ????
-  short field;                        // ?????
+  short useFlag;  //
+  short field;    //
   short target;                       // 
-  short deadTargetFlag;               // ??????????
-  short sendFlag;                     // ??????????
+  short deadTargetFlag;  //
+  short sendFlag; 
   char name[ITEM_NAME_BUFFER_SIZE];
   char name2[ITEM_NAME2_BUFFER_SIZE];
   char memo[ITEM_MEMO_BUFFER_SIZE];
@@ -262,28 +262,25 @@ typedef struct {
 #ifdef _MAGIC_ITEM_
   int 道具类型;
 #endif
-} ITEM;
+};
 
-typedef struct {
+struct PC {
   int graNo;
   int faceGraNo;
   int id;
   int dir;
   int hp, maxHp;
   int mp, maxMp;
-  int vital;
-  int str, tgh, dex;
-  int exp, maxExp;
-  int level;
-  int atk, def;
-  int quick, charm, luck;
-  int earth, water, fire, wind;
-  int gold;
+  int vital, str, tgh, dex; // 活力、腕力、耐力、敏捷
+  int exp, maxExp, level; // 经验，下一级经验，等级
+  int atk, def, quick, charm, luck;
+  int earth, water, fire, wind; // 地、水、火、风 属性
+  int gold; // 石器币
 #ifdef _NEW_MANOR_LAW
   int fame;
 #endif
   int titleNo;
-  int dp;
+  int dp; // 声望
   char name[CHAR_NAME_BUFFER_SIZE];
   char freeName[CHAR_FREENAME_BUFFER_SIZE];
   short nameColor;
@@ -325,7 +322,6 @@ typedef struct {
                      // 2 -> 慬我方按下确定键
                      // 3 -> 仅对方按下确定键
                      // 4 -> 双方皆按下确定键
-
 #ifdef _CHAR_PROFESSION // WON ADD 人物职业
   int profession_class;
   int profession_level;
@@ -377,7 +373,7 @@ typedef struct {
   int 法宝道具状态;
   int 道具光环效果;
 #endif
-} PC;
+};
 
 #ifdef _FMVER21
 enum {
@@ -460,12 +456,10 @@ struct PET {
   int graNo;                    // 图片
   int hp, maxHp;                // 生命值/最大生命值
   int mp, maxMp;                // 魔法值/最大魔法值
-  int exp, maxExp;              // 经验值/
-  int level;                    // ???
-  int atk, def;                 // 攻击、防御
-  int quick;                    // 速度
+  int exp, maxExp, level;       // 经验值, 等级
+  int atk, def, quick;          // 攻击、防御、敏捷
   int ai;                       // AI？
-  int earth, water, fire, wind; //
+  int earth, water, fire, wind; // 地水火风属性
   int maxSkill;                 //
   int trn;                      // 宠物转生数
 #ifdef _SHOW_FUSION

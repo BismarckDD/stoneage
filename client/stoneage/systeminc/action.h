@@ -64,16 +64,16 @@ enum {
 struct ACTION {
   ACTION *pPrev, *pNext;  // 上一个及下一个action指标
   void (*func)(ACTION *); // action所执行的function的指标
-  void *pYobi;                   // 备用的struct指标
-  void *pOther;                  // 其它用途struct指标
-  UCHAR prio;                    // action处理时的优先顺序
-  UCHAR dispPrio;                // 秀图时的优先顺序
-  int x, y;                      // 图的座标
-  int hitDispNo;                 // 是否命中目标编号
-  BOOL deathFlag;                // 此action是否死亡旗标
-  int dx, dy;                    // 秀图座标位移量
-  int dir;                       // 方向
-  int delta;                     // 合成向量
+  void *pYobi;            // Yobi:备用, 目的是为了存储Action子类的数据
+  void *pOther;           // 其它用途struct指标
+  UCHAR prio;             // action处理时的优先顺序
+  UCHAR dispPrio;         // 秀图时的优先顺序
+  int x, y;               // 图的座标
+  int hitDispNo;          // 是否命中目标编号
+  BOOL deathFlag;         // 此action是否死亡旗标
+  int dx, dy;             // 秀图座标位移量
+  int dir;                // 方向
+  int delta;              // 合成向量
 
   char name[UTF8_CHAR_NAME_BUFFER_SIZE];
   char freeName[UTF8_FREE_NAME_BUFFER_SIZE];

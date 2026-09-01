@@ -1121,10 +1121,9 @@ void CHAR_login(int clifd, char *data, int saveindex) {
     }
   }
 #endif
-
 // Nuke 20040420: CHECK MAX POINT
   {
-    print("判断属性点");
+    // 各转最高属性点
     int lv, vi, str, tou, dx, skup, trn, teq, quest, level, total, max;
     float table[] = {437, 490, 521, 550, 578, 620, 700}; // 各转最高点数(减10)
     lv = CHAR_getInt(char_index, CHAR_LV);
@@ -3786,13 +3785,9 @@ void CHAR_deleteTitle(int index, int titleindex) {
   }
   CHAR_setCharHaveTitle(index, titleindex, -1);
 
-  /*  愤坌互银匀化中凶支勾卅日壬｝公木手卅仄卞允月    */
   if (CHAR_getInt(index, CHAR_INDEXOFEQTITLE) == titleindex)
     CHAR_setInt(index, CHAR_INDEXOFEQTITLE, -1);
 
-  /*
-   * 旦  □正旦树  毛霜月［
-   */
   CHAR_sendStatusString(index, "T");
   CHAR_send_P_StatusString(index, CHAR_P_STRING_TITLE);
 }
@@ -5515,7 +5510,9 @@ BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int floor,
             "to=%d,%d,%d\n",
             char_index, objindex, of, ox, oy, floor, x, y);
     if (!MAP_objmove(objindex, of, ox, oy, floor, x, y)) {
-      printEx("ERROR MAP_OBJMOVE objindex=%d\n", objindex);
+      printEx("ERROR MAP_OBJMOVE objindex=%d old_objpos(%d,%d,%d) "
+              "target(%d,%d,%d) char_oldpos(%d,%d,%d)\n",
+              objindex, of, ox, oy, floor, x, y, old_floor, old_x, old_y);
     }
     if (is_player)
       print("[WARP_TRACE] after-map-objmove char=%d obj=%d\n", char_index,

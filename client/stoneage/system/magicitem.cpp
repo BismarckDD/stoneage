@@ -140,8 +140,6 @@ ACTION* ShowMagicItemData()
         }            
     }
 
-
-
     int id ;
     id = StockFontBuffer( 70,338, FONT_PRIO_FRONT,FONT_PAL_YELLOW, " 确  定 ", 2 );
     if(id ==HitFontNo){
@@ -190,9 +188,3 @@ ACTION* ShowMagicItemData()
     return MagicItemActAddr;
 }
 #endif
-
-
-
-
-
-

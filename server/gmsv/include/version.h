@@ -16,6 +16,12 @@
 #define _NEW_SERVER_
 #define _SERVER_NUMS
 #define _CHAR_NEWLOGOUT  // 新登出协议：0 原地登出，1 回记录点
+#define _NEW_ITEM_       // 与客户端一致：支持 15/30/45 格新物品栏
+#define _ITEM_EQUITSPACE // 与客户端一致：人物扩展装备栏
+#define _EQUIT_NEWGLOVE  // 与客户端一致：人物手套栏
+#define _ADD_SHOW_ITEMDAMAGE // 与正式客户端一致：物品耐久度字段
+#define _ITEM_PILENUMS       // 与正式客户端一致：物品堆叠数字段
+#define _ALCHEMIST           // 与正式客户端一致：精炼字段
 
 #define UNIQUE_KEYCODEITEM 100
 #define UNIQUE_KEYCODEPET  "i"
@@ -60,6 +66,10 @@
 // -------------------------------------------------------------------
 //专案：宠物、道具编码    人员：小瑜
 #define _UNIQUE_P_I              // (可开放) CoolFish 2001/10/11
+
+
+#define _RIDE_CF
+#define _ADD_RIDE_CF
 
 // -------------------------------------------------------------------
 //专案：新版人物储存pn 及 当机不回朔 1018  人员：彦勋

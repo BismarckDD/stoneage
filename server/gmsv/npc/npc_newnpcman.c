@@ -1,5 +1,7 @@
 #include "version.h"
-#include <string.h>
+//
+#include "npc_newnpcman.h"
+//
 #include <math.h>
 #include "char.h"
 #include "object.h"
@@ -12,7 +14,6 @@
 #include "readmap.h"
 #include "handletime.h"
 #include "npc_eventaction.h"
-#include "npc_newnpcman.h"
 #include "pet.h"
 #define NEWNPCMAN_STANDBY	5000
 #define NEWNPCMAN_WAITTIME	150
@@ -34,22 +35,12 @@ enum {
 	NPC_PROGRAMEGINEER_DEFIND,
 	NPC_PROGRAMEGINEER_END,
 };
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 extern int CheckCharMaxItem(int charindex);
 #endif
 enum {
 	NPC_WORK_CURRENTTIME = CHAR_NPCWORKINT1,
-/*
-	NPC_WORK_ROUTETOY = CHAR_NPCWORKINT2,
-	NPC_WORK_ROUTEPOINT = CHAR_NPCWORKINT3,
-	NPC_WORK_ROUNDTRIP = CHAR_NPCWORKINT4,
-	NPC_WORK_MODE = CHAR_NPCWORKINT5,
-	NPC_WORK_CURRENTROUTE = CHAR_NPCWORKINT6, 
-	NPC_WORK_ROUTEMAX = CHAR_NPCWORKINT7,
-	NPC_WORK_WAITTIME = CHAR_NPCWORKINT8,
-	NPC_WORK_CURRENTTIME = CHAR_NPCWORKINT9,
-	NPC_WORK_SEFLG = CHAR_NPCWORKINT10,
-*/
 };
 /*
 char UserBBIs[12][256]={

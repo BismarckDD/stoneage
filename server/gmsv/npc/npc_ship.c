@@ -1,5 +1,5 @@
 #include "version.h"
-#include <string.h>
+//
 #include "char.h"
 #include "object.h"
 #include "char_base.h"
@@ -11,7 +11,8 @@
 /* 
  * 加美航空 (Made from Bus)
  */
- #ifdef _NEW_ITEM_
+ #ifdef _NEW_ITEM_
+
 extern int CheckCharMaxItem(int charindex);
 #endif
 enum {
@@ -42,10 +43,12 @@ enum {
 	NPC_AIR_MSG_START,
 	NPC_AIR_MSG_END,
 };
+
 typedef struct {
 	char	option[32];
 	char	defaultmsg[128];
 }NPC_AIR_MSG;
+
 static NPC_AIR_MSG		airmsg[] = {
 	{ "msg_gettingon",	"PAON！（你无法於中途加入我们唷！）"},
 	{ "msg_notparty",	"PAPAON！！无法以团队加入唷！"},
@@ -527,8 +530,10 @@ static BOOL npc_ShipCheckDeniedItem( int meindex, int char_index, char *argstr)
 			if( ret == FALSE ) break;
 			itemid = atoi( buf2);
 
-#ifdef _NEW_ITEM_
-			int itemMax = CheckCharMaxItem(char_index);
+#ifdef _NEW_ITEM_
+
+			int itemMax = CheckCharMaxItem(char_index);
+
 			for( j = 0; j < itemMax; j ++) {
 #else
 			int itemMax = CHAR_MAXITEMHAVE;
@@ -579,9 +584,12 @@ BOOL npc_ShipCheckAllowItem( int meindex, int char_index, BOOL pickupmode)
 			itemid = atoi( buf2);
 			getflg = FALSE;
 
-#ifdef _NEW_ITEM_
-			int itemMax = CheckCharMaxItem(char_index);
-			for( j = 0; j < itemMax; j ++) {
+#ifdef _NEW_ITEM_
+
+			int itemMax = CheckCharMaxItem(char_index);
+
+			for( j = 0; j < itemMax; j ++) {
+
 #else
 			int itemMax = CHAR_MAXITEMHAVE;
 			for( j = 0; j < itemMax; j ++) {

@@ -539,7 +539,7 @@ BOOL init(int argc, char **argv, char **env) {
   else
     print("succeed.\n");
 #endif
-#ifdef _RIDE_CF
+#if defined(_RIDE_CF) && defined(_NEW_RIDEPETS)
   print("Start to init Ride CF......");
   if (!CHAR_Ride_CF_init())
     print("......failed.\n");

@@ -1,4 +1,4 @@
-﻿#define sprVERSION    3                //SPR ?  ??????
+﻿#define sprVERSION 3
 #include "version.h"
 #include "systeminc/system.h"
 #include "systeminc/loadsprbin.h"

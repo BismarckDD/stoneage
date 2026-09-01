@@ -978,6 +978,7 @@ static char *NPC_Util_MargeStrFromArgFile(char *filename, char *buf, int len) {
   return (cret);
 }
 
+// 将npc_index所指的NPC配置中ArgStr提取出来，存入
 char *NPC_Util_GetArgStr(int index, char *argstr, int len) {
   char filename[128];
   char *cret = NULL;
@@ -1003,8 +1004,6 @@ char *NPC_Util_GetArgStr(int index, char *argstr, int len) {
   }
   if (cret == NULL)
     print("File:%s\n", NPC_Util_CheckAssignArgFile(index, filename));
-
-  // print("cret: %s, argstr: %s\n", cret, argstr);
   return (cret);
 }
 
@@ -1013,8 +1012,7 @@ int NPC_Util_GetNumFromStrWithDelim(char *srcstr, char *in) {
   int i;
   char outstr[32];
   int out = -1;
-
-  for (i = 1;; i++) {
+  for (i = 1;;++i) {
     rc = getStringFromIndexWithDelim(srcstr, "|", i, outstr, sizeof(outstr));
     if (rc == FALSE)
       break;
@@ -1023,7 +1021,6 @@ int NPC_Util_GetNumFromStrWithDelim(char *srcstr, char *in) {
       break;
     }
   }
-
   return out;
 }
 
@@ -1034,11 +1031,10 @@ char *NPC_Util_GetStrFromStrWithDelim(char *srcstr, char *srhstr, char *buf,
   int i;
   char outstr[1024];
   char outstr2[1024];
-
   memset(outstr, 0, sizeof(outstr));
   memset(outstr2, 0, sizeof(outstr2));
   buf[0] = '\0';
-  for (i = 1;; i++) {
+  for (i = 1;;++i) {
     rc = getStringFromIndexWithDelim(srcstr, "|", i, outstr, sizeof(outstr));
     if (rc == FALSE)
       break;

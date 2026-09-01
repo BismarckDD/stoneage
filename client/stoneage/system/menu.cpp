@@ -8765,11 +8765,11 @@ void InitItem(int x, int y, BOOL bPetItemFlag)
         int x;
         int y;
     }InitXY[CHAR_EQUIPPLACENUM] = {
-        { x + 84, y + 51 }, { x + 85, y + 119 }, { x + 33, y + 122 },
-        { x + 137, y + 63 }, { x + 33, y + 63 }, { x + 137, y + 122 },
-        { x + 137, y + 122 }, { x + 136, y + 130 }
+        { x + 85, y + 51 }, { x + 85, y + 102 }, { x + 33, y + 102 },
+        { x + 137, y + 51 }, { x + 33, y + 51 }, { x + 85, y + 153 },
+        { x + 137, y + 102 }, { x + 137, y + 153 }
 #ifdef _EQUIT_NEWGLOVE
-        , { x + 137, y + 122 }
+        , { x + 33, y + 153 }
 #endif
     };
 #endif
@@ -12359,14 +12359,10 @@ void MenuProc(void)
                         int atrGraNo[4];
 
                         x = pActMenuWnd->x + 16 + 50, y = pActMenuWnd->y + 31;
-                        // ??????
                         for (i = 0; i < 5; i++){
-                            // ???????????
                             if (pet[i].useFlag == TRUE){
-
-                                color = FONT_PAL_WHITE;        // ?????
-                                btnNo = 0;                    // ???????
-                                // ???????
+                                color = FONT_PAL_WHITE; 
+                                btnNo = 0;
                                 if (pc.selectPetNo[i] == TRUE){
                                     color = FONT_PAL_AQUA;
                                     btnNo = 2;
@@ -19356,11 +19352,8 @@ void MenuProc(void)
                 {
                     SecondTradeWndflag = false;
 #endif
-
                     if (pActMenuWnd4->hp > 0)
                     {
-
-
                         //产生交易主视窗
 #ifdef _TRADESYSTEM2    // (不可开) Syu ADD 新交易系统
                         //回主视窗时清除检视视窗PetAction
@@ -19369,12 +19362,8 @@ void MenuProc(void)
                             DeathAction(SecondActPet);
                             SecondActPet = NULL;
                         }
-
-
                         StockDispBuffer(((WINDOW_DISP *)pActMenuWnd4->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd4->pYobi)->my - 20, DISP_PRIO_MENU, CG_TRADE_WND, 1);
 #endif
-
-
                         // 以下为滑鼠左键被按下时 Start
                         if (mouse.onceState & MOUSE_LEFT_CRICK)
                         {
