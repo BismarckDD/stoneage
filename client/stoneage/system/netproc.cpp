@@ -2463,6 +2463,14 @@ void lssproto_CD_recv(int fd, char *data) {
     if (id == -1)
       break;
 
+    // CD updates visibility of remote objects. Local lifetime is managed by
+    // map changes, battle transitions and logout through resetPc().
+    if (id == pc.id) {
+      ClientRuntimeLog("action", "CD ignored local player id=%d floor=%d action=%p",
+                       id, nowFloor, pc.ptAct);
+      continue;
+    }
+
     ClientRuntimeLog("action", "CD delete id=%d selfId=%d self=%d floor=%d action=%p",
                      id, pc.id, id == pc.id, nowFloor, pc.ptAct);
     delCharObj(id);

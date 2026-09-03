@@ -246,6 +246,7 @@ void BattleButtonOff(void) {
   ClearBoxFlag();
 }
 
+// 定义每一个的品位置
 void InitItem2(int x, int y) {
   int i, j = 0, k = 0;
   for (i = MAX_ITEMSTART; i < MAX_ITEM; i++) {
@@ -314,7 +315,6 @@ void HpMeterDisp(int no) {
                                     (double)p_party[BattleMyNo]->petMaxHp) *
                                    40.0),
                          meterY - 1, DISP_PRIO_IME2, SYSTEM_PAL_GREEN, 2);
-      // ?????????
       StockBoxDispBuffer(meterX - 21, meterY + 0,
                          meterX - 21 +
                              (int)(((double)p_party[BattleMyNo]->petHp /
@@ -349,14 +349,12 @@ void HpMeterDisp(int no) {
       meterX += 20;
       // ?
       StockDispBuffer(meterX, meterY, DISP_PRIO_IME1, CG_BATTLE_BAR_PET, 0);
-      // ?????????
       StockBoxDispBuffer(meterX - 21, meterY - 1,
                          meterX - 21 +
                              (int)(((double)p_party[no]->petHp /
                                     (double)p_party[no]->petMaxHp) *
                                    40.0),
                          meterY - 1, DISP_PRIO_IME2, SYSTEM_PAL_GREEN, 2);
-      // ?????????
       StockBoxDispBuffer(meterX - 21, meterY + 0,
                          meterX - 21 +
                              (int)(((double)p_party[no]->petHp /
@@ -387,10 +385,10 @@ void BattleNameDisp(void) {
   }
 }
 
+// 2026.09.03 战斗中攻击按钮
 void BattleButtonAttack(void) {
   int i, j, k, bak, hitBoxAll;
   if (HitDispNo == battleButtonDispNo[0] || battleButtonBak2 == 0) {
-
     if (mouse.onceState & MOUSE_LEFT_CRICK || battleButtonBak2 == 0) {
       bak = sBattleButtonFlag[0];
       BattleButtonOff();
@@ -1059,6 +1057,7 @@ void BattleButtonGuard(void) {
 extern int 道具栏页数;
 #endif
 
+// 2026.09.03 战斗中物品按钮
 void BattleButtonItem(void) {
   int i, bak;
   char moji[256];
@@ -1089,23 +1088,17 @@ void BattleButtonItem(void) {
   if (sBattleButtonFlag[5] == TRUE) {
     if (pActWnd != NULL) {
       if (pActWnd->hp > 0) {
-#ifdef _READ16BITBMP
-        if (g_bUseAlpha)
-          StockDispBuffer(((WINDOW_DISP *)pActWnd->pYobi)->mx,
-                          ((WINDOW_DISP *)pActWnd->pYobi)->my, DISP_PRIO_MENU,
-                          CG_ITEM_WND_1, 1);
-        else
-#endif
-          StockDispBuffer(((WINDOW_DISP *)pActWnd->pYobi)->mx,
-                          ((WINDOW_DISP *)pActWnd->pYobi)->my - 0,
-                          DISP_PRIO_MENU, CG_ITEM_WND_1, 1);
+        // 绘制道具15格窗口, 需要-80的offset
+        StockDispBuffer(((WINDOW_DISP *)pActWnd->pYobi)->mx,
+                        ((WINDOW_DISP *)pActWnd->pYobi)->my - 80,
+                        DISP_PRIO_MENU, CG_ITEM_WND_1, 1);
 
+        // 绘制道具Title窗口, 需要-80的offset
         StockDispBuffer(((WINDOW_DISP *)pActWnd->pYobi)->mx,
                         ((WINDOW_DISP *)pActWnd->pYobi)->my - 80,
                         DISP_PRIO_MENU, CG_BTL_ITEM_WND_TITLE, 1);
 
         if (mouse.onceState & MOUSE_LEFT_CRICK) {
-
           if (HitDispNo == battleMenuItemFontNo[0]) {
             BattleButtonOff();
           }
@@ -1128,32 +1121,19 @@ void BattleButtonItem(void) {
                   color = FONT_PAL_RED;
                 StockFontBuffer(pActWnd->x + 16, pActWnd->y + 332 - 160,
                                 FONT_PRIO_FRONT, color, pc.item[i].name, 0);
+                const int num = 28;
                 while (true) {
-                  if (strlen(splitPoint) > 28) {
-                    strncpy_s(moji, splitPoint, 28);
-                    moji[28] = NULL;
-
-                    if (GetStrLastByte(moji) == 3) {
-                      moji[27] = NULL;
-                      splitPoint += 27;
-                    } else {
-                      moji[28] = NULL;
-                      splitPoint += 28;
-                    }
-                    StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
-                    y += 24;
-                  } else {
-                    strcpy(moji, splitPoint);
-                    StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                  splitPoint = copyUtf8CharByNum(moji, splitPoint, num);
+                  StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                  if (splitPoint == NULL || *splitPoint == '\0') {
                     break;
                   }
+                  y += 24;
                 }
               }
 
               if (mouse.onceState & MOUSE_LEFT_DBL_CRICK) {
-
                 if (pc.item[i].useFlag == TRUE) {
-
                   if (pc.item[i].useFlag != TRUE ||
                       pc.item[i].field == ITEM_FIELD_MAP ||
                       pc.transmigration == 0 && pc.level < pc.item[i].level) {
@@ -1164,109 +1144,70 @@ void BattleButtonItem(void) {
                     case ITEM_TARGET_MYSELF:
                       p_party[BattleMyNo]->atr |= ACT_ATR_HIT_BOX;
                       battleTargetSelectFlag = TRUE;
-
                       DeathAction(pActWnd);
                       pActWnd = NULL;
-
                       ClearBattleButton();
-
                       BattleCmdNo = BATTLE_ITEM;
-
                       play_se(217, 320, 240);
                       break;
-
                     case ITEM_TARGET_OTHER:
-
                       for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-
                         if (p_party[i]->func == NULL)
                           continue;
-
                         if (pc.item[BattleItemNo].deadTargetFlag == FALSE)
                           if (p_party[i]->hp <= 0)
                             continue;
-
+                        // 所有人都画上HitBox
                         p_party[i]->atr |= ACT_ATR_HIT_BOX;
                       }
-
                       battleTargetSelectFlag = TRUE;
-
                       DeathAction(pActWnd);
                       pActWnd = NULL;
-
                       ClearBattleButton();
-
                       BattleCmdNo = BATTLE_ITEM;
-
                       play_se(217, 320, 240);
                       break;
-
                     case ITEM_TARGET_ALLMYSIDE:
-
                       if (BattleMyNo < 10) {
-
                         for (i = 0; i < 10; i++) {
-
                           if (p_party[i]->func == NULL)
                             continue;
-
                           if (pc.item[BattleItemNo].deadTargetFlag == FALSE)
                             if (p_party[i]->hp <= 0)
                               continue;
-
-                          p_party[i]->atr |= ACT_ATR_HIT_BOX_ALL1;
-                        }
-                      }
-
-                      else {
-
-                        for (i = 10; i < 20; i++) {
-
-                          if (p_party[i]->func == NULL)
-                            continue;
-
-                          if (pc.item[BattleItemNo].deadTargetFlag == FALSE)
-                            if (p_party[i]->hp <= 0)
-                              continue;
-
-                          p_party[i]->atr |= ACT_ATR_HIT_BOX_ALL2;
-                        }
-                      }
-
-                      battleTargetSelectFlag = TRUE;
-
-                      DeathAction(pActWnd);
-                      pActWnd = NULL;
-
-                      ClearBattleButton();
-
-                      BattleCmdNo = BATTLE_ITEM;
-
-                      play_se(217, 320, 240);
-                      break;
-
-                    case ITEM_TARGET_ALLOTHERSIDE:
-
-                      if (BattleMyNo >= 10) {
-
-                        for (i = 0; i < 10; i++) {
-
-                          if (p_party[i]->func == NULL)
-                            continue;
-
-                          if (pc.item[BattleItemNo].deadTargetFlag == FALSE)
-                            if (p_party[i]->hp <= 0)
-                              continue;
-
                           p_party[i]->atr |= ACT_ATR_HIT_BOX_ALL1;
                         }
                       } else {
-
                         for (i = 10; i < 20; i++) {
-
                           if (p_party[i]->func == NULL)
                             continue;
-
+                          if (pc.item[BattleItemNo].deadTargetFlag == FALSE)
+                            if (p_party[i]->hp <= 0)
+                              continue;
+                          p_party[i]->atr |= ACT_ATR_HIT_BOX_ALL2;
+                        }
+                      }
+                      battleTargetSelectFlag = TRUE;
+                      DeathAction(pActWnd);
+                      pActWnd = NULL;
+                      ClearBattleButton();
+                      BattleCmdNo = BATTLE_ITEM;
+                      play_se(217, 320, 240);
+                      break;
+                    case ITEM_TARGET_ALLOTHERSIDE:
+                      if (BattleMyNo >= 10) {
+                        for (i = 0; i < 10; i++) {
+                          if (p_party[i]->func == NULL)
+                            continue;
+                          if (pc.item[BattleItemNo].deadTargetFlag == FALSE)
+                            if (p_party[i]->hp <= 0)
+                              continue;
+                          p_party[i]->atr |= ACT_ATR_HIT_BOX_ALL1;
+                        }
+                      } else {
+                        for (i = 10; i < 20; i++) {
+                          if (p_party[i]->func == NULL)
+                            continue;
                           if (pc.item[BattleItemNo].deadTargetFlag == FALSE)
                             if (p_party[i]->hp <= 0)
                               continue;
@@ -1344,15 +1285,11 @@ void BattleButtonItem(void) {
 
                         p_party[i]->atr |= ACT_ATR_HIT_BOX;
                       }
-
                       battleTargetSelectFlag = TRUE;
-
                       DeathAction(pActWnd);
                       pActWnd = NULL;
-
                       ClearBattleButton();
                       BattleCmdNo = BATTLE_ITEM;
-
                       play_se(217, 320, 240);
                       break;
 
@@ -1375,16 +1312,11 @@ void BattleButtonItem(void) {
 
                         p_party[i]->atr |= ACT_ATR_HIT_BOX;
                       }
-
                       battleTargetSelectFlag = TRUE;
-
                       DeathAction(pActWnd);
                       pActWnd = NULL;
-
                       ClearBattleButton();
-
                       BattleCmdNo = BATTLE_ITEM;
-
                       play_se(217, 320, 240);
                       break;
 #ifdef _PET_ITEM
@@ -1399,6 +1331,7 @@ void BattleButtonItem(void) {
                 }
               }
             }
+            // 绘制每一个物品
             if (pc.item[i].useFlag == TRUE) {
               StockDispBuffer(ItemBuffer[i].defX, ItemBuffer[i].defY,
                               ItemBuffer[i].dispPrio, pc.item[i].graNo, 0);
@@ -1406,6 +1339,7 @@ void BattleButtonItem(void) {
           }
 
           if (pActWnd != NULL) {
+            // 绘制CloseButton.
             battleMenuItemFontNo[0] = StockDispBuffer(
                 ((WINDOW_DISP *)pActWnd->pYobi)->mx, pActWnd->y + 262,
                 DISP_PRIO_IME3, CG_CLOSE_BTN, 2);
@@ -1416,6 +1350,7 @@ void BattleButtonItem(void) {
   }
 }
 
+// 2026.09.03 战斗中的宠物按钮
 void BattleButtonPet(void) {
   int i, bak;
   char moji[256];
@@ -1425,15 +1360,11 @@ void BattleButtonPet(void) {
   int atrGraNo[4];
   int color;
   if (HitDispNo == battleButtonDispNo[6] || battleButtonBak2 == 6) {
-
     if (mouse.onceState & MOUSE_LEFT_CRICK || battleButtonBak2 == 6) {
       bak = sBattleButtonFlag[6];
       BattleButtonOff();
-
       if (bak == FALSE) {
-
         sBattleButtonFlag[6] = TRUE;
-
         for (i = 0; i < BATTLE_MENU_PET_FONTS; i++)
           battleMenuPetFontNo[i] = -2;
 #ifdef _NEW_WIN_POS_
@@ -1443,47 +1374,36 @@ void BattleButtonPet(void) {
         pActWnd = MakeWindowDisp(380, 160, 271, 281, 0, -1, FALSE);
 #endif
         battleButtonBak = 6;
-
         battleButtonBak2 = -1;
       }
     }
-
     strcpy(OneLineInfoStr, "更换宠物。");
   }
 
   if (sBattleButtonFlag[6] == TRUE) {
     if (pActWnd != NULL) {
       if (pActWnd->hp > 0) {
-
         StockDispBuffer(((WINDOW_DISP *)pActWnd->pYobi)->mx,
                         ((WINDOW_DISP *)pActWnd->pYobi)->my, DISP_PRIO_MENU,
                         CG_BTL_PET_CHANGE_WND, 1);
-
         if (mouse.onceState & MOUSE_LEFT_CRICK) {
           for (i = 0; i < 5; i++) {
             if (pet[i].useFlag == TRUE && pc.selectPetNo[i] == TRUE) {
               if (HitFontNo == battleMenuPetFontNo[i]) {
                 if (pet[i].hp > 0 && i != pc.battlePetNo) {
                   sprintf_s(moji, "S|%d", i);
-
                   if (bNewServer)
                     lssproto_B_send(sockfd, moji);
                   else
                     old_lssproto_B_send(sockfd, moji);
-
-                  play_se(203, 320, 240);
-
+                  play_se(203, 320, 240); // 成功的声音，清脆
                   DeathAction(pActWnd);
-
                   pActWnd = NULL;
-
                   battleMenuReturn = TRUE;
-
                   battleButtonBak = -1;
-
                   battleButtonBak2 = -1;
                 } else {
-                  play_se(220, 320, 240);
+                  play_se(220, 320, 240); // 失败的声音，沉闷
                 }
               }
             }
@@ -1497,15 +1417,10 @@ void BattleButtonPet(void) {
               old_lssproto_B_send(sockfd, "S|-1");
 
             play_se(203, 320, 240);
-
             DeathAction(pActWnd);
-
             pActWnd = NULL;
-
             battleMenuReturn = TRUE;
-
             battleButtonBak = -1;
-
             battleButtonBak2 = -1;
           }
 
@@ -1516,9 +1431,7 @@ void BattleButtonPet(void) {
 
         if (pActWnd != NULL) {
           x = pActWnd->x + 17, y = pActWnd->y + 10;
-
           for (i = 0; i < 5; i++) {
-
             if (pet[i].useFlag == TRUE && pc.selectPetNo[i] == TRUE) {
               atrFlag = FALSE;
               color = FONT_PAL_AQUA;
@@ -1962,34 +1875,26 @@ void BattleButtonPPLSKILL(void) {
 }
 #endif
 
+// 2026.09.03: 逃跑Button
 void BattleButtonEscape(void) {
   if (HitDispNo == battleButtonDispNo[7] && sBattleButtonFlag[7] == FALSE) {
-
     if (mouse.onceState & MOUSE_LEFT_CRICK) {
       BattleButtonOff();
       sBattleButtonFlag[7] = TRUE;
-      // ??
       if (bNewServer)
         lssproto_B_send(sockfd, "E");
       else
         old_lssproto_B_send(sockfd, "E");
-      // ??????????
       battlePlayerEscFlag = TRUE;
-      // ??????
       battleMenuReturn = TRUE;
-      // ????????
       battleButtonBak = -1;
-      // ????????
       battleButtonBak2 = -1;
-      // ????????
       play_se(203, 320, 240);
     }
-    // ??????
     strcpy(OneLineInfoStr, "逃脱。");
   }
 }
 
-// ?????????????? **************************************************/
 #ifdef _BATTLESKILL // (不可开) Syu ADD 战斗技能介面
 void BattleSetWazaHitBox(int no, int typeflag)
 #else
@@ -2505,98 +2410,64 @@ void BattleSetWazaHitBox(int no)
   }
 }
 
-// ????? *****************************************************************/
+// 战斗中宠物技能选择按钮 
 void BattleButtonWaza(void) {
   int i, bak;
   int x, y;
   char moji[256];
   if (HitDispNo == battleButtonDispNo[8] || battlePetButtonFlag == TRUE) {
-    // ?????????
     if (mouse.onceState & MOUSE_LEFT_CRICK || battlePetButtonFlag == TRUE) {
-      bak = sBattleButtonFlag[8]; // ??????
-      BattleButtonOff();         // ????????????
-      // ?????????
+      bak = sBattleButtonFlag[8]; //
+      BattleButtonOff(); 
       if (bak == FALSE) {
-        // ?????????
         sBattleButtonFlag[8] = TRUE; // 打开技能选项盒
-        // ?????????
         battleWazaTargetBak = -1;
-        // ?????
-        // BattleCmdNo = BATTLE_WAZA;
-        // ????????
         for (i = 0; i < BATTLE_MENU_WAZA_FONTS; i++)
           battleMenuWazaFontNo[i] = -2;
-        // ?????????
-        pActWnd = MakeWindowDisp(364, 41, 272, 348, 0, -1);
+        // 绘制宠物技能选择框(x, y, width, height, title?, windowType?)
+        // TODO: 分辨率自适应匹配，例如：x = WIDTH - 280, y = 90
+        pActWnd = MakeWindowDisp(364, 92, 272, 348, 0, -1);
       }
     }
-    // ?????????
     battlePetButtonFlag = FALSE;
-    // ??????
     strcpy(OneLineInfoStr, "使用技能。");
   }
-  // ????????
   if (sBattleButtonFlag[8] == TRUE) {
-    // ?????????
     if (pActWnd != NULL) {
-      // ??????????????
       if (pActWnd->hp > 0) {
-        // ?????????
+        // 绘制宠物技能整体框图:CG_PET_WAZA_WND
         StockDispBuffer(((WINDOW_DISP *)pActWnd->pYobi)->mx,
                         ((WINDOW_DISP *)pActWnd->pYobi)->my, DISP_PRIO_MENU,
                         CG_PET_WAZA_WND, 1);
-        // ?????????
+        // 绘制每个技能框图:CG_PET_WAZA_BAR
         for (i = 0; i < pet[battlePetNoBak].maxSkill; i++) {
-          // ?????
           StockDispBuffer(((WINDOW_DISP *)pActWnd->pYobi)->mx,
                           ((WINDOW_DISP *)pActWnd->pYobi)->my, DISP_PRIO_IME3,
                           CG_PET_WAZA_BAR_1 + i, 1);
         }
-        // ????????
         if (mouse.onceState & MOUSE_LEFT_CRICK) {
-          // ????????
           if (HitDispNo == battleMenuWazaFontNo[7]) {
-            // ????????????
             BattleButtonOff();
           }
         }
-        // ????????
         if (pActWnd != NULL) {
-          // ?
           x = pActWnd->x + 32;
           y = pActWnd->y + 252;
-          // ?
           for (i = 0; i < pet[battlePetNoBak].maxSkill; i++) {
-            // ????????
             if (petSkill[battlePetNoBak][i].useFlag == TRUE) {
               if (HitFontNo == battleMenuWazaFontNo[i]) {
-                // ??????
+                // memo: 技能描述, 2026.09.03: 把技能描述拆分成不同的行
                 char *splitPoint = petSkill[battlePetNoBak][i].memo;
-                // ?????
-                while (1) {
-                  // ?????????
-                  if (strlen(splitPoint) > 24) {
-                    strncpy_s(moji, splitPoint, 24);
-                    moji[24] = NULL; // ??????
-                    // ??????
-                    if (GetStrLastByte(moji) == 3) {
-                      moji[23] = NULL;
-                      splitPoint += 23;
-                    } else {
-                      moji[24] = NULL;
-                      splitPoint += 24;
-                    }
-                    StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
-                    y += 20;
-                  } else {
-                    strcpy(moji, splitPoint);
-                    StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                const int charEachLine = 24;
+                while (true) {
+                  splitPoint = copyUtf8CharByNum(moji, splitPoint, charEachLine);
+                  StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                  if (splitPoint == NULL || *splitPoint == '\0') {
                     break;
                   }
+                  y += 20;
                 }
-                // ????????
                 if (mouse.onceState & MOUSE_LEFT_CRICK) {
-                  // ????
                   if (petSkill[battlePetNoBak][i].field != PETSKILL_FIELD_MAP) {
 #ifdef _VARY_WOLF
                     if (!((pet[battlePetNoBak].graNo == 101428) &&
@@ -2608,31 +2479,21 @@ void BattleButtonWaza(void) {
 #endif
                     )
 #endif
-                    // ??????????????
-#ifdef _BATTLESKILL // (不可开) Syu ADD 战斗技能介面
-                      BattleSetWazaHitBox(i, 0);
-#else
+                    // 鼠标选中时候绘制选中框
                     BattleSetWazaHitBox(i);
-#endif
                   } else {
                     int flag = 0;
                     int j;
-                    // ?????????????????
                     for (j = 0; j < pet[battlePetNoBak].maxSkill; j++) {
-                      // ????????
                       if (petSkill[battlePetNoBak][j].useFlag == TRUE) {
-                        // ????
                         if (petSkill[battlePetNoBak][j].field !=
                             PETSKILL_FIELD_MAP)
                           flag++;
                       }
                     }
-                    // ??????????
                     if (flag > 0) {
-                      // ???
                       play_se(220, 320, 240);
                     }
-                    // ??????
                     else {
                       BattleButtonOff(); // ????????????
                       // battleMenuReturn = TRUE;
@@ -2642,11 +2503,8 @@ void BattleButtonWaza(void) {
                         lssproto_B_send(sockfd, "W|FF|FF");
                       else
                         old_lssproto_B_send(sockfd, "W|FF|FF");
-                      // ????????
                       play_se(203, 320, 240);
-                      // ????????
                       battleWazaTargetBak = -1;
-                      // ??????????????
                       battleTargetSelectFlag = FALSE;
                     }
                   }
@@ -2655,14 +2513,15 @@ void BattleButtonWaza(void) {
             }
           }
           if (pActWnd != NULL) {
+            // 绘制宠物名称
             x = pActWnd->x + 40;
             y = pActWnd->y + 32;
-            // ??????
             if (pet[battlePetNoBak].freeName[0] != NULL)
               CenteringStr(pet[battlePetNoBak].freeName, moji, PET_NAME_LEN);
             else
               CenteringStr(pet[battlePetNoBak].name, moji, PET_NAME_LEN);
             StockFontBuffer(x - 28, y, FONT_PRIO_FRONT, 0, moji, 0);
+            // 绘制每个技能的名称
             y += 26;
             x += 18;
             for (i = 0; i < pet[battlePetNoBak].maxSkill; i++) {
@@ -2675,7 +2534,6 @@ void BattleButtonWaza(void) {
                 sprintf_s(moji, "       %-22s",
                           petSkill[battlePetNoBak][i].name);
 #endif
-                // ????
                 if (petSkill[battlePetNoBak][i].field != PETSKILL_FIELD_MAP) {
 #ifdef _VARY_WOLF
                   if (!((pet[battlePetNoBak].graNo == 101428) &&
@@ -2702,9 +2560,8 @@ void BattleButtonWaza(void) {
               }
               y += 25;
             }
-            // ?
+            // 绘制技能的关闭按钮
             y = pActWnd->y + 330;
-            // ?????????
             battleMenuWazaFontNo[7] =
                 StockDispBuffer(((WINDOW_DISP *)pActWnd->pYobi)->mx, y,
                                 DISP_PRIO_IME3, CG_CLOSE_BTN, 2);
@@ -3251,23 +3108,15 @@ void BattleCntDownDisp(void) {
   sprintf(moji, "%2d", (BattleCntDown - TimeGetTime()) / 1000);
 #endif
 
-  // ????????
   for (i = 0; i < 2; i++) {
-    // ??????
     if (*work != 0x20) {
-      // 
       StockDispBuffer(x, y, DISP_PRIO_IME1, *work - '0' + CG_CNT_DOWN_0, 0);
     }
-    // ???
     x += 32;
-    // ??????
     work++;
   }
-  //??????
   if (DuelFlag == TRUE) {
-    // ???????
     sprintf_s(moji, "第 %02d 回合", BattleCliTurnNo + 1);
-    // 
     if (gResolutionMode == 0 || gResolutionMode == 2) {
       StockFontBuffer(290, 180, FONT_PRIO_BACK, FONT_PAL_YELLOW, moji, 0);
     } else if (gResolutionMode == 3) {

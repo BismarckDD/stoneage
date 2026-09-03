@@ -645,13 +645,29 @@ void CHAR_CHAT_DEBUG_additem(int charindex, char *message) {
   }
 }
 
+static int CHAR_parseMetamoImage(const char *token) {
+  size_t length = strlen(token);
+  /* The command supports up to six digits. IDs below 100 are invisible. */
+  if (length == 0 || length > 6 || strspn(token, "0123456789") != length)
+    return -1;
+  int image = atoi(token);
+  return image >= 100 ? image : -1;
+}
+
 void CHAR_CHAT_DEBUG_metamo(int charindex, char *message) {
-  char metamoid[7];
-  char cdkey[CDKEYLEN];
+  char metamoid[256] = "";
+  char cdkey[CDKEYLEN] = "";
   char token[128];
   int i = 0;
   int playernum = CHAR_getPlayerMaxNum();
   easyGetTokenFromString(message, 1, metamoid, sizeof(metamoid));
+  int image = CHAR_parseMetamoImage(metamoid);
+  if (image < 0) {
+    CHAR_talkToCli(charindex, -1,
+                   "用法: metamo 图号 [账号]，图号必须为100至999999的整数。",
+                   CHAR_COLORYELLOW);
+    return;
+  }
   easyGetTokenFromString(message, 2, cdkey, sizeof(cdkey));
   if (strlen(cdkey) > 0) {
     for (i = 0; i < playernum; i++) {
@@ -665,26 +681,26 @@ void CHAR_CHAT_DEBUG_metamo(int charindex, char *message) {
       CHAR_talkToCli(charindex, -1, "此账号不在线~", CHAR_COLORYELLOW);
       return;
     }
-    CHAR_setInt(i, CHAR_BASEIMAGENUMBER, atoi(metamoid));
-    CHAR_setInt(i, CHAR_BASEBASEIMAGENUMBER, atoi(metamoid));
+    CHAR_setInt(i, CHAR_BASEIMAGENUMBER, image);
+    CHAR_setInt(i, CHAR_BASEBASEIMAGENUMBER, image);
 
     CHAR_complianceParameter(i);
     CHAR_sendCToArroundCharacter(CHAR_getWorkInt(i, CHAR_WORKOBJINDEX));
     CHAR_send_P_StatusString(i, CHAR_P_STRING_BASEBASEIMAGENUMBER);
     sprintf(token, "[GM]%s把你的人物形象设置为%d!",
-            CHAR_getChar(charindex, CHAR_NAME), (int)atoi(metamoid));
+            CHAR_getChar(charindex, CHAR_NAME), image);
     CHAR_talkToCli(i, -1, token, CHAR_COLORYELLOW);
     sprintf(token, "玩家%s的人物形象设置为%d!", CHAR_getChar(i, CHAR_NAME),
-            (int)atoi(metamoid));
+            image);
     CHAR_talkToCli(charindex, -1, token, CHAR_COLORYELLOW);
   } else {
-    CHAR_setInt(charindex, CHAR_BASEIMAGENUMBER, atoi(metamoid));
-    CHAR_setInt(charindex, CHAR_BASEBASEIMAGENUMBER, atoi(metamoid));
+    CHAR_setInt(charindex, CHAR_BASEIMAGENUMBER, image);
+    CHAR_setInt(charindex, CHAR_BASEBASEIMAGENUMBER, image);
 
     CHAR_complianceParameter(charindex);
     CHAR_sendCToArroundCharacter(CHAR_getWorkInt(charindex, CHAR_WORKOBJINDEX));
     CHAR_send_P_StatusString(charindex, CHAR_P_STRING_BASEBASEIMAGENUMBER);
-    sprintf(token, "人物形象设置为%d!", (int)atoi(metamoid));
+    sprintf(token, "人物形象设置为%d!", image);
     CHAR_talkToCli(charindex, -1, token, CHAR_COLORYELLOW);
   }
 }

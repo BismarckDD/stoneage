@@ -1598,7 +1598,7 @@ void AI_ChooseAction()
     if( p_party[ BattleMyNo ]->hp <= 0 ||
         BattleBpFlag & BATTLE_BP_PLAYER_MENU_NON ){
         if( BattleBpFlag & BATTLE_BP_PLAYER_MENU_NON ){
-            if( bNewServer)
+            if(bNewServer)
                 lssproto_B_send( sockfd, "N" );
             else
                 old_lssproto_B_send( sockfd, "N" );

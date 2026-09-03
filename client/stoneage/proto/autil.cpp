@@ -1065,6 +1065,21 @@ size_t getUtf8PrefixBytes(const char *text, int maxDisplayWidth)
     return offset;
 }
 
+char *copyUtf8CharByNum(char *des, char *src, int Num)
+{
+    if (des == NULL)
+        return src;
+    if (src == NULL) {
+        des[0] = '\0';
+        return NULL;
+    }
+
+    const size_t bytes = getUtf8PrefixBytes(src, Num);
+    memmove(des, src, bytes);
+    des[bytes] = '\0';
+    return src + bytes;
+}
+
 BOOL copyUtf8WithLimit(char *destination, size_t destinationSize,
                        const char *source, int maxDisplayWidth)
 {

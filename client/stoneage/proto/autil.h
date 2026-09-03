@@ -91,5 +91,10 @@ int getUtf8CharNum(const char *);
 int getUtf8SequenceLength(const char *text, size_t remainingBytes);
 BOOL isValidUtf8(const char *text);
 size_t getUtf8PrefixBytes(const char *text, int maxDisplayWidth);
+// 按 getUtf8CharNum 的规则复制至多 Num 个单位，不拆分 UTF-8 字符。
+// 返回 src 中第一个未复制字符的位置；复制完毕时指向 src 的 '\0'。
+// Num <= 0 时写入空串并返回 src；非法 UTF-8 处停止，返回该字节位置。
+// src 和 des 不得重叠；des 须容纳复制的字节及 '\0'（Num > 0 时 4 * Num + 1 字节足够）。
+char *copyUtf8CharByNum(char *des, char *src, int Num);
 BOOL copyUtf8WithLimit(char *destination, size_t destinationSize,
                        const char *source, int maxDisplayWidth);

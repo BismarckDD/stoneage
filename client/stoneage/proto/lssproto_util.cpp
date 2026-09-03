@@ -483,7 +483,6 @@ void lssproto_Send(int fd, char *msg) {
     /* add a newline character*/
     unsigned int l = strlen(encoded);
     if (l < lssproto.workbufsize * 3) {
-      // #ifndef __NEW_PROTOCOL
       encoded[l] = '\n';
       encoded[l + 1] = 0;
       l++;
@@ -504,7 +503,6 @@ void lssproto_CreateHeaderID(char *out, int outlen, unsigned long msgid,
 char *lssproto_Ltoa(long v) {
   static char _ltoa_out[64];
   lssproto_cnv10to62((int)v, _ltoa_out, sizeof(_ltoa_out));
-  /*    sprintf_s( _ltoa_out , "%d" , (int)v );*/
   return _ltoa_out;
 }
 char *lssproto_Ultoa(unsigned long v) {
