@@ -1952,6 +1952,12 @@ void lssproto_C_recv(int fd, char *data) {
       dir = (atoi(smalltoken) + 3) % 8;
       getStringToken(bigtoken, '|', 7, sizeof(smalltoken) - 1, smalltoken);
       graNo = atoi(smalltoken);
+      if (pc.id == id) {
+        ClientRuntimeLog("player-image",
+                         "C-self layout=OBJSEND_C id=%d type=%d pos=(%d,%d) dir=%d gra=%d graTokenBytes=%u oldGra=%d action=%p",
+                         id, charType, x, y, dir, graNo,
+                         (unsigned)strlen(smalltoken), pc.graNo, pc.ptAct);
+      }
       if (graNo == 9999)
         continue;
       getStringToken(bigtoken, '|', 8, sizeof(smalltoken) - 1, smalltoken);
@@ -2214,6 +2220,12 @@ void lssproto_C_recv(int fd, char *data) {
       dir = (atoi(smalltoken) + 3) % 8;
       getStringToken(bigtoken, '|', 6, sizeof(smalltoken) - 1, smalltoken);
       graNo = atoi(smalltoken);
+      if (pc.id == id) {
+        ClientRuntimeLog("player-image",
+                         "C-self layout=legacy id=%d type=%d pos=(%d,%d) dir=%d gra=%d graTokenBytes=%u oldGra=%d action=%p",
+                         id, charType, x, y, dir, graNo,
+                         (unsigned)strlen(smalltoken), pc.graNo, pc.ptAct);
+      }
       getStringToken(bigtoken, '|', 7, sizeof(smalltoken) - 1, smalltoken);
       level = atoi(smalltoken);
       nameColor = getIntegerToken(bigtoken, '|', 8);

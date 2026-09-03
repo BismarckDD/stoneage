@@ -39,6 +39,8 @@ void swap(char *T1, char *T2) {
 
 void initPcAll(void) {
   int i;
+  ClientRuntimeLog("player-image", "initPcAll clear id=%d gra=%d action=%p",
+                   pc.id, pc.graNo, pc.ptAct);
   memset(&pc, 0, sizeof(pc));
   memset(&pet, 0, sizeof(pet));
   memset(&magic, 0, sizeof(magic));
@@ -182,6 +184,8 @@ void initPc(void) {
 
 void createPc(int graNo, int gx, int gy, int dir) {
   ACTION *oldPtAct = pc.ptAct;
+  ClientRuntimeLog("player-image", "createPc id=%d oldGra=%d requestedGra=%d floor=%d pos=(%d,%d)",
+                   pc.id, pc.graNo, graNo, nowFloor, gx, gy);
   pc.graNo = graNo;
   pc.dir = dir;
   if (pc.ptAct == NULL) {
@@ -241,6 +245,13 @@ void resetPc(void) {
 
 // PC??????????
 void setPcGraNo(int graNo, int dir) {
+  if (pc.graNo != graNo || pc.ptAct == NULL ||
+      pc.ptAct->anim_chr_no != graNo) {
+    ClientRuntimeLog("player-image",
+                     "setPcGraNo id=%d oldGra=%d requestedGra=%d oldAnimGra=%d dir=%d action=%p",
+                     pc.id, pc.graNo, graNo,
+                     pc.ptAct ? pc.ptAct->anim_chr_no : -1, dir, pc.ptAct);
+  }
   pc.graNo = graNo;
   pc.dir = dir;
 

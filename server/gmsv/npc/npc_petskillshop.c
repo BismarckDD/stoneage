@@ -1,10 +1,12 @@
 #include "version.h"
+//
+#include "pet_skill.h"
+//
 #include "char.h"
 #include "object.h"
 #include "char_base.h"
 #include "npcutil.h"
 #include "gmsv_server.h"
-#include "pet_skill.h"
 #include "readmap.h"
 #include "battle.h"
 enum {

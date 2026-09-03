@@ -8,6 +8,7 @@
 #include "log.h" // for StoneAge
 #include "npc_lua_interface.h"
 #include "shop.h"
+#include "workspace.h"
 #include <zlib.h>
 #include <net.h>
 
@@ -2552,9 +2553,68 @@ void GmsvServer_M_send(int fd, int fl, int x1, int y1, int x2, int y2,
   util_mkint(buffer, checksum);
   util_SendMesg(fd, LSSPROTO_M_SEND, buffer);
 }
+/* Inspect only the numeric header of the receiver's own C record. Never log
+ * the full packet: later fields contain character names and other user data. */
+static void LogSelfPlayerImage(int fd, const char *data) {
+  int charindex = CONNECT_getCharaindex(fd);
+  char objectid[32];
+  const char *record;
+#ifdef _OBJSEND_C
+  const int idfield = 2, grafield = 6;
+#else
+  const int idfield = 1, grafield = 5;
+#endif
+  if (!data || !CHAR_CHECKINDEX(charindex))
+    return;
+  cnv10to62(CHAR_getWorkInt(charindex, CHAR_WORKOBJINDEX), objectid,
+            sizeof(objectid));
+  for (record = data; *record;) {
+    const char *end = strchr(record, ',');
+    const char *field = record;
+    int n, self = 0;
+    if (!end)
+      end = record + strlen(record);
+    for (n = 0; n <= grafield && field < end; ++n) {
+      const char *sep = memchr(field, '|', (size_t)(end - field));
+      size_t len;
+      if (!sep)
+        sep = end;
+      len = (size_t)(sep - field);
+      if (n == idfield)
+        self = len == strlen(objectid) && !memcmp(field, objectid, len);
+      if (n == grafield && self) {
+        char token[32], *tail;
+        long wireGra = 0;
+        int valid = 0;
+        if (len > 0 && len < sizeof(token)) {
+          memcpy(token, field, len);
+          token[len] = '\0';
+          wireGra = strtol(token, &tail, 10);
+          valid = tail != token && *tail == '\0';
+        }
+        print("[player-image] C-send fd=%d id=%d layout=%s floor=%d pos=(%d,%d) baseGra=%d originalGra=%d wireGra=%ld graTokenBytes=%u numeric=%d\n",
+              fd, CHAR_getWorkInt(charindex, CHAR_WORKOBJINDEX),
+#ifdef _OBJSEND_C
+              "OBJSEND_C",
+#else
+              "legacy",
+#endif
+              CHAR_getInt(charindex, CHAR_FLOOR),
+              CHAR_getInt(charindex, CHAR_X), CHAR_getInt(charindex, CHAR_Y),
+              CHAR_getInt(charindex, CHAR_BASEIMAGENUMBER),
+              CHAR_getInt(charindex, CHAR_BASEBASEIMAGENUMBER),
+              wireGra, (unsigned)len, valid);
+      }
+      field = sep < end ? sep + 1 : end;
+    }
+    record = *end ? end + 1 : end;
+  }
+}
+
 void GmsvServer_C_send(int fd, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
+  LogSelfPlayerImage(fd, data);
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_C_SEND-data:%s\n", data);
 #endif
