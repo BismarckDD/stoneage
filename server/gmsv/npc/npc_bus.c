@@ -24,7 +24,8 @@ enum {
 	NPC_WORK_CURRENTTIME = CHAR_NPCWORKINT9,
 	NPC_WORK_SEFLG = CHAR_NPCWORKINT10,
 };
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 extern int CheckCharMaxItem(int charindex);
 #endif
 /* 蛐  丢永本□斥及enum */
@@ -44,17 +45,17 @@ typedef struct {
 	char	option[32];
 	char	defaultmsg[128];
 }NPC_BUS_MSG;
-NPC_BUS_MSG		busmsg[] = {
-	{ "msg_gettingon",	"PAON！（你无法於中途加入我们唷！）"},
-	{ "msg_notparty",	"PAPAON！！无法以团队加入唷！"},
-	{ "msg_overparty",	"PAON！！人数已满。"},
-	{ "msg_denieditem",		"PAPAON！！我可不要这个道具！"},
-	{ "msg_allowitem",		"哇喔~(想要那个道具啊!)"},
-	{ "msglevel",		"PAPAON！！你的等级还不够唷！"},
-	{ "msg_stone",		"PAPAON！！金钱不足唷！"},
-	{ "msg_event",		"PAON！！你无法加入唷！"},
-	{ "msg_start",		"哇喔~(出发进行)"},
-	{ "msg_end",		"哇喔~(到罗)"}
+NPC_BUS_MSG	busmsg[] = {
+	{ "msg_gettingon",  "PAON！（你无法於中途加入我们唷！）"},
+	{ "msg_notparty",   "PAPAON！！无法以团队加入唷！"},
+	{ "msg_overparty",  "PAON！！人数已满。"},
+	{ "msg_denieditem", "PAPAON！！我可不要这个道具！"},
+	{ "msg_allowitem",  "哇喔~(想要那个道具啊!)"},
+	{ "msglevel",       "PAPAON！！你的等级还不够唷！"},
+	{ "msg_stone",      "PAPAON！！金钱不足唷！"},
+	{ "msg_event",      "PAON！！你无法加入唷！"},
+	{ "msg_start",      "哇喔~(出发进行)"},
+	{ "msg_end",        "哇喔~(到罗)"}
 	
 };
 
@@ -134,7 +135,6 @@ BOOL NPC_BusInit( int meindex )
     	CHAR_setWorkInt( meindex, CHAR_WORKPARTYINDEX1 + i, -1);
     }
 	
-	/* 伙□玄瑁烂允月 */
 {
 	int rev;
 	int r = CHAR_getWorkInt( meindex, NPC_WORK_ROUTEMAX);
@@ -173,11 +173,9 @@ void NPC_BusTalked( int meindex , int talkerindex , char *szMes ,
     int i;
     int	partyflg = FALSE;
 	
-    /* 皿伊奶乩□卞覆仄化分仃  杀允月 */
     if( CHAR_getInt( talkerindex , CHAR_WHICHTYPE ) != CHAR_TYPEPLAYER ) {
     	return;
     }
-	/* 愤坌及由□  奴  昙菸  井升丹井譬屯月 */
 	for( i = 0; i < getPartyNum(meindex  ); i ++ ) {
 		int index = CHAR_getWorkInt( meindex, CHAR_WORKPARTYINDEX1+i);
 		if( CHAR_CHECKINDEX(index)){
@@ -192,7 +190,6 @@ void NPC_BusTalked( int meindex , int talkerindex , char *szMes ,
 	else {
 		if( CHAR_getWorkInt( meindex, NPC_WORK_MODE) == 0 ) {
 			int i;
-	//		#define NPC_BUS_DEBUGROUTINTG	"routingtable:"
 			if( strstr( szMes, "出发" )  ||
 				strstr( szMes, "出发" )  ||
 				strstr( szMes, "Go" )  ||

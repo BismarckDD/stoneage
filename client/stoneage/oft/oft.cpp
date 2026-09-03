@@ -4146,11 +4146,15 @@ static char get_command(void)
         now_point = command_point;
         d0 = BattleCmd[command_point++];
         if (d0 == NULL)
+        {
+            command_point--;
             return -1;
+        }
         if (d0 == 'B')
         {
-            //andy_reEdit 2003/07/18 21:54
-            if (BattleCmd[now_point + 2] == '|' && (BattleCmd[now_point - 1] == '|' || BattleCmd[now_point - 1] == NULL))
+            // The first command has no preceding byte. Later commands start after '|'.
+            if ((now_point == 0 || BattleCmd[now_point - 1] == '|') &&
+                BattleCmd[now_point + 1] != '\0' && BattleCmd[now_point + 2] == '|')
                 break;
         }
     }
@@ -5195,24 +5199,12 @@ void master(ACTION *a0)
         if (d0 < 0 || d0 >= BATTLKPKPLYAERNUM)        //???????
         {
             if (command_no == ATT_VARIABLE)        //???
-            {
                 ATR_ATTRIB(p_master) = get_num();        //??
-                break;
-            }
-            else
-            {
-#ifdef _STONDEBUG_
-                MessageBoxNew(hWnd, "command_no != ATT_VARIABLE", "Error", MB_OK);
-#endif
-                break;
-            }
+            break;
         }
         a1 = p_party[d0];        //???????
         if (ATR_NAME(a1) == NULL)        //???????????????
         {
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "ATR_NAME(a1) == NULL", "Error", MB_OK);
-#endif
             command_no = get_command();        //??????
             if (command_no == -1)        //???
             {
@@ -5230,8 +5222,12 @@ void master(ACTION *a0)
         }
         if (command_no != ATT_MALFUNCTION)        //??????
         {
-            if (ATR_VCT_NO(a1) != 0)        //??            command_point = sav_command_point;        //?????
+            if (ATR_VCT_NO(a1) != 0)
+            {
+                // Retry this command once the actor has returned to idle.
+                command_point = sav_command_point;
                 break;
+            }
         }
         ATR_VCT_NO(a0) = 1;        //???
         ATR_DAMAGE(a0) = 0;
@@ -5281,10 +5277,6 @@ void master(ACTION *a0)
             ATR_ATTACK_POW(0, a1) = get_num();            //攻击力
             if (BattleCmd[command_point] == 'p')
                 ATR_ATTACK_PET_POW(0, a1) = get_num();    //pet攻击力
-#ifdef _STONDEBUG_
-            else
-                LogToBattleError( BattleCmd, __LINE__ );
-#endif
             ATR_BODY_CNT(a0) = 1;
 #ifdef _ATTDOUBLE_ATTACK
             //andy_add
@@ -5838,9 +5830,6 @@ void master(ACTION *a0)
                 a1 = p_party[d0];        //???????
                 if (ATR_NAME(a1) == NULL)        //????????
                 {
-#ifdef _STONDEBUG_
-                    MessageBoxNew(hWnd, "没有合体攻击的名字紧急连络日本！", "Error", MB_OK);
-#endif
                     get_num();        //??????
                     get_num();        //??????
                     get_num();        //????
@@ -6060,14 +6049,6 @@ void master(ACTION *a0)
         default:    //???????
             action_inf = -1;
             //?????????????
-#ifdef _STONDEBUG_
-            {
-                char errbuf[256];
-
-                sprintf_s(errbuf, "errbuf:%c", command_no);
-                MessageBoxNew(hWnd, errbuf, "Error", MB_OK);
-            }
-#endif
             command_point = 0;
             break;
         }
@@ -6245,6 +6226,34 @@ void monster(ACTION *a0)
     static ACTION *a0tmp[10];
     static int a0mark[10];                // 0:已将action release 1:未
     static int a0tmpcount;
+
+    // Record state changes, plus one snapshot if an action stops progressing.
+    static int traceState[BATTLKPKPLYAERNUM];
+    static ACTION *traceActor[BATTLKPKPLYAERNUM];
+    static DWORD traceSince[BATTLKPKPLYAERNUM];
+    static bool traceStalled[BATTLKPKPLYAERNUM];
+    const int tracePlace = ATR_PLACE_NO(a0);
+    if (tracePlace >= 0 && tracePlace < BATTLKPKPLYAERNUM)
+    {
+        const DWORD now = GetTickCount();
+        const bool changed = traceActor[tracePlace] != a0 ||
+            traceState[tracePlace] != ATR_VCT_NO(a0);
+        const bool stalled = !changed && ATR_VCT_NO(a0) != 0 &&
+            !traceStalled[tracePlace] && now - traceSince[tracePlace] >= 3000;
+        if (changed || stalled)
+        {
+            ClientRuntimeLog("battle-action",
+                "place=%d self=%d state=%d gra=%d anim=%d frame=%d timer=%d hit=%d pos=(%d,%d) master=%d done=%d/%d cursor=%d stalled=%d",
+                tracePlace, BattleMyNo, ATR_VCT_NO(a0), ATR_CHR_NO(a0),
+                ATR_CHR_ACT(a0), ATR_CHR_CNT(a0), ATR_CHR_TIM(a0), ATR_HIT(a0),
+                ATR_H_POS(a0), ATR_V_POS(a0), ATR_VCT_NO(p_master),
+                ATR_DAMAGE(p_master), ATR_BODY_CNT(p_master), command_point, stalled);
+            traceActor[tracePlace] = a0;
+            traceState[tracePlace] = ATR_VCT_NO(a0);
+            traceSince[tracePlace] = now;
+            traceStalled[tracePlace] = stalled;
+        }
+    }
 
     switch (ATR_VCT_NO(a0))
     {
@@ -7986,7 +7995,6 @@ void monster(ACTION *a0)
                 else
                     LogToBattleError(BattleCmd, __LINE__);
 
-                //???????
                 a1 = GetAction(T_PRIO_MISSILE, sizeof(ATR_EQU));
                 if (a1 == NULL)
                 {
@@ -8021,7 +8029,7 @@ void monster(ACTION *a0)
             return;
         }
         break;
-    case 27:        //??????
+    case 27:
         if (ATR_HIT_STOP(a0))
         {
             ATR_HIT_STOP(a0)--;
@@ -8030,7 +8038,7 @@ void monster(ACTION *a0)
         if (pattern(a0, ANM_NOMAL_SPD, ANM_NO_LOOP))
         {    //??????
             ATR_DAMAGE(p_master) = ATR_BODY_CNT(p_master);        //??????
-            DeathAction(a0);        //?
+            DeathAction(a0);
             return;
         }
         if (ATR_CHR_CNT(a0) == 9 && ATR_CHR_TIM(a0) == 0)
@@ -11884,10 +11892,6 @@ void set_bc(void)
     {
         //??????
         d2 = get_bc_num();
-#ifdef _STONDEBUG_
-        if (d2 >= BATTLKPKPLYAERNUM)
-            MessageBoxNew(hWnd, "初始化失败,超过设定数量", "Error", MB_OK);
-#endif
         //?????????????
         a1 = p_party[d2];
         /* ??? */
@@ -11898,6 +11902,7 @@ void set_bc(void)
         get_bc_asc(a1, 1);
         //???????
         ATR_CHR_NO(a1) = get_bc_num();
+        ClientRuntimeLog("battle-actor", "place=%d self=%d gra=%d", d2, BattleMyNo, ATR_CHR_NO(a1));
         //??????
         ATR_LEVEL(a1) = get_bc_num();
         //?????
@@ -12315,12 +12320,9 @@ void petrideChangeGraph(ACTION *a0,int ridebmp)
     //    return;
     //if (ATR_RIDE(a0) != 0)
     //    return;
-
     //if( a0->saveride == -1 )
     //    return;
-
     ATR_CHR_NO(a0) = ridebmp;
-
     ATR_PETFALL(a0) = 0;
     //andy_fall
     ATR_RIDE(a0) = 1;
@@ -12330,13 +12332,4 @@ void petrideChangeGraph(ACTION *a0,int ridebmp)
 
 void LogToBattleError(char *data, int line)
 {
-#ifdef _STONDEBUG_
-    FILE *rfp;
-    rfp = fopen("battleerror.txt", "a+");
-    if (rfp)
-    {
-        fprintf(rfp, "%d: %s\n", line, data);
-        fclose(rfp);
-    }
-#endif
 }

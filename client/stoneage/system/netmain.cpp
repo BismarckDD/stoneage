@@ -79,9 +79,6 @@ void networkLoop(void) {
     }
     if (len == SOCKET_ERROR) {
       if (WSAGetLastError() != WSAEWOULDBLOCK) {
-#ifdef _STONDEBUG_
-        CheckNetErrror();
-#endif
         closesocket(sockfd);
         dwServer = NULL;
         // ??????????????
@@ -121,9 +118,6 @@ void networkLoop(void) {
       writetime = TimeGetTime();
     if (len == SOCKET_ERROR) {
       if (WSAGetLastError() != WSAEWOULDBLOCK) {
-#ifdef _STONDEBUG_
-        CheckNetErrror();
-#endif
         closesocket(sockfd);
         dwServer = NULL;
         // ??????????????

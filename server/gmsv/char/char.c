@@ -62,10 +62,6 @@ extern int BATTLE_getRidePet(int char_index);
 #ifdef _CHANNEL_MODIFY
 extern int InitOccChannel(void);
 #endif
-
-#ifdef _ABSOLUTE_DEBUG
-extern int debugline;
-#endif
 #ifdef _OFFLINE_SYSTEM
 extern int playeronlinenum;
 #endif

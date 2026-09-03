@@ -45,8 +45,8 @@ int CursorFlashCnt = 0;
 // ??????????
 int ChatLineSmoothY = 0 ;
 
+// 存储当前用户额历史记录
 #define CAHT_HISTORY_STR_FILE_NAME "data\\chathis.dat"
-// ???????????
 CHAT_HISTORY ChatHistory;
 
 #define MAX_SHIELD_SIZE 5000
@@ -798,7 +798,6 @@ void KeyboardRight()
 }
 
 #include <tlhelp32.h>
-/* ???????? ************************************************************/
 void KeyboardReturn( void )
 {
     //ttom
@@ -833,117 +832,29 @@ void KeyboardReturn( void )
     }
 #endif
     first_keydown=false;
-    //end
     //ttom
     char bakNo;
-    // ?????????????????
     if( GetImeString() != NULL )
         return;
-    // ??????? *******************************
     if( pNowStrBuffer == &MyChatBuffer ){
         if( pNowStrBuffer->cnt == 0 )
             return;
         pNowStrBuffer->buffer[ pNowStrBuffer->cnt ] = '\0';
-#ifdef _STONDEBUG_
-        // ????????
-        if( strstr( pNowStrBuffer->buffer, "[battlein]" ) )
-            EncountFlag = TRUE;
-        if( strstr( pNowStrBuffer->buffer, "[battleout]" ) ){
-            ChangeProc( PROC_GAME, 1 );
-            DeathAllAction();    // ????????
-        }
-    #ifdef _THEATER
-        if (strstr(pNowStrBuffer->buffer, "scenery"))
-        {
-            char szData[128];
-
-            getStringToken(pNowStrBuffer->buffer, ' ', 2, sizeof(szData) - 1, szData);
-            sprintf_s(szData, "%d|%d", E_DATA_TYPE_SCENERY, atoi(szData));
-            lssproto_TheaterData_recv(0, szData);
-        }
-        if (strstr(pNowStrBuffer->buffer, "movescreen"))
-        {
-            int iXY = 0;
-            char szData[128];
-
-            if (pc.bMoveScreenMode)
-                lssproto_MoveScreen_recv(0, FALSE, iXY);
-            else
-            {
-                getStringToken(pNowStrBuffer->buffer, ' ', 2, sizeof(szData) - 1, szData);
-                iXY = atoi(szData);
-                getStringToken(pNowStrBuffer->buffer, ' ', 3, sizeof(szData) - 1, szData);
-                iXY = (iXY << 16) | atoi(szData);
-                lssproto_MoveScreen_recv(0, TRUE, iXY);
-            }
-        }
-        if (strstr(pNowStrBuffer->buffer, "playnpc"))
-        {
-            char    szData[128], szData1[128];
-
-            getStringToken(pNowStrBuffer->buffer, ' ', 2, sizeof(szData1) - 1, szData1);
-            sprintf_s(szData, "12|%s", szData1);
-            lssproto_TheaterData_recv(0, szData);
-        }
-    #endif
-        if( strstr( pNowStrBuffer->buffer, "[cary encountoff]" ) ){
-            EncountOffFlag = TRUE;
-            pNowStrBuffer->cnt = 0;
-            pNowStrBuffer->cursor=0;
-            *( pNowStrBuffer->buffer )= '\0';
-            return;
-        }
-        if( strstr( pNowStrBuffer->buffer, "[cary encounton]" ) ){
-            EncountOffFlag = FALSE;
-            pNowStrBuffer->cnt = 0;
-            pNowStrBuffer->cursor=0;
-            *( pNowStrBuffer->buffer )= '\0';
-            return;
-        }
-#endif
-        // ??????
         bakNo = ChatHistory.newNo;
-        // ????????
         ChatHistory.newNo++;
-        // ????????
         if( ChatHistory.newNo >= MAX_CHAT_HISTORY )
             ChatHistory.newNo = 0;
 //cary
         BOOL bSave=TRUE;
-        /*
-        BOOL bH=FALSE;
-        for(int i=0;i<pNowStrBuffer->cnt;i++){
-            if(!bH){
-                if('['==pNowStrBuffer->buffer[i])
-                    bH=TRUE;
-            }else{
-            }
-        }
-        */
-        /*
-        for(int i=0;i<pNowStrBuffer->cnt;i++){
-            if('['==pNowStrBuffer->buffer[i]){
-                if(strstr( pNowStrBuffer->buffer+i, "debug on]" ) != 0){
-                    bSave=FALSE;
-                    break;
-                }
-            }
-        }
-        */
         if(('['==pNowStrBuffer->buffer[0])&&(']'==pNowStrBuffer->buffer[pNowStrBuffer->cnt-1]))
             bSave=FALSE;
         if(!bSave){
             ChatHistory.newNo = bakNo;
         }else{
-//end
-            // ????????
             if( strcmp( pNowStrBuffer->buffer, ChatHistory.str[ bakNo ] ) != 0 ){
-                // ?????????
                 strcpy( ChatHistory.str[ ChatHistory.newNo ], pNowStrBuffer->buffer );
-                // ?????????
                 SaveChatHistoryStr( ChatHistory.newNo );
             }else{
-                // ??????????
                 ChatHistory.newNo = bakNo;
             }
         }
@@ -971,13 +882,16 @@ void KeyboardReturn( void )
             old_lssproto_FT_send( sockfd, shougouChange.buffer ) ; /* ../doc/lssproto.html line 1792 */
     }else
     
-    // ??? **********************************
     if( pNowStrBuffer == &petNameChange ){
+        // 2026.09.03
         // Unlike the chat branch above, this branch historically relied on
         // insertion preserving the old terminator.  Explicitly terminate it
         // before the protocol encoder reads the name.
         petNameChange.buffer[petNameChange.cnt] = '\0';
-        // ??????
+        // An empty edit explicitly restores the species name.  Send that
+        // name through the normal rename request and wait for server status.
+        char *requestedName = petNameChange.cnt == 0
+            ? pet[petStatusNo].name : petNameChange.buffer;
         DeathAction( pActMenuWnd3 );
         pActMenuWnd3 = NULL;
         // ????????
@@ -986,12 +900,11 @@ void KeyboardReturn( void )
         play_se( 203, 320, 240 );
         // ??
         if( bNewServer)
-            lssproto_KN_send( sockfd, petStatusNo, petNameChange.buffer ) ; /* ../doc/lssproto.html line 1792 */
+            lssproto_KN_send( sockfd, petStatusNo, requestedName ) ; /* ../doc/lssproto.html line 1792 */
         else
-            old_lssproto_KN_send( sockfd, petStatusNo, petNameChange.buffer ) ; /* ../doc/lssproto.html line 1792 */
+            old_lssproto_KN_send( sockfd, petStatusNo, requestedName ) ; /* ../doc/lssproto.html line 1792 */
     }else
     
-    // ????? **********************************
     if( pNowStrBuffer == &MailStr
 #ifdef __EDEN_AUCTION
         || pNowStrBuffer == &AuctionStr){

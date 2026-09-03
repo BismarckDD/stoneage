@@ -468,35 +468,14 @@ BOOL NPC_readNPCCreateFiles(char *topdirectory, int createsize) {
   print("正确创建NPC %d ...", NPC_create_readindex);
   /* Do not expose unused capacity to the runtime generation loop. */
   NPC_createnum = NPC_create_readindex;
-#ifdef DEBUG
-  /* 99/4/8 By Kawata csv溥挚卞仄化支月 */
-  print("Npc_Create's\n");
-  for (i = 0; i < NPC_createnum; i++) {
-    int j;
-    /*print( "NPC_create[%d]:\n", i);*/
-    print("%d,", i);
-    for (j = 0; j < NPC_CREATECHARNUM; j++)
-      print("%s,", NPC_create[i].chardata[j].string);
-    /*print( "\tIntdata\t" );*/
-    for (j = 0; j < NPC_CREATEINTNUM; j++)
-      print("%d,", NPC_create[i].intdata[j]);
-    /***print("\n" );
-    print( "\tChardata\t" );***/
-    for (j = 0; j < NPC_create[i].intdata[NPC_CREATEENEMYNUM]; j++)
-      print("%d", NPC_create[i].templateindex[j]);
-    /*print("\n" );*/
-    print("\n");
-  }
-#endif /*DEBUG*/
-
   freeMemory(filenames);
   return TRUE;
 }
 
 /*------------------------------------------------------------
- * createindex 井日 boundary 互涩烂今木化中月井升丹井毛苇月
+ * createindex 井日 boundary
  * 娄醒
- *  createindex         int         create及奶件犯永弁旦
+ *  createindex int create
  * 忒曰袄
  *  涩烂今木化中月          TRUE(1)
  *  涩烂今木化中卅中        FALSE(0)

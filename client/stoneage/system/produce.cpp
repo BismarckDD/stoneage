@@ -1104,19 +1104,9 @@ BOOL ProduceCenterPress(int mode) {
   return FALSE;
 }
 
-// 跪笱蛌劓源宒
 BOOL DrawProduce(int no) {
-#ifdef _STONDEBUG_
-  // pass
-  if (joy_con[0] & JOY_UP) {
-    // ???ㄈ?釤????
-    NowTime = TimeGetTime();
-    return FALSE;
-  }
-#endif
   BOOL ret = TRUE;
   ClearBackSurface();
-
   no = -1;
   switch (no) {
   case PRODUCE_UP_ACCELE:
@@ -1231,13 +1221,6 @@ void TitleProduce(void) {
   static int fall[8];
   static int time;
   int i, bmpNo;
-#ifdef _STONDEBUG_
-  // pass
-  if (joy_con[0] & JOY_UP) {
-    NowTime = TimeGetTime();
-    return;
-  }
-#endif
   if (ProduceInitFlag == TRUE) {
     ProduceInitFlag = FALSE;
     flag = 0;
@@ -1253,11 +1236,8 @@ void TitleProduce(void) {
       cnt3 = 0;
       time = 0;
     }
-    // ???????
     x[9] = -319;
-    // cary 2001 07 10
     y[9] = 410 + 5;
-    //        y[ 9 ] = 410;
     a[9] = 25.5;
     x[8] = 959;
     y[8] = 444;
@@ -1328,7 +1308,6 @@ void TitleProduce(void) {
   // StockDispBuffer( ( int )x[ 9 ] + DISPLACEMENT_X / 2, ( int )y[ 9 ],
   // DISP_PRIO_CHAR, CG_TITLE_DREAM_LOGO, 0 );
   if (cnt3 < 8) {
-    // 牙
     for (i = 0; i < 8; i++) {
       StockDispBuffer((int)x[i] + DISPLACEMENT_X / 2, (int)y[i], DISP_PRIO_CHAR,
                       CG_TITLE_NAME_S + i, 0);

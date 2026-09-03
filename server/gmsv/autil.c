@@ -203,16 +203,10 @@ int util_GetFunctionFromSlice(int *func, int *fieldcount) {
 
 void util_DiscardMessage(void) { SliceCount = 0; }
 extern int clisendfunc;
-#ifdef _ABSOLUTE_DEBUG
-extern int lastfunctime;
-#endif
 void _util_SendMesg(char *file, int line, int fd, int func, char *buffer) {
   //  char t1[16384], t2[16384];
   char t1[1024 * 64], t2[1024 * 64];
   clisendfunc = func;
-#ifdef _ABSOLUTE_DEBUG
-  lastfunctime = 4;
-#endif
   // WON ADD
   if (fd < 0) {
     print("\n SendMesg fd err %s:%d!! ==> func(%d)\n", file, line, func);

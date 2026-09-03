@@ -93,10 +93,6 @@ void shutdownProgram(void) {
 #ifdef _KEEP_UP_NO_LOGIN
 extern char keepupnologin[256];
 #endif
-#ifdef _GMSV_DEBUG
-char *DebugMainFunction = NULL;
-extern time_t initTime;
-#endif
 extern int player_online;
 extern int player_maxonline;
 static char saacrecvfunc_buf[255] = "";
@@ -125,10 +121,6 @@ void sigshutdown(int number) {
     logerr(buff);
     sprintf(buff, "标准信息: %d\n", number);
     logerr(buff);
-#ifdef _GMSV_DEBUG
-    sprintf(buff, "主 函 数: %s\n", DebugMainFunction);
-    logerr(buff);
-#endif
     sprintf(buff, "在线人数: %d\n", player_online);
     logerr(buff);
     sprintf(buff, "最高在线: %d\n", player_maxonline);
@@ -141,20 +133,6 @@ void sigshutdown(int number) {
     logerr(buff);
     sprintf(buff, "cli 发送: %d\n", clisendfunc);
     logerr(buff);
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(buff, "错误数据: %s\n", errordata);
-    logerr(buff);
-    sprintf(buff, "错误账号: %s\n", charId);
-    logerr(buff);
-    sprintf(buff, "最后执行: %d\n", lastfunctime);
-    logerr(buff);
-    sprintf(buff, "调试行数: %d\n", debugline);
-    logerr(buff);
-    sprintf(buff, "COM 接口: %d\n", comnum);
-    logerr(buff);
-    sprintf(buff, "当前版本: %s\n", SERVER_VERSION);
-    logerr(buff);
-#endif
     sprintf(buff, "以下是主要错误，必须向我们提交的错误\n");
     logerr(buff);
     dump();
@@ -167,43 +145,6 @@ void sigshutdown(int number) {
     printf("当前版本: %s\n", SERVER_VERSION);
   }
 
-#ifdef _GMSV_DEBUG
-  {
-    time_t new_t;
-    int dd, hh, mm, ss;
-    char buf[128];
-    time(&new_t);
-    if (initTime == 0) {
-      printf("运行时间: 尚未初始化完\n");
-    } else {
-      new_t -= initTime;
-
-      dd = (int)new_t / 86400;
-      new_t = new_t % 86400;
-      hh = (int)new_t / 3600;
-      new_t = new_t % 3600;
-      mm = (int)new_t / 60;
-      new_t = new_t % 60;
-      ss = (int)new_t;
-
-      if (dd > 0) {
-        snprintf(buf, sizeof(buf), "服务器共运行了 %d 日 %d 小时 %d 分 %d 秒。",
-                 dd, hh, mm, ss);
-      } else if (hh > 0) {
-        snprintf(buf, sizeof(buf), "服务器共运行了 %d 小时 %d 分 %d 秒。", hh,
-                 mm, ss);
-      } else {
-        snprintf(buf, sizeof(buf), "服务器共运行了 %d 分 %d 秒。", mm, ss);
-      }
-      if (number == 0 || number == 2) {
-        printf("运行时间: %s\n", buf);
-      } else {
-        sprintf(buff, "运行时间: %s\n", buf);
-        logerr(buff);
-      }
-    }
-  }
-#endif
   remove("gmsvlog.err2");
   rename("gmsvlog.err1", "gmsvlog.err2");
   rename("gmsvlog.err", "gmsvlog.err1");

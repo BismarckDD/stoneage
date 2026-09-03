@@ -257,9 +257,6 @@ void NPC_AirLoop(int meindex) {
     }
     return;
   case 3:
-    /* 谗邋仄化手］弁仿奶失件玄及  樟谨切及啃卞］
-     * 剂仄仇仇匹它尼奶玄毛中木化支月
-     */
     if (CHAR_getWorkInt(meindex, NPC_WORK_CURRENTTIME) + 3 < NowTime.tv_sec) {
       char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
       NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr));

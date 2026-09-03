@@ -200,7 +200,6 @@ void npc_ShipTalked( int meindex , int talkerindex , char *szMes ,
 	else {
 		if( CHAR_getWorkInt( meindex, NPC_WORK_MODE) == 0 ) {
 			int i;
-	//		#define NPC_AIR_DEBUGROUTINTG	"routingtable:"
 			if( strstr( szMes, "出发" )  ||
 				strstr( szMes, "出发" )  ||
 				strstr( szMes, "Go" )  ||
@@ -208,12 +207,9 @@ void npc_ShipTalked( int meindex , int talkerindex , char *szMes ,
 			{
 				CHAR_setWorkInt( meindex, NPC_WORK_MODE,1);
 				
-				/* 伙□皿楮醒及裟请仄毛汹仁簧蘸卞允月 */
 	 			CHAR_setInt( meindex, CHAR_LOOPINTERVAL, NPC_AIR_LOOPTIME);
 				
-				/* SE   日允  穴件乒旦及陲太   */
 				if( CHAR_getWorkInt( meindex, NPC_WORK_SEFLG )) {
-					//andy_reEdit	NPC_WORK_RUNWAVE
 					CHAR_sendSEoArroundCharacter( 
 									CHAR_getInt( meindex, CHAR_FLOOR),
 									CHAR_getInt( meindex, CHAR_X),

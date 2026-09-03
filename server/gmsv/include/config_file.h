@@ -539,9 +539,6 @@ int getExpShare(void);
 int getBigBao(void);
 int getBigBao2(void);
 #endif
-#ifdef _MO_SHOW_DEBUG
-int isDebug(void);
-#endif
 #ifdef _CHAR_LOOP_TIME
 int getCharLoopTime();
 #endif

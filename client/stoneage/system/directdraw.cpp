@@ -42,9 +42,6 @@ BOOL g_bUseAlpha = FALSE;
 BOOL g_bTalkWindow = FALSE;
 #endif
 
-#ifdef _STONDEBUG_
-extern int g_iMallocCount;
-#endif
 
 void SetAnimTbl();
 
@@ -456,13 +453,8 @@ BOOL InitDirectDraw(void) {
     }
 
 #endif
-  // ??????????
   if ((lpBattleSurface = CreateSurface(DEF_APPSIZEX, DEF_APPSIZEY, DEF_COLORKEY,
                                        DDSCAPS_VIDEOMEMORY)) == NULL) {
-#ifdef _STONDEBUG_
-    MessageBoxNew(hWnd, "建立VideoRam BattleSurface失败！", "确定",
-                  MB_OK | MB_ICONSTOP);
-#endif
     if ((lpBattleSurface = CreateSurface(DEF_APPSIZEX, DEF_APPSIZEY,
                                          DEF_COLORKEY, DDSCAPS_SYSTEMMEMORY)) ==
         NULL) {
@@ -613,7 +605,6 @@ BOOL InitPalette(void) {
   }
   // WON REM
 #ifdef _HI_COLOR_16
-  // #ifdef _STONDEBUG_
   if (displayBpp == 8) {
     if (lpDraw->lpFRONTBUFFER->SetPalette(lpDraw->lpPALETTE) != DD_OK) {
       MessageBoxNew(hWnd, "调色盘数据处理失败", "Error", MB_OK);
@@ -859,10 +850,6 @@ void ClearBackSurface(void) {
 
   ZeroMemory(&ddbltfx, sizeof(DDBLTFX));
   ddbltfx.dwSize = sizeof(DDBLTFX);
-#ifdef _STONDEBUG_
-  QueryPerformanceCounter(&tf);
-  iTotalProcTime = (int)tf.QuadPart;
-#endif
   HRESULT hr = lpDraw->lpBACKBUFFER->Blt(
       NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT, &ddbltfx);
 #ifdef _READ16BITBMP
@@ -870,11 +857,6 @@ void ClearBackSurface(void) {
     lpDraw->lpBACKBUFFERSYS->Blt(NULL, NULL, NULL, DDBLT_COLORFILL | DDBLT_WAIT,
                                  &ddbltfx);
   }
-#endif
-#ifdef _STONDEBUG_
-  QueryPerformanceCounter(&tf);
-  iTotalUseTime += (((int)tf.QuadPart - iTotalProcTime)) / 100;
-  iTotalRunCount++;
 #endif
 }
 
@@ -2828,12 +2810,7 @@ HRESULT DrawSurfaceFast(long bx, long by, LPDIRECTDRAWSURFACE lpSurface,
     rect.bottom -= by + h - lpDraw->ySize;
   }
 
-#ifdef _STONDEBUG_
-  // ?????????????????
-  SurfaceDispCnt++;
-#endif
   RECT rectD;
-
   rectD.left = x0;
   rectD.top = y0;
   rectD.right = x0 + (rect.right - rect.left);
@@ -2844,6 +2821,7 @@ HRESULT DrawSurfaceFast(long bx, long by, LPDIRECTDRAWSURFACE lpSurface,
                                    DDBLT_KEYSRC | DDBLT_WAIT, NULL);
 }
 #endif
+
 
 HRESULT DrawSurfaceFast(short bx, short by, LPDIRECTDRAWSURFACE lpSurface) {
   short x0, y0;
@@ -2872,9 +2850,6 @@ HRESULT DrawSurfaceFast(short bx, short by, LPDIRECTDRAWSURFACE lpSurface) {
     rect.bottom -= by + h - lpDraw->ySize;
   }
 
-#ifdef _STONDEBUG_
-  SurfaceDispCnt++;
-#endif
   RECT rectD;
 
   rectD.left = x0;
@@ -2932,14 +2907,6 @@ HRESULT DrawSurfaceFast2(short bx, short by, RECT *rect,
     rect->bottom -= by + h - lpDraw->ySize;
   }
 
-#ifdef _STONDEBUG_
-  // ?????????????????
-  SurfaceDispCnt++;
-#endif
-
-  // ???????????
-  // return lpDraw->lpBACKBUFFER->BltFast( x0, y0, lpSurface, rect,
-  // DDBLTFAST_SRCCOLORKEY | DDBLTFAST_WAIT );
   return lpDraw->lpBACKBUFFER->BltFast(x0, y0, lpSurface, rect, DDBLTFAST_WAIT);
 }
 
@@ -2966,9 +2933,6 @@ void ReleaseDirectDraw(void) {
     if (g_bUseAlpha) {
       if (SurfaceInfo[i].lpAlphaData != NULL) {
         FREE(SurfaceInfo[i].lpAlphaData);
-#ifdef _STONDEBUG_
-        g_iMallocCount--;
-#endif
         SurfaceInfo[i].lpAlphaData = NULL;
       }
     }
@@ -3659,9 +3623,6 @@ void snapShot(void) {
   memset(&ddsdDesc, 0, sizeof(DDSURFACEDESC));
   ddsdDesc.dwSize = sizeof(DDSURFACEDESC);
   if (lpDraw->lpFRONTBUFFER->Lock(NULL, &ddsdDesc, 0, NULL) != DD_OK) {
-#ifdef _STONDEBUG_
-    MessageBoxNew(hWnd, "前景缓冲区锁定失败！", "确定", MB_OK | MB_ICONSTOP);
-#endif
     return;
   }
 
@@ -3675,9 +3636,6 @@ void snapShot(void) {
   if (displayBpp == 16) {
     BYTE *mem = new BYTE[w * h * 3], *pmem, pR, pG, pB;
     if (mem == NULL) {
-#ifdef _STONDEBUG_
-      MessageBoxNew(hWnd, "记忆体配置失败失败！", "确定", MB_OK | MB_ICONSTOP);
-#endif
       return;
     }
     WORD *work = (WORD *)ddsdDesc.lpSurface;

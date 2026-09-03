@@ -5,9 +5,6 @@
 #include "systeminc/unpack.h"
 #include "sdk/zlib.h"
 #pragma comment(lib,"zlib.lib")
-#ifdef _STONDEBUG_
-extern int g_iMallocCount;
-#endif
 
 #define BIT_CMP         (unsigned char)0x80
 #define BIT_ZERO        (unsigned char)0x40
@@ -30,12 +27,7 @@ unsigned char *encoder( unsigned char *buf, unsigned char **disBuf,
 
     if( *disBuf == NULL ){
         if( (wBuf = (unsigned char *)MALLOC( width * height + sizeof( RD_HEADER ) )) == NULL )
-        {
             return NULL;
-        }
-#ifdef _STONDEBUG_
-        g_iMallocCount++;
-#endif
         *disBuf = wBuf;
     }else{
         wBuf = *disBuf;

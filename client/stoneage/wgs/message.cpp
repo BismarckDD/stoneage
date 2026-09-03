@@ -264,14 +264,6 @@ DWORD AnalyzeMessage(LPSTR lpstr, int iStrLen) {
       break;
     }
     lpstr[iStrLen] = '\0';
-#ifdef _STONDEBUG_
-    FILE *fp;
-    fopen_s(&fp, "recvtime.txt", "a+");
-    if (fp)
-      fprintf(fp, "%u RECV %d  %s\n", TimeGetTime(), iStrLen, lpstr);
-    if (fp)
-      fclose(fp);
-#endif
     DWORD dw;
     while (0 < iStrLen) {
       switch (nState) {

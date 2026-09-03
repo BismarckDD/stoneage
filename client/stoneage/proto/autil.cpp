@@ -555,15 +555,9 @@ void util_Release(void) {
     for (i = 0; i < SLICE_MAX; i++) {
       if (MesgSlice[i]) {
         FREE(MesgSlice[i]);
-#ifdef _STONDEBUG_
-        g_iMallocCount--;
-#endif
       }
     }
     FREE(MesgSlice);
-#ifdef _STONDEBUG_
-    g_iMallocCount--;
-#endif
   }
 }
 int strcmptail(char *s1, char *s2) {

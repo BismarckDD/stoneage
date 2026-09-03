@@ -106,16 +106,7 @@ void initPcAll(void) {
 void initPc(void) {
   int walk = 0, height = 0;
   int i;
-#ifndef _STONDEBUG_
   createPc(pc.graNo, nowGx, nowGy, pc.dir);
-#else
-  if (offlineFlag) {
-    createPc(SPR_pet004, nowGx, nowGy, pc.dir);
-  } else {
-    createPc(pc.graNo, nowGx, nowGy, pc.dir);
-  }
-#endif
-
   if ((pc.status & CHR_STATUS_W)) {
     walk = 1;
   }
@@ -203,7 +194,6 @@ void createPc(int graNo, int gx, int gy, int dir) {
                    pc.id, nowFloor, gx, gy, graNo, dir, oldPtAct, pc.ptAct);
 }
 
-// PC???????
 void resetPc(void) {
   int i;
   ClientRuntimeLog("action", "resetPc id=%d floor=%d pos=(%d,%d) action=%p",
@@ -238,12 +228,9 @@ void resetPc(void) {
     DeathAction(pc.ptAct);
     pc.ptAct = NULL;
   }
-
-  // ????????????
   delPcLeader();
 }
 
-// PC??????????
 void setPcGraNo(int graNo, int dir) {
   if (pc.graNo != graNo || pc.ptAct == NULL ||
       pc.ptAct->anim_chr_no != graNo) {
@@ -324,7 +311,6 @@ void setPcEmotion(int emotion) {
 }
 #endif
 
-// ????????
 int getPcAction(void) {
   if (pc.ptAct == NULL)
     return -1;

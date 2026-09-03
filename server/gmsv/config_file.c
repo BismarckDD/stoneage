@@ -388,9 +388,6 @@ typedef struct tagServerConfig {
   int bigbao;
   int bigbao2;
 #endif
-#ifdef _MO_SHOW_DEBUG
-  int isdebug;
-#endif
 #ifdef _CHAR_LOOP_TIME
   int charlooptime;
 #endif
@@ -980,9 +977,6 @@ ReadConf gReadConf[] = {
 #ifdef _DEFEND_BIGBAO
     {"BIGBAO", NULL, 0, (void *)&gServerConfig.bigbao, INT},
     {"BIGBAO2", NULL, 0, (void *)&gServerConfig.bigbao2, INT},
-#endif
-#ifdef _MO_SHOW_DEBUG
-    {"ISDEBUG", NULL, 0, (void *)&gServerConfig.isdebug, INT},
 #endif
 #ifdef _CHAR_LOOP_TIME
     {"charlooptime", NULL, 0, (void *)&gServerConfig.charlooptime, INT},
@@ -2910,10 +2904,6 @@ int getBigBao2(void) {
     return 1024;
   return gServerConfig.bigbao2;
 }
-#endif
-
-#ifdef _MO_SHOW_DEBUG
-int isDebug(void) { return gServerConfig.isdebug; }
 #endif
 #ifdef _CHAR_LOOP_TIME
 int getCharLoopTime() { return gServerConfig.charlooptime; }

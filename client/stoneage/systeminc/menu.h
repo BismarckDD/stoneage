@@ -735,8 +735,8 @@ enum {
   ANIM_DISP_LETTER,      // 宠物新建
 
   ANIM_DISP_MIX_PET_INIT, // ???????
-  ANIM_DISP_MIX_PET_MOVE, // ?????????去
-  ANIM_DISP_MIX_PET_MOJI, // ???????????????
+  ANIM_DISP_MIX_PET_MOVE, //
+  ANIM_DISP_MIX_PET_MOJI, //
 #ifdef _THEATER
   ANIM_DISP_THEATER_NPC, // 曄部NPC珆尨
 #endif
@@ -746,7 +746,7 @@ enum {
   ANIM_DISP_MIX_PET_END, // ????????
 };
 
-typedef struct {
+struct PET_ALBUM {
   char name[PET_NAME_LEN + 1];     // Pet本身的名字
   char freeName[PET_NAME_LEN + 1]; // Player给Pet起的名字
   int faceGraNo;                   // Pet的图像
@@ -757,14 +757,15 @@ typedef struct {
   int def;                         // Pet的防御
   int earth, water, fire, wind;    // Pet的地水火风属性
   int flag;                        // Pet的Flag?
-} PET_ALBUM;
+};
 
-// ????????????????﹨▍
-typedef struct {
-  int albumNo;                 // ?????????吻?
-  char name[PET_NAME_LEN + 1]; // ?????〈
-  int faceGraNo;               // ???????????吻?
-} PET_ALBUM_TBL;
+// 宠物基础信息: 用于宠物相册(编号，宠物原始名称，静态图片)
+struct PET_ALBUM_TBL {
+  int albumNo;                 // 相册编号: No.001
+  char name[PET_NAME_LEN + 1]; // 宠物基础名称: 例如佩露夏、邦奇诺
+  int faceGraNo;               // 宠物头像(静态图片)ID，不是动画ID. 
+}; // 2026.09.30 药区分faceGraNo和动画(包括行动、攻击的每一帧)的区别？
+// 当前ALBUM的实现实在是有点XX
 
 // ????????
 extern BOOL TaskBarFlag;
@@ -792,7 +793,7 @@ extern ACTION *pActMenuWnd3;
 // ????????更??
 extern STR_BUFFER shougouChange;
 
-#ifdef _MONEYINPUT // Syu ADD 忒雄怀踢講
+#ifdef _MONEYINPUT // Syu ADD
 extern STR_BUFFER MymoneyBuffer;
 #endif
 #ifdef _ITEM_JIGSAW

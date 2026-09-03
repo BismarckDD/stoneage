@@ -182,7 +182,6 @@ extern int viewOffsetY;
 //#define CHINA_VER            //Cary (禁用)
 //#define __ALBUM_4
 //#define __ALBUM_6            //Cary 加入新的宠物相簿(含年兽)
-//#define __TEST_SERVER        //Cary 3.0的测试server
 
 #define __HELP                //Cary 线上说明
 #define __NEW_PROTOCOL        //Cary 新的底层
@@ -580,14 +579,12 @@ unsigned int TimeGetTime(void);
 #define _SA_MAC_VERSION_CONTROL       // MAC版本号控制
 #define FAMILY_MANOR_                 // 庄园光环
 #define _CHAR_MANOR_                  // 人物脚下光环
-//#define _CHAR_MANOR_DEBUG           // 人物脚下光环DEBUG
 #define _ANNOUNCEMENT_                // 公告系统
 //#define _EFFECT_MAP_                // 塔特效
 #ifndef _DEBUG_
 // #define _ANTI_DEBUG_               // 反调试: 测试版本注释, 正式版本开启.
 #else
 #define _CMD_MODE                    // 调试模式
-//#define _STONDEBUG__PACKET_        // 调试封包
 //#define _MO_SHOW_FPS               // 显示fps
 #define _RELUA_                      // DEBUG模式下启用按个人信息则重读LUA
 #endif

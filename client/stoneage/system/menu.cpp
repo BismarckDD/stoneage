@@ -467,10 +467,13 @@ static int albumWndBtnFlag[MENU_ALBUM_0];
 static unsigned int albumWndNo;
 static int albumWndPageNo;
 static int albumNo;
-// ????????????????
+
+// 2026.09.03: 宠物相册中的宠物名称
+// pet_name.h 只在这里用到
 PET_ALBUM_TBL PetAlbumTbl[] = {
 #include "pet_name.h"
 };
+
 PET_ALBUM PetAlbum[MAX_PET_KIND];        // ?????
 int AlbumIdCnt = 0;                    // ???????????????????
 // ?????????
@@ -1897,13 +1900,7 @@ BOOL LoadMailHistory(void)
 
     // ????????????
     if (fread(work, sizeof(MAIL_HISTORY), MAX_ADR_BOOK * 2, fp) < MAX_ADR_BOOK * 2){
-        // ???????
-        // ???????
         if ((fp = fopen(MAIL_HISTORY_FILE_NAME, "wb")) != NULL){
-#ifdef _STONDEBUG_        
-            MessageBoxNew( hWnd, "删除以前的mail资料。", "确定", MB_OK | MB_ICONSTOP );
-#endif
-            // ???????
             fwrite(MailHistory, sizeof(MAIL_HISTORY), MAX_ADR_BOOK, fp);
             fwrite(MailHistory, sizeof(MAIL_HISTORY), MAX_ADR_BOOK, fp);
             fclose(fp);    // ????????
@@ -6738,14 +6735,13 @@ BOOL CheckMailNoReadFlag(void)
     return FALSE;
 }
 
-// ???????? ****************************************************************/
+//
 void CheckNewPet(int sprNo)
 {
-    int tblNo = sprNo - 100250; // ??????
+    int tblNo = sprNo - 100250; // 2026.09.03, 根据faceId计算在album中的位置
     int albumNo;
-    // ?????
 #if defined(__ALBUM_47)
-    if (tblNo > 1800){                    //小恶魔
+    if (tblNo > 1800){ // 小恶魔
         tblNo -= 1208;
     }
     else if (tblNo > 1755){                    //间隔南瓜魔王后的 狐猴
@@ -12683,7 +12679,7 @@ void MenuProc(void)
                             pet[petStatusNo].graNo != 101172 && pet[petStatusNo].graNo != 102011 &&
                             pet[petStatusNo].graNo != 102012)    // fix 哪些宠物不能照宠照
                         if (mouse.onceState & MOUSE_LEFT_CRICK){
-                            int tblNo = pet[petStatusNo].graNo - 100250; // ??????
+                            int tblNo = pet[petStatusNo].graNo - 100250; // 2026.09.03 计算宠物在album中的位置
 #if defined(__ALBUM_47)
                             if (tblNo > 1800){                    //小恶魔
                                 tblNo -= 1208;
@@ -15005,16 +15001,10 @@ void MenuProc(void)
             break;
 
         case 2: // ??????????
-
-            // ?????????
             if (pActMenuWnd == NULL){
-                // ?????????
                 pActMenuWnd = MakeWindowDisp(4, 4, 272, 348, 0, -1);
-                // ??????
                 for (i = 0; i < MENU_PET_0; i++) petWndFontNo[i] = -2;
-
-            }
-            else{
+            } else {
                 // ??????????????
                 if (pActMenuWnd->hp > 0){
                     // ?????????
@@ -15136,70 +15126,6 @@ void MenuProc(void)
                                             break;
                                         }
                                     }
-#ifdef _STONDEBUG_                        
-                                    // ????????
-                                    if( mouse.onceState & MOUSE_RIGHT_CRICK ){
-                                        // ?????????
-                                        if( petSkill[ petStatusNo ][ i ].field != PETSKILL_FIELD_BATTLE ){
-                                            int j;
-                                            int cnt = 0;
-                                            switch( petSkill[ petStatusNo ][ i ].skillId ){
-
-                                            case PETSKILL_MERGE:     // ??????
-                                                // ?????????????????
-                                                for( j = MAX_ITEMSTART ; j < MAX_ITEMSTART ; j++ ){
-                                                    if( ItemBuffer[ j ].mixFlag == 1 ) cnt++;
-                                                }
-                                                break;
-
-                                            case PETSKILL_MERGE2:     // ???????
-                                                // ?????????????????
-                                                for( j = MAX_ITEMSTART ; j < MAX_ITEM ; j++ ){
-                                                    if( ItemBuffer[ j ].mixFlag == 2 ) cnt++;
-                                                }
-                                                break;
-                                            }
-
-                                            // ????????
-                                            if( cnt >= 2 ){
-                                                // ????
-                                                moji[ 0 ] = NULL;
-                                                // ????????????
-                                                for( j = MAX_ITEMSTART ; j <  MAX_ITEM ; j++ ){
-                                                    // ??????????
-                                                    if( ItemBuffer[ j ].mixFlag >= TRUE ){
-                                                        char work[ 256 ];
-                                                        // ???
-                                                        sprintf_s( work,"%d|", j );
-                                                        strcat_s( moji, work );
-                                                        // ??????
-                                                        ItemBuffer[ j ].mixFlag = FALSE;
-                                                    }
-                                                }
-                                                // ???|????????
-                                                moji[ strlen( moji ) - 1 ] = NULL;
-
-                                                // ??????????????????
-                                                if( bNewServer)
-                                                    lssproto_PS_send( sockfd, mixPetNo, i, 0, moji );
-                                                else
-                                                    old_lssproto_PS_send( sockfd, mixPetNo, i, 0, moji );
-
-                                                // ??????
-                                                play_se(212, 320, 240);
-                                            }
-                                            else{
-                                                // ???
-                                                play_se(220, 320, 240);
-                                            }
-                                        }
-                                        else{
-                                            // ???
-                                            play_se(220, 320, 240);
-                                        }
-                                    }
-#endif                                    
-                                    // ????????
                                     if (mouse.onceState & MOUSE_LEFT_CRICK){
                                         // ????????????????????????????????????
                                         if (petSkill[petStatusNo][i].field != PETSKILL_FIELD_BATTLE && pActPet2 == NULL
@@ -16317,8 +16243,6 @@ void MenuProc(void)
                                             }
                                         }
                                     }
-                                    //#ifdef _STONDEBUG_        
-                                    // ??????????????????????
                                     if (mouse.onceState & MOUSE_RIGHT_CRICK  && mouse.itemNo == -1)
                                     {
                                         int j;
@@ -21572,23 +21496,6 @@ void checkRidePet(int pindex)
         for (j = 0; j < sizeof(ridePetTable) / sizeof(tagRidePetTable); j++){
             int baseimageNo = pc.graNo - (pc.graNo % 5);
             int leaderimageNo = 100700 + ((baseimageNo - 100000) / 20) * 10 + (pc.familySprite) * 5;
-//            //andy_edit
-//            if (((ridePetTable[j].charNo == pc.graNo) || (ridePetTable[j].charNo == pc.baseGraNo)) /*&& ridePetTable[j].petNo == pet[pindex].graNo*/){
-//                char buf[64];
-//#ifdef _PET_ITEM
-//                if (bHavePetItem){    // 有装备不可骑
-//                    StockChatBufferLine("宠物身上有装备不可骑乘！", FONT_PAL_YELLOW);
-//                    pc.selectPetNo[pindex] = 0;
-//                    return;
-//                }
-//#endif
-//                sprintf(buf, "R|P|%d", pindex);
-//                if (bNewServer)
-//                    lssproto_FM_send(sockfd, buf);
-//                else
-//                    old_lssproto_FM_send(sockfd, buf);
-//                pc.ridePetNo = pindex;
-//                return;
             char buf[64];
             sprintf(buf, "R|P|%d", pindex);
             if (bNewServer)

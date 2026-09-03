@@ -189,9 +189,6 @@ BOOL CreateSoundData(LPCSTR pName, LPDIRECTSOUNDBUFFER &pDSData)
     DWORD cbWaveSize = 0;    // ????????????
     if(!LoadWave(pName, pWaveHeader, pbWaveData, cbWaveSize))
     {
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "黍Wave腔訧蹋囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
 
@@ -387,9 +384,6 @@ int InitDSound(void)
 
     ret = DirectSoundCreate(NULL, &pDSound, NULL);
     if(ret != DS_OK){
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "膘蕾DirectSound賡醱囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
     //?????????　叉
@@ -397,9 +391,6 @@ int InitDSound(void)
     if(ret != DS_OK){
         // ??????　叉??
         RELEASE(pDSound);
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "扢隅衪覃脹撰囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
     // ?????　叉
@@ -416,9 +407,6 @@ int InitDSound(void)
     // ???????
     ret = pDSound->CreateSoundBuffer(&dsbdesc, &pDSPrimary, NULL); 
     if(ret != DS_OK) { 
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "膘蕾翋猁buffer囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
     // ???????????Wave???????　叉
@@ -433,9 +421,6 @@ int InitDSound(void)
     pcmwf.wBitsPerSample = 16;        // 16???
     ret = pDSPrimary->SetFormat(&pcmwf);
     if(ret != DS_OK){
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "翋猁buffer腔跡宒趙囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
 /*
@@ -449,9 +434,6 @@ int InitDSound(void)
                 RELEASE(pDSData_tone[d7]);
             RELEASE(pDSPrimary);
             RELEASE(pDSound);
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "膘蕾汒秞訧蹋囮啖ㄐ", "Error", MB_OK);
-#endif
             return FALSE;
         }
     }
@@ -539,31 +521,19 @@ int InitDSound(void)
 
         //????????????
         if( (hmmio = mmioOpen(fname, NULL, MMIO_READ | MMIO_ALLOCBUF )) == NULL){
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "湖羲WAV紫囮啖ㄐ", "Error", MB_OK);
-#endif
             goto InitDSound_err;
         }
         //???????????
         if( WaveFormatRead( hmmio , &Wfmtx , &WaveSize ) == FALSE ){
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "黍WAV跡宒囮啖ㄐ", "Error", MB_OK);
-#endif
             goto InitDSound_err;
         }
         DataSize = WaveSize;
         //??????????????
         if( dwSoundInit( &Wfmtx, DataSize, &pDSData_tone[tone_max_buf] ) == FALSE ){
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "場宎趙汒秞buffer囮啖ㄐ", "Error", MB_OK);
-#endif
             goto InitDSound_err;
         }
         //???????
         if( WaveDataRead( hmmio, &DataSize, pDSData_tone[tone_max_buf] ) == FALSE  ){
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "黍WAV紫腔訧蹋囮啖ㄐ", "Error", MB_OK);
-#endif
             goto InitDSound_err;
         }
         mmioClose( hmmio , 0 );
@@ -584,9 +554,6 @@ InitDSound_err2:    //叉????????
     if(hmmio != (HMMIO)-1){        //????????????
         mmioClose( hmmio , 0 );
     }
-#ifdef _STONDEBUG_
-    MessageBoxNew(hWnd, "?　叉???????", "Error", MB_OK);
-#endif
     for(d7=0;d7<tone_max_buf;d7++)
         RELEASE(pDSData_tone[d7]);
     RELEASE(pDSPrimary);
@@ -603,9 +570,6 @@ InitDSound_ok:        //?
                 RELEASE(pDSData[d7]);
             RELEASE(pDSPrimary);
             RELEASE(pDSound);
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "葩秶汒秞buffer囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
         }
     }
@@ -1080,9 +1044,6 @@ int music_read( void )
     fp = fopen( "oft.mml", "r" );
     if( fp == NULL ){
         sprintf( moji ,"%s" ,err_msg[0] );
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, moji, "Error", MB_OK);
-#endif
         return err_flg;
     }
 
@@ -1771,17 +1732,11 @@ music_read_999:
     fclose( fp );
     if(err_flg){
         sprintf_s( moji ,"菴 %d 俴 %s" ,err_line ,err_msg[err_flg] );
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, moji, "Error", MB_OK);
-#endif
     } else {
         for(d7=0;d7<TRACK_MAX;d7++){
             if(ch_kuri_lv[d7]!=-1){
                 err_flg=M_KURISU_ERR;
                 sprintf_s( moji ,"菴 %d 秞寢 %s" ,d7+1 ,err_msg[err_flg] );
-#ifdef _STONDEBUG_
-                MessageBoxNew(hWnd, moji, "Error", MB_OK);
-#endif
                 break;
             }
         }
@@ -2038,9 +1993,6 @@ int    set_tone( int tone, long note, int use_task_cnt, int delay)
         voice_seek_point&=VOICE_MAX-1;
     }
     if(!d1){        //????????
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "????", "Error", MB_OK);        //????兌??
-#endif
         play_use_task[ch][use_task_cnt]=-1;        //??????
         return -1;
     }
@@ -2058,9 +2010,6 @@ int    set_tone( int tone, long note, int use_task_cnt, int delay)
     RELEASE(pDSData[d7]);
 
     if( pDSound->DuplicateSoundBuffer(pDSData_tone[tone],&pDSData[d7]) != DS_OK ){        //????
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "葩秶汒秞buffer囮啖ㄐ", "Error", MB_OK);
-#endif
         play_use_task[ch][use_task_cnt]=-1;        //??????
         return -1;
     }
@@ -2567,18 +2516,12 @@ static BOOL dwSoundInit2( WAVEFORMATEX *pWfmtx, DWORD DataSize, LPDIRECTSOUNDBUF
     dsbufferdesc.dwBufferBytes = DataSize;
     dsbufferdesc.lpwfxFormat   = pWfmtx;
     if ( pDSound->CreateSoundBuffer( &dsbufferdesc , ppData , NULL ) != DS_OK ){
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "膘蕾汒秞腔buffer囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
 
 
     //??????????
     if( WaveDataRead( hmmio, &DataSize, pDSData_stream ) == FALSE  ){
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "黍WAV紫囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
 
@@ -2601,9 +2544,6 @@ static BOOL dwSoundInit2( WAVEFORMATEX *pWfmtx, DWORD DataSize, LPDIRECTSOUNDBUF
         // ????????
 //        RELEASE(pDSound);
         RELEASE(pDSData_stream);
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "膘蕾汒秞腔buffer囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
 
@@ -2614,9 +2554,6 @@ static BOOL dwSoundInit2( WAVEFORMATEX *pWfmtx, DWORD DataSize, LPDIRECTSOUNDBUF
 //        RELEASE(pDSound);
         RELEASE(pDSData_stream);
         RELEASE(pDSData_tone[ TONE_MAX ]);
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "膘蕾DirectSoundNotify囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
         //  ???
     }
@@ -2646,9 +2583,6 @@ static BOOL dwSoundInit2( WAVEFORMATEX *pWfmtx, DWORD DataSize, LPDIRECTSOUNDBUF
 //        RELEASE(pDSound);
         RELEASE(pDSData_stream);
         RELEASE(pDSData_tone[ TONE_MAX ]);
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "扢隅DirectSoundNotify囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
 
@@ -2670,12 +2604,6 @@ static BOOL dwSoundInit2( WAVEFORMATEX *pWfmtx, DWORD DataSize, LPDIRECTSOUNDBUF
     hThreadHandle = CreateThread(NULL, 0, MyThreadFunc, &sd, 0, &dwThreadID);
     if(hThreadHandle == NULL)
     {
-#ifdef _STONDEBUG_
-        // ???????
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "膘蕾Thread囮啖ㄐ", "Error", MB_OK);
-#endif
-#endif
         return FALSE;
     }
 
@@ -2761,16 +2689,10 @@ int play_bgm(int bgm_no)
     //????????????
 //    if( (hmmio = mmioOpen(fname[bgm_no], NULL, MMIO_READ | MMIO_ALLOCBUF )) == NULL){
     if( (hmmio = mmioOpen(bgm_tbl[bgm_no].fname, NULL, MMIO_READ | MMIO_ALLOCBUF )) == NULL){
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "湖羲WAV紫囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
     //???????????
     if( WaveFormatRead( hmmio , &Wfmtx , &WaveSize ) == FALSE ){
-#ifdef _STONDEBUG_
-        MessageBoxNew(hWnd, "黍汒秞跡宒囮啖ㄐ", "Error", MB_OK);
-#endif
         return FALSE;
     }
     DataSize = WaveSize;
@@ -2783,9 +2705,6 @@ int play_bgm(int bgm_no)
         int d0,d1,d2;
         fp = fopen( bgm_tbl[bgm_no].fname, "rb" );
         if( fp == NULL ){
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "湖羲汒秞紫囮啖ㄐ", "Error", MB_OK);
-#endif
             return FALSE;
         }
         d2 = 8;                         //??????????????
@@ -2822,9 +2741,6 @@ int play_bgm(int bgm_no)
         thread_loop_start = bgm_tbl[bgm_no].loop_point << 1;
 #endif
         if (dwSoundInit2( &Wfmtx, DataSize, &pDSData_stream, hmmio ) == FALSE ){
-#ifdef _STONDEBUG_
-          MessageBoxNew(hWnd, "膘蕾汒秞腔buffer囮啖ㄐ", "Error", MB_OK);
-#endif
           return FALSE;
         }
 #if BGM_AUTO_LOOP
@@ -2834,16 +2750,10 @@ int play_bgm(int bgm_no)
     } else {
         thread_stop_flg = 0;        //?????
         if( dwSoundInit( &Wfmtx, DataSize, &pDSData_tone[TONE_MAX] ) == FALSE ){
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "膘蕾汒秞腔buffer囮啖ㄐ", "Error", MB_OK);
-#endif
             return FALSE;
         }
         //???????
         if( WaveDataRead( hmmio, &DataSize, pDSData_tone[TONE_MAX] ) == FALSE  ){
-#ifdef _STONDEBUG_
-            MessageBoxNew(hWnd, "黍WAV紫腔訧蹋囮啖ㄐ", "Error", MB_OK);
-#endif
             return FALSE;
         }
     }
@@ -2977,9 +2887,6 @@ int play_environment_tone(int tbl_no, int new_flg)
     env_tbl[tbl_no].distance = env_tbl[tbl_no].distance << 4;        //?????π?阪?
     env_tbl[tbl_no].distance /= 0x6a;                //
 
-//    if(env_tbl[tbl_no].distance >= 127)                //吳????
-//        return 0;                    //?????
-
     if(env_tbl[tbl_no].distance >= 127)                //吳????
         env_tbl[tbl_no].distance = 127;                    //?????
 
@@ -2994,10 +2901,6 @@ int play_environment_tone(int tbl_no, int new_flg)
             }
             //????
             if( pDSound->DuplicateSoundBuffer(pDSData_tone[tone_tbl[ env_tbl[tbl_no].tone ].voice_place],&pDSData[env_tbl[tbl_no].voice_address]) != DS_OK ){
-#ifdef _STONDEBUG_
-                MessageBoxNew(hWnd, "葩秶汒秞buffer囮啖ㄐ", "Error", MB_OK);
-#endif
-                //???????????佃???????
                 voice[ env_tbl[tbl_no].voice_address ].tone_no = -2;
                 return -1;
             }

@@ -84,7 +84,6 @@ static NPC_Shop TypeTable[] = {
 BOOL NPC_ItemShopInit(int meindex) {
 
   char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
-
   CHAR_setInt(meindex, CHAR_WHICHTYPE, CHAR_TYPEITEMSHOP);
   if (NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr)) == NULL) {
     print("GetArgStrErr");
@@ -105,7 +104,6 @@ BOOL NPC_ItemShopInit(int meindex) {
   } else {
     CHAR_setWorkInt(meindex, NPC_SHOP_WORK_EXPRESS, 0);
   }
-
   return TRUE;
 }
 
@@ -523,7 +521,6 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
   int kosuucnt = 0;
   int item_index;
 
-  /*--忒匀化五凶犯□正毛本伊弁玄午蜊醒卞坌荸--*/
   getStringFromIndexWithDelim(data, "|", 1, buf, sizeof(buf));
   select = atoi(buf);
   if (select == 0)
@@ -533,7 +530,6 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
   if (kosuu <= 0)
     return FALSE;
 
-  /*--蜊醒及民尼永弁  癫卞蝈    月井＂-*/
   for (i = CHAR_STARTITEMARRAY; i < CheckCharMaxItem(talker); i++) {
     item_index = CHAR_getItemIndex(talker, i);
     if (!ITEM_CHECKINDEX(item_index)) {
@@ -541,24 +537,19 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
     }
   }
 
-  /*--忒匀化  凶蜊醒及  互  端及蜊醒  扔□田础  方曰聂中午云井仄中及匹--*/
-  /*--扔□田□础及  毛  木月--*/
   if (kosuucnt < kosuu)
     kosuu = kosuucnt;
 
-  /*--未夫及桦宁反巨仿□--*/
   if (kosuucnt == 0)
     return FALSE;
 
   i = 1;
 
-  /*--云饕及白央奶伙  中坭反白央奶伙互钒仃卅井匀凶午五反蔽  --*/
   if (NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr)) == NULL) {
     print("shop_GetArgStr_Err");
     return FALSE;
   }
 
-  /*---伊□玄毛潸    卅仃木壬1.0)-*/
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "buy_rate", buf, sizeof(buf)) !=
       NULL) {
     rate = atof(buf);
@@ -573,7 +564,6 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
                                       sizeof(buff5)) == NULL)
     iChangeItemCost = -1;
 
-  /*--失奶  丞及馨笛毛垫丹午仇欠-*/
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "ItemList", buf, sizeof(buf)) !=
       NULL) {
     while (getStringFromIndexWithDelim(buf, ",", j, buff2, sizeof(buff2)) !=
@@ -589,12 +579,9 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
           iChangeItemCost = atoi(buff6);
       }
       j++;
-      /*--  "-"互殖引木化中月井升丹井--*/
       if (strstr(buff2, "-") == NULL) {
         if (ITEM_getcostFromITEMtabl(atoi(buff2)) != -1) {
           if (i == select) {
-            /*---失奶  丞及综岳---*/
-            /*--蜊醒坌综岳--*/
             if (NPC_AddItemBuy(meindex, talker, atoi(buff2), kosuu, rate,
                                iCostFame, iChangeItemCost) != TRUE) {
               return FALSE;
@@ -604,30 +591,21 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
           i++;
         }
       } else {
-        /*--失奶  丞互  15-25  及溥匹霜日木凶桦宁--*/
-        int start;
-        int end;
-
-        /* "-"匹嗉濠日木凶铵户及醒袄午  及醒袄毛潸  --*/
         getStringFromIndexWithDelim(buff2, "-", 1, argstr, sizeof(argstr));
-        start = atoi(argstr);
+        int start = atoi(argstr);
         getStringFromIndexWithDelim(buff2, "-", 2, argstr, sizeof(argstr));
-        end = atoi(argstr);
+        int end = atoi(argstr);
         end++;
 
-        /*--  寞互菅卞卅匀化中凶日｝  木赘尹月**/
         if (start > end) {
           gold = start;
           start = end;
           end = gold;
         }
 
-        /*--"-"匹嗉濠日木凶坌及失奶  丞毛树  毛  月--*/
         for (; start < end; start++) {
           if (ITEM_getcostFromITEMtabl(start) != -1) {
             if (i == select) {
-              /*---失奶  丞及综岳---*/
-              /*--蜊醒坌综岳--*/
               if (NPC_AddItemBuy(meindex, talker, start, kosuu, rate, iCostFame,
                                  iChangeItemCost) != TRUE) {
                 return FALSE;
@@ -645,7 +623,6 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
 }
 
 /*---------------------------------------------
- *失奶  丞及馨笛毛垫丹
  *--------------------------------------------*/
 BOOL NPC_AddItemBuy(int meindex, int talker, int itemID, int kosuu, double rate,
                     int iCostFame, int iChangeItemCost) {
@@ -674,12 +651,6 @@ BOOL NPC_AddItemBuy(int meindex, int talker, int itemID, int kosuu, double rate,
       return FALSE;
   }
   addNpcFamilyTax(meindex, talker, maxgold * 0.1);
-  /*
-          if( addNpcFamilyTax( meindex, talker, maxgold*0.4 ) )
-                  print(" FamilyTaxDone! ");
-          else
-                  print(" FamilyTaxError!");
-  */
   for (i = 0; i < kosuu; i++) {
     item_index = ITEM_makeItemAndRegist(itemID);
 
@@ -725,11 +696,12 @@ BOOL NPC_AddItemBuy(int meindex, int talker, int itemID, int kosuu, double rate,
   return TRUE;
 }
 
+// 2026.09.03 巫女的乱码问题，这里打印是正常的
 // 选择 (买,卖,出去) 的小视窗
 void NPC_ItemShop_Menu(int meindex, int talker) {
   char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
   char token[NPC_UTIL_GETARGSTR_LINEMAX];
-  char buff[256];
+  char main_msg[256];
   int fd = getfdFromCharaIndex(talker);
 
   // argstr取得整个设定档的讯息:
@@ -741,15 +713,16 @@ void NPC_ItemShop_Menu(int meindex, int talker) {
   }
 
   // token为视窗上面的title文字  例如: 萨姆吉尔的防具店|欢迎光临
-  NPC_Util_GetStrFromStrWithDelim(argstr, "main_msg", buff, sizeof(buff));
+  NPC_Util_GetStrFromStrWithDelim(argstr, "main_msg", main_msg, sizeof(main_msg));
+  // print("main_msg: %s\n", main_msg);
 #ifdef _VERSION_25
   snprintf(token, sizeof(token), "%s|%s", CHAR_getChar(meindex, CHAR_NAME),
-           buff);
+           main_msg);
 #else
   snprintf(token, sizeof(token), "%s|%s|%d", CHAR_getChar(meindex, CHAR_NAME),
-           buff, CHAR_getInt(talker, CHAR_FAME) / 100);
+           main_msg, CHAR_getInt(talker, CHAR_FAME) / 100);
 #endif
-
+  // print("token: %s\n", token);
   GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_ITEMSHOPMENU,
                      WINDOW_BUTTONTYPE_NONE,
                      CHAR_WINDOWTYPE_WINDOWITEMSHOP_STARTMSG,
@@ -988,9 +961,6 @@ int NPC_GetLimtItemList(int talker, char *argstr, char *token2, int sell) {
 }
 
 /*----------------------------------------------------------
-
-        弁仿奶失件玄卞霜耨允月皿夫玄戊伙及综岳
-
  *----------------------------------------------------------*/
 int NPC_GetSellItemList(int item_index, int flg, char *argstr, char *argtoken,
                         int select, int sell) {

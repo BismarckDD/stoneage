@@ -20,9 +20,8 @@ typedef struct tagNPC_searchPoint {
   int y;
 } NPC_searchPoint;
 
-/*  窒荚NPC毛综月井 */
 #define NPC_CREATECHALLENGETIME 1
-int all_nosee = 0;     /* ㄠ及凛｛蝈化及衬毛 no_see 卞 */
+int all_nosee = 0;
 int all_nobody = 0;    /* ㄠ及凛｛蝈化及衬毛 no_body 卞 */
 int one_loop_born = 1; /* 每个LOOP生成NPC的数量限制 */
 

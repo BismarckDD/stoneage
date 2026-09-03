@@ -1,5 +1,5 @@
-﻿#include "version.h"
-#include "systeminc/system.h"
+﻿#include "systeminc/system.h"
+//
 #include "systeminc/pc.h"
 #include "systeminc/menu.h"
 #include "systeminc/t_music.h"
@@ -1481,7 +1481,6 @@ int GetCureTarget( int target_flag)
     return target;
 }
 
-extern BOOL bNewServer;
 extern int GetBattelTarget();
 extern int battlePlayerEscFlag;
 
@@ -1873,22 +1872,9 @@ void AI_ChooseAction()
                         break;
                     }
                 }
-                /*
-                if( i >= MAX_ITEM){
-#ifdef _STONDEBUG_
-                    extern STR_BUFFER MyChatBuffer;
-                    sprintf_s(MyChatBuffer.buffer,"[additem 6 2400]");
-                    MyChatBuffer.cnt = strlen(MyChatBuffer.buffer);
-                    KeyboardReturn();
-#endif
-                    StockChatBufferLine( "没有回复气力的道具", FONT_PAL_WHITE);
-                }
-                */
             }
         }
         if( 0 == done){
-//            if( BattleBpFlag & BATTLE_BP_BOOMERANG ){
-//            }
             //如自己或宠物没有血 且 没有气 就逃跑
             if( ( (p_party[BattleMyNo]->maxHp*AI_limit[0]/100 > p_party[BattleMyNo]->hp) ||
                 (p_party[BattleMyNo+5]->func &&         

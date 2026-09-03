@@ -611,9 +611,7 @@ void SaacClient_ACAuctionSold_send(int fd, char *data) {
 }
 
 extern char saacrecvfunc[255];
-#ifdef _ABSOLUTE_DEBUG
-extern int lastfunctime;
-#endif
+
 int SaacClient_ClientDispatchMessage(int fd, char *line) {
   int msgid;
   char funcname[255];
@@ -625,9 +623,6 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
   GetMessageInfo(&msgid, funcname, sizeof(funcname), ws->token_list);
   SAAC_LOG_RECV(funcname, "msgid=%u fd=%d", msgid, fd);
   strcpy(saacrecvfunc, funcname);
-#ifdef _ABSOLUTE_DEBUG
-  lastfunctime = 1;
-#endif
   if (strcmp(funcname, "ACGmsvDownRequest") == 0) {
     int min;
     min = demkstr_int(ws->token_list[2]);

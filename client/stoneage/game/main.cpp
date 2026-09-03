@@ -584,18 +584,10 @@ void AnalyzeCmdLine(void) {
   if (strstr(CmdLine, "usealpha"))
     g_bUseAlpha = TRUE; // ???
 #endif
-#ifdef _REMAKE_20
-#ifdef _STONDEBUG_
   if (strstr(CmdLine, "windowmode"))
     WindowMode = TRUE;
-#endif
-#else
-  if (strstr(CmdLine, "windowmode"))
-    WindowMode = TRUE;
-#endif
   if (strstr(CmdLine, "nodelay"))
     NoDelay = FALSE;
-
   if (strstr(CmdLine, "offline")) {
     ProcNo = PROC_GAME;
     offlineFlag = TRUE;
@@ -635,9 +627,6 @@ void AnalyzeCmdLine(void) {
     ProcNo = PROC_SE_TEST;
     offlineFlag = TRUE;
   }
-  // if (strstr(CmdLine, "encountoff")) {
-  //    EncountOffFlag = TRUE;
-  // }
   if (strstr(CmdLine, "lowreso")) {
     gResolutionMode = 1;
   }
@@ -923,21 +912,11 @@ LRESULT CALLBACK WindMsgProc(HWND hWnd, UINT Message, WPARAM wParam,
     switch (wParam) {
     case VK_RETURN:
 #ifdef _REMAKE_20
-#ifndef _STONDEBUG_
-      // 缩成视窗模式离开游戏
-      SendMessage(hWnd, WM_CLOSE, 0, 0);
-      break;
-#endif
 #else
-      // ?????
       if (BackBufferDrawType == DRAW_BACK_PRODUCE)
         break;
-
-      // DirectDraw??????????
       if (lpDraw == NULL)
         break;
-
-      // ????????????
       if (WindowMode == TRUE)
         WindowMode = FALSE;
       else
@@ -986,7 +965,6 @@ LRESULT CALLBACK WindMsgProc(HWND hWnd, UINT Message, WPARAM wParam,
         fastDrawTileFlag = 1;
 #else
         PutBmp();
-        // ??????????????????????
         lpBattleSurface->BltFast(0, 0, lpDraw->lpBACKBUFFER, NULL,
                                  DDBLTFAST_WAIT);
 #endif

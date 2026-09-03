@@ -2769,8 +2769,8 @@ void GmsvServer_BATTLESKILL_recv(int fd, int iNum) {
   if (CHAR_getWorkInt(charaindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return;
 
-#ifndef _PROSKILL_OPTIMUM // Robin fix cancel �˴��Թ�ְҵ���, ����
-                          // PROFESSION_SKILL_Use �м��
+#ifndef _PROSKILL_OPTIMUM // Robin fix cancel.
+                          // PROFESSION_SKILL_Use.
   char_pskill = CHAR_getInt(charaindex, PROFESSION_CLASS);
   skillindex = PROFESSION_SKILL_GetArray(charaindex, iNum);
   int Pskillid = skillindex;

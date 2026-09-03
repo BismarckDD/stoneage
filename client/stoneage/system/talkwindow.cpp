@@ -91,12 +91,6 @@ void CTalkWindow::Init(HWND hWnd,HINSTANCE hInstance)
     m_pCBLTail = pCBL;
     m_bInit = TRUE;
     LoadSkin("data\\skin\\default");
-#ifdef _STONDEBUG_
-    m_iSymbolCount = 0;
-    memset(m_fsFaceSymbol,0,sizeof(m_fsFaceSymbol));
-    memset(m_ssStoreSymbol,0,sizeof(m_ssStoreSymbol));
-    ReadFaceSymbolFile();
-#endif
 };
 
 void CTalkWindow::Release(void)
@@ -127,9 +121,6 @@ void CTalkWindow::Release(void)
         }
     }
     FREE(m_pCBLHead);
-#ifdef _STONDEBUG_
-    ReleaseFaceSymbol();
-#endif
 };
 
 void CTalkWindow::Create()
@@ -225,11 +216,7 @@ void CTalkWindow::DrawSkin(BOOL bShowCursor)
     pCBL = m_pCBLView;
     for(int i=0;i<MAX_TALK_WINDOW_LINE;i++){
         if(pCBL != NULL){
-#ifdef _STONDEBUG_
-            SetToFaceSymbolString(szBuffer,pCBL,TALK_WINDOW_SXO,TALK_WINDOW_SYO + j * 20);
-#else
             strcpy(szBuffer,pCBL->ChatBuffer.buffer);
-#endif
             color = pCBL->ChatBuffer.color;
             if(pCBL->bUse){
                 SetTextColor(m_hdcBackBuffer,0);
@@ -267,9 +254,6 @@ void CTalkWindow::DrawSkin(BOOL bShowCursor)
         TextOut(m_hdcBackBuffer,x,TALK_WINDOW_SYI,"_",1);
     }
     SelectObject(m_hdcBackBuffer,hOldFont);
-#ifdef _STONDEBUG_
-    ShowFaceSymbol();
-#endif
     // draw to window dc
     hdc = GetDC(m_hTalkWindow);
     BitBlt(hdc,0,0,SKIN_WIDTH,SKIN_HEIGHT,m_hdcBackBuffer,0,0,SRCCOPY);

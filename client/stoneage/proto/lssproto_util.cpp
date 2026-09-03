@@ -487,9 +487,6 @@ void lssproto_Send(int fd, char *msg) {
       encoded[l] = '\n';
       encoded[l + 1] = 0;
       l++;
-      // #else
-      //             encoded[l] = 0;
-      // #endif
     }
     lssproto.write_func(fd, encoded, l);
   }

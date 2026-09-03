@@ -60,9 +60,6 @@ extern Landed PcLanded;
 #define SETNEEDCHOOSE(mode)                                                    \
   if (server_choosed == 0)                                                     \
     return;
-#ifdef _STONDEBUG_
-void sendDataToServer(char *data);
-#endif
 
 extern char szUser[], szPassword[];
 
@@ -1079,18 +1076,10 @@ void lssproto_S_recv(int fd, char *data) {
       strcpy_s(party[0].name, pc.name);
     }
 
-#ifdef _STONDEBUG_
-    char title[128];
-    sprintf_s(title, "%s %s [%s  %s:%s]", DEF_APPNAME, "调试版本",
-              gmsv[selectServerIndex].name, gmsv[selectServerIndex].ipaddr,
-              gmsv[selectServerIndex].port);
-#else
     char title[128];
     extern int nServerGroup;
     sprintf_s(title, "%s %s [%s] %s", DEF_APPNAME, gmgroup[nServerGroup].name,
               gmsv[selectServerIndex].name, pc.name);
-
-#endif
     SetWindowTextUtf8(hWnd, title);
   }
     if (!bNewServer)
@@ -2533,25 +2522,10 @@ void chatStrSendForServer(char *str, int color) {
   char tmp1[128];
 #endif
 
-#ifdef _STONDEBUG_ // 手动送出封包
-  {
-    if (!strncmp(str, "send ", 5)) {
-      sendDataToServer(str + 5);
-      return;
-    }
-  }
-#endif
-
 #ifdef _SETTICK_COUNT
   if (fTalkTick == NULL || (GetTickCount() - *fTalkTick) > 60000) {
     FREE(fTalkTick);
-#ifdef _STONDEBUG_
-    g_iMallocCount--;
-#endif
     fTalkTick = (float *)MALLOC(sizeof(float));
-#ifdef _STONDEBUG_
-    g_iMallocCount++;
-#endif
     *fTalkTick = (float)0.00;
   }
   if ((GetTickCount() - *fTalkTick) > 2500) {
@@ -3452,9 +3426,6 @@ void lssproto_EF_recv(int fd, int effect, int level, char *option) {
   // 骰子
   if (effect == 10) {
     pCommand = (char *)MALLOC(strlen(option) + 1);
-#ifdef _STONDEBUG_
-    g_iMallocCount++;
-#endif
     if (pCommand != NULL) {
       strcpy(pCommand, strlen(option) + 1, option);
       bMapEffectDice = TRUE;
@@ -3511,6 +3482,10 @@ void lssproto_EN_recv(int fd, int result, int field) {
 void lssproto_HL_recv(int fd, int flg) { helpFlag = flg; }
 
 void lssproto_B_recv(int fd, char *command) {
+
+  // BC contains character names; actor graphics are logged separately in set_bc().
+  if (command[0] && command[1] != 'C')
+    ClientRuntimeLog("battle-recv", "%s", command);
 
   if (*(command + 1) == 'C') {
     strcpy(BattleStatusBak[BattleStatusWritePointer], command);
@@ -3576,9 +3551,6 @@ void lssproto_B_recv(int fd, char *command) {
     BattleCmdWritePointer = (BattleCmdWritePointer + 1) & (BATTLE_BUF_SIZE - 1);
   }
 
-#ifdef _STONDEBUG__MSG
-  // StockChatBufferLine( command, FONT_PAL_RED );
-#endif
 }
 
 #ifdef _PETS_SELECTCON
@@ -3781,17 +3753,7 @@ void lssproto_WO_recv(int fd, int effect) {
   }
 }
 
-// ?????? /////////////////////////////////////////////////////////
 void lssproto_Echo_recv(int fd, char *test) {
-#if 1
-#ifdef _STONDEBUG__MSG
-
-  // ?????
-  time(&serverAliveLongTime);
-  localtime_s(&serverAliveTime, &serverAliveLongTime);
-
-#endif
-#endif
 }
 
 void lssproto_NU_recv(int fd, int AddCount) {}
@@ -4163,59 +4125,6 @@ void lssproto_STREET_VENDOR_recv(int fd, char *data) {
 }
 #endif
 
-#ifdef _STONDEBUG_ // 手动送出封包功能 Robin
-/*
-    (封包编号)`d`(数值资料)`s`(字串资料)`......
-    例: 35`d`100`d`100`s`P|Hellp~~`d`1`d`1
-*/
-void sendDataToServer(char *data) {
-  char token[1024];
-  char token2[1024];
-  char token3[1024];
-  char sendbuf[16384] = "";
-  char showbuf[16384] = "";
-  char showsubbuf[1024];
-  int checksum = 0;
-  int datakind;
-  int i = 1;
-
-  strcat_s(showbuf, "手动送出 ");
-
-  getStringToken(data, '`', i++, sizeof(token), token);
-  if (token[0] == NULL)
-    return;
-  datakind = atoi(token);
-  sprintf_s(showsubbuf, "封包=%d ", datakind);
-  strcat_s(showbuf, showsubbuf);
-
-  while (1) {
-
-    getStringToken(data, '`', i++, sizeof(token2), token2);
-    if (token2[0] == NULL)
-      break;
-    getStringToken(data, '`', i++, sizeof(token3), token3);
-    if (token3[0] == NULL)
-      break;
-
-    if (!strcmp(token2, "d")) {
-      checksum += util_mkint(sendbuf, atoi(token3));
-      sprintf_s(showsubbuf, "数=%d ", atoi(token3));
-      strcat_s(showbuf, showsubbuf);
-    } else if (!strcmp(token2, "s")) {
-      checksum += util_mkstring(sendbuf, token3);
-      sprintf_s(showsubbuf, "字=%s ", token3);
-      strcat_s(showbuf, showsubbuf);
-    } else {
-      break;
-    }
-  }
-
-  util_mkint(sendbuf, checksum);
-  util_SendMesg(sockfd, datakind, sendbuf);
-
-  StockChatBufferLine(showbuf, FONT_PAL_RED);
-}
-#endif
 #ifdef _FAMILYBADGE_
 extern int 徽章数据[];
 extern int 徽章个数;

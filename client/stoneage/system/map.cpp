@@ -1994,14 +1994,8 @@ void drawGrid(void)
     yy = mouseMapGy * GRID_SIZE;
     camMapToGamen((float)xx, (float)yy, &x, &y);
 
-    // ??????????????????????
-#if 0
-    if (mouse.level < DISP_PRIO_MENU || mapWndFontNo[0] == HitDispNo || resultWndFontNo[0] == HitDispNo)
-#else
     if (mouse.level < DISP_PRIO_MENU)
-#endif
     {
-        // ?????????
         if (mouseCursorMode == MOUSE_CURSOR_MODE_NORMAL)
             StockDispBuffer((int)(x + .5), (int)(y + .5), DISP_PRIO_GRID, CG_GRID_CURSOR, 0);
         //cary 2002.1.15    else
@@ -2066,8 +2060,6 @@ void drawGrid(void)
         if ((mouse.onceState & MOUSE_RIGHT_DBL_CRICK))
             mouseDblRightOn = TRUE;
 #endif
-        // ??????????????????????????
-        // ?????????????????????????
         if (mapWndFontNo[0] == HitDispNo || resultWndFontNo[0] == HitDispNo)
             mouseLeftCrick = FALSE;
     }
@@ -2079,143 +2071,14 @@ void drawGrid(void)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
-// ???
 //Terry add 2003/11/25
 bool g_bTradesystemOpen = false;
 //end
 void moveProc(void)
 {
     static unsigned int befortime = -1;
-
-#ifdef _STONDEBUG_
-    {
-        static short tglSw = 0;
-
-        if (tglSw == 1)
-        {
-            char msg[256];
-            sprintf_s(msg, "EN send        : %d", sendEnFlag);
-            StockFontBuffer(240, 16, FONT_PRIO_FRONT, 0, msg, 0);
-            sprintf_s(msg, "EV (Warp) send : %d", eventWarpSendFlag);
-            StockFontBuffer(240, 32, FONT_PRIO_FRONT, 0, msg, 0);
-            sprintf_s(msg, "EV (Enemy) send: %d", eventEnemySendFlag);
-            StockFontBuffer(240, 48, FONT_PRIO_FRONT, 0, msg, 0);
-            sprintf_s(msg, "Empty          : %d", mapEmptyFlag);
-            StockFontBuffer(240, 64, FONT_PRIO_FRONT, 0, msg, 0);
-            sprintf_s(msg, "  nowGx      = %3d/ nowGy      = %3d", nowGx, nowGy);
-            StockFontBuffer(240, 80, FONT_PRIO_FRONT, 0, msg, 0);
-            sprintf_s(msg, "  mapEmptyGx = %3d/ mapEmptyGy = %3d", mapEmptyGx, mapEmptyGy);
-            StockFontBuffer(240, 96, FONT_PRIO_FRONT, 0, msg, 0);
-            sprintf_s(msg, "  mapEmptyDir = %3d", mapEmptyDir);
-            StockFontBuffer(240, 112, FONT_PRIO_FRONT, 0, msg, 0);
-        }
-        else if (tglSw == 2)
-        {
-            char msg[256];
-            sprintf_s(msg, "nowEncountPercentage : %d", nowEncountPercentage);
-            StockFontBuffer(240, 16, FONT_PRIO_FRONT, 0, msg, 0);
-            sprintf_s(msg, "nowEncountExtra      : %d", nowEncountExtra);
-            StockFontBuffer(240, 32, FONT_PRIO_FRONT, 0, msg, 0);
-        }
-        else if (tglSw == 3 || tglSw == 4)
-        {
-            // ?????????
-            // ??????????
-            char msg[256];
-            int x, y, xx, yy, color;
-
-            xx = -MAP_TILE_GRID_X1;
-            yy = -MAP_TILE_GRID_Y1;
-
-            if (MAP_X_SIZE > mapAreaWidth)
-            {
-                if (mapAreaX1 == 0)
-                    xx -= (MAP_X_SIZE - mapAreaWidth);
-            }
-            if (MAP_Y_SIZE > mapAreaHeight)
-            {
-                if (mapAreaY1 == 0)
-                    yy -= (MAP_Y_SIZE - mapAreaHeight);
-            }
-
-            for (y = 0; y < mapAreaHeight && y < 26; y++)
-            {
-                for (x = 0; x < mapAreaWidth; x++)
-                {
-                    if (tglSw == 3)
-                    {
-                        sprintf_s(msg, "%d", hitMap[y * mapAreaWidth + x]);
-                        if (x == xx && y == yy)
-                            color = FONT_PAL_RED;
-                        else
-                            color = FONT_PAL_WHITE;
-                    }
-                    else
-                    {
-                        sprintf_s(msg, "%d", (event[y * mapAreaWidth + x] & 0xfff));
-                        if (x == xx && y == yy)
-                            color = FONT_PAL_RED;
-                        else
-                        {
-                            if (event[y * mapAreaWidth + x] != 0)
-                                color = FONT_PAL_YELLOW;
-                            else
-                                color = FONT_PAL_WHITE;
-                        }
-                    }
-                    StockFontBuffer(x * 10, y * 18, FONT_PRIO_FRONT, color, msg, 0);
-                }
-            }
-            sprintf_s(msg, "gx = %5d / gy = %5d / hit = %d", mouseMapGx, mouseMapGy, checkHitMap(mouseMapGx, mouseMapGy));
-            StockFontBuffer(332, 40, FONT_PRIO_FRONT, 0, msg, 0);
-        }
-        else if (tglSw == 5)
-        {
-            char msg[256];
-            int x, y;
-
-            x = mouseMapGx - mapAreaX1;
-            y = mouseMapGy - mapAreaY1;
-            sprintf_s(msg, "Tile  Bmp = %d", tile[y * mapAreaWidth + x]);
-            StockFontBuffer(240, 34, FONT_PRIO_FRONT, 0, msg, 0);
-            sprintf_s(msg, "Parts Bmp = %d", parts[y * mapAreaWidth + x]);
-            StockFontBuffer(240, 54, FONT_PRIO_FRONT, 0, msg, 0);
-            sprintf_s(msg, "Gx = %d / Gy = %d", mouseMapGx, mouseMapGy);
-            StockFontBuffer(240, 74, FONT_PRIO_FRONT, 0, msg, 0);
-        }
-        else if (tglSw == 6)
-        {
-            char msg[256];
-
-            if ((joy_trg[0] & JOY_RIGHT) && mapEffectRainLevel < 5)
-                mapEffectRainLevel++;
-            else if ((joy_trg[0] & JOY_LEFT) && mapEffectRainLevel > 0)
-                mapEffectRainLevel--;
-            sprintf_s(msg, "mapEffectRainLevel = %d", mapEffectRainLevel);
-            StockFontBuffer(240, 34, FONT_PRIO_FRONT, 0, msg, 0);
-        }
-        else if (tglSw == 7)
-        {
-            char msg[256];
-
-            if ((joy_trg[0] & JOY_RIGHT) && mapEffectSnowLevel < 5)
-                mapEffectSnowLevel++;
-            else if ((joy_trg[0] & JOY_LEFT) && mapEffectSnowLevel > 0)
-                mapEffectSnowLevel--;
-            sprintf_s(msg, "mapEffectSnowLevel = %d", mapEffectSnowLevel);
-            StockFontBuffer(240, 34, FONT_PRIO_FRONT, 0, msg, 0);
-        }
-    }
-#endif
-
-    // ?????????????
     if (sendEnFlag == 0 && eventWarpSendFlag == 0 && eventEnemySendFlag == 0)
         etcEventFlag = 0;
-
-
-    // ??????????????
-    // ??????????????
     if (mouseLeftCrick)
     {
         if (lookAtAround())
@@ -2243,9 +2106,6 @@ void moveProc(void)
     {
     }
 #endif
-    // ??
-    // ??????????????
-    // ?????????????????
 
     if ((partyModeFlag == 0 || (pc.status & CHR_STATUS_LEADER) != 0) && etcSendFlag == 0 && etcEventFlag == 0)
     {
@@ -5908,9 +5768,6 @@ void mapEffectDice(void)
             getStringToken(pCommand, '|', 6, sizeof(temp), temp);
             d2 = atoi(temp);
             FREE(pCommand);
-#ifdef _STONDEBUG_
-            g_iMallocCount--;
-#endif
             pCommand = NULL;
             nState++;
             delCharObj(1);

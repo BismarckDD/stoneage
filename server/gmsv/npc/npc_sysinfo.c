@@ -172,7 +172,7 @@ static FUNC		functbl[] = {
     NPC_Sysinfo_Msg_allowAccept,
     NPC_Sysinfo_Msg_denyAccept,
     NPC_Sysinfo_Msg_closeallsockets,
-	/* 错痊馨笛 */
+	/* ???? */
     NPC_Sysinfo_All_NoSee,
     NPC_Sysinfo_All_NoBody,
     NPC_Sysinfo_Move_Num,

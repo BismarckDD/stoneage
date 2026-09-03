@@ -29,7 +29,6 @@ short drawFieldButtonFlag = 1;
 int fieldBtnHitId[FIELD_FUNC_END];    // ?????????
 short drawTimeAnimeFlag = 0;
 
-extern BOOL bNewServer;
 extern BOOL g_bUseAlpha;
 //新增 动作表情切换地图BUG
 ACTION *ptActMenuWin1 = NULL;//表情动作窗口

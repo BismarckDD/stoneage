@@ -1704,7 +1704,7 @@
 #define CG_MAIL_WND_CLEAR_BTN_DOWN 26173   // ???????
 #define CG_SEND_BTN 26099                  // "?"???
 #define CG_SEND_BTN_DOWN 26174             // "?"????
-// sa3 ??????????????
+// sa3
 #define CG_MAIL_WND_ON_LINE_MERCURY_BTN 25910 // ???????????
 #define CG_MAIL_WND_ON_LINE_VINUS_BTN 25911   // ???????????
 #define CG_MAIL_WND_ON_LINE_EARTH_BTN 25912   // ?????????佋?
@@ -1844,7 +1844,7 @@
 #define CG_DOWN_BTN_DOWN 26191 // ?????
 
 // ????
-#define CG_ICON_FUKIDASI 26500    // ???????????
+#define CG_ICON_FUKIDASI 26500    // 
 #define CG_ICON_COME_ON 26501     // ?Come On!?
 #define CG_ICON_GO 26502          // ?Go!?
 #define CG_ICON_WATCHING 26503    // ?Watching?
@@ -1865,7 +1865,7 @@
 #define CG_ICON_ROAR 25869        // ?Hwaoo!?
 #endif
 
-// ????????????
+//
 #define CG_NOW_PAINTING 28999
 
 // ????
@@ -2001,9 +2001,9 @@
 #define CG_TRADE_LOCK_BTN 26300
 
 // family
-// #define CG_FAMILY_ADD_WIN        26139
-// #define CG_FAMILY_CHANNEL_BTN_OFF        26234
-// #define CG_FAMILY_CHANNEL_BTN_ON        26235
+// #define CG_FAMILY_ADD_WIN         26139
+// #define CG_FAMILY_CHANNEL_BTN_OFF 26234
+// #define CG_FAMILY_CHANNEL_BTN_ON  26235
 
 #define CG_EXIT_BTN2 26241
 #define CG_EXIT_BTN2_DOWN 26242
@@ -2261,10 +2261,10 @@ static tagRidePetList RPlistMode[] = {
 
 #ifdef _MO_IMAGE_EXTENSION
 #define CG_CHR_MAKE_NEWFACE 54500
-#define SPRNEW_001em 102003 // 火    
-#define SPRNEW_001ax 102004 // 斧头             ?
-#define SPRNEW_001cl 102005 // 木棍            ??
-#define SPRNEW_001sp 102006 // 矛            ?
+#define SPRNEW_001em 102003 // 火
+#define SPRNEW_001ax 102004 // 斧头
+#define SPRNEW_001cl 102005 // 木棍
+#define SPRNEW_001sp 102006 // 矛
 #define SPRNEW_001bw 102007 // 弓            ?
 
 #define SPRNEW_002em 102008 // 水    
@@ -2359,20 +2359,20 @@ static tagRidePetList RPlistMode[] = {
 
 #define SPRNEW_016em 102078 // 地    
 #define SPRNEW_016ax 102079 // 斧头             ?
-#define SPRNEW_016cl 102080 // 木棍            ??
-#define SPRNEW_016sp 102081 // 矛            ?
+#define SPRNEW_016cl 102080 // 木棍
+#define SPRNEW_016sp 102081 // 矛
 #define SPRNEW_016bw 102082 // 弓
 
-#define SPRNEW_017em 102089 // 地    
-#define SPRNEW_017ax 102090 // 斧头             ?
-#define SPRNEW_017cl 102091 // 木棍            ??
-#define SPRNEW_017sp 102092 // 矛            ?
+#define SPRNEW_017em 102089 // 地
+#define SPRNEW_017ax 102090 // 斧头
+#define SPRNEW_017cl 102091 // 木棍
+#define SPRNEW_017sp 102092 // 矛
 #define SPRNEW_017bw 102093 // 弓
 
-#define SPRNEW_018em 102094 // 地    
-#define SPRNEW_018ax 102095 // 斧头             ?
-#define SPRNEW_018cl 102096 // 木棍            ??
-#define SPRNEW_018sp 102097 // 矛            ?
+#define SPRNEW_018em 102094 // 地
+#define SPRNEW_018ax 102095 // 斧头
+#define SPRNEW_018cl 102096 // 木棍
+#define SPRNEW_018sp 102097 // 矛
 #define SPRNEW_018bw 102098 // 弓
 
 #define SPRNEW_019em 102099 // 地
@@ -2393,15 +2393,15 @@ static tagRidePetList RPlistMode[] = {
 #define SPRNEW_021sp 102112 // 矛
 #define SPRNEW_021bw 102113 // 弓
 
-#define SPRNEW_022em 102114 // 地    
-#define SPRNEW_022ax 102115 // 斧头             ?
-#define SPRNEW_022cl 102116 // 木棍            ??
-#define SPRNEW_022sp 102117 // 矛            ?
+#define SPRNEW_022em 102114 // 地
+#define SPRNEW_022ax 102115 // 斧头
+#define SPRNEW_022cl 102116 // 木棍
+#define SPRNEW_022sp 102117 // 矛
 #define SPRNEW_022bw 102118 // 弓
 
-#define SPRNEW_023em 102119 // 地    
-#define SPRNEW_023ax 102120 // 斧头             ?
-#define SPRNEW_023cl 102121 // 木棍            ??
+#define SPRNEW_023em 102119 // 地
+#define SPRNEW_023ax 102120 // 斧头
+#define SPRNEW_023cl 102121 // 木棍
 #define SPRNEW_023sp 102122 // 矛
 #define SPRNEW_023bw 102123 // 弓
 

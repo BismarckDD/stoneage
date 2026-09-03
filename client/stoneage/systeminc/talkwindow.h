@@ -13,38 +13,9 @@
 #define SKIN_HEIGHT 155
 #define SKIN_KIND 5
 #define TALK_WINDOW_MAX_CHAT_LINE 40 // 最大聊天buffer
-#ifdef _STONDEBUG_
-#define FACE_SYMBOL_NUM 20                // 表情符号数量
-#define STORE_SYMBOL_NUM 200            // 记录表情位置数量
-#define LINE_HEIGHT 20                        // 文字输出时的行距
-#define SYMBOL_WIDTH 19                        // 表情符号图宽
-#define SYMBOL_HEIGHT 19                    // 表情符号图高
-#endif
 
 extern BOOL g_bTalkWindow;
 extern int g_iCursorCount;
-
-#ifdef _STONDEBUG_
-typedef struct _tsFaceSymbol{                // 表情符号
-    HDC hDraw;
-    HDC hDrawMask;
-    HBITMAP hbmpMaskBMP;
-    HANDLE hLoadBMP;
-    HANDLE hOldLoadBMP;
-    HANDLE hOldMaskBMP;
-    BOOL bUse;
-    char szSymbol[8];                    // 符号( :) :( :D ...etc)
-    char szFaceName[32];            // 档名
-}FaceSymbol;
-
-typedef struct _tsStoreSymbol{                // 记录在那里显示表情
-    BOOL bUse;
-    HDC hDraw;
-    HDC hDrawMask;
-    int x;
-    int y;
-}StoreSymbol;
-#endif
 
 typedef struct _tsChatBufferLink{
     CHAT_BUFFER ChatBuffer;
@@ -76,11 +47,6 @@ private:
     ChatBufferLink *m_pCBLString;             // 指向对话link准备被填入字串的link的指标
     ChatBufferLink *m_pCBLView;               // 指向要显示在画面上第一行的字串的link指标
     ChatBufferLink *m_pCBLViewBottom;         // 指向要显示在画面上最后一行的字串的link指标
-#ifdef _STONDEBUG_
-    FaceSymbol m_fsFaceSymbol[FACE_SYMBOL_NUM];            // 表情符号
-    StoreSymbol m_ssStoreSymbol[STORE_SYMBOL_NUM];    // 记录在那边显示表情
-    int m_iSymbolCount;
-#endif
     int m_iline;
 public:
     CTalkWindow(void);
@@ -98,13 +64,6 @@ public:
     void Init(HWND hWnd,HINSTANCE hInstance);
     void Visible(BOOL flag);
     void Release(void);
-#ifdef _STONDEBUG_
-    void ReadFaceSymbolFile(void);
-    void InitFaceSymbol(COLORREF MaskColor);
-    void ReleaseFaceSymbol(void);
-    void SetToFaceSymbolString(char *szDestString,ChatBufferLink *pCBL,int x,int y);
-    void ShowFaceSymbol(void);
-#endif
 };
 
 extern CTalkWindow TalkWindow;

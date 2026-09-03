@@ -12,13 +12,6 @@
 #include <zlib.h>
 #include <net.h>
 
-
-#ifdef _ABSOLUTE_DEBUG
-extern char charId[32];
-extern char errordata[256];
-extern int lastfunctime;
-#endif
-
 #define DME() print("<DME(%d)%d:%d>", fd, __LINE__, func)
 
 char charname[CHARNAMELEN];
@@ -64,26 +57,7 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     DME();
     return -1;
   }
-#ifdef _MO_SHOW_DEBUG
-  if (isDebug() == 1) {
-    printf("\n客户端接口=%d\n", func);
-  }
-  if (func < LSSPROTO_W_RECV) {
-    if (isDebug() == 1) {
-      printf("\n客户端接口异常，已屏蔽！\n");
-    }
-    return -1;
-  }
-#endif
   cliretfunc = func;
-#ifdef _ABSOLUTE_DEBUG
-  CONNECT_getCdkey(fd, charId, sizeof(charId));
-  lastfunctime = 3;
-#endif
-
-#ifdef _DEBUG_RET
-  printf("\n客户端接口=%d\n", func);
-#endif
   if (func == LSSPROTO_W_RECV) {
     int checksum = 0, checksumrecv;
     int x;
@@ -100,17 +74,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
       DME();
       return -1;
     }
-#ifdef _DEBUG_RET_CLI
-    printf("[接收]LSSPROTO_W_RECV-x:%d,y:%d,direction:%s\n", x, y, direction);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%s", x, y, direction);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_W_recv(fd, x, y, direction);
     util_DiscardMessage();
     return 0;
@@ -132,14 +95,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_W2_RECV-x:%d,y:%d,direction:%s\n", x, y, direction);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%s", x, y, direction);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_W2_recv(fd, x, y, direction);
     util_DiscardMessage();
@@ -168,14 +123,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     printf("[接收]LSSPROTO_EV_RECV-event:%d,seqno:%d,x:%d,y:%d,dir:%d\n", event,
            seqno, x, y, dir);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%d:%d", event, seqno, x, y, dir);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_EV_recv(fd, event, seqno, x, y, dir);
     util_DiscardMessage();
     return 0;
@@ -196,14 +143,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_DU_RECV-x:%d,y:%d\n", x, y);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d", x, y);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_DU_recv(fd, x, y);
     util_DiscardMessage();
     return 0;
@@ -221,14 +160,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_EO_RECV-dummy:%d\n", dummy);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", dummy);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_EO_recv(fd, dummy);
     util_DiscardMessage();
@@ -248,14 +179,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_BU_RECV-dummy:%d\n", dummy);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", dummy);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_BU_recv(fd, dummy);
     util_DiscardMessage();
@@ -277,14 +200,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_JB_RECV-x:%d,y:%d\n", x, y);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d", x, y);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_JB_recv(fd, x, y);
     util_DiscardMessage();
     return 0;
@@ -305,14 +220,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_LB_RECV-x:%d,y:%d\n", x, y);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d", x, y);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_LB_recv(fd, x, y);
     util_DiscardMessage();
     return 0;
@@ -330,14 +237,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_B_RECV-command:%s\n", command);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", command);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_B_recv(fd, command);
     util_DiscardMessage();
@@ -358,14 +257,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_SKD_RECV-dir:%d,index:%d\n", dir, index);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d", dir, index);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_SKD_recv(fd, dir, index);
     util_DiscardMessage();
@@ -392,14 +283,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     printf("[接收]LSSPROTO_ID_RECV-x:%d,y:%d,haveitemindex:%d,toindex:%d\n", x,
            y, haveitemindex, toindex);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%d", x, y, haveitemindex, toindex);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_ID_recv(fd, x, y, haveitemindex, toindex);
     util_DiscardMessage();
     return 0;
@@ -421,14 +304,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_PI_RECV-x:%d,y:%d,dir:%d\n", x, y, dir);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d", x, y, dir);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_PI_recv(fd, x, y, dir);
     util_DiscardMessage();
@@ -452,14 +327,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_DI_RECV-x:%d,y:%d,itemindex:%d\n", x, y, itemindex);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d", x, y, itemindex);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_DI_recv(fd, x, y, itemindex);
     util_DiscardMessage();
     return 0;
@@ -481,14 +348,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_DG_RECV-x:%d,y:%d,amount:%d\n", x, y, amount);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d", x, y, amount);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_DG_recv(fd, x, y, amount);
     util_DiscardMessage();
@@ -512,14 +371,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_DP_RECV-x:%d,y:%d,petindex:%d\n", x, y, petindex);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d", x, y, petindex);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_DP_recv(fd, x, y, petindex);
     util_DiscardMessage();
     return 0;
@@ -540,14 +391,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_MI_RECV-fromindex:%d,toindex:%d\n", fromindex,
            toindex);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d", fromindex, toindex);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_MI_recv(fd, fromindex, toindex);
     util_DiscardMessage();
@@ -571,14 +414,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_MSG_RECV-index:%d,message:%s,color:%d\n", index,
            message, color);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%s:%d", index, message, color);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_MSG_recv(fd, index, message, color);
     util_DiscardMessage();
@@ -608,15 +443,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
            "%s,color:%d\n",
            index, petindex, itemindex, message, color);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%s:%d", index, petindex, itemindex, message,
-            color);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_PMSG_recv(fd, index, petindex, itemindex, message, color);
     util_DiscardMessage();
     return 0;
@@ -632,14 +458,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_AB_RECV\n");
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    strcpy(errordata, "");
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_AB_recv(fd);
     util_DiscardMessage();
@@ -658,14 +476,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_DAB_RECV-index:%d\n", index);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", index);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_DAB_recv(fd, index);
     util_DiscardMessage();
@@ -687,14 +497,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_AAB_RECV-x:%d,y:%d\n", x, y);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d", x, y);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_AAB_recv(fd, x, y);
     util_DiscardMessage();
     return 0;
@@ -712,14 +514,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_L_RECV-dir:%d\n", dir);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", dir);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_L_recv(fd, dir);
     util_DiscardMessage();
@@ -748,14 +542,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     printf("[接收]LSSPROTO_TK_RECV-x:%d,y:%d,message:%s,color:%d,area:%d\n", x,
            y, message, color, area);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%s:%d:%d", x, y, message, color, area);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_TK_recv(fd, x, y, message, color, area);
     util_DiscardMessage();
     return 0;
@@ -783,14 +569,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     printf("[接收]LSSPROTO_M_RECV-fl:%d,x1:%d,y1:%d,x2:%d,y2:%d\n", fl, x1, y1,
            x2, y2);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%d:%d", fl, x1, y1, x2, y2);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_M_recv(fd, fl, x1, y1, x2, y2);
     util_DiscardMessage();
     return 0;
@@ -808,14 +586,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_C_RECV-index:%d\n", index);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", index);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_C_recv(fd, index);
     util_DiscardMessage();
@@ -835,14 +605,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_S_RECV-category:%s\n", category);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", category);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_S_recv(fd, category);
     util_DiscardMessage();
     return 0;
@@ -861,14 +623,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_FS_RECV-flg:%d\n", flg);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", flg);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_FS_recv(fd, flg);
     util_DiscardMessage();
     return 0;
@@ -886,14 +640,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_HL_RECV-flg:%d\n", flg);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", flg);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_HL_recv(fd, flg);
     util_DiscardMessage();
@@ -917,14 +663,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_PR_RECV-x:%d,y:%d,request:%d\n", x, y, request);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d", x, y, request);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_PR_recv(fd, x, y, request);
     util_DiscardMessage();
     return 0;
@@ -942,14 +680,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_KS_RECV-petarray:%d\n", petarray);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", petarray);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_KS_recv(fd, petarray);
     util_DiscardMessage();
@@ -969,14 +699,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_SPET_RECV-standbypet:%d\n", standbypet);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", standbypet);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_SPET_recv(fd, standbypet);
     util_DiscardMessage();
@@ -1000,9 +722,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_RCLICK_RECV-type:%d,data:%s\n", type, data);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%s", type, data);
-#endif
     GmsvServer_RCLICK_recv(fd, type, data);
     util_DiscardMessage();
     return 0;
@@ -1025,14 +744,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_AC_RECV-x:%d,y:%d,actionno:%d\n", x, y, actionno);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d", x, y, actionno);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_AC_recv(fd, x, y, actionno);
     util_DiscardMessage();
@@ -1058,14 +769,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_MU_RECV-x:%d,y:%d,array:%d,toindex:%d\n", x, y,
            array, toindex);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%d", x, y, array, toindex);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_MU_recv(fd, x, y, array, toindex);
     util_DiscardMessage();
@@ -1094,15 +797,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
            "data:%s\n",
            havepetindex, havepetskill, toindex, data);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%s", havepetindex, havepetskill, toindex,
-            data);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_PS_recv(fd, havepetindex, havepetskill, toindex, data);
 
     util_DiscardMessage();
@@ -1122,14 +816,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_ST_RECV-titleindex:%d\n", titleindex);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", titleindex);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_ST_recv(fd, titleindex);
     util_DiscardMessage();
     return 0;
@@ -1147,14 +833,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_DT_RECV-titleindex:%d\n", titleindex);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", titleindex);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_DT_recv(fd, titleindex);
     util_DiscardMessage();
@@ -1174,14 +852,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_FT_RECV-data:%s\n", data);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", data);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_FT_recv(fd, data);
     util_DiscardMessage();
     return 0;
@@ -1199,14 +869,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_SKUP_RECV-skillid:%d\n", skillid);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", skillid);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_SKUP_recv(fd, skillid);
     util_DiscardMessage();
@@ -1228,14 +890,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_KN_RECV-havepetindex:%d,data:%s\n", havepetindex,
            data);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%s", havepetindex, data);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_KN_recv(fd, havepetindex, data);
     util_DiscardMessage();
@@ -1268,15 +922,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
            "data:%s\n",
            x, y, seqno, objindex, select, data);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%d:%d:%s", x, y, seqno, objindex, select,
-            data);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_WN_recv(fd, x, y, seqno, objindex, select, data);
     util_DiscardMessage();
     return 0;
@@ -1299,14 +944,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_SP_RECV-x:%d,y:%d,dir:%d\n", x, y, dir);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d", x, y, dir);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_SP_recv(fd, x, y, dir);
     util_DiscardMessage();
     return 0;
@@ -1327,14 +964,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
       printf("[接收]LSSPROTO_CLIENTLOGIN_RECV-cdkey:%s,passwd:%s\n", cdkey,
              passwd);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-      sprintf(errordata, "%s:%s", cdkey, passwd);
-#endif
-#ifdef _MO_SHOW_DEBUG
-      if (isDebug() == 1) {
-        printf("%s\n", errordata);
-      }
-#endif
     } else {
       checksum += util_destring(4, mac);
       util_deint(5, &checksumrecv);
@@ -1342,14 +971,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
         printf("[接收]LSSPROTO_CLIENTLOGIN_RECV-cdkey:%s,passwd:%s,mac:%s\n",
                cdkey, passwd, mac);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-        sprintf(errordata, "%s:%s:%s", cdkey, passwd, mac);
-#endif
-#ifdef _MO_SHOW_DEBUG
-        if (isDebug() == 1) {
-          printf("%s\n", errordata);
-        }
 #endif
       } else {
         checksum += util_deint(5, &servid);
@@ -1365,14 +986,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
         printf("[接收]LSSPROTO_CLIENTLOGIN_RECV-cdkey:%s,passwd:%s,mac:%s,"
                "servid:%d\n",
                cdkey, passwd, mac, servid);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-        sprintf(errordata, "%s:%s:%s:%d", cdkey, passwd, mac, servid);
-#endif
-#ifdef _MO_SHOW_DEBUG
-        if (isDebug() == 1) {
-          printf("%s\n", errordata);
-        }
 #endif
       }
     }
@@ -1426,16 +1039,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
            dataplacenum, charname, imgno, faceimgno, vital, str, tgh, dex,
            earth, water, fire, wind, hometown);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%s:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d:%d", dataplacenum,
-            charname, imgno, faceimgno, vital, str, tgh, dex, earth, water,
-            fire, wind, hometown);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_CreateNewChar_recv(fd, dataplacenum, charname, imgno, faceimgno,
                                 vital, str, tgh, dex, earth, water, fire, wind,
                                 hometown);
@@ -1457,14 +1060,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_CHARDELETE_RECV-charname:%s\n", charname);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", charname);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_CharDelete_recv(fd, charname, passwd);
     util_DiscardMessage();
@@ -1507,14 +1102,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_CHARLOGIN_RECV-charname:%s\n", charname);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", charname);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_CharLogin_recv(fd, charname);
     util_DiscardMessage();
     return 0;
@@ -1530,9 +1117,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_CHARLIST_RECV\n");
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    strcpy(errordata, "");
 #endif
     GmsvServer_CharList_recv(fd);
     util_DiscardMessage();
@@ -1556,14 +1140,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_CHARLOGOUT_RECV-Flg:%d\n", Flg);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", Flg);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_CharLogout_recv(fd, Flg);
     util_DiscardMessage();
     return 0;
@@ -1582,9 +1158,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_PROCGET_RECV\n");
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    strcpy(errordata, "");
-#endif
     GmsvServer_ProcGet_recv(fd);
     util_DiscardMessage();
     return 0;
@@ -1600,9 +1173,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_PLAYERNUMGET_RECV\n");
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    strcpy(errordata, "");
 #endif
     GmsvServer_PlayerNumGet_recv(fd);
     util_DiscardMessage();
@@ -1621,14 +1191,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_ECHO_RECV-test:%s\n", test);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", test);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_Echo_recv(fd, test);
     util_DiscardMessage();
@@ -1669,14 +1231,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_TD_RECV-message:%s\n", message);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", message);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_TD_recv(fd, message);
     util_DiscardMessage();
     return 0;
@@ -1694,14 +1248,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_FM_RECV-message:%s\n", message);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", message);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_FM_recv(fd, message);
     util_DiscardMessage();
@@ -1724,14 +1270,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_PETST_RECV-nPet:%d,sPet:%d\n", nPet, sPet);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d", nPet, sPet);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_PETST_recv(fd, nPet, sPet);
     util_DiscardMessage();
     return 0;
@@ -1742,9 +1280,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     buffer[0] = '\0';
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_CS_RECV\n");
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    strcpy(errordata, "");
 #endif
     GmsvServer_CS_recv(fd);
     util_DiscardMessage();
@@ -1765,14 +1300,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_KTEAM_RECV-sindex:%d\n", sindex);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", sindex);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_KTEAM_recv(fd, sindex);
     util_DiscardMessage();
@@ -1798,14 +1325,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_MA_RECV-x:%d,y:%d,nMind:%d\n", x, y, nMind);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d", x, y, nMind);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_MA_recv(fd, x, y, nMind);
     util_DiscardMessage();
     return 0;
@@ -1826,14 +1345,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_CHATROOM_RECV-test:%s\n", test);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", test);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_CHATROOM_recv(fd, test);
     util_DiscardMessage();
     return 0;
@@ -1845,9 +1356,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     buffer[0] = '\0';
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_RESIST_RECV\n");
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    strcpy(errordata, "");
 #endif
     GmsvServer_RESIST_recv(fd);
     util_DiscardMessage();
@@ -1870,14 +1378,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_BATTLESKILL_RECV-iNum:%d\n", iNum);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", iNum);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_BATTLESKILL_recv(fd, iNum);
     util_DiscardMessage();
     return 0;
@@ -1897,14 +1397,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_STREET_VENDOR_RECV-message:%s\n", message);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", message);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_STREET_VENDOR_recv(fd, message);
     util_DiscardMessage();
@@ -1926,14 +1418,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_JOBDAILY_RECV-buffer:%s\n", buffer);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", buffer);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
-#endif
     GmsvServer_JOBDAILY_recv(fd, buffer);
     util_DiscardMessage();
     return 0;
@@ -1954,9 +1438,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_TEACHER_SYSTEM_RECV-message:%s\n", message);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", message);
-#endif
     GmsvServer_TEACHER_SYSTEM_recv(fd, message);
     util_DiscardMessage();
     return 0;
@@ -1966,9 +1447,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   if (func == LSSPROTO_S2_RECV) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_S2_RECV\n");
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    strcpy(errordata, "");
 #endif
     return 0;
   }
@@ -1998,9 +1476,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
            "toindex:%d\n",
            x, y, petindex, fromindex, toindex);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%d:%d", x, y, petindex, fromindex, toindex);
-#endif
     GmsvServer_PETITEM_recv(fd, x, y, petindex, fromindex, toindex);
     util_DiscardMessage();
     return 0;
@@ -2021,14 +1496,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_ASSESS_ABILITY_RECV-data:%s\n", data);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%s", data);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     // GmsvServer_ASSESS_ABILITY_send( fd,
     // "10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|10000|"
@@ -2055,9 +1522,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_VIP_SHOP_RECV-x:%d,y:%d\n", type, page);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d", type, page);
-#endif
     GmsvServer_VIP_SHOP_recv(fd, type, page);
     util_DiscardMessage();
     return 0;
@@ -2082,9 +1546,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_VIP_SHOP_RECV-type:%d,page:%d,id:%d,num:%d\n", type,
            page, id, num);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%d", type, page, id, num);
 #endif
     GmsvServer_VIP_SHOP_buy_recv(fd, type, page, id, num);
     util_DiscardMessage();
@@ -2111,9 +1572,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     printf("[接收]LSSPROTO_VIP_SHOP_RECV-type:%d,page:%d,id:%d,num:%d\n", type,
            page, id, num);
 #endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d:%d:%d:%d", type, page, id, num);
-#endif
     GmsvServer_VIP_SHOP_buy_recv(fd, type, page, id, num);
     util_DiscardMessage();
     return 0;
@@ -2126,9 +1584,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     util_deint(3, &checksumrecv);
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_SAMENU_RECV-index:%d\n", index);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "");
 #endif
     GmsvServer_SaMenu_recv(fd, index);
     util_DiscardMessage();
@@ -2162,14 +1617,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     }
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_FAMILYBADGE_RECV:%s\n", test);
-#endif
-#ifdef _ABSOLUTE_DEBUG
-    sprintf(errordata, "%d", test);
-#endif
-#ifdef _MO_SHOW_DEBUG
-    if (isDebug() == 1) {
-      printf("%s\n", errordata);
-    }
 #endif
     GmsvServer_FamilyBadge_recv(fd);
     util_DiscardMessage();

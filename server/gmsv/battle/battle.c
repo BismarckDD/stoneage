@@ -41,11 +41,6 @@
 #include "skill.h"
 #endif
 
-#ifdef _ABSOLUTE_DEBUG
-extern int debugline;
-extern int comnum;
-#endif
-
 // #define DANTAI
 static int Total_BattleNum = 0;
 BATTLE *BattleArray;
@@ -1269,13 +1264,8 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
                 Dtimes = BattleArray[battleindex].CreateTime;
                 battletime =
                     (unsigned int)(BattleArray[battleindex].flgTime / 100);
-
-                // if( CHAR_getWorkInt( char_index, CHAR_WORKFLG) &
-                // WORKFLG_DEBUGMODE ){ }else
-                {
-                  CheckDefBTime(char_index, fd, Dtimes, battletime,
-                                10); //lowTime延迟时间
-                }
+                CheckDefBTime(char_index, fd, Dtimes, battletime,
+                              10); //lowTime延迟时间
               }
             }
           }
@@ -8388,9 +8378,6 @@ static int BATTLE_Battling(int battleindex) {
     if (CHAR_getInt(char_index, CHAR_HP) <= 0)
       continue;
 
-#ifdef _ABSOLUTE_DEBUG
-    comnum = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
-#endif
     szBattleString[0] = 0;
     pszBattleTop = szBattleString;
     pszBattleLast = szBattleString + arraysizeof(szBattleString);

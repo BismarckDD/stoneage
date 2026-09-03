@@ -13,9 +13,6 @@
 
 unsigned char autoMapColorTbl[MAX_GRAPHICS];
 
-#ifdef _STONDEBUG_
-extern int g_iMallocCount;
-#endif
 
 unsigned long bitmapnumbertable[MAX_GRAPHICS];
 
@@ -451,9 +448,6 @@ BOOL Read16BMP(int BmpNo,unsigned char **BmpData,int *width,int *height,BYTE **A
     // 移到要读取的图档资料位置上
     SetFilePointer(hRealtrueFile,pAddr->adder,NULL,FILE_BEGIN);
     pBmpData = (unsigned char*)MALLOC(pAddr->size);
-#ifdef _STONDEBUG_
-    g_iMallocCount++;
-#endif
     if(pBmpData == NULL) return FALSE;
     else{
         memset(g_rgbPal,0,sizeof(g_rgbPal));
@@ -470,16 +464,10 @@ BOOL Read16BMP(int BmpNo,unsigned char **BmpData,int *width,int *height,BYTE **A
             if(decoder(pBmpData,BmpData,(unsigned int*)width,(unsigned int*)height,&len) == NULL) bRet = FALSE;
         }
         FREE(pBmpData);
-#ifdef _STONDEBUG_
-        g_iMallocCount--;
-#endif
         // 把alpha资料读入
         *useAlpha = FALSE;
         if(pAddr->alpha_size > 0){
             pBmpData = (unsigned char*)MALLOC(pAddr->alpha_size);
-#ifdef _STONDEBUG_
-            g_iMallocCount++;
-#endif
             if(pBmpData == NULL) return FALSE;
             bReadReturn = ReadFile(hRealtrueFile,pBmpData,pAddr->alpha_size,&dwReadByte,NULL);
             // 读档失败
@@ -489,9 +477,6 @@ BOOL Read16BMP(int BmpNo,unsigned char **BmpData,int *width,int *height,BYTE **A
                 if(decoder(pBmpData,AlphaData,&iw,&ih,&len) == NULL) bRet = FALSE;
             }
             FREE(pBmpData);
-#ifdef _STONDEBUG_
-            g_iMallocCount--;
-#endif
             *useAlpha = TRUE;
         }
     }

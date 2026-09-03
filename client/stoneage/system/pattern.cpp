@@ -59,6 +59,23 @@ void picture_play(ACTION *a0) {
 }
 #endif
 
+// Even without graphics, a one-shot battle action must deliver its hit before
+// reporting completion. monster() consumes the hit only when pattern returns 0.
+static int finishMissingAnimation(ACTION *a0, int loop_flg) {
+  if (loop_flg != ANM_NO_LOOP)
+    return 0;
+  if (ATR_CHR_CNT(a0) == 0) {
+    ClientRuntimeLog("animation-missing", "gra=%d anim=%d dir=%d",
+                     ATR_CHR_NO(a0), ATR_CHR_ACT(a0), ATR_CHR_ANG(a0));
+    ATR_CHR_CNT(a0) = 1;
+    if (ATR_CHR_ACT(a0) == ANIM_ATTACK) {
+      ATR_HIT(a0) = 10000;
+      return 0;
+    }
+  }
+  return 1;
+}
+
 /*----------  ?????????  ----------*/
 // Return 1:播完了此动画( 无重覆播放的状况下 )
 // Return 0:播放此动画中
@@ -98,7 +115,7 @@ int pattern(ACTION *a0, int anim_spd, int loop_flg) {
 #ifdef _NPC_PICTURE
     picture_play(a0);
 #endif
-    return 0;
+    return finishMissingAnimation(a0, loop_flg);
   }
   if (ATR_CHR_NO(a0) < SPRSTART) { // 不是sprite
     realGetNo(ATR_CHR_NO(a0), (U4 *)&BmpNo);
@@ -140,19 +157,19 @@ int pattern(ACTION *a0, int anim_spd, int loop_flg) {
 #endif
     return 0;
   }
-  if (ATR_CHR_NO(a0) > SPRSTART + mxSPRITE) {
+  if (ATR_CHR_NO(a0) >= SPRSTART + mxSPRITE) {
 #ifdef _NPC_PICTURE
     picture_play(a0);
 #endif
-    return 0; // 超出sprite的范围
+    return finishMissingAnimation(a0, loop_flg);
   }
   chrNo = ATR_CHR_NO(a0) - SPRSTART;
   ptAnimlist = SpriteData[chrNo].ptAnimlist;
-  if (SpriteData[chrNo].animSize == 0) {
+  if (SpriteData[chrNo].animSize == 0 || ptAnimlist == NULL) {
 #ifdef _NPC_PICTURE
     picture_play(a0);
 #endif
-    return 0; // 无动画
+    return finishMissingAnimation(a0, loop_flg);
   }
   // 选择想要的方向和动画
   for (i = 0; i < SpriteData[chrNo].animSize; i++) {
@@ -161,6 +178,8 @@ int pattern(ACTION *a0, int anim_spd, int loop_flg) {
       break;
   }
   if (i >= SpriteData[chrNo].animSize) {
+    if (ATR_CHR_ACT(a0) == ANIM_ATTACK && loop_flg == ANM_NO_LOOP)
+      return finishMissingAnimation(a0, loop_flg);
     // shan remark
     // i = 0;
     for (int sh_i = 0; sh_i < SpriteData[chrNo].animSize; sh_i++) {
@@ -174,6 +193,8 @@ int pattern(ACTION *a0, int anim_spd, int loop_flg) {
     }
   }
   ptFramelist = ptAnimlist[i].ptFramelist;
+  if (ptAnimlist[i].frameCnt == 0 || ptFramelist == NULL)
+    return finishMissingAnimation(a0, loop_flg);
   if (anim_spd) // 有指定动画速度
     ATR_CHR_TIM(a0) = anim_spd;
   else

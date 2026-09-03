@@ -1484,8 +1484,6 @@ int deleteCharacter(void)
     return ret;
 }
 
-// ??????????
-
 static short downloadCharListProcNo = 0;
 #ifdef _PK2007
 static short downloadpkListProcNo = 0;
@@ -1496,29 +1494,16 @@ void initDownloadCharList(void)
     downloadCharListProcNo = 0;
 }
 
-// ?????
-//
-//  ??：     0 ... ?
-//                 1 ... ??
-//                -1 ... ??????
-//                -2 ... ???
-//              -3 ... ?????????
-//              -4 ... ???
 int downloadCharList(void)
 {
     static ACTION *ptActMenuWin = NULL;
     static int x, y, w, h;
     int ret = 0;
     static char msg[256];
-
-    // ???
     if (downloadCharListProcNo == 0)
     {
         downloadCharListProcNo = 1;
-
         strcpy(msg, "人物名单取得中");
-
-        // ??????
         w = getUtf8CharNum(msg) * 8 / 64 + 2;
         h = (16 + 47) / 48;
         if (h < 2)
@@ -2186,32 +2171,27 @@ int selCharGraColorWin(void)
         play_se(217, 320, 240); // ?????
     }
     else
-        // ???
+    {
         if (id == 1)
         {
             selCharColor[nowSelCharGraNo]++;
             if (selCharColor[nowSelCharGraNo] > 3)
                 selCharColor[nowSelCharGraNo] = 0;
-            play_se(217, 320, 240); // ?????
+            play_se(217, 320, 240);
         }
-        else
-            // ????
-            if (id == 2)
-            {
-                selCharDir[nowSelCharGraNo]++;
-                if (selCharDir[nowSelCharGraNo] > 7)
-                    selCharDir[nowSelCharGraNo] = 0;
-                play_se(217, 320, 240); // ?????
-            }
-            else
-                // ?????
-                if (id == 3)
-                {
-                    ret = 2;
-                    play_se(217, 320, 240); // ?????
-                }
-
-    // ???????????????
+        else if (id == 2)
+        {
+            selCharDir[nowSelCharGraNo]++;
+            if (selCharDir[nowSelCharGraNo] > 7)
+                selCharDir[nowSelCharGraNo] = 0;
+            play_se(217, 320, 240);
+        }
+        else if (id == 3)
+        {
+            ret = 2;
+            play_se(217, 320, 240);
+        }
+    }
     if (ret != 0)
     {
         if (ptActMenuWin)
@@ -2221,47 +2201,33 @@ int selCharGraColorWin(void)
         }
     }
 
-    // ???????????????
     id = focusFontId(fontId, sizeof(fontId) / sizeof(int));
 
-    // ?
-    if (id == 0)
-    {
-        ShowBottomLineString(FONT_PAL_WHITE, "决定目前所选择的人物。");
-    }
-    else
-        // ???
-        if (id == 1)
-        {
+    switch (id) {
+        case 0:
+            ShowBottomLineString(FONT_PAL_WHITE, "决定目前所选择的人物。");
+            break;
+        case 1: 
             ShowBottomLineString(FONT_PAL_WHITE, "改变人物的颜色。");
-        }
-        else
-            // ????
-            if (id == 2)
-            {
-                ShowBottomLineString(FONT_PAL_WHITE, "转动人物的方向。");
-            }
-            else
-                // ?????
-                if (id == 3)
-                {
-                    ShowBottomLineString(FONT_PAL_WHITE, "回到选择人物的画面。");
-                }
-
-    if (ptActMenuWin != NULL)
-    {
-        // ?????
-        if (ptActMenuWin->hp >= 1)
-        {
-            for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
-            {
-                fontId[i] =
-                    StockFontBuffer(x + 22, y + i * 22 + 32,
-                                    FONT_PRIO_FRONT, FONT_PAL_YELLOW, msg[i], 2);
-            }
-        }
+            break;
+        case 2:
+            ShowBottomLineString(FONT_PAL_WHITE, "转动人物的方向。");
+            break;
+        case 3: 
+            ShowBottomLineString(FONT_PAL_WHITE, "回到选择人物的画面。");
+            break;
+        default:
+            break;
     }
 
+    if (ptActMenuWin && ptActMenuWin->hp >= 1)
+    {
+        for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
+        {
+            fontId[i] = StockFontBuffer(x + 22, y + i * 22 + 32,
+                            FONT_PRIO_FRONT, FONT_PAL_YELLOW, msg[i], 2);
+        }
+    }
     return ret;
 }
 
@@ -2278,25 +2244,9 @@ void initEditCharParam(void)
     selCharName.cursor = 0;
     GetKeyInputFocus(&selCharName);
 
-#ifdef __TEST_SERVER
-    if ((bNewServer & 0xf100000) == 0xf100000)
-    {
-        nowSelCharStatusPoint = 550;
-    }
-    else
-    {
-        nowSelCharStatusPoint = 20;
-    }
-#else
-    // nowSelCharStatusPoint = 20;
     nowSelCharStatusPoint = 0;
-#endif
-    //    nowSelCharStatus[0]   =  0;
-    //    nowSelCharStatus[1]   =  0;
-
     nowSelCharStatus[0] = 10;
     nowSelCharStatus[1] = 10;
-
     // end modified by lsh
     nowSelCharStatus[2] = 0;
     nowSelCharStatus[3] = 0;
@@ -2328,11 +2278,8 @@ typedef struct
     char name[16]; // 宠物名称
 } BORNPETINFO;
 #endif
-// ???????????
-//
-//  ??：    0 ... ???
-//                1 ... ?
-//                2 ... ?????
+
+// 编辑Char的初始状态
 int editCharParam(void)
 {
     int ret = 0;
@@ -2360,27 +2307,22 @@ int editCharParam(void)
 #endif
     int i;
     int id, id2, id3;
-
-    int statusLocate[4][2] =
-        {
+    int statusLocate[4][2] = {
             {111, 250},
             {111, 278},
             {111, 305},
             {111, 334}};
-    int attrLocate[4][2] =
-        {
+    int attrLocate[4][2] = {
             {297, 255},
             {297, 279},
             {297, 303},
             {297, 327}};
-    int attrColor[4][2] =
-        {
+    int attrColor[4][2] = {
             {SYSTEM_PAL_GREEN, SYSTEM_PAL_GREEN2},
             {SYSTEM_PAL_AQUA, SYSTEM_PAL_AQUA2},
             {SYSTEM_PAL_RED, SYSTEM_PAL_RED2},
             {SYSTEM_PAL_YELLOW, SYSTEM_PAL_YELLOW2}};
-    int upDownBtnGraNo[][2] =
-        {
+    int upDownBtnGraNo[][2] = {
             {CG_PREV_BTN, CG_PREV_BTN_DOWN},
             {CG_NEXT_BTN, CG_NEXT_BTN_DOWN}};
     int selUseFlag = 0;
@@ -2388,285 +2330,192 @@ int editCharParam(void)
 
     GetKeyInputFocus(NULL);
 
-    // ???
     if (editCharParamProcNo == 0)
     {
         for (i = 0; i < sizeof(graId) / sizeof(int); i++)
-        {
             graId[i] = -2;
-        }
         editCharParamProcNo++;
     }
 
-    // ???????
     id = -1;
     id3 = -1;
     if (editCharParamProcNo == 1)
     {
         selUseFlag = 2;
         GetKeyInputFocus(&selCharName);
-
-        // ??????????
-        // id = selGraId( graId, sizeof( graId )/sizeof( int ) );
         id = selRepGraId(graId, sizeof(graId) / sizeof(int));
         id3 = pushGraId(graId, sizeof(graId) / sizeof(int));
 
-        // ?
         if (id == 0)
         {
-            // ???????
-            if (selCharName.cnt <= 0)
-            {
+            if (selCharName.cnt <= 0) // 名字不合法
                 editCharParamProcNo = 100;
-            }
+            else if (nowSelCharStatusPoint > 0) // 状态点未分配完毕
+                editCharParamProcNo = 104;
+            else if (nowSelCharAttrPoint > 0) // 属性点未分配完毕
+                    editCharParamProcNo = 106;
             else
-                // ????????????????
-                if (nowSelCharStatusPoint > 0)
-                {
-                    editCharParamProcNo = 104;
-                }
+            {
+                strcpy(newCharacterName, selCharName.buffer);
+                newCharacterName[selCharName.cnt] = '\0';
+                if (cmpNameCharacterList(selCharName.buffer))
+                    editCharParamProcNo = 102;
+                else if (strstr(newCharacterName, " ") != NULL
+                         || strstr(newCharacterName, "  ") != NULL)
+                    editCharParamProcNo = 108;
                 else
-                    // ???????????
-                    if (nowSelCharAttrPoint > 0)
-                    {
-                        editCharParamProcNo = 106;
-                    }
-                    else
-                    // ???????
-                    {
-                        strcpy(newCharacterName, selCharName.buffer);
-                        newCharacterName[selCharName.cnt] = '\0';
-
-                        if (cmpNameCharacterList(selCharName.buffer))
-                        {
-                            // ????????
-                            editCharParamProcNo = 102;
-                        }
-                        else
-                            // ?????????????
-                            if (strstr(newCharacterName, " ") != NULL || strstr(newCharacterName, "  ") != NULL)
-                            {
-                                editCharParamProcNo = 108;
-                            }
-                            /*else
-                            if(!CheckName(newCharacterName))
-                            {
-                            editCharParamProcNo = 110;
-                            }*/
-                            else
-                            {
-                                // ?
-                                ret = 1;
-                                newCharacterGraNo =
-                                    selectGraNoTbl[nowSelCharGraNo] + selCharColor[nowSelCharGraNo] * 5;
-                                newCharacterFaceGraNo =
-                                    CG_CHR_MAKE_FACE + nowSelCharGraNo * 100 + selCharColor[nowSelCharGraNo] * 25 + nowSelCharEyeNo * 5 + nowSelCharMouthNo;
-                                if (nowSelCharGraNo < 12)
-                                    newCharacterFaceGraNo =
-                                        CG_CHR_MAKE_FACE + nowSelCharGraNo * 100 + selCharColor[nowSelCharGraNo] * 25 + nowSelCharEyeNo * 5 + nowSelCharMouthNo;
+                {
+                    ret = 1;
+                    newCharacterGraNo =
+                        selectGraNoTbl[nowSelCharGraNo] + selCharColor[nowSelCharGraNo] * 5;
+                    newCharacterFaceGraNo =
+                        CG_CHR_MAKE_FACE + nowSelCharGraNo * 100 + selCharColor[nowSelCharGraNo] * 25 + nowSelCharEyeNo * 5 + nowSelCharMouthNo;
+                    if (nowSelCharGraNo < 12)
+                        newCharacterFaceGraNo =
+                            CG_CHR_MAKE_FACE + nowSelCharGraNo * 100 + selCharColor[nowSelCharGraNo] * 25 + nowSelCharEyeNo * 5 + nowSelCharMouthNo;
 #ifdef _MO_IMAGE_EXTENSION
-                                else
-                                    newCharacterFaceGraNo =
-                                        CG_CHR_MAKE_NEWFACE + (nowSelCharGraNo - 12) * 100 + selCharColor[nowSelCharGraNo] * 25 + nowSelCharEyeNo * 5 + nowSelCharMouthNo;
+                    else
+                        newCharacterFaceGraNo =
+                            CG_CHR_MAKE_NEWFACE + (nowSelCharGraNo - 12) * 100 + selCharColor[nowSelCharGraNo] * 25 + nowSelCharEyeNo * 5 + nowSelCharMouthNo;
 #endif
-                                newCharacterVit = nowSelCharStatus[0];
-                                newCharacterStr = nowSelCharStatus[1];
-                                newCharacterTgh = nowSelCharStatus[2];
-                                newCharacterDex = nowSelCharStatus[3];
-                                newCharacterEarth = nowSelCharAttr[0];
-                                newCharacterWater = nowSelCharAttr[1];
-                                newCharacterFire = nowSelCharAttr[2];
-                                newCharacterWind = nowSelCharAttr[3];
+                    newCharacterVit = nowSelCharStatus[0];
+                    newCharacterStr = nowSelCharStatus[1];
+                    newCharacterTgh = nowSelCharStatus[2];
+                    newCharacterDex = nowSelCharStatus[3];
+                    newCharacterEarth = nowSelCharAttr[0];
+                    newCharacterWater = nowSelCharAttr[1];
+                    newCharacterFire = nowSelCharAttr[2];
+                    newCharacterWind = nowSelCharAttr[3];
 #ifdef _DELBORNPLACE // Syu ADD 6.0 统一出生于新手村
                      // 用原来的出生点变数纪录出生宠
-                                newCharacterHomeTown = BornPetNum;
+                    newCharacterHomeTown = BornPetNum;
 #endif
-                                loginDp = 0;
-                                play_se(217, 320, 240); // ?????
-                            }
-                    }
+                    loginDp = 0;
+                    play_se(217, 320, 240); 
+                }
+            }
         }
-        else
-            // ??
-            if (id == 1)
+        else if (id == 1)
+        {
+            ret = 2;
+            play_se(217, 320, 240); // ?????
+        }
+        else if (2 <= id && id <= 9)
+        {
+            id2 = id - 2;
+            if ((id2 % 2) == 0)
             {
-                ret = 2;
-                play_se(217, 320, 240); // ?????
+                if (nowSelCharStatus[id2 / 2] > 0)
+                {
+                    nowSelCharStatus[id2 / 2]--;
+                    nowSelCharStatusPoint++;
+                    play_se(217, 320, 240); // ?????
+                }
             }
             else
-                // ????????????
-                if (2 <= id && id <= 9)
+            {
+                if (nowSelCharStatusPoint > 0)
                 {
-                    id2 = id - 2;
-                    // ?????????
-                    if ((id2 % 2) == 0)
+                    nowSelCharStatus[id2 / 2]++;
+                    nowSelCharStatusPoint--;
+                    play_se(217, 320, 240);
+                }
+            }
+        }
+        else if (10 <= id && id <= 17)
+        {
+            id2 = id - 10; // id2 -> [0, 7]
+            if ((id2 % 2) == 0)
+            {
+                if (nowSelCharAttr[id2 / 2] > 0)
+                {
+                    nowSelCharAttr[id2 / 2]--;
+                    nowSelCharAttrPoint++;
+                }
+            }
+            else
+            {
+                int no, no2;
+                no = id2 / 2;
+                if (no < 2)
+                    no2 = no + 2;
+                else
+                    no2 = no - 2;
+                if (nowSelCharAttr[no2] == 0)
+                {
+                    if (nowSelCharAttrPoint > 0)
                     {
-                        if (nowSelCharStatus[id2 / 2] > 0)
-                        {
-                            nowSelCharStatus[id2 / 2]--;
-                            nowSelCharStatusPoint++;
-                            play_se(217, 320, 240); // ?????
-                        }
+                        nowSelCharAttr[no]++;
+                        nowSelCharAttrPoint--;
                     }
                     else
-                    // ?????????
                     {
-                        if (nowSelCharStatusPoint > 0)
+                        for (i = 0; i < 4 && i != no && nowSelCharAttr[i] > 0; ++i) {}
+                        if (i < 4)
                         {
-
-#ifdef __TEST_SERVER
-                            if (nowSelCharStatusPoint > 100)
-                                cnt = 10;
-                            else
-                                cnt = 1;
-                            nowSelCharStatus[id2 / 2] += cnt;
-                            nowSelCharStatusPoint -= cnt;
-                            play_se(217, 320, 240);
-#else
-                            nowSelCharStatus[id2 / 2]++;
-                            nowSelCharStatusPoint--;
-                            play_se(217, 320, 240);
-#endif
+                            nowSelCharAttr[no]++;
+                            nowSelCharAttr[i]--;
                         }
                     }
                 }
-                else
-                    // ???
-                    if (10 <= id && id <= 17)
-                    {
-                        id2 = id - 10;
-                        // ?????????
-                        if ((id2 % 2) == 0)
-                        {
-                            if (nowSelCharAttr[id2 / 2] > 0)
-                            {
-                                nowSelCharAttr[id2 / 2]--;
-                                nowSelCharAttrPoint++;
-                                play_se(217, 320, 240); // ?????
-                            }
-                        }
-                        else
-                        // ?????????
-                        {
-                            int no, no2;
-
-                            no = id2 / 2;
-                            if (no < 2)
-                            {
-                                no2 = no + 2;
-                            }
-                            else
-                            {
-                                no2 = no - 2;
-                            }
-
-                            if (nowSelCharAttr[no2] == 0)
-                            {
-                                if (nowSelCharAttrPoint > 0)
-                                {
-                                    nowSelCharAttr[no]++;
-                                    nowSelCharAttrPoint--;
-                                    play_se(217, 320, 240); // ?????
-                                }
-                                else
-                                {
-                                    for (i = 0; i < 4; i++)
-                                    {
-                                        if (i != no && nowSelCharAttr[i] > 0)
-                                        {
-                                            break;
-                                        }
-                                    }
-                                    if (i < 4)
-                                    {
-                                        nowSelCharAttr[no]++;
-                                        nowSelCharAttr[i]--;
-                                        play_se(217, 320, 240); // ?????
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    else if (id == 18 || id == 19)
-                    {
-                        // ?????????
-                        if (id == 18)
-                        {
-                            if (nowSelCharEyeNo > 0)
-                            {
-                                nowSelCharEyeNo--;
-                            }
-                            else
-                            {
-                                nowSelCharEyeNo = 4;
-                            }
-                        }
-                        else
-                        // ?????????
-                        {
-                            if (nowSelCharEyeNo < 4)
-                            {
-                                nowSelCharEyeNo++;
-                            }
-                            else
-                            {
-                                nowSelCharEyeNo = 0;
-                            }
-                        }
-                        play_se(217, 320, 240); // ?????
-                    }
-                    else if (id == 20 || id == 21)
-                    {
-                        // ?????????
-                        if (id == 20)
-                        {
-                            if (nowSelCharMouthNo > 0)
-                            {
-                                nowSelCharMouthNo--;
-                            }
-                            else
-                            {
-                                nowSelCharMouthNo = 4;
-                            }
-                        }
-                        else
-                        // ?????????
-                        {
-                            if (nowSelCharMouthNo < 4)
-                            {
-                                nowSelCharMouthNo++;
-                            }
-                            else
-                            {
-                                nowSelCharMouthNo = 0;
-                            }
-                        }
-                        play_se(217, 320, 240); // ?????
-                    }
+            }
+            play_se(217, 320, 240);
+        }
+        else if (id == 18)
+        {
+            if (nowSelCharEyeNo > 0)
+                nowSelCharEyeNo--;
+            else
+                nowSelCharEyeNo = 4;
+            play_se(217, 320, 240);
+        }
+        else if (id == 19)
+        {
+            if (nowSelCharEyeNo < 4)
+                nowSelCharEyeNo++;
+            else
+                nowSelCharEyeNo = 0;
+            play_se(217, 320, 240);
+        }
+        else if (id == 20)
+        {
+            if (nowSelCharMouthNo > 0)
+                nowSelCharMouthNo--;
+            else
+                nowSelCharMouthNo = 4;
+            play_se(217, 320, 240);
+        }
+        else if (id == 21)
+        {
+            if (nowSelCharMouthNo < 4)
+                nowSelCharMouthNo++;
+            else
+                nowSelCharMouthNo = 0;
+            play_se(217, 320, 240);
+        }
 #ifdef _DELBORNPLACE // Syu ADD 6.0 统一出生于新手村
-                    else if (id == 22 || id == 23)
-                    {
-                        if (pActPet20 != NULL)
-                        {
-                            DeathAction(pActPet20);
-                            pActPet20 = NULL;
-                        }
-                        if (id == 22)
-                        {
-                            if (BornPetNum > 0)
-                                BornPetNum--;
-                            else
-                                BornPetNum = 3;
-                        }
-                        else
-                        {
-                            if (BornPetNum < 3)
-                                BornPetNum++;
-                            else
-                                BornPetNum = 0;
-                        }
-                        play_se(217, 320, 240);
-                    }
+        else if (id == 22 || id == 23)
+        {
+            if (pActPet20 != NULL)
+            {
+                DeathAction(pActPet20);
+                pActPet20 = NULL;
+            }
+            if (id == 22)
+            {
+                if (BornPetNum > 0)
+                    BornPetNum--;
+                else
+                    BornPetNum = 3;
+            }
+            else
+            {
+                if (BornPetNum < 3)
+                    BornPetNum++;
+                else
+                    BornPetNum = 0;
+            }
+        }
 #endif
     }
     if (editCharParamProcNo == 100)
@@ -2678,159 +2527,106 @@ int editCharParam(void)
     if (editCharParamProcNo == 101)
     {
         if (commonMsgWin("没有输入名字！"))
-        {
-            // ＯＫ????????
             editCharParamProcNo = 1;
-        }
     }
-    // ????
     if (editCharParamProcNo == 102)
     {
         initCommonMsgWin();
         editCharParamProcNo++;
-        play_se(220, 320, 240); // ???
+        play_se(220, 320, 240);
     }
     if (editCharParamProcNo == 103)
     {
         if (commonMsgWin("已经有同名的人物存在了！"))
-        {
-            // ＯＫ????????
             editCharParamProcNo = 1;
-        }
     }
-    // ????????????????
     if (editCharParamProcNo == 104)
     {
         initCommonMsgWin();
         editCharParamProcNo++;
-        play_se(220, 320, 240); // ???
+        play_se(220, 320, 240);
     }
     if (editCharParamProcNo == 105)
     {
         if (commonMsgWin("请将状态的点数分配完毕！"))
-        {
-            // ＯＫ????????
             editCharParamProcNo = 1;
-        }
     }
-    // ???????????
     if (editCharParamProcNo == 106)
     {
         initCommonMsgWin();
         editCharParamProcNo++;
-        play_se(220, 320, 240); // ???
+        play_se(220, 320, 240);
     }
     if (editCharParamProcNo == 107)
     {
         if (commonMsgWin("请将属性的点数分配完毕！"))
-        {
-            // ＯＫ????????
             editCharParamProcNo = 1;
-        }
     }
-    // ????
     if (editCharParamProcNo == 108)
     {
         initCommonMsgWin();
         editCharParamProcNo++;
-        play_se(220, 320, 240); // ???
+        play_se(220, 320, 240);
     }
     if (editCharParamProcNo == 109)
     {
         if (commonMsgWin("名字里面不可以有空白！"))
-        {
-            // ＯＫ????????
             editCharParamProcNo = 1;
-        }
     }
     if (editCharParamProcNo == 110)
     {
         initCommonMsgWin();
         editCharParamProcNo++;
-        play_se(220, 320, 240); // ???
+        play_se(220, 320, 240);
     }
     if (editCharParamProcNo == 111)
     {
         if (commonMsgWin("你输入的名字有不允许字符"))
-        {
-            // ＯＫ????????
             editCharParamProcNo = 1;
-        }
     }
 
-    // 
     if (editCharParamProcNo == 1)
     {
         id = focusGraId(graId, sizeof(graId) / sizeof(int));
         if (id == 0)
-        {
             ShowBottomLineString(FONT_PAL_WHITE, "决定人物的设定。");
-        }
         else if (id == 1)
-        {
             ShowBottomLineString(FONT_PAL_WHITE, "回到前一个画面。");
-        }
         else if (2 <= id && id <= 9)
         {
-            id -= 2;
-            id /= 2;
+            id = (id - 10) >> 1;
             if (id == 0)
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "这项主要与耐久力有关。");
-            }
             else if (id == 1)
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "这项主要与攻击力有关。");
-            }
             else if (id == 2)
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "这项主要与防御力有关。");
-            }
             else if (id == 3)
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "这项主要与战斗时的行动顺序有关。");
-            }
         }
         else if (10 <= id && id <= 17)
         {
-            id -= 10;
-            id /= 2;
+            id = (id - 10) >> 1;
             if (id == 0)
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "地属性。与水属性的对手战斗时较为有利。");
-            }
             else if (id == 1)
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "水属性。与火属性的对手战斗时较为有利。");
-            }
             else if (id == 2)
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "火属性。与风属性的对手战斗时较为有利。");
-            }
             else if (id == 3)
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "风属性。与地属性的对手战斗时较为有利。");
-            }
         }
         else if (id == 18 || id == 19)
         {
             if (nowSelCharGraNo != 0 && nowSelCharGraNo != 6)
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "改变眼睛的形状。");
-            }
             else
-            {
                 ShowBottomLineString(FONT_PAL_WHITE, "改变鼻子的形状。");
-            }
         }
         else if (id == 20 || id == 21)
-        {
             ShowBottomLineString(FONT_PAL_WHITE, "改变嘴巴的形状。");
-        }
         else
-        {
             ShowBottomLineString(FONT_PAL_WHITE, "设定姓名、长相、基本状态与属性。");
-        }
     }
 
     StockFontBuffer2(&selCharName);
@@ -2932,7 +2728,6 @@ int editCharParam(void)
         graId[i * 2 + 18] =
             StockDispBuffer(156, 172 + i * 24,
                             DISP_PRIO_CHAR, upDownBtnGraNo[0][btn1], selUseFlag);
-        // > ???
         graId[i * 2 + 19] =
             StockDispBuffer(260, 172 + i * 24,
                             DISP_PRIO_CHAR, upDownBtnGraNo[1][btn2], selUseFlag);
@@ -3536,27 +3331,13 @@ void characterLogoutProc(void)
         extern void ReleaseSpecAnim();
         ReleaseSpecAnim();
 #endif
-        // PC????
         resetPc();
-
-        // ?????????????
         initCharObj();
-
-        // ??????
         DeathAllAction();
-
-        // ???????
-        //        fade_out_bgm();
-
         if (!offlineFlag)
-        {
             SubProcNo++;
-        }
         else
-        {
-            // ??????Ｓ? WM_CLOSE ??????????
             PostMessage(hWnd, WM_CLOSE, 0, 0L);
-        }
     }
 
     if (SubProcNo == 1)
@@ -3574,27 +3355,19 @@ void characterLogoutProc(void)
             ChangeProc(PROC_ID_PASSWORD);
             SubProcNo = 0;
         }
-        else
-            // ??????
-            if (ret == -1)
-            {
-                // ?????????
-                cleanupNetwork();
-                SubProcNo = 100;
-                strcpy(msg, NET_ERRMSG_LOGOUTTIMEOUT);
-            }
-            else
-                // ???
-                if (ret == -2)
-                {
-                    // ?????????
-                    cleanupNetwork();
-                    SubProcNo = 100;
-                    strcpy(msg, "签出处理失败。");
-                }
+        else if (ret == -1)
+        {
+            cleanupNetwork();
+            SubProcNo = 100;
+            strcpy(msg, NET_ERRMSG_LOGOUTTIMEOUT);
+        }
+        else if (ret == -2)
+        {
+            cleanupNetwork();
+            SubProcNo = 100;
+            strcpy(msg, "签出处理失败。");
+        }
     }
-
-    // ???
     if (SubProcNo == 100)
     {
         initCommonMsgWin();
@@ -3604,8 +3377,6 @@ void characterLogoutProc(void)
     {
         if (commonMsgWin(msg))
         {
-            // ＯＫ????????
-            // cary
             ChangeProc(PROC_ID_PASSWORD); // ?????
             SubProcNo = 0;
         }
@@ -3617,7 +3388,6 @@ void characterLogoutProc(void)
 
 static int charLogoutProcNo;
 
-// ??????????
 void initCharLogout(void)
 {
     charLogoutProcNo = 0;
@@ -3688,12 +3458,6 @@ int charLogout(void)
     return ret;
 }
 
-///////////////////////////////////////////////////////////////////////////
-// ??????????????
-//
-//   ?????:    ?40? ? 8?
-//
-// ????????????openServerWindowProc?????
 int windowTypeWN = -1; // ????????  -1??
 int buttonTypeWN = 0;  // ??????(???)
 int indexWN;           // ??????
@@ -3714,10 +3478,10 @@ short wnCloseFlag = 0; // ????????????
 #define MAX_SHOP_ITEM 8    // ??????????????????
 #define MAX_SHOP_PAGE 8    // ?????????????????
 short shopWindowMode;      // ??????????????0...????,1...?????
-char shopWindow1Title[27]; // ??????????????
-char shopWindow1Msg[27];   // ???????????????
+char shopWindow1Title[48]; // 物品商店标题: 例如【巫女】
+char shopWindow1Msg[48];   // 物品商店欢迎语: 例如【我有卖很神奇的东西喔！】
 #ifdef _NEW_SHOP_FRAME
-char shopWindowCurrency[27];
+char shopWindowCurrency[48];
 #endif
 typedef struct
 {
@@ -3743,9 +3507,9 @@ short selShopItemNo;                               // ??????
 char shopWindow3Msg[41];
 short sealItemCnt;
 
-char shopWindow4Msg[2][39]; // ???????????????
-char shopWindow5Msg[2][39]; // ???????????????
-char shopWindow6Msg[2][39]; // ???????????????
+char shopWindow4Msg[2][39]; //
+char shopWindow5Msg[2][39]; //
+char shopWindow6Msg[2][39]; //
 
 short nowUserItemCnt;
 
@@ -4635,7 +4399,6 @@ void openServerWindowProc(void)
 #endif
 #ifdef _MAGIC_ITEM_
     case 1004:
-
         //    MagicItemActAddr = CreateMagicItemWin();
         if (MagicItemActAddr == NULL)
         {
@@ -4768,8 +4531,6 @@ void getStrSplit(char *dist, char *src, int distSize, int line, int strLen)
     }
 }
 
-// ????????
-//  ????????????????
 void initServerWindowType0(char *data)
 {
     msgWN_W = 7;
@@ -4797,8 +4558,6 @@ void initServerWindowType0(char *data)
 #endif
 }
 
-// ????????????
-//  ????????????????
 void initServerWindowType1(char *data)
 {
     makeStringFromEscaped(data);
@@ -4831,11 +4590,8 @@ void initServerWindowType1(char *data)
 #endif
 }
 
-// ???????
-
 short shopWindowProcNo;
 
-// ?????????????
 void initServerWindowType2(char *data)
 {
     char msg[256];
@@ -7896,11 +7652,8 @@ int shopWindow7(void)
     return ret;
 }
 
-// ??????????
-//   ???????????????
 short shopWindow8ProcNo;
 
-// ???
 void initShopWindow8(void)
 {
     shopWindow8ProcNo = 0;
@@ -7920,8 +7673,6 @@ int shopWindow8(void)
         {
             btnId[i] = -2;
         }
-
-        // ??????
         w = 6;
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
@@ -7938,12 +7689,7 @@ int shopWindow8(void)
     {
         id = -1;
         if (ptActMenuWin->hp >= 1)
-        {
-            // ????
             id = selGraId(btnId, sizeof(btnId) / sizeof(int));
-        }
-
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -7953,26 +7699,19 @@ int shopWindow8(void)
         if (id >= 0)
         {
             if (id == 0)
-            {
                 ret = 1;
-            }
             else if (id == 100)
-            {
                 ret = 100;
-            }
 
             DeathAction(ptActMenuWin);
             ptActMenuWin = NULL;
             if (ret == 100)
-            {
                 windowTypeWN = -1;
-            }
             return ret;
         }
 
         if (ptActMenuWin->hp >= 1)
         {
-            // ?????????
             for (i = 0; i < sizeof(shopWindow8Msg) / sizeof(shopWindow8Msg[0]); i++)
             {
                 if (shopWindow8Msg[0] != '\0')
@@ -7981,7 +7720,6 @@ int shopWindow8(void)
                                     shopWindow8Msg[i], 0);
                 }
             }
-
             btnId[0] = StockDispBuffer(x + 192, y + 72, DISP_PRIO_IME3, CG_YES_BTN, 2);
         }
     }
@@ -8014,13 +7752,6 @@ int shopWindow10(void)
         {
             btnId[i] = -2;
         }
-        /*
-        w = 5;///440;
-        h = 2;//160;
-        x = (lpDraw->xSize-w*70)/2;//(lpDraw->xSize-w)/2;
-        y = (lpDraw->ySize-h*40)/2;//(lpDraw->ySize-h)/2;
-        ptActMenuWin = MakeWindowDisp( x, y, w, h, NULL, 1 );
-        */
         w = 440;
         h = 160;
         x = (lpDraw->xSize - w) / 2;
@@ -8046,9 +7777,7 @@ int shopWindow10(void)
         {
             pushId = 0;
             if (joy_auto[0] & JOY_A)
-            {
                 id = 0;
-            }
         }
         if (pushId == 0)
         {
@@ -8166,8 +7895,6 @@ int skillShopWindow4(void);
 void serverWindowType6(void)
 {
     int ret;
-
-    // ????
     if (skillShopWindowProcNo == 0)
     {
         initSkillShopWindow1();
@@ -8178,9 +7905,7 @@ void serverWindowType6(void)
     {
         ret = skillShopWindow1();
         if (ret == 2)
-        {
             skillShopWindowProcNo = 10;
-        }
     }
     if (skillShopWindowProcNo == 10)
     {
@@ -8192,13 +7917,9 @@ void serverWindowType6(void)
     {
         ret = skillShopWindow2();
         if (ret == 1)
-        {
             skillShopWindowProcNo = 0;
-        }
         else if (ret == 2)
-        {
             skillShopWindowProcNo = 20;
-        }
     }
     if (skillShopWindowProcNo == 20)
     {
@@ -8210,13 +7931,9 @@ void serverWindowType6(void)
     {
         ret = skillShopWindow3();
         if (ret == 1)
-        {
             skillShopWindowProcNo = 10;
-        }
         else if (ret == 2)
-        {
             skillShopWindowProcNo = 30;
-        }
     }
     if (skillShopWindowProcNo == 30)
     {
@@ -8229,7 +7946,6 @@ void serverWindowType6(void)
         ret = skillShopWindow4();
         if (ret == 1)
         {
-#if 1
             sprintf_s(data, "%d|%d|%d|%d",
                       selShopSkillNo + 1,
                       selShopSkillPetNo,
@@ -8240,9 +7956,7 @@ void serverWindowType6(void)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             else
                 old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-#endif
             pc.gold -= sealSkill[selShopSkillNo].price;
-
             windowTypeWN = -1;
         }
         else if (ret == 2)
@@ -8319,13 +8033,9 @@ void initServerWindowProfession(char *data)
         sealSkill[i].icon = getIntegerToken(data, '|', 7 + i * 4);
     }
     if (j > 0)
-    {
         shopWondow2MaxPage = (j + 7) / MAX_SKILL_SHOP_SKILL;
-    }
     else
-    {
         shopWondow2MaxPage = 1;
-    }
 }
 
 void profession_windows(void)
@@ -8368,7 +8078,6 @@ void profession_windows(void)
 
             // Robin fix 20040707 修改Client自动扣钱bug
             // pc.gold -= sealSkill[selShopSkillNo].price;
-
             windowTypeWN = -1;
         }
         else if (ret == 2)
@@ -8555,8 +8264,6 @@ int profession_windows_1(void)
 
             sprintf_s(tmsg, "金钱 %8dＳ", pc.gold);
             StockFontBuffer(x + 244, y + 84, FONT_PRIO_FRONT, FONT_PAL_WHITE, tmsg, 0);
-
-            // 页??
             btnId[0] = StockDispBuffer(x + 32, y + 100, DISP_PRIO_IME3, prevBtnGraNo[prevBtn], 2);
             btnId[1] = StockDispBuffer(x + 200, y + 100, DISP_PRIO_IME3, nextBtnGraNo[nextBtn], 2);
             sprintf_s(tmsg, "%2d/%2d 页", shopWondow2Page + 1, shopWondow2MaxPage);
@@ -8587,20 +8294,16 @@ int profession_windows_1(void)
             {
                 // 秀ICON
                 StockDispBuffer(x + 58, y + 340, DISP_PRIO_IME3, sealSkill[focusId].icon, 0);
-
                 for (i = 0; i < sizeof(sealSkill[0].info) / sizeof(sealSkill[0].info[0]); i++)
                 {
                     StockFontBuffer(x + 120, y + 308 + i * 20, FONT_PRIO_FRONT, FONT_PAL_WHITE,
                                     sealSkill[focusId].info[i], 0);
                 }
             }
-
             btnId[2] = StockDispBuffer(x + 216, y + 402, DISP_PRIO_IME3, CG_EXIT_BTN, 2);
-
             StockDispBuffer(x + w / 2, y + h / 2, DISP_PRIO_MENU, CG_SKILLSHOP_WIN, 1);
         }
     }
-
     return ret;
 }
 
@@ -9520,10 +9223,6 @@ void initSkillShopWindow2(void)
     skillShopWindow2ProcNo = 0;
 }
 
-// ???
-//   ??：0 ... ???
-//           1 ... ??
-//           2 ... ?
 int skillShopWindow2(void)
 {
     static int x, y, w, h;
@@ -9655,9 +9354,8 @@ int skillShopWindow2(void)
     return ret;
 }
 
-// ???????  ?????????
 short skillShopWindow3ProcNo;
-// ???
+
 void initSkillShopWindow3(void)
 {
     skillShopWindow3ProcNo = 0;
@@ -9680,8 +9378,6 @@ int skillShopWindow3(void)
         {
             btnId[i] = -2;
         }
-
-        // ??????
         w = 5;
         h = 6;
         x = (lpDraw->xSize - w * 64) / 2;
@@ -9699,9 +9395,7 @@ int skillShopWindow3(void)
         id = -1;
         if (ptActMenuWin->hp >= 1)
         {
-            // ????
             id = selGraId(btnId, sizeof(btnId) / sizeof(int));
-
             for (i = 0; i < MAX_SKILL && i < pet[selShopSkillPetNo - 1].maxSkill; i++)
             {
                 x1 = x + 41;
@@ -9805,17 +9499,11 @@ int skillShopWindow4(void)
 
         char name[32];
         if (strlen(pet[selShopSkillPetNo - 1].freeName) > 0)
-        {
             strcpy(name, pet[selShopSkillPetNo - 1].freeName);
-        }
         else
-        {
             strcpy(name, pet[selShopSkillPetNo - 1].name);
-        }
-
         sprintf_s(msg1, "让[%s]将[%s]", name,
                   sealSkill[selShopSkillNo].name);
-
         skillShopWindow4ProcNo++;
     }
 
@@ -9823,12 +9511,8 @@ int skillShopWindow4(void)
     {
         id = -1;
         if (ptActMenuWin->hp >= 1)
-        {
-            // ????
             id = selGraId(btnId, sizeof(btnId) / sizeof(int));
-        }
 
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -10094,21 +9778,15 @@ void serverWindowType7(void)
     }
 }
 
-// ?????????????????????
 
+// POOL SHOP 是啥？
 short poolShopWindow1ProcNo;
 
-// ???
 void initPoolShopWindow1(void)
 {
     poolShopWindow1ProcNo = 0;
 }
 
-// ???
-//   ??：0 ... ???
-//           1 ... ???
-//           2 ... ???
-//           3 ... ?
 int poolShopWindow1(void)
 {
     static int x, y, w, h;
@@ -10199,7 +9877,7 @@ int poolShopWindow1(void)
     return ret;
 }
 short poolShopWindow2ProcNo;
-// ???
+
 void initPoolShopWindow2(void)
 {
     poolShopWindow2ProcNo = 0;
@@ -10251,8 +9929,6 @@ int poolShopWindow2(void)
 
         if (ptActMenuWin->hp >= 1)
         {
-            // ????
-            // id = selGraId( btnId, sizeof( btnId )/sizeof( int ) );
             id = selRepGraId(btnId, sizeof(btnId) / sizeof(int));
             pushId = pushGraId(btnId, sizeof(btnId) / sizeof(int));
 
@@ -10307,17 +9983,13 @@ int poolShopWindow2(void)
             }
         }
         else
-        {
             prevBtn = 0;
-        }
-        // ???????
+
         if (joy_con[0] & JOY_B)
         {
             pushId = 1;
             if (joy_auto[0] & JOY_B)
-            {
                 id = 1;
-            }
         }
         if (pushId == 1)
         {
@@ -10332,11 +10004,8 @@ int poolShopWindow2(void)
             }
         }
         else
-        {
             nextBtn = 0;
-        }
 
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -15358,47 +15027,28 @@ void familyTaxWN()
 #if 1
         switch (selBtnId)
         {
-
-            // Add Gold
         case 2:
             if (mouse.onceState & MOUSE_LEFT_CRICK_UP && pushBtnFlag[2] == TRUE)
-            {
-
                 pushBtnFlag[2] = FALSE;
-            }
-
             if ((haveGold < CHAR_getMaxHaveGold()) && (familyTaxChange > 0))
             {
-
                 if (pushBtnFlag[2] == TRUE)
                 {
-
                     haveGold += taxGoldInc;
                     // bankGold -= bankGoldInc;
                     taxGoldCnt++;
-
-                    // ????
                     if (taxGoldCnt >= 30)
                     {
-                        // ?????????????
                         taxGoldCnt = 0;
-                        // ????????
                         if (taxGoldInc == 0)
-                        {
                             taxGoldInc = 1;
-                        }
                         else
                         {
-                            // ?????
                             taxGoldInc *= 5;
-                            // ????????
                             if (taxGoldInc > 10000)
-                            {
                                 taxGoldInc = 10000;
-                            }
                         }
                     }
-                    // ????????
                     if (haveGold >= CHAR_getMaxHaveGold())
                     {
                         haveGold = CHAR_getMaxHaveGold();
@@ -15440,17 +15090,11 @@ void familyTaxWN()
 
         case 3:
             if (mouse.onceState & MOUSE_LEFT_CRICK_UP && pushBtnFlag[3] == TRUE)
-            {
-
                 pushBtnFlag[3] = FALSE;
-            }
-
             if (haveGold > 0 && (familyTax + (pc.gold - haveGold)) < MAX_FMBANKGOLD)
             {
-
                 if (pushBtnFlag[3] == TRUE)
                 {
-
                     haveGold -= taxGoldDec;
                     // bankGold -= bankGoldInc;
                     taxGoldCnt++;
@@ -15485,32 +15129,22 @@ void familyTaxWN()
                     if ((familyTax + (pc.gold - haveGold)) > MAX_FMBANKGOLD)
                     {
                         haveGold = familyTax + pc.gold - MAX_FMBANKGOLD;
-
                         play_se(220, 320, 240);
                     }
                 }
-
-                // ????????
                 if (mouse.onceState & MOUSE_LEFT_CRICK)
                 {
-                    // ???
                     haveGold--;
-                    // ????????
                     if (haveGold < 0)
                     {
                         haveGold = 0;
-                        // ???
                         play_se(220, 320, 240);
                     }
                     else
                     {
-                        // ?????
                         taxGoldDec = 0;
-                        // ?????????????
                         taxGoldCnt = 0;
-                        // ???????
                         pushBtnFlag[3] = TRUE;
-                        // ?????
                         play_se(217, 320, 240);
                     }
                 }
@@ -15555,9 +15189,6 @@ void familyTaxWN()
                                        CG_UP_BTN + pushBtnFlag[3], 2);
 
 #ifdef _FMVER21
-            /*if( pc.familyleader == FMMEMBER_LEADER ||
-            pc.familyleader == FMMEMBER_VICELEADER ||
-            pc.familyleader == FMMEMBER_BAILEE) {*/
             if (pc.familyleader == FMMEMBER_LEADER ||
                 pc.familyleader == FMMEMBER_ELDER)
             {
@@ -15565,10 +15196,8 @@ void familyTaxWN()
             if (pc.familyleader == 1)
             {
 #endif
-
                 btnId[2] = StockDispBuffer(winX + 190, winY + 105, DISP_PRIO_IME3,
                                            CG_DOWN_BTN + pushBtnFlag[2], 2);
-
                 btnId[0] = StockDispBuffer(winX + 100, winY + 160, DISP_PRIO_IME3,
                                            CG_TRADE_OK_BTN, 2);
                 btnId[1] = StockDispBuffer(winX + 100 + 120, winY + 160, DISP_PRIO_IME3,
@@ -15580,10 +15209,6 @@ void familyTaxWN()
                                            CG_TRADE_OK_BTN, 2);
                 btnId[1] = StockDispBuffer(winX + 100 + 120, winY + 160, DISP_PRIO_IME3,
                                            CG_TRADE_CANCEL_BTN, 2);
-                // btnId[1] = StockDispBuffer( winX+160, winY+160, DISP_PRIO_IME3,
-                //                     CG_TRADE_OK_BTN, 2 );
-                // StockFontBuffer( winX+60, winY+120,
-                //         FONT_PRIO_FRONT, FONT_PAL_WHITE, "只有族长可以取款。", 0 );
             }
         }
     }
@@ -15601,23 +15226,6 @@ void initShowRidePetWN(void)
     rideablePet[0] = 0;
     rideablePet[1] = 0;
     rideablePet[2] = 0;
-
-    /*
-    if( pc.ridePetNo != -1 )
-    {
-    for( j=0 ; j< sizeof(ridePetTable)/sizeof(tagRidePetTable) ; j++ )
-    {
-    if( ridePetTable[j].rideNo == pc.graNo )
-    {
-    baseimageNo = ridePetTable[j].charNo;
-    break;
-    }
-    }
-
-    }else
-    baseimageNo = pc.graNo - (pc.graNo % 5);
-    */
-
     for (j = 0; j < sizeof(ridePetTable) / sizeof(tagRidePetTable); j++)
     {
 #ifdef _LEADERRIDE

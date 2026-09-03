@@ -805,12 +805,6 @@ void GameEnd(void)
 #ifdef _CHANNEL_MODIFY
     SaveChatData(NULL, 0, true);
 #endif
-#ifdef _REMAKE_20
-#ifndef _STONDEBUG_
-    UnregisterHotKey(hWnd, 0);
-    UnregisterHotKey(hWnd, 1);
-#endif
-#endif
     util_Release();
 }
 #ifdef _CMD_MODE

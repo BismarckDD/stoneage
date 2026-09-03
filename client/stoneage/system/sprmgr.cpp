@@ -10,9 +10,6 @@ LPDIRECTDRAWSURFACE lpBattleSurface;
 LPDIRECTDRAWSURFACE lpBattleSurfaceSys;
 #endif
 extern int MessageBoxNew(HWND hWnd,LPCSTR lpText,LPCSTR lpCaption,UINT uType);
-#ifdef _STONDEBUG_
-int SurfaceDispCnt;
-#endif
 
 int SurfaceSizeX;
 int SurfaceSizeY;
@@ -27,11 +24,6 @@ SURFACE_INFO SurfaceInfoSys[SURACE_INFO_MAX];
 extern BOOL g_bUseAlpha;
 #endif
 int SurfaceSearchPoint;
-
-#ifdef _STONDEBUG_        
-int SurfaceUseCnt;
-extern int g_iMallocCount;
-#endif
 
 int SurfaceCnt;
 int VramSurfaceCnt;
@@ -82,9 +74,6 @@ void AllocateBmpToSurface( int bmpNo)
     }
     while( 1 ){
         if( SurfaceInfo[ SurfaceSearchPoint ].date < SurfaceDate - SURACE_BMP_DEATH_DATE ){
-#ifdef _STONDEBUG_        
-            SurfaceUseCnt++;
-#endif
             // 已在使用中
             if( SurfaceInfo[ SurfaceSearchPoint ].bmpNo != -1 ){
                 SURFACE_INFO *lpSurfaceInfo;
@@ -104,9 +93,6 @@ void AllocateBmpToSurface( int bmpNo)
                     lpSurfaceInfo->bmpNo = -1;
 #ifdef _READ16BITBMP
                     if(g_bUseAlpha)    lpSurfaceInfoSys->bmpNo = -1;
-#endif
-#ifdef _STONDEBUG_        
-                    SurfaceUseCnt--;
 #endif
                 }
             }
@@ -284,9 +270,6 @@ BOOL InitOffScreenSurface( void )
     for( i = 0 ; i < SURACE_INFO_MAX ; i++ ){
         if( vramFullFlag == FALSE ){
             if ((SurfaceInfo[i].lpSurface = CreateSurface(SurfaceSizeX, SurfaceSizeY, DEF_COLORKEY, /*DDSCAPS_SYSTEMMEMORY*/ DDSCAPS_VIDEOMEMORY)) == NULL){
-#ifdef _STONDEBUG_
-                MessageBoxNew( hWnd ,"SurfaceInfo:建立VideoRAM Surface失败！" ,"确定",MB_OK | MB_ICONSTOP );
-#endif
                 vramFullFlag = TRUE;
             }else{
                 VramSurfaceCnt++;
@@ -294,24 +277,15 @@ BOOL InitOffScreenSurface( void )
         }
         if( vramFullFlag == TRUE ){
             if( ( SurfaceInfo[ i ].lpSurface = CreateSurface( SurfaceSizeX, SurfaceSizeY, DEF_COLORKEY, DDSCAPS_SYSTEMMEMORY )) == NULL ){
-#ifdef _STONDEBUG_
-                MessageBoxNew( hWnd ,"建立SysRAM Surface失败！" ,"确定",MB_OK | MB_ICONSTOP );
-#endif
                 return FALSE;
             }else SysramSurfaceCnt++;
         }
 #ifdef _READ16BITBMP
         if(g_bUseAlpha){
             if((SurfaceInfo[i].lpAlphaData = (BYTE*)MALLOC(SurfaceSizeX*SurfaceSizeY)) == NULL){
-    #ifdef _STONDEBUG_
-                MessageBoxNew( hWnd ,"alpha记忆体配置失败！","确定",MB_OK | MB_ICONSTOP);
-    #endif
                 return FALSE;
             }
             else{
-#ifdef _STONDEBUG_
-                g_iMallocCount++;
-#endif
                 SysramSurfaceCnt++;
             }
         }
@@ -319,9 +293,6 @@ BOOL InitOffScreenSurface( void )
 #ifdef _READ16BITBMP
         if(g_bUseAlpha){
             if((SurfaceInfoSys[i].lpSurface = CreateSurface(SurfaceSizeX,SurfaceSizeY,DEF_COLORKEY,DDSCAPS_SYSTEMMEMORY )) == NULL){
-    #ifdef _STONDEBUG_
-                MessageBoxNew(hWnd,"建立SysRAM Surface(2)失败！","确定",MB_OK | MB_ICONSTOP);
-    #endif
                 return FALSE;
             }
             else SysramSurfaceCnt++;
@@ -337,9 +308,6 @@ BOOL InitOffScreenSurface( void )
 void InitSurfaceInfo( void )
 {
     int i;
-#ifdef _STONDEBUG_        
-    SurfaceUseCnt = 0;
-#endif
     SurfaceSearchPoint = 0;
     for( i = 0 ; i < SurfaceCnt ; i++ ){
         SurfaceInfo[ i ].bmpNo = -1;

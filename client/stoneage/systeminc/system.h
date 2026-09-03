@@ -41,13 +41,3 @@
 #include "gemini.h"
 #include "pattern.h"
 #include "tools/math2.h"
-
-#ifdef _STONDEBUG_
-// defined in game_main.cpp
-extern unsigned int iTotalUseTime;
-extern unsigned int iTotalProcTime;
-extern unsigned int iTotalRunCount;
-// defined in winnt.h >> windows.h
-extern LARGE_INTEGER tf;
-#endif
-

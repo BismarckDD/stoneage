@@ -43,7 +43,7 @@ static FunctionNameSet functionSet[] = {
     {"Msg", "MsgInit", "", "", "", "", "", "", "", "", "", "", "", "MsgLooked",
      "", "", ""},
 
-    /* 伐□皿札□件 */
+    /* 传送点 */
     {"Warp", "WarpInit", "", "", "", "", "", "", "", "", "", "", "", "", "", "",
      ""},
 
@@ -53,7 +53,7 @@ static FunctionNameSet functionSet[] = {
     {"Oldman", "OldmanInit", "", "", "", "", "", "", "", "OldmanTalked", "", "",
      "", "", "", "", ""},
 
-    /* 本□皮禾奶件玄 */
+    /* 记录点 */
     {"SavePoint", "SavePointInit", "", "", "", "", "", "", "",
      "SavePointTalked", "", "", "", "", "", "", "SavePointWindowTalked"},
 
@@ -85,7 +85,7 @@ static FunctionNameSet functionSet[] = {
     {"ItemCompo", "ItemCompoInit", "", "", "", "", "", "", "",
      "ItemCompoTalked", "", "", "", "", "", "", ""},
 
-    /* 裔烂衬 */
+    /* 敌人 */
     {"NPCEnemy", "NPCEnemyInit", "", "", "", "", "NPCEnemyWatch", "", "",
      "NPCEnemyTalked", "", "", "", "", "", "", "NPCEnemyWindowTalked"},
 
@@ -102,7 +102,7 @@ static FunctionNameSet functionSet[] = {
      "WindowHealerTalked", "", "", "", "WindowHealerLooked", "", "",
      "WindowHealerWindowTalked"},
 
-    /* ItemShop  */
+    /* ItemShop: 物品商店: 巫女, 肉店，道具店，武器店、防具店都是  */
     {"ItemShop", "ItemShopInit", "", "", "", "", "", "", "", "ItemShopTalked",
      "", "", "", "", "", "", "ItemShopWindowTalked"},
     {"Sysinfo", "SysinfoInit", "", "", "", "", "", "SysinfoLoop", "",
@@ -111,11 +111,11 @@ static FunctionNameSet functionSet[] = {
     {"Duelranking", "DuelrankingInit", "", "", "", "", "", "", "", "", "", "",
      "", "DuelrankingLooked", "", "", "DuelrankingWindowTalked"},
 
-    /* PetSkillShop  */
+    /* PetSkillShop: 宠物技能店: 学习宠物技能  */
     {"PetSkillShop", "PetSkillShopInit", "", "", "", "", "", "", "",
      "PetSkillShopTalked", "", "", "", "", "", "", "PetSkillShopWindowTalked"},
 
-    /* PetShop  */
+    /* PetShop: 宠物店: 寄放、领取、卖出宠物  */
     {"PetShop", "PetShopInit", "", "", "", "", "", "", "", "PetShopTalked", "",
      "", "", "", "", "", "PetShopWindowTalked"},
 
@@ -123,7 +123,7 @@ static FunctionNameSet functionSet[] = {
     {"SignBoard", "SignBoardInit", "", "", "", "", "", "", "", "", "", "", "",
      "SignBoardLooked", "", "", "SignBoardWindowTalked"},
 
-    /* WarpMan  */
+    /* WarpMan: 传送者  */
     {"WarpMan", "WarpManInit", "", "", "", "", "WarpManWatch", "WarpManLoop",
      "", "WarpManTalked", "", "", "", "", "", "", "WarpManWindowTalked"},
 
@@ -147,7 +147,7 @@ static FunctionNameSet functionSet[] = {
     {"LuckyMan", "LuckyManInit", "", "", "", "", "", "", "", "LuckyManTalked",
      "", "", "", "", "", "", "LuckyManWindowTalked"},
 
-    /* 穴件乒旦田旦楝 */
+    /* 长毛象公交 */
     {"Bus", "BusInit", "", "", "", "", "", "BusLoop", "", "BusTalked", "", "",
      "", "", "", "", ""},
 
@@ -173,7 +173,7 @@ static FunctionNameSet functionSet[] = {
     {"Janken", "JankenInit", "", "", "", "", "", "", "", "JankenTalked", "", "",
      "", "", "", "", "JankenWindowTalked"},
 
-    /* 鳖戏谛 */
+    /* 转生 */
     {"Transmigration", "TransmigrationInit", "", "", "", "", "", "", "",
      "TransmigrationTalked", "", "", "", "", "", "",
      "TransmigrationWindowTalked"},

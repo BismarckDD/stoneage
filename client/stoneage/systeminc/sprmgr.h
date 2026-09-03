@@ -76,14 +76,6 @@ extern int SurfaceCnt;
 extern int VramSurfaceCnt;
 extern int SysramSurfaceCnt;
 extern int SurfaceSearchPoint;
-#ifdef _READ16BITBMP
-#ifdef _STONDEBUG_
-extern unsigned int iTotalUseTime;
-extern unsigned int iTotalProcTime;
-extern unsigned int iTotalRunCount;
-extern LARGE_INTEGER tf;
-#endif
-#endif
 
 BOOL InitOffScreenSurface(void);
 void InitSurfaceInfo(void);
