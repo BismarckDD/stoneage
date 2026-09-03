@@ -12397,7 +12397,7 @@ void MenuProc(void)
                                 }
                                 petWndFontNo[i + 5] = StockFontBuffer(x + 3, y, FONT_PRIO_FRONT, color, moji, 2); y += 24;
 #ifdef _SHOWPETTRN_
-                                sprintf(moji, "%d转", pet[i].trn);
+                                sprintf_s(moji, "%d转", pet[i].trn);
                                 StockFontBuffer(x + 122, y - 24, FONT_PRIO_FRONT, color, moji, 2);
 #endif
                                 atrFlag = FALSE;
@@ -14829,7 +14829,7 @@ void MenuProc(void)
                             CenteringStr(pet[petStatusNo].name, moji, PET_NAME_LEN);
                         StockFontBuffer(x - 7, y, FONT_PRIO_FRONT, 0, moji, 0); y += 24;
 #ifdef _SHOWPETTRN_
-                        sprintf(moji, "[%d转]", pet[petStatusNo].trn);
+                        sprintf_s(moji, "[%d转]", pet[petStatusNo].trn);
                         StockFontBuffer(x + 108, y - 24, FONT_PRIO_FRONT, 5, moji, 0);
 #endif
                         petWndFontNo[3] = StockDispBuffer(x + 66, y + 7, DISP_PRIO_IME3, CG_NAME_CHANGE_BTN + petWndBtnFlag[3], 2);

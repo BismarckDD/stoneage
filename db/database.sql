@@ -390,3 +390,7 @@ CREATE TABLE IF NOT EXISTS `yuxiaxielog` (
   `sumfame` int(11) NOT NULL,
   `fixtime` datetime NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
+-- INSERT INTO CSAlogin (username, password) values ('aaa', 'aaa');
+-- INSERT INTO CSAlogin (username, password) values ('aaaa', 'aaaa');

@@ -10,19 +10,19 @@
 typedef struct ITEMSMALL
 {
     int id;                  //id
-    int itemId;              //ÎïÆ·/³èÎïID
-    char itemName[128];      //ÎïÆ·/³èÎïÃû×Ö
-    int itemFlag;            //ÊÇÎïÆ·»¹ÊÇ³èÎï£¬ÎïÆ·Îª£º1£»³èÎïÎª£º2¡£
-    int bmpNo;               //³èÎï/ÎïÆ·Íâ¹ÛÍ¼Æ¬
-    int currencyType;        //¹ºÂòĞ©ÎïÆ·ËùĞèµÄ»õ±ÒÖÖÀà
-    int currencyNum;        //¹ºÂò´ËÎïÆ·ËùĞèµÄ½ğ±ÒÊıÁ¿£¬²»ÄÜÓÃ´Ë»õ±Ò¹ºÂò£¬Ôò´Ë×Ö¶ÎÎª£º-1
-    int recordType;          //ÎïÆ·ÖÖÀà£º1±íÊ¾×îĞÂÉÏ¼Û£»4±íÊ¾ÆäËü»õÆ·£»
+    int itemId;              //ç‰©å“/å® ç‰©ID
+    char itemName[128];      //ç‰©å“/å® ç‰©åå­—
+    int itemFlag;            //æ˜¯ç‰©å“è¿˜æ˜¯å® ç‰©ï¼Œç‰©å“ä¸ºï¼š1ï¼›å® ç‰©ä¸ºï¼š2ã€‚
+    int bmpNo;               //å® ç‰©/ç‰©å“å¤–è§‚å›¾ç‰‡
+    int currencyType;        //è´­ä¹°äº›ç‰©å“æ‰€éœ€çš„è´§å¸ç§ç±»
+    int currencyNum;        //è´­ä¹°æ­¤ç‰©å“æ‰€éœ€çš„é‡‘å¸æ•°é‡ï¼Œä¸èƒ½ç”¨æ­¤è´§å¸è´­ä¹°ï¼Œåˆ™æ­¤å­—æ®µä¸ºï¼š-1
+    int recordType;          //ç‰©å“ç§ç±»ï¼š1è¡¨ç¤ºæœ€æ–°ä¸Šä»·ï¼›4è¡¨ç¤ºå…¶å®ƒè´§å“ï¼›
     char szLine1[128];
     char szLine2[128];
     char szLine3[128];
 }*LP_ITEMSMALL;
 
-//ÄÚÖÃÉÌ³ÇÏà¹Ø²Ù×÷ÏÔÊ¾Àà
+//å†…ç½®å•†åŸç›¸å…³æ“ä½œæ˜¾ç¤ºç±»
 class ItemsMall
 {
 public:
@@ -36,17 +36,17 @@ public:
     int GetAllItemSize() { return g_mapItemsMall.size(); }
 
     ITEMSMALL* GetItemByIndex(int nIndex);
-    ITEMSMALL* GetItemByType(int nIndex, int nType, int recordType = 1);   //recodTypeÄ¬ÈÏÖµÎª1±íÊ¾×îĞÂÉÏ¼ÛÎïÆ·£¬4ÎªÆäËüÎïÆ·
+    ITEMSMALL* GetItemByType(int nIndex, int nType, int recordType = 1);   //recodTypeé»˜è®¤å€¼ä¸º1è¡¨ç¤ºæœ€æ–°ä¸Šä»·ç‰©å“ï¼Œ4ä¸ºå…¶å®ƒç‰©å“
     ITEMSMALL* GetAllItemsByIndex(int nIndex, int nType);
     ITEMSMALL* GetAllPetsByIndex(int nIndex, int nType);
     ITEMSMALL* GetAllOtherItemsByIndex(int nIndex, int nType);
 
     int GetCurrentItemNum(int nCurrencyType, int nType);
 
-    //int GetAllLatestNum();  //×îĞÂÉÏ¼Û»õÆ·ÊıÁ¿
-    //int GetAllItemsNum(); //×°±¸»õÆ·ÊıÁ¿
-    //int GetAllPetsNum(); //³èÎï»õÆ·ÊıÁ¿
-    //int GetAllOthersNum(); //ÆäËü»õÆ·ÊıÁ¿
+    //int GetAllLatestNum();  //æœ€æ–°ä¸Šä»·è´§å“æ•°é‡
+    //int GetAllItemsNum(); //è£…å¤‡è´§å“æ•°é‡
+    //int GetAllPetsNum(); //å® ç‰©è´§å“æ•°é‡
+    //int GetAllOthersNum(); //å…¶å®ƒè´§å“æ•°é‡
 
 protected:
     ItemsMall(void){}

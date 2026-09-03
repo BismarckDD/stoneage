@@ -373,7 +373,6 @@ ACTION *_ATR_BODY_WORK(int b, ACTION *a, char *file, int line);
 #endif
 
 #endif
-#endif
 
 /*----------  ????????  ----------*/
 // ??

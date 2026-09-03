@@ -3086,13 +3086,9 @@ void InitFont(int fontNo) {
   // 宋体
   // char *fontName[] = { "Microsoft JhengHei","楷体_GB2312" };
 #ifdef _NEWFONT_
-  char fontName[2][128];
-  sprintf(fontName[0], "Microsoft JhengHei");
-  sprintf(fontName[1], "Microsoft JhengHei");
+  const wchar_t *fontName[] = {L"Microsoft JhengHei", L"Microsoft JhengHei"};
 #else
-  char fontName[2][128];
-  sprintf(fontName[0], "宋体");
-  sprintf(fontName[1], "楷体_GB2312");
+  const wchar_t *fontName[] = {L"宋体", L"楷体_GB2312"};
 
   // char *fontName[] = { "宋体", "楷体_GB2312" };
 #endif
@@ -3105,7 +3101,7 @@ void InitFont(int fontNo) {
   //???????????????
   if (gResolutionMode == 1) {
     // MS??????????????????????
-    hFont = CreateFont(
+    hFont = CreateFontW(
 #ifdef _NEWFONT_
         FONT_SIZE1, /* ????????    */
 #else
@@ -3137,14 +3133,12 @@ void InitFont(int fontNo) {
         fontName[fontNo]);
   } else {
 #ifdef _NEWFONT_
-    char strfame[128];
-    sprintf(strfame, "Microsoft JhengHei");
-    hFont = CreateFont(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 1,
-                       0, 0, 0, 17, (LPCTSTR)strfame);
+    hFont = CreateFontW(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 1,
+                       0, 0, 0, 17, L"Microsoft JhengHei");
 #else
 
     hFont =
-        CreateFont(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+        CreateFontW(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
                    GB2312_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
                    DEFAULT_QUALITY, FIXED_PITCH | FF_ROMAN, fontName[fontNo]);
 #endif
@@ -4146,15 +4140,12 @@ void SetAnimTbl() {
 HFONT CreateNewFont(int size) {
 
 #ifdef _NEWFONT_
-  char strfame[128];
-  sprintf(strfame, "Microsoft JhengHei");
-
-  return CreateFont(size, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 1, 0, 0, 0,
-                    17, (LPCTSTR)strfame);
+  return CreateFontW(size, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE, 1, 0, 0, 0,
+                    17, L"Microsoft JhengHei");
 #else
-  return CreateFont(size, 0, 0, 0, 400, FALSE, FALSE, FALSE, GB2312_CHARSET,
+  return CreateFontW(size, 0, 0, 0, 400, FALSE, FALSE, FALSE, GB2312_CHARSET,
                     OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                    FIXED_PITCH | FF_ROMAN, (LPCTSTR) "宋体");
+                    FIXED_PITCH | FF_ROMAN, L"宋体");
 
 #endif
 }

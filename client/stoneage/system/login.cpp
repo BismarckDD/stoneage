@@ -9255,6 +9255,7 @@ void PetSkillShowType1(void)
                             FONT_PRIO_FRONT, FONT_PAL_WHITE, "要在那个位置做呢？", 0);
             for (i = 0; i < MAX_SKILL && i < pet[selShopSkillPetNo].maxSkill; i++)
             {
+                // /utf-8 keeps this prefix and the server skill name in one encoding.
                 sprintf_s(skillName, "技 %d: ", i + 1);
                 if (petSkill[selShopSkillPetNo][i].useFlag != 0)
                 {
@@ -9662,10 +9663,7 @@ void initSkillShopWindow3(void)
     skillShopWindow3ProcNo = 0;
 }
 
-// ???
-//   ??：0 ... ???
-//           1 ... ??
-//           2 ... ?
+// Pet Skill Window 3: 指定在哪个地方做宠物?
 int skillShopWindow3(void)
 {
     static int x, y, w, h;
@@ -9720,7 +9718,6 @@ int skillShopWindow3(void)
             }
         }
 
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -9729,7 +9726,6 @@ int skillShopWindow3(void)
 
         if (id >= 0)
         {
-            // ?????
             if (id == 0)
             {
                 ret = 1;
@@ -9759,6 +9755,7 @@ int skillShopWindow3(void)
                             FONT_PRIO_FRONT, FONT_PAL_WHITE, "要在那个位置做呢？", 0);
             for (i = 0; i < MAX_SKILL && i < pet[selShopSkillPetNo - 1].maxSkill; i++)
             {
+                // /utf-8 keeps this prefix and the server skill name in one encoding.
                 sprintf_s(skillName, "技 %d: ", i + 1);
                 if (petSkill[selShopSkillPetNo - 1][i].useFlag != 0)
                 {
@@ -10864,7 +10861,7 @@ STR_BUFFER familyNameInput;
 STR_BUFFER familyRuleInput;
 STR_BUFFER familyRuleShow;
 
-static char familySpriteName[3][10] = {
+static char familySpriteName[3][32] = {
     "光明精灵",
     "黑暗精灵",
     "        ",

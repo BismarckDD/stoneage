@@ -1,7 +1,7 @@
 /*-----------------------------------------------------------------------------
-    caryMemory_lib.h -- cary's Virtual memory ºŞ²z¡C
+    caryMemory_lib.h -- cary's Virtual memory æ¨ç¶î“‰
     Waei(c) All rights reserved
-    author: ³\¦Ê³ÓCary Hsu, 2000.10.8
+    author: ç ›Îºç§¤Cary Hsu, 2000.10.8
 -----------------------------------------------------------------------------*/
 #ifndef __MEMDLL
 #define __MEMDLL
@@ -18,68 +18,68 @@
     #endif
 #endif
 
-//¦^¶Çªº¿ù»~***************************************************************************************
+//î›„è‚šî€™å²¿ç²‡***************************************************************************************
 #define ERROR_MEMORY_OK                0x00000000
-#define ERROR_MEMORY_INITFAILED        0x00000001    //°t¸mHandle°}¦C¿ù»~
+#define ERROR_MEMORY_INITFAILED        0x00000001    //çšŒç«šHandleçššîš©å²¿ç²‡
 
 #define ERROR_HEAP_NOT_ENOUGH        0x00000010
 #define ERROR_HEAP_LIST_NOT_ENOUGH    0x00000020
 
 //*************************************************************************************************
-/*    ªì©l¤Æ°O¾ĞÅé¨ç¦¡®w
-return:    ERROR_MEMORY_OK:        ¦¨¥\
-        ERROR_MEMORY_INITFAILED:ªì©l¤Æ¥¢±Ñ    */
+/*    î‹ï¹ã¦ç™˜æ‹˜ç °ã„§Î‘ç•
+return:    ERROR_MEMORY_OK:        Î˜î™¢
+        ERROR_MEMORY_INITFAILED:î‹ï¹ã¦ã‚¢æ¯–    */
 DWORD MemoryInit();
 
-/*    ÄÀ©ñ°O¾ĞÅé¨ç¦¡®wªº°O¾ĞÅé    */
+/*    ç¦î ‚ç™˜æ‹˜ç °ã„§Î‘ç•î€™ç™˜æ‹˜ç °    */
 void MemoryRelease();
 
 //*************************************************************************************************
-/*    «O¯d¤@¤j½d³òªºVirtual Memory¡A¨Ã¶Ç¦^Handle¡A«ØÄ³¥Hpage¬°³æ¦ì(¥ı°t¸m1­Ócommit pageªº°O¾ĞÅé)
-parameter:    lpdwHandle:    ¶Ç¦^Handle
-            iSize:        ­n°t¸m¦h¤Ö°O¾ĞÅé¡A¨Ã¦^¶Ç«Ø¥ßªº¤j¤p
-return:        «DNULL:        ¦^¶Ç°t¸m°O¾ĞÅéªº¦ì§}
-            NULL:        ¥¢±Ñ                    */
+/*    ç‚ç—™î—¦î˜çµ›ç…î€™Virtual Memoryî“‡îŸ‹è‚šî›„Handleî“‡î‚•æŸî™pageîƒ‹è™«î”(îƒçšŒç«š1î…Œcommit pageî€™ç™˜æ‹˜ç °)
+parameter:    lpdwHandle:    è‚šî›„Handle
+            iSize:        ç’¶çšŒç«šî›ã¶ç™˜æ‹˜ç °î“‡îŸ‹î›„è‚šî‚•ãƒŸî€™î˜î˜–
+return:        ç¶NULL:        î›„è‚šçšŒç«šç™˜æ‹˜ç °î€™î”îƒ
+            NULL:        ã‚¢æ¯–                    */
 MEMDLL_API LPVOID VirtualReserve( LPDWORD lpdwHandle, int &iSize);
 
-/*    ÄÀ©ñ¦¹Handle°t¸mªº°O¾ĞÅé
-parameter:    lpdwHandle:    Handle­È    */
+/*    ç¦î ‚î…HandleçšŒç«šî€™ç™˜æ‹˜ç °
+parameter:    lpdwHandle:    Handleî…    */
 MEMDLL_API void VirtualRelease( LPDWORD lpdwHandle);
 
-/*    µo¥ÍExceptionªº³B²z¨ç¦¡
-parameter:    dwHandle:                        Handle­È
-            lpEP:                            EXCEPTION_POINTERSªºstructure
-return:        EXCEPTION_CONTINUE_EXECUTION:    Ä~Äò°õ¦æ
-            EXCEPTION_CONTINUE_SEARCH:        Ä~Äò´M§ä¥i³B²zexception handle    */
+/*    ç¥‡ãƒExceptionî€™çŸªç¶ã„§Î‘
+parameter:    dwHandle:                        Handleî…
+            lpEP:                            EXCEPTION_POINTERSî€™structure
+return:        EXCEPTION_CONTINUE_EXECUTION:    è†¥å°¿ç£…ï¸½
+            EXCEPTION_CONTINUE_SEARCH:        è†¥å°¿ç¢Ñ‚î™¯çŸªç¶exception handle    */
 MEMDLL_API int ExpFilter( DWORD dwHandle, LPEXCEPTION_POINTERS lpEP);
 
 //*************************************************************************************************
 //*************************************************************************************************
-/*    °t¸miSize­Ó°O¾ĞÅé·íHeap
-parameter:    lpdwHandle:        ¶Ç¦^Handle
-            iSize:            ­n°t¸m¦h¤Öªº°O¾ĞÅé
-return:        TRUE:            °t¸m¦¨¥\
-            FALSE:            ¥¢±Ñ                */
+/*    çšŒç«šiSizeî…Œç™˜æ‹˜ç °è®½Heap
+parameter:    lpdwHandle:        è‚šî›„Handle
+            iSize:            ç’¶çšŒç«šî›ã¶î€™ç™˜æ‹˜ç °
+return:        TRUE:            çšŒç«šÎ˜î™¢
+            FALSE:            ã‚¢æ¯–                */
 MEMDLL_API BOOL HeapCreate( LPDWORD lpdwHandle, int &iSize);
 
-/*    ÄÀ©ñHeapªº©Ò¦³°O¾ĞÅé
-parameter:    lpdwHandle:    Handle­È    */
+/*    ç¦î ‚Heapî€™â”®Î¤ç™˜æ‹˜ç °
+parameter:    lpdwHandle:    Handleî…    */
 MEMDLL_API void HeapRelease( LPDWORD lpdwHandle);
 
-/*    ²M°£HeapªºList¡A¦A¨Ï¥Î
-parameter:    dwHandle:    Handle­È    */
+/*    ç²åŸƒHeapî€™Listî“‡îš§ã„ãƒ
+parameter:    dwHandle:    Handleî…    */
 MEMDLL_API void HeapReset( DWORD dwHandle);
 
-/*    ±qlpheap¤¤¡A°t¸mdwSize¤j¤pªº°O¾ĞÅé
-parameter:    dwHandle:    Handle­È
-            dwSize:        ­n°t¸m¦h¤Ö°O¾ĞÅé
-return:        «DNULL:        ¶Ç¦^°t¸mªº°O¾ĞÅé
-            NULL:        ¥¢±Ñ                */
+/*    çœ–lpheapã„î“‡çšŒç«šdwSizeî˜î˜–î€™ç™˜æ‹˜ç °
+parameter:    dwHandle:    Handleî…
+            dwSize:        ç’¶çšŒç«šî›ã¶ç™˜æ‹˜ç °
+return:        ç¶NULL:        è‚šî›„çšŒç«šî€™ç™˜æ‹˜ç °
+            NULL:        ã‚¢æ¯–                */
 MEMDLL_API LPVOID HeapAlloc( DWORD dwHandle, DWORD dwSize);
 
-/*    ±qlpheap¤¤ÄÀ©ñ±¼Heapªºmemlt
-parameter:    dwHandle:    Handle­È
-            lpAddress:    ­nÄÀ©ñªº°O¾ĞÅé¦ì§}ªº¦ì§}                */
+/*    çœ–lpheapã„ç¦î ‚å¥”Heapî€™memlt
+parameter:    dwHandle:    Handleî…
+            lpAddress:    ç’¶ç¦î ‚î€™ç™˜æ‹˜ç °î”îƒî€™î”îƒ                */
 MEMDLL_API void HeapFree( DWORD dwHandle, LPVOID *lpAddress);
 
 //*************************************************************************************************
@@ -89,37 +89,37 @@ typedef struct USEDMEMORY{
     DWORD            dwSize;
 }*LPUSEDMEMORY;
 
-/*    ¨ú¦^lpheapªº²Ä¤@­ÓHeap list
-parameter:    dwHandle:    Handle­È
-return:        ¶Ç¦^¨Ï¥Î¤¤ªºaddress¡ANULL¬°³Ì«á¤@­Ó    */
+/*    îŸî›„lpheapî€™æî—¦î…ŒHeap list
+parameter:    dwHandle:    Handleî…
+return:        è‚šî›„ã„ãƒã„î€™addressî“‡NULLîƒ‹ç¨‹î‚î—¦î…Œ    */
 MEMDLL_API LPUSEDMEMORY GetMemoryListHead( DWORD dwHandle);
 
-/*    ¨ú¦^lpheapªº¤U¤@­ÓHeap list
-parameter:    dwHandle:    Handle­È
-return:        ¶Ç¦^¨Ï¥Î¤¤ªºaddress¡ANULL¬°³Ì«á¤@­Ó    */
+/*    îŸî›„lpheapî€™î—»î—¦î…ŒHeap list
+parameter:    dwHandle:    Handleî…
+return:        è‚šî›„ã„ãƒã„î€™addressî“‡NULLîƒ‹ç¨‹î‚î—¦î…Œ    */
 MEMDLL_API LPUSEDMEMORY GetMemoryListNext( DWORD dwHandle);
 
-/*    ¨ú¦^¿ù»~­È
-parameter:    dwHandle:    Handle­È
-return:        ¦^¶Ç¿ù»~­È            */
+/*    îŸî›„å²¿ç²‡î…
+parameter:    dwHandle:    Handleî…
+return:        î›„è‚šå²¿ç²‡î…            */
 MEMDLL_API DWORD GetCaryError( DWORD dwHandle);
 
 //*************************************************************************************************
 //*************************************************************************************************
-/*    ·h²¾°O¾ĞÅé¡A¨Ï¥ÎMMX°µ°w¹ïpentum II³Ì¨Î¤Æªº³B²z
-parameter:    dest:    ¥Øªº¦ì§}
-            src:    ¨Ó·½¦ì§}
-            cnt:    ·h²¾ªºbyte¼Æ
-return:        TRUE:    ¦¨¥\°õ¦æ
-            FALSE:    ¦ì§}¤£¦Xªk                        */
+/*    ç©ç°¿ç™˜æ‹˜ç °î“‡ã„ãƒMMXæš—çšç™¸pentum IIç¨‹ã„ã¦î€™çŸªç¶
+parameter:    dest:    ãƒ˜î€™î”îƒ
+            src:    ã„“æ–¹î”îƒ
+            cnt:    ç©ç°¿î€™byteè®¡
+return:        TRUE:    Î˜î™¢ç£…ï¸½
+            FALSE:    î”îƒãƒîš¾çŒ­                        */
 MEMDLL_API BOOL mmx_CopyMemory( LPVOID dest, LPVOID src, int cnt);
 
-/*    ·h²¾°O¾ĞÅé¡A¨Ï¥ÎMMX°µ°w¹ïpentum II³Ì¨Î¤Æªº³B²z
-parameter:    dest:    ¥Øªº¦ì§}
-            src:    ¨Ó·½¦ì§}
-            cnt:    ·h²¾ªºbyte¼Æ
-return:        TRUE:    ¦¨¥\°õ¦æ
-            FALSE:    ¦ì§}¤£¦Xªk                        */
+/*    ç©ç°¿ç™˜æ‹˜ç °î“‡ã„ãƒMMXæš—çšç™¸pentum IIç¨‹ã„ã¦î€™çŸªç¶
+parameter:    dest:    ãƒ˜î€™î”îƒ
+            src:    ã„“æ–¹î”îƒ
+            cnt:    ç©ç°¿î€™byteè®¡
+return:        TRUE:    Î˜î™¢ç£…ï¸½
+            FALSE:    î”îƒãƒîš¾çŒ­                        */
 MEMDLL_API BOOL mmx_CopyMemory_test( LPVOID dest, LPVOID src, int cnt);
 
 #endif

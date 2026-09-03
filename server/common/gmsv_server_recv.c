@@ -2289,7 +2289,7 @@ void GmsvServer_KN_recv(int fd, int havepetindex, char *data) {
 #ifdef _CHANGE_PETNAME_FIX
   if (strstr(data, "|") != NULL && strstr(data, "'") != NULL &&
       strstr(data, "/") != NULL && strstr(data, "\\") != NULL) {
-    CHAR_talkToCli(char_index, -1, "���������벻Ҫ���зǷ��ַ���", CHAR_COLORRED);
+    CHAR_talkToCli(char_index, -1, "宠物名称中存在非法字符唷。", CHAR_COLORRED);
     return;
   }
 #endif
@@ -2677,48 +2677,24 @@ void GmsvServer_MA_recv(int fd, int x, int y, int nMind) {
   return;
 }
 #endif
+
+
 BOOL checkStringErr(char *checkstring) {
-  int i, ach;
-  for (i = 0, ach = 0; i < strlen(checkstring); i++) {
-    if ((unsigned char)checkstring[i] == 0xff) {
-      ach = 1;
-      break;
-    } // Force no 0xff
-    if ((unsigned char)checkstring[i] == 0x80) {
-      ach = 1;
-      break;
-    } // Force no 0x80
-    if ((unsigned char)checkstring[i] == 0x7f) {
-      ach = 1;
-      break;
-    } // Force no 0x7f
-    if ((unsigned char)checkstring[i] <= 0x20) {
-      ach = 1;
-      break;
-    } // Force greater than 0x20
-    if ((unsigned char)checkstring[i] == 0x27) {
-      ach = 1;
-      break;
-    } // Force greater than 0x27
-    if ((unsigned char)checkstring[i] == 0x3b) {
-      ach = 1;
-      break;
-    } // Force greater than 0x3b
-    if (ach) {
-      if ((((unsigned char)checkstring[i] >= 0x40) &&
-           ((unsigned char)checkstring[i] <= 0x7e)) ||
-          (((unsigned char)checkstring[i] >= 0xa1) &&
-           ((unsigned char)checkstring[i] <= 0xfe)))
-        ach = 0;
-    } else {
-      if (((unsigned char)checkstring[i] >= 0xa1) &&
-          ((unsigned char)checkstring[i] <= 0xfe))
-        ach = 1;
-    }
-  }
-  if (ach) {
+  // Validate complete UTF-8 sequences, not GBK byte pairs. Continuation
+  // bytes such as 0x80 are legal inside a valid UTF-8 character.
+  // The shared validator also rejects ASCII whitespace, controls and DEL.
+  if (checkstring == NULL || !isValidUtf8CharacterName(checkstring)) {
     print("StringDog!");
     return TRUE;
+  }
+
+  // Preserve the existing ASCII restrictions independently of encoding.
+  // Empty strings remain valid (used to clear a custom pet name).
+  for (const unsigned char *p = (const unsigned char *)checkstring; *p; ++p) {
+    if (*p == '\'' || *p == ';') {
+      print("StringDog!");
+      return TRUE;
+    }
   }
   return FALSE;
 }

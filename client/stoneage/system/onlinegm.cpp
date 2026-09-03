@@ -68,20 +68,20 @@ char ProblemC2[DEF_C2_TOTAL][24]={
     "星系移民",    
 };
 // 人物异常
-char ProblemC2_1[3][16]={
+char ProblemC2_1[3][32]={
     "人物消失",
     "人物资料异常",
     "其他"
 };
 // 道具异常
-char ProblemC2_2[3][16]={
+char ProblemC2_2[3][32]={
     "道具消失",
     "其他",
     "道具功能异常"
 };
 
 // 宠物异常
-char ProblemC2_3[5][16]={
+char ProblemC2_3[5][32]={
     "宠物消失",
     "宠物邮件问题",
     "溜宠问题",
@@ -89,23 +89,23 @@ char ProblemC2_3[5][16]={
     "其他"
 };
 // 交易问题
-char ProblemC2_4[2][16]={
+char ProblemC2_4[2][32]={
     "交易后消失",
     "其他"
 };
 // 疑似盗用
-char ProblemC2_5[2][16]={
+char ProblemC2_5[2][32]={
     "疑似盗用查询",
     "其他"
 };
 // 家族问题
-char ProblemC2_6[3][16]={
+char ProblemC2_6[3][32]={
     "家族被解散",
     "声望异常",
     "其他"
 };
 // 星系移民
-char ProblemC2_7[3][16]={
+char ProblemC2_7[3][32]={
     "道具消失",
     "人物消失",
     "其他"

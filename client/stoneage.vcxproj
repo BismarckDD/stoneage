@@ -147,6 +147,7 @@
     <ClCompile Include="stoneage\system\loadrealbin.cpp" />
     <ClCompile Include="stoneage\system\loadsprbin.cpp" />
     <ClCompile Include="stoneage\system\login.cpp" />
+    <ClCompile Include="tests\utf8_literals.cpp" />
     <ClCompile Include="stoneage\system\magicitem.cpp" />
     <ClCompile Include="stoneage\system\map.cpp" />
     <ClCompile Include="stoneage\system\menu.cpp" />
@@ -343,6 +344,13 @@ dsound.lib;winmm.lib;imm32.lib;dinput.lib;
       <OutputFile>$(ProjectDir)..\build\$(Configuration)\stoneage.exe</OutputFile>
       <AdditionalLibraryDirectories>$(ProjectDir)\sdk;</AdditionalLibraryDirectories>
     </Link>
+  </ItemDefinitionGroup>
+  <!-- All configurations use UTF-8 for both source and narrow string literals.
+       Reject invalid source bytes even when normal warnings are disabled. -->
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <AdditionalOptions>%(AdditionalOptions) /utf-8 /we4828</AdditionalOptions>
+    </ClCompile>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

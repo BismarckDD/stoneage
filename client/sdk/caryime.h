@@ -1,55 +1,55 @@
 /******************************************************************************
-    caryIme.h:    cary's ImeªºDllMain¡C
-                                                (c) ³\¦Ê³ÓCary Hsu,    2000.7.10
+    caryIme.h:    cary's Imeî€™DllMainî“‰
+                                                (c) ç ›Îºç§¤Cary Hsu,    2000.7.10
 ******************************************************************************/
 #ifndef __CARYIME
 #define __CARYIME
 
 typedef void(*RESULTCALLBACK)(LPSTR);
 
-/*    IMEªºªì©l¤Æ
-parameter:    hwnd:            ©Ò¨Ï¥ÎªºHWND
-            ResultCallback:    ¤¤¤å¿é¤Jªkªºµ²ªG¦^³ø
-return:        TRUE:            ÄY­«ªº¿ù»~¡A½Ğµ²§ôµ{¦¡¡A§_«hµLªk¨Ï¥Î¤¤¤å¿é¤Jªk*/
+/*    IMEî€™î‹ï¹ã¦
+parameter:    hwnd:            â”®ã„ãƒî€™HWND
+            ResultCallback:    ã„ã‚…å—î—°çŒ­î€™æŒ¡ç‹¦î›„å¨
+return:        TRUE:            è…¨î„¤î€™å²¿ç²‡î“‡å«æŒ¡î±ç¥˜Î‘î“‡îœ¥ç¥ç¤šçŒ­ã„ãƒã„ã‚…å—î—°çŒ­*/
 BOOL InitIme(HWND hwnd,RESULTCALLBACK ResultCallback);
 
-/*    IMEµ²§ô*/
+/*    IMEæŒ¡î±*/
 void EndIme();
 
-/*    §ïÅÜÅã¥Üªº¼Ò¦¡¡Awindow mode©Îfullscreen mode
-parameter:    bWindowMode:    ¨Ï¥Îªºµøµ¡¼Ò¦¡        */
+/*    Ñè·‘é™ªãƒœî€™å®¶Î‘î“‡window modeâ”ªfullscreen mode
+parameter:    bWindowMode:    ã„ãƒî€™è·Œæ€ å®¶Î‘        */
 void ChangeMode(BOOL bWindowMode);
 
-/*    ³B²zIMEªºmessage
-parameter:    Message:    µøµ¡°T®§
-            wParam,lParam:µøµ¡°T®§ªº°Ñ¼Æ
-return:    TRUE:    ¤w¸g¦³³B²zIMEªºmessage
-        FALSE:    ÁÙ¦³¨ä¤]ªºmessage»İ­n³B²z    */
+/*    çŸªç¶IMEî€™message
+parameter:    Message:    è·Œæ€ ç™Ÿî…¾
+            wParam,lParam:è·Œæ€ ç™Ÿî…¾î€™æŠŠè®¡
+return:    TRUE:    î˜ç«’Î¤çŸªç¶IMEî€™message
+        FALSE:    ä¸´Î¤ã„¤î˜ƒî€™messageæƒ ç’¶çŸªç¶    */
 BOOL ImeMessage(UINT Message,WPARAM wParam,LPARAM lParam);
 
 /*    clear IME buffer    */
 void ClearIme();
 
-/*    IMEªºON,OFFª¬ºA½T»{
+/*    IMEî€™ON,OFFî€‹ç¯ˆçµ‹ç²„
 return:    ON:    TRUE
         OFF:FALSE        */
 BOOL ImeOpenState();
 
-/*    ¨ú±o¿é¤Jªkªº¦r¦ê¡A¥i¯àcandiate©Îcompsition    
-return:    NULL:    ¨S¦³¦r¦ê¡A½Ğ¦Û¦æ³B²z
-        «DNULL:    ¦³¿é¤Jªkªº¦r¦ê                */
+/*    îŸçœ”å—î—°çŒ­î€™î›˜ï¹ƒî“‡î™¯îˆ•candiateâ”ªcompsition
+return:    NULL:    âŠ¿Î¤î›˜ï¹ƒî“‡å«îï¸½çŸªç¶
+        ç¶NULL:    Î¤å—î—°çŒ­î€™î›˜ï¹ƒ                */
 LPSTR GetImeString();
 
-/*    ¨ú±o¿é¤Jªkªº´y­z¦r¦ê
-return:    ¿é¤Jªkªº´y­z¦r¦ê    */
+/*    îŸçœ”å—î—°çŒ­î€™ç£ç“ƒî›˜ï¹ƒ
+return:    å—î—°çŒ­î€™ç£ç“ƒî›˜ï¹ƒ    */
 LPSTR GetImeDescString();
 
 ///////////////////////////////////////////////////////////////////////////////
 
-/*    ¨ú±olpstrªº¤W¤@­Ó¦rªº¦ì§}
-parameter:    lpstrHead:    ¦r¦êªºÀY
-            lpstr:        ­n¨ú¦^¤W¤@­Ó¦rªº¦r¦ê
-return:        ¤W¤@­Ó¦rªº¦ì§}                    */
+/*    îŸçœ”lpstrî€™î—½î—¦î…Œî›˜î€™î”îƒ
+parameter:    lpstrHead:    î›˜ï¹ƒî€™ç¹·
+            lpstr:        ç’¶îŸî›„î—½î—¦î…Œî›˜î€™î›˜ï¹ƒ
+return:        î—½î—¦î…Œî›˜î€™î”îƒ                    */
 char *GetCharPrev(char *lpstrHead,char *lpstr);
 
 #endif

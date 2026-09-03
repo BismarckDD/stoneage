@@ -88,13 +88,13 @@ void CreatFontHdc() {
   FontSizeHdc = CreateCompatibleDC(hScrDC);
   if (FontSizeHdc) {
 #ifdef _NEWFONT_
-    HFONT font = CreateFont(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
-                            1, 0, 0, 0, 17, (LPCTSTR) "Microsoft JhengHei");
+    HFONT font = CreateFontW(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+                            1, 0, 0, 0, 17, L"Microsoft JhengHei");
 #else
-    HFONT font = CreateFont(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
+    HFONT font = CreateFontW(FONT_SIZE1, 0, 0, 0, FW_NORMAL, FALSE, FALSE, FALSE,
                         GB2312_CHARSET,
                         OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS, DEFAULT_QUALITY,
-                        FIXED_PITCH | FF_ROMAN, (LPCTSTR) "宋体");
+                        FIXED_PITCH | FF_ROMAN, L"宋体");
 #endif
     SelectObject(FontSizeHdc, font);
   } else {

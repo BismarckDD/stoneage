@@ -969,16 +969,20 @@ void NPC_getDrawPet(int npc_index, int toindex, char *token, int *buttontype,
 
 /* 2026.09.01 这个是干啥的？ */
 void NPC_MaxGoldOver(int npc_index, int toindex, int shopMsgIdx, char *token) {
-
-  NPC_Util_GetArgStr(npc_index, npcarg, sizeof(npcarg));
+  // The caller may pass the global buf as token. Never use buf as both
+  // snprintf's destination and its %s source: overlapping buffers are UB.
+  char message[sizeof(buf) - 2];
+  char args[NPC_UTIL_GETARGSTR_BUFSIZE];
+  token[0] = '\0';
   if (shopMsgIdx < 0 || shopMsgIdx >= arraysizeof(gShopMsg))
     return;
 
-  if (NPC_Util_GetStrFromStrWithDelim(npcarg,
-    gShopMsg[shopMsgIdx].option, buf, sizeof(buf)) == NULL) {
-    strcpy(buf, gShopMsg[shopMsgIdx].defaultmsg);
+  if (NPC_Util_GetArgStr(npc_index, args, sizeof(args)) == NULL ||
+      NPC_Util_GetStrFromStrWithDelim(args,
+        gShopMsg[shopMsgIdx].option, message, sizeof(message)) == NULL) {
+    strcpy(message, gShopMsg[shopMsgIdx].defaultmsg);
   }
-  snprintf(token, sizeof(buf), "\n\n%s", buf);
+  snprintf(token, sizeof(buf), "\n\n%s", message);
 }
 
 #ifdef _NPC_DEPOTPET

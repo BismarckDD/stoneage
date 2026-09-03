@@ -3,20 +3,20 @@
 
 #define FONT_SIZE 14
 
-static int PAT0_000[] =                    //¶ë?
+static int PAT0_000[] =                    //Óõ∂?
 {
     2,640,480,
     0,0,0,0,
     0,480,0,0
 };
 
-static int PAT0_001[] =                    //˚´?
+static int PAT0_001[] =                    //Óçò?
 {
     1,32,32,
     0,0,0,0
 };
 
-static int PAT0_002[] =                    //§Ñ£d
+static int PAT0_002[] =                    //Óò©Óñ™
 {
     1,8,8,
     0,0,0,0
@@ -2411,7 +2411,7 @@ static int PAT3_003[] =                    //
     0,0,68 * 3,0
 };
 
-static int PAT3_004[] =                    //  ?¢~
+static int PAT3_004[] =                    //  ?Óï§
 {
     1,72,93,
     0,0,72 * 0,94
@@ -2441,7 +2441,7 @@ int *pPatTbl03[] = {
     PAT3_001,    // 
     PAT3_002,    // 
     PAT3_003,    // 
-    PAT3_004,    // ?¢~
+    PAT3_004,    // ?Óï§
     PAT3_005,    // 
     PAT3_006,    // 
     PAT3_007,    // 
