@@ -395,9 +395,7 @@ BOOL Produce4Way(int mode) {
 }
 #ifdef _NEW_RESOMODE
 
-// 輛桵須裁邈
 BOOL ProduceHagare(int mode) {
-  // 輸賃等弇湮苤
   // 1024 * 768
   // int CutX = 128 ;
   // int CutY = 96 ;
@@ -623,7 +621,6 @@ BOOL ProduceHagare(int mode) {
   return FALSE;
 }
 #else
-// 輛桵須裁邈
 BOOL ProduceHagare(int mode) {
   RECT rect;
   static int endFlag = -1;

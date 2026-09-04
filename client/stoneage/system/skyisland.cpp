@@ -353,15 +353,6 @@ void SkyIslandDraw()
             iCloudY1 += iCloudDY;
             if(((iCloudX1>=DEF_APPSIZEX) || (iCloudY1>=DEF_APPSIZEY)) ){
                 //产生一朵新的云
-#ifdef __CARYTEST
-                iCloudNo1 = 40500+(rand()&0x3);
-                DWORD no;
-                short w, h;
-                realGetNo( iCloudNo1, &no);
-                realGetWH( no, &w, &h);
-                CloudWidth1 = w;
-                CloudHeight1 = h;
-#else
                 DWORD no;
                 short w, h;
 #ifdef _NEW_CLOUD
@@ -378,7 +369,6 @@ void SkyIslandDraw()
                     CloudHeight1 = h;
                     LoadBmpToSurface( no, lpsurCloud1, w, h);
                 }
-#endif
                 int dx = 0, dy = 0;
                 switch( rand()%3){
                 case 0:
@@ -394,7 +384,6 @@ void SkyIslandDraw()
                 iCloudY1 = -CloudHeight1 + dy + 30;
             }
         }
-    //        int x, y;
             x = iCloudX1;
             y = iCloudY1;
             SetRect( &rc, 0, 0, CloudWidth1, CloudHeight1);

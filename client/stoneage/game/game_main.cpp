@@ -360,24 +360,6 @@ bool GameMain(void)
             static DWORD switchmodetime = TimeGetTime();
             if ((switchmodetime + 500) < NowTime){
                 switchmodetime = NowTime;
-#ifdef __AI
-                if (AI == AI_SELECT){
-                    AI = AI_NONE;
-                    pc.etcFlag &= (~PC_AI_MOD);
-                    lssproto_FS_send(sockfd, pc.etcFlag);
-                    // 修复战斗AI转换的BUG  AI->玩家
-#ifdef _FIX_BATTLE_AI
-                    battleMenuFix();
-#endif
-                }
-                else{
-                    AI = AI_SELECT;
-                    pc.etcFlag |= PC_AI_MOD;
-                    lssproto_FS_send(sockfd, pc.etcFlag);
-                }
-                extern BOOL AI_Save();
-                AI_Save();
-#else
                 extern int battleWazaTargetBak;
                 if (PROC_BATTLE != ProcNo || BATTLE_SUBPROC_CMD_INPUT != SubProcNo){
                     battleWazaTargetBak = -1;
@@ -391,7 +373,6 @@ bool GameMain(void)
                         AI = AI_ATTACK;
                     }
                 }
-#endif
             }
         }
         else if (di_key[DIK_PRIOR] & 0x80){
@@ -399,24 +380,6 @@ bool GameMain(void)
             static DWORD switchmodetime = TimeGetTime();
             if ((switchmodetime + 500) < NowTime){
                 switchmodetime = NowTime;
-#ifdef __AI
-                if (AI == AI_SELECT){
-                    AI = AI_NONE;
-                    // 修复战斗AI转换的BUG  玩家->AI
-#ifdef _FIX_BATTLE_AI
-                    battleMenuFix();
-#endif
-                    pc.etcFlag &= (~PC_AI_MOD);
-                    lssproto_FS_send(sockfd, pc.etcFlag);
-                }
-                else{
-                    AI = AI_SELECT;
-                    pc.etcFlag |= PC_AI_MOD;
-                    lssproto_FS_send(sockfd, pc.etcFlag);
-                }
-                extern BOOL AI_Save();
-                AI_Save();
-#else
                 extern int battleWazaTargetBak;
                 if (PROC_BATTLE != ProcNo || BATTLE_SUBPROC_CMD_INPUT != SubProcNo){
                     battleWazaTargetBak = -1;
@@ -429,7 +392,6 @@ bool GameMain(void)
                         AI = AI_SELECT;
                     }
                 }
-#endif
             }
         }
 
@@ -565,12 +527,7 @@ bool GameMain(void)
                 InitSurfaceInfo();
                 extern int BackBufferDrawType;
                 if (BackBufferDrawType == DRAW_BACK_BATTLE){
-#ifdef _NEW_RESOMODE
-                    //drawMap();
                     ReadBattleMap(BattleMapNo);
-#else
-                    ReadBattleMap(BattleMapNo);
-#endif
                     SortDispBuffer();
                     ClearBackSurface();
                     fastDrawTileFlag = 0;
@@ -578,13 +535,6 @@ bool GameMain(void)
                     fastDrawTileFlag = 1;
                 }
                 else repairMap();
-#endif
-#ifdef __CARYTEST
-                extern LPREALBIN    g_lpRealHead;
-                LPREALBIN node = g_lpRealHead;
-                while (node){
-                    node->state = 0;
-                }
 #endif
             }
             else if (displayBpp == 8){

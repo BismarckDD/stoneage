@@ -1,23 +1,18 @@
-﻿#ifndef _MAP_H_ 
-#define _MAP_H_
-
-// ?????????????????????
+﻿#ifndef __MAP_H__
+#define __MAP_H__
 
 #define MAP_TILE_GRID_X1    -20
 #define MAP_TILE_GRID_X2    +17        // ?????
 #define MAP_TILE_GRID_Y1    -16
 #define MAP_TILE_GRID_Y2    +21        // ?????
 
-// ??????
 #define MAP_X_SIZE    (MAP_TILE_GRID_X2 - MAP_TILE_GRID_X1)
 #define MAP_Y_SIZE    (MAP_TILE_GRID_Y2 - MAP_TILE_GRID_Y1)
 
-// ????????
-#define GRID_SIZE        64
+#define GRID_SIZE     64
 
-// ?
-#define MOVE_SPEED            4
-#define MOVE_FRAME            (GRID_SIZE/MOVE_SPEED)
+#define MOVE_SPEED    4
+#define MOVE_FRAME    (GRID_SIZE/MOVE_SPEED)
 
 // ?????
 enum
@@ -35,12 +30,15 @@ enum
     EVENT_END        // ????????
 };
 
-// ???????
 #define MAP_READ_FLAG    0x8000        // ???????????????????
 #define MAP_SEE_FLAG    0x4000        // ????????????????
-
-// ?????
 #define FLOOR_NAME_LEN    24
+
+#ifdef __MAP_CPP__
+#define EXTERN
+#else
+#define EXTERN extern
+#endif
 
 extern char nowFloorName[];
 extern int nowFloor;
@@ -66,10 +64,10 @@ extern int viewOffsetY;
 extern short moveAddTbl[8][2];
 
 
-extern BOOL mouseLeftCrick;
-extern BOOL mouseLeftOn;
-extern BOOL mouseRightCrick;
-extern BOOL mouseRightOn;
+EXTERN BOOL mouseLeftCrick;
+EXTERN BOOL mouseLeftOn;
+EXTERN BOOL mouseRightCrick;
+EXTERN BOOL mouseRightOn;
 #ifdef _MOUSE_DBL_CLICK
 extern BOOL mouseDblRightOn;
 #endif
@@ -89,19 +87,17 @@ extern short eventWarpSendId;
 extern short eventEnemySendFlag;
 extern short eventEnemySendId;
 extern short eventEnemyFlag;
-
 extern BOOL loginFlag;
-
 extern short vsLookFlag;
-
 extern BOOL floorChangeFlag;
-
 extern BOOL warpEffectFlag;
 extern BOOL warpEffectStart;
 extern BOOL warpEffectOk;
 
 extern int transmigrationEffectFlag;
 extern int transEffectPaletteStatus;
+
+#undef EXTERN
 
 void initMap( void );
 void resetMap( void );
@@ -138,12 +134,6 @@ void initCharPartsPrio( void );
 void setPartsPrio( int, int, int, int, int, float, float, int);
 void setCharPrio( int, int, int, int, int, float, float);
 void stockCharParts( void );
-
-
-#if 0
-BOOL checkNpcEvent( int, int, int, int );
-#endif
-
 void drawAutoMap( int x, int y );
 void readAutoMapSeeFlag( void );
 void writeAutoMapSeeFlag( void );
@@ -152,9 +142,6 @@ BOOL checkHitMap( int, int );
 
 void camMapToGamen( float, float, float *, float * );
 void camGamenToMap( float, float, float *, float * );
-
-
-#if 1
 
 enum
 {
@@ -237,10 +224,9 @@ void mapEffectSnow2( int );
 
 void _checkEmptyMap( void );
 
-#endif
 
 #ifdef _ITEM_PATH
     extern BOOL ITEMPATHFLAG;
 #endif
 
-#endif
+#endif // __MAP_H__

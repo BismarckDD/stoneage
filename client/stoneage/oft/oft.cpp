@@ -29,9 +29,6 @@ void LogToBattleError(char *data, int line);
 void katino(ACTION *a0);
 static int command_point;
 extern ACTION *MakeAnimDisp(int x, int y, int sprNo, int mode);
-#ifdef _SYUTEST
-static ACTION *Light1;
-#endif
 #ifdef _PETSKILL_LER
 extern BOOL g_bUseAlpha;
 #endif
@@ -650,15 +647,6 @@ void damage_num(ACTION *a0)
         sprintf_s(szMoji, "敏 %s%d％", (ATR_INT_WORK0(a0) > 0) ? "上升" : "下降", ATR_INT_WORK0(a0));
         d1 = FONT_PAL_GREEN;
         break;
-#ifdef _SYUTEST
-    case 41:
-        sprintf_s(szMoji, "LightTake");
-        d1 = 5;        
-        ATR_ATTRIB(a0) = 0;
-        ATR_CHR_NO(a0) = SPR_lightget;//动画
-        break;
-#endif
-        //#ifdef _BATTLESKILL                // (不可开) Syu ADD 战斗技能介面
     case 41:
         sprintf_s(szMoji, "LightTake");
         d1 = 5;
@@ -1024,14 +1012,7 @@ void set_damage_num(ACTION *a0, int color, int v_pos)
             ATR_V_POS(a1) = ATR_V_POS(a0) - SpriteInfo[a0->bmpNo].height / 2 + 20;
         else
 #endif
-#ifdef _SYUTEST
-        if (color == 41)
-            ATR_V_POS(a1) = ATR_V_POS(a0) + v_pos;
-        else
             ATR_V_POS(a1) = ATR_V_POS(a0) - 80;
-#else
-            ATR_V_POS(a1) = ATR_V_POS(a0) - 80;
-#endif
     }
 #ifdef _PETSKILL_LER
     // 雷尔防御时的防护盾
@@ -1409,11 +1390,7 @@ void set_piyo_loop(ACTION *a0)
         ATR_BODY_WORK(0, a1) = a0;
         ATR_STIMER(a1) = d7 * (60 / PIYOPIYO_CNT);
         //???
-#ifndef __CARYTEST
         ATR_INT_WORK0(a1) = a0->anim_x + SpriteInfo[ATR_PAT_NO(a0)].width / 2;
-#else
-        ATR_INT_WORK0(a1) = a0->anim_x + g_lpRealAdrn[ATR_PAT_NO(a0)].width / 2;
-#endif
         ATR_INT_WORK1(a1) = a0->anim_y;
     }
 }
@@ -6874,20 +6851,10 @@ void monster(ACTION *a0)
                 {
                     if (!ATR_COMBO(a1))            //????????
                     {
-                        //??
-#ifdef _SYUTEST
-                        ATR_DAMAGE(a1) = ATR_ATTACK_POW(0, a0);
-                        ATR_LIFE(a1) -= ATR_DAMAGE(a1);
-                        if (Light1 == NULL)
-                            Light1 = MakeAnimDisp(ATR_H_POS(a0), ATR_V_POS(a0), 101581, 0);
-                        set_damage_num(a1, 41, -64 + 25);
-                        // 采光术预备
-#else
                         ATR_DAMAGE(a1) = ATR_ATTACK_POW(0, a0);
                         ATR_LIFE(a1) += ATR_DAMAGE(a1);
                         if (ATR_LIFE(a1) > ATR_MAX_LIFE(a1))        //????
                             ATR_LIFE(a1) = ATR_MAX_LIFE(a1);        //????
-#endif
                         ATR_PET_DAMAGE(a1) = ATR_ATTACK_PET_POW(0, a0);
                         ATR_PET_LIFE(a1) += ATR_PET_DAMAGE(a1);
                         if (ATR_PET_LIFE(a1) > ATR_PET_MAX_LIFE(a1))        //????
@@ -6902,11 +6869,7 @@ void monster(ACTION *a0)
                     //????????
                     if (ATR_HIT(a0) >= 10000 && ATR_HIT(a0) < 10100)
                     {
-                        //??
                         ATR_DAMAGE(a1) = ATR_ATTACK_POW(0, a0);
-#ifdef _SYUTEST
-                        // 采光术预备
-#endif
                         ATR_LIFE(a1) += ATR_DAMAGE(a1);
                         if (ATR_LIFE(a1) > ATR_MAX_LIFE(a1))        //????
                             ATR_LIFE(a1) = ATR_MAX_LIFE(a1);        //????
@@ -7969,11 +7932,7 @@ void monster(ACTION *a0)
             ATR_CHR_NO(a1) = SPR_effect01;
             /* ??? */
             LoadBmp(ATR_PAT_NO(a0));
-#ifndef __CARYTEST
             ATR_V_POS(a1) = ATR_V_POS(a0) + a0->anim_y + SpriteInfo[ATR_PAT_NO(a0)].height / 2;
-#else
-            ATR_V_POS(a1) = ATR_V_POS(a0) + a0->anim_y + g_lpRealAdrn[ATR_PAT_NO(a0)].height / 2;
-#endif
             ATR_H_POS(a1) = ATR_H_POS(a0);
         }
         break;
@@ -8019,11 +7978,7 @@ void monster(ACTION *a0)
                 /* ??? */
                 LoadBmp(ATR_PAT_NO(a2));
                 ATR_H_POS(a1) = ATR_H_POS(a2);
-#ifndef __CARYTEST
                 ATR_V_POS(a1) = ATR_V_POS(a2) + a2->anim_y + SpriteInfo[ATR_PAT_NO(a2)].height / 2;
-#else
-                ATR_V_POS(a1) = ATR_V_POS(a2) + a2->anim_y + g_lpRealAdrn[ATR_PAT_NO(a2)].height / 2;
-#endif
             }
             DeathAction(a0);        //?
             return;
@@ -9529,15 +9484,8 @@ void monster(ACTION *a0)
                 ATR_CHR_NO(a1) += 53;
         }
 #endif
-        /* ??? */
         LoadBmp(ATR_PAT_NO(a0));
-        //???????
-#ifndef __CARYTEST
         ATR_INT_WORK0(a1) = a0->anim_y + SpriteInfo[ATR_PAT_NO(a0)].height / 2;
-#else
-        ATR_INT_WORK0(a1) = a0->anim_y + g_lpRealAdrn[ATR_PAT_NO(a0)].height / 2;
-#endif
-        //???????????
         ATR_BODY_WORK(0, a1) = a0;
         ATR_V_POS(a1) = ATR_V_POS(a0) + ATR_INT_WORK0(a1);
         ATR_H_POS(a1) = ATR_H_POS(a0);
@@ -9601,12 +9549,7 @@ void monster(ACTION *a0)
                 /* ??? */
                 LoadBmp(ATR_PAT_NO(a2));
                 //???????
-#ifndef __CARYTEST
                 ATR_INT_WORK0(a1) = a2->anim_y + SpriteInfo[ATR_PAT_NO(a2)].height / 2;
-#else
-                ATR_INT_WORK0(a1) = a2->anim_y + g_lpRealAdrn[ATR_PAT_NO(a2)].height / 2;
-#endif
-                //???????????
                 ATR_BODY_WORK(0, a1) = a2;
                 ATR_V_POS(a1) = ATR_V_POS(a2) + ATR_INT_WORK0(a1);
                 ATR_H_POS(a1) = ATR_H_POS(a2);
@@ -9760,12 +9703,7 @@ void monster(ACTION *a0)
         /* ??? */
         LoadBmp(ATR_PAT_NO(a0));
         //???????
-#ifndef __CARYTEST
         ATR_INT_WORK0(a1) = a0->anim_y + SpriteInfo[ATR_PAT_NO(a0)].height / 2;
-#else
-        ATR_INT_WORK0(a1) = a0->anim_y + g_lpRealAdrn[ATR_PAT_NO(a0)].height / 2;
-#endif
-        //???????????
         ATR_BODY_WORK(0, a1) = a0;
         ATR_V_POS(a1) = ATR_V_POS(a0) + ATR_INT_WORK0(a1);
         ATR_H_POS(a1) = ATR_H_POS(a0);
@@ -10245,12 +10183,7 @@ void monster(ACTION *a0)
                 /* ??? */
                 LoadBmp(ATR_PAT_NO(a0));
                 //???????
-#ifndef __CARYTEST
                 ATR_INT_WORK0(a1) = a0->anim_y + SpriteInfo[ATR_PAT_NO(a0)].height / 2;
-#else
-                ATR_INT_WORK0(a1) = a0->anim_y + g_lpRealAdrn[ATR_PAT_NO(a0)].height / 2;
-#endif
-                //???????????
                 ATR_BODY_WORK(0, a1) = a0;
                 ATR_V_POS(a1) = ATR_V_POS(a0) + ATR_INT_WORK0(a1);
                 ATR_H_POS(a1) = ATR_H_POS(a0);
@@ -11325,16 +11258,6 @@ void monster(ACTION *a0)
         break;
         //#endif
     }
-#ifdef _SYUTEST
-    if (Light1 != NULL)
-    {
-        if (Light1->anim_cnt == 5)
-        {    //拨放到最后一张
-            DeathAction(Light1);
-            Light1 = NULL;
-        }
-    }
-#endif
 }
 
 ACTION *oft_test(void)

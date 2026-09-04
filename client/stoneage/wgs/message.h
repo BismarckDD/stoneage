@@ -116,11 +116,7 @@ enum { E_INIT, E_ECB, E_NO };
 #ifdef _BACK_VERSION
 #define SZ_ECB "9304001" // 产品序号
 #else
-#ifdef _PK_SERVER
-#define SZ_ECB "9306001"
-#else
 #define SZ_ECB "8904001"
-#endif
 #endif
 
 extern const DWORD RET_OK;

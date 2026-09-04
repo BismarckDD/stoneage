@@ -118,13 +118,8 @@ void InitBattleMenu(void) {
   battleButtonBak2 = -1;
   BattleResultWndFlag = FALSE;
   ClearBattleButton();
-#ifdef __AI
-  extern int AI_First;
-  AI_First = 1;
-#else
   if (AI != AI_NONE)
     battleButtonBak = -1;
-#endif
   pActWnd = NULL; //
   pActInfoWnd = NULL;
   if (battlePetNoBak != -2) {
@@ -485,9 +480,7 @@ void BattleButtonJujutsu(void) {
 #endif
 
   if (sBattleButtonFlag[1] == TRUE) {
-
     if (pActWnd != NULL) {
-
       if (pActWnd->hp > 0) {
         x = pActWnd->x + 74;
         y = pActWnd->y + 208;
@@ -502,43 +495,26 @@ void BattleButtonJujutsu(void) {
           StockDispBuffer(((WINDOW_DISP *)pActWnd->pYobi)->mx,
                           ((WINDOW_DISP *)pActWnd->pYobi)->my + 4,
                           DISP_PRIO_MENU, CG_JUJUTU_WND, 1);
-
         for (i = 0; i < 5; i++) {
-
           if (HitFontNo == battleMenuJujutsuFontNo[i] &&
               magic[i].useFlag == TRUE) {
-
             char *splitPoint = magic[i].memo;
-
+            // 绘制每一个精灵的气力耗费
             sprintf_s(moji, "%2d/%2d", magic[i].mp, p_party[BattleMyNo]->mp);
             StockFontBuffer(pActWnd->x + 74 + 81, pActWnd->y + 183,
                             FONT_PRIO_FRONT, 0, moji, 0);
-
-            while (1) {
-
-              if (strlen(splitPoint) > 22) {
-                strncpy_s(moji, splitPoint, 22);
-                moji[22] = NULL;
-
-                if (GetStrLastByte(moji) == 3) {
-                  moji[21] = NULL;
-                  splitPoint += 21;
-                } else {
-                  moji[22] = NULL;
-                  splitPoint += 22;
-                }
-                StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
-                y += 24;
-              } else {
-                strcpy(moji, splitPoint);
-                StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+            // 绘制每一个精灵的说明
+            const int charEachline = 22;
+            while (true) {
+              splitPoint = copyUtf8CharByNum(moji, splitPoint, charEachline);
+              StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+              if (splitPoint == NULL || *splitPoint == '\0') {
                 break;
               }
+              y += 24;
             }
-
             StockDispBuffer(pActWnd->x + 37, pActWnd->y + 220, DISP_PRIO_ITEM,
                             pc.item[i].graNo, 0);
-
             if (mouse.onceState & MOUSE_LEFT_CRICK) {
 
               if (magic[i].field == MAGIC_FIELD_MAP ||
@@ -551,156 +527,111 @@ void BattleButtonJujutsu(void) {
 
                 switch (magic[i].target) {
                 case MAGIC_TARGET_MYSELF:
-
                   p_party[BattleMyNo]->atr |= ACT_ATR_HIT_BOX;
-
                   battleTargetSelectFlag = TRUE;
                   DeathAction(pActWnd);
                   pActWnd = NULL;
-
                   ClearBattleButton();
-
                   BattleCmdNo = BATTLE_JUJUTU;
-
                   play_se(217, 320, 240);
                   break;
-
                 case MAGIC_TARGET_OTHER:
-
                   for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-
                     if (p_party[i]->func == NULL)
                       continue;
-
                     if (magic[BattleJujutuNo].deadTargetFlag == FALSE)
                       if (p_party[i]->hp <= 0)
                         continue;
-
                     p_party[i]->atr |= ACT_ATR_HIT_BOX;
                   }
-
                   battleTargetSelectFlag = TRUE;
-
                   DeathAction(pActWnd);
                   pActWnd = NULL;
-
                   ClearBattleButton();
-
                   BattleCmdNo = BATTLE_JUJUTU;
-
                   play_se(217, 320, 240);
                   break;
-
 #ifdef __ATTACK_MAGIC
-
                 case MAGIC_TARGET_SINGLE:
-
                   if (BattleMyNo < 10) {
                     for (i = 10; i < 20; i++) {
                       if (p_party[i]->func == NULL)
                         continue;
-
                       if (FALSE == magic[BattleJujutuNo].deadTargetFlag)
                         if (p_party[i]->hp <= 0)
                           continue;
-
                       p_party[i]->atr |= ACT_ATR_HIT_BOX;
                     }
                   } else {
                     for (i = 0; i < 10; i++) {
                       if (p_party[i]->func == NULL)
                         continue;
-
                       if (FALSE == magic[BattleJujutuNo].deadTargetFlag)
                         if (p_party[i]->hp <= 0)
                           continue;
-
                       p_party[i]->atr |= ACT_ATR_HIT_BOX;
                     }
                   }
-
                   battleTargetSelectFlag = TRUE;
                   DeathAction(pActWnd);
                   pActWnd = NULL;
                   ClearBattleButton();
                   BattleCmdNo = BATTLE_JUJUTU;
                   play_se(217, 320, 240);
-
                   break;
-
                 case MAGIC_TARGET_ONE_ROW:
-
                   for (i = 0; i < 5; i++) {
                     if (p_party[i]->func == NULL)
                       continue;
-
                     if (FALSE == magic[BattleJujutuNo].deadTargetFlag)
                       if (p_party[i]->hp <= 0)
                         continue;
-
                     if (p_party[i]->atr & ACT_ATR_TRAVEL)
                       continue;
-
                     // 右下第二列
                     p_party[i]->atr |= ACT_ATR_HIT_BOX_COL4;
                   }
-
                   for (i = 5; i < 10; i++) {
                     if (p_party[i]->func == NULL)
                       continue;
-
                     if (FALSE == magic[BattleJujutuNo].deadTargetFlag)
                       if (p_party[i]->hp <= 0)
                         continue;
-
                     if (p_party[i]->atr & ACT_ATR_TRAVEL)
                       continue;
-
                     // 右下第一列
                     p_party[i]->atr |= ACT_ATR_HIT_BOX_COL3;
                   }
-
                   for (i = 10; i < 15; i++) {
                     if (p_party[i]->func == NULL)
                       continue;
-
                     if (FALSE == magic[BattleJujutuNo].deadTargetFlag)
                       if (p_party[i]->hp <= 0)
                         continue;
-
                     if (p_party[i]->atr & ACT_ATR_TRAVEL)
                       continue;
-
                     // 左上第一列
                     p_party[i]->atr |= ACT_ATR_HIT_BOX_COL1;
                   }
-
                   for (i = 15; i < 20; i++) {
                     if (p_party[i]->func == NULL)
                       continue;
-
                     if (FALSE == magic[BattleJujutuNo].deadTargetFlag)
                       if (p_party[i]->hp <= 0)
                         continue;
-
                     if (p_party[i]->atr & ACT_ATR_TRAVEL)
                       continue;
-
                     // 左上第二列
                     p_party[i]->atr |= ACT_ATR_HIT_BOX_COL2;
                   }
-
                   battleTargetSelectFlag = TRUE;
                   DeathAction(pActWnd);
                   pActWnd = NULL;
                   ClearBattleButton();
                   BattleCmdNo = BATTLE_JUJUTU;
                   play_se(217, 320, 240);
-
                   break;
-
                 case MAGIC_TARGET_ALL_ROWS:
-
                   if (BattleMyNo >= 10) {
                     for (i = 0; i < 10; i++) {
                       if (p_party[i]->func == NULL)
@@ -1121,9 +1052,9 @@ void BattleButtonItem(void) {
                   color = FONT_PAL_RED;
                 StockFontBuffer(pActWnd->x + 16, pActWnd->y + 332 - 160,
                                 FONT_PRIO_FRONT, color, pc.item[i].name, 0);
-                const int num = 28;
+                const int charEachline = 28;
                 while (true) {
-                  splitPoint = copyUtf8CharByNum(moji, splitPoint, num);
+                  splitPoint = copyUtf8CharByNum(moji, splitPoint, charEachline);
                   StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
                   if (splitPoint == NULL || *splitPoint == '\0') {
                     break;
@@ -1243,19 +1174,13 @@ void BattleButtonItem(void) {
                       }
 
                       battleTargetSelectFlag = TRUE;
-
                       DeathAction(pActWnd);
                       pActWnd = NULL;
-
                       ClearBattleButton();
-
                       BattleCmdNo = BATTLE_ITEM;
-
                       play_se(217, 320, 240);
                       break;
-
                     case ITEM_TARGET_NONE:
-
                       BattleButtonOff();
                       battleMenuReturn = TRUE;
 
@@ -1263,26 +1188,18 @@ void BattleButtonItem(void) {
                         lssproto_ID_send(sockfd, nowGx, nowGy, i, 0);
                       else
                         old_lssproto_ID_send(sockfd, nowGx, nowGy, i, 0);
-
                       play_se(203, 320, 240);
-
                       battleTargetSelectFlag = FALSE;
                       break;
-
                     case ITEM_TARGET_OTHERWITHOUTMYSELF:
-
                       for (i = 0; i < BATTLKPKPLYAERNUM; i++) {
-
                         if (p_party[i]->func == NULL)
                           continue;
-
                         if (i == BattleMyNo)
                           continue;
-
                         if (pc.item[BattleItemNo].deadTargetFlag == FALSE)
                           if (p_party[i]->hp <= 0)
                             continue;
-
                         p_party[i]->atr |= ACT_ATR_HIT_BOX;
                       }
                       battleTargetSelectFlag = TRUE;
@@ -1766,11 +1683,6 @@ void BattleButtonPPLSKILL(void) {
             } else {
               use_color = FONT_PAL_GRAY;
             }
-#ifdef _PROFESSION_ADDSKILL
-            //    if ( profession_skill[ AdvanceSkill [ j + i * 4 ] ].skillId ==
-            //    2 )
-            //        use_color = FONT_PAL_WHITE; //针针相对不做mp限制
-#endif
 #ifdef _PRO_ABSOLUTE_DEFENSE
             if ((profession_skill[AdvanceSkill[j + i * 4]].skillId == 75 ||
                  profession_skill[AdvanceSkill[j + i * 4]].skillId == 76 ||
@@ -1830,16 +1742,6 @@ void BattleButtonPPLSKILL(void) {
                     profession_skill[AdvanceSkill[j + i * 4]].target, 1);
               }
 #endif
-#ifdef _PROFESSION_ADDSKILL
-              //        else if ( profession_skill[ AdvanceSkill [ j + i * 4 ]
-              //        ].skillId == 2 && profession_skill[AdvanceSkill [ j + i
-              //        * 4 ]].costmp == 0 ) { //针针相对不做mp限制
-              //            wonflag = 0 ;
-              //            BattleSetWazaHitBox( profession_skill[AdvanceSkill [
-              //            j + i * 4 ] ].target , 1) ; prouseskill =
-              //            AdvanceSkill [ j + i * 4  ];
-              //        }
-#endif
             }
           }
         }
@@ -1852,7 +1754,7 @@ void BattleButtonPPLSKILL(void) {
     sprintf_s(buf, "%s", msg);
     x = 18;
     y = 340;
-    while (1) {
+    while (true) {
       if (strlen(splitPoint) > 34) {
         strncpy_s(msg, splitPoint, 34);
         buf[34] = NULL;
@@ -1942,9 +1844,7 @@ void BattleSetWazaHitBox(int no)
     else
 #endif
       BattleCmdNo = BATTLE_WAZA;
-    // ?????
     play_se(217, 320, 240);
-    // ????????
     battleWazaTargetBak = no;
     break;
 
@@ -2973,38 +2873,6 @@ int GetBattelTarget() {
     i = 0;
     end = 10;
   }
-#ifdef __AI
-#ifdef _AI_CAPTURE
-  for (; i < end; i++) {
-    index = Ordinal[i];
-    if (p_party[index]->func == NULL)
-      continue;
-    if (p_party[index]->hp <= 0 || index == BattleMyNo ||
-        index == 5 + BattleMyNo)
-      continue;
-    if (AI_OtherSetting[1] && p_party[index]->level == 1) {
-      return index;
-      ;
-    }
-  }
-#endif
-  i = 10;
-  end = 20;
-  if (BattleMyNo < 10) {
-    i = 0;
-    end = 10;
-  }
-  for (; i < end; i++) {
-    index = Ordinal[i];
-    if (p_party[index]->func == NULL)
-      continue;
-    if (p_party[index]->hp <= 0 || index == BattleMyNo ||
-        index == 5 + BattleMyNo)
-      continue;
-
-    return index;
-  }
-#else
   for (; i < end; i++) {
     index = Ordinal[i];
     if (p_party[index]->func == NULL)
@@ -3027,7 +2895,6 @@ int GetBattelTarget() {
         (p_party[index]->atr & ACT_ATR_HIT_BOX_COL8))
       return index;
   }
-#endif
   return -1;
 }
 

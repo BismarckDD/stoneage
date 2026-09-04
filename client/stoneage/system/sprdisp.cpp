@@ -11,15 +11,10 @@
 #define STOCK_DISP_BUFFER_BOX_FILL (1 << 28) // ????????
 #define STOCK_DISP_BUFFER_CIRCLE (1 << 27)   // ?
 extern int displayBpp;
-// ?????
 DISP_BUFFER DispBuffer;
 
-#ifndef __CARYTEST
-// Realbin ???????????????
 char *pRealBinBits;
-// ?? Realbin ????????????
 int RealBinWidth, RealBinHeight;
-#endif
 #ifdef _READ16BITBMP
 BYTE *pRealBinAlpha;
 #endif
@@ -96,7 +91,6 @@ BOOL PutTileBmp(void) {
     if (fastDrawTile &&
         (fastDrawTileFlag == 0 || amountXFastDraw || amountYFastDraw)) {
       retainbackbuffer = TRUE;
-      // ?????????????????????????????
       if (ProcNo != PROC_BATTLE) {
         src.top = 0;
         src.left = 0;
@@ -104,10 +98,7 @@ BOOL PutTileBmp(void) {
         src.bottom = DEF_APPSIZEY;
         sx = 0;
         sy = 0;
-        //???????????????
         if (gResolutionMode == 1) {
-          // src.right /= 2;
-          // src.bottom /= 2;
           src.right >>= 1;
           src.bottom >>= 1;
         }
@@ -305,27 +296,10 @@ void PutBmp(void) {
   unsigned char drawMapEffectFlag = 0;
   unsigned char drawFastTileFlag = 0;
   unsigned char drawFastTileFlag2 = 0;
-#ifndef __CARYTEST
   SURFACE_INFO *lpSurfaceInfo;
 #ifdef _READ16BITBMP
   SURFACE_INFO *lpSurfaceInfoSys;
 #endif
-#else
-  DDSURFACEDESC ddsd; // ??????
-  LPWORD surface;
-  int pitch;
-  BOOL locked = FALSE;
-  int x, y;
-  short width, height;
-  ZeroMemory(&ddsd, sizeof(DDSURFACEDESC));
-  ddsd.dwSize = sizeof(DDSURFACEDESC);
-  if (lpDraw->lpBACKBUFFER->Lock(NULL, &ddsd, DDLOCK_WAIT, NULL) == DD_OK) {
-    surface = (LPWORD)ddsd.lpSurface;
-    pitch = ddsd.lPitch;
-    locked = TRUE;
-  }
-#endif
-  // ???????????
   for (i = 0; i < DispBuffer.DispCnt; i++, pDispSort++) {
     pDispInfo = &DispBuffer.DispInfo[pDispSort->no];
     bmpNo = pDispInfo->bmpNo; // 秀图ID

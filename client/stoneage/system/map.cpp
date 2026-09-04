@@ -1,4 +1,5 @@
-﻿#include "systeminc/system.h"
+﻿#define __MAP_CPP__
+#include "systeminc/system.h"
 //
 #include <direct.h>
 //
@@ -109,12 +110,6 @@ short moveRouteCnt2 = 0;
 short moveRoute2[MOVE_MAX2];
 
 short moveLastDir = -1;
-
-// ??????
-BOOL mouseLeftCrick = FALSE;
-BOOL mouseLeftOn = FALSE;
-BOOL mouseRightCrick = FALSE;
-BOOL mouseRightOn = FALSE;
 #ifdef _MOUSE_DBL_CLICK
 BOOL mouseDblRightOn = FALSE;
 #endif
@@ -193,9 +188,11 @@ int transEffectPaletteStatus;
 unsigned int transEffectPaletteAfterWaitTime;
 
 
-// ???
-void onceMoveProc(void);
+// 单人移动处理函数
+void singleMoveProc(void);
+// 团队移动处理函数
 void partyMoveProc(void);
+//
 void getPartyTbl(void);
 #ifdef _MOVE_SCREEN
 void MoveScreenProc(void);
@@ -2093,12 +2090,16 @@ void moveProc(void)
             mouseLeftCrick = FALSE;
         //end
     }
-    // ????????????
+    // 在MoveProc中点击右键
     if (mouseRightCrick)
     {
-        // ?????
         turnAround();
-        // ?????
+        // 2026.09.04 将右键攻击从turnAround中移动到这里
+        // 之前的逻辑是有问题的，非右键也可能攻击
+        if (bRightClickAttack) {
+            lssproto_AC_send(sockfd, nowGx, nowGy, -1);
+            setPcAction(0);
+        }
         getItem();
     }
 #ifdef _MOUSE_DBL_CLICK
@@ -2147,13 +2148,10 @@ void moveProc(void)
             }
     }
 
-    // ???????????
     getPartyTbl();
-    // ????????????
     if (partyModeFlag == 0 || (pc.status & CHR_STATUS_LEADER) != 0)
-        onceMoveProc();
+        singleMoveProc();
     else
-        // ????????????
         partyMoveProc();
 #ifdef _MOVE_SCREEN
     if (pc.bMoveScreenMode)
@@ -2227,12 +2225,10 @@ void updateMapArea(void)
     mapAreaHeight = mapAreaY2 - mapAreaY1;
 }
 
-void onceMoveProc(void)
+void singleMoveProc(void)
 {
     int dir;
-    // ??????????????䥺?
     nowSpdRate = 1.0F;
-    // ??????????????
     if (mapEmptyFlag)
         return;
     if (sendEnFlag == 0 && eventWarpSendFlag == 0 && eventEnemySendFlag == 0)
@@ -2283,12 +2279,8 @@ void onceMoveProc(void)
     // ?????????
     _partyMapMove();
     updateMapArea();
-
-    {
-        viewPointX = nowX;
-        viewPointY = nowY;
-    }
-
+    viewPointX = nowX;
+    viewPointY = nowY;
 }
 
 // ?????????????
@@ -2827,13 +2819,9 @@ void _sendWarpEvent(void)
     else
         old_lssproto_EV_send(sockfd, _eventWarpNo, eventId, nowGx, nowGy, -1);
     eventId++;
-    wnCloseFlag = 1;    // ?????????
-#ifdef __AI
-    void AI_CloseWnd();
-    //            AI_CloseWnd();
-#endif
-    closeEtcSwitch();    // ????????
-    closeCharActionAnimeChange();    // ?????????????
+    wnCloseFlag = 1; //
+    closeEtcSwitch();
+    closeCharActionAnimeChange();
     closeJoinChannelWN();
     // ?????
 
@@ -3221,9 +3209,7 @@ void mapMove2(void)
     setPcPoint();
 }
 
-///////////////////////////////////////////////////////////////////////////
-// ????????
-//
+// 转向, 也就是说只有转向的时候才能右键攻击？
 void turnAround(void)
 {
     float tmpDir, tmpX, tmpY;
@@ -3256,10 +3242,8 @@ void turnAround(void)
     tmpDir = Atan(tmpX, tmpY) + 22.5F;
     tmpDir = AdjustDir(tmpDir);
     dir = (int)(tmpDir / 45);
-    // ???????????
     if (pc.ptAct->anim_ang == dir)
         return;
-    // ??
     if (turnSendTime + FIELD_BTN_PUSH_WAIT < TimeGetTime())
     {
         setPcDir(dir);
@@ -3267,17 +3251,10 @@ void turnAround(void)
         dir2[1] = '\0';
         walkSendForServer(nowGx, nowGy, dir2);
         turnSendTime = TimeGetTime();
-        extern int 右键攻击;
-        if (右键攻击) {
-            lssproto_AC_send(sockfd, nowGx, nowGy, 0);
-            setPcAction(0);
-
-        }
-
-
     }
 }
 
+// 转向
 void turnAround2(int dir)
 {
     char dir2[2];
@@ -3309,10 +3286,6 @@ void turnAround2(int dir)
     }
 }
 
-///////////////////////////////////////////////////////////////////////////
-// ??????
-//
-// ??佋??dir??1????????????
 void getRouteData(int dir, int *x, int *y)
 {
     switch (dir)
@@ -4488,11 +4461,9 @@ short mapEffectKamiFubukiCnt = 0;
 BOOL bMapEffectDice = FALSE;
 #endif
 
-// ????????????
 void initMapEffect(BOOL bFirstRun)
 {
     int i;
-
     emptyBufMapEffect = &masterBufMapEffect[0];
     masterBufMapEffect[0].pre = (MAP_EFFECT *)NULL;
     for (i = 1; i < MAX_MAP_EFFECT_BUF; i++)
@@ -5688,7 +5659,6 @@ void mapEffectKamiFubuki(void)
             }
         }
     }
-    // ???
     i = 0;
     buf = useBufMapEffect;
     while (buf != (MAP_EFFECT*)NULL)

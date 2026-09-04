@@ -711,10 +711,9 @@ void setCharLeader(ACTION *ptAct) {
 }
 
 int getCharType(ACTION *ptAct) {
-  extern int 人物屏蔽开关;
   if (ProcNo != PROC_GAME)
     return 0;
-  if (!人物屏蔽开关)
+  if (!bSwitchMuteOtherPlayers)
     return 0;
   // 人物屏蔽只作用于场景中的其他角色。本机角色必须持续生成动画帧，
   // 否则角色仍可移动并带动镜头，但 bmpNo 会被 pattern() 清零而不可见。
@@ -1032,10 +1031,6 @@ void setCharUseMagic(ACTION *ptAct) {
   charObj[no].status |= CHR_STATUS_USE_MAGIC;
 }
 
-// ???????????????????
-// ???????
-extern int 人物屏蔽开关;
-
 void delCharUseMagic(ACTION *ptAct) {
   CHAREXTRA *ext;
   int no;
@@ -1096,7 +1091,7 @@ void drawCharStatus(ACTION *ptAct) {
 #ifdef _CHAR_MANOR_
   if (ext->ptmManorIcon) {
     {
-      if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+      if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
         if (ATR_PAT_NO(ext->ptmManorIcon)) {
           ATR_PAT_BAK_NO(ext->ptmManorIcon) = ATR_PAT_NO(ext->ptmManorIcon);
           ATR_PAT_NO(ext->ptmManorIcon) = 0;
@@ -1124,7 +1119,7 @@ void drawCharStatus(ACTION *ptAct) {
 #endif
 
   if ((status & CHR_STATUS_BATTLE) != 0) {
-    if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+    if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
       ; // ATR_PAT_NO(ptAct) = 0;
     } else {
       int no;
@@ -1144,7 +1139,7 @@ void drawCharStatus(ACTION *ptAct) {
 
   // Trade Mark
   if ((status & CHR_STATUS_TRADE) != 0) {
-    if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+    if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
       ; // ATR_PAT_NO(ptAct) = 0;
     } else {
 
@@ -1200,7 +1195,7 @@ void drawCharStatus(ACTION *ptAct) {
 
   // ????
   if ((status & CHR_STATUS_WATCH) != 0) {
-    if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+    if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
       ; // ATR_PAT_NO(ptAct) = 0;
     } else {
       int no;
@@ -1219,7 +1214,7 @@ void drawCharStatus(ACTION *ptAct) {
   }
   // ??????
   if ((status & CHR_STATUS_HELP) != 0) {
-    if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+    if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
       ; // ATR_PAT_NO(ptAct) = 0;
     } else {
       int no;
@@ -1249,7 +1244,7 @@ void drawCharStatus(ACTION *ptAct) {
     ext->ptActLeaderMark = NULL;
   } else if ((status & CHR_STATUS_LEADER) != 0 &&
              ext->ptActLeaderMark != NULL) {
-    if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+    if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
       if (ATR_PAT_NO(ext->ptActLeaderMark)) {
         ATR_PAT_BAK_NO(ext->ptActLeaderMark) = ATR_PAT_NO(ext->ptActLeaderMark);
         ATR_PAT_NO(ext->ptActLeaderMark) = 0;
@@ -1310,7 +1305,7 @@ void drawCharStatus(ACTION *ptAct) {
       U4 bmpNo;
       realGetNo(CG_ICON_FUKIDASI, &bmpNo);
       if (SPR_001em <= ptAct->anim_chr_no && ptAct->anim_chr_no <= SPR_114bw) {
-        if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+        if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
           ; // ATR_PAT_NO(ptAct) = 0;
         } else {
           short x1, y1;
@@ -1474,7 +1469,7 @@ void drawCharStatus(ACTION *ptAct) {
       ext->ptActEmotion = NULL;
       // pattern( ext->ptActEmotion, ANM_NOMAL_SPD, ANM_LOOP );
     } else {
-      if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+      if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
         if (ATR_PAT_NO(ext->ptActEmotion)) {
           ATR_PAT_BAK_NO(ext->ptActEmotion) = ATR_PAT_NO(ext->ptActEmotion);
           ATR_PAT_NO(ext->ptActEmotion) = 0;
@@ -1500,11 +1495,10 @@ void drawCharStatus(ACTION *ptAct) {
   }
 #endif
 #ifdef _STREET_VENDOR
-  extern int 人物屏蔽开关;
   if (ext->ptStreetVendor) {
     BOOL pand = FALSE;
 
-    if (人物屏蔽开关) {
+    if (bSwitchMuteOtherPlayers) {
       if (pc.ptAct == ptAct)
         pand = TRUE;
     } else
@@ -1543,7 +1537,7 @@ void drawCharStatus(ACTION *ptAct) {
       DeathAction(ext->ptMindIcon);
       ext->ptMindIcon = NULL;
     } else {
-      if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+      if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
         if (ATR_PAT_NO(ext->ptMindIcon)) {
           ATR_PAT_BAK_NO(ext->ptMindIcon) = ATR_PAT_NO(ext->ptMindIcon);
           ATR_PAT_NO(ext->ptMindIcon) = 0;
@@ -1604,7 +1598,7 @@ void drawCharStatus(ACTION *ptAct) {
 #ifdef _SHOWFAMILYBADGE_
   if (ext->ptFamilyIcon) { // 这里删除掉就可以走动显示
     {
-      if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+      if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
         if (ATR_PAT_NO(ext->ptFamilyIcon)) {
           ATR_PAT_BAK_NO(ext->ptFamilyIcon) = ATR_PAT_NO(ext->ptFamilyIcon);
           ATR_PAT_NO(ext->ptFamilyIcon) = 0;
@@ -1653,7 +1647,7 @@ void drawCharStatus(ACTION *ptAct) {
 #ifdef FAMILY_MANOR_
   if (ext->ptmFamilyIcon) { // 这里删除掉就可以走动显示
     {
-      if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+      if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
         if (ATR_PAT_NO(ext->ptmFamilyIcon)) {
           ATR_PAT_BAK_NO(ext->ptmFamilyIcon) = ATR_PAT_NO(ext->ptmFamilyIcon);
           ATR_PAT_NO(ext->ptmFamilyIcon) = 0;
@@ -1685,7 +1679,7 @@ void drawCharStatus(ACTION *ptAct) {
 #ifdef _CHARTITLE_
   if (ext->ptTitleIcon) { // 这里删除掉就可以走动显示
     {
-      if (人物屏蔽开关 && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
+      if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
         if (ATR_PAT_NO(ext->ptTitleIcon)) {
           ATR_PAT_BAK_NO(ext->ptTitleIcon) = ATR_PAT_NO(ext->ptTitleIcon);
           ATR_PAT_NO(ext->ptTitleIcon) = 0;

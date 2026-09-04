@@ -8,7 +8,6 @@
 #define EXTERN extern
 #endif
 
-
 /*
 PC 可以理解为 Player Character。
 主要内容如下：
@@ -240,7 +239,7 @@ struct ITEM {
 #endif
   short useFlag;  //
   short field;    //
-  short target;                       // 
+  short target;   // 
   short deadTargetFlag;  //
   short sendFlag; 
   char name[ITEM_NAME_BUFFER_SIZE];
@@ -631,6 +630,8 @@ EXTERN int newCharacterWater;
 EXTERN int newCharacterFire;
 EXTERN int newCharacterWind;
 EXTERN int newCharacterHomeTown;
+
+#undef EXTERN
 
 void initPcAll(void);
 void initPc(void);

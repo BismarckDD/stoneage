@@ -219,40 +219,19 @@ void CheckGroupSelect(int no) {
     pDispInfo = DispBuffer.DispInfo + i;
     pDispSort = DispBuffer.DispSort + i;
 
-    // ??????????
     if (pDispInfo->hitFlag == no) {
-      // ??????????
       if (pDispSort->dispPrio >= DISP_PRIO_MENU) {
-        // ????牙????????????
-#ifndef __CARYTEST
         StockBoxDispBuffer(
             pDispInfo->x - 2, pDispInfo->y - 2,
             pDispInfo->x + SpriteInfo[pDispInfo->bmpNo].width + 2,
             pDispInfo->y + SpriteInfo[pDispInfo->bmpNo].height + 2,
             DISP_PRIO_BOX2, BoxColor, 0);
-#else
-        StockBoxDispBuffer(
-            pDispInfo->x - 2, pDispInfo->y - 2,
-            pDispInfo->x + g_lpRealAdrn[pDispInfo->bmpNo].width + 2,
-            pDispInfo->y + g_lpRealAdrn[pDispInfo->bmpNo].height + 2,
-            DISP_PRIO_BOX2, BoxColor, 0);
-#endif
       } else {
-        // ????牙????????????
-#ifndef __CARYTEST
         StockBoxDispBuffer(
             pDispInfo->x - 2, pDispInfo->y - 2,
             pDispInfo->x + SpriteInfo[pDispInfo->bmpNo].width + 2,
             pDispInfo->y + SpriteInfo[pDispInfo->bmpNo].height + 2,
             DISP_PRIO_BOX, BoxColor, 0);
-        // pDispSort->dispPrio, 250, 0 );
-#else
-        StockBoxDispBuffer(
-            pDispInfo->x - 2, pDispInfo->y - 2,
-            pDispInfo->x + g_lpRealAdrn[pDispInfo->bmpNo].width + 2,
-            pDispInfo->y + g_lpRealAdrn[pDispInfo->bmpNo].height + 2,
-            DISP_PRIO_BOX, BoxColor, 0);
-#endif
       }
     }
   }
@@ -344,21 +323,12 @@ void HitMouseCursor(void) {
     // ?????????
     if (pDispInfo->pAct == NULL) {
       // ?????刪叉
-#ifndef __CARYTEST
       if (mouse.nowPoint.x <=
               pDispInfo->x + SpriteInfo[pDispInfo->bmpNo].width &&
           pDispInfo->x <= mouse.nowPoint.x &&
           mouse.nowPoint.y <=
               pDispInfo->y + SpriteInfo[pDispInfo->bmpNo].height &&
           pDispInfo->y <= mouse.nowPoint.y)
-#else
-      if (mouse.nowPoint.x <=
-              pDispInfo->x + g_lpRealAdrn[pDispInfo->bmpNo].width &&
-          pDispInfo->x <= mouse.nowPoint.x &&
-          mouse.nowPoint.y <=
-              pDispInfo->y + g_lpRealAdrn[pDispInfo->bmpNo].height &&
-          pDispInfo->y <= mouse.nowPoint.y)
-#endif
         hitFlag = TRUE;
     } else {
       // World character x/y is the projected map position (feet). Sprite
@@ -372,7 +342,6 @@ void HitMouseCursor(void) {
           mouse.nowPoint.y <= pDispInfo->pAct->y + MOUSE_HIT_SIZE_Y / 2)
         hitFlag = TRUE;
       // ?????刪叉????????
-#ifndef __CARYTEST
       if (mouse.nowPoint.x <= pDispInfo->x +
                                   SpriteInfo[pDispInfo->bmpNo].width * 0.5 +
                                   MOUSE_HIT_SIZE_X * 0.5 &&
@@ -384,19 +353,6 @@ void HitMouseCursor(void) {
           pDispInfo->y + SpriteInfo[pDispInfo->bmpNo].height -
                   MOUSE_HIT_SIZE_Y <=
               mouse.nowPoint.y)
-#else
-      if (mouse.nowPoint.x <= pDispInfo->x +
-                                  g_lpRealAdrn[pDispInfo->bmpNo].width * 0.5 +
-                                  MOUSE_HIT_SIZE_X * 0.5 &&
-          pDispInfo->x + g_lpRealAdrn[pDispInfo->bmpNo].width * 0.5 -
-                  MOUSE_HIT_SIZE_X * 0.5 <=
-              mouse.nowPoint.x &&
-          mouse.nowPoint.y <=
-              pDispInfo->y + g_lpRealAdrn[pDispInfo->bmpNo].height &&
-          pDispInfo->y + g_lpRealAdrn[pDispInfo->bmpNo].height -
-                  MOUSE_HIT_SIZE_Y <=
-              mouse.nowPoint.y)
-#endif
         hitFlag = TRUE;
     }
 
@@ -447,60 +403,29 @@ void HitMouseCursor(void) {
       // ???????吻????
       HitDispNo = pDispSort->no;
 
-      // ?????牙???
       if (pDispInfo->hitFlag >= 2) {
-        // ??????????
         if (pDispSort->dispPrio >= DISP_PRIO_YES_NO_WND) {
-          // ????牙????????????
-#ifndef __CARYTEST
           StockBoxDispBuffer(
               pDispInfo->x - 2, pDispInfo->y - 2,
               pDispInfo->x + SpriteInfo[pDispInfo->bmpNo].width + 2,
               pDispInfo->y + SpriteInfo[pDispInfo->bmpNo].height + 2,
-              // DISP_PRIO_BOX2, 250, 0 );
               DISP_PRIO_BOX3, BoxColor, 0);
-#else
-          StockBoxDispBuffer(
-              pDispInfo->x - 2, pDispInfo->y - 2,
-              pDispInfo->x + g_lpRealAdrn[pDispInfo->bmpNo].width + 2,
-              pDispInfo->y + g_lpRealAdrn[pDispInfo->bmpNo].height + 2,
-              DISP_PRIO_BOX3, BoxColor, 0);
-#endif
         } else
           // ??????????
           if (pDispSort->dispPrio >= DISP_PRIO_MENU) {
             // ????牙????????????
-#ifndef __CARYTEST
             StockBoxDispBuffer(
                 pDispInfo->x - 2, pDispInfo->y - 2,
                 pDispInfo->x + SpriteInfo[pDispInfo->bmpNo].width + 2,
                 pDispInfo->y + SpriteInfo[pDispInfo->bmpNo].height + 2,
-                // DISP_PRIO_BOX2, 250, 0 );
                 DISP_PRIO_BOX2, BoxColor, 0);
-#else
-            StockBoxDispBuffer(
-                pDispInfo->x - 2, pDispInfo->y - 2,
-                pDispInfo->x + g_lpRealAdrn[pDispInfo->bmpNo].width + 2,
-                pDispInfo->y + g_lpRealAdrn[pDispInfo->bmpNo].height + 2,
-                DISP_PRIO_BOX2, BoxColor, 0);
-#endif
           } else {
             // ????牙????????????
-#ifndef __CARYTEST
             StockBoxDispBuffer(
                 pDispInfo->x - 2, pDispInfo->y - 2,
                 pDispInfo->x + SpriteInfo[pDispInfo->bmpNo].width + 2,
                 pDispInfo->y + SpriteInfo[pDispInfo->bmpNo].height + 2,
-                // DISP_PRIO_BOX, 250, 0 );
                 DISP_PRIO_BOX, BoxColor, 0);
-            // pDispSort->dispPrio, 250, 0 );
-#else
-            StockBoxDispBuffer(
-                pDispInfo->x - 2, pDispInfo->y - 2,
-                pDispInfo->x + g_lpRealAdrn[pDispInfo->bmpNo].width + 2,
-                pDispInfo->y + g_lpRealAdrn[pDispInfo->bmpNo].height + 2,
-                DISP_PRIO_BOX, BoxColor, 0);
-#endif
           }
         if (pDispInfo->hitFlag >= 3)
           CheckGroupSelect(pDispInfo->hitFlag);
@@ -515,14 +440,12 @@ void HitMouseCursor(void) {
           if (pDispInfo->pAct->atr & ACT_ATR_INFO) {
             if (ProcNo == PROC_GAME) {
               // 2026.08.30: 设置在平时场景下的OneLineInfoStr.
-#ifdef _MOUSE_SHOW_INFO_FOR_HEAD
+              // 鼠标hover显示角色的名字
               int left = getTextLength(pDispInfo->pAct->name) / 2;
               itemNameColor = pDispInfo->pAct->itemNameColor;
               StockFontBuffer(pDispInfo->x + 20 - left, pDispInfo->y - 10,
                               FONT_PRIO_FRONT, itemNameColor,
                               pDispInfo->pAct->name, 0);
-#endif
-
               if (pDispInfo->pAct->atr & ACT_ATR_TYPE_PC) {
                 itemNameColor = pDispInfo->pAct->itemNameColor;
                 if (pDispInfo->pAct->freeName[0] != NULL) {

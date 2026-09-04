@@ -392,5 +392,5 @@ CREATE TABLE IF NOT EXISTS `yuxiaxielog` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 
--- INSERT INTO CSAlogin (username, password) values ('aaa', 'aaa');
--- INSERT INTO CSAlogin (username, password) values ('aaaa', 'aaaa');
+INSERT INTO CSAlogin (username, password) values ('aaa', 'aaa');
+INSERT INTO CSAlogin (username, password) values ('aaaa', 'aaaa');

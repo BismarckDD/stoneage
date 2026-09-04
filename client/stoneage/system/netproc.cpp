@@ -788,15 +788,16 @@ void lssproto_CharLogout_recv(int fd, char *result, char *data) {
 
 #define S_DELIM '|'
 
+// 2026.09.04 这个代码代表了双方的交互协议，重点研究
 /*================================
-C warp 用
+C WARP，传送角色
 D 修正时间
 X 骑宠
 P 人物状态
 F 家族状态
 M HP,MP,EXP
 K 宠物状态
-E nowEncountPercentage
+E 当前的遇敌百分比
 J 魔法
 N 队伍资讯
 I 道具
@@ -810,7 +811,6 @@ void lssproto_S_recv(int fd, char *data) {
   switch (data[0]) {
   case 'C': {
     int fl, maxx, maxy, gx, gy;
-
     floorChangeFlag = TRUE;
     ClientRuntimeLog("action",
                      "map-change C received: currentFloor=%d id=%d action=%p login=%d proc=%d warp=%d",
@@ -885,7 +885,6 @@ void lssproto_S_recv(int fd, char *data) {
     char name[256], freeName[256];
     int i, kubun;
     unsigned int mask;
-
     data++;
     kubun = getInteger62Token(data, S_DELIM, 1);
     if (!bNewServer)
@@ -948,7 +947,6 @@ void lssproto_S_recv(int fd, char *data) {
       pc.道具光环效果 = getIntegerToken(data, S_DELIM, 35);
 #endif
 #endif
-
     } else {
       mask = 2;
       i = 2;
@@ -1465,6 +1463,14 @@ void lssproto_S_recv(int fd, char *data) {
   case 'I': {
     int i, no;
     char temp[256];
+    int delimiterCount = 0;
+    for (const char *cursor = data + 1; *cursor != '\0'; ++cursor) {
+      if (*cursor == '|')
+        ++delimiterCount;
+    }
+    ClientRuntimeLog("inventory-recv",
+                     "full packet bytes=%u delimiters=%d expectedSlots=%d",
+                     (unsigned int)strlen(data + 1), delimiterCount, MAX_ITEM);
 
     data++;
     for (i = 0; i < MAX_ITEM; i++) {
@@ -1484,18 +1490,17 @@ void lssproto_S_recv(int fd, char *data) {
 #else
 #ifdef _ITEM_PILENUMS
 #ifdef _ALCHEMIST // #ifdef _ITEMSET7_TXT
-      no = i * 14;
+      // name, name2, color, memo, gra, field, target, level, flags,
+      // durability, pile, alchemist tag and item type: 13 fields.
+      no = i * 13;
 #else
 
       no = i * 11;
 
 #endif //_ALCHEMIST
 #else
-
       no = i * 10;
-
       // end modified by lsh
-
 #endif //_ITEM_PILENUMS
 #endif //_PET_ITEM
 #endif //_ITEM_JIGSAW
@@ -1564,6 +1569,18 @@ void lssproto_S_recv(int fd, char *data) {
       pc.item[i].counttime = getIntegerToken(data, '|', no + 16);
 #endif
     }
+    int usedCount = 0;
+    for (i = 0; i < MAX_ITEM; ++i) {
+      if (!pc.item[i].useFlag)
+        continue;
+      ++usedCount;
+      ClientRuntimeLog("inventory-recv",
+                       "full slot=%d use=1 gra=%d pile=%d name=%s",
+                       i, pc.item[i].graNo, pc.item[i].pile,
+                       pc.item[i].name);
+    }
+    ClientRuntimeLog("inventory-recv", "full parsed used=%d empty=%d",
+                     usedCount, MAX_ITEM - usedCount);
   } break;
   // 接收到的宠物技能
   case 'W': {
@@ -1924,9 +1941,7 @@ void lssproto_C_recv(int fd, char *data) {
       charType = getIntegerToken(bigtoken, '|', 2);
       getStringToken(bigtoken, '|', 3, sizeof(smalltoken) - 1, smalltoken);
       id = a62toi(smalltoken);
-
-      extern BOOL 人物屏蔽开关;
-      if (人物屏蔽开关) {
+      if (bSwitchMuteOtherPlayers) {
         if (id != pc.id) {
           if (charType < 4)
             continue;
@@ -3189,6 +3204,7 @@ void lssproto_SI_recv(int fd, int from, int to) {
 void lssproto_I_recv(int fd, char *data) {
   int i, j;
   int no;
+  int delimiterCount = 0;
   char name[256];
   char name2[256];
   char memo[256];
@@ -3196,6 +3212,11 @@ void lssproto_I_recv(int fd, char *data) {
   // "9|乌力斯坦的肉||0|耐久力10前後回复|24002|0|1|0|7|不会损坏|1|肉|20||10|乌力斯坦的肉||0|耐久力10前後回复|24002|0|1|0|7|不会损坏|1|肉|20|";
   if (logOutFlag) // 人物未登陆则不接收这个封包
     return;
+
+  for (const char *cursor = data; *cursor != '\0'; ++cursor) {
+    if (*cursor == '|')
+      ++delimiterCount;
+  }
 
   for (j = 0;; j++) {
 #ifdef _ITEM_JIGSAW
@@ -3235,6 +3256,7 @@ void lssproto_I_recv(int fd, char *data) {
     makeStringFromEscaped(name);
     if (strlen(name) == 0) {
       pc.item[i].useFlag = 0;
+      ClientRuntimeLog("inventory-recv", "incremental slot=%d cleared", i);
       continue;
     }
     pc.item[i].useFlag = 1;
@@ -3301,7 +3323,14 @@ void lssproto_I_recv(int fd, char *data) {
     pc.item[i].道具类型 = getIntegerToken(data, '|', no + 14);
 #endif
 #endif
+    ClientRuntimeLog("inventory-recv",
+                     "incremental slot=%d use=1 gra=%d pile=%d name=%s",
+                     i, pc.item[i].graNo, pc.item[i].pile,
+                     pc.item[i].name);
   }
+  ClientRuntimeLog("inventory-recv",
+                   "incremental records=%d bytes=%u delimiters=%d",
+                   j, (unsigned int)strlen(data), delimiterCount);
 }
 
 void lssproto_WN_recv(int fd, int windowtype, int buttontype, int seqno,

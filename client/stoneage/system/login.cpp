@@ -19,6 +19,7 @@
 #include "proto/protocol.h"
 #include "proto/autil.h"
 #include "systeminc/field.h"
+#include "systeminc/directdraw.h"
 #include "game/anim_tbl.h"
 #include "systeminc/login.h"
 #include "systeminc/produce.h"
@@ -72,9 +73,6 @@ void initStrBuffer(STR_BUFFER *, int, int, int, int, int);
 void getStrSplit(char *, char *, int, int, int);
 int DelCharGraColorWin(void);
 
-#ifdef _PET_TRACE_MOUSE
-SCPlayPet PlayPet;
-#endif
 #ifdef _75_LOGIN
 static ACTION *aEffect, *aEffect1;
 #define RAND(x, y) ((x - 1) + 1 + (int)((double)(y - (x - 1)) * rand() / (RAND_MAX + 1.0)))
@@ -204,9 +202,6 @@ void idPasswordProc(void)
         SubProcNo++;
         initInputIdPassword();
         idKeyReturn = 0;
-#ifdef _PET_TRACE_MOUSE
-        PlayPet.SetActionStep(0);
-#endif
     }
     if (SubProcNo == 1)
     {
@@ -262,9 +257,6 @@ void idPasswordProc(void)
 #endif
         initConnectServer();
         SubProcNo = 4;
-#ifdef _PET_TRACE_MOUSE
-        PlayPet.SetActionStep(2);
-#endif
 #ifdef _75_LOGIN
         if (g_bUseAlpha)
         {
@@ -1989,7 +1981,6 @@ int selCharGraNo(void)
         selCharGraNoProcNo++;
     }
 
-    // ???
     if (selCharGraNoProcNo == 1)
     {
         for (i = 0; i < MaxSelectChar; i++)
@@ -2002,37 +1993,13 @@ int selCharGraNo(void)
                 y2 = y1 + selectGraHitArea[i][3];
                 if (MakeHitBox(x1, y1, x2, y2, DISP_PRIO_BOX))
                 {
-#ifndef _TAIKEN
                     ptActSelChar[i]->anim_no = ANIM_WALK;
                     if (mouse.onceState & MOUSE_LEFT_CRICK)
                     {
-                        // ???????
                         selCharGraNoProcNo = 2;
                         nowSelCharGraNo = i;
                         play_se(217, 320, 240); // ?????
                     }
-#else
-                    if (i == 0 || i == 2 || i == 6 || i == 9)
-                    {
-                        ptActSelChar[i]->anim_no = ANIM_WALK;
-                        if (mouse.onceState & MOUSE_LEFT_CRICK)
-                        {
-                            // ???????
-                            selCharGraNoProcNo = 2;
-                            nowSelCharGraNo = i;
-                            play_se(217, 320, 240); // ?????
-                        }
-                    }
-                    else
-                    {
-                        ptActSelChar[i]->anim_no = ANIM_SAD;
-                        taikenFlag = 1;
-                        if (mouse.onceState & MOUSE_LEFT_CRICK)
-                        {
-                            play_se(220, 320, 240); // ???
-                        }
-                    }
-#endif
                 }
                 else
                     ptActSelChar[i]->anim_no = ANIM_STAND;
@@ -3393,7 +3360,6 @@ void initCharLogout(void)
     charLogoutProcNo = 0;
 }
 
-// ???????
 int charLogout(void)
 {
     extern unsigned int systemWndNo; // ??????
@@ -3527,6 +3493,20 @@ static int GetEmptyPlayerItemSlotCount(void)
         if (pc.item[i].useFlag == 0)
             ++emptyCount;
     }
+    ClientRuntimeLog("inventory-capacity",
+        "range=[%d,%d) capacity=%d used=%d empty=%d"
+#ifdef _NEW_ITEM_
+        " state=0x%x"
+#endif
+        ,
+        MAX_ITEMSTART, itemLimit, itemLimit - MAX_ITEMSTART,
+        itemLimit - MAX_ITEMSTART - emptyCount, emptyCount
+#ifdef _NEW_ITEM_
+        ,
+        pc.道具栏状态);
+#else
+        );
+#endif
     return emptyCount;
 }
 char shopWindow7Msg[2][39]; // ???????????????

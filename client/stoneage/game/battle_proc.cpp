@@ -33,17 +33,16 @@ extern ACTION *boundary_2,*boundary_mark[2];
 #ifdef __ATTACK_MAGIC
 
 // Global vars
-extern int            g_iRunEarthQuake;            // 地震的状况: 0 --> 没地震 , 1 --> 初始化地震 , 2 --> 地震中
-extern int            g_iCurRunEarthQuake;        // 目前地震的位置线
-extern int            g_iNumRunEarthQuake;        // 地震的总次数
+extern int  g_iRunEarthQuake;           // 地震的状况: 0 --> 没地震 , 1 --> 初始化地震 , 2 --> 地震中
+extern int  g_iCurRunEarthQuake;        // 目前地震的位置线
+extern int  g_iNumRunEarthQuake;        // 地震的总次数
 
 #endif
 
 extern BOOL BattlingFlag;  
 
 int flash_pal_cnt;
-PALETTEENTRY    Palette2[256];    // ?????
-
+PALETTEENTRY    Palette2[256];    // 调色板？
 // ?????????
 BOOL EncountFlag = FALSE;
 // ???????
@@ -87,57 +86,44 @@ extern
 void battle_quake( void )
 {
     switch(quake_vct_no){
-    case 0:        //???
+    case 0:
         break;
-    case 1:        //佋?
+    case 1:
         quake_flg = 60;
         quake_vct_no = 2;
         break;
-    case 2:        //佋?
+    case 2:
         if(quake_flg >= 16){
             piyo_point += 16;
         } else {
             piyo_point += quake_flg;
         }
         piyo_point &= 63;
-        if(!--quake_flg){        //佋???
+        if(!--quake_flg){
             quake_vct_no = 0;
         }
         break;
     }
 
     #ifdef __ATTACK_MAGIC
-
     switch( g_iRunEarthQuake )
     {
-        // 没地震
-        case 0:
-
+        case 0: // 没地震
             break;
-
-        // 初始化地震
-        case 1:
-
+        case 1: // 初始化地震
             g_iRunEarthQuake = 2;
             break;
-
-        // 地震中
-        case 2:
-
+        case 2: // 地震中
             if( g_iNumRunEarthQuake >= 16 )
                 g_iCurRunEarthQuake += 16;
             else
                 g_iCurRunEarthQuake += g_iNumRunEarthQuake;
-
             g_iCurRunEarthQuake &= 63;
-
             if( 0 == --g_iNumRunEarthQuake )
                 g_iRunEarthQuake = 0;
-
             break;
-
+        default: break;
     }
-
     #endif
 }
 
@@ -150,11 +136,9 @@ void die_flash( void )
     switch(flash_vct_no){
     case 0:
         break;
-//??????????  ?  ??????????
     case 1:
         flash_vct_no++;
         break;
-
     case 2:
         for( d7 = 0; d7 < 10; d7++ ){
             Palette2[d7].peBlue      = Palette[d7].peBlue;
@@ -167,7 +151,7 @@ void die_flash( void )
             Palette2[d7+246].peRed     = Palette[d7+246].peRed;
             Palette2[d7+246].peFlags = Palette[d7].peFlags;
         }
-        for( d7 = 10; d7 < 246; d7++ ){        //??????????
+        for( d7 = 10; d7 < 246; d7++ ){
             Palette2[d7].peBlue = Palette[d7].peBlue;
             Palette2[d7].peGreen = Palette[d7].peGreen;
             Palette2[d7].peRed = 0xff;
@@ -322,10 +306,6 @@ void BattleProc( void )
 
     switch( SubProcNo ){
         case BATTLE_SUBPROC_INIT:    //初期化
-#ifdef __AI
-            extern char *AI_Choosen;
-            AI_Choosen = NULL;
-#endif
             BattlingFlag = TRUE;  
 
 #ifdef _PROFESSION_ADDSKILL
@@ -630,39 +610,16 @@ void BattleProc( void )
                 break;
             }
 #endif
-
-            /* ?????? */
             ChatProc();
-/*
-#ifndef __AI
-            //cary 清除暂停自动攻击
-            if( PauseAI == 2)
-                PauseAI = 0;
-            if( PauseAI == 1)
-                PauseAI = 2;
-            extern int battleButtonBak;
-            if( AI == AI_SELECT)
-                battleButtonBak = -1;
-#endif
-*/
-            // ??????????????????????
             ChatBufferToFontBuffer(); 
-            // ???????????
             FlashKeyboardCursor();
-            // ??????
             MenuProc();
-            // ???????
             ImeProc();
-            // ???????????
             fieldProc2();
-            // ???????????????
             TimeZoneProc();
-            // ??
             if( BattleBpFlag & BATTLE_BP_JOIN ){
-                // ??????
                 strcpy( OneLineInfoStr,"等待回合结束。");
             }
-            // ?????????????????
             if( EncountFlag == FALSE ){
                 // ??????????
                 if( !( s_timer & 7 ) ){
@@ -801,25 +758,10 @@ void BattleProc( void )
                 piyo_point++;
                 piyo_point &= 63;
             }
-
-            {
-#ifndef __AI
-                if( mouse.onceState == MOUSE_RIGHT_CRICK)
-                    PauseAI = 2;
-                // ?????????  
-                BattleMenuProc();
-#else
-                extern void AI_ChooseAction();
-                if( AI == AI_SELECT){
-                    void CloseInfoWnd();
-                    CloseInfoWnd();
-                    AI_ChooseAction();
-                }else
-                    BattleMenuProc();
-#endif
-            }
-
-
+            if( mouse.onceState == MOUSE_RIGHT_CRICK)
+                PauseAI = 2;
+            // ?????????  
+            BattleMenuProc();
             // ???????????????
             CheckBattleAnimFlag();
             /* ????????? */
@@ -846,27 +788,8 @@ void BattleProc( void )
             break;
             
         case BATTLE_SUBPROC_RECEIVE_MOVIE:        // ?????
-#ifdef _DEBUG__
-            if(offlineFlag == TRUE){
-                strcpy( BattleCmd,"BY teki_A jibun_0 flg_0 damage_0 jibun_1 flg_0 damage_0 jibun_2 flg_0 damage_0"
-                " jibun_3 flg_0 damage_0 jibun_4 flg_0 damage_0 jibun_5 flg_0 damage_0"
-                " jibun_6 flg_0 damage_0 jibun_7 flg_0 damage_0 jibun_8 flg_0 damage_0"
-                " jibun_9 flg_0 damage_1 FF");
-                strcpy( BattleCmd, BattleCmdDeb[ BattleDebTurnNo ] );
-                BattleMyNo = 0;
-                //????????
-                att_select_flg = FALSE;
-                SubProcNo++;
-                break;
-            }
-#endif
-#ifndef __AI
             if( mouse.onceState == MOUSE_RIGHT_CRICK)
                 PauseAI = 1;
-#else
-            extern char *AI_Choosen;
-#endif
-            // ??????????
             if( !( s_timer & 7 ) ){
                 piyo_point++;
                 piyo_point &= 63;
@@ -934,28 +857,9 @@ void BattleProc( void )
 #endif
             }
             break;
-            
         case BATTLE_SUBPROC_MOVIE:                // ??????
-#ifdef _DEBUG__
-            if(offlineFlag == TRUE){
-                if(joy_trg[0]&JOY_A){        //??????
-                    DeathAllAction();
-                    SubProcNo = 0;
-                    BattleCmd[0] = NULL;
-                    break;
-                }
-            }
-#endif
-            //???????????
-#ifndef __AI
             if( mouse.onceState == MOUSE_RIGHT_CRICK)
                 PauseAI = 1;
-#else
-            if( AI_Choosen){
-                
-                StockFontBuffer( 640-strlen(AI_Choosen)*7-4 + DISPLACEMENT_X, 440 + DISPLACEMENT_Y, FONT_PRIO_FRONT, FONT_PAL_YELLOW, AI_Choosen, 0 );
-            }
-#endif
             if( slow_flg ){        
                 if( !( s_timer & 31 ) ){    // ????????
                     piyo_point++;    // ????????????
@@ -1001,21 +905,10 @@ void BattleProc( void )
 #ifndef PK_SYSTEM_TIMER_BY_ZHU
                 BattleCliTurnNo++;                            // ???????????
 #endif
-#ifdef _DEBUG__
-                if(offlineFlag == TRUE){
-                    SubProcNo = BATTLE_SUBPROC_RECEIVE_BC;        //?????????
-                    BattleDebTurnNo++;
-                    // ????????
-                    if( BattleDebTurnNo >= sizeof( BattleCmdDeb )/sizeof(int) ) BattleDebTurnNo = 0;
-                }
-#endif
                 action_inf = 0;
-                // ??????????
                 BattleCmd[ 0 ] = NULL;
-                // ????????? 
                 battleMenuFlag2 = TRUE;
             }
-            //??
             if( action_inf == 2 ){        
                 SubProcNo = BATTLE_SUBPROC_OUT_PRODUCE_INIT;        //???
                 action_inf = 0;

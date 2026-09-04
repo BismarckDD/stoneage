@@ -345,14 +345,8 @@ void joy_read(void)
         if( di_key[DIK_INSERT]     & 0x80)        d0|=JOY_INS;
         if( di_key[DIK_DELETE]     & 0x80)        d0|=JOY_DEL;
         
-        
-        
         joy_con[0] = d0;
-
         d0=0;
-        
-        //??�D��???
-        // ???��???��??
         if( GetImeString() == NULL ){
             
             // ?????????
@@ -384,19 +378,17 @@ void joy_read(void)
             if(di_key[DIK_8] & 0x80) d0|=JOY_CTRL_8;
             if(di_key[DIK_9] & 0x80) d0|=JOY_CTRL_9;
             if(di_key[DIK_0] & 0x80) d0|=JOY_CTRL_0;
-            if(di_key[DIK_MINUS] & 0x80)     d0|=JOY_CTRL_MINUS;
-            //cary ʮ��
-            if(di_key[DIK_EQUALS] & 0x80)     d0|=JOY_CTRL_CIRCUMFLEX;
+            if(di_key[DIK_MINUS] & 0x80) d0|=JOY_CTRL_MINUS;
+            //cary
+            if(di_key[DIK_EQUALS] & 0x80) d0|=JOY_CTRL_CIRCUMFLEX;
             if(di_key[DIK_BACKSLASH] & 0x80) d0|=JOY_CTRL_YEN;
             if(di_key[DIK_J] & 0x80) d0|=JOY_CTRL_J;
             if(di_key[DIK_Q] & 0x80) d0|=JOY_CTRL_Q;
             if(di_key[DIK_W] & 0x80) d0|=JOY_CTRL_W;
             if(di_key[DIK_G] & 0x80) d0|=JOY_CTRL_G;
-            
             // Robin 0607 channel
             if(di_key[DIK_C] & 0x80) d0|=JOY_CTRL_C;
-
-            #ifdef _TELLCHANNEL                //ROG ADD ����Ƶ��
+            #ifdef _TELLCHANNEL //ROG ADD
             if( di_key[DIK_R] & 0x80 ) d0|=JOY_CTRL_R;
             #endif
 
@@ -628,21 +620,17 @@ int InitDInput(void)
     }
 
     DIPROPRANGE diprg; 
- 
-    // ��?�k?�d??�@�e
-    diprg.diph.dwSize    = sizeof(diprg); 
-    diprg.diph.dwHeaderSize    = sizeof(diprg.diph); 
-    diprg.diph.dwObj    = DIJOFS_X; 
-    diprg.diph.dwHow    = DIPH_BYOFFSET; 
-    diprg.lMin    = -1000; 
-    diprg.lMax    = +1000; 
-     pDInputDevice2->SetProperty(DIPROP_RANGE, &diprg.diph);
-    diprg.diph.dwObj    = DIJOFS_Y; 
-     pDInputDevice2->SetProperty(DIPROP_RANGE, &diprg.diph);
-
+    diprg.diph.dwSize = sizeof(diprg); 
+    diprg.diph.dwHeaderSize = sizeof(diprg.diph); 
+    diprg.diph.dwObj = DIJOFS_X; 
+    diprg.diph.dwHow = DIPH_BYOFFSET; 
+    diprg.lMin = -1000; 
+    diprg.lMax = +1000; 
+    pDInputDevice2->SetProperty(DIPROP_RANGE, &diprg.diph);
+    diprg.diph.dwObj = DIJOFS_Y; 
+    pDInputDevice2->SetProperty(DIPROP_RANGE, &diprg.diph);
     pDInputDevice2->Acquire();
-
-    joy_flg = TRUE;        //????????�ϣ�
+    joy_flg = TRUE;
     return TRUE;
 }
 /*-------------------------------------------
@@ -650,13 +638,11 @@ int InitDInput(void)
 ---------------------------------------------*/
 int EndDInput(void)
 {
-    //?????�ϣ�??
     if(keyboad_flg == TRUE){
         pDInputDevice->Unacquire();
         RELEASE(pDInputDevice);
         RELEASE(pDInput);
     }
-    //????????�ϣ�??
     if(joy_flg == TRUE){
         pDInputDevice2->Unacquire();
         RELEASE(pDInputDevice2);

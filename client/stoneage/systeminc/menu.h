@@ -30,10 +30,10 @@ typedef struct {
   BOOL mixFlag;   // ????
 } ITEM_BUFFER;
 
-// ???????﹨▍
+//
 typedef struct {
-  char str[MAIL_MAX_HISTORY][MAIL_STR_LEN + 1];          // ??????更??
-  char dateStr[MAIL_MAX_HISTORY][MAIL_DATE_STR_LEN + 1]; // 吋至?更??
+  char str[MAIL_MAX_HISTORY][MAIL_STR_LEN + 1];          // 
+  char dateStr[MAIL_MAX_HISTORY][MAIL_DATE_STR_LEN + 1]; // 
   int noReadFlag[MAIL_MAX_HISTORY]; // ???????????????吻??
   int petLevel[MAIL_MAX_HISTORY];   // ??????????吻?
   char petName[MAIL_MAX_HISTORY][PET_NAME_LEN + 1]; // ?????〈
@@ -715,7 +715,6 @@ typedef struct {
 #define MAX_PET_SPECIES 42 // 唾昜昜笱杅講
 #endif
 
-//
 enum {
   ANIM_DISP_PET,         // ???牙
   ANIM_DISP_PET_SEND,    // ??????????????去
@@ -800,6 +799,17 @@ extern int JigsawIdx;
 void SetJigsaw(int img, char *str);
 #endif
 
+
+#ifdef __MENU_CPP__
+#define EXTERN
+#else
+#define EXTERN extern
+#endif
+EXTERN int bSwitchExperienceTips; // 战斗结束后的经验提示
+EXTERN int bSwitchMuteOtherPlayers; // 屏蔽其他玩家
+EXTERN int bRightClickAttack; // 右键攻击开关
+#undef EXTERN
+
 typedef enum {
   MAIL_WND_VIEW,
   MAIL_WND_SELECT,
@@ -824,18 +834,14 @@ extern int mailHistoryWndPageNo;   // ???????????吻?
 extern int mailHistoryWndSelectNo; // ︻???????吻?
 // extern int mailReceivePetGraNo;   // ??????????????????吻?
 
-// ·卯??去????????牙?????
 extern int MapWmdFlagBak;
 
-//
 #define RESULT_WND_CLOSE_TIME 300
-//
+
 extern int ResultWndTimer;
 
-//
 extern BOOL ItemMixRecvFlag;
 
-//
 extern int MouseCursorFlag;
 #ifdef _TRADETALKWND
 void TradeTalk(char *msg);
@@ -843,22 +849,17 @@ void TradeTalk(char *msg);
 
 void InitItem(int x, int y, BOOL bPetItemFlag);
 
-// ?????????? *******************************************************/
 void InitMenu(void);
 
-// ??????????? *******************************************************/
 void InitMenu2(void);
 
-// ??????????? *******************************************************/
 BOOL CheckMenuFlag(void);
 
-// ?????? ***************************************************************/
 void MenuProc(void);
 
-//
 ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY, int titleNo,
                        int wndType
-#ifdef _NEW_RESOMODE // 800 600 耀宒
+#ifdef _NEW_RESOMODE //
                        ,
                        BOOL fixType = TRUE
 #endif
@@ -867,45 +868,32 @@ ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY, int titleNo,
 // 画选中框(绿色的矩形框, 游戏中常用)
 BOOL MakeHitBox(int x1, int y1, int x2, int y2, int dispPrio);
 
-// ???????卒㎏ ****************************************************************/
+//
 BOOL SaveMailHistory(int no);
 
-// ??????????? ****************************************************************/
 BOOL LoadMailHistory(void);
 
-// ???????? ****************************************************************/
 BOOL CheckMailNoReadFlag(void);
 
-// ??????????兣?﹐?? **************************************************/
 void InitOhtaParam(void);
 
-// ????????? **********************************************************/
 void DeathLetterAction(void);
 
-// ?????仕?更??卒㎏
-// ****************************************************************/
 BOOL SaveChatRegistyStr(void);
 
-// ?????仕?更??????
-// ****************************************************************/
 BOOL LoadChatRegistyStr(void);
 
 // 按out_len的总长度，给in_str补充前空格和后空格，输出到out_str
 void CenteringStr(const char *in, char *out, int out_len);
 
-// ?????????
-// ****************************************************************/
 void CheckNewPet(int sprNo);
 
-// ·卯??????????
-// **********************************************************/
 void CheckBattleNewPet(void);
 
-// ????????? ****************************************************************/
 BOOL LoadAlbum(void);
 
-// ?????卒㎏ ****************************************************************/
 BOOL SaveAlbum(int no);
+
 ACTION *MakeAnimDisp(int x, int y, int sprNo, int mode);
 
 // Robin 04/16 trade

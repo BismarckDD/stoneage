@@ -22,10 +22,6 @@
 bool new_music = true;
 #endif
 
-#ifdef _PET_TRACE_MOUSE
-extern SCPlayPet PlayPet;
-#endif
-
 void Process(void) {
   if (ProcNo2 >= 0) {
     ProcNo = ProcNo2;
@@ -48,9 +44,6 @@ void Process(void) {
 #endif
     BackBufferDrawType = DRAW_BACK_NORMAL;
     idPasswordProc();
-#ifdef _PET_TRACE_MOUSE
-    PlayPet.Proc();
-#endif
     RunAction();           //
     StockTaskDispBuffer(); //
     FlashKeyboardCursor(); //

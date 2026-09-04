@@ -2862,10 +2862,6 @@ void fieldProc( void )
         if (pushId == FIELD_FUNC_MARKET){
             marketBtn = 1;
             if (selId == FIELD_FUNC_MARKET){
-#ifdef __AI
-                extern void AI_CloseWnd();
-                AI_CloseWnd();
-#endif
                 extern ACTION* 商城动作地址;
                 if(商城动作地址){
                     DeathAction(商城动作地址);

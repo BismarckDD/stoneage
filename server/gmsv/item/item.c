@@ -1312,6 +1312,11 @@ CHAR_EquipPlace ITEM_getEquipPlace(int char_index, int itemid) {
 }
 #define ITEMSTRINGBUFSIZ 512
 static char ITEM_itemStatusStringBuffer[ITEMSTRINGBUFSIZ];
+/*
+ * The caller appends the separator between item records.  Keep the status
+ * string itself unterminated; an extra trailing '|' shifts every following
+ * item by one field in the client's fixed-width parser.
+ */
 char *ITEM_makeItemStatusString(int haveitem_index, int item_index) {
   char escapename[256];
   char escapeeffectstring[256];
@@ -1402,7 +1407,7 @@ char *ITEM_makeItemStatusString(int haveitem_index, int item_index) {
 
 #ifdef _ITEM_PILENUMS
 #ifdef _ALCHEMIST
-             "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d|%s|%d|",
+             "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d|%s|%d",
 #else
              "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d|%s",
 #endif
@@ -1453,7 +1458,7 @@ char *ITEM_makeItemStatusString(int haveitem_index, int item_index) {
 
 #ifdef _ITEM_PILENUMS
 #ifdef _ALCHEMIST
-             "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d|%s|%d|",
+             "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d|%s|%d",
 #else
              "%s|%s|%d|%s|%d|%d|%d|%d|%d|%s|%d",
 #endif
@@ -1495,7 +1500,8 @@ char *ITEM_makeItemFalseString(void) {
   strncpysafe(ITEM_itemStatusStringBuffer, sizeof(ITEM_itemStatusStringBuffer),
 #ifdef _ITEM_PILENUMS
 #ifdef _ALCHEMIST
-             "||||||||||||||"
+             /* Thirteen empty fields: twelve internal separators. */
+             "||||||||||||"
 #else
              "|||||||||||"
 #endif
@@ -1517,7 +1523,8 @@ char *ITEM_makeItemFalseStringWithNum(int haveitem_index) {
 
 #ifdef _ITEM_PILENUMS
 #ifdef _ALCHEMIST
-           "%d||||||||||||||",
+           /* Slot index plus thirteen empty item fields. */
+           "%d|||||||||||||",
 #else
            "%d||||||||||",
 #endif

@@ -16,7 +16,7 @@
 #define _ALCHEMIST                    // Robin 精炼功能 
 #define _CHAR_NEWLOGOUT               // (可开放) ANDY 新登出机制
 // #define _ITEM_JIGSAW               // (可开) Change 拼图道具
-#define  _TELLCHANNEL                 // (可开放) ROG ADD 密语频道
+#define _TELLCHANNEL                  // (可开放) ROG ADD 密语频道
 #define _TRADETALKWND                 // (可开放) Syu ADD 交易新增对话框架
 #define _DROPPETWND                   // (可开放) Syu ADD 丢弃宠物确认
 #define _TEAM_KICKPARTY               // (可开放) ANDY 队长踢人
@@ -78,7 +78,6 @@
 #define _HI_COLOR_16                    // (可开) ANDY (8bit to 16bit) 含图档
 #define _HI_COLOR_32                    // (可开) longzoro (32 bit) 含图档
 #define _NEW_RESOMODE                   // 800 * 600模式
-#define _MOUSE_SHOW_INFO_FOR_HEAD       // (可开) longzoro 鼠标显示信息
 //#define _NEWLOGO                      // (可开放) Syu ADD 6.0登入画面新logo 要关_v4_0 
 /* -------------------------------------------------------------------
 * 新功能：石器 800 * 600
@@ -307,7 +306,7 @@ extern int viewOffsetY;
 //新功能：人物职业
 #define _TABLEOFSKILL                // (可开放) Syu ADD 7.0 新增人物技能表单
 //#define _NEWPANEL_71                // (可开放) ROG ADD 新login画面
-//#define    _NEWPANEL_70                // (可开放) Syu ADD 石器7.0 LOGIN 画面
+//#define _NEWPANEL_70                // (可开放) Syu ADD 石器7.0 LOGIN 画面
 #define _CHAR_PROFESSION            // (可开放) WON ADD 人物职业
 #define _SKILLSORT                    // (可开放) Syu ADD 职业技能排列分类
 #define _NEWREQUESTPROTOCOL            // (可开放) Syu ADD 新增Protocol要求能力细项
@@ -317,7 +316,7 @@ extern int viewOffsetY;
 #define _ALLDOMAN                    // (可开放) Syu ADD 排行榜NPC
 #define _CHATROOMPROTOCOL            // (可开放) Syu ADD 聊天室频道
 #define _FRIENDCHANNEL                // (可开放) ROG ADD 好友频道
-#define    _TELLCHANNEL                // (可开放) ROG ADD 密语频道
+#define _TELLCHANNEL                // (可开放) ROG ADD 密语频道
 
 #define _DROPPETWND                    // (可开放) Syu ADD 丢弃宠物确认
 
@@ -357,9 +356,6 @@ extern int viewOffsetY;
 //#define _NPC_WELFARE_2            // (不可开) WON ADD 职业NPC-2
 
 //#define _NPC_SELLSTH              // (可开放) ANDY 拍卖
-//#define _SYUTEST
-//#define _SYUTEST2
-//#define _SYUTEST3
 //#define _AUCPROTOCOL              // (不可开) Syu ADD 拍卖频道开关Protocol
 
 /* -------------------------------------------------------------------
@@ -400,9 +396,8 @@ extern int viewOffsetY;
 #define new new(_NORMAL_BLOCK,__FILE__,__LINE__)
 #define FREE(p) free(p)
 
-//#define _PET_TRACE_MOUSE
 //#define __EDEN_DICE                  // (不可开) 赌场骰子
-#define _AI_OTHER                        // AI其它功能
+#define _AI_OTHER                      // AI其它功能
 #ifdef _AI_OTHER
 #define _AI_CAPTURE
 #endif
@@ -437,8 +432,6 @@ unsigned int TimeGetTime(void);
 #define _STREET_VENDOR          // 摆摊功能
 #define _NEW_MANOR_LAW          // 新庄园规则
 #define _PETSKILL_LER           // 雷尔技能
-//#define _PK_SERVER            // 百万PK活动
-//#define _8_TEST               // 8.0测试server
 
 // -------------------------------------------------------------------
 // 专案：线上回报系统
@@ -548,8 +541,8 @@ unsigned int TimeGetTime(void);
 #define _NEW_COLOR_                 // 补丁支持16位RGB高彩图片
 #define _NEW_WIN_POS_               // 800窗口偏移设置
 #define _NEW_ALPHA_                 // 新建半透明处理
-// #define _CACHE_SURFACE_            // 缓存surface 加快渲染
-// #define _OPTIMIZATIONFLIP_         // 优化Flip
+// #define _CACHE_SURFACE_          // 缓存surface 加快渲染
+// #define _OPTIMIZATIONFLIP_       // 优化Flip
 #define _KEY_  "AEB3A729E71F8870D4611FBDC01D0A4B"      // 商品加密 -> shop.cpp
 // #define _NEWFONT_
 
@@ -557,12 +550,12 @@ unsigned int TimeGetTime(void);
 #define _MO_SIGN_IN                 // 客户端签到按钮
 #define _CHANGE_HELP_BUTTON         // 修改帮助按钮图形
 #define _PETCOM_                    // 宠物成长自动计算
-#define _NEW_SPEED_                    //新游戏速度
+#define _NEW_SPEED_                 // 新游戏速度
 
-#define _PETCOLOR_                    // 1级宠物变色
-#define _PETKILL_COST_FAME            // Terry 宠物技能店学技能要花费声
-// #define _AIDENGLU_                    // 自动登陆
-#define _ZENGJIASHUO_                 // 增加一个锁道具的图标，同时被锁的道具不能选中
+#define _PETCOLOR_                  // 1级宠物变色
+#define _PETKILL_COST_FAME          // Terry 宠物技能店学技能要花费声
+// #define _AIDENGLU_               // 自动登陆
+#define _ZENGJIASHUO_               // 增加一个锁道具的图标，同时被锁的道具不能选中
 #define _BUDING_ "554CDB1A99DF514B2F0B09DBDA0A6E9D"       //补丁加密
 #define _TIME_GET_TIME                // 用QueryPerformanceCounter取代timeGetTime
 #define _FAMILYBADGE_                 // 家族徽章
@@ -588,7 +581,7 @@ unsigned int TimeGetTime(void);
 //#define _MO_SHOW_FPS               // 显示fps
 #define _RELUA_                      // DEBUG模式下启用按个人信息则重读LUA
 #endif
-#define SHOW_VERSION "2.0"
+#define SHOW_VERSION "2.5"
 #define LABEL_STR_                 //标记重定义输出[普][密]
 
 #ifdef _SA_VERSION_25
@@ -608,15 +601,15 @@ unsigned int TimeGetTime(void);
 #define _LUA_KEY_ "6A68673107B8C5B829815A507FF5C274"   //LUA加密密钥
 #endif
 // 服务端物品协议没有实现 _MAGIC_ITEM_ 的额外字段，保持关闭以避免物品包错位。
-// #define _MAGIC_ITEM_                 // 法宝功能
+// #define _MAGIC_ITEM_              // 法宝功能
 #define _ICONBUTTONS_                // 转盘
-#define _BATTLE_TIME_  99000    
+#define _BATTLE_TIME_  15000         // 战斗倒计时
 #define _PET_2TRANS                  // (可开) Change 宠物2转
 #define _DEBUGVER_    "0.1"          //DEBUG版本号
-#define _NEWSHOP_         //商城
-#define _SHOWPETTRN_       //显示宠物转数
+#define _NEWSHOP_                    //商城
+#define _SHOWPETTRN_                 //显示宠物转数
 #ifdef _SA_MAC_VERSION_CONTROL
-#define _SA_MAC_VERSION        "7sa2"
+#define _SA_MAC_VERSION  "7sa2"
 #endif
 #define _CHANGETEAM_                  // 队长切换
 #define SA_MUTE "sa25.exe"
@@ -642,7 +635,6 @@ unsigned int TimeGetTime(void);
 #define MAX_AIRPLANENUM 8
 #define _FIX_CG_ATR_ICON
 #define _PETSKILL_LER
-//#define _CANCEL_FANTI               // 取消繁体切换
 //#define _RED_MEMOY_                 // 红包
 #endif
 

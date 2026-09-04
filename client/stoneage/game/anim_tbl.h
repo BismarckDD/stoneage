@@ -1928,8 +1928,8 @@
 #define CG_TITLE_ID_PASS 28996
 #else
 #define CG_TITLE_ID_PASS 28994 // 29046->28993
-#endif                         //_NEWPANEL_70
-#endif                         //_NEWPANEL_71
+#endif //_NEWPANEL_70
+#endif //_NEWPANEL_71
 #ifdef _80_LOGIN
 #undef CG_TITLE_ID_PASS
 #define CG_TITLE_ID_PASS 26301

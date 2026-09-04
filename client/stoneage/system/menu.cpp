@@ -1,4 +1,5 @@
-﻿#include "systeminc/system.h"
+﻿#define __MENU_CPP__
+#include "systeminc/system.h"
 //
 #include "systeminc/menu.h"
 //
@@ -21,6 +22,7 @@
 #include "systeminc/pet_skillinfo.h"
 #include "wgs/descrypt.h"
 #include "systeminc/character.h"
+#include "systeminc/directdraw.h"
 #include "red_memoy.h"
 #ifdef _TALK_WINDOW
 #include "systeminc/talkwindow.h"
@@ -36,9 +38,7 @@ extern int MagicItemPosState[4];
 BOOL 任务查询开关=FALSE;
 #endif
 extern int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
-int 经验开关 = TRUE;
-int 人物屏蔽开关 = FALSE;
-int 右键攻击 = FALSE;
+
 
 #ifdef _PETBLESS_
 int 祝福窗口开关 = FALSE;
@@ -52,11 +52,7 @@ extern void ShowBottomLineString(int iColor, LPSTR lpstr);
 extern Landed PcLanded;
 #endif
 #ifdef _NEWPANEL // Syu ADD 7.0 新人物状态介面
-#ifdef _SYUTEST3
-#define MENU_STATUS_0   25
-#else
 #define MENU_STATUS_0   17
-#endif
 #else
 #define MENU_STATUS_0   12
 #endif
@@ -82,18 +78,20 @@ extern bool g_bTradesystemOpen;
 #ifdef _NEW_COLOR_
 extern BOOL g_bUseAlpha;
 #endif
-// ????
 
 #define MAX_CHAT_REGISTY_STR        8
 #define MAX_CHAT_REGISTY_STR_LEN    26
 
-#ifdef _DROPPETWND                    // (可开放) Syu ADD 丢弃宠物确认
-bool DropPetWndflag = false;            //丢弃宠物视窗显示与否旗标
-short DropI = -1;                        //暂存i值
+#ifdef _DROPPETWND               // (可开放) Syu ADD 丢弃宠物确认
+bool DropPetWndflag = false;     // 丢弃宠物视窗显示与否旗标
+short DropI = -1;                //暂存i值
 #endif
 #ifdef _NEW_ITEM_
 
 int 道具栏页数 = 0;
+static int g_lastInventoryHitSlot = -1;
+static int g_lastInventoryLogPage = -1;
+
 int 判断玩家道具数量()
 {
     int ret = MAX_MAXHAVEITEM + MAX_ITEMSTART;
@@ -139,16 +137,15 @@ STR_BUFFER TradeBuffer;
 bool Tradeflag = false;    //输入位置Focus旗标
 bool TradeBtnflag = false; //金额放置钮显示开关
 // ???
-int mapWndFontNo[MENU_MAP_0];     // ????
-static unsigned int  mapWndNo;        // ??????
-int MapWmdFlagBak;                    // ???????????????
+int mapWndFontNo[MENU_MAP_0];
+static unsigned int mapWndNo;
+int MapWmdFlagBak;
 
-// ?????
-static int statusWndFontNo[MENU_STATUS_0];     // ????
-static int statusWndBtnFlag[MENU_STATUS_0];    // ???????
-static unsigned int statusWndNo;                // ??????
-STR_BUFFER shougouChange;                        // ??????????
-int StatusUpPoint;                                // ????????????
+static int statusWndFontNo[MENU_STATUS_0];
+static int statusWndBtnFlag[MENU_STATUS_0];
+static unsigned int statusWndNo;
+STR_BUFFER shougouChange;
+int StatusUpPoint;
 
 #ifdef _TRADESYSTEM2    
 static int tradeWndFontNo[MENU_TRADE_0];     // ????
@@ -157,7 +154,6 @@ static int tradeWndBtnFlag[MENU_TRADE_0];    // ???????
 static unsigned int tradeWndNo = 0;                // ??????
 
 int showindex[7] = { 0, 0, 0, 0, 0, 0, 0 };
-
 static char opp_sockfd[128] = "-1";
 static char opp_name[128] = "";
 static char trade_command[128];
@@ -330,10 +326,8 @@ int  timeBarCurPos;
 bool timeBarFlag = FALSE;
 bool barHolder[2];                // 用来切换时间条
 void DrawTimeBar();
-/////////TEST/////////////////
 int StartTime = 0;
 int timBarIdent = -1;
-//////////////////////////////
 #endif
 
 // ???
@@ -1047,27 +1041,18 @@ void WindowDisp(ACTION *pAct)
                 pYobi->yesNoResult = FALSE;
             }
         }
-        // ??????????
         StockDispBuffer(pYobi->mx, pYobi->my, DISP_PRIO_YES_NO_WND, CG_COMMON_WIN_YORO, 1);
-        // ?????
         pYobi->yesDispNo = StockDispBuffer(pYobi->mx, pYobi->my, DISP_PRIO_YES_NO_BTN, CG_COMMON_YES_BTN, 2);
-        // ??????
         pYobi->noDispNo = StockDispBuffer(pYobi->mx, pYobi->my, DISP_PRIO_YES_NO_BTN, CG_COMMON_NO_BTN, 2);
         break;
     }
 }
 
-// ????????? **************************************************************/
-//    ??：    int x,y             ????
-//            int sizeX,sizeY     ??????????????????????????
-//            int titleNo         ?????????????????????????
-//            int wndType         ?：?????????????
-//                                 ?：??????????????
-//                                ?：????????????
-//                                ?：?????????????
-//                                ?：?????????????
-//                                -1：???
-//****************************************************************************************/
+// 输入参数:
+// int x,y
+// int sizeX,sizeY
+// int titleNo
+// int wndType
 ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY, int titleNo, int wndType
 #ifdef _NEW_RESOMODE  //800 600模式
     , BOOL fixType /*= TRUE*/
@@ -1392,50 +1377,33 @@ void AnimDisp(ACTION *pAct)
 
         break;
 
-    case ANIM_DISP_PET_DEAD:    // ?
-
-        // ??
+    case ANIM_DISP_PET_DEAD:
         pAct->anim_no = ANIM_DEAD;
-
-        // ???????
         if (pattern(pAct, ANM_NOMAL_SPD, ANM_NO_LOOP)){
-            // ???????
             if (Rnd(0, 2) == 0){
                 pAct->actNo = ANIM_DISP_PET_MAIN;
             }
         }
-
         break;
 
-    case ANIM_DISP_PET_ITEM:    // ????????
-
-        // ???????
+    case ANIM_DISP_PET_ITEM:
         pattern(pAct, ANM_NOMAL_SPD, ANM_LOOP);
-
         break;
 
-    case ANIM_DISP_LETTER_MOVE:    // ??
-
-        // ?
+    case ANIM_DISP_LETTER_MOVE:
         if (pAct->x < 245) pAct->x += 5;
-        // ?????????
-        else{
+        else
+        {
             pAct->actNo = ANIM_DISP_LETTER;
-            // ???????
             pattern(pAct, ANM_NOMAL_SPD, ANM_LOOP);
             pAct->anim_cnt += 8;
         }
         break;
 
     case ANIM_DISP_LETTER:        // ????????
-
-        // ???????
         pattern(pAct, ANM_NOMAL_SPD, ANM_LOOP);
-
         break;
-
     case ANIM_DISP_MIX_PET_INIT:    // ???????
-
         // ?????????
         pAct->spd = 11;//Rnd( 6, 12 );
         // ???????????
@@ -8851,6 +8819,22 @@ void InitItem(int x, int y, BOOL bPetItemFlag)
 #endif
         }
     }
+
+    g_lastInventoryHitSlot = -1;
+    g_lastInventoryLogPage = -1;
+    ClientRuntimeLog("inventory-layout",
+        "init window=(%d,%d) petMode=%d equipSlots=%d maxItems=%d unlockedEnd=%d state=0x%x",
+        x, y, bPetItemFlag, MAX_ITEMSTART, MAX_ITEM,
+        判断玩家道具数量(), pc.道具栏状态);
+    for (i = 0; i < MAX_ITEMSTART; ++i) {
+        ClientRuntimeLog("inventory-layout",
+            "equip slot=%d center=(%d,%d) hitbox=(%d,%d)-(%d,%d) use=%d gra=%d name=%s",
+            i, ItemBuffer[i].defX, ItemBuffer[i].defY,
+            ItemBuffer[i].defX - 24, ItemBuffer[i].defY - 24,
+            ItemBuffer[i].defX + 26, ItemBuffer[i].defY + 23,
+            pc.item[i].useFlag, pc.item[i].graNo,
+            pc.item[i].useFlag ? pc.item[i].name : "<empty>");
+    }
 }
 
 // CoolFish: Trade 04/14
@@ -9013,12 +8997,9 @@ void DeathMenuAction2(void)
     Moneyflag = false;
 #endif
     pActMenuWnd2 = NULL;
-    // ?????
     DeathAction(pActPet2);
     pActPet2 = NULL;
-    // ????????????
     ItemMixPetNo = -1;
-
     // Robin 04/14 trade
     DeathAction(pActMenuWnd4);
 #ifdef _FRIENDCHANNEL            //ROG ADD 好友频道
@@ -9054,44 +9035,30 @@ void DeathMenuAction2(void)
 
 }
 
-// ?????????? *******************************************************/
+// 初始化所有菜单的按钮/文字状态信息
 void InitMenu(void)
 {
-
     int i;
-
-    // ????
     for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
-    // ???
     for (i = 0; i < MENU_MAP_0; i++) mapWndFontNo[i] = -2;
     mapWndNo = 0;
-    // ?????
     for (i = 0; i < MENU_STATUS_0; i++) statusWndFontNo[i] = -2;
     for (i = 0; i < MENU_STATUS_0; i++) statusWndBtnFlag[i] = 0;
-
     // Robin 04/14 trade
     for (i = 0; i < MENU_TRADE_0; i++) tradeWndFontNo[i] = -2;
     for (i = 0; i < MENU_TRADE_0; i++) tradeWndBtnFlag[i] = 0;
-
-    // ???
     for (i = 0; i < MENU_PET_0; i++) petWndFontNo[i] = -2;
     petWndNo = 0;
-    // ????
     for (i = 0; i < MENU_ITEM_0; i++) itemWndFontNo[i] = -2;
     for (i = 0; i < MENU_ITEM_0; i++) itemWndBtnFlag[i] = 0;
     itemWndNo = 0;
-    // ???
     for (i = 0; i < MENU_MAIL_0; i++) mailWndFontNo[i] = -2;
     for (i = 0; i < MAX_ADR_BOOK; i++) mailWndSendFlag[i] = 0;
     mailWndNo = MAIL_WND_VIEW;
-    // ????
     for (i = 0; i < MENU_ALBUM_0; i++) albumWndFontNo[i] = -2;
     albumWndNo = 0;
-    // ?????
     for (i = 0; i < TASK_BAR; i++) taskBarFontNo[i] = -2;
-    // ???????
     for (i = 0; i < MENU_BTL_RESULT_0; i++) resultWndFontNo[i] = -2;
-    // ??????
     MenuToggleFlag = 0;
 #ifdef _ITEM_JIGSAW 
     JigsawIdx = 0;
@@ -9099,55 +9066,30 @@ void InitMenu(void)
 #ifdef _TELLCHANNEL                //ROG ADD 密语频道
     MultiTells = FALSE;
 #endif
-
-    // ?????????????
     DeathMenuAction();
-    // ?????????????
     DeathMenuAction2();
-    // ???????????
     mouse.itemNo = -1;
-    // ????????
     itemNo = -1;
-    // ???????
     jujutuNo = -1;
-    // ????????
     ItemMixPetNo = -1;
-#ifdef __AI
-    void AI_CloseWnd();
-    AI_CloseWnd();
-#endif
 }
 
-// ??????????? *******************************************************/
 void InitMenu2(void)
 {
-    // ??????
     MenuToggleFlag = 0;
-    // ?????????????
     DeathMenuAction();
-    // ?????????????
     DeathMenuAction2();
-    // ???????????
     mouse.itemNo = -1;
-    // ????????
     itemNo = -1;
-    // ???????
     jujutuNo = -1;
-    // ???????????
     BattleResultWndFlag = FALSE;
-
 }
 
-// ??????????? *******************************************************/
 BOOL CheckMenuFlag(void)
 {
     BOOL flag = FALSE;
-
-    // ??????
     if (MenuToggleFlag != 0) flag = TRUE;
-    // ???????????
     if (BattleResultWndFlag >= 1) flag = TRUE;
-    // ?????????????????
     if (MapWmdFlagBak >= TRUE) flag = TRUE;
 #ifdef _FRIENDCHANNEL
     if( assentFlag ) flag = assentFlag;
@@ -9172,367 +9114,6 @@ void CleanSMS()
 #endif
 
 
-#ifdef _AIDENGLU_
-BOOL 自动登陆窗口 = FALSE;
-ACTION *p自动登陆窗口 = NULL;
-ACTION * 方向动作;
-ACTION * 人物动作;
-extern struct GameServer gmsv[];
-extern struct GameGroup  gmgroup[];
-void 自动登陆窗口回调()
-{
-    static int 方向窗口是否打开;
-    static int btnId[15], btnState[15];
-    static int x = 0, y = 0;
-    static DWORD dwPressTime;
-    static char msg[][8] = {
-        "队长",
-        "队员",
-        "单人"
-    };
-    static char  chardir[][8] = {
-        "下",
-        "左下",
-        "左",
-        "左上",
-        "上",
-        "右上",
-        "右",
-        "右下"
-    };
-    if (p自动登陆窗口 == NULL){
-        方向窗口是否打开 = FALSE;
-        方向动作 = NULL;
-        人物动作 = NULL;
-        int w = 412;
-        int h = 301;
-        x = (lpDraw->xSize - w) / 2;
-        y = (lpDraw->ySize - h) / 2;
-        p自动登陆窗口 = MakeWindowDisp(x, y, w, h, 55241, -1, FALSE);
-        for (int i = 0; i < 14; i++){
-            btnId[i] = -2;
-            if (i < 10)
-                btnState[i] = 0;
-        }
-        dwPressTime = 0;
-    }
-    else{
-        if (p自动登陆窗口->hp >= 1){
-            if (joy_trg[0] & JOY_ESC){
-                自动登陆窗口 = FALSE;
-                DeathAction(p自动登陆窗口);
-                DeathAction(方向动作);
-                DeathAction(人物动作);
-                人物动作 = NULL;
-                方向窗口是否打开 = FALSE;
-                方向动作 = NULL;
-                p自动登陆窗口 = NULL;
-                actBtn = 0;
-                return;
-            }
-            if (dwPressTime){
-                if (TimeGetTime() > (dwPressTime + 100)){
-                    dwPressTime = 0;
-                    if (btnState[0] == 1){//大区减
-                        btnState[0] = 0;
-                        play_se(217, 320, 240);
-                        while (TRUE){
-                            PcLanded.大区--;
-                            if (PcLanded.大区 < 0){
-                                PcLanded.大区 = 18;
-                            }
-                            if (gmgroup[PcLanded.大区].used){
-                                break;
-                            }
-                        }
-                    }
-                    if (btnState[1] == 1){//大区加
-                        btnState[1] = 0;
-                        play_se(217, 320, 240);
-                        while (TRUE){
-                            PcLanded.大区++;
-                            if (PcLanded.大区 > 18){
-                                PcLanded.大区 = 0;
-                            }
-                            if (gmgroup[PcLanded.大区].used){
-                                break;
-                            }
-                        }
-                    }
-
-                    if (btnState[2] == 1){//小区减
-                        btnState[2] = 0;
-                        play_se(217, 320, 240);
-                        if (PcLanded.大区 != -1)
-                        {
-                            while (TRUE){
-                                PcLanded.小区--;
-                                if (PcLanded.小区 < 0){
-                                    PcLanded.小区 = gmgroup[PcLanded.大区].num - 1;
-                                }
-                                if (gmsv[gmgroup[PcLanded.大区].startindex + PcLanded.小区].used){
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (btnState[3] == 1){//小区加
-                        btnState[3] = 0;
-                        play_se(217, 320, 240);
-                        if (PcLanded.大区 != -1)
-                        {
-                            while (TRUE){
-                                PcLanded.小区++;
-                                if (PcLanded.小区 >= gmgroup[PcLanded.大区].num){
-                                    PcLanded.小区 = 0;
-                                }
-                                if (gmsv[gmgroup[PcLanded.大区].startindex + PcLanded.小区].used){
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    if (btnState[4] == 1){//队模减
-                        btnState[4] = 0;
-                        play_se(217, 320, 240);
-                        PcLanded.队模--;
-                        if (PcLanded.队模 < 0){
-                            PcLanded.队模 = 2;
-                        }
-                        if (PcLanded.队模 == 0 || PcLanded.队模 == 2){
-                            PcLanded.是否自动喊话 = FALSE;
-                        }
-                        if (PcLanded.队模 == 1){
-                            PcLanded.是否自动遇敌 = FALSE;
-                        }
-                    }
-                    if (btnState[5] == 1){//队模加
-                        btnState[5] = 0;
-                        play_se(217, 320, 240);
-                        PcLanded.队模++;
-                        if (PcLanded.队模 > 2){
-                            PcLanded.队模 = 0;
-                        }
-                        if (PcLanded.队模 == 0 || PcLanded.队模 == 2){
-                            PcLanded.是否自动喊话 = FALSE;
-                        }
-                        if (PcLanded.队模 == 1){
-                            PcLanded.是否自动遇敌 = FALSE;
-                        }
-                    }
-                    if (btnState[6] == 1){//角色减
-                        btnState[6] = 0;
-                        play_se(217, 320, 240);
-                        while (TRUE){
-                            PcLanded.人物--;
-                            if (PcLanded.人物 < 0){
-                                PcLanded.人物 = 3;
-                            }
-                            if (PcLanded.登陆人物名称[PcLanded.人物][0]) break;
-                        }
-                    }
-                    if (btnState[7] == 1){//角色加
-                        btnState[7] = 0;
-                        play_se(217, 320, 240);
-                        while (TRUE){
-                            PcLanded.人物++;
-                            if (PcLanded.人物 > 3){
-                                PcLanded.人物 = 0;
-                            }
-                            if (PcLanded.登陆人物名称[PcLanded.人物][0]) break;
-                        }
-                    }
-                    if (btnState[8] == 1){//确定
-                        btnState[8] = 0;
-                        play_se(217, 320, 240);
-                        DeathAction(p自动登陆窗口);
-                        p自动登陆窗口 = NULL;
-                        自动登陆窗口 = FALSE;
-                        if (方向动作){
-                            DeathAction(方向动作);
-                            方向动作 = NULL;
-                            DeathAction(人物动作);
-                            人物动作 = NULL;
-                        }
-                        extern short actBtn;
-                        actBtn = 0;
-                        return;
-                    }
-                    if (btnState[9] == 1){//取消
-                        btnState[9] = 0;
-                        play_se(217, 320, 240);
-                        DeathAction(p自动登陆窗口);
-                        p自动登陆窗口 = NULL;
-                        自动登陆窗口 = FALSE;
-                        if (方向动作){
-                            DeathAction(方向动作);
-                            方向动作 = NULL;
-                            DeathAction(人物动作);
-                            人物动作 = NULL;
-                        }
-                        extern short actBtn;
-                        actBtn = 0;
-                        return;
-                    }
-                    if (btnState[10] == 1){//方向
-                        btnState[10] = 0;
-                        play_se(217, 320, 240);
-                        DeathAction(方向动作);
-                        方向动作 = NULL;
-                        DeathAction(人物动作);
-                        人物动作 = NULL;
-                        方向窗口是否打开 = FALSE;
-                    }
-                }
-            }
-            else{
-                for (int i = 0; i < 10; i++){
-                    if (HitDispNo == btnId[i]){
-                        if (i == 0 || i == 1) ShowBottomLineString(FONT_PAL_WHITE, "设置大区。");
-                        if (i == 2 || i == 3) ShowBottomLineString(FONT_PAL_WHITE, "设置线路,需设置大区方可设置。");
-                        if (i == 4 || i == 5) ShowBottomLineString(FONT_PAL_WHITE, "队长：可设自动遇敌 队员：可设喊话和自动组队 单人：可设自动遇敌 ps：人物掉线重登自动开启AI模式。");
-                        if (i == 6 || i == 7) ShowBottomLineString(FONT_PAL_WHITE, "设置登陆人物。");
-                        if (mouse.onceState & MOUSE_LEFT_CRICK){
-                            dwPressTime = TimeGetTime();
-                            btnState[i] = 1;
-                            break;
-                        }
-                    }
-                }
-                if (HitDispNo == btnId[14]){
-                    if (mouse.onceState & MOUSE_LEFT_CRICK){
-                        dwPressTime = TimeGetTime();
-                        btnState[10] = 1;
-                    }
-                }
-            }
-
-            extern int 自动登陆是否开启;
-            if (HitFontNo == btnId[10]){
-                ShowBottomLineString(FONT_PAL_WHITE, "登陆游戏中可按F9开启和关闭,队员模式登陆游戏后喊话可关闭该功能停止喊话。");
-                if (mouse.onceState & MOUSE_LEFT_CRICK){
-                    if (PcLanded.大区 != -1 && PcLanded.小区 != -1 && PcLanded.人物 != -1){
-                        自动登陆是否开启 = !自动登陆是否开启;
-                        if (!自动登陆是否开启){
-                            extern int 是否重登组队, 是否重登喊话, 是否重开登组队_1;
-                            是否重登组队 = FALSE;
-                            是否重登喊话 = FALSE;
-                            是否重开登组队_1 = FALSE;
-                        }
-                    }
-                    else{
-                        StockChatBufferLine("请把大区、线路和角色选择后才能操作！", FONT_PAL_RED);
-                    }
-                }
-            }
-            if (HitFontNo == btnId[12]){
-                if (mouse.onceState & MOUSE_LEFT_CRICK){
-                    ShowBottomLineString(FONT_PAL_WHITE, "队长和单人可设置该功能。");
-                    if (PcLanded.队模 == 0 || PcLanded.队模 == 2)
-                        PcLanded.是否自动遇敌 = !PcLanded.是否自动遇敌;
-                    else{
-                        PcLanded.是否自动遇敌 = FALSE;
-                        StockChatBufferLine("遇敌模式只有队长和单人可开启！", FONT_PAL_RED);
-                    }
-                }
-            }
-            if (HitFontNo == btnId[13]){
-                if (mouse.onceState & MOUSE_LEFT_CRICK){
-                    ShowBottomLineString(FONT_PAL_WHITE, "只有队员可设置该功能。");
-                    if (PcLanded.队模 == 1)
-                        PcLanded.是否自动喊话 = !PcLanded.是否自动喊话;
-                    else{
-                        PcLanded.是否自动喊话 = FALSE;
-                        StockChatBufferLine("自动喊话只有队员模式可开启！", FONT_PAL_RED);
-                    }
-                }
-            }
-            if (HitFontNo == btnId[11]){
-                ShowBottomLineString(FONT_PAL_WHITE, "掉线人物登陆后人物的方向。");
-                if (mouse.onceState & MOUSE_LEFT_CRICK){
-                    if (方向窗口是否打开){
-                        方向窗口是否打开 = FALSE;
-                        if (方向动作){
-                            DeathAction(方向动作);
-                            方向动作 = NULL;
-                            DeathAction(人物动作);
-                            人物动作 = NULL;
-                        }
-                    }
-                    else 方向窗口是否打开 = TRUE;
-                }
-            }
-            int 方向偏移X = 0;
-            if (方向窗口是否打开) 方向偏移X = -90;
-            if (方向窗口是否打开){
-                if (!方向动作){
-                    方向动作 = MakeWindowDisp(607 + 方向偏移X, 147, 192, 148, 55242, -1, FALSE);
-                    人物动作 = MakeAnimDisp(660 + 方向偏移X, 240, pc.graNo, 0);
-                    人物动作->anim_ang = PcLanded.人物方向;
-                    pattern(人物动作, ANM_NOMAL_SPD, ANM_LOOP);
-                    btnId[14] = -2;
-                    btnState[10] = 0;
-                }
-                else if (方向动作->hp >= 1){
-                    StockDispBuffer(((WINDOW_DISP *)方向动作->pYobi)->mx, ((WINDOW_DISP *)方向动作->pYobi)->my, DISP_PRIO_MENU, 55242, 1);
-                    PcLanded.人物方向 = 人物动作->anim_ang;
-                    btnId[14] = StockDispBuffer(((WINDOW_DISP *)方向动作->pYobi)->mx - 55, ((WINDOW_DISP *)方向动作->pYobi)->my - 90, DISP_PRIO_IME3, 26262 + btnState[10], 2);
-                }
-            }
-            StockDispBuffer(((WINDOW_DISP *)p自动登陆窗口->pYobi)->mx + 方向偏移X, ((WINDOW_DISP *)p自动登陆窗口->pYobi)->my, DISP_PRIO_MENU, 55241, 1);
-            btnId[0] = StockDispBuffer(x + 128 + 方向偏移X, y + 92 + 70, DISP_PRIO_IME3, 26064 + btnState[0], 2);
-            btnId[1] = StockDispBuffer(x + 109 + 方向偏移X, y + 107 + 71, DISP_PRIO_IME3, 26066 + btnState[1], 2);
-
-            btnId[2] = StockDispBuffer(x + 273 + 方向偏移X, y + 92 + 70, DISP_PRIO_IME3, 26064 + btnState[2], 2);
-            btnId[3] = StockDispBuffer(x + 254 + 方向偏移X, y + 107 + 71, DISP_PRIO_IME3, 26066 + btnState[3], 2);
-
-            btnId[4] = StockDispBuffer(x + 128 + 方向偏移X, y + 92 + 106, DISP_PRIO_IME3, 26064 + btnState[4], 2);
-            btnId[5] = StockDispBuffer(x + 109 + 方向偏移X, y + 107 + 107, DISP_PRIO_IME3, 26066 + btnState[5], 2);
-
-            btnId[6] = StockDispBuffer(x + 128 + 方向偏移X, y + 92 + 142, DISP_PRIO_IME3, 26064 + btnState[6], 2);
-            btnId[7] = StockDispBuffer(x + 109 + 方向偏移X, y + 107 + 143, DISP_PRIO_IME3, 26066 + btnState[7], 2);
-
-            btnId[8] = StockDispBuffer(x + 207 + 方向偏移X, y + 152, DISP_PRIO_IME3, 26262 + btnState[8], 2);
-            btnId[9] = StockDispBuffer(x + 207 + 方向偏移X, y + 152, DISP_PRIO_IME3, 26264 + btnState[9], 2);
-
-            char moji[256];
-            if (PcLanded.大区 != -1){
-                CenteringStr(gmgroup[PcLanded.大区].name, moji, CHAR_NAME_LEN);
-                StockFontBuffer(x + 105 + 方向偏移X, y + 64, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0);
-            }
-            if (PcLanded.队模 != -1){
-                StockFontBuffer(x + 150 + 方向偏移X, y + 100, FONT_PRIO_FRONT, FONT_PAL_YELLOW, msg[PcLanded.队模], 0);
-            }
-            if (PcLanded.人物 != -1){
-                CenteringStr(PcLanded.登陆人物名称[PcLanded.人物], moji, CHAR_NAME_LEN);
-                StockFontBuffer(x + 105 + 方向偏移X, y + 136, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0);
-            }
-
-            if (自动登陆是否开启)
-                btnId[10] = StockFontBuffer(x + 150 + 方向偏移X, y + 171, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "开启", 2);
-            else
-                btnId[10] = StockFontBuffer(x + 150 + 方向偏移X, y + 171, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "关闭", 2);
-            if (PcLanded.小区 != -1){
-                StockFontBuffer(x + 305 + 方向偏移X, y + 64, FONT_PRIO_FRONT, FONT_PAL_YELLOW, gmsv[gmgroup[PcLanded.大区].startindex + PcLanded.小区].name, 0);
-            }
-            btnId[11] = StockFontBuffer(x + 320 + 方向偏移X, y + 100, FONT_PRIO_FRONT, FONT_PAL_YELLOW, chardir[PcLanded.人物方向], 2);
-            if (PcLanded.是否自动遇敌)
-                btnId[12] = StockFontBuffer(x + 320 + 方向偏移X, y + 136, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "开启", 2);
-            else
-                btnId[12] = StockFontBuffer(x + 320 + 方向偏移X, y + 136, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "关闭", 2);
-            if (PcLanded.是否自动喊话)
-                btnId[13] = StockFontBuffer(x + 320 + 方向偏移X, y + 171, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "开启", 2);
-            else
-                btnId[13] = StockFontBuffer(x + 320 + 方向偏移X, y + 171, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "关闭", 2);
-        }
-    }
-}
-
-#endif
-
-
-
-
 #ifdef _AI_OTHER
 extern int AI_Other_State;
 extern void AI_OtherProc();
@@ -9544,17 +9125,6 @@ void MenuProc(void)
     char moji[256];
 #ifdef _ITEM_JIGSAW 
     DrawJigsawFlag = false;
-#endif
-#ifdef __AI
-    extern int AI_State;
-    if (AI_State){
-        extern BOOL AI_SettingProc();
-        if (AI_SettingProc()){
-            AI_State = 0;
-            extern short actBtn;
-            actBtn = 0;
-        }
-    }
 #endif
 #ifdef _AIDENGLU_
     if (自动登陆窗口){
@@ -9593,18 +9163,8 @@ void MenuProc(void)
     }
 #endif
 
-    // ??????????????
-#ifdef __AI
-    if (joy_trg[0] & JOY_ESC && checkFieldMenuFlag() == FALSE && !AI_State&&!自动登陆窗口
-
-
-        ){
-#else
-    if( joy_trg[ 0 ] & JOY_ESC && checkFieldMenuFlag() == FALSE ){
-#endif
-        // ?????????????
+    if (joy_trg[0] & JOY_ESC && checkFieldMenuFlag() == FALSE) {
         if (GetImeString() == NULL){
-            // ???????
             if (MenuToggleFlag != 0 || BattleResultWndFlag >= 1){
                 MenuToggleFlag = 0;
                 // ???????????
@@ -9623,17 +9183,12 @@ void MenuProc(void)
             }
             else{  // ??????????
                 if (GetImeString() == NULL){
-
                     MenuToggleFlag ^= JOY_ESC;    // ?????
-                    // ????????
                     play_se(202, 320, 240);
-                    // ????
                     for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                     systemWndNo = 0;        // ?????????
-
-                    // ????????
                     if (MenuToggleFlag & JOY_ESC){
-                        MenuToggleFlag &= JOY_CTRL_I | JOY_CTRL_M;    // ??????????????????
+                        MenuToggleFlag &= JOY_CTRL_I | JOY_CTRL_M;
                         MenuToggleFlag |= JOY_ESC;    // ?????
                         // ???????????
                         BattleResultWndFlag = FALSE;
@@ -9646,21 +9201,12 @@ void MenuProc(void)
                     }
                 }
             }
-            // ??????????
             DeathMenuAction();
             DeathMenuAction2();
-            // ????????
             saveUserSetting();
         }
     }
-    // ??????????????
-#ifdef __AI
-    if (TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[3] && !AI_State&&!自动登陆窗口
-            
-        ){
-#else
-    if( TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[ 3 ] ){ 
-#endif
+    if(TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[3]) { 
 #ifdef _BATTLESKILL
         extern int wonflag ;
         if ( wonflag == 1 ) 
@@ -9694,18 +9240,8 @@ void MenuProc(void)
 #endif
     }
 
-    // ??????????
-#ifdef __AI
-    if (!AI_State&&!自动登陆窗口 && ((joy_trg[0] & JOY_CTRL_S && GetImeString() == NULL)
-        || (TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[1]))
-        
-
-        ){
-#else
     if( ( joy_trg[ 0 ] & JOY_CTRL_S && GetImeString() == NULL ) 
         || ( TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[ 1 ] ) ){ 
-#endif
-        // ???
         if (ProcNo == PROC_BATTLE){
             // ???
             play_se(220, 320, 240);
@@ -9739,50 +9275,12 @@ void MenuProc(void)
     }
 
     // Nuke 0413: Trade
-#ifdef __AI
-    if (!AI_State&&!自动登陆窗口 && joy_trg[0] & JOY_CTRL_T && GetImeString() == NULL) {
-#else
     if ( joy_trg[ 0 ] & JOY_CTRL_T && GetImeString() == NULL ) {
-#endif
         joy_trg[0] &= ~JOY_CTRL_T;
-
-        // ???
         if (ProcNo == PROC_BATTLE){
-            // ???
             play_se(220, 320, 240);
-        }
-        else{
+        } else{
 
-#if 0
-            MenuToggleFlag ^= JOY_CTRL_T;    // CTRL + T ??
-
-            for (i = 0; i < MENU_TRADE_0; i++) tradeWndFontNo[i] = -2;
-            for (i = 0; i < MENU_TRADE_0; i++) tradeWndBtnFlag[i] = 0;
-
-            tradeWndNo = 0;
-
-            tradeInit();
-
-            DeathMenuAction();
-            DeathMenuAction2();
-            // ????????
-            saveUserSetting();
-
-            // ????????
-            if (MenuToggleFlag & JOY_CTRL_T){
-                MenuToggleFlag &= 0;
-                MenuToggleFlag |= JOY_CTRL_T;    // ??????????
-                // ???????????
-                BattleResultWndFlag = FALSE;
-
-                // ????????
-                play_se(202, 320, 240);
-            }
-            else{
-                // ????????
-                play_se(203, 320, 240);
-            }
-#else
             int dx, dy;
             int flag;
 
@@ -9800,7 +9298,7 @@ void MenuProc(void)
 #endif
                 )
             {
-                if (!(MenuToggleFlag & JOY_CTRL_T))// ??
+                if (!(MenuToggleFlag & JOY_CTRL_T)) 
                 {
                     if (bNewServer)
                         lssproto_TD_send(sockfd, "D|D");
@@ -9816,30 +9314,15 @@ void MenuProc(void)
             if (pc.iTheaterMode > 0)
                 StockChatBufferLine("请专心表演", FONT_PAL_RED);
 #endif
-            play_se(217, 320, 240);    // ?????
-
-#endif
-
+            play_se(217, 320, 240);  //
         }
     }
 
-    // ????????
-#ifdef __AI
-    if (!AI_State&&!自动登陆窗口 && ((joy_trg[0] & JOY_CTRL_P && GetImeString() == NULL)
-        || (TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[2]))
-            
-
-        ){
-#else
     if( ( joy_trg[ 0 ] & JOY_CTRL_P && GetImeString() == NULL )
         || ( TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[ 2 ] ) ){ 
-#endif
-        // ???????????????
         if (ProcNo == PROC_BATTLE){
-            // ???
             play_se(220, 320, 240);
-        }
-        else{
+        } else{
             {
                 MenuToggleFlag ^= JOY_CTRL_P;    // CTRL + P ??
                 // ???
@@ -9867,22 +9350,11 @@ void MenuProc(void)
             }
         }
     }
-    // ?????????
-#ifdef __AI
-    if (!AI_State&&!自动登陆窗口 && ((joy_trg[0] & JOY_CTRL_I && GetImeString() == NULL)
-        || (TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[4]))
-                
-        ){
-#else
     if( ( joy_trg[ 0 ] & JOY_CTRL_I && GetImeString() == NULL ) 
         || ( TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[ 4 ] ) ){ 
-#endif
-        // ???
         if (ProcNo == PROC_BATTLE){
-            // ???
             play_se(220, 320, 240);
-        }
-        else{
+        } else{
 #ifdef _STREET_VENDOR
             if (pc.iOnStreetVendor == 1 || sStreetVendorBuyBtn == 2) StockChatBufferLine("摆摊中不得使用道具", FONT_PAL_RED);
             else
@@ -9968,17 +9440,8 @@ void MenuProc(void)
             }
         }
     }
-
-    // ????????
-#ifdef __AI
-    if (!AI_State&&!自动登陆窗口 && ((joy_trg[0] & JOY_CTRL_E && GetImeString() == NULL)
-        || (TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[5]))
-            
-        ){
-#else
     if( ( joy_trg[ 0 ] & JOY_CTRL_E && GetImeString() == NULL )
         || ( TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[ 5 ] ) ){ 
-#endif
 #ifdef _BATTLESKILL
         extern int wonflag ;
         if ( wonflag == 1 ) 
@@ -10016,17 +9479,8 @@ void MenuProc(void)
         //}
     }
 
-    // ?????????
-#ifdef __AI
-    if (!AI_State&&!自动登陆窗口 && ((joy_trg[0] & JOY_CTRL_A && GetImeString() == NULL)
-        || (TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[6]))
-    
-
-        ){
-#else
     if( ( joy_trg[ 0 ] & JOY_CTRL_A && GetImeString() == NULL )
         || ( TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[ 6 ] ) ){
-#endif
 #ifdef _BATTLESKILL
         extern int wonflag ;
         if ( wonflag == 1 ) 
@@ -10121,7 +9575,6 @@ void MenuProc(void)
 #endif
 #ifdef _RED_MEMOY_
     RedMemoyCall();
-
 #endif
     StockDispBuffer(TASK_BAR_X, TASK_BAR_Y, DISP_PRIO_MENU, CG_TASK_BAR_BACK, 1);
     if (mouse.nowPoint.y >= 456 + DISPLACEMENT_Y){
@@ -10133,13 +9586,11 @@ void MenuProc(void)
         }
 #endif 
     }
-    else{
-        if (TaskBarFlag == TRUE){
-            if (taskBarY < TASK_BAR_Y + 24) taskBarY++;
-            if (taskBarY == TASK_BAR_Y + 24){
-                for (i = 0; i < TASK_BAR; i++) albumWndFontNo[i] = -2;
-                TaskBarFlag = FALSE;
-            }
+    else if (TaskBarFlag == TRUE){
+        if (taskBarY < TASK_BAR_Y + 24) taskBarY++;
+        if (taskBarY == TASK_BAR_Y + 24){
+            for (i = 0; i < TASK_BAR; i++) albumWndFontNo[i] = -2;
+            TaskBarFlag = FALSE;
         }
     }
 
@@ -10175,11 +9626,8 @@ void MenuProc(void)
             {
                 if (pActMenuWnd->hp <= 0) break;
             }
-            // ????????
             if (mouse.onceState & MOUSE_LEFT_CRICK){
-                // ???????
                 if (HitFontNo == systemWndFontNo[0]){
-                    // ??????
 #ifdef __PHONEMESSAGE
                     CleanSMS();
 #endif
@@ -10236,40 +9684,6 @@ void MenuProc(void)
                     play_se(203, 320, 240);
                     break;
                 }
-#ifdef __AI
-                //自动战斗设定
-                if (HitFontNo == systemWndFontNo[7]){
-                    // ??????
-                    extern int AI_State;
-                    AI_State = 1;
-                    extern short actBtn;
-                    actBtn = 1;
-                    closeEtcSwitch();
-                    closeJoinChannelWN();
-                    MenuToggleFlag = 0;
-                    DeathMenuAction2();
-                    DeathMenuAction();
-                    // ????????
-                    play_se(202, 320, 240);
-                    break;
-                }
-                if (HitFontNo == systemWndFontNo[24]){
-                    if (AI == AI_SELECT){
-                        AI = AI_NONE;
-                        StockChatBufferLine("关闭ＡＩ模式！", FONT_PAL_RED);
-                        pc.etcFlag &= (~PC_AI_MOD);
-                        lssproto_FS_send(sockfd, pc.etcFlag);
-                    }
-                    else {
-                        AI = AI_SELECT;
-                        StockChatBufferLine("开启ＡＩ模式！", FONT_PAL_RED);
-                        pc.etcFlag |= PC_AI_MOD;
-                        lssproto_FS_send(sockfd, pc.etcFlag);
-                    }
-                    play_se(202, 320, 240);
-                    break;
-                }
-#endif
                 static BOOL stopBGMClicked = FALSE;
                 if (HitFontNo == systemWndFontNo[8]){
                     if (MuteFlag){
@@ -10319,8 +9733,8 @@ void MenuProc(void)
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
                     MenuToggleFlag ^= JOY_ESC;
-                    右键攻击 = !右键攻击;
-                    if (右键攻击)
+                    bRightClickAttack = !bRightClickAttack;
+                    if (bRightClickAttack)
                         StockChatBufferLine("开启右键攻击！", FONT_PAL_RED);
                     else
                         StockChatBufferLine("关闭右键攻击！", FONT_PAL_RED);
@@ -10328,11 +9742,10 @@ void MenuProc(void)
                     play_se(202, 320, 240);
                     break;
                 }
-
                 if (HitFontNo == systemWndFontNo[23]){
                     play_se(202, 320, 240);
-                    经验开关 = !经验开关;
-                    if (经验开关)
+                    bSwitchExperienceTips = !bSwitchExperienceTips;
+                    if (bSwitchExperienceTips)
                         StockChatBufferLine("开启经验显示！", FONT_PAL_RED);
                     else
                         StockChatBufferLine("关闭经验显示！", FONT_PAL_RED);
@@ -10341,8 +9754,8 @@ void MenuProc(void)
                 }
                 if (HitFontNo == systemWndFontNo[22]){
                     play_se(202, 320, 240);
-                    人物屏蔽开关 = !人物屏蔽开关;
-                    if (人物屏蔽开关)
+                    bSwitchMuteOtherPlayers = !bSwitchMuteOtherPlayers;
+                    if (bSwitchMuteOtherPlayers)
                         StockChatBufferLine("屏蔽周边人物！", FONT_PAL_RED);
                     else{
                         //extern void 设置静止的动作为站立( void );
@@ -10437,12 +9850,12 @@ void MenuProc(void)
             systemWndFontNo[21] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    快捷传送    ", 2); y += 34;//y += 40;
             systemWndFontNo[9]  = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    掉线重连    ", 2); y += 34;//y += 40;
             systemWndFontNo[10] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    简体中文    ", 2); y += 34;//y += 40;
-            if (人物屏蔽开关) {
+            if (bSwitchMuteOtherPlayers) {
                 systemWndFontNo[22] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    人物显示    ", 2);    y += 34;
             } else {
                 systemWndFontNo[22] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    人物屏蔽    ", 2);    y += 34;
             }
-            if (经验开关) {
+            if (bSwitchExperienceTips) {
                 systemWndFontNo[23] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    经验关闭    ", 2);    y += 34;//y += 40;
             } else {
                 systemWndFontNo[23] = StockFontBuffer(x + 280, y, FONT_PRIO_FRONT, 0, "    经验显示    ", 2);    y += 34;//y += 40;
@@ -10469,10 +9882,8 @@ void MenuProc(void)
                 pActMenuWnd = MakeWindowDisp(x, y, 3, 3, CG_WND_TITLE_LOGOUT, 1, FALSE);
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 break;
-            }
-            else
-                if (pActMenuWnd->hp <= 0)
-                    break;
+            } else if (pActMenuWnd->hp <= 0)
+                break;
             if (mouse.onceState & MOUSE_LEFT_CRICK){
                 if (HitFontNo == systemWndFontNo[0]){
                     DeathAction(pActMenuWnd);
@@ -10482,24 +9893,19 @@ void MenuProc(void)
                     lssproto_CharLogout_send(sockfd, 1);
 #else
                     GameState = GAME_LOGIN;
-                    ChangeProc2( PROC_CHAR_LOGOUT );
+                    ChangeProc2(PROC_CHAR_LOGOUT);
 #endif
                     play_se(206, 320, 240);
                     break;
                 }
-                // ?????
                 if (HitFontNo == systemWndFontNo[1]){
-                    // ??????
                     DeathAction(pActMenuWnd);
                     pActMenuWnd = NULL;
-                    // ??????
                     systemWndNo = 0;
                     play_se(203, 320, 240);
                     break;
                 }
             }
-
-            // ?
             x = pActMenuWnd->x + 38;
             y = pActMenuWnd->y + 56;
 
@@ -11057,8 +10463,7 @@ void MenuProc(void)
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
                 SkillWndflag = false ; 
 #endif
-            }
-            else{
+            } else {
                 if (pActMenuWnd->hp > 0){
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
                     if ( SkillWndflag == true ) {
@@ -11078,7 +10483,6 @@ void MenuProc(void)
                     StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_MENU, CG_STATUS_WND, 1);
 #endif
 #endif
-                    // ????????
                     if (mouse.onceState & MOUSE_LEFT_CRICK){
                         // 队伍
                         if (HitDispNo == statusWndFontNo[0]){
@@ -11158,14 +10562,6 @@ void MenuProc(void)
                             MenuToggleFlag &= ~JOY_CTRL_I;
                             //MenuToggleFlag &= ~JOY_CTRL_M;
 #endif
-#ifdef _TAIKEN            
-                            // ???
-                            play_se( 220, 320, 240 );
-                            // ???????
-                            sprintf_s( moji,"体验版不能选择！" );
-                            // ??????????????????
-                            StockChatBufferLine( moji, FONT_PAL_WHITE );
-#else
                             if (pActMenuWnd3 == NULL){
                                 // ?????????
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
@@ -11176,8 +10572,6 @@ void MenuProc(void)
 #else
                                 pActMenuWnd3 = MakeWindowDisp( 4, 16 + 280 + 78, 272, 88, 0, -1 ,0);
 #endif
-#endif
-                                // ????????
                                 play_se(202, 320, 240);
                                 // ????
                                 shougouChange.buffer[0] = NULL;
@@ -11920,10 +11314,6 @@ void MenuProc(void)
                     statusWndFontNo[ 13 ] = StockDispBuffer( x+139, y+423, DISP_PRIO_IME3, CG_TRADE_BACK_BTN, 2 );
 #endif
                     statusWndFontNo[ 13 ] = StockDispBuffer( x+215, y+437, DISP_PRIO_IME3, CG_TRADE_BACK_BTN, 2 );
-#ifdef _SYUTEST3
-                    for ( i = 14 ; i < 22 ; i ++ ) 
-                        statusWndFontNo[ i ] = StockDispBuffer( x+139 , y+ 200 + ( i - 14 ) * 20 , DISP_PRIO_IME3, CG_TRADE_BACK_BTN, 2 );
-#endif
 #ifndef _MAG_MENU
                     for ( i = 0 ; i < CHAR_MAX_DETAIL ; i ++ ) {
                         sprintf_s( moji , "%s%d" , DetailDesc[i] , atoi ( CharDetail[i] ) ) ; 
@@ -11937,24 +11327,6 @@ void MenuProc(void)
                             statusWndNo = 0;
                             play_se( 202, 320, 240);
                         }
-#ifdef _SYUTEST3
-                        if( HitDispNo == statusWndFontNo[ 14 ] )
-                            lssproto_CHATROOM_send ( sockfd , "C|123456798" ) ; 
-                        if( HitDispNo == statusWndFontNo[ 15 ] )
-                            lssproto_CHATROOM_send ( sockfd , "D|123456798" ) ; 
-                        if( HitDispNo == statusWndFontNo[ 16 ] )
-                            lssproto_CHATROOM_send ( sockfd , "J|0" ) ; 
-                        if( HitDispNo == statusWndFontNo[ 17 ] )
-                            lssproto_CHATROOM_send ( sockfd , "L|123456798" ) ; 
-                        if( HitDispNo == statusWndFontNo[ 18 ] )
-                            lssproto_CHATROOM_send ( sockfd , "K|123456798" ) ; 
-                        if( HitDispNo == statusWndFontNo[ 19 ] )
-                            lssproto_CHATROOM_send ( sockfd , "M|123456798" ) ; 
-                        if( HitDispNo == statusWndFontNo[ 20 ] )
-                            lssproto_CHATROOM_send ( sockfd , "T|123456798" ) ; 
-                        if( HitDispNo == statusWndFontNo[ 21 ] )
-                            lssproto_CHATROOM_send ( sockfd , "B|123456798" ) ; 
-#endif
                     }
                 }
             }
@@ -12285,15 +11657,10 @@ void MenuProc(void)
                         }
 #endif
                     }
-                    // ????????
                     if (mouse.onceState & MOUSE_RIGHT_CRICK){
-                        // ????????
                         for (i = 0; i < 5; i++){
-                            // ???????????
                             if (pet[i].useFlag == TRUE && eventWarpSendFlag == FALSE){
-                                // ??????
                                 if (HitFontNo == petWndFontNo[i + 5]){
-                                    // ?????????? or ride Pet
                                     if (ItemMixPetNo != i
                                         && pc.ridePetNo != i)
                                     {
@@ -14796,11 +14163,11 @@ void MenuProc(void)
 #ifdef _PETCOM_
                         extern void ShowBottomLineString(int iColor, LPSTR lpstr);
                         static int 宠算图片索引 = 0;
-                        static int 宠算窗口按钮ID = 0;
-                        宠算窗口按钮ID = StockDispBuffer(x + 193, y + 5, DISP_PRIO_IME3, CG_PETCOM_CHANGE_BTN + 宠算图片索引, 2);
-                        if (HitDispNo == 宠算窗口按钮ID)
+                        static int 宠算窗口buttonId = 0;
+                        宠算窗口buttonId = StockDispBuffer(x + 193, y + 5, DISP_PRIO_IME3, CG_PETCOM_CHANGE_BTN + 宠算图片索引, 2);
+                        if (HitDispNo == 宠算窗口buttonId)
                             ShowBottomLineString(FONT_PAL_WHITE, "宠物成长计算。");
-                        if ((mouse.state & MOUSE_LEFT_CRICK && HitDispNo == 宠算窗口按钮ID)){
+                        if ((mouse.state & MOUSE_LEFT_CRICK && HitDispNo == 宠算窗口buttonId)){
                             宠算图片索引 = 1;
                             if (mouse.onceState & MOUSE_LEFT_CRICK){
                                 petWndNo = 4;
@@ -15095,39 +14462,20 @@ void MenuProc(void)
                         x = pActMenuWnd->x + 32;
                         y = pActMenuWnd->y + 252;
 
-                        // ?
                         for (i = 0; i < pet[petStatusNo].maxSkill; i++){
-                            // ????????
                             if (petSkill[petStatusNo][i].useFlag == TRUE){
-                                // ???????
                                 if (HitFontNo == petWndFontNo[i]){
-                                    // ??????
                                     char *splitPoint = petSkill[petStatusNo][i].memo;
-                                    // ?????
-                                    while (1){
-                                        // ?????????
-                                        if (strlen(splitPoint) > 24){
-                                            strncpy_s(moji, splitPoint, 24);
-                                            moji[24] = NULL;    // ??????
-                                            // ??????
-                                            if (GetStrLastByte(moji) == 3){
-                                                moji[23] = NULL;
-                                                splitPoint += 23;
-                                            }
-                                            else{
-                                                moji[24] = NULL;
-                                                splitPoint += 24;
-                                            }
-                                            StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
-                                        }
-                                        else{
-                                            strcpy(moji, splitPoint);
-                                            StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                                    while (true){
+                                        const int charEachLine = 24;
+                                        splitPoint = copyUtf8CharByNum(moji, splitPoint, charEachLine);
+                                        StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                                        if (splitPoint == NULL || *splitPoint == '\0') {
                                             break;
                                         }
+                                        y += 20;
                                     }
                                     if (mouse.onceState & MOUSE_LEFT_CRICK){
-                                        // ????????????????????????????????????
                                         if (petSkill[petStatusNo][i].field != PETSKILL_FIELD_BATTLE && pActPet2 == NULL
                                             /* && MenuToggleFlag & JOY_CTRL_I*/){
                                             int j;
@@ -15135,15 +14483,12 @@ void MenuProc(void)
                                             // ?????
                                             switch (petSkill[petStatusNo][i].skillId){
 
-                                            case PETSKILL_MERGE:     // ??????
-                                                // ?????????????????
+                                            case PETSKILL_MERGE: //
                                                 for (j = MAX_ITEMSTART; j < MAX_ITEM; j++){
                                                     if (ItemBuffer[j].mixFlag == 1) cnt++;
                                                 }
                                                 break;
-
-                                            case PETSKILL_MERGE2:     // ???????
-                                                // ?????????????????
+                                            case PETSKILL_MERGE2: //
                                                 for (j = MAX_ITEMSTART; j < MAX_ITEM; j++){
                                                     if (ItemBuffer[j].mixFlag == 2) cnt++;
                                                 }
@@ -15186,29 +14531,18 @@ void MenuProc(void)
                                                 break;
 #endif
                                             }
-                                            // ????????
                                             if (cnt >= 2){
-
-                                                // ????????????????
                                                 if (pActPet2 == NULL){
-                                                    // ?????????
                                                     pActPet2 = MakeAnimDisp(750, 240, pet[petStatusNo].graNo, ANIM_DISP_MIX_PET_INIT);
-                                                    // ???????
                                                     ItemMixPetNo = petStatusNo;
                                                 }
-                                                // ????
                                                 SelectWazaNo = i;
-                                                // ???????????
                                                 mixPetNo = petStatusNo;
-
-                                                // ??????
                                                 play_se(212, 320, 240);
-                                            }
-                                            else{
+                                            } else{
 #ifdef _CALLBUS
                                                 if (petSkill[petStatusNo][i].skillId != PETSKILL_CALLBUS){
 #endif
-                                                    // ?????????????????
                                                     if (!(MenuToggleFlag & JOY_CTRL_I) || (MenuToggleFlag & JOY_CTRL_I && itemWndNo != 0)){
                                                         int j;
                                                         MenuToggleFlag |= JOY_CTRL_I;    // CTRL + I ??
@@ -15291,163 +14625,154 @@ void MenuProc(void)
         case 4:
             if (pActMenuWnd == NULL){
                 pActMenuWnd = MakeWindowDisp(4, 4, 272, 320, 0, -1);
-            }
-            else{
-                if (pActMenuWnd->hp > 0){
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_MENU, CG_PETCOM_WND, 1);
-                    int 按钮ID = StockDispBuffer(pActMenuWnd->x + 190, pActMenuWnd->y + 300, DISP_PRIO_IME3, CG_RETURN_BTN, 2);
-                    if ((mouse.onceState & MOUSE_LEFT_CRICK) && (HitDispNo == 按钮ID)){
-                        DeathAction(pActMenuWnd);
-                        pActMenuWnd = NULL;
-                        petWndNo = 1;
-                        play_se(203, 320, 240);
-                        break;
-                    }
-                    static int 宠算左按钮索引 = 0;
-                    static int 宠算右按钮索引 = 0;
-                    按钮ID = StockDispBuffer(pActMenuWnd->x + 60, pActMenuWnd->y + 300, DISP_PRIO_IME3, CG_PREV_BTN + 宠算左按钮索引, 2);
-                    if ((mouse.state & MOUSE_LEFT_CRICK && HitDispNo == 按钮ID)){
-                        宠算左按钮索引 = 1;
-                        if (mouse.onceState & MOUSE_LEFT_CRICK){
-                            while (1){
-                                petStatusNo--;
-                                if (petStatusNo <= -1) petStatusNo = 4;
-                                if (pet[petStatusNo].useFlag == TRUE) break;
-                            }
-                            play_se(203, 320, 240);
-                        }
-                    }
-                    else{
-                        宠算左按钮索引 = 0;
-                    }
-                    按钮ID = StockDispBuffer(pActMenuWnd->x + 104, pActMenuWnd->y + 300, DISP_PRIO_IME3, CG_NEXT_BTN + 宠算右按钮索引, 2);
-                    if ((mouse.state & MOUSE_LEFT_CRICK && HitDispNo == 按钮ID)){
-                        宠算右按钮索引 = 1;
-                        if (mouse.onceState & MOUSE_LEFT_CRICK){
-                            while (1){
-                                petStatusNo++;
-                                // ????????
-                                if (petStatusNo >= 5) petStatusNo = 0;
-                                if (pet[petStatusNo].useFlag == TRUE) break;
-                            }
-                            play_se(203, 320, 240);
-                        }
-                    }
-                    else{
-                        宠算右按钮索引 = 0;
-                    }
-#define _PETCMOX 10
-                    if (pet[petStatusNo].freeName[0] != NULL)
-                        CenteringStr(pet[petStatusNo].freeName, moji, PET_NAME_LEN);
-                    else
-                        CenteringStr(pet[petStatusNo].name, moji, PET_NAME_LEN);
-                    StockFontBuffer(85, 36, FONT_PRIO_FRONT, 0, moji, 0);
-
-                    int atrFlag = FALSE;
-                    int atrGraNo[4];
-                    atrFlag = 0;
-                    if (pet[petStatusNo].earth > 0){
-                        if (pet[petStatusNo].earth > 50) atrGraNo[atrFlag] = CG_ATR_ICON_EARTH_BIG;
-                        else atrGraNo[atrFlag] = CG_ATR_ICON_EARTH_SML;
-                        atrFlag++;
-                    }
-                    if (pet[petStatusNo].water > 0){
-                        if (pet[petStatusNo].water > 50) atrGraNo[atrFlag] = CG_ATR_ICON_WATER_BIG;
-                        else atrGraNo[atrFlag] = CG_ATR_ICON_WATER_SML;
-                        atrFlag++;
-                    }
-                    if (pet[petStatusNo].fire > 0){
-                        if (pet[petStatusNo].fire > 50) atrGraNo[atrFlag] = CG_ATR_ICON_FIRE_BIG;
-                        else atrGraNo[atrFlag] = CG_ATR_ICON_FIRE_SML;
-                        atrFlag++;
-                    }
-                    if (pet[petStatusNo].wind > 0){
-                        if (pet[petStatusNo].wind > 50) atrGraNo[atrFlag] = CG_ATR_ICON_WIND_BIG;
-                        else atrGraNo[atrFlag] = CG_ATR_ICON_WIND_SML;
-                        atrFlag++;
-                    }
-                    if (atrFlag > 0) StockDispBuffer(232, 44, DISP_PRIO_IME3, atrGraNo[0], 0);
-                    if (atrFlag > 1) StockDispBuffer(232 + 16, 44, DISP_PRIO_IME3, atrGraNo[1], 0);
-
-                    sprintf_s(moji, "%3d", pet[petStatusNo].oldlevel);
-                    StockFontBuffer(80, 98, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3d", pet[petStatusNo].oldhp);
-                    StockFontBuffer(80, 120, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3d", pet[petStatusNo].oldatk);
-                    StockFontBuffer(80, 142, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3d", pet[petStatusNo].olddef);
-                    StockFontBuffer(80, 164, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3d", pet[petStatusNo].oldquick);
-                    StockFontBuffer(80, 186, FONT_PRIO_FRONT, 0, moji, 0);
-                    float  a, b, c, d, e, f;
-                    float a1, b1, c1, d1, e1;
-
-                    if (pet[petStatusNo].level != pet[petStatusNo].oldlevel && pet[petStatusNo].oldlevel){
-                        f = (float)(pet[petStatusNo].level - pet[petStatusNo].oldlevel);
-                        a = (pet[petStatusNo].maxHp - pet[petStatusNo].oldhp) / f;
-                        b = (pet[petStatusNo].atk - pet[petStatusNo].oldatk) / f;
-                        c = (pet[petStatusNo].def - pet[petStatusNo].olddef) / f;
-                        d = (pet[petStatusNo].quick - pet[petStatusNo].oldquick) / f;
-
-                        f = 140.00 - pet[petStatusNo].oldlevel;
-
-                        a1 = f*a + pet[petStatusNo].oldhp;
-                        b1 = f*b + pet[petStatusNo].oldatk;
-                        c1 = f*c + pet[petStatusNo].olddef;
-                        d1 = f*d + pet[petStatusNo].oldquick;
-                    }
-                    else{
-                        a = b = c = d = 1.0000;
-                        a1 = b1 = c1 = d1 = 0;
-                    }
-                    e = b + c + d;
-                    e1 = pet[petStatusNo].maxHp*0.25 + pet[petStatusNo].atk + pet[petStatusNo].def + pet[petStatusNo].quick;
-
-                    sprintf_s(moji, "%3d", 140);
-
-                    StockFontBuffer(155, 98, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3.2f", a1);
-                    StockFontBuffer(143, 120, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3.2f", b1);
-                    StockFontBuffer(143, 142, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3.2f", c1);
-                    StockFontBuffer(143, 164, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3.2f", d1);
-                    StockFontBuffer(143, 186, FONT_PRIO_FRONT, 0, moji, 0);
-
-                    sprintf_s(moji, "%3.4f", a);
-                    StockFontBuffer(215, 120, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3.4f", b);
-                    StockFontBuffer(215, 142, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3.4f", c);
-                    StockFontBuffer(215, 164, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3.4f", d);
-                    StockFontBuffer(215, 186, FONT_PRIO_FRONT, 0, moji, 0);
-                    sprintf_s(moji, "%3.4f", e);
-                    StockFontBuffer(80, 210, FONT_PRIO_FRONT, 0, moji, 0);
-
-                    sprintf_s(moji, "%3.2f", e1);
-                    StockFontBuffer(210, 210, FONT_PRIO_FRONT, 0, moji, 0);
-
-
+            } else if (pActMenuWnd->hp > 0) {
+                // 2026.09.04 Pet Status
+                StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx,
+                                ((WINDOW_DISP *)pActMenuWnd->pYobi)->my,
+                                DISP_PRIO_MENU, CG_PETCOM_WND, 1);
+                int buttonId = StockDispBuffer(pActMenuWnd->x + 190,
+                                               pActMenuWnd->y + 300,
+                                               DISP_PRIO_IME3, CG_RETURN_BTN, 2);
+                if ((mouse.onceState & MOUSE_LEFT_CRICK) && (HitDispNo == buttonId)){
+                    DeathAction(pActMenuWnd);
+                    pActMenuWnd = NULL;
+                    petWndNo = 1;
+                    play_se(203, 320, 240);
+                    break; // 这个break的是switch
                 }
+                static int sPetPrevButtonIdx = 0;
+                static int sPetNextButtonIdx = 0;
+                buttonId = StockDispBuffer(pActMenuWnd->x + 60,
+                                           pActMenuWnd->y + 300,
+                                           DISP_PRIO_IME3,
+                                           CG_PREV_BTN + sPetPrevButtonIdx, 2);
+                if ((mouse.state & MOUSE_LEFT_CRICK && HitDispNo == buttonId)){
+                    sPetPrevButtonIdx = 1;
+                    if (mouse.onceState & MOUSE_LEFT_CRICK){
+                        while (true){
+                            petStatusNo--;
+                            if (petStatusNo <= -1) petStatusNo = 4;
+                            if (pet[petStatusNo].useFlag == TRUE) break;
+                        }
+                        play_se(203, 320, 240);
+                    }
+                }
+                else{
+                    sPetPrevButtonIdx = 0;
+                }
+                buttonId = StockDispBuffer(pActMenuWnd->x + 104,
+                                           pActMenuWnd->y + 300,
+                                           DISP_PRIO_IME3,
+                                           CG_NEXT_BTN + sPetNextButtonIdx, 2);
+                if ((mouse.state & MOUSE_LEFT_CRICK && HitDispNo == buttonId)){
+                    sPetNextButtonIdx = 1;
+                    if (mouse.onceState & MOUSE_LEFT_CRICK){
+                        while (true){
+                            petStatusNo++;
+                            if (petStatusNo >= 5) petStatusNo = 0;
+                            if (pet[petStatusNo].useFlag == TRUE) break;
+                        }
+                        play_se(203, 320, 240);
+                    }
+                }
+                else{
+                    sPetNextButtonIdx = 0;
+                }
+                if (pet[petStatusNo].freeName[0] != NULL)
+                    CenteringStr(pet[petStatusNo].freeName, moji, PET_NAME_LEN);
+                else
+                    CenteringStr(pet[petStatusNo].name, moji, PET_NAME_LEN);
+                StockFontBuffer(85, 36, FONT_PRIO_FRONT, 0, moji, 0);
+
+                int atrFlag = FALSE;
+                int atrGraNo[4];
+                atrFlag = 0;
+                if (pet[petStatusNo].earth > 0){
+                    if (pet[petStatusNo].earth > 50) atrGraNo[atrFlag] = CG_ATR_ICON_EARTH_BIG;
+                    else atrGraNo[atrFlag] = CG_ATR_ICON_EARTH_SML;
+                    atrFlag++;
+                }
+                if (pet[petStatusNo].water > 0){
+                    if (pet[petStatusNo].water > 50) atrGraNo[atrFlag] = CG_ATR_ICON_WATER_BIG;
+                    else atrGraNo[atrFlag] = CG_ATR_ICON_WATER_SML;
+                    atrFlag++;
+                }
+                if (pet[petStatusNo].fire > 0){
+                    if (pet[petStatusNo].fire > 50) atrGraNo[atrFlag] = CG_ATR_ICON_FIRE_BIG;
+                    else atrGraNo[atrFlag] = CG_ATR_ICON_FIRE_SML;
+                    atrFlag++;
+                }
+                if (pet[petStatusNo].wind > 0){
+                    if (pet[petStatusNo].wind > 50) atrGraNo[atrFlag] = CG_ATR_ICON_WIND_BIG;
+                    else atrGraNo[atrFlag] = CG_ATR_ICON_WIND_SML;
+                    atrFlag++;
+                }
+                if (atrFlag > 0) StockDispBuffer(232, 44, DISP_PRIO_IME3, atrGraNo[0], 0);
+                if (atrFlag > 1) StockDispBuffer(232 + 16, 44, DISP_PRIO_IME3, atrGraNo[1], 0);
+
+                sprintf_s(moji, "%3d", pet[petStatusNo].oldlevel);
+                StockFontBuffer(80, 98, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3d", pet[petStatusNo].oldhp);
+                StockFontBuffer(80, 120, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3d", pet[petStatusNo].oldatk);
+                StockFontBuffer(80, 142, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3d", pet[petStatusNo].olddef);
+                StockFontBuffer(80, 164, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3d", pet[petStatusNo].oldquick);
+                StockFontBuffer(80, 186, FONT_PRIO_FRONT, 0, moji, 0);
+                float  a, b, c, d, e, f;
+                float a1, b1, c1, d1, e1;
+
+                if (pet[petStatusNo].level != pet[petStatusNo].oldlevel && pet[petStatusNo].oldlevel){
+                    f = (float)(pet[petStatusNo].level - pet[petStatusNo].oldlevel);
+                    a = (pet[petStatusNo].maxHp - pet[petStatusNo].oldhp) / f;
+                    b = (pet[petStatusNo].atk - pet[petStatusNo].oldatk) / f;
+                    c = (pet[petStatusNo].def - pet[petStatusNo].olddef) / f;
+                    d = (pet[petStatusNo].quick - pet[petStatusNo].oldquick) / f;
+                    f = 140.00 - pet[petStatusNo].oldlevel;
+                    a1 = f*a + pet[petStatusNo].oldhp;
+                    b1 = f*b + pet[petStatusNo].oldatk;
+                    c1 = f*c + pet[petStatusNo].olddef;
+                    d1 = f*d + pet[petStatusNo].oldquick;
+                }
+                else{
+                    a = b = c = d = 1.0000;
+                    a1 = b1 = c1 = d1 = 0;
+                }
+                e = b + c + d;
+                e1 = pet[petStatusNo].maxHp*0.25 + pet[petStatusNo].atk + pet[petStatusNo].def + pet[petStatusNo].quick;
+                sprintf_s(moji, "%3d", 140);
+                StockFontBuffer(155, 98, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3.2f", a1);
+                StockFontBuffer(143, 120, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3.2f", b1);
+                StockFontBuffer(143, 142, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3.2f", c1);
+                StockFontBuffer(143, 164, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3.2f", d1);
+                StockFontBuffer(143, 186, FONT_PRIO_FRONT, 0, moji, 0);
+
+                sprintf_s(moji, "%3.4f", a);
+                StockFontBuffer(215, 120, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3.4f", b);
+                StockFontBuffer(215, 142, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3.4f", c);
+                StockFontBuffer(215, 164, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3.4f", d);
+                StockFontBuffer(215, 186, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3.4f", e);
+                StockFontBuffer(80, 210, FONT_PRIO_FRONT, 0, moji, 0);
+                sprintf_s(moji, "%3.2f", e1);
+                StockFontBuffer(210, 210, FONT_PRIO_FRONT, 0, moji, 0);
             }
             break;
 #endif
         }
     }
-
-    //? ??????????? *******************************************************/
-    if (MenuToggleFlag & JOY_CTRL_I){
+    if (MenuToggleFlag & JOY_CTRL_I){ // 物品界面
         int x1 = 0, y1 = 0;
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
         SkillWndflag = false ; 
-        /*        if( pActMenuWnd3 != NULL ) {
-                    DeathAction ( pActMenuWnd3 ) ; 
-                    pActMenuWnd3 = NULL ; 
-                    GetKeyInputFocus( &MyChatBuffer );
-                    }
-                    */
 #endif
 #ifdef _NPC_DANCE
         if (pc.iDanceMode)
@@ -15457,12 +14782,10 @@ void MenuProc(void)
             itemWndNo = 3;
         }
 #endif
-
         switch (itemWndNo){
         case 0:    
             if (pActMenuWnd2 == NULL)
             {
-                // ?????????
 #ifndef _PET_ITEM
                 pActMenuWnd2 = MakeWindowDisp(365, 4, 271, 440, 0, -1);
 #ifdef _NEW_ITEM_
@@ -15517,44 +14840,40 @@ void MenuProc(void)
                 }
 #endif
             }
-            else
+            else if (pActMenuWnd2->hp > 0)
             {
-                //andy_log 装备栏位修改处
-                if (pActMenuWnd2->hp > 0)
-                {
 #ifdef _PET_ITEM
-                    // 检查是否按下了道具视窗左边的标签
-                    x1 = pActMenuWnd2->x - 21;
-                    y1 = pActMenuWnd2->y + 12;
-                    if (g_bPetItemWndFlag)
+                // 检查是否按下了道具视窗左边的标签
+                x1 = pActMenuWnd2->x - 21;
+                y1 = pActMenuWnd2->y + 12;
+                if (g_bPetItemWndFlag)
+                {
+                    if (MakeHitBox(x1, y1, x1 + 23, y1 + 60, DISP_PRIO_IME3) == TRUE)    // 按下了人物装备
+                    if (mouse.onceState & MOUSE_LEFT_CRICK)
                     {
-                        if (MakeHitBox(x1, y1, x1 + 23, y1 + 60, DISP_PRIO_IME3) == TRUE)    // 按下了人物装备
-                        if (mouse.onceState & MOUSE_LEFT_CRICK)
-                        {
-                            g_bPetItemWndFlag = false;
-                            InitItem(pActMenuWnd2->x, pActMenuWnd2->y, g_bPetItemWndFlag);
-                        }
+                        g_bPetItemWndFlag = false;
+                        InitItem(pActMenuWnd2->x, pActMenuWnd2->y, g_bPetItemWndFlag);
                     }
-                    else
+                }
+                else
+                {
+                    if (MakeHitBox(x1, y1 + 78, x1 + 23, y1 + 142, DISP_PRIO_IME3) == TRUE)    // 按下了宠物装备
+                    if (mouse.onceState & MOUSE_LEFT_CRICK)
                     {
-                        if (MakeHitBox(x1, y1 + 78, x1 + 23, y1 + 142, DISP_PRIO_IME3) == TRUE)    // 按下了宠物装备
-                        if (mouse.onceState & MOUSE_LEFT_CRICK)
-                        {
-                            g_bPetItemWndFlag = true;
-                            InitItem(pActMenuWnd2->x, pActMenuWnd2->y, g_bPetItemWndFlag);
-                        }
-                    }    
-                    if (g_bPetItemWndFlag)
-                        StockDispBuffer(((WINDOW_DISP*)pActMenuWnd2->pYobi)->mx - 14, ((WINDOW_DISP*)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, 26456, 1);
-                    else
-                        StockDispBuffer(((WINDOW_DISP*)pActMenuWnd2->pYobi)->mx - 14, ((WINDOW_DISP*)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_NEWITEM_WND, 1);
+                        g_bPetItemWndFlag = true;
+                        InitItem(pActMenuWnd2->x, pActMenuWnd2->y, g_bPetItemWndFlag);
+                    }
+                }    
+                if (g_bPetItemWndFlag)
+                    StockDispBuffer(((WINDOW_DISP*)pActMenuWnd2->pYobi)->mx - 14, ((WINDOW_DISP*)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, 26456, 1);
+                else
+                    StockDispBuffer(((WINDOW_DISP*)pActMenuWnd2->pYobi)->mx - 14, ((WINDOW_DISP*)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_NEWITEM_WND, 1);
 #else
 #ifdef _ITEM_EQUITSPACE
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_NEWITEM_WND, 1);
+                StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_NEWITEM_WND, 1);
 #else
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_ITEM_WND_0, 1);
-
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_ITEM_WND_1, 1);
+                StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_ITEM_WND_0, 1);
+                StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_ITEM_WND_1, 1);
 #endif
 #endif
 
@@ -15591,123 +14910,114 @@ void MenuProc(void)
                         }
                     }
 #endif
-                    // ????????
-                    if (mouse.onceState & MOUSE_LEFT_CRICK)
-                    {
-                        // 按下关闭钮
-                        if (HitDispNo == itemWndFontNo[0]){
+                if (mouse.onceState & MOUSE_LEFT_CRICK)
+                {
+                    // 按下关闭钮
+                    if (HitDispNo == itemWndFontNo[0]){
 #ifdef _MAGIC_ITEM_
-                            if(道具光环Act) DeathAction(道具光环Act);
-                            道具光环Act=NULL;
-                            extern void ClearMagicItemWin();
-                            ClearMagicItemWin();
+                        if(道具光环Act) DeathAction(道具光环Act);
+                        道具光环Act=NULL;
+                        extern void ClearMagicItemWin();
+                        ClearMagicItemWin();
 #endif
-                            DeathAction(pActMenuWnd2);
-
-                            pActMenuWnd2 = NULL;
-                            // ????
-                            DeathAction(pActPet2);
-                            pActPet2 = NULL;
-                            // ????????
-                            ItemMixPetNo = -1;
-                            // ???????????
-                            MenuToggleFlag ^= JOY_CTRL_I;
-                            // ??????????????????
-                            if (MenuToggleFlag & JOY_CTRL_S){
-
-                                MenuToggleFlag ^= JOY_CTRL_S;    // CTRL + S ??
-                                // ??????????
-                                DeathMenuAction();
-                            }
-                            // ????????
-                            play_se(203, 320, 240);
-                            itemNo = -1;
-#ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
-                            GetKeyInputFocus(&MyChatBuffer);
-                            Moneyflag = false;
-#endif
+                        DeathAction(pActMenuWnd2);
+                        pActMenuWnd2 = NULL;
+                        DeathAction(pActPet2);
+                        pActPet2 = NULL;
+                        ItemMixPetNo = -1;
+                        MenuToggleFlag ^= JOY_CTRL_I;
+                        if (MenuToggleFlag & JOY_CTRL_S){
+                            MenuToggleFlag ^= JOY_CTRL_S;    // CTRL + S
+                            DeathMenuAction();
                         }
-                        // 按了咒术
-                        if (HitDispNo == itemWndFontNo[1]){
-                            itemWndNo = 1;
-                            DeathAction(pActMenuWnd2);
+                        play_se(203, 320, 240);
+                        itemNo = -1;
 #ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
-                            GetKeyInputFocus(&MyChatBuffer);
-                            Moneyflag = false;
+                        GetKeyInputFocus(&MyChatBuffer);
+                        Moneyflag = false;
 #endif
-                            pActMenuWnd2 = NULL;
-                            DeathAction(pActPet2);
-                            pActPet2 = NULL;
-                            ItemMixPetNo = -1;
-                            play_se(202, 320, 240);
-                            if (!(MenuToggleFlag & JOY_CTRL_S)){
-                                MenuToggleFlag ^= JOY_CTRL_S;    // CTRL + S ??
-                                for (i = 0; i < MENU_STATUS_0; i++) statusWndFontNo[i] = -2;
-                                for (i = 0; i < MENU_STATUS_0; i++) statusWndBtnFlag[i] = 0;
+                    }
+                    // 按了咒术
+                    if (HitDispNo == itemWndFontNo[1]){
+                        itemWndNo = 1;
+                        DeathAction(pActMenuWnd2);
+#ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
+                        GetKeyInputFocus(&MyChatBuffer);
+                        Moneyflag = false;
+#endif
+                        pActMenuWnd2 = NULL;
+                        DeathAction(pActPet2);
+                        pActPet2 = NULL;
+                        ItemMixPetNo = -1;
+                        play_se(202, 320, 240);
+                        if (!(MenuToggleFlag & JOY_CTRL_S)){
+                            MenuToggleFlag ^= JOY_CTRL_S;    // CTRL + S ??
+                            for (i = 0; i < MENU_STATUS_0; i++) statusWndFontNo[i] = -2;
+                            for (i = 0; i < MENU_STATUS_0; i++) statusWndBtnFlag[i] = 0;
+                            statusWndNo = 1;
+                            DeathMenuAction();
+                            saveUserSetting();
+                            MenuToggleFlag &= JOY_CTRL_I;
+                            MenuToggleFlag |= JOY_CTRL_S;
+                        }
+                        else{
+                            if (statusWndNo != 1){
+                                DeathAction(pActMenuWnd);
+                                pActMenuWnd = NULL;
                                 statusWndNo = 1;
-                                DeathMenuAction();
-                                saveUserSetting();
-                                MenuToggleFlag &= JOY_CTRL_I;
-                                MenuToggleFlag |= JOY_CTRL_S;
-                            }
-                            else{
-                                if (statusWndNo != 1){
-                                    DeathAction(pActMenuWnd);
-                                    pActMenuWnd = NULL;
-                                    statusWndNo = 1;
-                                }
                             }
                         }
-                        if (itemNo != -1 && MenuToggleFlag & JOY_CTRL_S && statusWndNo == 1){
-                            for (i = 0; i < 11; i++){
-                                if (HitFontNo == statusWndFontNo[i] && eventWarpSendFlag == FALSE){
-                                    if (bNewServer)
-                                        lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
-                                    else
-                                        old_lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
-                                    play_se(212, 320, 240);
-                                    itemNo = -1;
+                    }
+                    if (itemNo != -1 && MenuToggleFlag & JOY_CTRL_S && statusWndNo == 1){
+                        for (i = 0; i < 11; i++){
+                            if (HitFontNo == statusWndFontNo[i] && eventWarpSendFlag == FALSE){
+                                if (bNewServer)
+                                    lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
+                                else
+                                    old_lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
+                                play_se(212, 320, 240);
+                                itemNo = -1;
 
-                                }
                             }
                         }
+                    }
 #ifdef _PET_ITEM
-                        // 目前处在宠物装备视窗
-                        if (g_bPetItemWndFlag)
+                    // 目前处在宠物装备视窗
+                    if (g_bPetItemWndFlag)
+                    {
+                        // 按下了左箭头
+                        if (HitDispNo == itemWndFontNo[5])
                         {
-                            // 按下了左箭头
-                            if (HitDispNo == itemWndFontNo[5])
+                            if (nSelectPet != -1)
                             {
-                                if (nSelectPet != -1)
+                                do
                                 {
-                                    do
-                                    {
+                                    nSelectPet--;
+                                    if (nSelectPet == pc.ridePetNo)
                                         nSelectPet--;
-                                        if (nSelectPet == pc.ridePetNo)
-                                            nSelectPet--;
-                                        if (nSelectPet < 0)
-                                            nSelectPet = MAX_PET - 1;
-                                    }
-                                    while (!pet[nSelectPet].useFlag);
+                                    if (nSelectPet < 0)
+                                        nSelectPet = MAX_PET - 1;
                                 }
-                            }
-                            // 按下了右箭头
-                            if (HitDispNo == itemWndFontNo[6])
-                            {
-                                if (nSelectPet != -1)
-                                {
-                                    do
-                                    {
-                                        nSelectPet++;
-                                        if (nSelectPet == pc.ridePetNo)
-                                            nSelectPet++;
-                                        if (nSelectPet >= MAX_PET)
-                                            nSelectPet = 0;
-                                    }
-                                    while (!pet[nSelectPet].useFlag);
-                                }
+                                while (!pet[nSelectPet].useFlag);
                             }
                         }
+                        // 按下了右箭头
+                        if (HitDispNo == itemWndFontNo[6])
+                        {
+                            if (nSelectPet != -1)
+                            {
+                                do
+                                {
+                                    nSelectPet++;
+                                    if (nSelectPet == pc.ridePetNo)
+                                        nSelectPet++;
+                                    if (nSelectPet >= MAX_PET)
+                                        nSelectPet = 0;
+                                }
+                                while (!pet[nSelectPet].useFlag);
+                            }
+                        }
+                    }
 #endif
                     }
 
@@ -15750,27 +15060,18 @@ void MenuProc(void)
                             GetKeyInputFocus(&MyChatBuffer);
                             Moneyflag = false;
 #endif
-                            // ???
                             itemWndDropGold += itemWndDropGoldInc;
-                            // ?????????????
                             itemWndDropGoldCnt++;
-                            // ????
                             if (itemWndDropGoldCnt >= 30){
-                                // ?????????????
                                 itemWndDropGoldCnt = 0;
-                                // ????????
                                 if (itemWndDropGoldInc == 0) itemWndDropGoldInc = 1;
                                 else{
-                                    // ?????
                                     itemWndDropGoldInc *= 5;
-                                    // ????????
                                     if (itemWndDropGoldInc > 10000) itemWndDropGoldInc = 10000;
                                 }
                             }
-                            // ????????
                             if (itemWndDropGold >= pc.gold){
                                 itemWndDropGold = pc.gold;
-                                // ???
                                 play_se(220, 320, 240);
                             }
                         }
@@ -15867,6 +15168,21 @@ void MenuProc(void)
                     if (pActMenuWnd2 != NULL)
                     {
 #ifdef _NEW_ITEM_
+                        if (g_lastInventoryLogPage != 道具栏页数) {
+                            const int pageStart = MAX_ITEMSTART + MAX_MAXHAVEITEM * 道具栏页数;
+                            int usedOnPage = 0;
+                            for (int logIndex = pageStart;
+                                 logIndex < pageStart + MAX_MAXHAVEITEM; ++logIndex) {
+                                if (pc.item[logIndex].useFlag)
+                                    ++usedOnPage;
+                            }
+                            ClientRuntimeLog("inventory-ui",
+                                "show page=%d range=[%d,%d) used=%d unlockedEnd=%d state=0x%x",
+                                道具栏页数, pageStart,
+                                pageStart + MAX_MAXHAVEITEM, usedOnPage,
+                                判断玩家道具数量(), pc.道具栏状态);
+                            g_lastInventoryLogPage = 道具栏页数;
+                        }
                         //道具栏页数
                         for (i = 0; i < 3; i++){
                             if (i == 道具栏页数){
@@ -15938,6 +15254,15 @@ void MenuProc(void)
                             if (MakeHitBox(ItemBuffer[i].defX - 24, ItemBuffer[i].defY - 24,
                                 ItemBuffer[i].defX + 26, ItemBuffer[i].defY + 23, DISP_PRIO_IME3) == TRUE)
                             {
+                                if (i < MAX_ITEMSTART && g_lastInventoryHitSlot != i) {
+                                    ClientRuntimeLog("inventory-hitbox",
+                                        "hit equip slot=%d mouse=(%d,%d) center=(%d,%d) use=%d gra=%d name=%s",
+                                        i, mouse.nowPoint.x, mouse.nowPoint.y,
+                                        ItemBuffer[i].defX, ItemBuffer[i].defY,
+                                        pc.item[i].useFlag, pc.item[i].graNo,
+                                        pc.item[i].useFlag ? pc.item[i].name : "<empty>");
+                                    g_lastInventoryHitSlot = i;
+                                }
 #ifdef _PET_ITEM
                                 // 处理显示宠物装备
                                 if (g_bPetItemWndFlag && (i >= PET_HEAD && i < PET_EQUIPNUM) && nSelectPet > -1)
@@ -16592,18 +15917,13 @@ void MenuProc(void)
                                         StockFontBuffer(ItemBuffer[i].defX - 17, ItemBuffer[i].defY, FONT_PRIO_FRONT, 0, "祝福", 0);
                                     }
 #endif
-
-                                }
-                                else{
-                                    // ???????
+                                } else{
                                     ItemBuffer[i].mixFlag = TRUE;
                                 }
                             }
                         }
-                        // ?????????
                         if (mouse.onceState & MOUSE_LEFT_CRICK_UP)
                         {
-
 #ifdef _MAGIC_ITEM_
 
                             if(MagicItemActAddr){
@@ -16688,9 +16008,9 @@ void MenuProc(void)
                         {
 #ifdef _DIEJIA_
                             static int 叠加时间 = 0;
-                            int 按钮ID = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx - 60, pActMenuWnd2->y + 422, DISP_PRIO_IME3, 55246, 2);
+                            int buttonId = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx - 60, pActMenuWnd2->y + 422, DISP_PRIO_IME3, 55246, 2);
                             if (mouse.onceState & MOUSE_LEFT_CRICK){
-                                if (HitDispNo == 按钮ID){
+                                if (HitDispNo == buttonId){
                                     if (TimeGetTime() > 叠加时间){
                                         叠加时间 = TimeGetTime() + 4000;
                                         int itemMax = CHAR_EQUIPPLACENUM + MAX_MAXHAVEITEM;
@@ -16796,152 +16116,74 @@ void MenuProc(void)
                         }
                     }
                 }
-            }
             break;
-
-        case 1:    // ?????
-
-            // ?????????
+        case 1: 
             if (pActMenuWnd2 == NULL){
                 pActMenuWnd2 = MakeWindowDisp(364, 4, 272, 280, 0, -1);
-                // ????
                 for (i = 0; i < MENU_ITEM_0; i++) itemWndFontNo[i] = -2;
                 for (i = 0; i < MENU_ITEM_0; i++) itemWndBtnFlag[i] = 0;
-                jujutuNo = -1;    // ???????
-
-            }
-            else{
-                // ??????????????
-                if (pActMenuWnd2->hp > 0){
-                    x = pActMenuWnd2->x + 74;
-                    y = pActMenuWnd2->y + 208;
-                    // ?????????
-#ifdef _READ16BITBMP
-                    if (g_bUseAlpha) StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my + 7, DISP_PRIO_MENU, CG_JUJUTU_WND, 1);
-                    else
-#endif
-                        StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my + 10, DISP_PRIO_MENU, CG_JUJUTU_WND, 1);
-                    // ???
-                    for (i = 0; i < 5; i++){
-                        if (HitFontNo == itemWndFontNo[i]){
-                            // ??????
-                            char *splitPoint = magic[i].memo;
-                            sprintf_s(moji, "%2d/%2d", magic[i].mp, pc.mp);
-                            StockFontBuffer(pActMenuWnd2->x + 74 + 81, pActMenuWnd2->y + 183, FONT_PRIO_FRONT, 0, moji, 0);
-                            while (1){
-                                // ?????????
-                                if (strlen(splitPoint) > 22){
-                                    strncpy_s(moji, splitPoint, 22);
-                                    moji[22] = NULL;    // ??????
-                                    // ??????
-                                    if (GetStrLastByte(moji) == 3){
-                                        moji[21] = NULL;
-                                        splitPoint += 21;
-                                    }
-                                    else{
-                                        moji[22] = NULL;
-                                        splitPoint += 22;
-                                    }
-                                    StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0); y += 24;
-                                }
-                                else{
-                                    strcpy(moji, splitPoint);
-                                    StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
-                                    break;
-                                }
+                jujutuNo = -1;
+            } else if (pActMenuWnd2->hp > 0){
+                x = pActMenuWnd2->x + 74;
+                y = pActMenuWnd2->y + 208;
+                StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my + 10, DISP_PRIO_MENU, CG_JUJUTU_WND, 1);
+                for (i = 0; i < 5; i++){
+                    if (HitFontNo == itemWndFontNo[i]){
+                        char *splitPoint = magic[i].memo;
+                        sprintf_s(moji, "%2d/%2d", magic[i].mp, pc.mp);
+                        StockFontBuffer(pActMenuWnd2->x + 74 + 81, pActMenuWnd2->y + 183, FONT_PRIO_FRONT, 0, moji, 0);
+                        while (true){
+                            const int charEachLine = 22;
+                            splitPoint = copyUtf8CharByNum(moji, splitPoint, charEachLine);
+                            StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                            if (splitPoint == NULL || *splitPoint == '\0') {
+                                break;
                             }
-#if 0
-                            // ??????
-                            if( magic[ i ].memo[ 0 ] != NULL ){
-                                strncpy_s(moji, magic[i].memo, 22);
-                                moji[22] = NULL;
-                                StockFontBuffer(pActMenuWnd2->x + 74, pActMenuWnd2->y + 204, FONT_PRIO_FRONT, 0, moji, 0);
+                            y += 24;
+                        }
+                        StockDispBuffer(pActMenuWnd2->x + 37, pActMenuWnd2->y + 220, DISP_PRIO_ITEM, pc.item[i].graNo, 0);
 
-                                if (magic[i].memo[22] != NULL){
-                                    strncpy_s(moji, magic[i].memo + 22, 22);
-                                    moji[22] = NULL;
-                                    StockFontBuffer(pActMenuWnd2->x + 74, pActMenuWnd2->y + 224, FONT_PRIO_FRONT, 0, moji, 0);
-                                }
+                        // ????????
+                        if (mouse.onceState & MOUSE_LEFT_CRICK){
+                            // ????????
+                            if (magic[i].field == MAGIC_FIELD_BATTLE || magic[i].mp > pc.mp){
+                                // ???
+                                play_se(220, 320, 240);
                             }
-#endif
-                            // ????
-                            StockDispBuffer(pActMenuWnd2->x + 37, pActMenuWnd2->y + 220, DISP_PRIO_ITEM, pc.item[i].graNo, 0);
+                            else{ // ????
+                                // ???????
+                                switch (magic[i].target){
 
-                            // ????????
-                            if (mouse.onceState & MOUSE_LEFT_CRICK){
-                                // ????????
-                                if (magic[i].field == MAGIC_FIELD_BATTLE || magic[i].mp > pc.mp){
-                                    // ???
-                                    play_se(220, 320, 240);
-                                }
-                                else{ // ????
-                                    // ???????
-                                    switch (magic[i].target){
+                                case MAGIC_TARGET_MYSELF:    // ??
 
-                                    case MAGIC_TARGET_MYSELF:    // ??
-
-                                        // ????????????
-                                        if (eventWarpSendFlag == FALSE){
-                                            // ??
-                                            if (bNewServer)
-                                                lssproto_MU_send(sockfd, nowGx, nowGy, i, 0);
-                                            else
-                                                old_lssproto_MU_send(sockfd, nowGx, nowGy, i, 0);
-                                            play_se(100, 320, 240);
-                                        }
-                                        break;
-
-                                    case MAGIC_TARGET_OTHER:    // ????)
-                                        jujutuNo = i;
-                                        // ?????
-                                        play_se(217, 320, 240);
-                                        //itemNo = -1;
-                                        break;
-#if 0
-                                    case MAGIC_TARGET_ALLMYSIDE:    // 
-
-                                        // ??
-                                        if( bNewServer)
-                                            lssproto_MU_send( sockfd, nowGx, nowGy, i, 0 );
-                                        else
-                                            old_lssproto_MU_send( sockfd, nowGx, nowGy, i, 0 );
-                                        // ?
-                                        play_se( 100, 320, 240 );
-                                        break;
-
-                                    case MAGIC_TARGET_ALLOTHERSIDE:    // ?
-
-                                        // ??
-                                        if( bNewServer)
-                                            lssproto_MU_send( sockfd, nowGx, nowGy, i, 0 );
-                                        else
-                                            old_lssproto_MU_send( sockfd, nowGx, nowGy, i, 0 );
-                                        // ?
-                                        play_se( 100, 320, 240 );
-                                        break;
-
-                                    case MAGIC_TARGET_ALL:    // ?
-
+                                    // ????????????
+                                    if (eventWarpSendFlag == FALSE){
                                         // ??
                                         if (bNewServer)
                                             lssproto_MU_send(sockfd, nowGx, nowGy, i, 0);
                                         else
                                             old_lssproto_MU_send(sockfd, nowGx, nowGy, i, 0);
-                                        // ?
                                         play_se(100, 320, 240);
-                                        break;
-#endif                                    
                                     }
+                                    break;
+
+                                case MAGIC_TARGET_OTHER:    // ????)
+                                    jujutuNo = i;
+                                    // ?????
+                                    play_se(217, 320, 240);
+                                    //itemNo = -1;
+                                    break;
                                 }
                             }
                         }
                     }
-                    // ????????
-                    if (mouse.onceState & MOUSE_LEFT_CRICK){
-                        // ???
-                        if (HitDispNo == itemWndFontNo[12]){
-                            // ??????
-                            DeathAction(pActMenuWnd2);
+                }
+                // ????????
+                if (mouse.onceState & MOUSE_LEFT_CRICK){
+                    // ???
+                    if (HitDispNo == itemWndFontNo[12]){
+                        // ??????
+                        DeathAction(pActMenuWnd2);
 #ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
                             GetKeyInputFocus(&MyChatBuffer);
                             Moneyflag = false;
@@ -16961,13 +16203,9 @@ void MenuProc(void)
                                 DeathMenuAction();
                             }
                         }
-                        // ?????
                         if (jujutuNo != -1 && MenuToggleFlag & JOY_CTRL_S && statusWndNo == 1){
-                            // ????
                             for (i = 0; i < 11; i++){
-                                // ?
                                 if (HitFontNo == statusWndFontNo[i] && eventWarpSendFlag == FALSE){
-                                    // ??
                                     if (bNewServer)
                                         lssproto_MU_send(sockfd, nowGx, nowGy, jujutuNo, i);
                                     else
@@ -16982,7 +16220,6 @@ void MenuProc(void)
                         }
 
                     }
-                    // ????????
                     if (pActMenuWnd2 != NULL){
                         int flag = FALSE;
                         int col;
@@ -16990,11 +16227,10 @@ void MenuProc(void)
                         x = pActMenuWnd2->x + 30;
                         y = pActMenuWnd2->y + 35;
 
-                        // 
                         for (i = 0; i < 5; i++){
                             if (magic[i].useFlag == TRUE){
-                                col = FONT_PAL_WHITE;    // ??????
-                                if (jujutuNo == i) col = FONT_PAL_AQUA;    // ??
+                                col = FONT_PAL_WHITE; 
+                                if (jujutuNo == i) col = FONT_PAL_AQUA;
                                 //cary 2001.12.3
                                 if (pc.familySprite == 0){
                                     if ((magic[i].mp * 80 / 100) > pc.mp) col = FONT_PAL_RED;    // ????
@@ -17009,144 +16245,118 @@ void MenuProc(void)
                             }
                         }
                         if (flag == FALSE) StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, "没有咒术", 0);
-                        // ?????????
-                        itemWndFontNo[12] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, pActMenuWnd2->y + 262 + 10, DISP_PRIO_IME3, CG_RETURN_BTN, 2);
+                        // 2026.0.04 font12:
+                        itemWndFontNo[12] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx,
+                                                            pActMenuWnd2->y + 262 + 10,
+                                                            DISP_PRIO_IME3, CG_RETURN_BTN, 2);
                     }
                 }
-            }
             break;
-
-        case 2:    // ??????????
-
-            // ?????????
+        case 2: // 物品栏
             if (pActMenuWnd2 == NULL){
                 pActMenuWnd2 = MakeWindowDisp(368, 4, 192, 304, 0, -1);
-                // ????
                 for (i = 0; i < MENU_ITEM_0; i++) itemWndFontNo[i] = -2;
                 for (i = 0; i < MENU_ITEM_0; i++) itemWndBtnFlag[i] = 0;
-
-            }
-            else{
-                // ??????????????
-                if (pActMenuWnd2->hp > 0){
-                    // ?????????
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_ITEM_WND_SELECT_WND, 1);
-                    // ????????
-                    if (mouse.onceState & MOUSE_LEFT_CRICK){
-                        // ????
-                        for (i = 0; i < 11; i++){
-                            if (HitFontNo == itemWndFontNo[i] && eventWarpSendFlag == FALSE){
-                                // ??
-                                if (jujutuNo != -1){
-                                    // ??
-                                    if (bNewServer)
-                                        lssproto_MU_send(sockfd, nowGx, nowGy, jujutuNo, i);
-                                    else
-                                        old_lssproto_MU_send(sockfd, nowGx, nowGy, jujutuNo, i);
-                                    // ?
-                                    play_se(100, 320, 240);
-                                    // ?????????
-                                    if (magic[jujutuNo].mp > pc.mp - magic[jujutuNo].mp){
-                                        // ??????
-                                        DeathAction(pActMenuWnd2);
-#ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
-                                        GetKeyInputFocus(&MyChatBuffer);
-                                        Moneyflag = false;
-#endif
-                                        pActMenuWnd2 = NULL;
-                                        itemWndNo = 1;
-                                        // ????????
-                                        play_se(203, 320, 240);
-                                    }
-                                }
-                                else{    // ??????
-                                    //??????
-                                    if (bNewServer)
-                                        lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
-                                    else
-                                        old_lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
-                                    // ??????
-                                    play_se(212, 320, 240);
-                                    // ??????
+            } else if (pActMenuWnd2->hp > 0){
+                StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx,
+                                ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my,
+                                DISP_PRIO_MENU, CG_ITEM_WND_SELECT_WND, 1);
+                if (mouse.onceState & MOUSE_LEFT_CRICK){
+                    for (i = 0; i < 11; i++){
+                        if (HitFontNo == itemWndFontNo[i] && eventWarpSendFlag == FALSE){
+                            if (jujutuNo != -1){
+                                if (bNewServer)
+                                    lssproto_MU_send(sockfd, nowGx, nowGy, jujutuNo, i);
+                                else
+                                    old_lssproto_MU_send(sockfd, nowGx, nowGy, jujutuNo, i);
+                                play_se(100, 320, 240);
+                                if (magic[jujutuNo].mp > pc.mp - magic[jujutuNo].mp){
                                     DeathAction(pActMenuWnd2);
 #ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
                                     GetKeyInputFocus(&MyChatBuffer);
                                     Moneyflag = false;
 #endif
                                     pActMenuWnd2 = NULL;
-                                    itemWndNo = 0;
-                                    // ??????????????????
-                                    if (MenuToggleFlag & JOY_CTRL_S){
-
-                                        MenuToggleFlag ^= JOY_CTRL_S;    // CTRL + S ??
-                                        // ??????????
-                                        DeathMenuAction();
-                                    }
-                                    // ????????
+                                    itemWndNo = 1;
                                     play_se(203, 320, 240);
                                 }
-                            }
-                        }
-                        // ???
-                        if (HitDispNo == itemWndFontNo[11]){
-                            // ??????
-                            DeathAction(pActMenuWnd2);
+                            } else {
+                                if (bNewServer)
+                                    lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
+                                else
+                                    old_lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
+                                play_se(212, 320, 240);
+                                DeathAction(pActMenuWnd2);
 #ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
-                            GetKeyInputFocus(&MyChatBuffer);
-                            Moneyflag = false;
+                                GetKeyInputFocus(&MyChatBuffer);
+                                Moneyflag = false;
 #endif
-                            pActMenuWnd2 = NULL;
-                            // ??
-                            if (jujutuNo != -1) itemWndNo = 1;
-                            else{
-                                // ????????????
+                                pActMenuWnd2 = NULL;
                                 itemWndNo = 0;
-                                // ??????????????????
                                 if (MenuToggleFlag & JOY_CTRL_S){
-
-                                    MenuToggleFlag ^= JOY_CTRL_S;    // CTRL + S ??
-                                    // ??????????
+                                    MenuToggleFlag ^= JOY_CTRL_S; // CTRL + S ??
                                     DeathMenuAction();
                                 }
+                                play_se(203, 320, 240);
                             }
-                            // ????????
-                            play_se(203, 320, 240);
                         }
                     }
-                    // ????????
-                    if (pActMenuWnd2 != NULL){
-                        // ?
-                        x = pActMenuWnd2->x + 25;
-                        y = pActMenuWnd2->y + 30;
+                    if (HitDispNo == itemWndFontNo[11]){
+                        DeathAction(pActMenuWnd2);
+#ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
+                        GetKeyInputFocus(&MyChatBuffer);
+                        Moneyflag = false;
+#endif
+                        pActMenuWnd2 = NULL;
+                        if (jujutuNo != -1) itemWndNo = 1;
+                        else{
+                            // ????????????
+                            itemWndNo = 0;
+                            // ??????????????????
+                            if (MenuToggleFlag & JOY_CTRL_S){
 
-                        // ?????????
-                        // ?
-                        sprintf_s(moji, "%-16s", pc.name);
-                        itemWndFontNo[0] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 2); y += 23;
-                        // ???
-                        for (i = 0; i < 5; i++){
-                            // ???????????
-                            if (pet[i].useFlag == TRUE){
-                                // ??????
-                                if (pet[i].freeName[0] != NULL)
-                                    sprintf_s(moji, "%-16s", pet[i].freeName);
-                                else
-                                    sprintf_s(moji, "%-16s", pet[i].name);
-                                itemWndFontNo[i + 1] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 2); y += 23;
+                                MenuToggleFlag ^= JOY_CTRL_S;    // CTRL + S ??
+                                // ??????????
+                                DeathMenuAction();
                             }
                         }
-                        y = 183;
-                        // ??
-                        for (i = 0; i < 5; i++){
-                            // ????????????????
-                            if (pc.id != party[i].id && party[i].useFlag == TRUE){
-                                sprintf_s(moji, "%-16s", party[i].name);
-                                itemWndFontNo[i + 6] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 2); y += 23;
-                            }
-                        }
-                        // ?????????
-                        itemWndFontNo[11] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, pActMenuWnd2->y + 287, DISP_PRIO_IME3, CG_RETURN_BTN, 2);
+                        // ????????
+                        play_se(203, 320, 240);
                     }
+                }
+                // ????????
+                if (pActMenuWnd2 != NULL){
+                    // ?
+                    x = pActMenuWnd2->x + 25;
+                    y = pActMenuWnd2->y + 30;
+
+                    // ?????????
+                    // ?
+                    sprintf_s(moji, "%-16s", pc.name);
+                    itemWndFontNo[0] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 2); y += 23;
+                    // ???
+                    for (i = 0; i < 5; i++){
+                        // ???????????
+                        if (pet[i].useFlag == TRUE){
+                            // ??????
+                            if (pet[i].freeName[0] != NULL)
+                                sprintf_s(moji, "%-16s", pet[i].freeName);
+                            else
+                                sprintf_s(moji, "%-16s", pet[i].name);
+                            itemWndFontNo[i + 1] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 2); y += 23;
+                        }
+                    }
+                    y = 183;
+                    // ??
+                    for (i = 0; i < 5; i++){
+                        // ????????????????
+                        if (pc.id != party[i].id && party[i].useFlag == TRUE){
+                            sprintf_s(moji, "%-16s", party[i].name);
+                            itemWndFontNo[i + 6] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 2); y += 23;
+                        }
+                    }
+                    // ?????????
+                    itemWndFontNo[11] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx, pActMenuWnd2->y + 287, DISP_PRIO_IME3, CG_RETURN_BTN, 2);
                 }
             }
             break;
@@ -17547,14 +16757,6 @@ void MenuProc(void)
                         }
                         // ????????
                         if (HitFontNo == mailWndFontNo[1]){
-#ifdef _TAIKEN            
-                            // ???
-                            play_se(220, 320, 240);
-                            // ???????
-                            sprintf_s(moji, "体验版不能选择！");
-                            // ??????????????????
-                            StockChatBufferLine( moji, FONT_PAL_WHITE );
-#else
 #ifdef _STREET_VENDOR
                             if (pc.iOnStreetVendor == 1){
                                 play_se(220, 320, 240);
@@ -17569,7 +16771,6 @@ void MenuProc(void)
                                 StockChatBufferLine("请专心看表演", FONT_PAL_RED);
                             else
 #endif
-                                // ???????????
                             if (pc.mailPetNo != -1){
                                 // ??????
                                 DeathAction(pActMenuWnd);
@@ -17578,14 +16779,10 @@ void MenuProc(void)
                                 mailWndNo = MAIL_WND_PET_SEND;
                                 // ????????
                                 play_se(202, 320, 240);
-                            }
-                            else{
-                                // ???
+                            } else{
                                 play_se(220, 320, 240);
                             }
-#endif
                         }
-                        // ???
                         if (HitDispNo == mailWndFontNo[2]){
                             // ??????
                             DeathAction(pActMenuWnd);
@@ -17617,10 +16814,7 @@ void MenuProc(void)
                 }
             }
             break;
-
-        case MAIL_WND_SEND:    // ??????????
-
-            // ?????????
+        case MAIL_WND_SEND:    // 邮件
             if (pActMenuWnd == NULL){
                 pActMenuWnd = MakeWindowDisp(4, 4, 272, 304, 0, -1);
                 // ??????
@@ -18309,59 +17503,35 @@ void MenuProc(void)
                                     // ??????
                                     char *splitPoint = pc.item[i].memo;
                                     int color = pc.item[i].color;
-
-                                    // ?????????
                                     if (pc.level < pc.item[i].level) color = FONT_PAL_RED;
-                                    // ?????
-                                    StockFontBuffer(pActMenuWnd->x + 16, pActMenuWnd->y + 332 - 160 - 1, FONT_PRIO_FRONT, color, pc.item[i].name, 0);
-                                    // ?????
-                                    // ?????
-                                    while (1){
-                                        // ?????????
-                                        if (strlen(splitPoint) > 28){
-                                            strncpy_s(moji, splitPoint, 28);
-                                            moji[28] = NULL;    // ??????
-                                            // ??????
-                                            if (GetStrLastByte(moji) == 3){
-                                                moji[27] = NULL;
-                                                splitPoint += 27;
-                                            }
-                                            else{
-                                                moji[28] = NULL;
-                                                splitPoint += 28;
-                                            }
-                                            StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0); y += 24;
-                                        }
-                                        else{
-                                            strcpy(moji, splitPoint);
-                                            StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                                    StockFontBuffer(pActMenuWnd->x + 16,
+                                                    pActMenuWnd->y + 332 - 160 - 1,
+                                                    FONT_PRIO_FRONT, color, pc.item[i].name, 0);
+                                    while (true) {
+                                        const int charEachLine = 28;
+                                        splitPoint = copyUtf8CharByNum(moji, splitPoint, charEachLine);
+                                        StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                                        if (splitPoint == NULL || *splitPoint == '\0') {
                                             break;
                                         }
+                                        y += 24;
                                     }
                                 }
 
-                                // ??????????????
                                 if (mouse.onceState & MOUSE_LEFT_DBL_CRICK){
                                     if (pc.item[i].useFlag == TRUE && pc.item[i].sendFlag & ITEM_FLAG_PET_MAIL){
                                         mailItemNo = i;    // ???????
-                                        // ??????
                                         DeathAction(pActMenuWnd);
                                         pActMenuWnd = NULL;
-                                        // ????????
                                         mailWndNo = MAIL_WND_PET_SEND;
-                                        // ????????
                                         play_se(203, 320, 240);
-                                        // ????????
                                         GetKeyInputFocus(&MyChatBuffer);
-                                    }
-                                    else{
-                                        // ???
+                                    } else {
                                         play_se(220, 320, 240);
                                     }
                                 }
                             }
                             if (pc.item[i].useFlag == TRUE){
-                                // ????
                                 StockDispBuffer(ItemBuffer[i].defX, ItemBuffer[i].defY - 160, ItemBuffer[i].dispPrio, pc.item[i].graNo, 0);
                             }
                         }
@@ -18591,20 +17761,14 @@ void MenuProc(void)
                             mailLamp = CheckMailNoReadFlag();
 
                         }
-                        // ??????
                         splitPoint = MailHistory[mailHistoryWndSelectNo].str[mailHistoryWndNowPageNo];
-                        // 
                         CenteringStr(addressBook[mailHistoryWndSelectNo].name, moji, CHAR_NAME_LEN);
                         StockFontBuffer(x + 64, y + 34, FONT_PRIO_FRONT, 0, moji, 0);
-                        // 
                         StockFontBuffer(x + 148, y + 236, FONT_PRIO_FRONT, 0, MailHistory[mailHistoryWndSelectNo].dateStr[mailHistoryWndNowPageNo], 0);
-                        // 
                         while (1){
-                            // ?????????
                             if (strlen(splitPoint) > 28){
                                 strncpy_s(moji, splitPoint, 28);
                                 moji[28] = NULL;    // ??????
-                                // ??????
                                 if (GetStrLastByte(moji) == 3){
                                     moji[27] = NULL;
                                     splitPoint += 27;
@@ -19015,7 +18179,7 @@ void MenuProc(void)
                         }
                         resultWndFontNo[ 0 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx, pActMenuWnd->y + 216+30, DISP_PRIO_IME3, CG_CLOSE_BTN, 2 );
 
-                        if (!宠物经验判断&&经验开关){
+                        if (!宠物经验判断&&bSwitchExperienceTips){
                             int petexp[2];
                             int petlevel[2];
                             int petindex[2];
@@ -20711,19 +19875,12 @@ void MenuProc(void)
         tradeInit();
         pc.trade_confirm = 1;
     }
-
     // 交易视窗部分到此结束
-
-
     // show Bank Window
     if (MenuToggleFlag & JOY_B){
-
         char buffer[1024];
         int x, y, w, h;
-
         if (checkPcWalkFlag() == 1) closeBankman();
-
-
         if (joy_trg[0] & JOY_ESC
             || actBtn == 1
             || menuBtn == 1
@@ -20885,14 +20042,10 @@ void MenuProc(void)
                             }
 
                         }
-                        // ????????
                         if (mouse.onceState & MOUSE_LEFT_CRICK) {
-
                             cashGold--;
-
                             if (cashGold <= 0){
                                 cashGold = 0;
-                                // ???
                                 play_se(220, 320, 240);
                             }
                             else if (totalGold - cashGold >= MAX_BANKGOLD) {
@@ -20900,17 +20053,11 @@ void MenuProc(void)
                                 play_se(220, 320, 240);
                             }
                             else{
-                                // ?????
                                 bankGoldInc = 0;
-                                // ?????????????
                                 bankGoldCnt = 0;
-                                // ???????
                                 bankWndBtnFlag[3] = TRUE;
-                                // ?????
                                 play_se(217, 320, 240);
-
                             }
-
                         }
                     }
                     else {
@@ -20918,19 +20065,15 @@ void MenuProc(void)
                         bankGoldCnt = 0;
                     }
 
-                }
-                else{
+                } else{
                     // ??????
                     bankWndBtnFlag[3] = FALSE;
                 }
                 // ?????????
                 for (int i = 2; i <= 8; i++) {
                     if (mouse.state & MOUSE_LEFT_CRICK && tradeWndBtnFlag[i] == TRUE){
-                        // ????
                         tradeWndBtnFlag[i] = TRUE;
-                    }
-                    else{
-                        // ???
+                    } else{
                         tradeWndBtnFlag[i] = FALSE;
                     }
                 }

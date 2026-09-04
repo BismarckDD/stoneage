@@ -161,26 +161,6 @@ int focusFontId(int *, int);
 void closeBlackMarketWN(void);
 #endif
 
-#ifdef _PET_TRACE_MOUSE
-class SCPlayPet {
-private:
-  ACTION *m_pPet;
-  int m_iDestX, m_iDestY, m_iX, m_iY, m_iCount, m_iDirx, m_iDiry, b,
-      m_iActionStep;
-  bool m_bMove, m_bChangeDir, m_bAIWalk;
-  unsigned int m_iTimeToChangeAction, m_iTimeToChangeTime, m_iKindOfChangeTime;
-
-  void CnangePetAction(bool bUserMove);
-
-public:
-  SCPlayPet();
-  ~SCPlayPet();
-
-  void Proc(void);
-  void SetActionStep(int iActionStep) { m_iActionStep = iActionStep; };
-};
-#endif
-
 #ifdef _PK2007
 void selectpkProc(void);
 #endif

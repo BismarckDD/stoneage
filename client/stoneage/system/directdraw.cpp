@@ -3020,14 +3020,6 @@ BOOL CheckSurfaceLost(void) {
       SurfaceLostFlag = TRUE;
     }
   }
-#ifdef __SKYISLAND
-#ifndef __CARYTEST
-  extern BOOL SkyIslandCheckSurface();
-  if (SkyIslandCheckSurface())
-    SurfaceLostFlag = TRUE;
-#endif
-#endif
-  // ??????????
   if (lpDraw->lpBACKBUFFER != NULL) {
     // ????????????????
     if (lpDraw->lpBACKBUFFER->IsLost()) {

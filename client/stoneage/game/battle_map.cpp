@@ -147,12 +147,6 @@ BOOL ReadBattleMap(const int battleMapNo) {
               ) &&
              (RandBattleBg != 0))
     StockDispBuffer(400, 300, DISP_PRIO_TILE, RandBattleBg, 0);
-#ifdef _SYUTEST2
-  else {
-    RandBattleBg = 29050;
-    StockDispBuffer(320, 240, DISP_PRIO_TILE, RandBattleBg, 0);
-  }
-#else
   else if (nowFloor == 8519) {
     RandBattleBg = 29069;
     StockDispBuffer(400, 300, DISP_PRIO_TILE, RandBattleBg, 0);
@@ -173,7 +167,6 @@ BOOL ReadBattleMap(const int battleMapNo) {
       }
     }
   }
-#endif
 
 #else
   for (i = 0; i < 20; i++) {
