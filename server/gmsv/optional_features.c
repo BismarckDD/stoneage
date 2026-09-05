@@ -60,15 +60,6 @@ void NPC_Lua_NEWSHOP_Recv(char *function_name, int char_index) {
 int luaplayernum = 0;
 #endif
 
-/* mylua/function.c only provides this callback with pet-fusion Lua enabled,
- * while the SAAC protocol dispatcher calls it unconditionally. */
-#if !defined(_WIN32) && !defined(_PET_FUSION_LUA)
-BOOL FreeSaMenu(int char_index, int menu_index) {
-  (void)char_index;
-  (void)menu_index;
-  return FALSE;
-}
-#endif
 
 BOOL NPC_RoomAdminNew_ReadFile(char *room_name, NPC_ROOMINFO *data) {
   char filename[512];

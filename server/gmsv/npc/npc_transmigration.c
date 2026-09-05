@@ -128,7 +128,6 @@ static void NPC_Transmigration_selectWindow(int meindex, int toindex, int num) {
   int tenseiNo = 1;
   int fd = getfdFromCharaIndex(toindex);
   int i = 1;
-  BOOL tenflg = FALSE;
   char *elder[4] = {"samugiru", "marinasu", "jaja", "karutarna"};
   int point;
   int ten_no;
@@ -149,21 +148,13 @@ static void NPC_Transmigration_selectWindow(int meindex, int toindex, int num) {
          FALSE) {
     i++;
     if (strstr(buf, s_tensei) != NULL) {
-      tenflg = TRUE;
       break;
     }
   }
-  // ttom
-  //        print("\nTrans meindex=%d,toindex=%d,num=%d",meindex,toindex,num);
-  // ttom
   CONNECT_set_state_trans(fd, 6);
-  // ttom end
 
   switch (num) {
   case 0:
-    // ttom
-    // CONNECT_set_state_trans(fd,0);
-    // ttom end
     ten_no = NPC_TransmigrationCheck(meindex, toindex);
     if (
 #ifdef _TRANS_6
@@ -176,16 +167,13 @@ static void NPC_Transmigration_selectWindow(int meindex, int toindex, int num) {
         ten_no < 5
 #endif //_TRANS_6
         && ten_no >= 0) {
-      // 椭瘀弁伉失□
       if (NPC_Util_GetStrFromStrWithDelim(buf, "startmsg", token,
                                           sizeof(token)) == NULL) {
         print("startmsgErr");
         return;
       }
       buttontype = WINDOW_BUTTONTYPE_NEXT;
-      // ttom
       CONNECT_set_state_trans(fd, 0);
-      // ttom end
     } else if (
 #ifdef _TRANS_6
 #ifdef _TRANS_7
@@ -205,7 +193,6 @@ static void NPC_Transmigration_selectWindow(int meindex, int toindex, int num) {
       }
       buttontype = WINDOW_BUTTONTYPE_OK;
     } else {
-      // 椭瘀弁伉失仄化卅中
       if (NPC_Util_GetStrFromStrWithDelim(buf, "nonemsg", token,
                                           sizeof(token)) == NULL) {
         print("nonemsgErr");
@@ -282,10 +269,7 @@ static void NPC_Transmigration_selectWindow(int meindex, int toindex, int num) {
       windowno = CHAR_WINDOWTYPE_TRANSMIGRATION_END;
     }
     break;
-
   case 3:
-
-    /*--平□伐□玉及民尼永弁毛垫丹--*/
     if (NPC_Util_GetStrFromStrWithDelim(buf, "nomsg", token, sizeof(token)) ==
         NULL) {
       print("nomsgErr");
@@ -470,7 +454,6 @@ BOOL NPC_TransmigratiomWarp(int meindex, int toindex, char *buf) {
     i++;
     if (strstr(buf2, "Warp") != NULL) {
       getStringFromIndexWithDelim(buf2, "=", 2, buf3, sizeof(buf3));
-      // 白夫失
       ret = getStringFromIndexWithDelim(buf3, ".", 1, buf4, sizeof(buf4));
       if (ret == FALSE)
         return FALSE;
@@ -486,25 +469,9 @@ BOOL NPC_TransmigratiomWarp(int meindex, int toindex, char *buf) {
     }
   }
 
-  // 伐□皿燮及民尼永弁
   if (MAP_IsValidCoordinate(floor, x, y) == FALSE) {
     return FALSE;
   }
-
-  // ttom
-  /*
-  {
-      int tenseiNo;
-      tenseiNo=CHAR_getInt( toindex, CHAR_TRANSMIGRATION);
-      CHAR_setInt( toindex,CHAR_SKILLUPPOINT,tenseiNo*10);
-      print("\n the set the skillpoint %d",tenseiNo*10);
-      CHAR_sendStatusString( toindex , "P");
-  }
-  */
-  // ttom
-
-  // 伐□皿今六月
-  CHAR_warpToSpecificPoint(toindex, floor, x, y);
 
   return TRUE;
 }
@@ -1500,7 +1467,6 @@ void NPC_PetTransMan_selectWindow(int meindex, int toindex, int num,
   int buttontype = 0, windowtype = 0, windowno = 0, errtype = 0;
   int petindex = 0, i = 1;
   char *petname;
-  BOOL tenflg = FALSE;
   int fd = getfdFromCharaIndex(toindex);
 
   if (fd == -1) {
@@ -1519,9 +1485,7 @@ void NPC_PetTransMan_selectWindow(int meindex, int toindex, int num,
   while (getStringFromIndexWithDelim(npcarg, "END", i, buf, sizeof(buf)) !=
          FALSE) {
     i++;
-    // 如果条件符合则 tenflg 设为TRUE
     if (strstr(buf, s_tensei) != NULL) {
-      tenflg = TRUE;
       break;
     }
   }

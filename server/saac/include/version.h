@@ -2,8 +2,7 @@
 #define __VERSION_H__
 
 /* 请将控制专案的 definition 放在这个档案
- * 然後藉由 remark/unmark 来开关功能
- */
+ * 然後藉由 remark/unmark 来开关功能 */
 
 //特殊功能控制----------------------------------------
 #define _SAVE_ZIP                //自动备份

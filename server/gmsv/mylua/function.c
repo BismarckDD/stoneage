@@ -204,7 +204,7 @@ BOOL LoadFamilyBadge(int fd) {
 #endif
 
 #ifdef _ALLBLUES_LUA_1_9
-int FreeCharDelet(int fd, char *cdkey, char *passwd) {
+int FreeCharDelete(int fd, const char *cdkey, const char *passwd) {
   static lua_State *lua;
 
   if (lua == NULL) {
@@ -734,7 +734,7 @@ BOOL FreeFusionSkill(int petskill) {
 }
 #endif
 
-BOOL FreeAction(int char_index, int x, int y, int actionno) {
+BOOL FreeAction(int char_index, int x, int y, int action_no) {
   static lua_State *lua;
   if (lua == NULL) {
     lua = FindLua("data/ablua/freeaction.lua");
@@ -752,7 +752,7 @@ BOOL FreeAction(int char_index, int x, int y, int actionno) {
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, x);
   lua_pushnumber(lua, y);
-  lua_pushnumber(lua, actionno);
+  lua_pushnumber(lua, action_no);
   docall(lua, 4, 1);
 
   return TRUE;

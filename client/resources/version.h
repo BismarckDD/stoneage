@@ -77,13 +77,7 @@
 
 #define _HI_COLOR_16                    // (可开) ANDY (8bit to 16bit) 含图档
 #define _HI_COLOR_32                    // (可开) longzoro (32 bit) 含图档
-#define _NEW_RESOMODE                   // 800 * 600模式
 //#define _NEWLOGO                      // (可开放) Syu ADD 6.0登入画面新logo 要关_v4_0 
-/* -------------------------------------------------------------------
-* 新功能：石器 800 * 600
-* 人员：旭诚,镇玮
-* 说明：
-*/
 
 extern int DISPLACEMENT_X;
 extern int DISPLACEMENT_Y;

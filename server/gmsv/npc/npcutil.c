@@ -1,5 +1,7 @@
 #include "version.h"
 //
+#include "mylua/function.h"
+//
 #include "autil.h"
 #include "char.h"
 #include "config_file.h"

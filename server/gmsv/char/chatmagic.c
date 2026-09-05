@@ -5980,7 +5980,6 @@ void CHAR_CHAT_DEBUG_GmSaveAllChar(int char_index, char *message) {
 }
 #endif
 
-#ifdef _ALLBLUES_LUA
 void CHAR_CHAT_DEBUG_ReLoadLua(int char_index, char *message) {
   ReLoadAllbluesLUA(message);
   CHAR_talkToCli(char_index, -1, "更新LUA完毕~", CHAR_COLORRED);
@@ -5990,7 +5989,7 @@ void CHAR_CHAT_DEBUG_NewLoadLua(int char_index, char *message) {
   NewLoadAllbluesLUA(message);
   CHAR_talkToCli(char_index, -1, "添加LUA完毕~", CHAR_COLORRED);
 }
-#endif
+
 #ifdef _KEEP_UP_NO_LOGIN
 extern char keepupnologin[256];
 void CHAR_CHAT_DEBUG_KeepUpNoLogin(int char_index, char *message) {

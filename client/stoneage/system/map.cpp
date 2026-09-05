@@ -1990,19 +1990,11 @@ void drawGrid(void)
     xx = mouseMapGx * GRID_SIZE;
     yy = mouseMapGy * GRID_SIZE;
     camMapToGamen((float)xx, (float)yy, &x, &y);
-
     if (mouse.level < DISP_PRIO_MENU)
     {
         if (mouseCursorMode == MOUSE_CURSOR_MODE_NORMAL)
             StockDispBuffer((int)(x + .5), (int)(y + .5), DISP_PRIO_GRID, CG_GRID_CURSOR, 0);
-        //cary 2002.1.15    else
-        //    {
-        //        StockDispBuffer((int)(x+.5), (int)(y+.5), DISP_PRIO_GRID, 1610, 0);
-        //    }
     }
-
-    // ?????
-    // fieldProc(); moveProc(); ??????????????
     mouseLeftCrick = FALSE;
     mouseLeftOn = FALSE;
     mouseRightCrick = FALSE;
@@ -2090,7 +2082,7 @@ void moveProc(void)
             mouseLeftCrick = FALSE;
         //end
     }
-    // 在MoveProc中点击右键
+    // 在正常地图上中点击右键
     if (mouseRightCrick)
     {
         turnAround();

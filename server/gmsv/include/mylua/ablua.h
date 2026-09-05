@@ -2,7 +2,7 @@
 #define __MYLUA_ABLUA_H__
 
 void LoadAllbluesLUA(char *path);
-void ReLoadAllbluesLUA();
+void ReLoadAllbluesLUA(char *filename);
 void NewLoadAllbluesLUA(char *filename);
 
 #endif

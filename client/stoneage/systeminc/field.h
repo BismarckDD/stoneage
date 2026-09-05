@@ -4,7 +4,7 @@
 #include "systeminc/pc.h"
 
 
-#define FIELD_BTN_PUSH_WAIT            500    // 0.5s
+#define FIELD_BTN_PUSH_WAIT            500    // 0.5
 
 #define FIELD_MAIL_LAMP_FLASH_TIME    1000    // 1s
 

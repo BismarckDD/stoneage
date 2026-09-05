@@ -14,6 +14,7 @@
 #include "handletime.h"
 #include "item_event.h"
 #include "gmsv_server.h"
+#include "saac_client.h"
 #include "shop.h"
 #ifdef _ALLBLUES_LUA   
 #include "mylua/mylua.h"
@@ -767,12 +768,12 @@ static int setFunctionPointer(lua_State *L)
     MY_Lua *mylua = &MYLua;
     while(mylua->next != NULL){
       if(strcmp(mylua->luapath, luafunctablepath) == 0){
-        return CHAR_setLUAFunction( index, functype, mylua->lua, luafunctable );
+        return 0; // TODO: CHAR_setLUAFunction( index, functype, mylua->lua, luafunctable );
       }
       mylua = mylua->next;
     }
   }else{
-    return CHAR_setLUAFunction( index, functype, L, luafunctable );
+    return 1; // TODO: CHAR_setLUAFunction( index, functype, L, luafunctable );
   }
   return 1;
 }
@@ -781,8 +782,7 @@ static int delFunctionPointer(lua_State *L)
 {
   const int index = luaL_checkint(L, 1);
   const int functype = getCharBaseValue(L, 2, CharBaseEvent, arraysizeof(CharBaseEvent));
-
-  return CHAR_delLUAFunction( index, functype );
+  return 0; //CHAR_delLUAFunction( index, functype );
 }
 
 static int TalkToCli(lua_State *L) 
@@ -1191,9 +1191,7 @@ static int getDepotPetIndex(lua_State *L)
 {
   const int index = luaL_checkint(L, 1);
   const int havepetid = luaL_checkint(L, 2);
-
   lua_pushinteger(L, CHAR_getDepotPetIndex( index, havepetid));
-  
   return 1;
 }
 
@@ -1201,9 +1199,7 @@ static int DelItem(lua_State *L)
 {
   const int char_index = luaL_checkint(L, 1);
   const int item_index = luaL_checkint(L, 2);
-  
   CHAR_DelItem( char_index, item_index);
-
   return 1;
 }
 
@@ -2118,23 +2114,19 @@ static int ClearEncounter(lua_State *L)
   return 1;
 }
 
-
-
 static int getDX(lua_State *L) 
 {
   size_t l;
-  char *diy=luaL_checklstring(L, 1, &l);
-  
-  lua_pushinteger(L, CHAR_getDX(diy));
+  // const char *diy = luaL_checklstring(L, 1, &l);
+  // lua_pushinteger(L, CHAR_getDX(diy));
   return 1;
 }
 
 static int getDY(lua_State *L) 
 {
   size_t l;
-  char *dir=luaL_checklstring(L, 1, &l);
-  
-  lua_pushinteger(L, CHAR_getDY(dir));
+  // const char *dir = luaL_checklstring(L, 1, &l);
+  // lua_pushinteger(L, CHAR_getDY(dir));
   return 1;
 }
 

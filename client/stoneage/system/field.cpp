@@ -486,7 +486,7 @@ int SellPriceWndfunc()
         int winY = (lpDraw->ySize-winH)/2;
 
         pActSellPriceWnd = MakeWindowDisp(winX, winY,
-                                          winW, winH, CG_FIELD_SV_SELL_PRICE_PANEL, -1, FALSE);
+                                          winW, winH, CG_FIELD_SV_SELL_PRICE_PANEL, -1);
         // 售价文字初始化
         ZeroMemory(str_bufferMoney.buffer, sizeof(str_bufferMoney.buffer));
         str_bufferMoney.cnt      = 0;
@@ -571,11 +571,7 @@ void StreetVendorWndfunc(bool bReset,char *data)
         道具栏页数=0;
 #endif
 
-#ifdef _NEW_RESOMODE
-        pActStreetVendorWnd = MakeWindowDisp(winX, winY, winW, winH, CG_FIELD_SV_SELL_PANEL, -1, FALSE);
-#else
         pActStreetVendorWnd = MakeWindowDisp((DEF_APPSIZEX >> 1) - (622 >> 1), 0, 622, 413, CG_FIELD_SV_SELL_PANEL, -1);
-#endif
         memset(iBtn, -1, sizeof(iBtn));
         memset(iItemOnSell, -1, sizeof(iItemOnSell));
         memset(iPetOnSell, -1, sizeof(iPetOnSell));
@@ -1152,11 +1148,7 @@ void StreetVendorBuyWndfunc(char *data)
         int winX = (lpDraw->xSize-winW)/2;
         int winY = (lpDraw->ySize-winH)/2;
 
-#ifdef _NEW_RESOMODE
-        pActStreetVendorBuyWnd = MakeWindowDisp(winX, winY, winW, winH, CG_FIELD_SV_BUY_PANEL, -1, FALSE);
-#else
         pActStreetVendorBuyWnd = MakeWindowDisp((DEF_APPSIZEX >> 1) - (617 >> 1), 0, 617, 405, CG_FIELD_SV_BUY_PANEL, -1);
-#endif
         
         memset(ShowVendorItem, 0, sizeof(ShowVendorItem));
         memset(iBuyItemBtn, 0, sizeof(iBuyItemBtn));
@@ -1618,10 +1610,8 @@ void StreetVendorBuyWndfunc(char *data)
                     }
                 }
             }
-
             // 处理左方项目
             int kind;
-
             for (i = 0; i < 13; i++)
             {
                 // 选定要买
@@ -1887,13 +1877,7 @@ void SkillWndfunc()
     char buf[256];
     char msg2[256];
     if (pActSkillWnd == NULL)
-    {
         pActSkillWnd = MakeWindowDisp(354, 0, 300, 456, 0, -1);
-#ifdef _NEW_RESOMODE  //800 600模式
-        x = pActSkillWnd->x;
-        y = pActSkillWnd->y;
-#endif
-    }
     else
     {
         if (pActSkillWnd->hp > 0)
@@ -2332,8 +2316,8 @@ int iTeacherSystemBtnGraNo[] = {
 
 // ????????????????
 short etcSendFlag = 0;
-// ??????
-short nowFieldMenuOpenFlag = 0;        // ??????????????????
+// 当前FieldMenu是否打开
+short nowFieldMenuOpenFlag = 0;
 // ???????????????????????
 unsigned int fieldBtnPushTime = 0;
 // ??????????
@@ -4204,14 +4188,12 @@ void drawField(void)
     }
 }
 
-// ????????????
+// 
 BOOL checkFieldMenuFlag(void)
 {
     return nowFieldMenuOpenFlag;
 }
 
-// ??????????????
-// ???
 void initCharActionAnimeChange(void)
 {
     charActionAnimeChangeProcNo = 0;
@@ -4303,10 +4285,6 @@ int charActionAnimeChange(void)
         y = 16;
         //新增 动作表情切换地图BUG
         ptActMenuWin1 = MakeWindowDisp(x, y, w, h, NULL, 1);
-#ifdef _NEW_RESOMODE  //800 600模式
-        x = ptActMenuWin1->x;
-        y = ptActMenuWin1->y;
-#endif
         charActionAnimeChangeProcNo++;
     }
     //新增 动作表情切换地图BUG
@@ -4596,19 +4574,11 @@ int etcSwitch(void)
     {
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
             btnId[i] = -2;
-
-        // ??????
         w = 3;
         h = 5;
         x = 16;
-        //x = 440;
-        //y = 72;
         y = 16;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1); //ptActMenuWin = MakeWindowDisp(x, y, w, h+1, NULL, 1);
-#ifdef _NEW_RESOMODE  //800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         etcSwitchProcNo++;
     }
 #ifdef _CHANNEL_MODIFY
@@ -5073,11 +5043,7 @@ int disconnectServer( void )
         h = 3;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE  //800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
 #ifdef _AIDENGLU_
     extern int 自动登陆是否开启;
@@ -5148,17 +5114,11 @@ void drawFieldInfoWin(void)
         closeEtcSwitch();
         closeCharActionAnimeChange();
         closeJoinChannelWN();
-
-        // ??????
         w = 4;
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - 24 - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 3, FALSE);
-#ifdef _NEW_RESOMODE  //800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 3);
         play_se(202, 320, 240);    // ????????
     }
 
@@ -5326,11 +5286,7 @@ void joinChannelWN(void)
 
     if (ptActChannelWin == NULL)
     {
-        ptActChannelWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE  //800 600模式
-        x = ptActChannelWin->x;
-        y = ptActChannelWin->y;
-#endif
+        ptActChannelWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
             btnId[i] = -2;
     }
@@ -5338,7 +5294,6 @@ void joinChannelWN(void)
     {
         if (ptActChannelWin->hp >= 1)
         {
-            // ESC????????
             if (((joy_trg[0] & JOY_ESC) && GetImeString() == NULL))
             {
                 closeJoinChannelWN();
@@ -5613,10 +5568,6 @@ void joinChannel2WN(void)
         DeathAction(ptActLeaderFuncWin);
         ptActLeaderFuncWin = NULL;
         ptActChannel2Win = MakeWindowDisp(x, y, w, h, NULL, 1);
-#ifdef _NEW_RESOMODE  //800 600模式
-        x = ptActChannel2Win->x;
-        y = ptActChannel2Win->y;
-#endif
     }
     else if (ptActChannel2Win->hp >= 1)
     {
@@ -5752,15 +5703,10 @@ void leaderFuncWN(void)
 
     if (ptActLeaderFuncWin == NULL)
     {
-        ptActLeaderFuncWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE  //800 600模式
-        x = ptActLeaderFuncWin->x;
-        y = ptActLeaderFuncWin->y;
-#endif
+        ptActLeaderFuncWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
     else if (ptActLeaderFuncWin->hp >= 1)
     {
-        // ESC????????
         if (((joy_trg[0] & JOY_ESC) && GetImeString() == NULL))
         {
             closeJoinChannelWN();

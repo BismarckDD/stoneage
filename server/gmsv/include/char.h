@@ -785,10 +785,6 @@ void sendAngelCleanToCli( int fd);
 #ifdef _ITEM_CHECKDROPATLOGOUT
 BOOL CheckDropatLogout(int char_index );
 #endif
-#ifdef _ROOKIE_ITEM
 void CHAR_CheckUserItem( int char_index );
+BOOL CHAR_PileItemFromItemBoxToItemBox(int char_index, int fromindex, int toindex);
 #endif
-#endif
-
-
-

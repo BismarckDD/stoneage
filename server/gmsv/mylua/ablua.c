@@ -8,12 +8,17 @@
 
 extern MY_Lua MYLua;
 
-void LoadAllbluesLUA(char *path)
+static void LoadAllbluesLUARecursive(char *path, int *loaded, int *failed)
 {
 	struct dirent* ent = NULL;
 	char filename[256];
 	DIR *pDir;
 	pDir=opendir(path);
+	if (pDir == NULL) {
+		print("[Lua] cannot open script directory: %s\n", path);
+		(*failed)++;
+		return;
+	}
 
 	while(NULL != (ent=readdir(pDir)))
 	{
@@ -28,14 +33,29 @@ void LoadAllbluesLUA(char *path)
 		  	memset(filename, 0, 256);
 		  	sprintf(filename, "%s/%s", path, ent->d_name);
 
-      	myluaload(filename);
+			if (myluaload(filename))
+				(*loaded)++;
+			else
+				(*failed)++;
 
     	}
 		}else{
 			sprintf(filename, "%s/%s", path, ent->d_name);
-			LoadAllbluesLUA(filename);
+			LoadAllbluesLUARecursive(filename, loaded, failed);
 		}
 	}
+	closedir(pDir);
+}
+
+void LoadAllbluesLUA(char *path)
+{
+	int loaded = 0;
+	int failed = 0;
+
+	print("[Lua] scanning script directory: %s\n", path);
+	LoadAllbluesLUARecursive(path, &loaded, &failed);
+	print("[Lua] scan complete: loaded=%d, failed/skipped=%d, path=%s\n",
+	      loaded, failed, path);
 }
 
 void ReLoadAllbluesLUA(char *filename)
@@ -90,4 +110,3 @@ const int getCharBaseValue(lua_State *L, int narg, CharBase *charbase, int num)
 }
 
 #endif
-

@@ -249,12 +249,7 @@ void idPasswordProc(void)
             h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         initConnectServer();
         SubProcNo = 4;
 #ifdef _75_LOGIN
@@ -507,12 +502,7 @@ int commonMsgWin(char *msg)
             h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-
-#ifdef _NEW_RESOMODE // 800 * 600 模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
     id = selFontId(fontId, sizeof(fontId) / sizeof(int));
     if (id == 0)
@@ -762,14 +752,10 @@ int renderGroupSelectionBox()
             x = 128;
         else if (row == 4)
             x = 64;
+        // TODO: 这里之是过的，不知道现在会如何？
         ptActSelectServerWin = MakeWindowDisp(x, y, row << 1, 3, NULL, 1);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActSelectServerWin->x + 22;
-        y = ptActSelectServerWin->y + 28;
-#else
         x += 22;
         y += 28;
-#endif
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
             fontId[i] = -2;
     }
@@ -865,13 +851,8 @@ int renderServerSelectionBox()
         if (IP线程 == NULL)
             IP线程 = CreateThread(NULL, 0, IP延时读取, 0, 0, NULL);
 #endif
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActSelectServerWin->x + 22;
-        y = ptActSelectServerWin->y + 28;
-#else
         x += 22;
         y += 28;
-#endif
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
             fontId[i] = -2;
     }
@@ -980,11 +961,7 @@ int connecGameServer(void)
             h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
     if (connectGameServerProcNo == 1)
     {
@@ -1434,11 +1411,7 @@ int deleteCharacter(void)
             h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
 
     if (deleteCharacterProcNo == 1)
@@ -1502,14 +1475,9 @@ int downloadCharList(void)
             h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
 
-    // ??????
     if (downloadCharListProcNo == 1)
     {
         charListStart();
@@ -1563,11 +1531,7 @@ int downloadpkList(void)
             h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
 
     if (downloadpkListProcNo == 1)
@@ -2101,41 +2065,24 @@ int selCharGraColorWin(void)
     int i;
     static int x, y, w, h;
     int ret = 0;
-    char msg[][16] =
-        {
-            "   决定   ",
-            " 改变颜色 ",
-            " 转动方向 ",
-            "   取消   "};
-
-    // ???
+    char msg[][16] = { "   决定   ", " 改变颜色 ", " 转动方向 ", "   取消   "};
     if (selCharGraColorWinProcNo == 0)
     {
         selCharGraColorWinProcNo = 1;
-
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
-        {
             fontId[i] = -2;
-        }
         w = 2;
         h = 3;
         x = 496;
         y = 41;
         ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
     }
-
-    // ?????
     id = selFontId(fontId, sizeof(fontId) / sizeof(int));
 
-    // ?
     if (id == 0)
     {
         ret = 1;
-        play_se(217, 320, 240); // ?????
+        play_se(217, 320, 240);
     }
     else
     {
@@ -2408,22 +2355,14 @@ int editCharParam(void)
                     no2 = no + 2;
                 else
                     no2 = no - 2;
-                if (nowSelCharAttr[no2] == 0)
+                // 配对属性为 0 且仍有剩余点数时才允许提升该属性。
+                // 剩余点数为 0 时“+”按钮已在下方绘制逻辑中禁用(-2)，
+                // 这里不再执行原先那段“互换”逻辑——那段逻辑会把值为 0 的
+                // 属性扣成负数(nowSelCharAttr[i]--), 造成属性出现负值/超额分配。
+                if (nowSelCharAttr[no2] == 0 && nowSelCharAttrPoint > 0)
                 {
-                    if (nowSelCharAttrPoint > 0)
-                    {
-                        nowSelCharAttr[no]++;
-                        nowSelCharAttrPoint--;
-                    }
-                    else
-                    {
-                        for (i = 0; i < 4 && i != no && nowSelCharAttr[i] > 0; ++i) {}
-                        if (i < 4)
-                        {
-                            nowSelCharAttr[no]++;
-                            nowSelCharAttr[i]--;
-                        }
-                    }
+                    nowSelCharAttr[no]++;
+                    nowSelCharAttrPoint--;
                 }
             }
             play_se(217, 320, 240);
@@ -2649,10 +2588,18 @@ int editCharParam(void)
             else
                 btn2 = 1;
         }
-        graId[i * 2 + 2] = StockDispBuffer(statusLocate[i][0] + 51, statusLocate[i][1] + 8,
-                                           DISP_PRIO_CHAR, upDownBtnGraNo[0][btn1], selUseFlag);
-        graId[i * 2 + 3] = StockDispBuffer(statusLocate[i][0] + 87, statusLocate[i][1] + 8,
-                                           DISP_PRIO_CHAR, upDownBtnGraNo[1][btn2], selUseFlag);
+        // “-”按钮(释放点数)：该状态值为 0 时禁用(-2：不可点击/不绘制)
+        if (nowSelCharStatus[i] > 0)
+            graId[i * 2 + 2] = StockDispBuffer(statusLocate[i][0] + 51, statusLocate[i][1] + 8,
+                                               DISP_PRIO_CHAR, upDownBtnGraNo[0][btn1], selUseFlag);
+        else
+            graId[i * 2 + 2] = -2;
+        // “+”按钮(分配点数)在剩余点数为 0 时禁用(-2：不可点击/不绘制)
+        if (nowSelCharStatusPoint > 0)
+            graId[i * 2 + 3] = StockDispBuffer(statusLocate[i][0] + 87, statusLocate[i][1] + 8,
+                                               DISP_PRIO_CHAR, upDownBtnGraNo[1][btn2], selUseFlag);
+        else
+            graId[i * 2 + 3] = -2;
     }
 
     for (i = 0; i < 4; i++)
@@ -2668,10 +2615,18 @@ int editCharParam(void)
                 else
                     btn2 = 1;
             }
-            graId[i * 2 + 10] = StockDispBuffer(attrLocate[i][0] + 101, attrLocate[i][1] + 5,
-                                                DISP_PRIO_CHAR, upDownBtnGraNo[0][btn1], selUseFlag);
-            graId[i * 2 + 11] = StockDispBuffer(attrLocate[i][0] + 137, attrLocate[i][1] + 5,
-                                                DISP_PRIO_CHAR, upDownBtnGraNo[1][btn2], selUseFlag);
+            // “-”按钮(释放点数)：该属性值为 0 时禁用(-2：不可点击/不绘制)
+            if (nowSelCharAttr[i] > 0)
+                graId[i * 2 + 10] = StockDispBuffer(attrLocate[i][0] + 101, attrLocate[i][1] + 5,
+                                                    DISP_PRIO_CHAR, upDownBtnGraNo[0][btn1], selUseFlag);
+            else
+                graId[i * 2 + 10] = -2;
+            // “+”按钮(分配点数)在剩余点数为 0 时禁用(-2：不可点击/不绘制)
+            if (nowSelCharAttrPoint > 0)
+                graId[i * 2 + 11] = StockDispBuffer(attrLocate[i][0] + 137, attrLocate[i][1] + 5,
+                                                    DISP_PRIO_CHAR, upDownBtnGraNo[1][btn2], selUseFlag);
+            else
+                graId[i * 2 + 11] = -2;
         }
         else
         {
@@ -2912,11 +2867,7 @@ int createChar(void)
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
     if (createCharProcNo == 1)
     {
@@ -3218,11 +3169,7 @@ int charLogin(void)
             h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
     if (charLoginProcNo == 1)
     {
@@ -3348,9 +3295,8 @@ void characterLogoutProc(void)
             SubProcNo = 0;
         }
     }
-
-    RunAction();           // ?????????
-    StockTaskDispBuffer(); // ???????????????
+    RunAction();
+    StockTaskDispBuffer();
 }
 
 static int charLogoutProcNo;
@@ -3362,7 +3308,7 @@ void initCharLogout(void)
 
 int charLogout(void)
 {
-    extern unsigned int systemWndNo; // ??????
+    extern unsigned int systemWndNo;
     static ACTION *ptActMenuWin = NULL;
     static int x, y, w, h;
     int ret = 0;
@@ -3384,11 +3330,7 @@ int charLogout(void)
             h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
     if (charLogoutProcNo == 1)
     {
@@ -5119,11 +5061,7 @@ void serverWindowType0(int mode)
 #endif
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
 
         lineSkip = 20;
         totalMsgLine = (winH * 48 - 56) / lineSkip;
@@ -5277,16 +5215,9 @@ void serverWindowType1(void)
         winH = 5;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
-
         mask = 1;
         btnCnt = 0;
         for (i = 0; i < 6; i++, mask <<= 1)
@@ -5298,7 +5229,6 @@ void serverWindowType1(void)
                     break;
             }
         }
-        // ?????????????
         if (btnCnt > 0)
         {
             int w;
@@ -5309,17 +5239,13 @@ void serverWindowType1(void)
                 btnLoc[i][1] = 196;
             }
         }
-
         msgLine = 10; // msgLine = 8;
-
         play_se(202, 320, 240); // ????????
     }
 
     if (ptActMenuWin != NULL)
     {
-        // ????
         id = selFontId(btnId, sizeof(btnId) / sizeof(int));
-
         id2 = -1;
         if (ptActMenuWin->hp >= 1) // ????????????
         {
@@ -5451,15 +5377,9 @@ void serverWindowType2(void)
         winH = 5;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
 
         mask = 1;
         btnCnt = 0;
@@ -5618,11 +5538,7 @@ void serverWindowType3(void)
         winH = 5;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
         {
             btnId[i] = -2;
@@ -5798,15 +5714,9 @@ void serverWindowType4(void)
         winH = 5;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
 
         mask = 1;
         btnCnt = 0;
@@ -5819,7 +5729,6 @@ void serverWindowType4(void)
                     break;
             }
         }
-        // ?????????????
         if (btnCnt > 0)
         {
             int w;
@@ -6018,15 +5927,9 @@ void serverWindowType9(void)
         winH = 5;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
         mask = 1;
         btnCnt = 0;
         for (i = 0; i < 6; i++, mask <<= 1)
@@ -6513,21 +6416,12 @@ int shopWindow1(void)
 
     if (shopWindow1ProcNo == 0)
     {
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
-
-        // ??????
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         w = 4;
         h = 3;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         shopWindow1ProcNo++;
     }
 
@@ -6536,16 +6430,13 @@ int shopWindow1(void)
         id = -1;
         if (ptActMenuWin->hp >= 1)
         {
-            // ????
             id = selGraId(btnId, sizeof(btnId) / sizeof(int));
             ret = id + 1;
         }
-
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
-            ret = 3; // ??
+            ret = 3;
             wnCloseFlag = 0;
         }
         if (0 <= id && id <= 2)
@@ -6626,11 +6517,7 @@ int shopWindow2(void)
         h = 428;
         x = (lpDraw->xSize - w) / 2;
         y = (lpDraw->ySize - h) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         shopWindow2ProcNo++;
     }
 
@@ -6963,11 +6850,7 @@ int shopWindow3(void)
         h = 160;
         x = (lpDraw->xSize - w) / 2;
         y = (lpDraw->ySize - h) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         shopWindow3ProcNo++;
     }
 
@@ -7134,11 +7017,7 @@ int shopWindow4(void)
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         shopWindow4ProcNo++;
     }
 
@@ -7222,11 +7101,7 @@ int shopWindow5(void)
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         shopWindow5ProcNo++;
     }
 
@@ -7300,18 +7175,12 @@ int shopWindow6(void)
     if (shopWindow6ProcNo == 0)
     {
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
         w = 6;
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         shopWindow6ProcNo++;
     }
     if (ptActMenuWin != NULL)
@@ -7393,21 +7262,12 @@ int shopWindow7(void)
 
     if (shopWindow7ProcNo == 0)
     {
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
-
-        // ??????
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         w = 432;
         h = 428;
         x = (lpDraw->xSize - w) / 2;
         y = (lpDraw->ySize - h) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         shopWindow7ProcNo++;
     }
 
@@ -7649,19 +7509,12 @@ int shopWindow8(void)
 
     if (shopWindow8ProcNo == 0)
     {
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         w = 6;
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         shopWindow8ProcNo++;
     }
 
@@ -7736,11 +7589,7 @@ int shopWindow10(void)
         h = 160;
         x = (lpDraw->xSize - w) / 2;
         y = (lpDraw->ySize - h) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         shopWindow10ProcNo++;
     }
 
@@ -8096,11 +7945,7 @@ int profession_windows_1(void)
         h = 428;
         x = (lpDraw->xSize - w) / 2;
         y = (lpDraw->ySize - h) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         skillShopWindow1ProcNo++;
     }
 
@@ -8298,35 +8143,21 @@ int profession_windows_2(void)
 
     if (skillShopWindow4ProcNo == 0)
     {
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
-
-        // ??????
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         w = 8;
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
 
         char name[32];
         if (strlen(pc.freeName) > 0)
-        {
             strcpy(name, pc.freeName);
-        }
         else
-        {
             strcpy(name, pc.name);
-        }
 
         sprintf_s(msg1, "让[%s]将[%s]", name,
                   sealSkill[selShopSkillNo].name);
-
         skillShopWindow4ProcNo++;
     }
 
@@ -8334,12 +8165,8 @@ int profession_windows_2(void)
     {
         id = -1;
         if (ptActMenuWin->hp >= 1)
-        {
-            // ????
             id = selGraId(btnId, sizeof(btnId) / sizeof(int));
-        }
 
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -8539,11 +8366,7 @@ int profession_windows_12(void)
         h = 428;
         x = (lpDraw->xSize - w) / 2;
         y = (lpDraw->ySize - h) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         skillShopWindow1ProcNo++;
     }
 
@@ -8758,24 +8581,14 @@ int profession_windows_22(void)
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
         ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
 
         char name[32];
         if (strlen(pc.freeName) > 0)
-        {
             strcpy(name, pc.freeName);
-        }
         else
-        {
             strcpy(name, pc.name);
-        }
-
         sprintf_s(msg1, "要[%s]将[%s]", name,
                   sealSkill[selShopSkillNo].name);
-
         skillShopWindow4ProcNo++;
     }
 
@@ -8851,18 +8664,12 @@ void PetSkillShowType1(void)
     if (PetskillShpwWindowProcNo == 0)
     {
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
         w = 5;
         h = 6;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         PetskillShpwWindowProcNo++;
     }
     if (ptActMenuWin != NULL)
@@ -8980,20 +8787,12 @@ int skillShopWindow1(void)
     if (skillShopWindow1ProcNo == 0)
     {
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
-
-        // ??????
         w = 432;
         h = 428;
         x = (lpDraw->xSize - w) / 2;
         y = (lpDraw->ySize - h) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         skillShopWindow1ProcNo++;
     }
 
@@ -9216,20 +9015,12 @@ int skillShopWindow2(void)
     if (skillShopWindow2ProcNo == 0)
     {
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
             btnId[i] = -2;
-        }
-
-        // ??????
         w = 7;
         h = 5;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         skillShopWindow2ProcNo++;
     }
 
@@ -9362,11 +9153,7 @@ int skillShopWindow3(void)
         h = 6;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         skillShopWindow3ProcNo++;
     }
 
@@ -9461,22 +9248,12 @@ int skillShopWindow4(void)
 
     if (skillShopWindow4ProcNo == 0)
     {
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
-
-        // ??????
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         w = 8;
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
-
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         char name[32];
         if (strlen(pet[selShopSkillPetNo - 1].freeName) > 0)
             strcpy(name, pet[selShopSkillPetNo - 1].freeName);
@@ -9777,21 +9554,12 @@ int poolShopWindow1(void)
 
     if (poolShopWindow1ProcNo == 0)
     {
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
-
-        // ??????
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         w = 4;
         h = 3;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         poolShopWindow1ProcNo++;
     }
 
@@ -9800,12 +9568,9 @@ int poolShopWindow1(void)
         id = -1;
         if (ptActMenuWin->hp >= 1)
         {
-            // ????
             id = selGraId(btnId, sizeof(btnId) / sizeof(int));
             ret = id + 1;
         }
-
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -9883,20 +9648,12 @@ int poolShopWindow2(void)
 
     if (poolShopWindow2ProcNo == 0)
     {
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
-        // ??????
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         w = 432;
         h = 428;
         x = (lpDraw->xSize - w) / 2;
         y = (lpDraw->ySize - h) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         poolShopWindow2ProcNo++;
     }
 
@@ -10121,11 +9878,7 @@ int poolShopWindow3(void)
         h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
         poolShopWindow3ProcNo++;
     }
 
@@ -10227,11 +9980,7 @@ int poolShopWindow4(void)
         h = 428;
         x = (lpDraw->xSize - w) / 2;
         y = (lpDraw->ySize - h) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         poolShopWindow4ProcNo++;
     }
 
@@ -10622,11 +10371,7 @@ void familyAddWN(void)
         familyNameInput.y = y + 40;
         familyNameInput.fontPrio = FONT_PRIO_FRONT;
 
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         play_se(202, 320, 240); // ????????
     }
     else if (ptActMenuWin->hp >= 1)
@@ -10983,11 +10728,6 @@ void familyListWN(void)
     if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
     {
         closeFamilyList();
-        /*
-        windowTypeWN = -1;
-        DeathAction( ptActMenuWin );
-        ptActMenuWin = NULL;
-        */
         return;
     }
 
@@ -11001,21 +10741,13 @@ void familyListWN(void)
         if (ptActMenuWin == NULL)
         {
             familyListProcNo = 1;
-
             w = 7;
             h = 8;
             x = (lpDraw->xSize - w * 64) / 2;
             y = (lpDraw->ySize - h * 48) / 2;
-
-            ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-            x = ptActMenuWin->x;
-            y = ptActMenuWin->y;
-#endif
+            ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
             play_se(202, 320, 240); // ????????
         }
-        // else if( ptActMenuWin != NULL )
-        // if( familyListProcNo == 1 )
         else if (ptActMenuWin->hp >= 1)
         {
 
@@ -11344,11 +11076,9 @@ int familyDetailWN(void)
             lssproto_FamilyBadge_send(sockfd);
         }
 #endif
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-
+        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, -1);
         familyRuleShow.x = x + 82;
         familyRuleShow.y = y + 162;
-
         play_se(202, 320, 240); // ????????
     }
 
@@ -11876,15 +11606,8 @@ void FMWindowType(void)
         winH = 8;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         mask = 1;
         btnCnt = 0;
         for (i = 0; i < 10; i++, mask <<= 1)
@@ -12346,15 +12069,8 @@ void FMWindowType(void)
         winH = 8;
         winX = (lpDraw->XSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         mask = 1;
         btnCnt = 0;
         for (i = 0; i < 10; i++, mask <<= 1)
@@ -12686,11 +12402,7 @@ void FMWindowType1(void)
         winH = msgWN_H;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         lineSkip = 20;
         totalMsgLine = (winH * 48 - 56) / lineSkip;
 
@@ -12912,16 +12624,8 @@ void FMWindowType2(void)
         winH = 4 + fm_point_num / 3;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         mask = 1;
         btnCnt = 0;
 #ifdef _FIX_9_FMPOINT // WON ADD 九大庄园
@@ -13200,10 +12904,6 @@ int fmselectdetuyWindow(int x, int y, int id)
     if (ptActMenuWin == NULL)
     {
         ptActMenuWin = MakeWindowDisp(x, y, 3, 5, NULL, 1);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
         for (int i = 0; i < 4; i++)
             btnId[i] = -2;
         for (int j = 0; j < 4; j++)
@@ -13321,10 +13021,6 @@ int fmYesNoWindow(int x, int y, int id)
     if (ptActMenuWin == NULL)
     {
         ptActMenuWin = MakeWindowDisp(x, y, 5, 2, NULL, 1);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
         for (int i = 0; i < 2; i++)
             btnId[i] = -2;
         for (int j = 0; j < 2; j++)
@@ -13469,16 +13165,8 @@ void FMWindowType4(void)
 #endif
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         mask = 1;
         btnCnt = 0;
         for (i = 0; i < 10; i++, mask <<= 1)
@@ -13746,15 +13434,8 @@ void FMWindowType3(void)
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
 
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
-        for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
-        {
-            btnId[i] = -2;
-        }
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
+        for (i = 0; i < sizeof(btnId) / sizeof(int); i++) btnId[i] = -2;
         mask = 1;
         btnCnt = 0;
         for (i = 0; i < 10; i++, mask <<= 1)
@@ -13972,11 +13653,7 @@ void FMWindowType3(void)
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
 
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
         {
             btnId[i] = -2;
@@ -14124,10 +13801,6 @@ int DelCharGraColorWin(void)
         x = 250;
         y = 180;
         ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x;
-        y = ptActMenuWin->y;
-#endif
         initStrBuffer(&passwd, x + 20, y + 44, 20, FONT_PAL_WHITE, FONT_PRIO_FRONT);
         // 设定输入密码的StrBuffer
         passwd.cnt = 0;
@@ -14263,18 +13936,8 @@ void FMPKListWN(int mode)
         winH = 8;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
-
-        for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
-        {
-            fontId[i] = -2;
-        }
-
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
+        for (i = 0; i < sizeof(fontId) / sizeof(int); i++) fontId[i] = -2;
         mask = 1;
         btnCnt = 0;
         for (i = 0; i < 6; i++, mask <<= 1)
@@ -14530,19 +14193,8 @@ void FMPKSelectWN(int mode)
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
 
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
-        // lineSkip = 20;
-        // totalMsgLine = (winH*48-56)/lineSkip;
-
-        for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
-        {
-            fontId[i] = -2;
-        }
-
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
+        for (i = 0; i < sizeof(fontId) / sizeof(int); i++) fontId[i] = -2;
         mask = 1;
         btnCnt = 0;
         for (i = 0; i < 6; i++, mask <<= 1)
@@ -14719,11 +14371,7 @@ void FMPKDetailWN(int mode)
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
 
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
         {
             fontId[i] = -2;
@@ -14958,26 +14606,15 @@ void familyTaxWN()
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
 
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
-        for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
-        {
-            fontId[i] = -2;
-        }
-
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
+        for (i = 0; i < sizeof(fontId) / sizeof(int); i++) fontId[i] = -2;
         play_se(202, 320, 240);
     }
 
     if (ptActMenuWin != NULL)
     {
-        // ?????
         id = selFontId(fontId, sizeof(fontId) / sizeof(int));
         selBtnId = focusGraId(btnId, sizeof(btnId) / sizeof(int));
-
-        // ?????????????????????
         if (CheckMenuFlag() || (joy_trg[0] & JOY_ESC) || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -15258,19 +14895,8 @@ void showRidePetWN(void)
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
 
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
-        // lineSkip = 20;
-        // totalMsgLine = (winH*48-56)/lineSkip;
-
-        for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
-        {
-            fontId[i] = -2;
-        }
-
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
+        for (i = 0; i < sizeof(fontId) / sizeof(int); i++) fontId[i] = -2;
         mask = 1;
         btnCnt = 0;
         for (i = 0; i < 6; i++, mask <<= 1)
@@ -15458,11 +15084,7 @@ void familyLeaderChangeWN()
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
 
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
             fontId[i] = -2;
         for (i = 0; i < sizeof(fontId2) / sizeof(int); i++)
@@ -15561,11 +15183,7 @@ void familyLeaderChangeQWN()
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
 
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
             fontId[i] = -2;
 
@@ -15645,12 +15263,7 @@ void familyLeaderChangeAWN()
         winH = 3;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
             fontId[i] = -2;
 
@@ -15819,21 +15432,14 @@ void mineFamilyDetailWN()
     static int fontId[2];
     int selId;
     char buf[256];
-    // char timebuf[14];
     int i;
-
     if (ptActMenuWin == NULL)
     {
         winW = 7;
         winH = 6;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
             fontId[i] = -2;
 
@@ -17210,18 +16816,9 @@ void FMTAXWindowsType(void)
         winH = 4;
         winX = (lpDraw->xSize - winW * 64) / 2;
         winY = (lpDraw->ySize - winH * 48) / 2;
-
-        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1, FALSE);
-
-#ifdef _NEW_RESOMODE // 800 600模式
-        winX = ptActMenuWin->x;
-        winY = ptActMenuWin->y;
-#endif
+        ptActMenuWin = MakeWindowDisp(winX, winY, winW, winH, NULL, 1);
         for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
-        {
             fontId[i] = -2;
-        }
-
         play_se(202, 320, 240);
     }
 
@@ -17378,10 +16975,6 @@ void BMWindowType(void)
         for (i = 0; i < 2; i++)
             btnId[i] = -2;
         ptActMenuWin = MakeWindowDisp(x + 100, y + 100, 100, 100, NULL, -1);
-#ifdef _NEW_RESOMODE // 800 600模式
-        x = ptActMenuWin->x - 100;
-        y = ptActMenuWin->y - 100;
-#endif
         play_se(202, 320, 240);
     }
     else if (ptActMenuWin->hp >= 1)

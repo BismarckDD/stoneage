@@ -460,8 +460,8 @@ void BattleButtonJujutsu(void) {
           pActWnd = MakeWindowDisp(lpDraw->xSize - 280,
                                    140,
                                    271,
-                                   281, 0, -1,
-                                   FALSE);
+                                   281, 0, -1
+                                  );
           battleButtonBak = 1;
           battleButtonBak2 = -1;
         }
@@ -1005,8 +1005,8 @@ void BattleButtonItem(void) {
         // 道具栏标题
         pActWnd = MakeWindowDisp(lpDraw->xSize - 280, // 全宽280
                                  160,                 // 上面菜单时160
-                                 271, 281, 0, -1,     // 
-                                 FALSE);
+                                 271, 281, 0, -1     // 
+                                );
         // 这个是下面的道具框？
         InitItem2(pActWnd->x, pActWnd->y);
         battleButtonBak = 5;
@@ -1285,10 +1285,9 @@ void BattleButtonPet(void) {
         for (i = 0; i < BATTLE_MENU_PET_FONTS; i++)
           battleMenuPetFontNo[i] = -2;
 #ifdef _NEW_WIN_POS_
-        pActWnd = MakeWindowDisp(lpDraw->xSize - 280, 160, 271, 281, 0, -1,
-                                 FALSE);
+        pActWnd = MakeWindowDisp(lpDraw->xSize - 280, 160, 271, 281, 0, -1);
 #else
-        pActWnd = MakeWindowDisp(380, 160, 271, 281, 0, -1, FALSE);
+        pActWnd = MakeWindowDisp(380, 160, 271, 281, 0, -1);
 #endif
         battleButtonBak = 6;
         battleButtonBak2 = -1;

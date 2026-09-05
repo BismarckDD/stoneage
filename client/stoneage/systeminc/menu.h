@@ -857,13 +857,8 @@ BOOL CheckMenuFlag(void);
 
 void MenuProc(void);
 
-ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY, int titleNo,
-                       int wndType
-#ifdef _NEW_RESOMODE //
-                       ,
-                       BOOL fixType = TRUE
-#endif
-);
+ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY,
+  int titleNo, int wndType);
 
 // 画选中框(绿色的矩形框, 游戏中常用)
 BOOL MakeHitBox(int x1, int y1, int x2, int y2, int dispPrio);

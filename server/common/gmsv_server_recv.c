@@ -1,4 +1,8 @@
+#include "version.h"
+//
 #include "gmsv_server.h"
+//
+#include "mylua/function.h"
 //
 #include "addressbook.h"
 #include "battle.h"
@@ -513,7 +517,7 @@ void GmsvServer_NewCharDelete_recv(int fd, char *charname, char *passwd) {
   CONNECT_getCdkey(fd, cdkey, sizeof(cdkey));
   int fdid = CONNECT_getFdid(fd);
 #ifdef _ALLBLUES_LUA_1_9
-  if (FreeCharDelet(fd, cdkey, passwd) == 0) {
+  if (FreeCharDelete(fd, cdkey, passwd) == 0) {
     return;
   }
 #endif
@@ -2064,9 +2068,6 @@ void GmsvServer_PR_recv(int fd, int x, int y, int request) {
     ix = CHAR_getInt(char_index, CHAR_X);
     iy = CHAR_getInt(char_index, CHAR_Y);
     if ((ix != x) || (iy != y)) {
-      // print("\n<PR>--Error!!!!");
-      // print("\n<PR>origion x=%d,y=%d",ix,iy);
-      // print("\n<PR>modify  X=%d,Y=%d",x,y);
       x = ix;
       y = iy;
     }
@@ -2074,14 +2075,12 @@ void GmsvServer_PR_recv(int fd, int x, int y, int request) {
   CHAR_setMyPosition(char_index, x, y, TRUE);
 
   if (request == 0) {
-    /* �������� */
     result = CHAR_DischargeParty(char_index, 0);
   } else if (request == 1) {
     result = CHAR_JoinParty(char_index);
   }
 }
-/*------------------------------------------------------------
- ------------------------------------------------------------*/
+
 void GmsvServer_KS_recv(int fd, int petarray) {
   int ret, char_index;
   CHECKFDANDTIME;
@@ -2104,31 +2103,13 @@ void GmsvServer_SPET_recv(int fd, int standbypet) {
   char_index = CONNECT_getCharaindex(fd);
   if (!CHAR_CHECKINDEX(char_index))
     return;
-  // if( CHAR_getWorkInt( char_index, CHAR_WORKBATTLEMODE) !=
-  // BATTLE_CHARMODE_NONE
-  //   && standbypet >= CHAR_getWorkInt( char_index, CHAR_WORKSTANDBYPET) ) {
-  //   print("\n �ķ��!??ս������SPET���Ӵ�����!!:%s ", CHAR_getChar(
-  //   char_index, CHAR_CDKEY) ); return;
-  // }
-
-  // if( CHAR_getInt( char_index, CHAR_RIDEPET) == petarray ) {
-  //   GmsvServer_SPET_send( fd, petarray, FALSE);
-  //}
 
   for (i = 0; i < CHAR_MAXPETHAVE; i++) {
     if (standbypet & (1 << i)) {
 
       if (CHAR_getInt(char_index, CHAR_RIDEPET) == i)
         continue;
-
       cnt++;
-      // if( cnt > 4 ) {
-      //   print("\n �ķ��!�����賬������!!:%s ", CHAR_getChar( char_index,
-      //   CHAR_CDKEY) );
-      // GmsvServer_SPET_send( fd, s_pet, FALSE);
-      //  break;
-      //}
-
       s_pet |= (1 << i);
     }
   }
@@ -2190,9 +2171,6 @@ void GmsvServer_MU_recv(int fd, int x, int y, int array, int toindex) {
     ix = CHAR_getInt(char_index, CHAR_X);
     iy = CHAR_getInt(char_index, CHAR_Y);
     if ((ix != x) || (iy != y)) {
-      // print("\n<MU>--Error!!!!");
-      // print("\n<MU>origion x=%d,y=%d",ix,iy);
-      // print("\n<MU>modify  X=%d,Y=%d",x,y);
       x = ix;
       y = iy;
     }
@@ -2205,7 +2183,6 @@ void GmsvServer_MU_recv(int fd, int x, int y, int array, int toindex) {
 
 void GmsvServer_JB_recv(int fd, int x, int y) {
   int charaindex, floor;
-
   CHECKFDANDTIME;
   charaindex = CONNECT_getCharaindex(fd);
   {
@@ -2867,12 +2844,13 @@ void GmsvServer_ASSESS_ABILITY_recv(int fd) {
 }
 #endif
 
+// 2026.09.04: 处理SAMENU相关的指令: 原地遇敌
 void GmsvServer_SaMenu_recv(int fd, int index) {
-  CHECKFDANDTIME;
-  const int charaindex = CONNECT_getCharaindex(fd);
-  if (!CHAR_CHECKINDEX(charaindex))
+  CHECKFDANDTIME; // check fd.
+  const int chara_index = CONNECT_getCharaindex(fd);
+  if (!CHAR_CHECKINDEX(chara_index))
     return;
-  FreeSaMenu(charaindex, index);
+  FreeSaMenu(chara_index, index);
 }
 
 #ifdef _FAMILYBADGE_

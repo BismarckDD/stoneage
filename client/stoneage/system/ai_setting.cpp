@@ -1115,7 +1115,7 @@ BOOL AI_SettingProc()
         if(g_bUseAlpha) pAISettingWnd = MakeWindowDisp( x, y, w, h, OLD_GRAPHICS_START + 57, -1, FALSE);
         else
 #endif
-        pAISettingWnd = MakeWindowDisp( x, y, w, h, 35225, -1, FALSE);
+        pAISettingWnd = MakeWindowDisp( x, y, w, h, 35225, -1);
 
         dwPressTime = 0;
         AI_ReLoad();
@@ -2044,9 +2044,7 @@ void AI_OtherProc(){
     static char szFunctionSwitch[2][12] = {" Ｎ  Ｏ "," ＹＥＳ "};
     if(pAIOtherFunctionWnd == NULL){
         // 若在战斗中
-        pAIOtherFunctionWnd = MakeWindowDisp(413,lpDraw->ySize / 2 + 150,3,2,NULL,1, FALSE);
-        //if(ProcNo == PROC_BATTLE) pAIOtherFunctionWnd = MakeWindowDisp(413,150,3,2,NULL,1, FALSE);
-        //else pAIOtherFunctionWnd = MakeWindowDisp(413,0,3,2,NULL,1, FALSE);
+        pAIOtherFunctionWnd = MakeWindowDisp(413,lpDraw->ySize / 2 + 150,3,2,NULL,1);
     }
     else{
         if(pAIOtherFunctionWnd->hp >= 1 ){

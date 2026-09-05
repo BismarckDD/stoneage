@@ -231,8 +231,12 @@ void Cryptodofile(lua_State *L, char *filename) {
 
 int myluaload(char *filename) {
   MY_Lua *mylua = &MYLua;
+  int status = 0;
+
+  print("[Lua] loading: %s\n", filename);
   while (mylua->next != NULL) {
     if (strcmp(mylua->luapath, filename) == 0) {
+      print("[Lua] skipped (already loaded): %s\n", filename);
       return FALSE;
     }
     mylua = mylua->next;
@@ -248,6 +252,7 @@ int myluaload(char *filename) {
   mylua->lua = lua_open(); /* create state */
 
   if (mylua->lua == NULL) {
+    print("[Lua] failed to create state: %s\n", filename);
     return FALSE;
   }
 
@@ -259,20 +264,33 @@ int myluaload(char *filename) {
   if (strcmptail(filename, ".allblues") == 0) {
     Cryptodofile(mylua->lua, filename);
   } else {
-    dofile(mylua->lua, filename);
+    status = dofile(mylua->lua, filename);
+    if (status != 0) {
+      print("[Lua] load failed: %s (status=%d)\n", filename, status);
+      return FALSE;
+    }
   }
 
   lua_getglobal(mylua->lua, "init");
   if (lua_isfunction(mylua->lua, -1)) {
-    docall(mylua->lua, 0, 1);
+    status = docall(mylua->lua, 0, 1);
+    if (status != 0) {
+      print("[Lua] init() failed: %s (status=%d)\n", filename, status);
+      return FALSE;
+    }
   }
 
   lua_getglobal(mylua->lua, "main");
 
   if (lua_isfunction(mylua->lua, -1)) {
-    docall(mylua->lua, 0, 1);
+    status = docall(mylua->lua, 0, 1);
+    if (status != 0) {
+      print("[Lua] main() failed: %s (status=%d)\n", filename, status);
+      return FALSE;
+    }
   }
 
+  print("[Lua] loaded: %s\n", filename);
   return TRUE;
 }
 

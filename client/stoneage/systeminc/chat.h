@@ -3,15 +3,7 @@
 
 // cary 256 -> 260
 #define STR_BUFFER_SIZE 260 //
-#ifdef _NEW_RESOMODE
-#ifdef _SA_LIAOTIAN_
-#define MAX_CHAT_LINE 200 // 聊天行数限制
-#else
-#define MAX_CHAT_LINE 20 // 聊天行数限制
-#endif
-#else
-#define MAX_CHAT_LINE 20 // 聊天行数限制
-#endif
+#define MAX_CHAT_LINE 20    // 聊天行数限制
 #define DEF_CHAT_LINE 20    // 默认聊天行数
 #define MAX_CHAT_HISTORY 64 // 最大64条聊天记录
 #define DEF_VOICE 3         // 默认声音大小

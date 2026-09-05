@@ -574,16 +574,13 @@ BOOL ProduceHagare(int mode) {
       rect.top = posY[i];
       rect.right = posX[i] + CutX;
       rect.bottom = posY[i] + CutY;
-      //???????????????
       if (gResolutionMode == 1) {
         rect.top >>= 1;
         rect.left >>= 1;
         rect.right >>= 1;
         rect.bottom >>= 1;
-        // ??????????﹩???鄸?叉?
         DrawSurfaceFast2(x[i] / 2, y[i] / 2, &rect, lpBattleSurface);
       } else {
-        // ??????????﹩???鄸?叉?
         DrawSurfaceFast2(x[i], y[i], &rect, lpBattleSurface);
       }
     }
@@ -594,16 +591,13 @@ BOOL ProduceHagare(int mode) {
       rect.top = posY[i];
       rect.right = posX[i] + CutX;
       rect.bottom = posY[i] + CutY;
-      //???????????????
       if (gResolutionMode == 1) {
         rect.top >>= 1;
         rect.left >>= 1;
         rect.right >>= 1;
         rect.bottom >>= 1;
-        // ??????????﹩???鄸?叉?
         DrawSurfaceFast2(x[i] / 2, y[i] / 2, &rect, lpBattleSurface);
       } else {
-        // ??????????﹩???鄸?叉?
         DrawSurfaceFast2(x[i], y[i], &rect, lpBattleSurface);
       }
     }
@@ -841,24 +835,13 @@ BOOL ProduceHagare(int mode) {
 }
 #endif
 
-#ifdef _NEW_RESOMODE
-// 剒遙傖褫眕淕壺賤昴僅腔X , Y 硉
-// 1024 * 768
-// #define BRAN_SIZE_X 32
-// #define BRAN_SIZE_Y 16
-// 800 * 600
 #define BRAN_SIZE_X 32
 #define BRAN_SIZE_Y 16
-#else
-#define BRAN_SIZE_X 32
-#define BRAN_SIZE_Y 16
-#endif
 static int bran_cnt;
 static int pos_tbl[((800) / BRAN_SIZE_Y) * ((1024) / BRAN_SIZE_X) * 2];
 static int bran_flg = 0;
 // static int bran_flg = 0;
 
-// 蚕賒醱笢陑砃侐源孺湮摯眈毀
 BOOL Produce_bran_small(int ang) {
   RECT rect;
   int d0, d6, d7;

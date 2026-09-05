@@ -1577,13 +1577,14 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
 #endif
+  // 2026.09.04: 开启/关闭原地遇敌
   if (func == LSSPROTO_SAMENU_RECV) {
-    int checksum = 0, checksumrecv;
-    int index;
-    checksum += util_deint(2, &index);
+    int checksum = 0, checksumrecv, index;
+    checksum += util_deint(2, &index); // 从workspace中解析int
     util_deint(3, &checksumrecv);
+    // TODO: 这里是否要校验checksum和checksumRecv?
 #ifdef _DEBUG_RET_CLI
-    printf("[接收]LSSPROTO_SAMENU_RECV-index:%d\n", index);
+    printf("[接收]LSSPROTO_SAMENU_RECV. index:%d\n", index);
 #endif
     GmsvServer_SaMenu_recv(fd, index);
     util_DiscardMessage();

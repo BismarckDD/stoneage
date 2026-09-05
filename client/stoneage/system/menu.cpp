@@ -148,10 +148,10 @@ STR_BUFFER shougouChange;
 int StatusUpPoint;
 
 #ifdef _TRADESYSTEM2    
-static int tradeWndFontNo[MENU_TRADE_0];     // ????
-static int tradeWndBtnFlag[MENU_TRADE_0];    // ???????
+static int tradeWndFontNo[MENU_TRADE_0];
+static int tradeWndBtnFlag[MENU_TRADE_0];
 #endif
-static unsigned int tradeWndNo = 0;                // ??????
+static unsigned int tradeWndNo = 0;
 
 int showindex[7] = { 0, 0, 0, 0, 0, 0, 0 };
 static char opp_sockfd[128] = "-1";
@@ -1052,26 +1052,12 @@ void WindowDisp(ACTION *pAct)
 // int x,y
 // int sizeX,sizeY
 // int titleNo
-// int wndType
-ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY, int titleNo, int wndType
-#ifdef _NEW_RESOMODE  //800 600模式
-    , BOOL fixType /*= TRUE*/
-#endif
-    )
+// int wndType, 这个通常是-1？
+ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY,
+                       int titleNo, int wndType)
 {
     ACTION *pAct;
     WINDOW_DISP *pYobi;
-#ifdef _NEW_RESOMODE  //800 600模式
-    if (fixType == TRUE){
-        if (x > 320){
-            x += DISPLACEMENT_X;
-        } else if (x > 40) {
-            x += DISPLACEMENT_X / 2;
-        }
-        if (y > 40)
-            y += DISPLACEMENT_Y / 2;
-    }
-#endif
     pAct = GetAction(PRIO_JIKI, sizeof(WINDOW_DISP));
     if (pAct == NULL) return NULL;
     pAct->func = WindowDisp;
@@ -1079,7 +1065,6 @@ ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY, int titleNo, int wndT
     pAct->atr |= ACT_ATR_HIT;
     pAct->atr |= ACT_ATR_HIDE;
     pYobi = (WINDOW_DISP *)pAct->pYobi;
-    // ????
     pAct->x = x;
     pAct->y = y;
     pYobi->titleX = x + (sizeX * 64) / 2;
@@ -1112,7 +1097,6 @@ ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY, int titleNo, int wndT
         pYobi->mx = (sizeX * 64) / 2 + pAct->x;
         pYobi->my = (sizeY * 48) / 2 + pAct->y;
     }
-    // ??
     pAct->dx = (pYobi->mx - pAct->x) / WINDOW_CREATE_FRAME;
     pAct->dy = (pYobi->my - pAct->y) / WINDOW_CREATE_FRAME;
     return pAct;
@@ -9163,42 +9147,30 @@ void MenuProc(void)
     }
 #endif
 
-    if (joy_trg[0] & JOY_ESC && checkFieldMenuFlag() == FALSE) {
+    if ((joy_trg[0] & JOY_ESC) && checkFieldMenuFlag() == FALSE) {
+        // IME没有在处理输入法，才可以处理组合键
         if (GetImeString() == NULL){
             if (MenuToggleFlag != 0 || BattleResultWndFlag >= 1){
                 MenuToggleFlag = 0;
-                // ???????????
                 BattleResultWndFlag = FALSE;
-                // ???????????
                 mouse.itemNo = -1;
-                // ????????
                 itemNo = -1;
-                // ???????
                 jujutuNo = -1;
-                // ????????????
                 if (MapWmdFlagBak != TRUE){
-                    // ????????
                     play_se(203, 320, 240);
                 }
-            }
-            else{  // ??????????
-                if (GetImeString() == NULL){
-                    MenuToggleFlag ^= JOY_ESC;    // ?????
+            } else {
+                MenuToggleFlag ^= JOY_ESC;  // ESC异或自己，按两下取消
+                play_se(202, 320, 240);
+                for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
+                systemWndNo = 0;
+                if (MenuToggleFlag & JOY_ESC) {
+                    MenuToggleFlag &= JOY_CTRL_I | JOY_CTRL_M;
+                    MenuToggleFlag |= JOY_ESC;
+                    BattleResultWndFlag = FALSE;
                     play_se(202, 320, 240);
-                    for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
-                    systemWndNo = 0;        // ?????????
-                    if (MenuToggleFlag & JOY_ESC){
-                        MenuToggleFlag &= JOY_CTRL_I | JOY_CTRL_M;
-                        MenuToggleFlag |= JOY_ESC;    // ?????
-                        // ???????????
-                        BattleResultWndFlag = FALSE;
-                        // ????????
-                        play_se(202, 320, 240);
-                    }
-                    else{
-                        // ????????
-                        play_se(203, 320, 240);
-                    }
+                } else {
+                    play_se(203, 320, 240);
                 }
             }
             DeathMenuAction();
@@ -9206,7 +9178,9 @@ void MenuProc(void)
             saveUserSetting();
         }
     }
-    if(TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[3]) { 
+    if (TaskBarFlag == TRUE
+        && (mouse.onceState & MOUSE_LEFT_CRICK)
+        && HitDispNo == taskBarFontNo[3]) { 
 #ifdef _BATTLESKILL
         extern int wonflag ;
         if ( wonflag == 1 ) 
@@ -9214,25 +9188,16 @@ void MenuProc(void)
         else {
 #endif
             MenuToggleFlag ^= JOY_ESC;    // ?????
-            // ????
             for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
             systemWndNo = 0;        // ?????????
-            // ??????????
             DeathMenuAction();
-            // ????????
             saveUserSetting();
-
-            // ????????
             if (MenuToggleFlag & JOY_ESC){
-                MenuToggleFlag &= JOY_CTRL_I | JOY_CTRL_M;    // ??????????????????
-                MenuToggleFlag |= JOY_ESC;    // ?????
-                // ???????????
+                MenuToggleFlag &= JOY_CTRL_I | JOY_CTRL_M;
+                MenuToggleFlag |= JOY_ESC;
                 BattleResultWndFlag = FALSE;
-                // ????????
                 play_se(202, 320, 240);
-            }
-            else{
-                // ????????
+            } else{
                 play_se(203, 320, 240);
             }
 #ifdef _BATTLESKILL
@@ -9614,8 +9579,7 @@ void MenuProc(void)
 #ifdef _NEW_SYSTEM_MENU
                 x = (lpDraw->xSize - w * 64) / 2;
                 y = (lpDraw->ySize - h * 48) / 2;
-
-                pActMenuWnd = MakeWindowDisp(x, y, w, h, CG_WND_TITLE_SYSTEM, 1, FALSE);
+                pActMenuWnd = MakeWindowDisp(x, y, w, h, CG_WND_TITLE_SYSTEM, 1);
 #else
                 pActMenuWnd = MakeWindowDisp( 4, 4, 3, 7, CG_WND_TITLE_SYSTEM, 1 );
 #endif
@@ -9879,7 +9843,7 @@ void MenuProc(void)
             if (pActMenuWnd == NULL){
                 x = (lpDraw->xSize - 3 * 64) / 2;
                 y = (lpDraw->ySize - 3 * 48) / 2;
-                pActMenuWnd = MakeWindowDisp(x, y, 3, 3, CG_WND_TITLE_LOGOUT, 1, FALSE);
+                pActMenuWnd = MakeWindowDisp(x, y, 3, 3, CG_WND_TITLE_LOGOUT, 1);
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 break;
             } else if (pActMenuWnd->hp <= 0)
@@ -9926,11 +9890,11 @@ void MenuProc(void)
 #ifndef _TALK_WINDOW
                 x = (lpDraw->xSize - 4 * 64) / 2;
                 y = (lpDraw->ySize - 8 * 48) / 2;
-                pActMenuWnd = MakeWindowDisp(x, y, 4, 8, CG_WND_TITLE_CHAT, 1, FALSE);
+                pActMenuWnd = MakeWindowDisp(x, y, 4, 8, CG_WND_TITLE_CHAT, 1);
 #else
                 x = (lpDraw->xSize - 4 * 64) / 2;
                 y = (lpDraw->ySize - 9 * 48) / 2;
-                pActMenuWnd = MakeWindowDisp( x, y, 4, 9, CG_WND_TITLE_CHAT, 1, FALSE );
+                pActMenuWnd = MakeWindowDisp( x, y, 4, 9, CG_WND_TITLE_CHAT, 1);
 #endif
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 break;
@@ -10066,24 +10030,20 @@ void MenuProc(void)
             StockFontBuffer(x - 16,y,FONT_PRIO_FRONT,FONT_PAL_YELLOW,"◆聊天视窗设定◆",0);y += 32;
             systemWndFontNo[7] = StockFontBuffer(x + 20,y,FONT_PRIO_FRONT,0,g_bTalkWindow ? "关闭聊天视窗":"打开聊天视窗",2);y += 32;
 #endif                                                                                                                                                        
-
             systemWndFontNo[3] = StockFontBuffer(x, y, FONT_PRIO_FRONT, FONT_PAL_AQUA, "     回上一页     ", 2);    y += 40;
-
             break;
-
         case 3:
             if (pActMenuWnd == NULL){
-                // ?????????
                 x = (lpDraw->xSize - 4 * 64) / 2;
                 y = (lpDraw->ySize - 6 * 48) / 2;
-                pActMenuWnd = MakeWindowDisp(x, y, 4, 6, CG_WND_TITLE_SE, 1, FALSE);
-                for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
+                pActMenuWnd = MakeWindowDisp(x, y, 4, 6, CG_WND_TITLE_SE, 1);
+                for (i = 0; i < MENU_SYSTEM_0; i++)
+                    systemWndFontNo[i] = -2;
                 break;
             }
             else
-            {
-                if (pActMenuWnd->hp <= 0) break;
-            }
+                if (pActMenuWnd->hp <= 0)
+                    break;
             if (mouse.autoState & MOUSE_LEFT_CRICK){
                 // ???????
                 if (HitFontNo == systemWndFontNo[0]){
@@ -10143,16 +10103,12 @@ void MenuProc(void)
             systemWndFontNo[1] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, "     减     少     ", 2);    y += 40;
             systemWndFontNo[2] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, monoStereoStr[stereo_flg], 2);    y += 52;
             systemWndFontNo[3] = StockFontBuffer(x, y, FONT_PRIO_FRONT, FONT_PAL_AQUA, "      回上一页      ", 2);    y += 40;
-
             break;
-
-        case 4:    // ???? ??????
-            // ?????????
+        case 4:
             if (pActMenuWnd == NULL){
-                // ?????????
                 x = (lpDraw->xSize - 4 * 64) / 2;
                 y = (lpDraw->ySize - 8 * 48) / 2;
-                pActMenuWnd = MakeWindowDisp(x, y, 4, 8, CG_WND_TITLE_BGM, 1, FALSE);
+                pActMenuWnd = MakeWindowDisp(x, y, 4, 8, CG_WND_TITLE_BGM, 1);
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 break;
             }
@@ -10160,16 +10116,11 @@ void MenuProc(void)
                 if (pActMenuWnd->hp <= 0) break;
             }
 
-            // ?????????????
             if (mouse.autoState & MOUSE_LEFT_CRICK){
-                // ???????
                 if (HitFontNo == systemWndFontNo[0]){
-                    // ???
                     t_music_bgm_volume++;
-                    // ????????
                     if (t_music_bgm_volume > 15){
                         t_music_bgm_volume = 15;
-                        // ???
                         play_se(220, 320, 240);
                     }
                     else{
@@ -10177,14 +10128,10 @@ void MenuProc(void)
                         bgm_volume_change();        // ???
                     }
                 }
-                // ???????
                 if (HitFontNo == systemWndFontNo[1]){
-                    // ???
                     t_music_bgm_volume--;
-                    // ????????
                     if (t_music_bgm_volume <= 0){
                         t_music_bgm_volume = 1;
-                        // ???
                         play_se(220, 320, 240);
                     }
                     else{
@@ -10260,7 +10207,7 @@ void MenuProc(void)
             if (pActMenuWnd == NULL){
                 x = (lpDraw->xSize - 272) / 2;
                 y = (lpDraw->ySize - 430) / 2;
-                pActMenuWnd = MakeWindowDisp(x, y, 272, 430, CG_WND_TITLE_CHAT, -1, FALSE);
+                pActMenuWnd = MakeWindowDisp(x, y, 272, 430, CG_WND_TITLE_CHAT, -1);
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 GetKeyInputFocus(&chatRegistryStr[0]);
                 break;
@@ -10309,13 +10256,10 @@ void MenuProc(void)
             systemWndFontNo[3] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, y + 5, DISP_PRIO_IME3, CG_RETURN_BTN, 2);
             break;
         case 6:
-
-            // ?????????
             if (pActMenuWnd == NULL){
-                // ?????????
                 x = (lpDraw->xSize - 3 * 64) / 2;
                 y = (lpDraw->ySize - 4 * 48) / 2;
-                pActMenuWnd = MakeWindowDisp(x, y, 3, 4, CG_WND_TITLE_MOUSE, 1, FALSE);
+                pActMenuWnd = MakeWindowDisp(x, y, 3, 4, CG_WND_TITLE_MOUSE, 1);
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 break;
             }
@@ -10366,25 +10310,17 @@ void MenuProc(void)
                     break;
                 }
             }
-
-            // ?
             x = pActMenuWnd->x + 38;
             y = pActMenuWnd->y + 56;
-
-            // ?????????
             StockFontBuffer(x, y, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "◆  游标设定  ◆", 0);    y += 40;
             systemWndFontNo[0] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, mouseCursor[MouseCursorFlag], 2);    y += 40;
             systemWndFontNo[1] = StockFontBuffer(x, y, FONT_PRIO_FRONT, FONT_PAL_AQUA, "    回上一页    ", 2);    y += 40;
             break;
-
-        case 7:    // ????? ??????
-
-            // ?????????
+        case 7:
             if (pActMenuWnd == NULL){
-                // ?????????
                 x = (lpDraw->xSize - 3 * 64) / 2;
                 y = (lpDraw->ySize - 3 * 48) / 2;
-                pActMenuWnd = MakeWindowDisp(x, y, 3, 3, CG_WND_TITLE_LOGOUT, 1, FALSE);
+                pActMenuWnd = MakeWindowDisp(x, y, 3, 3, CG_WND_TITLE_LOGOUT, 1);
                 for (i = 0; i < MENU_SYSTEM_0; i++) systemWndFontNo[i] = -2;
                 break;
             }
@@ -10548,7 +10484,7 @@ void MenuProc(void)
                             extern void 打开称号窗口初始化();
                             打开称号窗口初始化();
                             if (pActMenuWnd3 == NULL){
-                                pActMenuWnd3 = MakeWindowDisp(363, 105, 0, 0, 55249, -1, 0);
+                                pActMenuWnd3 = MakeWindowDisp(363, 105, 0, 0, 55249, -1);
                                 play_se(202, 320, 240);
                             }
                             else{
@@ -11993,7 +11929,7 @@ void MenuProc(void)
                             if (pet[petStatusNo].changeNameFlag == TRUE){
                                 // 2026.08.31 pActMenuWnd3 是更改宠物名称所用
                                 if (pActMenuWnd3 == nullptr) {
-                                    pActMenuWnd3 = MakeWindowDisp(4, 4 + 280 + 56, 272, 88, 0, -1, 0);
+                                    pActMenuWnd3 = MakeWindowDisp(4, 4 + 280 + 56, 272, 88, 0, -1);
                                     play_se(202, 320, 240);
                                     // Start with the name currently shown to the player.  If the
                                     // pet has no custom name, this is its original species name.
@@ -14480,9 +14416,7 @@ void MenuProc(void)
                                             /* && MenuToggleFlag & JOY_CTRL_I*/){
                                             int j;
                                             int cnt = 0;
-                                            // ?????
                                             switch (petSkill[petStatusNo][i].skillId){
-
                                             case PETSKILL_MERGE: //
                                                 for (j = MAX_ITEMSTART; j < MAX_ITEM; j++){
                                                     if (ItemBuffer[j].mixFlag == 1) cnt++;
@@ -16478,27 +16412,17 @@ void MenuProc(void)
 #endif    
                                 if (HitFontNo == mailWndFontNo[i]){
                                     mailHistoryWndSelectNo = nowNo;
-                                    // ??????
                                     DeathAction(pActMenuWnd);
                                     pActMenuWnd = NULL;
-                                    // ?????????
                                     DeathLetterAction();
-                                    // ????????
                                     mailWndNo = MAIL_WND_HISTORY;
-                                    // ????????
                                     play_se(202, 320, 240);
                                 }
 
-                                // ?????
                                 if (HitDispNo == mailWndFontNo[i + 1]){
-                                    // ?????????
                                     if (pActYesNoWnd == NULL){
-                                        // ????????
                                         play_se(202, 320, 240);
-                                        // ??????????
                                         pActYesNoWnd = MakeWindowDisp(pActMenuWnd->x + 42, i * 32 + 54, 176, 56, 0, 4);
-
-                                        // ????????
                                         nowDelNo = nowNo;
                                     }
                                 }
@@ -16720,7 +16644,7 @@ void MenuProc(void)
             }
             break;
 
-        case MAIL_WND_SELECT:    // ?????
+        case MAIL_WND_SELECT:
             // ?????????
             if (pActMenuWnd == NULL){
                 // ?????????
@@ -18062,26 +17986,17 @@ void MenuProc(void)
             if (pActMenuWnd == NULL){
                 宠物经验判断 = FALSE;
                 int flag = 0;
-                // ?????????
                 pActMenuWnd = MakeWindowDisp(320 - 160, 240 - 120, 5, 6, CG_WND_TITLE_RESULT, 2);
-                // ??????
                 for (i = 0; i < MENU_BTL_RESULT_0; i++) resultWndFontNo[i] = -2;
-                // ??????????
                 for (i = 0; i < 4; i++){
-                    // ?????????????
                     if (battleResultMsg.resChr[i].levelUp == TRUE) flag = TRUE;
                 }
                 if (flag == TRUE){
-                    // ???????
                     play_se(211, 320, 240);
-                }
-                else{
-                    // ????????
+                } else{
                     play_se(202, 320, 240);
                 }
-            }
-            else{
-                // ??????????????
+            } else{
                 if (pActMenuWnd->hp > 0){
                     // ????????
                     if (mouse.onceState & MOUSE_LEFT_CRICK){
@@ -18099,8 +18014,6 @@ void MenuProc(void)
                             }
                         }
                     }
-
-                    // ????????
                     if (pActMenuWnd != NULL){
                         int color;
                         int flag, j;
@@ -18351,7 +18264,7 @@ void MenuProc(void)
 
                 x = (lpDraw->xSize - 620) / 2;
                 y = (lpDraw->ySize - 456) / 2;
-                pActMenuWnd4 = MakeWindowDisp(x, y, 620, 456, 0, -1, FALSE);
+                pActMenuWnd4 = MakeWindowDisp(x, y, 620, 456, 0, -1);
 #ifdef _NEW_ITEM_
                 道具栏页数 = 0;
 #endif
@@ -18384,7 +18297,7 @@ void MenuProc(void)
 
                 x = (lpDraw->xSize - 620) / 2;
                 y = (lpDraw->ySize - 456) / 2;
-                SecondTradeWnd = MakeWindowDisp(x, y, 620, 456, 0, -1, FALSE);
+                SecondTradeWnd = MakeWindowDisp(x, y, 620, 456, 0, -1);
                 for (i = 0; i < 43; i++) {   //清理交易列表
                     tradeList[i].data = -1;
                     tradeList[i].kind = 'S';
@@ -19897,11 +19810,9 @@ void MenuProc(void)
             x = (lpDraw->xSize - w) / 2;
             y = (lpDraw->ySize - h) / 2;
 
-            pActMenuWnd5 = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
-            play_se(202, 320, 240);    // ????????                                    
-
-        }
-        else{
+            pActMenuWnd5 = MakeWindowDisp(x, y, w, h, NULL, -1);
+            play_se(202, 320, 240);
+        } else{
             // ??????????????
             if (pActMenuWnd5->hp > 0){
 
@@ -20213,12 +20124,10 @@ void lssproto_TD_recv(int fd, char *data)
             if (pActMenuWnd4 == NULL){
                 DeathMenuAction();
                 DeathMenuAction2();
-
                 int w = 620; int h = 456;
                 int x = (lpDraw->xSize - w) / 2;
                 int y = (lpDraw->ySize - h) / 2;
-
-                pActMenuWnd4 = MakeWindowDisp(x, y, w, h, NULL, -1, FALSE);
+                pActMenuWnd4 = MakeWindowDisp(x, y, w, h, NULL, -1);
                 InitItem3(325, 230);
 #ifdef _TRADESYSTEM2    // (不可开) Syu ADD 新交易系统
                 if (SecondTradeWnd == NULL)
@@ -20237,7 +20146,7 @@ void lssproto_TD_recv(int fd, char *data)
                 mouse.itemNo = objno;
             }
 
-            if (!strcmp(buf1, "I"))    {    //I
+            if (strcmp(buf1, "I"))    {    //I
             }
             else {    //P
                 tradePetIndex = objno;

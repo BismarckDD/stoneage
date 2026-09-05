@@ -731,3 +731,8 @@ int BATTLE_CreateVsPlayerForTrade( STradeList TradeList1, STradeList TradeList2 
 #endif
 
 #endif
+
+int BATTLE_getBattleFloor(int battleindex);
+int BATTLE_getCreateIime(int battleindex);
+int BATTLE_getType(int battleindex);
+int BATTLE_CreateForWatcher(int char_index, int battleindex);

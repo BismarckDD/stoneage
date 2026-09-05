@@ -940,16 +940,9 @@ LRESULT CALLBACK WindMsgProc(HWND hWnd, UINT Message, WPARAM wParam,
       }
       // ??????????????????????
       if (ProcNo == PROC_BATTLE) {
-        // ???????
         DispBuffer.DispCnt = 0;
         FontCnt = 0;
-#ifdef _NEW_RESOMODE
-        // drawMap();
         ReadBattleMap(BattleMapNo);
-#else
-        ReadBattleMap(BattleMapNo);
-#endif
-        // ???????????????
         ClearBackSurface();
         // ????????????????
 #ifdef __SKYISLAND
@@ -1157,26 +1150,6 @@ void SetgResolutionMode(const int mode) {
     DISPLACEMENT_X = 0;
     DISPLACEMENT_Y = 0;
     break;
-#ifdef _NEW_RESOMODE
-  case 3:
-    // 800x600：相对 640x480，横向和纵向分别多出 160、120 像素。
-    lpDraw->xSize = 800;
-    lpDraw->ySize = 600;
-    SurfaceSizeX = 64;
-    SurfaceSizeY = 48;
-    DISPLACEMENT_X = 160;
-    DISPLACEMENT_Y = 120;
-    break;
-  case 4:
-    // 1024x768：位移量仍表示相对 640x480 多出的尺寸。
-    lpDraw->xSize = 1024;
-    lpDraw->ySize = 768;
-    SurfaceSizeX = 64;
-    SurfaceSizeY = 48;
-    DISPLACEMENT_X = 384;
-    DISPLACEMENT_Y = 288;
-    break;
-#endif
   }
   // 同步全局窗口尺寸、屏幕中心和场景观察中心，供 UI 与地图绘制共同使用。
   DEF_APPSIZEX = lpDraw->xSize;

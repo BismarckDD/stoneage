@@ -8,6 +8,18 @@
 #define _VERSION_80
 #define _NEW_FUNC_DECRYPT
 #define DENGLUKEY1 "6D27AEB8326A2A8E7D04B9F9B44C59C7"
+
+// #define _ALLBLUES_LUA
+// #define _ALLBLUES_LUA_1_1
+// #define _ALLBLUES_LUA_1_2
+// // #define _ALLBLUES_LUA_1_3
+// // #define _ALLBLUES_LUA_1_4
+// #define _ALLBLUES_LUA_1_5
+// #define _ALLBLUES_LUA_1_6
+// #define _ALLBLUES_LUA_1_7
+// #define _ALLBLUES_LUA_1_8
+// #define _ALLBLUES_LUA_1_9
+
 /*  网络模型  */
 //#define _EPOLL_ET_MODE         // EPOLL_ET模型
 //#define _EPOLL_POOL_COUNT 5    // 线程池数量

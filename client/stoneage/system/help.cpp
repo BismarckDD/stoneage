@@ -39,7 +39,7 @@ int HelpProc() {
     h = 380;
     x = (lpDraw->xSize - w) / 2;
     y = (lpDraw->ySize - h) / 2;
-    ptActMenuWinHelp = MakeWindowDisp(x, y, w, h, CG_FIELD_HELP_WND, -1, FALSE);
+    ptActMenuWinHelp = MakeWindowDisp(x, y, w, h, CG_FIELD_HELP_WND, -1);
     if (ptActMenuWinHelp) {
       int i;
       for (i = 0; i < 3; i++) {

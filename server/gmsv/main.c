@@ -22,6 +22,9 @@
 #include "chatroom.h"
 #endif
 #include "shop.h"
+#ifdef _ALLBLUES_LUA
+#include "mylua/ablua.h"
+#endif
 
 static void ShutdownProc(void);
 void main_loop(void);
@@ -58,6 +61,11 @@ int main(int argc, char **argv, char **env) {
   LoadAnnounce(); // Arminius 7.12 loginannounce
   memcpy(&tmOld, localtime((time_t *)&NowTime.tv_sec), sizeof(tmNow));
   EXIT_WITH_CODE_IF_FALSE(init(argc, argv, env), 1);
+#ifdef _ALLBLUES_LUA
+  LoadAllbluesLUA("data/ablua");
+#else
+  print("[Lua] support disabled in this GMSV build.\n");
+#endif
   LoadPetTalk(); // Arminius 8.14 pet talk
 #ifdef _GAMBLE_BANK
   Load_GambleBankItems();
