@@ -23,14 +23,11 @@ enum {
   PROC_TAKE_TEST,         //
   PROC_OHTA_TEST,         //
   PROC_DWAF_TEST,         //
-  PROC_SPR_VIEW,          // ??????囝????
-  PROC_ANIM_VIEW,         // ????????囝????
-  PROC_SE_TEST,           // ???囝????
+  PROC_SPR_VIEW,          //
+  PROC_ANIM_VIEW,         //
+  PROC_SE_TEST,           //
 #ifdef _80_LOGIN_PLAY
   PROC_80_LOGIN,
-#endif
-#ifdef _PK2007
-  PROC_PKSERVER_SELECT,
 #endif
   PROC_ENDING
 };
@@ -95,6 +92,8 @@ EXTERN int SubProcNo2;
 EXTERN int palNo;
 EXTERN int oldPalNo;
 EXTERN int palTime; // the third
+
+#undef EXTERN
 
 void Process(void);
 void ChangeProc(int procNo);

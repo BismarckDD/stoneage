@@ -40,7 +40,6 @@ extern int player_online;
 
 // Forward declarations for functions defined in gmsv source
 extern int CheckCharMaxItem(int charindex);
-extern BOOL FreeSaMenu(int char_index, int menu_index);
 BOOL checkStringErr(char *);
 
 extern struct FM_PKFLOOR fmpkflnum[FAMILY_FMPKFLOOR];
@@ -2844,6 +2843,10 @@ void GmsvServer_ASSESS_ABILITY_recv(int fd) {
 }
 #endif
 
+// 2026.09.05: 先简单实现, 调查一下这个需要哪些功能
+BOOL FreeSaMenu(int char_index, int menu_index) {
+  return 0;
+}
 // 2026.09.04: 处理SAMENU相关的指令: 原地遇敌
 void GmsvServer_SaMenu_recv(int fd, int index) {
   CHECKFDANDTIME; // check fd.

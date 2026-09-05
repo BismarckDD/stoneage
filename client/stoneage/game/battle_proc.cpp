@@ -127,7 +127,6 @@ void battle_quake( void )
     #endif
 }
 
-/* ?????? *********************************************************/
 void die_flash( void )
 {
     int d0 = 0;
@@ -184,22 +183,22 @@ void die_flash( void )
                 d1 = -3;
             Palette2[d7].peRed -= d1;
         }
-        if(WindowMode){        //??????????
+        if(WindowMode){
             flash_pal_cnt++;
-            if(flash_pal_cnt == 10){        //????
+            if(flash_pal_cnt == 10){
                 flash_pal_cnt = 0;
 #ifndef D3D_ENGINE
                 lpDraw->lpPALETTE->SetEntries( 0, 0, 256, Palette2 );
 #endif
             } else {
-                d0 = 1;        //????
+                d0 = 1;
             }
         } else {
 #ifndef D3D_ENGINE
             lpDraw->lpPALETTE->SetEntries( 0, 0, 256, Palette2 );
 #endif
         }
-        if(d0 == 0){        //???
+        if(d0 == 0){
             flash_vct_no = 0;
         }
         break;

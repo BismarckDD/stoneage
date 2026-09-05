@@ -160,7 +160,3 @@ int focusFontId(int *, int);
 #ifdef _BLACK_MARKET
 void closeBlackMarketWN(void);
 #endif
-
-#ifdef _PK2007
-void selectpkProc(void);
-#endif

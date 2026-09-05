@@ -30,10 +30,6 @@ extern BOOL g_bUseAlpha;
 #endif
 int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType);
 
-#ifdef _NEWDRAWBATTLEMAP_FIX // (不可开)ROG ADD 战斗地图修改
-int BattleMapAdvance = 0;    // 战斗地图效能改进
-#endif
-
 const char *BattleMapFile[] = {
 #include "game/battle_map_name.h"
 };
@@ -46,10 +42,6 @@ static int iCrystalBattleMap[4][3] = { // 绿 // 蓝 // 红 // 黄
     {29057, 29067, 29068}};
 
 BOOL ReadBattleMap(const int battleMapNo) {
-#ifdef _NEWDRAWBATTLEMAP_FIX // (不可开)ROG ADD 战斗地图修改
-  extern void ddrawBattleMap();
-  ddrawBattleMap();
-#else
   char msg[256];
   FILE *fp;
   char header[5];
@@ -182,16 +174,12 @@ BOOL ReadBattleMap(const int battleMapNo) {
     posY += 24;
   }
 #endif
-#endif
   return TRUE;
 }
 
-// ??????? ***********************************************************/
-#ifdef _NEWDRAWBATTLEMAP_FIX // (不可开)ROG ADD 战斗地图修改
-#define RASTER_CLEARANCE 24  // 增加效能
-#else
+// TODO: 2026.09.05 是不是可以写到配置文件里？
 #define RASTER_CLEARANCE 8
-#endif
+
 int piyo_tbl[] = {
     0,   1,   2,   3,   4,   5,   6,  7,  8,  9,  10,  10,  11,  11,  11,  12,
     12,  12,  11,  11,  11,  10,  9,  9,  8,  7,  6,   5,   4,   3,   2,   1,

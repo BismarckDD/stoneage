@@ -1284,11 +1284,7 @@ void BattleButtonPet(void) {
         sBattleButtonFlag[6] = TRUE;
         for (i = 0; i < BATTLE_MENU_PET_FONTS; i++)
           battleMenuPetFontNo[i] = -2;
-#ifdef _NEW_WIN_POS_
         pActWnd = MakeWindowDisp(lpDraw->xSize - 280, 160, 271, 281, 0, -1);
-#else
-        pActWnd = MakeWindowDisp(380, 160, 271, 281, 0, -1);
-#endif
         battleButtonBak = 6;
         battleButtonBak2 = -1;
       }
@@ -2488,12 +2484,11 @@ void BattleTargetSelect(void) {
         StockFontBuffer(pActInfoWnd->x + 38, pActInfoWnd->y + 52,
                         FONT_PRIO_FRONT, FONT_PAL_YELLOW, "您的目标", 0);
       }
-#ifdef _NEW_WIN_POS_
-      if (mouse.nowPoint.y > 400)
-        pActInfoWnd->y = 4;
-      if (mouse.nowPoint.y < 200)
-        pActInfoWnd->y = 430;
-#endif
+      // 2026.09.05 TODO: 需要暂时保留，之后测试再删除
+      // if (mouse.nowPoint.y > 400)
+      //   pActInfoWnd->y = 4;
+      // if (mouse.nowPoint.y < 200)
+      //   pActInfoWnd->y = 430;
     }
   } else {
     DeathAction(pActInfoWnd);
@@ -3014,7 +3009,7 @@ void BattleMenuProc(void) {
   }
 
   for (i = 0; i < 20; i++)
-    HpMeterDisp(i); // ??????
+    HpMeterDisp(i); //
   if (p_party[BattleMyNo]->hp > 0 &&
       !(BattleBpFlag & BATTLE_BP_PLAYER_MENU_NON &&
         BattleBpFlag & BATTLE_BP_PET_MENU_NON)) {
@@ -3029,26 +3024,19 @@ void BattleMenuProc(void) {
   }
 
   if (battleMenuFlag2 == TRUE) {
-#ifdef _NEW_WIN_POS_
+    // 2026.09.05 TODO: 需要暂时保留，之后测试再删除
     buttonX = 820 + DISPLACEMENT_X;
     buttonY = 65;
-#endif
+    //
     buttonA = 25;
-
     InitBattleAnimFlag();
-
     battlePlayerEscFlag = FALSE;
-
     BattleCntDownFlag = TRUE;
-
 #ifndef PK_SYSTEM_TIMER_BY_ZHU
     BattleCntDown = TimeGetTime() + BATTLE_CNT_DOWN_TIME;
 #endif
-
     BattleIntervalCnt = 0;
-
     if (pc.battlePetNo == battlePetNoBak) {
-
       if (battleWazaTargetBak != -1) {
         battlePetButtonFlag = FALSE;
       } else {
@@ -3076,9 +3064,7 @@ void BattleMenuProc(void) {
     } else {
 
       battleMenuFlag |= BATTLE_MENU;
-
       battleMenuReturn = FALSE;
-
       battleTimeUpFlag = FALSE;
 
       play_se(202, 320, 240);

@@ -207,11 +207,6 @@ int SaDispatchMessage(int fd, char *encoded);
 #define LSSPROTO_HUNDREDKILL_RECV 138
 #endif
 
-#ifdef _PK2007
-#define LSSPROTO_PKLIST_SEND 139
-#define LSSPROTO_PKLIST_RECV 140
-#endif
-
 #ifdef _CHARSIGNDAY_
 #define LSSPROTO_SIGNDAY_SEND 141
 #endif
@@ -237,10 +232,6 @@ int SaDispatchMessage(int fd, char *encoded);
 #define LSSPROTO_FAMILYBADGE_RECV 211
 #endif
 
-#ifdef _CHARTITLE_
-#define LSSPROTO_CHARTITLE_SEND 212
-#define LSSPROTO_CHARTITLE_RECV 213
-#endif
 
 #ifdef _CHARTITLE_STR_
 #define LSSPROTO_CHARTITLE_SEND 212
@@ -498,10 +489,6 @@ void lssproto_DENGON_recv(char *data, int colors, int nums);
 #endif
 #ifdef _HUNDRED_KILL
 void lssproto_hundredkill_recv(int fd, int flag);
-#endif
-#ifdef _PK2007
-void lssproto_pkList_send(int fd);
-void lssproto_pkList_recv(int fd, int count, char *data);
 #endif
 #ifdef _NEW_SYSTEM_MENU
 void lssproto_SaMenu_send(int fd, int index);

@@ -840,33 +840,6 @@ void delCharFamily(ACTION *ptAct) {
 }
 #endif
 
-#ifdef _CHARTITLE_
-void setCharmTitle(ACTION *ptAct, int MindNo) {
-  CHAREXTRA *ext;
-  if (ptAct == NULL)
-    return;
-  ext = (CHAREXTRA *)ptAct->pYobi;
-  ptAct->TitleIcon = MindNo;
-  if (ext->ptTitleIcon) {
-    DeathAction(ext->ptTitleIcon);
-    ext->ptTitleIcon = NULL;
-  }
-  ext->ptTitleIcon = createCommmonEffectAction(MindNo, ptAct->gx, ptAct->gy, 0,
-                                               0, DISP_PRIO_CHAR);
-}
-
-void delCharmTitle(ACTION *ptAct) {
-  CHAREXTRA *ext;
-  if (ptAct == NULL)
-    return;
-  ext = (CHAREXTRA *)ptAct->pYobi;
-  if (ext->ptTitleIcon) {
-    DeathAction(ext->ptTitleIcon);
-    ext->ptTitleIcon = NULL;
-  }
-}
-#endif
-
 #ifdef FAMILY_MANOR_
 void setCharmFamily(ACTION *ptAct, int MindNo) {
   CHAREXTRA *ext;
@@ -1617,12 +1590,6 @@ void drawCharStatus(ACTION *ptAct) {
           ext->ptFamilyIcon->mx = ptAct->mx;
           ext->ptFamilyIcon->my = ptAct->my;
           pattern(ext->ptFamilyIcon, ANM_NOMAL_SPD, ANM_LOOP);
-#ifdef _CHARTITLE_
-          if (ext->ptTitleIcon) {
-            getCartoonSize(ext->ptTitleIcon, &x2, &y2);
-            x2 = x2 / 2;
-          }
-#endif
 
 #ifdef _CHARTITLE_STR_
           if (ptAct->TitleText.flg) {
@@ -1670,41 +1637,6 @@ void drawCharStatus(ACTION *ptAct) {
                       -(y1 / 2 + _FANILYTEXIAOY_) + 100, ext->ptmFamilyIcon->mx,
                       ext->ptmFamilyIcon->my
                       );
-        }
-      }
-    }
-  }
-#endif
-
-#ifdef _CHARTITLE_
-  if (ext->ptTitleIcon) { // 这里删除掉就可以走动显示
-    {
-      if (bSwitchMuteOtherPlayers && ProcNo == PROC_GAME && pc.ptAct != ptAct) {
-        if (ATR_PAT_NO(ext->ptTitleIcon)) {
-          ATR_PAT_BAK_NO(ext->ptTitleIcon) = ATR_PAT_NO(ext->ptTitleIcon);
-          ATR_PAT_NO(ext->ptTitleIcon) = 0;
-        }
-      } else {
-        if (!ATR_PAT_NO(ext->ptTitleIcon)) {
-          if (ATR_PAT_BAK_NO(ext->ptTitleIcon)) {
-            ATR_PAT_NO(ext->ptTitleIcon) = ATR_PAT_BAK_NO(ext->ptTitleIcon);
-          }
-        }
-        short x1, y1, x2, y2;
-        y2 = x2 = 0;
-        if (getCartoonSize(ptAct, &x1, &y1)) {
-          ext->ptTitleIcon->x = ptAct->x;
-          ext->ptTitleIcon->y = ptAct->y;
-          ext->ptTitleIcon->mx = ptAct->mx;
-          ext->ptTitleIcon->my = ptAct->my;
-          pattern(ext->ptTitleIcon, ANM_NOMAL_SPD, ANM_LOOP);
-          if (ext->ptFamilyIcon) {
-            x2 = 10;
-          }
-          setCharPrio(ext->ptTitleIcon->bmpNo, ext->ptTitleIcon->x + x2,
-                      ext->ptTitleIcon->y, 0, -(y1 / 2 + _FANILYTEXIAOY_),
-                      ext->ptTitleIcon->mx, ext->ptTitleIcon->my
-          );
         }
       }
     }
@@ -2422,14 +2354,6 @@ void changeCharAct(ACTION *ptAct, int x, int y, int dir, int action,
       delCharmFamily(ptAct);
     break;
 #endif
-#ifdef _CHARTITLE_
-  case 45:
-    if (effectno >= 0)
-      setCharmTitle(ptAct, effectno);
-    else
-      delCharmTitle(ptAct);
-    break;
-#endif
 #ifdef _CHAR_MANOR_
   case 46:
     if (effectno >= 0)
@@ -3059,12 +2983,6 @@ void delCharObj(int id) {
           ext->ptFamilyIcon = NULL;
         }
 #endif
-#ifdef _CHARTITLE_
-        if (ext->ptTitleIcon != NULL) {
-          DeathAction(ext->ptTitleIcon);
-          ext->ptTitleIcon = NULL;
-        }
-#endif
 #ifdef FAMILY_MANOR_
         if (ext->ptmFamilyIcon != NULL) {
           DeathAction(ext->ptmFamilyIcon);
@@ -3178,12 +3096,6 @@ void resetCharObj(void) {
           if (ext->ptFamilyIcon != NULL) {
             DeathAction(ext->ptFamilyIcon);
             ext->ptFamilyIcon = NULL;
-          }
-#endif
-#ifdef _CHARTITLE_
-          if (ext->ptTitleIcon != NULL) {
-            DeathAction(ext->ptTitleIcon);
-            ext->ptTitleIcon = NULL;
           }
 #endif
 #ifdef FAMILY_MANOR_

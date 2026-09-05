@@ -5981,12 +5981,12 @@ void CHAR_CHAT_DEBUG_GmSaveAllChar(int char_index, char *message) {
 #endif
 
 void CHAR_CHAT_DEBUG_ReLoadLua(int char_index, char *message) {
-  ReLoadAllbluesLUA(message);
+  // ReLoadAllbluesLUA(message);
   CHAR_talkToCli(char_index, -1, "更新LUA完毕~", CHAR_COLORRED);
 }
 
 void CHAR_CHAT_DEBUG_NewLoadLua(int char_index, char *message) {
-  NewLoadAllbluesLUA(message);
+  // NewLoadAllbluesLUA(message);
   CHAR_talkToCli(char_index, -1, "添加LUA完毕~", CHAR_COLORRED);
 }
 

@@ -677,13 +677,7 @@ void SelectServerProc(void)
         // 2026.08.19 这一步很关键，涉及网络通信!!!
         ret = connecGameServer();
         if (ret == 1)
-        {
-#ifdef _PK2007
-            ChangeProc(PROC_PKSERVER_SELECT);
-#else
             ChangeProc(PROC_CHAR_SELECT);
-#endif
-        }
         else if (ret == -2)
         {
             SubProcNo = 100;
@@ -1450,10 +1444,7 @@ int deleteCharacter(void)
 }
 
 static short downloadCharListProcNo = 0;
-#ifdef _PK2007
-static short downloadpkListProcNo = 0;
-#endif
-// ???
+
 void initDownloadCharList(void)
 {
     downloadCharListProcNo = 0;
@@ -1488,109 +1479,35 @@ int downloadCharList(void)
         ret = charListProc();
     }
 
-    if (ret != 0)
+    if (ret != 0 && ptActMenuWin)
     {
-        if (ptActMenuWin)
-        {
-            DeathAction(ptActMenuWin);
-            ptActMenuWin = NULL;
-        }
+        DeathAction(ptActMenuWin);
+        ptActMenuWin = NULL;
     }
-
-    if (ptActMenuWin != NULL)
+    if (ptActMenuWin && ptActMenuWin->hp >= 1)
     {
-        // ?????
-        if (ptActMenuWin->hp >= 1)
-        {
-            int len;
-            int xx, yy;
-
-            len = getUtf8CharNum(msg);
-            xx = (w * 64 - len * 8) / 2;
-            yy = (h * 48 - 16) / 2;
-            StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
-        }
+        int len = getUtf8CharNum(msg);
+        int xx = (w * 64 - len * 8) / 2;
+        int yy = (h * 48 - 16) / 2;
+        StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
     }
-
     return ret;
 }
-#ifdef _PK2007
-int downloadpkList(void)
-{
-    static ACTION *ptActMenuWin = NULL;
-    static int x, y, w, h;
-    int ret = 0;
-    static char msg[256];
-    if (downloadpkListProcNo == 0)
-    {
-        downloadpkListProcNo = 1;
-        strcpy(msg, "星系列表取得中");
-        w = getUtf8CharNum(msg) * 8 / 64 + 2;
-        h = (16 + 47) / 48;
-        if (h < 2)
-            h = 2;
-        x = (lpDraw->xSize - w * 64) / 2;
-        y = (lpDraw->ySize - h * 48) / 2;
-        ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
-    }
-
-    if (downloadpkListProcNo == 1)
-    {
-        pkListStart();
-        downloadpkListProcNo++;
-    }
-    else if (downloadpkListProcNo == 2)
-    {
-        ret = pkListProc();
-    }
-
-    if (ret != 0)
-    {
-        if (ptActMenuWin)
-        {
-            DeathAction(ptActMenuWin);
-            ptActMenuWin = NULL;
-        }
-    }
-
-    if (ptActMenuWin != NULL)
-    {
-        if (ptActMenuWin->hp >= 1)
-        {
-            int len;
-            int xx, yy;
-            len = getUtf8CharNum(msg);
-            xx = (w * 64 - len * 8) / 2;
-            yy = (h * 48 - 16) / 2;
-            StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
-        }
-    }
-
-    return ret;
-}
-#endif
 
 int commonYesNoWindow(int x, int y)
 {
-    int i;
-    int ret = 0;
-    int id;
+    int ret = 0, i;
     static int btnGraId[] = {-2, -2};
-
-    id = selGraId(btnGraId, sizeof(btnGraId) / sizeof(int));
-    // ??????????
+    int id = selGraId(btnGraId, sizeof(btnGraId) / sizeof(int));
     if (id == 0)
     {
         ret = 1;
-        play_se(217, 320, 240); // ?????
+        play_se(217, 320, 240);
     }
-    else
+    else if (id == 1)
     {
-        if (id == 1)
-        {
-            ret = 2;
-            play_se(217, 320, 240); // ?????
-        }
+        ret = 2;
+        play_se(217, 320, 240);
     }
 
     btnGraId[0] = StockDispBuffer(x, y, DISP_PRIO_YES_NO_BTN, CG_COMMON_YES_BTN, 2);
@@ -1634,31 +1551,33 @@ static int selectGraNoTbl[MaxSelectChar] =
         SPRNEW_021em,
 #endif
 };
-#ifdef _NEW_WIN_POS_
-int selectGraLocate[MaxSelectChar][2] =
-    {
-        {305, 290}, // 豆丁
-        {240, 360}, // 塞亚人
-        {410, 500}, // 辫子男孩
-        {330, 400}, // 酷哥
-        {200, 240}, // 熊皮男
-        {480, 430}, // 大个
-        {560, 410}, // 豆丁妹
-        {600, 340}, // 熊皮妹
-        {500, 310}, // 帽子妹
-        {380, 240}, // 短发妹
-        {460, 200}, // 手套女
-        {280, 200}, // 辣妹
-#ifdef _MO_IMAGE_EXTENSION
-        {180, 440},
-        {640, 420},
-        {530, 520},
-        {280, 500},
-        {120, 350},
-        {550, 240},
-#endif
-};
-#else
+
+// 2026.09.05: 这个是800*600的修正坐标
+// 用于创建角色时人物形象
+// int selectGraLocate[MaxSelectChar][2] =
+//     {
+//         {305, 290}, // 豆丁
+//         {240, 360}, // 塞亚人
+//         {410, 500}, // 辫子男孩
+//         {330, 400}, // 酷哥
+//         {200, 240}, // 熊皮男
+//         {480, 430}, // 大个
+//         {560, 410}, // 豆丁妹
+//         {600, 340}, // 熊皮妹
+//         {500, 310}, // 帽子妹
+//         {380, 240}, // 短发妹
+//         {460, 200}, // 手套女
+//         {280, 200}, // 辣妹
+// #ifdef _MO_IMAGE_EXTENSION
+//         {180, 440},
+//         {640, 420},
+//         {530, 520},
+//         {280, 500},
+//         {120, 350},
+//         {550, 240},
+// #endif
+// };
+
 int selectGraLocate[MaxSelectChar][2] =
     {
         {198, 301},
@@ -1673,10 +1592,8 @@ int selectGraLocate[MaxSelectChar][2] =
         {297, 198},
         {381, 146},
         {242, 116},
-#ifdef _MO_IMAGE_EXTENSION
-#endif
 };
-#endif
+
 int selectGraHitArea[MaxSelectChar][4] =
     {
     //     x,   y,  w,  h
@@ -1864,19 +1781,18 @@ void makeCharacterProc(void)
     StockTaskDispBuffer();
 }
 
-// ?????????
+// 初始化select char页面的角色图像
 void initSelCharGraNo(void)
 {
     int i;
     selCharGraNoProcNo = 0;
-    nowSelCharGraNo = -1; // ?-1
+    nowSelCharGraNo = -1;
     nowSelCharMouthNo = 0;
     for (i = 0; i < MaxSelectChar; i++)
     {
         selCharColor[i] = 0; // ????
         selCharDir[i] = 0;   // ??????
     }
-    // ??????????
     for (i = 0; i < MaxSelectChar; i++)
     {
         if (selectGraNoTbl[i] < 0)
@@ -1903,10 +1819,7 @@ void initSelCharGraNo2(void)
     selCharGraNoProcNo = 0;
     nowSelCharMouthNo = 0;
     nowSelCharEyeNo = 0;
-    // ?????????
-    nowSelCharGraNo = -1; // ?-1
-
-    // ??????????
+    nowSelCharGraNo = -1;
     for (i = 0; i < MaxSelectChar; i++)
     {
         if (selectGraNoTbl[i] < 0)
@@ -2032,16 +1945,9 @@ int selCharGraNo(void)
             ShowBottomLineString(FONT_PAL_WHITE, "回到前一个画面。");
         else
             ShowBottomLineString(FONT_PAL_WHITE, "请选择一个人物。");
-#ifdef _NEW_WIN_POS_
-        selCharCanselGraId[0] =
-            StockDispBuffer(64, 520, DISP_PRIO_BG, CG_CHR_MAKE_BACK_BTN, 2);
-#else
-        // ??????
         selCharCanselGraId[0] =
             StockDispBuffer(64, 400, DISP_PRIO_BG, CG_CHR_MAKE_BACK_BTN, 2);
-#endif
     }
-
     // 2026.08.23 修复角色选择页面背景问题
     if (ret == 0)
         StockDispBufferScaled(SCREEN_WIDTH_CENTER, SCREEN_HEIGHT_CENTER,
@@ -9944,11 +9850,6 @@ void initPoolShopWindow4(void)
     poolShopWindow4ProcNo = 0;
 }
 
-// ???
-//   ??：0 ... ???
-//           1 ... ??
-//           2 ... ?
-//           3 ... ?????????
 int poolShopWindow4(void)
 {
     static int x, y, w, h;
@@ -10063,7 +9964,6 @@ int poolShopWindow4(void)
         {
             prevBtn = 0;
         }
-        // ???????
         if (joy_con[0] & JOY_B)
         {
             pushId = 1;
@@ -10085,11 +9985,8 @@ int poolShopWindow4(void)
             }
         }
         else
-        {
             nextBtn = 0;
-        }
 
-        // ?????????????????????
         if (CheckMenuFlag() || joy_trg[0] & JOY_ESC || actBtn == 1 || menuBtn == 1 || disconnectServerFlag == TRUE || wnCloseFlag == 1)
         {
             id = 100;
@@ -11363,7 +11260,6 @@ int familyDetailWN(void)
         // StockFontBuffer( x+20, y+160, FONT_PRIO_FRONT, FONT_PAL_WHITE, buf, 0 );
         // StockFontBuffer( x+20, y+190, FONT_PRIO_FRONT, FONT_PAL_WHITE, familyDetail.rule, 0 );
         // StockFontBuffer( x+20, y+220, FONT_PRIO_FRONT, FONT_PAL_WHITE, familyDetail.rule, 0 );
-
         // sprintf_s( buf, "守 护 兽：%s", familyDetail.petname );
         if (changeData[1] == 0)
             StockFontBuffer(x + 436, y + 80, FONT_PRIO_FRONT, FONT_PAL_WHITE, familyDetail.petname, 0);
@@ -13856,7 +13752,6 @@ int DelCharGraColorWin(void)
 }
 
 // Robin 0712
-
 struct FMPKData
 {
     char time[6];
@@ -14342,15 +14237,12 @@ void initFMPKDetailWN(char *data)
 
 void FMPKDetailWN(int mode)
 {
-
     static int winX, winY;
     static int winW, winH;
     static int fontId[] = {-2, -2, -2, -2, -2, -2, -2};
     static int btnId[] = {-2, -2, -2, -2, -2};
     static int btnLoc[6][2];
     static int btnCnt;
-    // static int msgLine;
-    // static STR_BUFFER input;
     static int pushBtnFlag[4];
     int selBtnId;
     char dataBuf[256];
@@ -14389,11 +14281,9 @@ void FMPKDetailWN(int mode)
             }
         }
 
-        // ?????????????
         if (btnCnt > 0)
         {
-            int w;
-            w = winW * 64 / (btnCnt + 1);
+            int w = winW * 64 / (btnCnt + 1);
             for (i = 0; i < btnCnt; i++)
             {
                 btnLoc[i][0] = w * (i + 1) - 27;
@@ -15495,14 +15385,12 @@ void mineFamilyDetailWN()
             StockFontBuffer(winX + 30, winY + 150, FONT_PRIO_FRONT, FONT_PAL_WHITE, buf, 0);
             sprintf_s(buf, "个人声望：%d", mineFamily.personaldp);
             StockFontBuffer(winX + 240, winY + 150, FONT_PRIO_FRONT, FONT_PAL_WHITE, buf, 0);
-
 #ifdef _NEW_MANOR_LAW
             sprintf_s(buf, "家族气势：%d", mineFamily.fmMomentum);
             StockFontBuffer(winX + 240, winY + 180, FONT_PRIO_FRONT, FONT_PAL_WHITE, buf, 0);
             sprintf_s(buf, "个人气势：%d", mineFamily.momentum);
             StockFontBuffer(winX + 240, winY + 210, FONT_PRIO_FRONT, FONT_PAL_WHITE, buf, 0);
 #endif
-
 #ifdef _FAMILYBADGE_
             StockFontBuffer(winX + 30, winY + 210, FONT_PRIO_FRONT, FONT_PAL_WHITE, "家族徽章：", 0);
             StockDispBuffer(winX + 120, winY + 215, DISP_PRIO_IME4, mineFamily.badgeNo, 0);
@@ -15513,18 +15401,6 @@ void mineFamilyDetailWN()
 #else
             StockFontBuffer(winX + 30, winY + 230, FONT_PRIO_FRONT, FONT_PAL_WHITE, mineFamily.pkdata, 0);
 #endif
-
-            /*
-            if( atoi( mineFamily.pktime ) >= 10000 ) {
-            sprintf_s( timebuf, "明天 %d:00", ( atoi( mineFamily.pktime )-10000)/100 );
-            }
-            else {
-            sprintf_s( timebuf, "今天 %d:00", atoi( mineFamily.pktime )/100 );
-            }
-            sprintf_s( buf, "%s  %s  %s", timebuf, familyTownName[mineFamily.pkaddress], mineFamily.pkopp );
-            StockFontBuffer( winX+50, winY+240, FONT_PRIO_FRONT, FONT_PAL_WHITE, buf, 0 );
-            */
-
             fontId[0] = StockFontBuffer(winX + 180, winY + 250, FONT_PRIO_FRONT, FONT_PAL_YELLOW,
                                         "  离  开  ", 2);
         }

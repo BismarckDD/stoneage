@@ -576,25 +576,9 @@ void changePcAct(int x, int y, int dir, int action, int effectno,
       delCharmManor(pc.ptAct);
     break;
 #endif
-#ifdef _CHARTITLE_
-  case 45:
-    if (effectno >= 0) {
-      setCharmTitle(pc.ptAct, effectno);
-    } else
-      delCharmTitle(pc.ptAct);
-    break;
-#endif
   case 31:
-#if 1
     setPcWarpPoint(x, y);
     setPcDir(dir);
-#else
-    // ??????????????????
-    if (partyModeFlag == 0 || (pc.status & CHR_STATUS_LEADER) != 0) {
-      setPcWarpPoint(x, y);
-      setPcDir(dir);
-    }
-#endif
     setPcAction(ANIM_STAND);
     break;
 

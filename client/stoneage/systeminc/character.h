@@ -134,9 +134,6 @@ typedef struct {
 #ifdef _CHAR_MANOR_
   ACTION *ptmManorIcon;
 #endif
-#ifdef _CHARTITLE_
-  ACTION *ptTitleIcon;
-#endif
 #ifdef _STREET_VENDOR
   ACTION *ptStreetVendor;
 #endif
@@ -246,10 +243,6 @@ void setCharmManor(ACTION *ptAct, int MindNo);
 void delCharmManor(ACTION *ptAct);
 #endif
 
-#ifdef _CHARTITLE_
-void setCharmTitle(ACTION *ptAct, int MindNo);
-void delCharmTitle(ACTION *ptAct);
-#endif
 #ifdef _NPC_EVENT_NOTICE
 void setNpcNotice(ACTION *ptAct, int MindNo);
 void delNpcNotice(ACTION *ptAct);

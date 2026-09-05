@@ -74,32 +74,22 @@ int sCharSide = 0;
 
 BOOL createSaveFile(void);
 
-// ?????????? ///////////////////////////////////////////////////
-
-//
-// ???　叉卒㎏
 //
 BOOL saveUserSetting(void) {
   setUserSetting(selectPcNo);
   setUserSoundOption();
   setUserChatOption();
   setUserInterfaceOption();
-
   return saveNowState();
 }
 
-//
-// ???　叉????
-//
 BOOL loadUserSetting(void) {
   if (loadNowState()) {
     getUserSoundOption();
     getUserChatOption();
     getUserInterfaceOption();
-
     return TRUE;
   }
-
   return FALSE;
 }
 

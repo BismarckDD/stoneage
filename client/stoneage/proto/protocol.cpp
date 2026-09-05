@@ -1374,27 +1374,7 @@ int SaDispatchMessage(int fd, char *encoded) {
       return 0;
     }
 #endif
-#ifdef _PK2007
-    else if (func == LSSPROTO_PKLIST_RECV) {
-      int count;
-      char data[16384];
-      iChecksum += util_deint(2, &count);
-      iChecksum += util_destring(3, data);
-      util_deint(4, &iChecksumrecv);
-      if (iChecksum != iChecksumrecv) {
-        SliceCount = 0;
-        return 1;
-      }
-#ifdef _STONDEBUG__PACKET_
 
-      sprintf_s(datalog, "count=%d data=%s", count, data);
-      PackageLog(func, datalog);
-#endif
-      lssproto_pkList_recv(fd, count, data);
-      SliceCount = 0;
-      return 0;
-    }
-#endif
 #ifdef _NEWSHOP_
     else if (func == LSSPROTO_SHOPOK_RECV) {
       int a;
@@ -1992,10 +1972,6 @@ void lssproto_ClientLogin_send(int fd, char *cdkey, char *passwd)
 {
   char buffer[16384];
   int iChecksum = 0;
-#ifdef _CHARTITLE_
-  extern void init_title_struct();
-  init_title_struct();
-#endif
 #ifdef _CHARTITLE_STR_
   extern void init_title_struct();
   init_title_struct();
@@ -2071,15 +2047,7 @@ void lssproto_CharList_send(int fd) {
   util_mkint(buffer, iChecksum);
   util_SendMesg(fd, LSSPROTO_CHARLIST_SEND, buffer);
 }
-#ifdef _PK2007
-void lssproto_pkList_send(int fd) {
-  char buffer[16384];
-  int iChecksum = 0;
-  buffer[0] = '\0';
-  util_mkint(buffer, iChecksum);
-  util_SendMesg(fd, LSSPROTO_PKLIST_SEND, buffer);
-}
-#endif
+
 void lssproto_CharLogout_send(int fd, int Flg) {
   char buffer[16384];
   int iChecksum = 0;

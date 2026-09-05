@@ -81,9 +81,4 @@ void chatStrSendForServer(char *, int);
 void delCharStart(void);
 int delCharProc(void);
 
-#ifdef _PK2007
-void pkListStart(void);
-int pkListProc(void);
-#endif
-
 #endif /* ifndef _NETPROC_H_ */

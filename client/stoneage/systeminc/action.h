@@ -150,9 +150,6 @@ struct ACTION {
 #ifdef _CHARTITLE_STR_
   TITLE_STR TitleText;
 #endif
-#ifdef _CHARTITLE_
-  unsigned int TitleIcon;
-#endif
 #ifdef _NPC_EVENT_NOTICE
   int noticeNo;
 #endif

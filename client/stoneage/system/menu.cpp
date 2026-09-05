@@ -1605,39 +1605,21 @@ void AnimDisp(ACTION *pAct)
 
     case ANIM_DISP_MIX_PET_END:    // ???????
 
-        // ?佋
         x = 750;
         y = 240;
-
-        // ????
         radar(pAct, &x, &y);
-
-        // ??
         pAct->anim_no = ANIM_WALK;
-
-        // ?????????
         if (y >= pAct->spd / 2){
-            // ???
             pAct->crs = x;
-
-            // ????佋????????
             if (pAct->level == FALSE){
                 pAct->anim_ang = crs_change_tbl[pAct->crs];
-                // ??????????
                 pAct->level = TRUE;
             }
-
-            // ???
             gemini(pAct);
-            // ???????
             pattern(pAct, pAct->dy, ANM_LOOP);
-        }
-        // ?????
-        else{
-            // ??????
+        } else {
             DeathAction(pAct);
             pActPet2 = NULL;
-            // ????????
             ItemMixPetNo = -1;
         }
         break;
@@ -8966,7 +8948,7 @@ void DeathMenuAction(void)
     petWndNo = 0;
 #endif
 }
-// ????????????? *****************************************************/
+
 void DeathMenuAction2(void)
 {
 #ifdef _MAGIC_ITEM_
@@ -9204,36 +9186,24 @@ void MenuProc(void)
         }
 #endif
     }
-
-    if( ( joy_trg[ 0 ] & JOY_CTRL_S && GetImeString() == NULL ) 
-        || ( TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[ 1 ] ) ){ 
-        if (ProcNo == PROC_BATTLE){
-            // ???
+    if((joy_trg[0] & JOY_CTRL_S && GetImeString() == NULL) 
+        || (TaskBarFlag == TRUE && (mouse.onceState & MOUSE_LEFT_CRICK) && HitDispNo == taskBarFontNo[1]))
+    { 
+        if (ProcNo == PROC_BATTLE) {
             play_se(220, 320, 240);
-        }
-        else{
-
+        } else {
             MenuToggleFlag ^= JOY_CTRL_S;    // CTRL + S ??
-            // ?????
             for (i = 0; i < MENU_STATUS_0; i++) statusWndFontNo[i] = -2;
             for (i = 0; i < MENU_STATUS_0; i++) statusWndBtnFlag[i] = 0;
             statusWndNo = 0;
-            // ??????????
             DeathMenuAction();
-            // ????????
             saveUserSetting();
-
-            // ????????
             if (MenuToggleFlag & JOY_CTRL_S){
                 MenuToggleFlag &= JOY_CTRL_I | JOY_CTRL_M;    // ??????????????????
                 MenuToggleFlag |= JOY_CTRL_S;    // ??????????
-                // ???????????
                 BattleResultWndFlag = FALSE;
-                // ????????
                 play_se(202, 320, 240);
-            }
-            else{
-                // ????????
+            } else {
                 play_se(203, 320, 240);
             }
         }
@@ -9352,18 +9322,13 @@ void MenuProc(void)
                     MenuToggleFlag &= ~JOY_CTRL_T;
                     MenuToggleFlag &= ~JOY_B;
                     MenuToggleFlag |= JOY_CTRL_I;
-                    // ???????????
                     BattleResultWndFlag = FALSE;
-                    // ?????????
                     MapWmdFlagBak = FALSE;
-                    // ????????
                     play_se(202, 320, 240);
 
                 }
-                else{
-                    // ????????
+                else
                     play_se(203, 320, 240);
-                }
             }
         }
     }
@@ -9371,38 +9336,27 @@ void MenuProc(void)
     if( ( joy_trg[ 0 ] & JOY_CTRL_M && GetImeString() == NULL ) 
         || ( TaskBarFlag == TRUE && mouse.onceState & MOUSE_LEFT_CRICK && HitDispNo == taskBarFontNo[ 0 ] )
         || ( MapWmdFlagBak == TRUE && BattleResultWndFlag == FALSE && EncountFlag == FALSE && ProcNo == PROC_GAME && SubProcNo == 3 )
-        ){  
+    ){  
+        // 战斗中不能打开地图
         if (ProcNo == PROC_BATTLE){
             play_se(220, 320, 240);
-        }
-        else{
-
-            MenuToggleFlag ^= JOY_CTRL_M;    // CTRL + M ??
-            // ???
+        } else {
+            MenuToggleFlag ^= JOY_CTRL_M;    // CTRL + M
             for (i = 0; i < MENU_PET_0; i++) petWndFontNo[i] = -2;
-            mapWndNo = 0;        // ?????????
-
-            // ??????????
+            mapWndNo = 0; // 初始化MapWndNo
             if (BattleResultWndFlag >= 1) DeathMenuAction();
             DeathMenuAction2();
-            // ????????
-            // ????????
             if (MenuToggleFlag & JOY_CTRL_M){
-                MenuToggleFlag &= ~JOY_CTRL_I;    // ????????????
+                MenuToggleFlag &= ~JOY_CTRL_I;
                 MenuToggleFlag &= ~JOY_CTRL_T;
                 MenuToggleFlag &= ~JOY_B;
                 MenuToggleFlag |= JOY_CTRL_M;
-                // ???????????
                 BattleResultWndFlag = FALSE;
-                // ?????????
                 MapWmdFlagBak = FALSE;
-                // ????????
                 play_se(202, 320, 240);
             }
-            else{
-                // ????????    
+            else
                 play_se(203, 320, 240);
-            }
         }
     }
     if( ( joy_trg[ 0 ] & JOY_CTRL_E && GetImeString() == NULL )
@@ -9419,13 +9373,9 @@ void MenuProc(void)
             mailWndNo = MAIL_WND_VIEW;    // ?????????
             mailViewWndPageNo = 0;        // ???????????????
             mailItemNo = -1;            // ??????????????
-            InitMailSendFlag();            // ????????
-            // ??????????
+            InitMailSendFlag();
             DeathMenuAction();
-            // ????????
             saveUserSetting();
-
-            // ????????
             if (MenuToggleFlag & JOY_CTRL_E){
                 MenuToggleFlag &= JOY_CTRL_I | JOY_CTRL_M;    // ??????????????????
                 MenuToggleFlag |= JOY_CTRL_E;
@@ -10384,10 +10334,11 @@ void MenuProc(void)
 #endif
 
 
+    // 2026.09.05 人物状态栏
     if (MenuToggleFlag & JOY_CTRL_S){
         switch (statusWndNo){
         case 0:
-            if (pActMenuWnd == NULL){
+            if (pActMenuWnd == NULL) {
                 pActMenuWnd = MakeWindowDisp(4, 4, 272, 360, 0, -1);
 #ifdef _CHARTITLE_STR_
                 extern void 设置称号取消窗口();
@@ -10399,598 +10350,431 @@ void MenuProc(void)
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
                 SkillWndflag = false ; 
 #endif
-            } else {
-                if (pActMenuWnd->hp > 0){
+            } else if (pActMenuWnd->hp > 0) {
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                    if ( SkillWndflag == true ) {
-                        SkillWndfunc2();
+                if ( SkillWndflag == true ) {
+                    SkillWndfunc2();
+                } else {
+                    if ( pActSkillMenuWnd != NULL ) {
+                        DeathAction( pActSkillMenuWnd ) ; 
+                        pActSkillMenuWnd = NULL ; 
                     }
-                    else {
-                        if ( pActSkillMenuWnd != NULL ) {
-                            DeathAction( pActSkillMenuWnd ) ; 
-                            pActSkillMenuWnd = NULL ; 
-                        }
-                    }
-                    StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx-1, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my+34, DISP_PRIO_MENU, CG_NEW_STATUS_WND, 1 );
+                }
+                StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx-1, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my+34, DISP_PRIO_MENU, CG_NEW_STATUS_WND, 1 );
 #else
 #ifdef _NEW_CHARDATA_
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20, DISP_PRIO_MENU, CG_NEW_STATUS_WND, 1);
+                StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx,
+                                ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 35,
+                                DISP_PRIO_MENU, CG_NEW_STATUS_WND, 1);
 #else
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_MENU, CG_STATUS_WND, 1);
+                StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_MENU, CG_STATUS_WND, 1);
 #endif
 #endif
-                    if (mouse.onceState & MOUSE_LEFT_CRICK){
-                        // 队伍
-                        if (HitDispNo == statusWndFontNo[0]){
-                            DeathAction(pActMenuWnd);
-                            pActMenuWnd = NULL;
-                            statusWndNo = 1;
-                            play_se(202, 320, 240);
-                        }
-                        // 关闭
-                        if (HitDispNo == statusWndFontNo[1]){
-                            DeathAction(pActMenuWnd);
-                            pActMenuWnd = NULL;
-                            MenuToggleFlag ^= JOY_CTRL_S;
-                            play_se(203, 320, 240);
-                        }
+                if (mouse.onceState & MOUSE_LEFT_CRICK) {
+                    // 队伍
+                    if (HitDispNo == statusWndFontNo[0]) {
+                        DeathAction(pActMenuWnd);
+                        pActMenuWnd = NULL;
+                        statusWndNo = 1;
+                        play_se(202, 320, 240);
+                    }
+                    // 关闭
+                    if (HitDispNo == statusWndFontNo[1]) {
+                        DeathAction(pActMenuWnd);
+                        pActMenuWnd = NULL;
+                        MenuToggleFlag ^= JOY_CTRL_S;
+                        play_se(203, 320, 240);
+                    }
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                        if( HitDispNo == statusWndFontNo[ 12 ] ){
-                            DeathAction( pActMenuWnd);
-                            pActMenuWnd = NULL;
-                            statusWndNo = 3;
-                            play_se( 202, 320, 240);
+                    if( HitDispNo == statusWndFontNo[ 12 ] ) {
+                        DeathAction( pActMenuWnd);
+                        pActMenuWnd = NULL;
+                        statusWndNo = 3;
+                        play_se( 202, 320, 240);
 #ifdef _NEWREQUESTPROTOCOL            // (不可开) Syu ADD 新增Protocol要求细项
-                            lssproto_RESIST_send ( sockfd , "" ) ; 
+                        lssproto_RESIST_send ( sockfd , "" ) ; 
 #endif
 #ifdef _ALCHEPLUS
-                            lssproto_ALCHEPLUS_send ( sockfd , "" ) ; 
+                        lssproto_ALCHEPLUS_send ( sockfd , "" ) ; 
 #endif
-                        }
-                        if( HitDispNo == statusWndFontNo[ 14 ] ){
-                            play_se( 202, 320 , 240 ) ; 
-                            SkillWndflag = true ; 
-                            MenuToggleFlag &= ~JOY_CTRL_I;
-                            MenuToggleFlag &= ~JOY_CTRL_M;
-                            if( pActMenuWnd3 != NULL ) {
-                                DeathAction ( pActMenuWnd3 ) ; 
-                                pActMenuWnd3 = NULL ; 
-                                GetKeyInputFocus( &MyChatBuffer );
-                            }
-                        }
-#endif
-
                     }
-                    // 改变称号
-                    if (HitDispNo == statusWndFontNo[6]){
-                        // ????????
-                        if (mouse.onceState & MOUSE_LEFT_CRICK){
-#ifdef _CHARTITLE_
-                            statusWndBtnFlag[6] = TRUE;
-                            extern void 打开称号窗口初始化();
-                            打开称号窗口初始化();
-                            if (pActMenuWnd3 == NULL){
-                                pActMenuWnd3 = MakeWindowDisp(363, 105, 0, 0, 55249, -1, 0);
-                                play_se(202, 320, 240);
-                            }
-                            else{
-                                DeathAction(pActMenuWnd3);
-                                pActMenuWnd3 = NULL;
-                                play_se(203, 320, 240);
-                            }
-#else
-#ifdef _CHARTITLE_STR_
-                            statusWndBtnFlag[6] = TRUE;
-                            extern void 打开称号窗口初始化();
-                            打开称号窗口初始化();
-                            if (pActMenuWnd3 == NULL){
-                                pActMenuWnd3 = MakeWindowDisp(363, 105, 0, 0, 55249, -1);
-                                play_se(202, 320, 240);
-                            }
-                            else{
-                                DeathAction(pActMenuWnd3);
-                                pActMenuWnd3 = NULL;
-                                play_se(203, 320, 240);
-                            }
-#else
-#ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                            SkillWndflag = false ; 
-                            MenuToggleFlag &= ~JOY_CTRL_I;
-                            //MenuToggleFlag &= ~JOY_CTRL_M;
+                    if( HitDispNo == statusWndFontNo[ 14 ] ){
+                        play_se( 202, 320 , 240 ) ; 
+                        SkillWndflag = true ; 
+                        MenuToggleFlag &= ~JOY_CTRL_I;
+                        MenuToggleFlag &= ~JOY_CTRL_M;
+                        if( pActMenuWnd3 != NULL ) {
+                            DeathAction ( pActMenuWnd3 ) ; 
+                            pActMenuWnd3 = NULL ; 
+                            GetKeyInputFocus( &MyChatBuffer );
+                        }
+                    }
 #endif
-                            if (pActMenuWnd3 == NULL){
-                                // ?????????
+                }
+                // 改变称号
+                if (HitDispNo == statusWndFontNo[6]){
+                    if (mouse.onceState & MOUSE_LEFT_CRICK) {
+#ifdef _CHARTITLE_STR_
+                        statusWndBtnFlag[6] = TRUE;
+                        extern void 打开称号窗口初始化();
+                        打开称号窗口初始化();
+                        if (pActMenuWnd3 == NULL){
+                            pActMenuWnd3 = MakeWindowDisp(363, 105, 0, 0, 55249, -1);
+                            play_se(202, 320, 240);
+                        } else {
+                            DeathAction(pActMenuWnd3);
+                            pActMenuWnd3 = NULL;
+                            play_se(203, 320, 240);
+                        }
+#else
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                                pActMenuWnd3 = MakeWindowDisp( 304, 16 + 280 + 48, 272, 88, 0, -1 );
+                        SkillWndflag = false ; 
+                        MenuToggleFlag &= ~JOY_CTRL_I;
+                        //MenuToggleFlag &= ~JOY_CTRL_M;
+#endif
+                        if (pActMenuWnd3 == NULL){
+                            // ?????????
+#ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
+                            pActMenuWnd3 = MakeWindowDisp( 304, 16 + 280 + 48, 272, 88, 0, -1 );
 #else
 #ifdef _NEW_CHARDATA_
-                                pActMenuWnd3 = MakeWindowDisp(4, 16 + 280 + 78 + 35, 272, 88, 0, -1, 0);
+                            pActMenuWnd3 = MakeWindowDisp(4, 16 + 280 + 78 + 35, 272, 88, 0, -1, 0);
 #else
-                                pActMenuWnd3 = MakeWindowDisp( 4, 16 + 280 + 78, 272, 88, 0, -1 ,0);
+                            pActMenuWnd3 = MakeWindowDisp( 4, 16 + 280 + 78, 272, 88, 0, -1 ,0);
 #endif
-                                play_se(202, 320, 240);
-                                // ????
-                                shougouChange.buffer[0] = NULL;
-                                shougouChange.cnt = 0;
-                                shougouChange.cursor = 0;
-                                // ????
-                                shougouChange.len = 12;
-                                // ???
-                                shougouChange.color = 0;
-                                // ????
-                                shougouChange.x = pActMenuWnd3->x + 38;
-                                shougouChange.y = pActMenuWnd3->y + 25;
-                                // ??????
-                                shougouChange.fontPrio = FONT_PRIO_FRONT;
-                                // ????
-                                statusWndBtnFlag[6] = TRUE;
-                            }
-                            else{
-                                // ??????
-                                DeathAction(pActMenuWnd3);
-                                pActMenuWnd3 = NULL;
-                                // ????????
-                                GetKeyInputFocus(&MyChatBuffer);
-                                // ????????
-                                play_se(203, 320, 240);
-                            }
+                            play_se(202, 320, 240);
+                            // ????
+                            shougouChange.buffer[0] = NULL;
+                            shougouChange.cnt = 0;
+                            shougouChange.cursor = 0;
+                            shougouChange.len = 12;
+                            shougouChange.color = 0;
+                            shougouChange.x = pActMenuWnd3->x + 38;
+                            shougouChange.y = pActMenuWnd3->y + 25;
+                            shougouChange.fontPrio = FONT_PRIO_FRONT;
                             statusWndBtnFlag[6] = TRUE;
+                        } else {
+                            DeathAction(pActMenuWnd3);
+                            pActMenuWnd3 = NULL;
+                            GetKeyInputFocus(&MyChatBuffer);
+                            play_se(203, 320, 240);
+                        }
+                        statusWndBtnFlag[6] = TRUE;
 #endif
 #endif
-#endif
-                        }
-                        // ?????????
-                        if (mouse.state & MOUSE_LEFT_CRICK && statusWndBtnFlag[6] == TRUE){
-                            // ????
-                            statusWndBtnFlag[6] = TRUE;
-                        }
-                        else{
-                            // ???
-                            statusWndBtnFlag[6] = FALSE;
-                        }
                     }
-                    else{
-                        // ???
+                    if (mouse.state & MOUSE_LEFT_CRICK && statusWndBtnFlag[6] == TRUE)
+                        statusWndBtnFlag[6] = TRUE;
+                    else
                         statusWndBtnFlag[6] = FALSE;
-                    }
-                    // ??????????
-                    if (StatusUpPoint != 0){
-                        // ????????
-                        for (i = 2; i < 6; i++){
-                            // ?????
-                            if (HitDispNo == statusWndFontNo[i]){
-                                // ????
-                                // ????????
-                                if (mouse.onceState & MOUSE_LEFT_CRICK){
-                                    // ???????
-                                    if (bNewServer)
-                                        lssproto_SKUP_send(sockfd, i - 2);
-                                    else
-                                        old_lssproto_SKUP_send(sockfd, i - 2);
-
-
-#ifndef _CHAR_PROFESSION            // WON ADD 人物职业
-                                    StatusUpPoint--;
+                } else {
+                    statusWndBtnFlag[6] = FALSE;
+                }
+                if (StatusUpPoint != 0) {
+                    for (i = 2; i < 6; i++) {
+                        if (HitDispNo == statusWndFontNo[i]){
+                            if (mouse.onceState & MOUSE_LEFT_CRICK){
+                                if (bNewServer)
+                                    lssproto_SKUP_send(sockfd, i - 2);
+                                else
+                                    old_lssproto_SKUP_send(sockfd, i - 2);
+#ifndef _CHAR_PROFESSION
+                                StatusUpPoint--;
 #endif
-
-                                    play_se(211, 320, 240);
-
-                                    statusWndBtnFlag[i] = TRUE;
-                                }
-                                // ?????????
-                                if (mouse.state & MOUSE_LEFT_CRICK && statusWndBtnFlag[i] == TRUE){
-                                    // ????
-                                    statusWndBtnFlag[i] = TRUE;
-                                }
-                                else{
-                                    // ???
-                                    statusWndBtnFlag[i] = FALSE;
-                                }
+                                play_se(211, 320, 240);
+                                statusWndBtnFlag[i] = TRUE;
                             }
-                            else{
-                                // ???
+                            if (mouse.state & MOUSE_LEFT_CRICK && statusWndBtnFlag[i] == TRUE){
+                                statusWndBtnFlag[i] = TRUE;
+                            } else {
                                 statusWndBtnFlag[i] = FALSE;
                             }
+                        } else {
+                            statusWndBtnFlag[i] = FALSE;
                         }
                     }
-                    // ????????
-                    if (pActMenuWnd != NULL){
+                }
+                if (pActMenuWnd != NULL){
 #define PET_WND_ATTR_X 159
 #define PET_WND_ATTR_Y 5
-                        int x2;
-                        x = pActMenuWnd->x + 20;
-                        y = pActMenuWnd->y + 28;
-                        CenteringStr(pc.name, moji, CHAR_NAME_LEN);
-                        StockFontBuffer(x - 6, y - 2, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%8d", pc.dp);
-                        StockFontBuffer(x + 170, y - 2, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        // ??????????
-#ifndef _CHARTITLE_
-#ifndef _CHARTITLE_STR_
-                        CenteringStr(pc.freeName, moji, 32);    // ????
-#endif
-#endif
+                    int x2;
+                    x = pActMenuWnd->x + 20;
+                    y = pActMenuWnd->y + 25;
+                    CenteringStr(pc.name, moji, CHAR_NAME_LEN);
+                    StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%8d", pc.dp);
+                    StockFontBuffer(x + 160, y, FONT_PRIO_FRONT, 0, moji, 0); y += 35;
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                        //位移称号
-                        StockFontBuffer( x + 77, y + 2 , FONT_PRIO_FRONT, 0, moji, 0 );
+                    //位移称号
+                    StockFontBuffer( x + 77, y + 2 , FONT_PRIO_FRONT, 0, moji, 0 );
 #ifdef _ALLDOMAN // (不可开) Syu ADD 排行榜NPC
-                        //英雄战场称号
-                        if ( pc.herofloor == 132 )        sprintf_s( moji , "%s" , "尼斯大陆英雄" ) ;
-                        else if ( pc.herofloor >= 130 )    sprintf_s( moji , "%s" , "尼斯大陆战士" ) ; 
-                        else if ( pc.herofloor >= 125 )    sprintf_s( moji , "%s" , "尼斯大陆勇士" ) ; 
-                        else if ( pc.herofloor >= 120 )    sprintf_s( moji , "%s" , "萨伊那斯英雄" ) ; 
-                        else if ( pc.herofloor >= 115 )    sprintf_s( moji , "%s" , "斯巴达战士" ) ; 
-                        else if ( pc.herofloor >= 110 )    sprintf_s( moji , "%s" , "萨姆吉尔战士" ) ; 
-                        else if ( pc.herofloor >= 100 )    sprintf_s( moji , "%s" , "玛丽那丝战士" ) ; 
-                        else if ( pc.herofloor >=  80 )    sprintf_s( moji , "%s" , "卡坦战士" ) ; 
-                        else if ( pc.herofloor >=  60 )    sprintf_s( moji , "%s" , "霍特尔战士" ) ; 
-                        else if ( pc.herofloor >=  40 )    sprintf_s( moji , "%s" , "降魔勇士" ) ; 
-                        else if ( pc.herofloor >=  20 )    sprintf_s( moji , "%s" , "圣灵勇士" ) ; 
-                        else if ( pc.herofloor >=   1 )    sprintf_s( moji , "%s" , "初犊勇士" ) ; 
-                        else                            sprintf_s( moji , " " );
-                        StockFontBuffer( x + 72, y + 28 , FONT_PRIO_FRONT, 5, moji, 0 ); 
-                        sprintf_s( moji , "%d" , pc.profession_level);
-                        StockFontBuffer( x + 157, y + 53 , FONT_PRIO_FRONT, 0, moji, 0 ); 
-#endif
-#else
-#ifndef _CHARTITLE_
-#ifndef _CHARTITLE_STR_
-#ifdef _NEWFONT_
-                        StockFontBuffer( x-20, y, FONT_PRIO_FRONT, 0, moji, 0 ); 
-#else
-                        StockFontBuffer(x - 60, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    //英雄战场称号
+                    if ( pc.herofloor == 132 )        sprintf_s( moji , "%s" , "尼斯大陆英雄" ) ;
+                    else if ( pc.herofloor >= 130 )    sprintf_s( moji , "%s" , "尼斯大陆战士" ) ; 
+                    else if ( pc.herofloor >= 125 )    sprintf_s( moji , "%s" , "尼斯大陆勇士" ) ; 
+                    else if ( pc.herofloor >= 120 )    sprintf_s( moji , "%s" , "萨伊那斯英雄" ) ; 
+                    else if ( pc.herofloor >= 115 )    sprintf_s( moji , "%s" , "斯巴达战士" ) ; 
+                    else if ( pc.herofloor >= 110 )    sprintf_s( moji , "%s" , "萨姆吉尔战士" ) ; 
+                    else if ( pc.herofloor >= 100 )    sprintf_s( moji , "%s" , "玛丽那丝战士" ) ; 
+                    else if ( pc.herofloor >=  80 )    sprintf_s( moji , "%s" , "卡坦战士" ) ; 
+                    else if ( pc.herofloor >=  60 )    sprintf_s( moji , "%s" , "霍特尔战士" ) ; 
+                    else if ( pc.herofloor >=  40 )    sprintf_s( moji , "%s" , "降魔勇士" ) ; 
+                    else if ( pc.herofloor >=  20 )    sprintf_s( moji , "%s" , "圣灵勇士" ) ; 
+                    else if ( pc.herofloor >=   1 )    sprintf_s( moji , "%s" , "初犊勇士" ) ; 
+                    else                            sprintf_s( moji , " " );
+                    StockFontBuffer( x + 72, y + 28 , FONT_PRIO_FRONT, 5, moji, 0 ); 
+                    sprintf_s( moji , "%d" , pc.profession_level);
+                    StockFontBuffer( x + 157, y + 53 , FONT_PRIO_FRONT, 0, moji, 0 ); 
 #endif
 #endif
-#endif
-#endif
-#ifdef _TRANS_6
-                        if( pc.transmigration >= 1 && pc.transmigration <= 6 ){
-#else
-                        if (pc.transmigration >= 1 && pc.transmigration <= 5){
-#endif
-#ifndef _NEW_CHARDATA_
-                            sprintf_s(moji, "转生%s", TransmigrationStr[pc.transmigration]);
-                            StockFontBuffer(x + 178 + 12, y + 2, FONT_PRIO_FRONT, FONT_PAL_AQUA, moji, 0);
-#else
-                            ;
-#endif
-                        }
-#ifdef _CHARTITLE_
-                        y += 32;
-                        
-#else
-#ifdef _CHARTITLE_STR_
-                        y += 19;
-#else
-                        y += 21;
-#endif
-#endif
-                        sprintf_s(moji, "%3d", pc.level);
+
+                    sprintf_s(moji, "%3d", pc.level);
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                        y += 35;
-                        StockFontBuffer( x + 38, y - 2, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
-                        sprintf_s( moji, "%8d", pc.exp );
-                        StockFontBuffer( x + 48, y + 2 , FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
-                        sprintf_s( moji, "%8d",pc.maxExp );
-                        StockFontBuffer( x + 48, y + 4, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
-                        sprintf_s( moji, "%4d", pc.hp );
-                        StockFontBuffer( x + 48, y + 8, FONT_PRIO_FRONT, 0, moji, 0 );
-                        sprintf_s( moji, "%4d", pc.maxHp );
-                        StockFontBuffer( x + 98, y + 8, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
-                        sprintf_s( moji, "%3d", pc.mp );
-                        StockFontBuffer( x + 50, y + 12 , FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
-                        sprintf_s( moji, "%3d", pc.atk );
-                        StockFontBuffer( x + 50, y + 16, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
-                        sprintf_s( moji, "%3d", pc.def );
-                        StockFontBuffer( x + 50, y + 20, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
-                        sprintf_s( moji, "%3d", pc.quick );
-                        StockFontBuffer( x + 50, y + 24, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
-                        sprintf_s( moji, "%3d", pc.charm );
-                        StockFontBuffer( x + 50, y + 28, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
-                        y += 29;
-                        sprintf_s( moji, "%3d", pc.vital );
-                        StockFontBuffer( x + 55, y + 34 , FONT_PRIO_FRONT, 0, moji, 0 );
-                        sprintf_s( moji, "%3d", pc.str );
-                        StockFontBuffer( x + 55 + 120, y + 34 , FONT_PRIO_FRONT, 0, moji, 0 ); y += 20;
-                        sprintf_s( moji, "%3d", pc.tgh );
-                        StockFontBuffer( x + 55, y + 34 , FONT_PRIO_FRONT, 0, moji, 0 );
-                        sprintf_s( moji, "%3d", pc.dex );
-                        StockFontBuffer( x + 55 + 120, y + 34 , FONT_PRIO_FRONT, 0, moji, 0 ); y += 20;
+                    StockFontBuffer( x + 38, y - 2, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
+                    sprintf_s( moji, "%8d", pc.exp );
+                    StockFontBuffer( x + 48, y + 2 , FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
+                    sprintf_s( moji, "%8d",pc.maxExp );
+                    StockFontBuffer( x + 48, y + 4, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
+                    sprintf_s( moji, "%4d", pc.hp );
+                    StockFontBuffer( x + 48, y + 8, FONT_PRIO_FRONT, 0, moji, 0 );
+                    sprintf_s( moji, "%4d", pc.maxHp );
+                    StockFontBuffer( x + 98, y + 8, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
+                    sprintf_s( moji, "%3d", pc.mp );
+                    StockFontBuffer( x + 50, y + 12 , FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
+                    sprintf_s( moji, "%3d", pc.atk );
+                    StockFontBuffer( x + 50, y + 16, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
+                    sprintf_s( moji, "%3d", pc.def );
+                    StockFontBuffer( x + 50, y + 20, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
+                    sprintf_s( moji, "%3d", pc.quick );
+                    StockFontBuffer( x + 50, y + 24, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
+                    sprintf_s( moji, "%3d", pc.charm );
+                    StockFontBuffer( x + 50, y + 28, FONT_PRIO_FRONT, 0, moji, 0 ); y += 21;
+                    y += 29;
+                    sprintf_s( moji, "%3d", pc.vital );
+                    StockFontBuffer( x + 55, y + 34 , FONT_PRIO_FRONT, 0, moji, 0 );
+                    sprintf_s( moji, "%3d", pc.str );
+                    StockFontBuffer( x + 55 + 120, y + 34 , FONT_PRIO_FRONT, 0, moji, 0 ); y += 20;
+                    sprintf_s( moji, "%3d", pc.tgh );
+                    StockFontBuffer( x + 55, y + 34 , FONT_PRIO_FRONT, 0, moji, 0 );
+                    sprintf_s( moji, "%3d", pc.dex );
+                    StockFontBuffer( x + 55 + 120, y + 34 , FONT_PRIO_FRONT, 0, moji, 0 ); y += 20;
 #else
 #ifdef _NEW_CHARDATA_
-
-                        /*
-                        static int 人物头像左状态=0,人物头像右状态=0;
-
-                        StockDispBuffer( pActMenuWnd->x + 187, pActMenuWnd->y + 118+72, DISP_PRIO_IME3,CG_PREV_BTN+人物头像左状态, 1 );
-                        if( MakeHitBox( pActMenuWnd->x + 187-18, pActMenuWnd->y + 118+72-10, pActMenuWnd->x + 187+18,pActMenuWnd->y + 118+72+10, DISP_PRIO_IME4 ) == TRUE ){
-                        ShowBottomLineString(FONT_PAL_WHITE, "修改人物头像");
-                        if(mouse.state & MOUSE_LEFT_CRICK){
-                        人物头像左状态 = 1;
-                        if(mouse.onceState & MOUSE_LEFT_CRICK){
-                        play_se(203, 320, 240);
-                        //人物头像封包
-                        }
-                        }else 人物头像左状态=0;
-                        }else 人物头像左状态=0;
-                        StockDispBuffer( pActMenuWnd->x + 232, pActMenuWnd->y + 118+72, DISP_PRIO_IME3,CG_NEXT_BTN+人物头像右状态, 1 );
-                        if( MakeHitBox( pActMenuWnd->x + 232-18, pActMenuWnd->y + 118+72-10, pActMenuWnd->x + 232+18,pActMenuWnd->y + 118+72+10, DISP_PRIO_IME4 ) == TRUE ){
-                        ShowBottomLineString(FONT_PAL_WHITE, "修改人物头像");
-                        if(mouse.state & MOUSE_LEFT_CRICK){
-                        人物头像右状态 = 1;
-                        if(mouse.onceState & MOUSE_LEFT_CRICK){
-                        play_se(203, 320, 240);
-                        //人物头像封包
-                        }
-                        }else 人物头像右状态=0;
-                        }else 人物头像右状态=0;
-
-                        */
-
-
-                        StockFontBuffer(x + 50, y + 44, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%s", TransmigrationStr[pc.transmigration]);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, Transmigrationcolor[pc.transmigration], moji, 0);
-                        sprintf_s(moji, "%s", pc.chusheng);
-                        StockFontBuffer(x + 50, y + 21, FONT_PRIO_FRONT, 0, moji, 0);
-                        y += 21 + 44;
-                        sprintf_s(moji, "%8d", pc.exp);
-                        StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%8d", pc.maxExp);
-                        StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%4d", pc.hp);
-                        StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%4d", pc.maxHp);
-                        StockFontBuffer(x + 98, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.mp);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.atk);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.def);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.quick);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.charm);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        y += 29;
-                        sprintf_s(moji, "%3d", pc.vital);
-                        StockFontBuffer(x + 61, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%3d", pc.str);
-                        StockFontBuffer(x + 61 + 120, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
-                        sprintf_s(moji, "%3d", pc.tgh);
-                        StockFontBuffer(x + 61, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%3d", pc.dex);
-                        StockFontBuffer(x + 61 + 120, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
+                    // 2026.09.05: fix status panel. level:
+                    StockFontBuffer(x + 30, y + 44, FONT_PRIO_FRONT, 0, moji, 0);
+                    // trans
+                    sprintf_s(moji, "%s", TransmigrationStr[pc.transmigration]);
+                    StockFontBuffer(x + 30, y - 6, FONT_PRIO_FRONT, Transmigrationcolor[pc.transmigration], moji, 0);
+                    // 这个是啥？
+                    sprintf_s(moji, "%s", pc.chusheng);
+                    StockFontBuffer(x + 50, y + 22, FONT_PRIO_FRONT, 0, moji, 0);
+                    y += (22 + 44);
+                    sprintf_s(moji, "%8d", pc.exp);
+                    StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0); y += 24;
+                    sprintf_s(moji, "%8d", pc.maxExp);
+                    StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0); y += 26;
+                    sprintf_s(moji, "%4d", pc.hp);
+                    StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%4d", pc.maxHp);
+                    StockFontBuffer(x + 98, y, FONT_PRIO_FRONT, 0, moji, 0); y += 25;
+                    sprintf_s(moji, "%3d", pc.mp);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 25;
+                    sprintf_s(moji, "%3d", pc.atk);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 25;
+                    sprintf_s(moji, "%3d", pc.def);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 25;
+                    sprintf_s(moji, "%3d", pc.quick);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 25;
+                    sprintf_s(moji, "%3d", pc.charm);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 25;
+                    y += 30;
+                    sprintf_s(moji, "%3d", pc.vital);
+                    StockFontBuffer(x + 61, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%3d", pc.str);
+                    StockFontBuffer(x + 61 + 120, y, FONT_PRIO_FRONT, 0, moji, 0); y += 22;
+                    sprintf_s(moji, "%3d", pc.tgh);
+                    StockFontBuffer(x + 61, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%3d", pc.dex);
+                    StockFontBuffer(x + 61 + 120, y, FONT_PRIO_FRONT, 0, moji, 0); y += 22;
 #else
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%8d", pc.exp);
-                        StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%8d", pc.maxExp);
-                        StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%4d", pc.hp);
-                        StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%4d", pc.maxHp);
-                        StockFontBuffer(x + 98, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.mp);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.atk);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.def);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.quick);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        sprintf_s(moji, "%3d", pc.charm);
-                        StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
-                        y += 29;
-                        sprintf_s(moji, "%3d", pc.vital);
-                        StockFontBuffer(x + 61, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%3d", pc.str);
-                        StockFontBuffer(x + 61 + 120, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
-                        sprintf_s(moji, "%3d", pc.tgh);
-                        StockFontBuffer(x + 61, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%3d", pc.dex);
-                        StockFontBuffer(x + 61 + 120, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
+                    sprintf_s(moji, "%8d", pc.exp);
+                    StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
+                    sprintf_s(moji, "%8d", pc.maxExp);
+                    StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
+                    sprintf_s(moji, "%4d", pc.hp);
+                    StockFontBuffer(x + 48, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%4d", pc.maxHp);
+                    StockFontBuffer(x + 98, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
+                    sprintf_s(moji, "%3d", pc.mp);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
+                    sprintf_s(moji, "%3d", pc.atk);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
+                    sprintf_s(moji, "%3d", pc.def);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
+                    sprintf_s(moji, "%3d", pc.quick);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
+                    sprintf_s(moji, "%3d", pc.charm);
+                    StockFontBuffer(x + 50, y, FONT_PRIO_FRONT, 0, moji, 0); y += 21;
+                    y += 29;
+                    sprintf_s(moji, "%3d", pc.vital);
+                    StockFontBuffer(x + 61, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%3d", pc.str);
+                    StockFontBuffer(x + 61 + 120, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
+                    sprintf_s(moji, "%3d", pc.tgh);
+                    StockFontBuffer(x + 61, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%3d", pc.dex);
+                    StockFontBuffer(x + 61 + 120, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
 #endif
 #endif
-
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                        y += 50;
+                    y += 50;
 #else
-                        y += 17;
+                    y += 17;
 #endif
-                        statusWndFontNo[0] = StockDispBuffer(x + 59, y, DISP_PRIO_IME3, CG_STATUS_WND_GROUP_BTN, 2);
-                        statusWndFontNo[1] = StockDispBuffer(x + 173, y, DISP_PRIO_IME3, CG_CLOSE_BTN, 2);
-                        // ???????
+                    statusWndFontNo[0] = StockDispBuffer(x + 59, y, DISP_PRIO_IME3, CG_STATUS_WND_GROUP_BTN, 2);
+                    statusWndFontNo[1] = StockDispBuffer(x + 173, y, DISP_PRIO_IME3, CG_CLOSE_BTN, 2);
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                        statusWndFontNo[ 12 ] = StockDispBuffer( x + 164 , y - 102, DISP_PRIO_IME3, CG_STATUS_DETAIL, 2 );
-                        if ( pc.profession_class != 0 )
-                            statusWndFontNo[ 14 ] = StockDispBuffer( x + 213 , y - 318 , DISP_PRIO_IME3, CG_WAR_ICON_BIG + pc.profession_class - 1, 2 );
-                        //else //找时间放空图
-                        //    statusWndFontNo[ 14 ] = StockDispBuffer( x + 213 , y - 318 , DISP_PRIO_IME3, CG_WAR_ICON_BIG + pc.profession_class - 1, 2 );
-
-
-                        StockDispBuffer( pActMenuWnd->x + 216, pActMenuWnd->y + 168, DISP_PRIO_IME3, pc.faceGraNo, 0 );
-#else
-#ifdef _CHARTITLE_
-                        StockDispBuffer(pActMenuWnd->x + 209, pActMenuWnd->y + 118 + 11, DISP_PRIO_IME3, pc.faceGraNo, 0);
+                    statusWndFontNo[ 12 ] = StockDispBuffer( x + 164 , y - 102, DISP_PRIO_IME3, CG_STATUS_DETAIL, 2 );
+                    if ( pc.profession_class != 0 )
+                        statusWndFontNo[ 14 ] = StockDispBuffer( x + 213 , y - 318 , DISP_PRIO_IME3, CG_WAR_ICON_BIG + pc.profession_class - 1, 2 );
+                    StockDispBuffer( pActMenuWnd->x + 216, pActMenuWnd->y + 168, DISP_PRIO_IME3, pc.faceGraNo, 0 );
 #else
 #ifdef _CHARTITLE_STR_
-                        StockDispBuffer(pActMenuWnd->x + 209+1, pActMenuWnd->y + 118 + 13, DISP_PRIO_IME3, pc.faceGraNo, 0);
+                    StockDispBuffer(pActMenuWnd->x + 216, pActMenuWnd->y + 168, DISP_PRIO_IME3, pc.faceGraNo, 0);
 #else
 #ifdef _NEW_CHARDATA_
-                        StockDispBuffer(pActMenuWnd->x + 210, pActMenuWnd->y + 118 + 13, DISP_PRIO_IME3, pc.faceGraNo, 0);
+                    StockDispBuffer(pActMenuWnd->x + 210, pActMenuWnd->y + 118 + 13, DISP_PRIO_IME3, pc.faceGraNo, 0);
 #else
-                        StockDispBuffer( pActMenuWnd->x + 209, pActMenuWnd->y + 118, DISP_PRIO_IME3, pc.faceGraNo, 0 );
-#endif
+                    StockDispBuffer( pActMenuWnd->x + 209, pActMenuWnd->y + 118, DISP_PRIO_IME3, pc.faceGraNo, 0 );
 #endif
 #endif
 #endif                    
-                        if (StatusUpPoint != 0){
-                            // ??????????
+                    if (StatusUpPoint != 0){
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                            StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 14 , ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 67 , DISP_PRIO_IME3, CG_STATUS_WND_LV_UP_POINT, 0 );
-                            sprintf_s( moji, "%2d", StatusUpPoint );
-                            StockFontBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 70, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 156, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0 );
-                            statusWndFontNo[ 2 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx  , ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 66 , DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 2 ], 2 );
-                            statusWndFontNo[ 3 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 120, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 66 , DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 3 ], 2 );
-                            statusWndFontNo[ 4 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx  , ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 86, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 4 ], 2 );
-                            statusWndFontNo[ 5 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 120, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 86, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 5 ], 2 );
-#else
-#ifdef _CHARTITLE_
-                            StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 11, DISP_PRIO_IME3, CG_STATUS_WND_LV_UP_POINT, 0);
-                            sprintf_s(moji, "%2d", StatusUpPoint);
-                            StockFontBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 50, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 88 + 11, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0);
-
-                            // ??????
-                            statusWndFontNo[2] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 11, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[2], 2);
-                            statusWndFontNo[3] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 11, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[3], 2);
-                            statusWndFontNo[4] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 11, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[4], 2);
-                            statusWndFontNo[5] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 11, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[5], 2);
+                        StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 14 , ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 67 , DISP_PRIO_IME3, CG_STATUS_WND_LV_UP_POINT, 0 );
+                        sprintf_s( moji, "%2d", StatusUpPoint );
+                        StockFontBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 70, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 156, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0 );
+                        statusWndFontNo[ 2 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx  , ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 66 , DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 2 ], 2 );
+                        statusWndFontNo[ 3 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 120, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 66 , DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 3 ], 2 );
+                        statusWndFontNo[ 4 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx  , ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 86, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 4 ], 2 );
+                        statusWndFontNo[ 5 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 120, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 86, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 5 ], 2 );
 #else
 #ifdef _CHARTITLE_STR_
-                            StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 11+31, DISP_PRIO_IME3, CG_STATUS_WND_LV_UP_POINT, 0);
-                            sprintf_s(moji, "%2d", StatusUpPoint);
-                            StockFontBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 50, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 88 + 11+31, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0);
-
-                            // ??????
-                            statusWndFontNo[2] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 11+31, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[2], 2);
-                            statusWndFontNo[3] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 11+31, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[3], 2);
-                            statusWndFontNo[4] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 11+31, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[4], 2);
-                            statusWndFontNo[5] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 11+31, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[5], 2);
+                        // LEVEL UP POINT, 
+                        StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 16, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 69, DISP_PRIO_IME3, CG_STATUS_WND_LV_UP_POINT, 0);
+                        sprintf_s(moji, "%2d", StatusUpPoint);
+                        StockFontBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 66, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 88 + 69, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0);
+                        // UP! Button.
+                        statusWndFontNo[2] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 68, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[2], 2);
+                        statusWndFontNo[3] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 68, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[3], 2);
+                        statusWndFontNo[4] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 68, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[4], 2);
+                        statusWndFontNo[5] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 68, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[5], 2);
 #else
 #ifdef _NEW_CHARDATA_
-                            StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 42, DISP_PRIO_IME3, CG_STATUS_WND_LV_UP_POINT, 0);
-                            sprintf_s(moji, "%2d", StatusUpPoint);
-                            StockFontBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 50, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 88 + 42, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0);
-                            statusWndFontNo[2] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 42, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[2], 2);
-                            statusWndFontNo[3] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 42, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[3], 2);
-                            statusWndFontNo[4] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 42, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[4], 2);
-                            statusWndFontNo[5] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 42, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[5], 2);
+                        StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 42, DISP_PRIO_IME3, CG_STATUS_WND_LV_UP_POINT, 0);
+                        sprintf_s(moji, "%2d", StatusUpPoint);
+                        StockFontBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 50, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 88 + 42, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0);
+                        statusWndFontNo[2] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 42, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[2], 2);
+                        statusWndFontNo[3] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 42, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[3], 2);
+                        statusWndFontNo[4] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 42, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[4], 2);
+                        statusWndFontNo[5] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx + 120, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 20 + 42, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[5], 2);
 #else
-                            StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my, DISP_PRIO_IME3, CG_STATUS_WND_LV_UP_POINT, 0 );
-                            sprintf_s( moji, "%2d", StatusUpPoint );
-                            StockFontBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 50, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 88, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0 );
-                            // ??????
-                            statusWndFontNo[ 2 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 2 ], 2 );
-                            statusWndFontNo[ 3 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 120, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 3 ], 2 );
-                            statusWndFontNo[ 4 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 20, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 4 ], 2 );
-                            statusWndFontNo[ 5 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 120, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 20, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 5 ], 2 );
+                        StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my, DISP_PRIO_IME3, CG_STATUS_WND_LV_UP_POINT, 0 );
+                        sprintf_s( moji, "%2d", StatusUpPoint );
+                        StockFontBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 50, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 88, FONT_PRIO_FRONT, FONT_PAL_YELLOW, moji, 0 );
+                        statusWndFontNo[ 2 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 2 ], 2 );
+                        statusWndFontNo[ 3 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 120, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 3 ], 2 );
+                        statusWndFontNo[ 4 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 20, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 4 ], 2 );
+                        statusWndFontNo[ 5 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx + 120, ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my + 20, DISP_PRIO_IME3, CG_STATUS_WND_UP_BTN_UP + statusWndBtnFlag[ 5 ], 2 );
 #endif
 #endif
 #endif
-#endif
-                        }
-                        // ??
+                    }
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                        //位移改变称号钮
-                        statusWndFontNo[ 6 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx - 124 , ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my, DISP_PRIO_IME3, CG_STATUS_WND_SHOUGOU_BTN_UP + statusWndBtnFlag[ 6 ], 2 );
-#else
-#ifdef _CHARTITLE_
-                        extern void 称号展示();
-                        称号展示();
-                        statusWndFontNo[6] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx - 125, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my + 3, DISP_PRIO_IME3, CG_STATUS_WND_SHOUGOU_BTN_UP + statusWndBtnFlag[6], 2);
+                    //位移改变称号钮
+                    statusWndFontNo[ 6 ] = StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->mx - 124 , ( ( WINDOW_DISP *)pActMenuWnd->pYobi )->my, DISP_PRIO_IME3, CG_STATUS_WND_SHOUGOU_BTN_UP + statusWndBtnFlag[ 6 ], 2 );
 #else
 #ifdef _CHARTITLE_STR_
-                        extern void 称号展示();
-                        extern BOOL 获取当前称号是否存在();
-                        extern BOOL 获取称号取消窗口();
-                        extern void 设置称号取消窗口();
-                        if(获取称号取消窗口()){
-                            StockDispBuffer(138,450,DISP_PRIO_MENU,55259,1);//确定窗口底图
-                            int bnt;
-                            StockFontBuffer(70,425,1,0,"是否取消称号显示？",0);
-                            bnt = StockFontBuffer(90,462,1,FONT_PAL_YELLOW,"确定",2);
-                            if(mouse.onceState & MOUSE_LEFT_CRICK>0){
-                                if(HitFontNo == bnt){
-                                    设置称号取消窗口();
-                                    if(获取当前称号是否存在()){
-                                        int checksum=0;
-                                        char buf[1024*4];
-                                        memset(buf,0,1024*4);
-                                        checksum += util_mkint(buf, -1);
-                                        util_mkint(buf, checksum);
-                                        util_SendMesg(sockfd, LSSPROTO_CHARTITLE_SEND, buf);
-                                    }
-                                    play_se(203, 320, 240);
+                    extern void 称号展示();
+                    extern BOOL 获取当前称号是否存在();
+                    extern BOOL 获取称号取消窗口();
+                    extern void 设置称号取消窗口();
+                    if(获取称号取消窗口()){
+                        StockDispBuffer(138,450,DISP_PRIO_MENU,55259,1);//确定窗口底图
+                        int bnt;
+                        StockFontBuffer(70,425,1,0,"是否取消称号显示？",0);
+                        bnt = StockFontBuffer(90,462,1,FONT_PAL_YELLOW,"确定",2);
+                        if(mouse.onceState & MOUSE_LEFT_CRICK>0){
+                            if(HitFontNo == bnt){
+                                设置称号取消窗口();
+                                if(获取当前称号是否存在()){
+                                    int checksum=0;
+                                    char buf[1024*4];
+                                    memset(buf,0,1024*4);
+                                    checksum += util_mkint(buf, -1);
+                                    util_mkint(buf, checksum);
+                                    util_SendMesg(sockfd, LSSPROTO_CHARTITLE_SEND, buf);
                                 }
-                            }
-                            bnt = StockFontBuffer(155,462,1,FONT_PAL_YELLOW,"取消",2);
-                            if(mouse.onceState & MOUSE_LEFT_CRICK>0){
-                                if(HitFontNo == bnt){
-                                    设置称号取消窗口();
-                                    play_se(203, 320, 240);
-                                }
+                                play_se(203, 320, 240);
                             }
                         }
-                        称号展示();
-                        statusWndFontNo[6] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_IME3, CG_STATUS_WND_SHOUGOU_BTN_UP + statusWndBtnFlag[6], 2);
+                        bnt = StockFontBuffer(155,462,1,FONT_PAL_YELLOW,"取消",2);
+                        if(mouse.onceState & MOUSE_LEFT_CRICK>0){
+                            if(HitFontNo == bnt){
+                                设置称号取消窗口();
+                                play_se(203, 320, 240);
+                            }
+                        }
+                    }
+                    称号展示();
+                    statusWndFontNo[6] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_IME3, CG_STATUS_WND_SHOUGOU_BTN_UP + statusWndBtnFlag[6], 2);
 #else
-                        statusWndFontNo[6] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_IME3, CG_STATUS_WND_SHOUGOU_BTN_UP + statusWndBtnFlag[6], 2);
+                    statusWndFontNo[6] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_IME3, CG_STATUS_WND_SHOUGOU_BTN_UP + statusWndBtnFlag[6], 2);
 #endif
 #endif
-#endif
-
-                        // ?
-                        x = pActMenuWnd->x + 19;
-                        y = pActMenuWnd->y + 174;
+                    x = pActMenuWnd->x + 16;
+                    y = pActMenuWnd->y + 174;
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
-                        x -= 4;
-                        y += 43;
-#endif
-#ifdef _CHARTITLE_
-                        y += 11;
+                    x -= 4;
+                    y += 43;
 #endif
 #ifdef _NEW_CHARDATA_
-                        y += 42;
+                    y += 42;
 #endif
-                        if (pc.earth > 0){
-                            x2 = (int)(pc.earth * 0.8);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 0, y + PET_WND_ATTR_Y + 0, x + PET_WND_ATTR_X + 0 + x2, y + PET_WND_ATTR_Y + 8, DISP_PRIO_IME4, SYSTEM_PAL_GREEN, 1);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 1, y + PET_WND_ATTR_Y + 1, x + PET_WND_ATTR_X + 1 + x2, y + PET_WND_ATTR_Y + 9, DISP_PRIO_IME3, SYSTEM_PAL_GREEN2, 0);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 2, y + PET_WND_ATTR_Y + 2, x + PET_WND_ATTR_X + 2 + x2, y + PET_WND_ATTR_Y + 10, DISP_PRIO_IME3, SYSTEM_PAL_GREEN2, 0);
-                        }
-                        y += 20;
-
-                        // ????
-                        if (pc.water > 0){
-                            x2 = (int)(pc.water * 0.8);
-
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 0, y + PET_WND_ATTR_Y + 0, x + PET_WND_ATTR_X + 0 + x2, y + PET_WND_ATTR_Y + 8, DISP_PRIO_IME4, SYSTEM_PAL_AQUA, 1);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 1, y + PET_WND_ATTR_Y + 1, x + PET_WND_ATTR_X + 1 + x2, y + PET_WND_ATTR_Y + 9, DISP_PRIO_IME3, SYSTEM_PAL_AQUA2, 0);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 2, y + PET_WND_ATTR_Y + 2, x + PET_WND_ATTR_X + 2 + x2, y + PET_WND_ATTR_Y + 10, DISP_PRIO_IME3, SYSTEM_PAL_AQUA2, 0);
-                        }
-                        y += 20;
-
-                        // ????
-                        if (pc.fire > 0){
-                            x2 = (int)(pc.fire * 0.8);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 0, y + PET_WND_ATTR_Y + 0, x + PET_WND_ATTR_X + 0 + x2, y + PET_WND_ATTR_Y + 8, DISP_PRIO_IME4, SYSTEM_PAL_RED, 1);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 1, y + PET_WND_ATTR_Y + 1, x + PET_WND_ATTR_X + 1 + x2, y + PET_WND_ATTR_Y + 9, DISP_PRIO_IME3, SYSTEM_PAL_RED2, 0);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 2, y + PET_WND_ATTR_Y + 2, x + PET_WND_ATTR_X + 2 + x2, y + PET_WND_ATTR_Y + 10, DISP_PRIO_IME3, SYSTEM_PAL_RED2, 0);
-                        }
-                        y += 20;
-
-                        // ????
-                        if (pc.wind > 0){
-                            x2 = (int)(pc.wind * 0.8);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 0, y + PET_WND_ATTR_Y + 0, x + PET_WND_ATTR_X + 0 + x2, y + PET_WND_ATTR_Y + 8, DISP_PRIO_IME4, SYSTEM_PAL_YELLOW, 1);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 1, y + PET_WND_ATTR_Y + 1, x + PET_WND_ATTR_X + 1 + x2, y + PET_WND_ATTR_Y + 9, DISP_PRIO_IME3, SYSTEM_PAL_YELLOW2, 0);
-                            StockBoxDispBuffer(x + PET_WND_ATTR_X + 2, y + PET_WND_ATTR_Y + 2, x + PET_WND_ATTR_X + 2 + x2, y + PET_WND_ATTR_Y + 10, DISP_PRIO_IME3, SYSTEM_PAL_YELLOW2, 0);
-                        }
-
+                    if (pc.earth > 0){
+                        x2 = (int)(pc.earth * 0.8);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 0, y + PET_WND_ATTR_Y + 0, x + PET_WND_ATTR_X + 0 + x2, y + PET_WND_ATTR_Y + 8, DISP_PRIO_IME4, SYSTEM_PAL_GREEN, 1);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 1, y + PET_WND_ATTR_Y + 1, x + PET_WND_ATTR_X + 1 + x2, y + PET_WND_ATTR_Y + 9, DISP_PRIO_IME3, SYSTEM_PAL_GREEN2, 0);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 2, y + PET_WND_ATTR_Y + 2, x + PET_WND_ATTR_X + 2 + x2, y + PET_WND_ATTR_Y + 10, DISP_PRIO_IME3, SYSTEM_PAL_GREEN2, 0);
+                    }
+                    y += 20;
+                    if (pc.water > 0){
+                        x2 = (int)(pc.water * 0.8);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 0, y + PET_WND_ATTR_Y + 0, x + PET_WND_ATTR_X + 0 + x2, y + PET_WND_ATTR_Y + 8, DISP_PRIO_IME4, SYSTEM_PAL_AQUA, 1);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 1, y + PET_WND_ATTR_Y + 1, x + PET_WND_ATTR_X + 1 + x2, y + PET_WND_ATTR_Y + 9, DISP_PRIO_IME3, SYSTEM_PAL_AQUA2, 0);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 2, y + PET_WND_ATTR_Y + 2, x + PET_WND_ATTR_X + 2 + x2, y + PET_WND_ATTR_Y + 10, DISP_PRIO_IME3, SYSTEM_PAL_AQUA2, 0);
+                    }
+                    y += 20;
+                    if (pc.fire > 0){
+                        x2 = (int)(pc.fire * 0.8);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 0, y + PET_WND_ATTR_Y + 0, x + PET_WND_ATTR_X + 0 + x2, y + PET_WND_ATTR_Y + 8, DISP_PRIO_IME4, SYSTEM_PAL_RED, 1);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 1, y + PET_WND_ATTR_Y + 1, x + PET_WND_ATTR_X + 1 + x2, y + PET_WND_ATTR_Y + 9, DISP_PRIO_IME3, SYSTEM_PAL_RED2, 0);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 2, y + PET_WND_ATTR_Y + 2, x + PET_WND_ATTR_X + 2 + x2, y + PET_WND_ATTR_Y + 10, DISP_PRIO_IME3, SYSTEM_PAL_RED2, 0);
+                    }
+                    y += 20;
+                    if (pc.wind > 0){
+                        x2 = (int)(pc.wind * 0.8);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 0, y + PET_WND_ATTR_Y + 0, x + PET_WND_ATTR_X + 0 + x2, y + PET_WND_ATTR_Y + 8, DISP_PRIO_IME4, SYSTEM_PAL_YELLOW, 1);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 1, y + PET_WND_ATTR_Y + 1, x + PET_WND_ATTR_X + 1 + x2, y + PET_WND_ATTR_Y + 9, DISP_PRIO_IME3, SYSTEM_PAL_YELLOW2, 0);
+                        StockBoxDispBuffer(x + PET_WND_ATTR_X + 2, y + PET_WND_ATTR_Y + 2, x + PET_WND_ATTR_X + 2 + x2, y + PET_WND_ATTR_Y + 10, DISP_PRIO_IME3, SYSTEM_PAL_YELLOW2, 0);
                     }
                 }
             }
-            // ???????????
             if (pActMenuWnd3 != NULL){
-                // ??????????????
                 if (pActMenuWnd3->hp > 0){
-                    // ?????????
 #ifdef _NEWPANEL //Syu ADD 7.0 新人物状态介面
                     StockDispBuffer( ( ( WINDOW_DISP *)pActMenuWnd3->pYobi )->mx, ( ( WINDOW_DISP *)pActMenuWnd3->pYobi )->my, DISP_PRIO_MENU, CG_NAME_CHANGE_WND, 1 );
-#else
-#ifdef _CHARTITLE_
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd3->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd3->pYobi)->my + 27, DISP_PRIO_MENU, 55249, 1);
 #else
 #ifdef _CHARTITLE_STR_
                     StockDispBuffer(((WINDOW_DISP *)pActMenuWnd3->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd3->pYobi)->my + 27, DISP_PRIO_MENU, 55249, 1);
@@ -10998,161 +10782,123 @@ void MenuProc(void)
                     StockDispBuffer(((WINDOW_DISP *)pActMenuWnd3->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd3->pYobi)->my, DISP_PRIO_MENU, CG_NAME_CHANGE_WND, 1);
 #endif
 #endif
-#endif
-#ifdef _CHARTITLE_
-                    extern BOOL 人物称号处理(ACTION * pct);
-                    if (人物称号处理(pActMenuWnd3)){
-                        pActMenuWnd3 = NULL;
-
-                    }
-#else
 #ifdef _CHARTITLE_STR_
                     extern BOOL 人物称号处理(ACTION * pct);
                     if (人物称号处理(pActMenuWnd3)){
                         pActMenuWnd3 = NULL;
-
                     }
 #else
                     GetKeyInputFocus(&shougouChange);
-                    // ????????
                     if (mouse.onceState & MOUSE_LEFT_CRICK){
-                        // ??ＯＫ???
                         if (HitDispNo == statusWndFontNo[7]){
-                            // ???????? 
                             KeyboardReturn();
                         }
-                        // ??????????
                         if (HitDispNo == statusWndFontNo[8]){
-                            // ??????
                             DeathAction(pActMenuWnd3);
                             pActMenuWnd3 = NULL;
-                            // ????????
                             GetKeyInputFocus(&MyChatBuffer);
-                            // ????????
                             play_se(203, 320, 240);
                         }
                     }
-                    // ??????????????
                     if (pActMenuWnd3 != NULL){
-                        // ???
                         StockFontBuffer2(&shougouChange);
-
-                        // ?
                         x = pActMenuWnd3->x + 20;
                         y = pActMenuWnd3->y + 60;
                         statusWndFontNo[7] = StockDispBuffer(x + 60, y + 7, DISP_PRIO_IME3, CG_OK_BTN, 2);
                         statusWndFontNo[8] = StockDispBuffer(x + 170, y + 7, DISP_PRIO_IME3, CG_CANCEL_BTN, 2);
                     }
 #endif
-#endif
                 }
             }
             break;
-
-        case 1:    // ??????????
-
-            // ?????????
+        case 1:
             if (pActMenuWnd == NULL){
-                // ?????????
                 pActMenuWnd = MakeWindowDisp(4, 0, 256, 456, 0, -1);
-                // ??????
                 for (i = 0; i < MENU_STATUS_0; i++) statusWndFontNo[i] = -2;
                 for (i = 0; i < MENU_STATUS_0; i++) statusWndBtnFlag[i] = 0;
-            }
-            else{
-                // ??????????????
-                if (pActMenuWnd->hp > 0){
-                    // ????????????
-                    StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_MENU, CG_STATUS_WND_GROUP_WND, 1);
-                    // ????????
-                    if (mouse.onceState & MOUSE_LEFT_CRICK){
-                        // ???
-                        if (HitDispNo == statusWndFontNo[11]){
-                            // ??????
-                            DeathAction(pActMenuWnd);
-                            pActMenuWnd = NULL;
-                            statusWndNo = 0;
-                            // ????????
+            } else if (pActMenuWnd->hp > 0){
+                StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, ((WINDOW_DISP *)pActMenuWnd->pYobi)->my, DISP_PRIO_MENU, CG_STATUS_WND_GROUP_WND, 1);
+                if (mouse.onceState & MOUSE_LEFT_CRICK){
+                    if (HitDispNo == statusWndFontNo[11]){
+                        DeathAction(pActMenuWnd);
+                        pActMenuWnd = NULL;
+                        statusWndNo = 0;
+                        play_se(203, 320, 240);
+                    }
+#ifdef _TEAM_KICKPARTY
+                    for (i = 0; i < 5; i++){
+                        if (HitDispNo == statusWndFontNo[i + 12]){
+                            lssproto_KTEAM_send(sockfd, i);
                             play_se(203, 320, 240);
                         }
-#ifdef _TEAM_KICKPARTY
-                        for (i = 0; i < 5; i++){
-                            if (HitDispNo == statusWndFontNo[i + 12]){
-                                lssproto_KTEAM_send(sockfd, i);
-                                play_se(203, 320, 240);
-                            }
-                        }
-#endif
                     }
-                    // ????????
-                    if (pActMenuWnd != NULL){
-                        int selectFlag;    // ??????????
-                        // ?
-                        x = pActMenuWnd->x + 17;
-                        y = pActMenuWnd->y + 25;
+#endif
+                }
+                if (pActMenuWnd != NULL){
+                    int selectFlag;    // ??????????
+                    x = pActMenuWnd->x + 17;
+                    y = pActMenuWnd->y + 25;
 
-                        if (itemNo != -1 || jujutuNo != -1) selectFlag = 2;
-                        else selectFlag = FALSE;
+                    if (itemNo != -1 || jujutuNo != -1) selectFlag = 2;
+                    else selectFlag = FALSE;
 
-                        CenteringStr(pc.name, moji, CHAR_NAME_LEN);
-                        statusWndFontNo[0] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, selectFlag); y += 19;
-                        sprintf_s(moji, "%4d", pc.mp);
+                    CenteringStr(pc.name, moji, CHAR_NAME_LEN);
+                    statusWndFontNo[0] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, selectFlag); y += 19;
+                    sprintf_s(moji, "%4d", pc.mp);
 #ifdef _NEWFONT_
-                        StockFontBuffer(x + 79, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%d", pc.hp);
-                        StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%d",pc.maxHp);
-                        StockFontBuffer(x + 190, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        y += 20;
+                    StockFontBuffer(x + 79, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%d", pc.hp);
+                    StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%d",pc.maxHp);
+                    StockFontBuffer(x + 190, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    y += 20;
 #else
-                        StockFontBuffer(x + 77, y, FONT_PRIO_FRONT, 0, moji, 0);
-                        sprintf_s(moji, "%4d   %4d", pc.hp, pc.maxHp);
-                        StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
+                    StockFontBuffer(x + 77, y, FONT_PRIO_FRONT, 0, moji, 0);
+                    sprintf_s(moji, "%4d   %4d", pc.hp, pc.maxHp);
+                    StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
 #endif
-                        
-                        for (i = 0; i < 5; i++){
-                            if (pet[i].useFlag == TRUE){
-                                if (pet[i].freeName[0] != NULL) CenteringStr(pet[i].freeName, moji, PET_NAME_LEN);
-                                else CenteringStr(pet[i].name, moji, PET_NAME_LEN);
+                    
+                    for (i = 0; i < 5; i++){
+                        if (pet[i].useFlag == TRUE){
+                            if (pet[i].freeName[0] != NULL) CenteringStr(pet[i].freeName, moji, PET_NAME_LEN);
+                            else CenteringStr(pet[i].name, moji, PET_NAME_LEN);
 #ifdef _NEWFONT_
-                                statusWndFontNo[i + 1] = StockFontBuffer(x, y-2, FONT_PRIO_FRONT, 0, moji, selectFlag); y += 20;
-                                sprintf_s(moji, "%d", pet[i].hp);
-                                StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0);
-                                sprintf_s(moji, "%d", pet[i].maxHp);
-                                StockFontBuffer(x + 190, y, FONT_PRIO_FRONT, 0, moji, 0);
-                                y += 20;
+                            statusWndFontNo[i + 1] = StockFontBuffer(x, y-2, FONT_PRIO_FRONT, 0, moji, selectFlag); y += 20;
+                            sprintf_s(moji, "%d", pet[i].hp);
+                            StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0);
+                            sprintf_s(moji, "%d", pet[i].maxHp);
+                            StockFontBuffer(x + 190, y, FONT_PRIO_FRONT, 0, moji, 0);
+                            y += 20;
 #else
-                                statusWndFontNo[i + 1] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, selectFlag); y += 20;
-                                sprintf_s(moji, "%4d   %4d", pet[i].hp, pet[i].maxHp);
-                                StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
+                            statusWndFontNo[i + 1] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, selectFlag); y += 20;
+                            sprintf_s(moji, "%4d   %4d", pet[i].hp, pet[i].maxHp);
+                            StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
 #endif
-                            }
                         }
-                        y = 268;
-                        for (i = 0; i < 5; i++){
-                            if (pc.id != party[i].id && party[i].useFlag == TRUE){
-                                CenteringStr(party[i].name, moji, CHAR_NAME_LEN);
-                                statusWndFontNo[i + 6] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, selectFlag); y += 20;
-#ifdef _TEAM_KICKPARTY
-                                //andy_add 队长踢人
-                                statusWndFontNo[i + 12] = StockDispBuffer(x + 187, y - 10, DISP_PRIO_IME3, CG_MAIL_WND_DELETE_BTN, 2);
-#endif
-                                sprintf_s(moji, "%4d", party[i].mp);
-                                StockFontBuffer(x + 77, y, FONT_PRIO_FRONT, 0, moji, 0);
-#ifdef _NEWFONT_
-                                sprintf_s(moji, "%d", party[i].hp);
-                                StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0); 
-                                sprintf_s(moji, "%d", party[i].maxHp);
-                                StockFontBuffer(x + 190, y, FONT_PRIO_FRONT, 0, moji, 0); 
-                                y += 20;
-#else
-                                sprintf_s(moji, "%4d %4d", party[i].hp, party[i].maxHp);
-                                StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
-#endif
-                            }
-                        }
-                        statusWndFontNo[11] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, 441, DISP_PRIO_IME3, CG_RETURN_BTN, 2);
                     }
+                    y = 268;
+                    for (i = 0; i < 5; i++){
+                        if (pc.id != party[i].id && party[i].useFlag == TRUE){
+                            CenteringStr(party[i].name, moji, CHAR_NAME_LEN);
+                            statusWndFontNo[i + 6] = StockFontBuffer(x, y, FONT_PRIO_FRONT, 0, moji, selectFlag); y += 20;
+#ifdef _TEAM_KICKPARTY
+                            statusWndFontNo[i + 12] = StockDispBuffer(x + 187, y - 10, DISP_PRIO_IME3, CG_MAIL_WND_DELETE_BTN, 2);
+#endif
+                            sprintf_s(moji, "%4d", party[i].mp);
+                            StockFontBuffer(x + 77, y, FONT_PRIO_FRONT, 0, moji, 0);
+#ifdef _NEWFONT_
+                            sprintf_s(moji, "%d", party[i].hp);
+                            StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0); 
+                            sprintf_s(moji, "%d", party[i].maxHp);
+                            StockFontBuffer(x + 190, y, FONT_PRIO_FRONT, 0, moji, 0); 
+                            y += 20;
+#else
+                            sprintf_s(moji, "%4d %4d", party[i].hp, party[i].maxHp);
+                            StockFontBuffer(x + 142, y, FONT_PRIO_FRONT, 0, moji, 0); y += 20;
+#endif
+                        }
+                    }
+                    statusWndFontNo[11] = StockDispBuffer(((WINDOW_DISP *)pActMenuWnd->pYobi)->mx, 441, DISP_PRIO_IME3, CG_RETURN_BTN, 2);
                 }
             }
             break;
@@ -20057,11 +19803,6 @@ void lssproto_CHAREFFECT_recv(int fd, char *data) {
         setCharMind(pc.ptAct, atoi(data + 2));
     else if (data[0] == '3')
         setCharmFamily(pc.ptAct, atoi(data + 2));
-#ifdef _CHARTITLE_
-    else if (data[0] == '4'){
-        setCharmTitle(pc.ptAct, atoi(data + 2));
-    }
-#endif
 #ifdef _CHAR_MANOR_
     else if (data[0] == '5')
         setCharmManor(pc.ptAct, atoi(data + 2));

@@ -5,7 +5,7 @@
 #include <crtdbg.h>
 #endif
 
-#define _SA_VERSION_25
+#define _SA_VERSION_25  // 可选 _SA_VERSION_25/40/50/60/70/80/85
 
 #ifdef _SA_VERSION_SPECIAL
 #define _SA_VERSION_60
@@ -84,7 +84,6 @@ extern int DISPLACEMENT_Y;
 extern int viewOffsetX;
 extern int viewOffsetY;
 
-// #define _NEWDRAWBATTLEMAP_FIX           // (不可开) ROG ADD 战斗地图修改
 
 // 版本分割
 #ifdef _SA_VERSION_85
@@ -299,25 +298,24 @@ extern int viewOffsetY;
 
 //新功能：人物职业
 #define _TABLEOFSKILL                // (可开放) Syu ADD 7.0 新增人物技能表单
-//#define _NEWPANEL_71                // (可开放) ROG ADD 新login画面
-//#define _NEWPANEL_70                // (可开放) Syu ADD 石器7.0 LOGIN 画面
-#define _CHAR_PROFESSION            // (可开放) WON ADD 人物职业
-#define _SKILLSORT                    // (可开放) Syu ADD 职业技能排列分类
-#define _NEWREQUESTPROTOCOL            // (可开放) Syu ADD 新增Protocol要求能力细项
+//#define _NEWPANEL_71               // (可开放) ROG ADD 新login画面
+//#define _NEWPANEL_70               // (可开放) Syu ADD 石器7.0 LOGIN 画面
+#define _CHAR_PROFESSION             // (可开放) WON ADD 人物职业
+#define _SKILLSORT                   // (可开放) Syu ADD 职业技能排列分类
+#define _NEWREQUESTPROTOCOL          // (可开放) Syu ADD 新增Protocol要求能力细项
 #define _OUTOFBATTLESKILL            // (可开放) Syu ADD 非战斗时技能Protocol
-#define _NEWSOUNDEFFECT                // (可开放) Syu ADD 动画音效档
-#define _FIXSTATUS                    // (可开放) Syu ADD 新战斗状态显示方式
+#define _NEWSOUNDEFFECT              // (可开放) Syu ADD 动画音效档
+#define _FIXSTATUS                   // (可开放) Syu ADD 新战斗状态显示方式
 #define _ALLDOMAN                    // (可开放) Syu ADD 排行榜NPC
 #define _CHATROOMPROTOCOL            // (可开放) Syu ADD 聊天室频道
-#define _FRIENDCHANNEL                // (可开放) ROG ADD 好友频道
-#define _TELLCHANNEL                // (可开放) ROG ADD 密语频道
+#define _FRIENDCHANNEL               // (可开放) ROG ADD 好友频道
+#define _TELLCHANNEL                 // (可开放) ROG ADD 密语频道
+#define _DROPPETWND                  // (可开放) Syu ADD 丢弃宠物确认
 
-#define _DROPPETWND                    // (可开放) Syu ADD 丢弃宠物确认
-
-#define _MAILSHOWPLANET                // (可开放) Syu ADD 显示名片星球
-#define _MOON_FAIRYLAND                // (可开放) ROG ADD 月之仙境
+#define _MAILSHOWPLANET              // (可开放) Syu ADD 显示名片星球
+#define _MOON_FAIRYLAND              // (可开放) ROG ADD 月之仙境
 #define _SPECIALSPACEANIM_FIX        // (可开放) ROG ADD 修正动画
-//#define _TIMEBAR_FUNCTION            // (不可开) ROG ADD 时间bar函式
+//#define _TIMEBAR_FUNCTION          // (不可开) ROG ADD 时间bar函式
 
 
 //10/23
@@ -533,7 +531,6 @@ unsigned int TimeGetTime(void);
 #define _FIX_BATTLE_AI              // 修复战斗AI转换的BUG
 #define _WIN_LUAJIT_                // 增加LUAJIT扩展功能:支持中文接口和中文路径LUA文件
 #define _NEW_COLOR_                 // 补丁支持16位RGB高彩图片
-#define _NEW_WIN_POS_               // 800窗口偏移设置
 #define _NEW_ALPHA_                 // 新建半透明处理
 // #define _CACHE_SURFACE_          // 缓存surface 加快渲染
 // #define _OPTIMIZATIONFLIP_       // 优化Flip
