@@ -273,7 +273,7 @@ char *OnlineGmIP;       //使用domain name
 //char OnlineGmIP[20];   //使用直接ip
 #define SMSDomainName   "ingame.wayi.com.tw"//"sms.hwaei.com.tw"
 
-int     ResultCode;  // 传输产生的侦错码 
+int ResultCode;  // 传输产生的侦错码 
 
 static char *pContent=NULL;
 

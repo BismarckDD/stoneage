@@ -68,7 +68,6 @@ CHARLISTTABLE：登录界面的角色列表
 #endif
 #define MAX_ADR_BOOK (MAX_ADR_BOOK_COUNT * MAX_ADR_BOOK_PAGE)
 
-#ifdef _ITEM_EQUITSPACE
 typedef enum {
   CHAR_HEAD,
   CHAR_BODY,
@@ -117,15 +116,12 @@ typedef enum {
 
 #define MAX_ITEMSTART CHAR_EQUIPPLACENUM
 #define MAX_MAXHAVEITEM 15
+
 #ifdef _NEW_ITEM_
 #define MAX_ITEM (MAX_ITEMSTART + MAX_MAXHAVEITEM * 3)
 int 判断玩家道具数量();
 #else
 #define MAX_ITEM (MAX_ITEMSTART + MAX_MAXHAVEITEM)
-#endif
-#else
-#define MAX_ITEMSTART 5
-#define MAX_ITEM 20
 #endif
 
 #define RESULT_ITEM_COUNT 3

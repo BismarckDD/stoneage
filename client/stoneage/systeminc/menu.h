@@ -808,6 +808,7 @@ void SetJigsaw(int img, char *str);
 EXTERN int bSwitchExperienceTips; // 战斗结束后的经验提示
 EXTERN int bSwitchMuteOtherPlayers; // 屏蔽其他玩家
 EXTERN int bRightClickAttack; // 右键攻击开关
+EXTERN int gCurrInventoryPage; // 当前物品栏的页数
 #undef EXTERN
 
 typedef enum {
@@ -942,8 +943,4 @@ void ShowItemup(int value, int x, int y);
 
 #ifdef _NPC_ITEMUP
 void ShowCounttime(int value, int x, int y);
-#endif
-
-#ifdef _NEW_SPEED_
-extern BOOL GameSpeedFlag;
 #endif

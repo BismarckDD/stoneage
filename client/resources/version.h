@@ -141,13 +141,6 @@ extern int viewOffsetY;
 // 说明：
 #define _ITEM_FIRECREAKER
 
-/* -------------------------------------------------------------------
-* 新功能：PK星系
-* 人员：彦勋
-* 说明：
-*/
-//#define _PKSERVER // (不可开放)
-
 
 // -------------------------------------------------------------------
 // 专案：传送手机简讯的玩家界面实作
@@ -158,7 +151,7 @@ extern int viewOffsetY;
 // 开放日期 : 2002年03月04日
 // Status : Ready!
 //#define __PHONEMESSAGE    
-#define _FIX_URLENCODE             // WON ADD (可 开 放) 北京修正简讯无法加空格的问题
+#define _FIX_URLENCODE // WON ADD (可 开 放) 北京修正简讯无法加空格的问题
 
 
 // -------------------------------------------------------------------
@@ -168,22 +161,18 @@ extern int viewOffsetY;
 // 开放日期 : 禁止开放!!
 // Status : 建构中...
 //#define __CARDMESSAGE   //(禁用)!!
-
-
 //#define __NEW_CLIENT_ONLY_WRITE    //Cary(禁用,未测过)
 //#define CHINA_VER            //Cary (禁用)
 //#define __ALBUM_4
 //#define __ALBUM_6            //Cary 加入新的宠物相簿(含年兽)
-
-#define __HELP                //Cary 线上说明
-#define __NEW_PROTOCOL        //Cary 新的底层
-
-#define __NEW_CLIENT_MEM    //Cary
+#define __HELP                 //Cary 线上说明
+#define __NEW_PROTOCOL         //Cary 新的底层
+#define __NEW_CLIENT_MEM       //Cary
 #define __SKYISLAND            //Cary 加入天空岛的功能
-#define __HI_COLOR            //Cary 加入高彩的功能(debug version专用)
-#define __TALK_TO_NPC        //Cary 使用左键和npc说话
+#define __HI_COLOR             //Cary 加入高彩的功能(debug version专用)
+#define __TALK_TO_NPC          //Cary 使用左键和npc说话
 #define __NEW_BATTLE_EFFECT    //Cary 2002.2.21 新的战斗特效，如:替身娃娃
-#define _AFTER_TRADE_PETWAIT_       // (可 开 放) set pet status to wait after trade :vincent
+#define _AFTER_TRADE_PETWAIT_  // (可 开 放) set pet status to wait after trade :vincent
 
 
 
@@ -218,9 +207,7 @@ extern int viewOffsetY;
 #define _ITEM_CRACKER              // (可开放) 道具:拉炮 code:vincent
 #define _SKILL_ROAR                // (可开放) vincent  宠技:大吼(克年兽)
 #define _SKILL_SELFEXPLODE         // (可开放) vincent  宠技:自爆
-
 #define _NEW_RIDEPETS              // (可开放) 新骑宠
-
 #define _ATTDOUBLE_ATTACK          // (可开放) 属性强化攻击
 #define __TOCALL_MAGIC             // (可开放) kjl 02/06/24    
 #define _VARY_WOLF                 // (可开放) pet skill : vary wolf. code:shan
@@ -228,19 +215,14 @@ extern int viewOffsetY;
 #define _TRADE_PETCOLOR            // (可开放) Syu ADD 改变交易时宠物转生颜色
 #define _FIXSHOWMPERR              // (可开放) Syu ADD 修正补气时动画显示错误
 #define _LIZARDPOSITION            // (可开放) Syu ADD 修正龙蜥显示位置过低
-
-
 /* -------------------------------------------------------------------
 * 新功能：
 * 更新日期2002/12/18 14:00 更新
 */
-
-#define _TEAM_KICKPARTY                // (可开放) ANDY 队长踢人
-#define _MONEYINPUT                    // (可开放) Syu ADD 手动输入金钱量
-
-#define _PETS_SELECTCON                // (可开放) ANDY 宠物选择
-
-#endif        // _SA_VERSION_40
+#define _TEAM_KICKPARTY            // (可开放) ANDY 队长踢人
+#define _MONEYINPUT                // (可开放) Syu ADD 手动输入金钱量
+#define _PETS_SELECTCON            // (可开放) ANDY 宠物选择
+#endif // _SA_VERSION_40
 
 
 
@@ -249,25 +231,25 @@ extern int viewOffsetY;
 * 新功能：石器6.0
 * 更新日期
 */
-#define _OBJSEND_C                    // (可开放) ANDY 6.0
+#define _OBJSEND_C                  // (可开放) ANDY 6.0
 #define _ADD_SHOW_ITEMDAMAGE        // (可开放) WON ADD 显示道具的耐久度
-#define _WATERANIMATION                // (可开放) Syu ADD 泪之海动画层
-#define _NEWDRAWBATTLEMAP            // (可开放) Syu ADD 水世界战斗地表与战斗特效 
-#define _AniCharBubble                // (可开放) Syu ADD 动画层人物吐出气泡
-#define _AniCrossFrame                // (可开放) Syu ADD 动画层游过画面生物
+#define _WATERANIMATION             // (可开放) Syu ADD 泪之海动画层
+#define _NEWDRAWBATTLEMAP           // (可开放) Syu ADD 水世界战斗地表与战斗特效 
+#define _AniCharBubble              // (可开放) Syu ADD 动画层人物吐出气泡
+#define _AniCrossFrame              // (可开放) Syu ADD 动画层游过画面生物
 #define _AniImmobile                // (可开放) Syu ADD 定点产生特定动画
-#define _AniRandom                    // (可开放) Syu ADD 随机产生环境动画
-//#define _DELBORNPLACE                // (可开放) Syu ADD 6.0 统一出生于新手村
+#define _AniRandom                  // (可开放) Syu ADD 随机产生环境动画
+//#define _DELBORNPLACE             // (可开放) Syu ADD 6.0 统一出生于新手村
 #define _NEWMUSICFILE6_0            // (可开放) Syu ADD 6.0 新地图音乐
-#define _TRADESHOWNAME                // (可开放) Syu ADD 交易显示对方名称
+#define _TRADESHOWNAME              // (可开放) Syu ADD 交易显示对方名称
 #define _TRADEINPUTMONEY            // (可开放) Syu ADD 交易手动输入金钱
-#define _TRADE_SHOWHP                // (可开放) Syu ADD 交易显示血量
+#define _TRADE_SHOWHP               // (可开放) Syu ADD 交易显示血量
 #define _CHANGETRADERULE            // (可开放) Syu ADD 交易规则修订
 #define _PETSKILL_CANNEDFOOD        // (可开放) ANDY 宠物技能罐头
-#define _SPECIALSPACEANIM            // (可开放) Syu ADD 特殊场景动画配置
-#define _SHOOTCHESTNUT                // (可开放) Syu ADD 宠技：丢栗子
-//#define _NEWLOGO                   // (可开放) Syu ADD 6.0登入画面新logo 要关_v4_0 
-#endif        //SA_VERSION_60
+#define _SPECIALSPACEANIM           // (可开放) Syu ADD 特殊场景动画配置
+#define _SHOOTCHESTNUT              // (可开放) Syu ADD 宠技：丢栗子
+//#define _NEWLOGO                  // (可开放) Syu ADD 6.0登入画面新logo 要关_v4_0 
+#endif //SA_VERSION_60
 
 #define _TRADESYSTEM2                // (可开放) Syu ADD 新交易系统
 
@@ -339,7 +321,7 @@ extern int viewOffsetY;
 #define _ERROR301 // Robin AP回传301错误,产品尚未注册
 
 #define _STANDBYPET // Robin 送待机宠列表到Server
-#endif        //SA_VERSION_70
+#endif //SA_VERSION_70
 
 
 #define DIRECTINPUT_VERSION 0x0700    // Robin 增加DirectX SDK的相容性
@@ -501,7 +483,7 @@ unsigned int TimeGetTime(void);
 #define _FIX_ACUPUNCTURE        // (可开) Change 针刺外皮的修改
 #define _PETSKILL_RIDE            // (可开) Change 宠技:上马术
 
-#endif        // _SA_VERSION_80
+#endif // _SA_VERSION_80
 
 #ifdef _SA_VERSION_85
 //--------------------------------------------------------------------------------------------------------
@@ -541,52 +523,42 @@ unsigned int TimeGetTime(void);
 #define _MO_SIGN_IN                 // 客户端签到按钮
 #define _CHANGE_HELP_BUTTON         // 修改帮助按钮图形
 #define _PETCOM_                    // 宠物成长自动计算
-#define _NEW_SPEED_                 // 新游戏速度
 
-#define _PETCOLOR_                  // 1级宠物变色
+#define _PETCOLOR_                  // 1级宠物变色: 2026.09.06
 #define _PETKILL_COST_FAME          // Terry 宠物技能店学技能要花费声
 // #define _AIDENGLU_               // 自动登陆
-#define _ZENGJIASHUO_               // 增加一个锁道具的图标，同时被锁的道具不能选中
-#define _BUDING_ "554CDB1A99DF514B2F0B09DBDA0A6E9D"       //补丁加密
-#define _TIME_GET_TIME                // 用QueryPerformanceCounter取代timeGetTime
-#define _FAMILYBADGE_                 // 家族徽章
-#define _SHOWFAMILYBADGE_             // 显示家族徽章
-#define _NEWNET_                      // 新封包机制
-//#define _SHOWIPSLEEP_               // 显示线路延时
-//#define _MEMORYLEAK_CHECK           // 内存泄漏检测
-//#define _COMFIRM_TRADE_REQUEST      // 交易请求确认
-#define _DIEJIA_                      // 叠加功能
-#define _FANILYTEXIAOY_  45           // 家族徽章偏移Y 越大则越靠窗口顶部
-#define _OTHERTEXIAOY_  70            // 其它图标偏移Y 越大则越靠窗口顶部
-#define _ATTACK_EFFECT                // 角色攻击完后会播放攻击特效
-#define _SA_VERSION 'N'
-#define _SA_MAC_VERSION_CONTROL       // MAC版本号控制
-#define FAMILY_MANOR_                 // 庄园光环
-#define _CHAR_MANOR_                  // 人物脚下光环
-#define _ANNOUNCEMENT_                // 公告系统
-//#define _EFFECT_MAP_                // 塔特效
+#define _BUDING_ "554CDB1A99DF514B2F0B09DBDA0A6E9D"  // 补丁加密
+#define _TIME_GET_TIME              // 用QueryPerformanceCounter取代timeGetTime
+#define _FAMILYBADGE_               // 家族徽章
+#define _SHOWFAMILYBADGE_           // 显示家族徽章
+#define _NEWNET_                    // 新封包机制
+//#define _SHOWIPSLEEP_             // 显示线路延时
+//#define _COMFIRM_TRADE_REQUEST    // 交易请求确认
+#define _FANILYTEXIAOY_  45         // 家族徽章偏移Y 越大则越靠窗口顶部
+#define _OTHERTEXIAOY_  70          // 其它图标偏移Y 越大则越靠窗口顶部
+#define _ATTACK_EFFECT              // 角色攻击完后会播放攻击特效
+#define FAMILY_MANOR_               // 庄园光环
+#define _CHAR_MANOR_                // 人物脚下光环
+#define _ANNOUNCEMENT_              // 公告系统
 #ifndef _DEBUG_
-// #define _ANTI_DEBUG_               // 反调试: 测试版本注释, 正式版本开启.
+// #define _ANTI_DEBUG_             // 反调试: 测试版本注释, 正式版本开启.
 #else
-#define _CMD_MODE                    // 调试模式
-//#define _MO_SHOW_FPS               // 显示fps
-#define _RELUA_                      // DEBUG模式下启用按个人信息则重读LUA
+#define _CMD_MODE                   // 调试模式
+//#define _MO_SHOW_FPS              // 显示fps
 #endif
-#define SHOW_VERSION "2.5"
-#define LABEL_STR_                 //标记重定义输出[普][密]
 
 #ifdef _SA_VERSION_25
-#define _ITEM_EQUITSPACE              // 人物扩展装备栏：腰带、盾、鞋
-#define _EQUIT_NEWGLOVE               // 人物手套栏
-#define _DEFAULT_PKEY "shiqi"         // 默认的密钥
-#define _RUNNING_KEY  "shiqi.hk"      // 运行中密钥
-#define _SYSTEM_SLEEP_   6            // 游戏速度设置
-#define _SURFACE_ANIM                 // 动态地上物显示
-#define _DEFENSETOOENNUM_ 5           // 限几开
+#define _ITEM_EQUITSPACE            // 人物扩展装备栏：腰带、盾、鞋
+#define _EQUIT_NEWGLOVE             // 人物手套栏
+#define _DEFAULT_PKEY "shiqi"       // 默认的密钥
+#define _RUNNING_KEY  "shiqi.hk"    // 运行中密钥
+#define _SYSTEM_SLEEP_   6          // 游戏速度设置
+#define _SURFACE_ANIM               // 动态地上物显示
+#define _MULTI_CLIENT_DECTION_ 5    // 限同时打开的客户端数目
 #define DENGLUKEY1 "6D27AEB8326A2A8E7D04B9F9B44C59C7"
-#define _LEADERRIDE                   // (可开放) 四大家族骑暴功能 Robin 0921
-//#define _MO_IMAGE_EXTENSION         // 形象扩展
-#define _NEW_ITEM_                    // 新道具栏
+#define _LEADERRIDE                 // (可开放) 四大家族骑暴功能 Robin 0921
+//#define _MO_IMAGE_EXTENSION       // 形象扩展
+#define _NEW_ITEM_                  // 新道具栏
 #ifdef _WIN_LUAJIT_
 #define _LUA_PATCH_ ".//lua"  //LUA路径
 #define _LUA_KEY_ "6A68673107B8C5B829815A507FF5C274"   //LUA加密密钥
@@ -594,16 +566,11 @@ unsigned int TimeGetTime(void);
 // 服务端物品协议没有实现 _MAGIC_ITEM_ 的额外字段，保持关闭以避免物品包错位。
 // #define _MAGIC_ITEM_              // 法宝功能
 #define _ICONBUTTONS_                // 转盘
-#define _BATTLE_TIME_  15000         // 战斗倒计时
+#define _BATTLE_TIME_  30000         // 战斗倒计时
 #define _PET_2TRANS                  // (可开) Change 宠物2转
-#define _DEBUGVER_    "0.1"          //DEBUG版本号
 #define _NEWSHOP_                    //商城
 #define _SHOWPETTRN_                 //显示宠物转数
-#ifdef _SA_MAC_VERSION_CONTROL
-#define _SA_MAC_VERSION  "7sa2"
-#endif
 #define _CHANGETEAM_                  // 队长切换
-#define SA_MUTE "sa25.exe"
 #define _NEW_CHARDATA_                // 新人物资料
 #define _PETBLESS_                    // 宠物祝福
 #define _RIDEPET_                     // 骑宠开关

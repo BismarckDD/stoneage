@@ -984,9 +984,6 @@ void BattleButtonGuard(void) {
     strcpy(OneLineInfoStr, "防御。");
   }
 }
-#ifdef _NEW_ITEM_
-extern int 道具栏页数;
-#endif
 
 // 2026.09.03 战斗中物品按钮
 void BattleButtonItem(void) {

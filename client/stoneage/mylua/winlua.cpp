@@ -12,13 +12,8 @@ lua_State *FindWinIntLua(int wintype, char *data) {
   lua_State *lua = NULL;
   if (lua == NULL) {
     char filename[256];
-#ifdef _RELUA_
-    sprintf_s(filename, "%s//win//%d.lua", _LUA_PATCH_, wintype);
-#else
 #ifdef _SA_VERSION_25
-    sprintf_s(filename, "%s//win//%d.es", _LUA_PATCH_, wintype);
-#endif
-
+    sprintf_s(filename, "%s//win//%d.lua", _LUA_PATCH_, wintype);
 #endif
     lua = FindLua(filename);
     if (lua == NULL)
@@ -294,13 +289,9 @@ void LoadStoneAgeLUA(const char *dirpath) {
       sprintf_s(basepath, "%s//%s", dirpath, wfd.cFileName);
       LoadStoneAgeLUA(basepath);
     } else {
-#ifdef _RELUA_
-      if (strcmptail(wfd.cFileName, ".lua") == 0)
-#else
 #ifdef _SA_VERSION_25
       if (strcmptail(wfd.cFileName, "lua") == 0)
-#endif // _SA_VERSION_25
-#endif // _RELUA_
+#endif
       {
         char filename[256];
         memset(filename, 0, 256);
@@ -341,13 +332,8 @@ int FreeGetBattleMap(int floor) {
   lua_State *lua = NULL;
   if (lua == NULL) {
     char filename[256];
-#ifdef _RELUA_
-    sprintf_s(filename, "%s//map//battlemap.lua", _LUA_PATCH_);
-#else
 #ifdef _SA_VERSION_25
     sprintf_s(filename, "%s//map//battlemap.es", _LUA_PATCH_);
-#endif
-
 #endif
     lua = FindLua(filename);
     if (lua == NULL)
@@ -382,13 +368,8 @@ char *FreeGetTitleStr(int id) {
   lua_State *lua = NULL;
   if (lua == NULL) {
     char filename[256];
-#ifdef _RELUA_
-    sprintf_s(filename, "%s//title.lua", _LUA_PATCH_);
-#else
 #ifdef _SA_VERSION_25
-    sprintf_s(filename, "%s//title.es", _LUA_PATCH_);
-#endif
-
+    sprintf_s(filename, "%s//title.lua", _LUA_PATCH_);
 #endif
     lua = FindLua(filename);
     if (lua == NULL)

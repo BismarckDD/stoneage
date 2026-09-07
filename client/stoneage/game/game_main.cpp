@@ -63,7 +63,6 @@ void StrToNowStrBuffer(char *str);
 void StrToNowStrBuffer1(char *str);
 
 #define _BATTLESLEPP_ 0
-static char no_wait_cnt = 0;
 int debug_info_flag = 0;
 
 int FrameRate;
@@ -87,9 +86,6 @@ DWORD SystemTime = 6;
 #endif
 
 
-#ifdef _NEW_SPEED_
-BOOL GameSpeedFlag = FALSE;
-#endif
 int NoDrawCnt = 1;
 int BackBufferDrawType;
 #ifdef _READ16BITBMP
@@ -417,9 +413,6 @@ bool GameMain(void)
 #else
         if (BackBufferDrawType != DRAW_BACK_PRODUCE){
 #endif
-#ifdef _NEW_SPEED_
-            no_wait_cnt++;
-            no_wait_cnt &= 3;
 #ifdef _OPTIMIZATIONFLIP_
             loopAmend = TimeGetTime();
 #endif
@@ -427,41 +420,25 @@ bool GameMain(void)
 #ifdef _OPTIMIZATIONFLIP_
             loopAmend = TimeGetTime() - loopAmend;
             if (loopAmend < 8)
-            {
                 skipAmend = 0;
-            }
             else if (loopAmend >=8)
-            {
                 skipAmend = 1;
-            }        
 #endif
             baseXFastDraw = nowXFastDraw;
             baseYFastDraw = nowYFastDraw;
             baseXFastDraw2 = nowXFastDraw2;
             baseYFastDraw2 = nowYFastDraw2;
-
-#else
-            PutBmp();
-            baseXFastDraw = nowXFastDraw;
-            baseYFastDraw = nowYFastDraw;
-            baseXFastDraw2 = nowXFastDraw2;
-            baseYFastDraw2 = nowYFastDraw2;
-
-#endif //_SPEED
 #ifdef __SKYISLAND
         }
 #endif
-        Flip();    // ????????
-#ifdef _NEW_SPEED_
-        //nowtime = atoi( sz);
-        //nowtime ^= 0xffffbcde;
+        Flip();
+        
 #ifndef _OPTIMIZATIONFLIP_
         nowtime = nowttime1;
         while (nowtime >= TimeGetTime()){
             Sleep(1);
         }
         nowtime = 0;
-#endif
 #else
         nowtime = atoi( sz);
         nowtime ^= 0xffffbcde;
@@ -469,7 +446,6 @@ bool GameMain(void)
             Sleep(1);
         }
         nowtime = 0;
-
 #endif
 
         if (PalChangeFlag == TRUE){
@@ -542,21 +518,10 @@ bool GameMain(void)
             }
             PalChangeFlag = FALSE;
         }
-#ifdef _NEW_SPEED_
-        if (GameSpeedFlag){
-            nowtime = TimeGetTime();
-            nowttime1 = nowtime;
-            //_itoa_s( nowtime^0xffffbcde, sz, 10);
-            GameSpeedFlag = FALSE;
-        }
-#endif
-        //nowtime = atoi( sz);
-        //nowtime ^= 0xffffbcde;
 
-#ifdef    _OPTIMIZATIONFLIP_
+#ifdef _OPTIMIZATIONFLIP_
         finishLoop = TRUE;
         NoDrawCnt = 1;
-
         while (endloopTime > TimeGetTime()){
             std::this_thread::sleep_for(std::chrono::microseconds(10));
         }

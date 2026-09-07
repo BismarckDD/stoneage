@@ -3316,7 +3316,7 @@ int menuIndexWN;                                   // ??????(???????????)
 char shopWindow2Msg[2][45];                        // ???????????????
 short shopWondow2Page, shopWondow2MaxPage;         // ??????????
 ITEM_SHOP sealItem[MAX_SHOP_ITEM * MAX_SHOP_PAGE]; // ?????
-short selShopItemNo;                               // ??????
+short selShopItemNo;
 
 char shopWindow3Msg[41];
 short sealItemCnt;
@@ -3357,8 +3357,8 @@ static int GetEmptyPlayerItemSlotCount(void)
 #endif
     return emptyCount;
 }
-char shopWindow7Msg[2][39]; // ???????????????
-char shopWindow8Msg[2][39]; // ???????????????
+char shopWindow7Msg[2][39];
+char shopWindow8Msg[2][39];
 
 // Shan Add  (Begin)
 int FMmsgWN[16];
@@ -15776,8 +15776,7 @@ void AuctionNewWT(void)
         for (i = 0; i < MAX_ITEM; i++)
         {
 #ifdef _NEW_ITEM_
-            extern int 道具栏页数;
-            int 道具起始 = MAX_ITEMSTART + MAX_MAXHAVEITEM * 道具栏页数;
+            int 道具起始 = MAX_ITEMSTART + MAX_MAXHAVEITEM * gCurrInventoryPage;
             int 道具结束 = 道具起始 + MAX_MAXHAVEITEM;
             if (i >= MAX_ITEMSTART)
             {
@@ -15882,8 +15881,7 @@ void AuctionNewWT(void)
                             for (k = 0; k < MAX_ITEM - MAX_ITEMSTART; k++)
                                 nItem[k][1] = 0;
 #ifdef _NEW_ITEM_
-                            extern int 道具栏页数;
-                            int 道具起始 = MAX_ITEMSTART + MAX_MAXHAVEITEM * 道具栏页数;
+                            int 道具起始 = MAX_ITEMSTART + MAX_MAXHAVEITEM * gCurrInventoryPage;
                             int 道具结束 = 道具起始 + MAX_MAXHAVEITEM;
                             if (i >= MAX_ITEMSTART)
                             {

@@ -24,7 +24,7 @@ extern void WindowDisp( ACTION *a0 );
 extern int piyo_point;
 extern void set_bc( void );
 extern void disp_kanji(ACTION *a0);
-extern    BOOL    bNewServer;
+extern BOOL bNewServer;
 
 #ifdef _PROFESSION_ADDSKILL
 extern ACTION *boundary_2,*boundary_mark[2];
@@ -950,8 +950,6 @@ void BattleProc( void )
                     lssproto_EO_send( sockfd, 0 );
                 else
                     old_lssproto_EO_send( sockfd, 0 );
-                //??????????
-                // ?????????????????????????
                 if( battleResultMsg.useFlag >= 1 ){ 
                     BattleResultWndFlag = battleResultMsg.useFlag;    // ?????????
                     battleResultMsg.useFlag = FALSE; // ????????
@@ -977,8 +975,7 @@ void BattleProc( void )
                 return;
             }
             break;
-            
-        case 12:    // ?
+        case 12:
             break;
     }
 

@@ -1,66 +1,41 @@
 ﻿#ifndef __HANDLETIME_H__
 #define __HANDLETIME_H__
 
-//#undef EXTERN
-//#ifdef __HANDLETIME_C__
-//#define EXTERN
-//#else  /*__HANDLETIME_C__*/
-//#define EXTERN extern
-//#endif
+#define NIGHT_TO_MORNING 700
+#define MORNING_TO_NOON 930
+#define NOON_TO_EVENING 200
+#define EVENING_TO_NIGHT 300
 
-//EXTERN struct timeval NowTime;
-//EXTERN int     DEBUG_ADJUSTTIME;
+struct LSTIME {
+  int year;
+  int day;
+  int hour;
+};
 
+typedef enum {
+  LS_NOON,
+  LS_EVENING,
+  LS_NIGHT,
+  LS_MORNING,
+} LSTIME_SECTION;
 
-
-//BOOL setNewTime( void );
-#if 0
-
-#define NIGHT_TO_MORNING    906
-#define MORNING_TO_NOON        1006
-#define NOON_TO_EVENING        356
-#define EVENING_TO_NIGHT    456
-
+#ifdef __HANDLETIME_CPP__
+#define EXTERN
 #else
-
-#define NIGHT_TO_MORNING    700
-#define MORNING_TO_NOON        930
-#define NOON_TO_EVENING        200
-#define EVENING_TO_NIGHT    300
-
+#define EXTERN extern
 #endif
 
-/*??????HiO?LS?????*/
-/*  ??150(希)*60=9000企=750*12 ?   LS1吋   */
-/*  LS1200??  LS1吋   */
-/*  LS100吋?   LS1夙   */
-typedef struct tagLSTIME
-{
-    int year;
-    int day;
-    int hour;
-}LSTIME;
+EXTERN LSTIME SaTime;
+EXTERN long serverTime;
+EXTERN long FirstTime;
+EXTERN long clientTime;
+EXTERN int SaTimeZoneNo;
+EXTERN int TimeZonePalChangeFlag;
 
+#undef EXTERN
 
-typedef enum
-{
-    LS_NOON,
-    LS_EVENING ,
-    LS_NIGHT,
-    LS_MORNING ,
-}LSTIME_SECTION;
+void RealTimeToSATime(LSTIME *lstime);
+LSTIME_SECTION getLSTime(LSTIME *lstime);
+void TimeZoneProc(void);
 
-// ?????????
-extern LSTIME SaTime;
-extern long serverTime;
-extern long FirstTime; //the second
-extern long clientTime; //the third
-extern int SaTimeZoneNo;    // ?????┼
-extern BOOL TimeZonePalChangeFlag; // ??┼??????????????
-
-void RealTimeToSATime( LSTIME *lstime );
-/*void LSTimeToRealTime( LSTIME *lstime, long *t);*/
-LSTIME_SECTION getLSTime (LSTIME *lstime);
-void TimeZoneProc( void );
-
-#endif  /*__HANDLETIME_H__*/
+#endif /*__HANDLETIME_H__*/

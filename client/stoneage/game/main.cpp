@@ -279,7 +279,6 @@ DWORD __forceinline IsInsideVPC_exceptionFilter(LPEXCEPTION_POINTERS ep) {
 // high level language friendly version of IsInsideVPC()
 bool IsInsideVPC() {
   bool rc = false;
-
   __try {
     // Virtual PC backdoor probe. Keep each instruction intact; automatic
     // C++ formatters can otherwise split the operands and break compilation.
@@ -296,8 +295,8 @@ bool IsInsideVPC() {
       pop ebx
     }
   } __except (IsInsideVPC_exceptionFilter(GetExceptionInformation())) {
+    //
   }
-
   return rc;
 }
 
@@ -378,7 +377,6 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   GetCurrentDirectoryA(MAX_PATH, startupWorkingDirectory);
   ClientRuntimeLog("startup", "exe=%s cwd=%s", startupModule,
                    startupWorkingDirectory);
-  CreateMutex(NULL, FALSE, SA_MUTE);
 
   获取机器码();
   hInst = hInstance;
@@ -405,42 +403,28 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   }
 #endif
 
-#ifdef _DEFENSETOOENNUM_
-  FILE *tempfile = NULL;
-  int ds = 0;
+#ifdef _MULTI_CLIENT_DECTION_
   char strname[128];
-
-  BOOL checkclientflg = FALSE;
-  char *pathvar;
-  pathvar = getenv("TEMP");
-  for (ds = 0; ds < _DEFENSETOOENNUM_; ds++) {
-#ifdef _SA_VERSION_25
+  BOOL checkClientFlag = FALSE;
+  char *pathvar = getenv("TEMP");
+  if (pathvar == NULL) {
+    MessageBoxNew(NULL, "缺少本机必要的环境变量", DEF_APPNAME, MB_OK | MB_ICONSTOP);
+    return FALSE;
+  }
+  for (int ds = 0; ds < _MULTI_CLIENT_DECTION_; ds++) {
     sprintf(strname, "%s\\Etemp%d", pathvar, ds);
-#endif
-    tempfile = fopen(strname, "w");
-    if (tempfile)
-      fclose(tempfile);
     HANDLE file_handle;
     file_handle =
         CreateFile(strname, GENERIC_READ, 0, NULL, OPEN_EXISTING, NULL, NULL);
     if (INVALID_HANDLE_VALUE != file_handle) {
       if (INVALID_FILE_SIZE != (DWORD)file_handle) {
-        checkclientflg = TRUE;
+        checkClientFlag = TRUE;
         break;
       }
     }
   }
-  //    int xiangeshu=0;
-  //    int ds=0;
-  //    char strname[127];
-  //    for(ds=0;ds <_DEFENSETOOENNUM_ ;ds++){
-  //        sprintf(strname,"%s%d",SA_MUTE,ds);
-  //        if(IsTheSelfRun(strname)) xiangeshu++;
-  //        else break;
-  //    }
-  if (!checkclientflg) {
-    //    sprintf_s(strname, "游戏限制%d开！", _DEFENSETOOENNUM_);
-    sprintf_s(strname, "游戏限制2开！");
+  if (!checkClientFlag) {
+    sprintf_s(strname, "游戏限制%d开！", _MULTI_CLIENT_DECTION_);
     MessageBoxNew(NULL, strname, DEF_APPNAME, MB_OK | MB_ICONSTOP);
     return FALSE;
   }

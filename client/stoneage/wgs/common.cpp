@@ -9,10 +9,6 @@
 #include <time.h>
 #include <windows.h>
 
-#ifdef _MEMORYLEAK_CHECK
-#include "LeakDetector/vld.h"
-#endif
-
 char szPid[10];
 char szCSIP[125];
 char szError[1024];
@@ -254,7 +250,3 @@ void ipAddressAnalyze() {
       szAnnouncement[0] = '\0';
   }
 }
-
-#ifdef _MEMORYLEAK_CHECK
-
-#endif

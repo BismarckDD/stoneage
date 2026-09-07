@@ -3332,7 +3332,6 @@ void PutText(char fontPrio) {
 #endif
           }
 #endif
-#ifndef LABEL_STR_
           TextOut(hDc, 1 + 1, 432 + DISPLACEMENT_Y + 1,
                   g_szChannelTitle[TalkMode],
                   (int)strlen(g_szChannelTitle[TalkMode]));
@@ -3341,7 +3340,6 @@ void PutText(char fontPrio) {
             TextOut(hDcSys, 2 + 1, 432 + DISPLACEMENT_Y + 1,
                     g_szChannelTitle[TalkMode],
                     (int)strlen(g_szChannelTitle[TalkMode]));
-#endif
 #endif
         }
 #endif
@@ -3527,7 +3525,6 @@ void PutText(char fontPrio) {
 #endif
               }
 #endif
-#ifndef LABEL_STR_
               TextOut(hDc, 1, 432 + DISPLACEMENT_Y, g_szChannelTitle[TalkMode],
                       (int)strlen(g_szChannelTitle[TalkMode]));
 #ifdef _READ16BITBMP
@@ -3535,7 +3532,6 @@ void PutText(char fontPrio) {
                 TextOut(hDcSys, 2, 432 + DISPLACEMENT_Y,
                         g_szChannelTitle[TalkMode],
                         (int)strlen(g_szChannelTitle[TalkMode]));
-#endif
 #endif
             }
 #endif

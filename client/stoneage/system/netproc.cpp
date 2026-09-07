@@ -444,7 +444,6 @@ int connectServer(void) {
       if (FD_ISSET(sockfd, &rfds)) {
         // Nuke start
         int i_len = recv(sockfd, c_temp, sizeof(c_temp) - 1, 0);
-
         if (i_len > 0) {
           if (c_temp[0] == 'E') {
 #ifdef _AIDENGLU_
@@ -455,7 +454,7 @@ int connectServer(void) {
             closesocket(sockfd);
             dwServer = NULL;
             return -6;
-          } else if (c_temp[0] == _SA_VERSION) {
+          } else if (c_temp[0] == 'N') { // 2026.09.06 新协议, 就是用'N'
             bNewServer = 0xf000000 | 1;
             if (FD_ISSET(sockfd, &wfds)) {
               connectServerCounter = 71;
@@ -531,16 +530,11 @@ int connectServer(void) {
         leng = strlen(mac);
       }
 #ifdef _NEW_CLIENT_LOGIN
-#ifdef _SA_MAC_VERSION_CONTROL
       CHAR token[64];
-      sprintf_s(token, "%s-%s", _SA_MAC_VERSION, mac);
+      sprintf_s(token, "%s-%s", "7sa2", mac);
       // TODO: 这里移除了玩家公网IP的获取，后面是否有问题还需要观察.
       lssproto_ClientLogin_send(sockfd, userId, userPassword, token,
                                 selectServerIndex, "192.168.1.1");
-#else
-      lssproto_ClientLogin_send(sockfd, userId, userPassword, mac,
-                                selectServerIndex, "192.168.1.1");
-#endif
 #endif
       if ((bNewServer & 0xf000000) == 0xf000000) {
         lstrcpy(PersonalKey, userId);

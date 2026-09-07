@@ -149,9 +149,6 @@ void InitChat( void )
 void openChatLogFile( void )
 {
     if( chatLogFile == NULL ){
-#ifdef _STONDEBUG_
-        chatLogFile = fopen( chatLogFileName, "wt" );
-#else
         static struct tm nowTime;
         time_t longTime;
         time( &longTime );
@@ -164,7 +161,6 @@ void openChatLogFile( void )
                 (nowTime.tm_year % 100), nowTime.tm_mon+1, nowTime.tm_mday,
                 nowTime.tm_hour, nowTime.tm_min, nowTime.tm_sec );
         }
-#endif
     }
 }
 
@@ -1231,24 +1227,20 @@ void ChatBufferToFontBuffer( void )
 #endif
 #endif
         }
-        y -= _CHAT_SPACING;  // ??
+        y -= _CHAT_SPACING;  //
 #ifdef _FONT_SIZE
         y -= (int)((ChatBuffer[j].fontsize/2)*1.4);
 #endif
-        // ??????
         j--;
-        // ????????
         if( j < 0 )
             j = MAX_CHAT_LINE - 1;
     }
-    // ???????????
     if( ChatLineSmoothY > 0 )
         ChatLineSmoothY--;
      
-#ifdef LABEL_STR_
-    extern char g_szChannelTitle[][13];
-    StockFontBuffer( 2 ,430 + DISPLACEMENT_Y, FONT_PRIO_BACK, MyChatBuffer.color ,g_szChannelTitle[TalkMode] , 0 );
-#endif
+    // 2026.09.06 暂时移除这个代码
+    // extern char g_szChannelTitle[][13];
+    // StockFontBuffer(2, 430 + DISPLACEMENT_Y, FONT_PRIO_BACK, MyChatBuffer.color, g_szChannelTitle[TalkMode] , 0 );
 #ifdef _MO_CHAT_EXPRESSION
     extern void ShowBottomLineString(int iColor,LPSTR lpstr);
     extern int focusGraId( int *id, int cnt );

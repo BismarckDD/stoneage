@@ -556,7 +556,6 @@ void StreetVendorWndfunc(bool bReset,char *data)
     static bool bChangePet = true,bRunSellPrice = false;
     static Show_Sell_Item *pShowSellItem = NULL;
 #ifdef _NEW_ITEM_
-    extern int 道具栏页数;
     static int iItemOnSell[MAX_MAXHAVEITEM*3];
 #else
     static int iItemOnSell[MAX_MAXHAVEITEM];
@@ -568,7 +567,7 @@ void StreetVendorWndfunc(bool bReset,char *data)
         int winX = (lpDraw->xSize-winW)/2;
         int winY = (lpDraw->ySize-winH)/2;
 #ifdef _NEW_ITEM_
-        道具栏页数=0;
+        gCurrInventoryPage = 0;
 #endif
 
         pActStreetVendorWnd = MakeWindowDisp((DEF_APPSIZEX >> 1) - (622 >> 1), 0, 622, 413, CG_FIELD_SV_SELL_PANEL, -1);
@@ -923,7 +922,7 @@ void StreetVendorWndfunc(bool bReset,char *data)
 
 #ifdef _NEW_ITEM_
             for(i=0;i<3;i++){
-                if(i==道具栏页数){
+                if(i==gCurrInventoryPage){
                     StockDispBuffer(722,350+i*56, DISP_PRIO_IME3,55223+i, 1);
                 }else{
                     BOOL flg=FALSE;
@@ -936,7 +935,7 @@ void StreetVendorWndfunc(bool bReset,char *data)
                         StockDispBuffer(727-9,350+i*56, DISP_PRIO_IME3,55226+i, 1);
                         if(MakeHitBox(717-9 ,322+i*56,717+20-9,319+i*56+60, DISP_PRIO_IME4)){
                             if(mouse.onceState & MOUSE_LEFT_CRICK){
-                                道具栏页数=i;
+                                gCurrInventoryPage=i;
                             }
                         }
                     }else StockDispBuffer(727-9,350+i*56, DISP_PRIO_IME3,55229+i, 1);
@@ -953,7 +952,7 @@ void StreetVendorWndfunc(bool bReset,char *data)
                     // 显示玩家身上的道具
 
 #ifdef _NEW_ITEM_
-                    int 道具索引 = j * 5 + i + 9+道具栏页数*15;
+                    int 道具索引 = j * 5 + i + 9+gCurrInventoryPage*15;
                     if (pItem[道具索引].useFlag)
                     {
                         if (!bRunSellPrice)
@@ -2799,10 +2798,9 @@ void fieldProc( void )
 
 
 #ifdef _MO_SIGN_IN
-        if (pushId == FIELD_FUNC_SIGNIN)
+    if (pushId == FIELD_FUNC_SIGNIN)
     {
         signInBtn = 1;
-        
         if (selId == FIELD_FUNC_SIGNIN)
         {
 #ifdef _RIDEQUERY_
@@ -3201,29 +3199,22 @@ void fieldProc( void )
         }
     }
 #endif
-    
-    // ???????
     if (pushId == FIELD_FUNC_PARTY)
     {
         partyBtn = 1;
         if (partyBtnEnableFlag == 0)
         {
-            // ?????????????
             partyBtn = 0;
-            play_se(220, 320, 240);    // ???
+            play_se(220, 320, 240);
         }
         else if (selId == FIELD_FUNC_PARTY)
         {
-            // ????????????
             if (partyModeFlag == 0)
             {
                 int dx, dy;
                 int flag;
-                
-                // ??????????????????
                 getRouteData(pc.dir, &dx, &dy);
                 flag = checkCharObjPointNotStatus(nowGx+dx, nowGy+dy, (CHAROBJ_TYPE_USER_NPC | CHAROBJ_TYPE_PARTY_OK), CHR_STATUS_BATTLE);
-                // ?????????????
                 if (flag == 1 && eventWarpSendFlag == 0 && eventEnemySendFlag == 0 && sendEnFlag == 0
 #ifdef _STREET_VENDOR
                     && (pc.iOnStreetVendor == 0 || sStreetVendorBuyBtn == 2)
@@ -3235,7 +3226,6 @@ void fieldProc( void )
                 {
                     if (fieldBtnPushTime+FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                     {
-                        // ?????????????????????????
                         if (bNewServer)
                             lssproto_PR_send(sockfd, nowGx, nowGy, 1);
                         else
@@ -3256,13 +3246,11 @@ void fieldProc( void )
 #endif
             }
             else
-                // ????????
             {
                 if (eventWarpSendFlag == 0 && eventEnemySendFlag == 0 && sendEnFlag == 0)
                 {
                     if (fieldBtnPushTime + FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                     {
-                        // ????????
                         if (bNewServer)
                             lssproto_PR_send(sockfd, nowGx, nowGy, 0);
                         else
@@ -3293,44 +3281,6 @@ void fieldProc( void )
         msgBtnFocus = 1;
     else
         msgBtnFocus = 0;
-    if (pushId == FIELD_FUNC_MSG)
-    {
-        extern int MsgID;
-
-        if (selId == FIELD_FUNC_MSG)
-        {
-            if (msgBtn==0)
-            {
-                /*closeEtcSwitch();
-                closeJoinChannelWN();
-                if (CheckMenuFlag())
-                    InitMenu2();
-                MsgID = 0;
-                msgBtn = 1;
-                play_se(202, 320, 240);
-                actBtn = 1;*/
-
-                //::ShellExecute(hWnd, NULL, "http://www.longzoro.com/", NULL, NULL, SW_SHOW );
-
-            }
-            else
-            {
-            }
-        }
-    }
-    //if (msgBtn == 1)
-    //{
-    //    extern int MsgProc();
-
-    //    int msgret = MsgProc();
-
-    //    if (msgret)
-    //    {
-    //        msgBtn = 0;
-    //        actBtn = 0;
-    //        GetKeyInputFocus(&MyChatBuffer);
-    //    }
-    //}
     // LeiBoy 2002 Feb. 2 --- Cell Phone's Messages Button -- END
 #endif
 #ifdef _RENWU_
@@ -3342,11 +3292,8 @@ void fieldProc( void )
         {
             actBtn = 0;
             任务查询开关=FALSE;
-
         }
 #endif
-
-
 
 #ifdef _NEW_MATCH
     if (pushId == FIELD_FUNC_HELP){
@@ -3649,13 +3596,11 @@ void AniRandomRelease()
 }
 #endif
 
-
-// ??????????????
 void drawField(void)
 {
-    int leftUpPanelX = 0;        // ????????
+    int leftUpPanelX = 0;
     int leftUpPanelY = 0;
-    int rightUpPanelX = 504 + DISPLACEMENT_X ;    // ????????
+    int rightUpPanelX = 504 + DISPLACEMENT_X;
     int rightUpPanelY = 0;
     int i;
 #ifdef _WATERANIMATION //Syu ADD 泪之海动画层
@@ -3668,22 +3613,6 @@ void drawField(void)
 #ifdef _AniCrossFrame      // Syu ADD 动画层游过画面生物
     int x2 , y2;
 #endif
-
-#if 0
-#ifdef _STONDEBUG__MSG
-
-    char msg[256];
-    // ?????Echo??????????
-    //  ???????????????????????
-    sprintf_s(msg, "%s Server Alive -> %02d/%02d/%02d %02d:%02d:%02d",
-            selectServerName2[selectServerIndex],
-            (serverAliveTime.tm_year % 100), serverAliveTime.tm_mon+1, serverAliveTime.tm_mday,
-            serverAliveTime.tm_hour, serverAliveTime.tm_min, serverAliveTime.tm_sec);
-    StockFontBuffer( 108, 8, FONT_PRIO_FRONT, 0, msg, 0 );
-
-#endif
-#endif
-
 #ifdef _SPECIALSPACEANIM    // Syu ADD 特殊场景动画配置
     SpecAnim(nowFloor);
 #endif
@@ -3979,9 +3908,7 @@ void drawField(void)
 // LeiBoy 2002 Jan.26 --- Cell Phone's Messages Button -- END
 #else
 
-//#ifdef __FAMILY_UI_
         if (bNewServer)
-            // ??????
 #ifdef _SPECIAL_LOGO
 #ifdef _SA_VERSION_25
             StockDispBuffer(leftUpPanelX + 148, leftUpPanelY + 27, DISP_PRIO_MENU, CG_FIELD_MENU_LEFT_NEW, 0);
@@ -4046,7 +3973,7 @@ void drawField(void)
             ShowBottomLineString(FONT_PAL_WHITE, "职业技能。");
     #endif
 #endif
-        // ????????
+        //
         fieldBtnHitId[FIELD_FUNC_MENU] = StockDispBuffer(leftUpPanelX + 52, leftUpPanelY + 28, DISP_PRIO_IME3, menuBtnGraNo[menuBtn], 2);
         if (menuBtnFocus)
             ShowBottomLineString(FONT_PAL_WHITE, "游戏设定。");
@@ -5007,28 +4934,18 @@ int etcSwitch(void)
     return 0;
 }
 
-// ????????
-//   ??： 0 ... ???
-//            1 ... "??"????????
 int disconnectServer( void )
 {
     static ACTION *ptActMenuWin = NULL;
     static int x, y, w, h;
     static int btnId[1];
     int id = 0;
-    char *msg[] =
-    {
-        "与服务器切断连线",
-        "回到开头画面"
-    };
+    char *msg[] = { "与服务器切断连线", "回到开头画面" };
     int i;
     int ret = 0;
     int xx, yy;
-
-
     if (ptActMenuWin == NULL)
     {
-        // ???????????
         if (CheckMenuFlag())
             InitMenu2();
         closeEtcSwitch();
@@ -5037,8 +4954,6 @@ int disconnectServer( void )
 
         for (i = 0; i < sizeof(btnId) / sizeof(int); i++)
             btnId[i] = -2;
-
-        // ??????
         w = 5;
         h = 3;
         x = (lpDraw->xSize - w * 64) / 2;
@@ -5081,7 +4996,6 @@ int disconnectServer( void )
     return ret;
 }
 
-// ?????????
 void drawFieldInfoWin(void)
 {
     static ACTION *ptActMenuWin = NULL;
@@ -5103,10 +5017,8 @@ void drawFieldInfoWin(void)
 
     if (ptActMenuWin == NULL)
     {
-        // ???????????
         if (CheckMenuFlag())
         {
-            // ?????????????????
             if (MenuToggleFlag & JOY_CTRL_M)
                 MapWmdFlagBak = TRUE;
             InitMenu2();
@@ -5140,29 +5052,27 @@ void drawFieldInfoWin(void)
     }
 }
 
-// ???????????????????
 void actionShortCutKeyProc(void)
 {
     unsigned int key[] =
     {
-        JOY_CTRL_0,                // 0
-        JOY_CTRL_CIRCUMFLEX,    // 1
-        JOY_CTRL_9,                // 2
-        JOY_CTRL_7,                // 3
-        JOY_CTRL_8,                // 4
-        JOY_CTRL_1,                // 5
-        JOY_CTRL_2,                // 6
-        JOY_CTRL_4,                // 7
-        JOY_CTRL_5,                // 8
-        JOY_CTRL_6,                // 9
-        JOY_CTRL_MINUS,            // 10
-        JOY_CTRL_3,                // 11
-        JOY_CTRL_YEN            // 12
+        JOY_CTRL_0,          // 0
+        JOY_CTRL_CIRCUMFLEX, // 1
+        JOY_CTRL_9,          // 2
+        JOY_CTRL_7,          // 3
+        JOY_CTRL_8,          // 4
+        JOY_CTRL_1,          // 5
+        JOY_CTRL_2,          // 6
+        JOY_CTRL_4,          // 7
+        JOY_CTRL_5,          // 8
+        JOY_CTRL_6,          // 9
+        JOY_CTRL_MINUS,      // 10
+        JOY_CTRL_3,          // 11
+        JOY_CTRL_YEN         // 12
     };
     int i;
     BOOL pushFlag = FALSE;
 
-    // ??????????????
     if (moveRouteCnt != 0 || nowVx != 0 || nowVy != 0)
         return;
 
@@ -5283,7 +5193,6 @@ void joinChannelWN(void)
     h = 5;
 #endif
 
-
     if (ptActChannelWin == NULL)
     {
         ptActChannelWin = MakeWindowDisp(x, y, w, h, NULL, 1);
@@ -5297,7 +5206,7 @@ void joinChannelWN(void)
             if (((joy_trg[0] & JOY_ESC) && GetImeString() == NULL))
             {
                 closeJoinChannelWN();
-                play_se(203, 320, 240);    // ????????
+                play_se(203, 320, 240);
             }
             if (CheckMenuFlag())
                 closeJoinChannelWN();
@@ -5500,7 +5409,7 @@ void joinChannelWN(void)
 struct TchannelData{
     int index;
     int num;
-    int    join[FAMILY_MAXMEMBER];
+    int join[FAMILY_MAXMEMBER];
     int joinNum;
     char name[FAMILY_MAXMEMBER][20];
 };
