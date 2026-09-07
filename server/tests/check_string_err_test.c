@@ -16,6 +16,8 @@ int main(void) {
       "\xe4\xbd\xa9\xe9\x9c\xb2\xe5\xa4\x8f", /* Peiluxia */
       "\xe5\xa5\x87\xe9\xad\x94\xe7\x8c\xab", /* Qimomao */
       "\xe7\x99\xbd\xe8\x99\x8e", /* White tiger */
+      "\xe8\x97\xa4\xe5\x8e\x9f\xe7\xba\xaa\xe9\xa6\x99", /* 藤原纪香 */
+      "\xe7\x8e\x9b\xe8\x95\xbe\xe8\x8f\xb2\xe9\x9b\x85", /* 玛蕾菲雅 */
       "A\xe4\xbd\xa9" "9", "\xc2\x80", "\xdf\xbf",
       "\xe0\xa0\x80", "\xed\x9f\xbf", "\xef\xbf\xbf",
       "\xf0\x90\x80\x80", "\xf4\x8f\xbf\xbf"};
@@ -32,6 +34,6 @@ int main(void) {
     assert(checkStringErr((char *)valid[i]) == FALSE);
   for (i = 0; i < sizeof(invalid) / sizeof(invalid[0]); ++i)
     assert(checkStringErr((char *)invalid[i]) == TRUE);
-  puts("checkStringErr: 42 cases passed");
+  puts("checkStringErr: 44 cases passed");
   return 0;
 }

@@ -583,7 +583,7 @@ LRESULT CALLBACK TalkWindowProc(HWND hWnd,UINT Message,WPARAM wParam,LPARAM lPar
             TalkWindow.Update();
             break;
         case WM_CHAR:
-            StockStrBufferChar((char)wParam);
+            StockStrBufferWmChar(wParam); // GBK 双位元组会自动转存为 UTF-8
             break;
         case WM_TIMER:
             bShowCursor = !bShowCursor;

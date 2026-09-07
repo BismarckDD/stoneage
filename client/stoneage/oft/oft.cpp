@@ -19,8 +19,6 @@ extern int MessageBoxNew(HWND hWnd, LPCSTR lpText, LPCSTR lpCaption, UINT uType)
 extern BOOL g_bUseAlpha;
 
 // Robin 0804 ride Pet
-extern BOOL bNewServer;
-
 void petfallChangeGraph(ACTION *a0);
 #ifdef _PETSKILL_RIDE
 void petrideChangeGraph(ACTION *a0,int ridebmp);
@@ -11838,25 +11836,13 @@ void set_bc(void)
         //??????
         d0 = get_bc_num();
         // Robin 0728 ridePet
-        if (bNewServer)
-        {
-            ATR_RIDE(a1) = get_bc_num();
-            get_bc_asc_ridepet(a1);
-            ATR_PETLEVEL(a1) = get_bc_num();
-            ATR_PET_LIFE(a1) = get_bc_num();
-            int k = ATR_PET_LIFE(a1);
-            ATR_PET_MAX_LIFE(a1) = get_bc_num();
-            int o = ATR_PET_MAX_LIFE(a1);
-        }
-        else
-        {
-            ATR_RIDE(a1) = 0;
-            ATR_PETNAME(a1)[0] = NULL;
-            ATR_PETLEVEL(a1) = 0;
-            ATR_PET_LIFE(a1) = 0;
-            ATR_PET_MAX_LIFE(a1) = 0;
-        }
-        //???
+        ATR_RIDE(a1) = get_bc_num();
+        get_bc_asc_ridepet(a1);
+        ATR_PETLEVEL(a1) = get_bc_num();
+        ATR_PET_LIFE(a1) = get_bc_num();
+        int k = ATR_PET_LIFE(a1);
+        ATR_PET_MAX_LIFE(a1) = get_bc_num();
+        int o = ATR_PET_MAX_LIFE(a1);
         if (d0 & BC_FRESH)
         {
             //????

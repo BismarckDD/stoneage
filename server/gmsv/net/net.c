@@ -193,11 +193,6 @@ void NETWATCH_start(void) {
 
 const char cszServerBusy[64] = "服务器繁忙，请稍候再试。";
 
-#ifdef _NEW_SERVER_
-BOOL bNewServer = TRUE;
-#else
-BOOL bNewServer = FALSE;
-#endif
 extern time_t initTime;
 // Nuke +1 0901: For state monitor
 int StateTable[WHILESAVEWAIT + 1];
@@ -2554,10 +2549,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 #endif
       else if (sockfd < ConnectLen) {
         char mess[64] = "A"; // Nuke +2 Errormessage
-        if (bNewServer) {
-          mess[0] = 'N';
-        } else
-          mess[0] = '$';
+        mess[0] = 'N'; // 2026.09.07 以后统一用新协议
         if (!from_acsv) {
 #ifdef _NO_FULLPLAYER_ATT
           if (sockfd - player_online >= getNoFullPlayer()) {

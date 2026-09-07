@@ -80,15 +80,18 @@ void NPC_SavePointTalked(int meindex, int talkerindex, char *msg, int color) {
   char timeMsg[1024];
   int oldmanid;
 
-  if (!NPC_Util_charIsInFrontOfChar(talkerindex, meindex, RANGE) ||
-      CHAR_getFlg(talkerindex, CHAR_ISDIE)) {
-    if ((CHAR_getInt(talkerindex, CHAR_X) == CHAR_getInt(meindex, CHAR_X)) &&
-        (CHAR_getInt(talkerindex, CHAR_Y) == CHAR_getInt(meindex, CHAR_Y)) &&
-        (CHAR_getInt(talkerindex, CHAR_FLOOR) ==
-         CHAR_getInt(meindex, CHAR_FLOOR))) {
-    } else {
-      return;
-    }
+  /*
+   * The client can initiate an NPC conversation anywhere within two tiles.
+   * Requiring the server-side facing direction here makes save points uniquely
+   * sensitive to the preceding direction-update packet: when that packet and
+   * TK are handled together, the callback can still see the old direction and
+   * silently discard the conversation.  Validate the same distance used by
+   * SavePointWindowTalked instead.  This also keeps both stages of the
+   * interaction consistent.
+   */
+  if (CHAR_getFlg(talkerindex, CHAR_ISDIE) ||
+      NPC_Util_CharDistance(talkerindex, meindex) > RANGE) {
+    return;
   }
 
   if (NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr)) == NULL) {

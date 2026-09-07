@@ -1435,14 +1435,10 @@ BOOL mapCheckSum(int floor, int x1, int y1, int x2, int y2, int tileSum, int par
     }
     else
     {
-        if (bNewServer)
-            lssproto_M_send(sockfd, floor, x1, y1, x2, y2);
-        else
-            old_lssproto_M_send(sockfd, floor, x1, y1, x2, y2);
+        lssproto_M_send(sockfd, floor, x1, y1, x2, y2);
         //修正地图异常
         if (loginFlag)
             loginFlag = FALSE;
-
         return FALSE;
     }
 }
@@ -1484,22 +1480,12 @@ BOOL mapCheckSum(int floor, int x1, int y1, int x2, int y2, int tileSum, int par
     }
     else
     {
-        if (bNewServer)
-            lssproto_M_send(sockfd, floor, x1, y1, x2, y2);
-        else
-            old_lssproto_M_send(sockfd, floor, x1, y1, x2, y2);
-#if 0
-        // ??????????????FALSE???
-        if (loginFlag)
-            loginFlag = FALSE;
-#endif
+        lssproto_M_send(sockfd, floor, x1, y1, x2, y2);
         return FALSE;
     }
 }
 #endif
 
-
-// ????????????⿳????
 #if 1
 void readHitMap(int x1, int y1, int x2, int y2, unsigned short *tile, unsigned short *parts, unsigned short *event, unsigned short *hitMap)
 {
@@ -2644,16 +2630,7 @@ void _etcEventCheck(void)
         }
         else if (_checkEncount())
         {
-            //cary 旧版遇敌
-            if (!bNewServer)
-            {
-                _etcEventFlag = TRUE;
-                _etcEventStep = i + 1;
-                _etcEventMode = etcEventMode_LocalEncount;
-                breakFlag = TRUE;
-            }
             break;
-            //end cary
         }
         ogx = gx;
         ogy = gy;
@@ -2682,10 +2659,6 @@ BOOL _execEtcEvent(void)
                 _sendWarpEvent();
                 break;
             case etcEventMode_LocalEncount:
-                //cary 旧版遇敌
-                if (!bNewServer)
-                    _sendEncount();
-                //end test
                 break;
             case etcEventMode_Enemy:
                 _sendEnemyEvent();
@@ -2769,11 +2742,7 @@ void _sendEncount(void)
     sendEnFlag = 1;
     etcEventFlag = 1;
     eventEnemyFlag = 0;
-
-    if (bNewServer)
-        lssproto_EN_send(sockfd, nowGx, nowGy);
-    else
-        old_lssproto_EN_send(sockfd, nowGx, nowGy);
+    lssproto_EN_send(sockfd, nowGx, nowGy);
 }
 
 BOOL _checkWarpEvent(int gx, int gy)
@@ -2806,10 +2775,7 @@ void _sendWarpEvent(void)
     eventWarpSendFlag = 1;
     etcEventFlag = 1;
     eventWarpSendId = eventId;
-    if (bNewServer)
-        lssproto_EV_send(sockfd, _eventWarpNo, eventId, nowGx, nowGy, -1);
-    else
-        old_lssproto_EV_send(sockfd, _eventWarpNo, eventId, nowGx, nowGy, -1);
+    lssproto_EV_send(sockfd, _eventWarpNo, eventId, nowGx, nowGy, -1);
     eventId++;
     wnCloseFlag = 1; //
     closeEtcSwitch();
@@ -2852,10 +2818,7 @@ void _sendEnemyEvent(void)
     eventEnemySendFlag = 1;
     etcEventFlag = 1;
     eventEnemySendId = eventId;
-    if (bNewServer)
-        lssproto_EV_send(sockfd, EVENT_ENEMY, eventId, nowGx, nowGy, _enemyEventDir);
-    else
-        old_lssproto_EV_send(sockfd, EVENT_ENEMY, eventId, nowGx, nowGy, _enemyEventDir);
+    lssproto_EV_send(sockfd, EVENT_ENEMY, eventId, nowGx, nowGy, _enemyEventDir);
     eventId++;
     wnCloseFlag = 1;
     eventEnemyFlag = 1;
@@ -2874,10 +2837,7 @@ void _checkEmptyMap(void)
     {
         for (j = 0; j < getMapAreaCnt; j++)
         {
-            if (bNewServer)
-                lssproto_M_send(sockfd, nowFloor, getMapAreaX1[j], getMapAreaY1[j], getMapAreaX2[j], getMapAreaY2[j]);
-            else
-                old_lssproto_M_send(sockfd, nowFloor, getMapAreaX1[j], getMapAreaY1[j], getMapAreaX2[j], getMapAreaY2[j]);
+            lssproto_M_send(sockfd, nowFloor, getMapAreaX1[j], getMapAreaY1[j], getMapAreaX2[j], getMapAreaY2[j]);
         }
         //mapEmptyFlag = TRUE;
         mapEmptyDir = dir;

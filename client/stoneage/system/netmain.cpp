@@ -91,11 +91,7 @@ void networkLoop(void) {
     // get line from read buffer
     if (GS == dwServer) {
       if (!getLineFromReadBuf(rpc_linebuffer, sizeof(rpc_linebuffer))) {
-
-        if (bNewServer)
           SaDispatchMessage(sockfd, rpc_linebuffer);
-        else
-          lssproto_ClientDispatchMessage(sockfd, rpc_linebuffer);
       } else
         break;
     } else
@@ -133,10 +129,7 @@ void networkLoop(void) {
   }
   if ((GS == dwServer) && (writetime + 30 * 1000 < TimeGetTime())) {
     if (init_net == TRUE) {
-      if (bNewServer)
-        lssproto_Echo_send(sockfd, "hoge");
-      else
-        old_lssproto_Echo_send(sockfd, "hoge");
+      lssproto_Echo_send(sockfd, "hoge");
     }
   }
 }

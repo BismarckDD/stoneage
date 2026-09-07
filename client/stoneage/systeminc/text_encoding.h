@@ -21,6 +21,48 @@ inline std::wstring Utf8ToWide(const char *text)
     return result;
 }
 
+inline std::string WideToUtf8(const wchar_t *text)
+{
+    if (text == NULL || text[0] == L'\0')
+        return std::string();
+
+    int length = WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, text, -1,
+                                     NULL, 0, NULL, NULL);
+    if (length <= 0)
+        return std::string();
+
+    std::string result(length, '\0');
+    if (WideCharToMultiByte(CP_UTF8, WC_ERR_INVALID_CHARS, text, -1,
+                            &result[0], length, NULL, NULL) <= 0)
+        return std::string();
+    result.resize(length - 1);
+    return result;
+}
+
+// Character names are stored as UTF-8. Perform the optional traditional-to-
+// simplified mapping through the wide Win32 API so UTF-8 bytes are never
+// interpreted as the process ANSI code page.
+inline std::string SimplifyChineseUtf8(const char *text)
+{
+    const std::wstring source = Utf8ToWide(text);
+    if (source.empty())
+        return std::string();
+
+    const LCID locale = MAKELCID(
+        MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED),
+        SORT_CHINESE_PRCP);
+    const int length = LCMapStringW(locale, LCMAP_SIMPLIFIED_CHINESE,
+                                    source.c_str(), -1, NULL, 0);
+    if (length <= 0)
+        return std::string();
+
+    std::wstring mapped(length, L'\0');
+    if (LCMapStringW(locale, LCMAP_SIMPLIFIED_CHINESE, source.c_str(), -1,
+                     &mapped[0], length) <= 0)
+        return std::string();
+    return WideToUtf8(mapped.c_str());
+}
+
 // Win32's legacy IME path supplies CP936 bytes. Convert immediately at that
 // input boundary; the rest of the client stores and processes UTF-8.
 inline std::string GbkToUtf8(const char *text)

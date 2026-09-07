@@ -387,17 +387,7 @@ static void lssproto_encodeString(char *src, char *out, int maxoutlen);
 #endif
 void lssproto_splitString(char *src) {
   int i, c = 0;
-  char *decoded;
-
-#ifdef lssproto__ENCRYPT
-  if (!bNewServer) {
-    decoded = lssproto.cryptwork;
-    lssproto_decodeString(src, decoded);
-  } else
-    decoded = src;
-#else
-  decoded = src;
-#endif
+  char *decoded = src;
   if (lssproto_readlogfilename[0] != '\0') {
     FILE *rfp;
     rfp = fopen(lssproto_readlogfilename, "a+");
@@ -469,26 +459,15 @@ unsigned int lssproto_GetNewMessageID(void) { return lssproto.message_id++; }
 *****************/
 void lssproto_STONDEBUG_Send(int fd, char *msg) { lssproto_Send(fd, msg); }
 void lssproto_Send(int fd, char *msg) {
-  char *encoded;
-#ifdef lssproto__ENCRYPT
-  if (!bNewServer) {
-    encoded = lssproto.cryptwork;
-    lssproto_encodeString(msg, encoded, lssproto.workbufsize * 3);
-  } else
-    encoded = msg;
-#else
-  encoded = msg;
-#endif
-  {
-    /* add a newline character*/
-    unsigned int l = strlen(encoded);
-    if (l < lssproto.workbufsize * 3) {
-      encoded[l] = '\n';
-      encoded[l + 1] = 0;
-      l++;
-    }
-    lssproto.write_func(fd, encoded, l);
+  char *encoded = msg;
+  /* add a newline character*/
+  unsigned int l = strlen(encoded);
+  if (l < lssproto.workbufsize * 3) {
+    encoded[l] = '\n';
+    encoded[l + 1] = 0;
+    l++;
   }
+  lssproto.write_func(fd, encoded, l);
 }
 /****************
   create a header which has function name and new Message ID

@@ -421,7 +421,6 @@ int connectServer(void) {
       }
       connectServerCounter = 1;
       c_temp[0] = 0;
-      bNewServer = FALSE;
     }
   } else if (connectServerCounter >= 1 && connectServerCounter <= 70) {
     fd_set rfds, wfds, efds;
@@ -455,7 +454,6 @@ int connectServer(void) {
             dwServer = NULL;
             return -6;
           } else if (c_temp[0] == 'N') { // 2026.09.06 新协议, 就是用'N'
-            bNewServer = 0xf000000 | 1;
             if (FD_ISSET(sockfd, &wfds)) {
               connectServerCounter = 71;
               server_choosed = 1;
@@ -536,13 +534,8 @@ int connectServer(void) {
       lssproto_ClientLogin_send(sockfd, userId, userPassword, token,
                                 selectServerIndex, "192.168.1.1");
 #endif
-      if ((bNewServer & 0xf000000) == 0xf000000) {
-        lstrcpy(PersonalKey, userId);
-        lstrcat(PersonalKey, _RUNNING_KEY);
-      } else {
-        lstrcpy(PersonalKey, userId);
-        lstrcat(PersonalKey, "19761101");
-      }
+      lstrcpy(PersonalKey, userId);
+      lstrcat(PersonalKey, _RUNNING_KEY);
       netproc_sending = NETPROC_SENDING;
     }
     if (netproc_sending == NETPROC_RECEIVED) {
@@ -607,10 +600,7 @@ void charListStart(void) {
   多人物当前页数 = 0;
 #endif
   charListStatus = 0;
-  if (bNewServer)
-    lssproto_CharList_send(sockfd);
-  else
-    old_lssproto_CharList_send(sockfd);
+  lssproto_CharList_send(sockfd);
   SETSENDING;
 }
 
@@ -677,22 +667,7 @@ void lssproto_CharList_recv(int fd, char *result, char *data) {
 
 void charLoginStart(void) {
   charLoginStatus = 0;
-#ifdef _NEW_WGS_MSG // WON ADD WGS的新视窗
-  ERROR_MESSAGE = 0;
-#endif
-  if (bNewServer) {
-#ifdef _TRADITIONAL_LONG_
-    CHAR szOutBuffer[128 + 1] = {0};
-    WORD wLanguageID = MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED);
-    LCID Locale = MAKELCID(wLanguageID, SORT_CHINESE_PRCP);
-    int iRet = LCMapString(Locale, LCMAP_SIMPLIFIED_CHINESE,
-                           gamestate_login_charname, -1, szOutBuffer, 128);
-    lssproto_CharLogin_send(sockfd, szOutBuffer);
-#else
-    lssproto_CharLogin_send(sockfd, gamestate_login_charname);
-#endif
-  } else
-    old_lssproto_CharLogin_send(sockfd, gamestate_login_charname);
+  lssproto_CharLogin_send(sockfd, gamestate_login_charname);
   SETSENDING;
 }
 
@@ -753,10 +728,7 @@ void lssproto_CharLogin_recv(int fd, char *result, char *data) {
 
 void charLogoutStart(void) {
   charLogoutStatus = 0;
-  if (bNewServer)
-    lssproto_CharLogout_send(sockfd, 1);
-  else
-    old_lssproto_CharLogout_send(sockfd);
+  lssproto_CharLogout_send(sockfd, 1);
   SETSENDING;
 }
 
@@ -881,8 +853,6 @@ void lssproto_S_recv(int fd, char *data) {
     unsigned int mask;
     data++;
     kubun = getInteger62Token(data, S_DELIM, 1);
-    if (!bNewServer)
-      pc.ridePetNo = -1;
     if (kubun == 1) {
       pc.hp = getIntegerToken(data, S_DELIM, 2);              // 0x00000002
       pc.maxHp = getIntegerToken(data, S_DELIM, 3);           // 0x00000004
@@ -1074,10 +1044,7 @@ void lssproto_S_recv(int fd, char *data) {
               gmsv[selectServerIndex].name, pc.name);
     SetWindowTextUtf8(hWnd, title);
   }
-    if (!bNewServer)
-      pc.ridePetNo = -1;
-    if ((bNewServer & 0xf000000) == 0xf000000 && sPetStatFlag == 1)
-      saveUserSetting();
+    saveUserSetting();
     break;
   case 'F':
     char familyName[256];
@@ -2390,14 +2357,9 @@ void lssproto_CA_recv(int fd, char *data) {
     }
 
     if (pc.id == charindex) {
-      // PC??????
       if (pc.ptAct == NULL ||
           (pc.ptAct != NULL && pc.ptAct->anim_chr_no == 0)) {
-        // ???????????C????????????
-        if (bNewServer)
           lssproto_C_send(sockfd, charindex);
-        else
-          old_lssproto_C_send(sockfd, charindex);
       } else {
 #ifdef _STREET_VENDOR
         if (act == 41) {
@@ -2409,10 +2371,7 @@ void lssproto_CA_recv(int fd, char *data) {
                       szStreetVendorTitle);
             changePcAct(x, y, dir, act, effectno, effectparam1, effectparam2);
 #ifdef _STREET_VENDOR_CHANGE_ICON
-            if (bNewServer)
-              lssproto_AC_send(sockfd, nowGx, nowGy, 5);
-            else
-              old_lssproto_AC_send(sockfd, nowGx, nowGy, 5);
+            lssproto_AC_send(sockfd, nowGx, nowGy, 5);
             setPcAction(5);
 #endif
           }
@@ -2436,11 +2395,7 @@ void lssproto_CA_recv(int fd, char *data) {
       if (tellflag == 0 && tellCindex < sizeof(alreadytellC)) {
         alreadytellC[tellCindex] = charindex;
         tellCindex++;
-
-        if (bNewServer)
-          lssproto_C_send(sockfd, charindex);
-        else
-          old_lssproto_C_send(sockfd, charindex);
+        lssproto_C_send(sockfd, charindex);
       }
     } else {
 #ifdef _STREET_VENDOR
@@ -2498,32 +2453,19 @@ void lssproto_CD_recv(int fd, char *data) {
   }
 }
 
-// ? ///////////////////////////////////////////////////////////////////
-// ????????????
 void walkSendForServer(int x, int y, char *direction) {
 #ifdef _REMAKE_20
   if (!ChangedLibrary())
     RestoreLibrary();
 #endif
-  if (bNewServer)
-    lssproto_W_send(sockfd, x, y, direction);
-  else
-    old_lssproto_W_send(sockfd, x, y, direction);
+  lssproto_W_send(sockfd, x, y, direction);
 }
 
-// ????????????
-//  ??????????????????????????????????
 void noChecksumWalkSendForServer(int x, int y, char *direction) {
-  if (bNewServer)
-    lssproto_W2_send(sockfd, x, y, direction);
-  else
-    old_lssproto_w_send(sockfd, x, y, direction);
+  lssproto_W2_send(sockfd, x, y, direction);
 }
 
-// ???????
 void lssproto_W_recv(int fd, int id, int x, int y) {
-  // ?????????????????
-  // ??????????????????????
 }
 
 #ifdef _SETTICK_COUNT
@@ -2636,12 +2578,7 @@ case 5:
 #else
   sprintf_s(m, "P|%s", dest);
 #endif
-  if (bNewServer) {
-    // Input and the GMSV protocol are UTF-8. LCMapStringA interprets these
-    // bytes using the process ANSI code page and corrupts Chinese text.
-    lssproto_TK_send(sockfd, x, y, m, color, NowMaxVoice);
-  } else
-    old_lssproto_TK_send(sockfd, x, y, m, color, NowMaxVoice);
+  lssproto_TK_send(sockfd, x, y, m, color, NowMaxVoice);
 }
 
 // ???? ///////////////////////////////////////////////////////////
@@ -2806,13 +2743,8 @@ void lssproto_TK_recv(int fd, int index, char *message, int color) {
   return;
 }
 
-// ???? ///////////////////////////////////////////////////////////
-// ????????????????
 void createNewCharStart(void) {
   newCharStatus = 0;
-
-  // ??????????????????
-  if (bNewServer) {
 #ifdef _MORECHARACTERS_
     extern int 多人物当前页数;
     lssproto_CreateNewChar_send(
@@ -2822,32 +2754,14 @@ void createNewCharStart(void) {
         newCharacterWater, newCharacterFire, newCharacterWind,
         newCharacterHomeTown);
 #else
-#ifdef _TRADITIONAL_LONG_
-    CHAR szOutBuffer[128 + 1] = {0};
-    WORD wLanguageID = MAKELANGID(LANG_CHINESE, SUBLANG_CHINESE_SIMPLIFIED);
-    LCID Locale = MAKELCID(wLanguageID, SORT_CHINESE_PRCP);
-    int iRet = LCMapString(Locale, LCMAP_SIMPLIFIED_CHINESE, newCharacterName,
-                           -1, szOutBuffer, 128);
-#endif
     lssproto_CreateNewChar_send(
         sockfd, selectPcNo,
-#ifdef _TRADITIONAL_LONG_
-        szOutBuffer,
-#else
         newCharacterName,
-#endif
         newCharacterGraNo, newCharacterFaceGraNo, newCharacterVit,
         newCharacterStr, newCharacterTgh, newCharacterDex, newCharacterEarth,
         newCharacterWater, newCharacterFire, newCharacterWind,
         newCharacterHomeTown);
 #endif
-  } else
-    old_lssproto_CreateNewChar_send(
-        sockfd, selectPcNo, newCharacterName, newCharacterGraNo,
-        newCharacterFaceGraNo, newCharacterVit, newCharacterStr,
-        newCharacterTgh, newCharacterDex, newCharacterEarth, newCharacterWater,
-        newCharacterFire, newCharacterWind, newCharacterHomeTown);
-
   SETSENDING;
 }
 
@@ -2877,16 +2791,9 @@ void lssproto_CreateNewChar_recv(int fd, char *result, char *data) {
   }
 }
 
-// ????? /////////////////////////////////////////////////////////////
-// ???????
 void delCharStart(void) {
   charDelStatus = 0;
-
-  if (bNewServer)
-    lssproto_CharDelete_send(sockfd, gamestate_deletechar_charname);
-  else
-    old_lssproto_CharDelete_send(sockfd, gamestate_deletechar_charname);
-
+  lssproto_CharDelete_send(sockfd, gamestate_deletechar_charname);
   SETSENDING;
 }
 
@@ -2935,27 +2842,20 @@ void lssproto_PR_recv(int fd, int request, int result) {
 #endif
 
     char dir = (pc.dir + 5) % 8;
-    if (bNewServer)
-      lssproto_SP_send(sockfd, nextGx, nextGy, dir);
-    else
-      old_lssproto_SP_send(sockfd, nextGx, nextGy, dir);
+    lssproto_SP_send(sockfd, nextGx, nextGy, dir);
   }
   prSendFlag = 0;
 }
 
-// EV?????????? /////////////////////////////////////////
 void lssproto_EV_recv(int fd, int seqno, int result) {
-  // ????????????????????
   if (logOutFlag)
     return;
 
   if (eventWarpSendId == seqno) {
     eventWarpSendFlag = 0;
     if (result == 0) {
-      // ?????????????
       redrawMap();
       floorChangeFlag = FALSE;
-      // ???????????
       warpEffectStart = TRUE;
       warpEffectOk = TRUE;
     }
@@ -2963,23 +2863,15 @@ void lssproto_EV_recv(int fd, int seqno, int result) {
     if (result == 0) {
       eventEnemySendFlag = 0;
     }
-    // else
-    //{
-    //  ??????process.cpp???
-    //}
   }
 }
 
-// ??OK???OK????? ＯＫ? ////////////////////////
 void lssproto_FS_recv(int fd, int flg) {
-  // ????????????????????
   if (logOutFlag)
     return;
-
   pc.etcFlag = (unsigned short)flg;
 }
 
-// ????????? ///////////////////////////////////////////////
 void lssproto_AB_recv(int fd, char *data) {
   int i;
   int no;
@@ -2991,29 +2883,21 @@ void lssproto_AB_recv(int fd, char *data) {
   char planetid[8];
   int j;
 #endif
-  // ????????????????????
   if (logOutFlag)
     return;
 
   for (i = 0; i < MAX_ADR_BOOK; i++) {
-    // no = i * 6; //the second
     no = i * 8;
     useFlag = getIntegerToken(data, '|', no + 1);
     if (useFlag == -1) {
       useFlag = 0;
     }
     if (useFlag <= 0) {
-#if 0
-            if ( addressBook[i].useFlag == 1 )
-#else
       if (MailHistory[i].dateStr[MAIL_MAX_HISTORY - 1][0] != '\0')
-#endif
       {
         memset(&MailHistory[i], 0, sizeof(MailHistory[0]));
         SaveMailHistory(i);
-        // ????
         mailLamp = CheckMailNoReadFlag();
-        // ?????
         DeathLetterAction();
       }
       addressBook[i].useFlag = 0;

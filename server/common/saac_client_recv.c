@@ -27,7 +27,6 @@
 
 time_t initTime = 0;
 
-extern BOOL bNewServer;
 extern int i_shutdown_time;
 
 #ifdef _ANGEL_SUMMON

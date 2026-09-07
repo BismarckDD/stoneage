@@ -969,9 +969,8 @@ LRESULT CALLBACK WindMsgProc(HWND hWnd, UINT Message, WPARAM wParam,
       break;
     }
     break;
-  case WM_CHAR: // ????
-    // ?????????
-    StockStrBufferChar((char)wParam);
+  case WM_CHAR:
+    StockStrBufferWmChar(wParam); // GBK 双位元组会自动转存为 UTF-8
     break;
   case WM_MOUSEMOVE: // ????????
     // SetCursor( wndclass.hCursor );

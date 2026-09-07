@@ -12,8 +12,8 @@
 // #define _ALLBLUES_LUA
 // #define _ALLBLUES_LUA_1_1
 // #define _ALLBLUES_LUA_1_2
-// // #define _ALLBLUES_LUA_1_3
-// // #define _ALLBLUES_LUA_1_4
+// #define _ALLBLUES_LUA_1_3
+// #define _ALLBLUES_LUA_1_4
 // #define _ALLBLUES_LUA_1_5
 // #define _ALLBLUES_LUA_1_6
 // #define _ALLBLUES_LUA_1_7
@@ -25,7 +25,6 @@
 //#define _EPOLL_POOL_COUNT 5    // 线程池数量
 
 /*Server 版本控制*/
-#define _NEW_SERVER_
 #define _SERVER_NUMS
 #define _CHAR_NEWLOGOUT  // 新登出协议：0 原地登出，1 回记录点
 #define _NEW_ITEM_       // 与客户端一致：支持 15/30/45 格新物品栏
@@ -232,7 +231,7 @@
 // 新功能：专案6.0    人员：
 #define _PETSKILL_CANNEDFOOD     // (可开放) ANDY 宠物技能罐头
 #define _TEST_DROPITEMS          // (可开放) ANDY 测试丢宠
-#define __MAP_WARP_POINT           // (可开放) ANDY Map WarpPoint
+#define __MAP_WARP_POINT         // (可开放) ANDY Map WarpPoint
 #define _BENEMY_EVENTRUN         // (可开放) ANDY 战斗npc给道具
 #define _BATTLE_ABDUCTII         // (可开放) ANDY 旅途夥伴2
 #define _BATTLE_LIGHTTAKE        // (可开放) ANDY 采光术

@@ -3293,9 +3293,10 @@ BOOL CHAR_CanCureFlg(int char_index, char *arg) {
 }
 #endif
 
+// Exp: 上限(1 << 30)
 INLINE int CHAR_AddMaxExp(int char_index, int addexp) {
   int expirence = CHAR_getInt(char_index, CHAR_EXP);
-  expirence = min(expirence + addexp, 19911001);
+  expirence = min(expirence + addexp, 1 << 30);
   CHAR_setInt(char_index, CHAR_EXP, expirence);
   return addexp;
 }
@@ -4411,24 +4412,12 @@ int CHAR_FmLeaderRide(int meindex, int pet) {
 
 #ifdef _NEW_ITEM_
 int CheckCharMaxItem(int charindex) {
-  int ret = CHAR_STARTITEMARRAY + CHAR_MAXITEMNUM;
-  if (CHAR_getInt(charindex, CHAR_NEWITEMFLG) & 1 << 1) {
-    ret += CHAR_MAXITEMNUM;
-    if (CHAR_getInt(charindex, CHAR_NEWITEMFLG) & 1 << 2) {
-      ret += CHAR_MAXITEMNUM;
-    }
-  }
-  return ret;
+  (void)charindex;
+  return CHAR_STARTITEMARRAY + CHAR_MAXITEMNUM * 3;
 }
 int CheckCharMaxItemChar(Char *ch) {
-  int ret = CHAR_STARTITEMARRAY + CHAR_MAXITEMNUM;
-  if (ch->data[CHAR_NEWITEMFLG] & 1 << 1) {
-    ret += CHAR_MAXITEMNUM;
-    if (ch->data[CHAR_NEWITEMFLG] & 1 << 2) {
-      ret += CHAR_MAXITEMNUM;
-    }
-  }
-  return ret;
+  (void)ch;
+  return CHAR_STARTITEMARRAY + CHAR_MAXITEMNUM * 3;
 }
 #else
 int CheckCharMaxItem(int charindex) {

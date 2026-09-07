@@ -274,7 +274,8 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
   ch.data[CHAR_FMTIMELIMIT] = 0;
 #endif
 #ifdef _NEW_ITEM_
-  ch.data[CHAR_NEWITEMFLG] = 0;
+  // _NEW_ITEM_ exposes all three 15-slot inventory pages.
+  ch.data[CHAR_NEWITEMFLG] = (1 << 1) | (1 << 2);
 #endif
 #ifdef _NEWSAVE
   ch.data[CHAR_SAVEINDEXNUMBER] = -1;
@@ -2878,7 +2879,7 @@ char *CHAR_makeStatusString(int index, char *category) {
 #endif
 #ifdef _NEW_ITEM_
              ,
-             CHAR_getInt(index, CHAR_NEWITEMFLG)
+             (1 << 1) | (1 << 2)
 #endif
 #ifdef CHAR_RECORD_POINT
                  ,

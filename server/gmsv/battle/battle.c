@@ -3627,31 +3627,34 @@ int BATTLE_GetExp(int char_index, int midx)
 int BATTLE_GetExp(int char_index)
 #endif
 {
-  int addexp, i;
-  int modexp = 0, getexp = 0;
+  // 2026.09.07 修改，totalAddExp没有初始化，导致经验计算错误
+  int totalAddExp = 0, i; // 本次增加的总EXP
+  int extraExp = 0; // extraExp: 额外获得的EXP
+  int baseExp = 0; // baseExp: 基础获得的EXP
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return 0;
 
+  // CHAR是PET
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
     int ownerindex = CHAR_getWorkInt(char_index, CHAR_WORKPLAYERINDEX);
     if (CHAR_CHECKINDEX(ownerindex)) {
       if (CHAR_getWorkInt(ownerindex, CHAR_WORKITEM_ADDEXP) > 0) {
-        modexp += CHAR_getWorkInt(ownerindex, CHAR_WORKITEM_ADDEXP);
+        extraExp += CHAR_getWorkInt(ownerindex, CHAR_WORKITEM_ADDEXP);
       }
 #ifdef _PET_ADD_EXP
       if (CHAR_getWorkInt(char_index, CHAR_WORKITEM_ADDEXP) > 0) {
-        modexp += CHAR_getWorkInt(char_index, CHAR_WORKITEM_ADDEXP);
+        extraExp += CHAR_getWorkInt(char_index, CHAR_WORKITEM_ADDEXP);
       }
 #endif
     }
   } else if (CHAR_getWorkInt(char_index, CHAR_WORKITEM_ADDEXP) > 0) {
-    modexp = CHAR_getWorkInt(char_index, CHAR_WORKITEM_ADDEXP);
+    extraExp = CHAR_getWorkInt(char_index, CHAR_WORKITEM_ADDEXP);
   }
 
-  getexp = CHAR_getWorkInt(char_index, CHAR_WORKGETEXP);
+  baseExp = CHAR_getWorkInt(char_index, CHAR_WORKGETEXP);
 #ifdef _NEWOPEN_MAXEXP
-  if (getexp > 1000000000)
-    getexp = 1000000000;
+  if (baseExp > 1e9)
+    baseExp = 1e9;
 #endif
 #ifdef _BATTLE_GOLD
   int gold = CHAR_getInt(char_index, CHAR_GOLD);
@@ -3663,17 +3666,17 @@ int BATTLE_GetExp(int char_index)
   CHAR_complianceParameter(char_index);
   CHAR_send_P_StatusString(char_index, CHAR_P_STRING_GOLD);
 #endif
-  if (getexp < 0 ||
+  // 如果baseExp < 0, 或者下一级的经验为-1(已经升满级了)
+  if (baseExp < 0 ||
       CHAR_GetLevelExp(char_index, CHAR_getInt(char_index, CHAR_LV) + 1) ==
           -1) {
-    getexp = 0;
+    baseExp = 0;
   }
-  int badindex = -1;
-  if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-    badindex = char_index;
-  } else if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
-    badindex = CHAR_getWorkInt(char_index, CHAR_WORKPLAYERINDEX);
+  // 2026.09.07 增加经验
+  else if (baseExp < 1e6) {
+    baseExp = 1e6;
   }
+  totalAddExp += baseExp; /* 基础经验作为加成基数 */
 #ifdef _ITEM_ADDEQUIPEXP
   if (CHAR_CHECKINDEX(midx)) {
     for (i = 0; i < CHAR_EQUIPPLACENUM; i++) {
@@ -3684,18 +3687,18 @@ int BATTLE_GetExp(int char_index)
         if ((P = strstr(arg, "EXPUP"))) {
           if ((P = strstr(arg, "人"))) { // 只对人有效
             if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER)
-              addexp += getexp * atoi(P += 2) * 0.01 * getBattleexp();
+              totalAddExp += baseExp * atoi(P += 2) * 0.01 * getBattleexp();
           } else if ((P = strstr(arg, "宠"))) { //只对宠有效
             if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET &&
                 (CHAR_getInt(midx, CHAR_RIDEPET) != char_index))
-              addexp += getexp * atoi(P += 2) * 0.01 * getBattleexp();
+              totalAddExp += baseExp * atoi(P += 2) * 0.01 * getBattleexp();
           } else if ((P = strstr(arg, "骑"))) { //只对骑宠有效
             if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET &&
                 (CHAR_getInt(midx, CHAR_RIDEPET) == char_index))
-              addexp += getexp * atoi(P += 2) * 0.01 * getBattleexp();
+              totalAddExp += baseExp * atoi(P += 2) * 0.01 * getBattleexp();
           } else {
             P = strstr(arg, "EXPUP");
-            addexp += getexp * atoi(P += 5) * 0.01 * getBattleexp();
+            totalAddExp += baseExp * atoi(P += 5) * 0.01 * getBattleexp();
           }
         }
       }
@@ -3705,15 +3708,15 @@ int BATTLE_GetExp(int char_index)
 #ifdef _ITEM_ADDPETEXP
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET)
     if (CHAR_getInt(char_index, CHAR_PETID) == 1163)
-      addexp = 0;
-
+      totalAddExp = 0;
 #endif
-  addexp = (addexp < 0) ? 0 : addexp;
+  totalAddExp = (totalAddExp < 0) ? 0 : totalAddExp;
   if (CHAR_getInt(char_index, CHAR_LV) >= CHAR_MAXUPLEVEL)
-    addexp = 0;
-  CHAR_setWorkInt(char_index, CHAR_WORKGETEXP, addexp); //回存CHAR_WORKGETEXP
-  CHAR_AddMaxExp(char_index, addexp);
-  return addexp;
+    totalAddExp = 0;
+  CHAR_setWorkInt(char_index, CHAR_WORKGETEXP, totalAddExp); //回存CHAR_WORKGETEXP
+  // print("EXP: %d %d %d\n", baseExp, extraExp, totalAddExp);
+  CHAR_AddMaxExp(char_index, totalAddExp);
+  return totalAddExp;
 }
 #else
 
@@ -3746,10 +3749,8 @@ int BATTLE_DpCalc(int battleindex) {
   if (winside != -1 && winside != 1)
     return BATTLE_ERR_PARAM;
 
-  // 宁煌袄赓渝祭
   dpall = 0;
 
-  //  仃凶  井日    毛畴丹
   pLooseEntry = BattleArray[battleindex].Side[looseside].Entry;
   for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
     char_index = pLooseEntry[i].char_index;
@@ -3788,13 +3789,10 @@ int BATTLE_DpCalc(int battleindex) {
 
   for (num = 0, i = 0; i < BATTLE_ENTRY_MAX; i++) {
     char_index = pWinEntry[i].char_index;
-    // 皿伊奶乩□动陆反饬    仄
     if (CHAR_CHECKINDEX(char_index) == FALSE)
       continue;
     if (CHAR_getInt(char_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
       continue;
-
-    //   匀凶  卞反    毛涩烂
     CHAR_setWorkInt(char_index, CHAR_WORKGETEXP,
                     CHAR_getWorkInt(char_index, CHAR_WORKGETEXP) + dpadd);
   }
@@ -4030,9 +4028,9 @@ int BATTLE_GetDuelPoint(int battleindex, // 爵  奶件犯永弁旦
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
-int BATTLE_GetExpGold(int battleindex, // 爵  奶件犯永弁旦
-                      int side,        // 扔奶玉  ㄟ  ㄠ
-                      int num // 愤坌反    及窒    及平乓仿井
+int BATTLE_GetExpGold(int battleindex,
+                      int side,
+                      int num
 ) {
   BATTLE_ENTRY *pEntryChara;
   char szBuffer[1024] = "", szItemString[512], szEscItemString[256];
@@ -4113,6 +4111,7 @@ int BATTLE_GetExpGold(int battleindex, // 爵  奶件犯永弁旦
   }
   pEntryChara = &BattleArray[battleindex].Side[side].Entry[num];
   if (CHAR_getFlg(char_index, CHAR_ISDIE) == FALSE) {
+    // 2026.09.07 将获得的写入 CHAR_WORKGETEXP
 #ifdef _ITEM_ADDEQUIPEXP
     BATTLE_GetExp(char_index, char_index);
 #else
@@ -4340,11 +4339,11 @@ int BATTLE_GetExpGold(int battleindex, // 爵  奶件犯永弁旦
   return 0;
 }
 
-int BATTLE_GetProfit(int battleindex, int side, int num) {
-  if (BattleArray[battleindex].dpbattle == 1) {
-    return BATTLE_GetDuelPoint(battleindex, side, num);
+int BATTLE_GetProfit(int battle_index, int side, int num) {
+  if (BattleArray[battle_index].dpbattle == 1) {
+    return BATTLE_GetDuelPoint(battle_index, side, num);
   } else {
-    return BATTLE_GetExpGold(battleindex, side, num);
+    return BATTLE_GetExpGold(battle_index, side, num); // 包括金钱和经验
   }
 }
 
@@ -4356,6 +4355,8 @@ int BATTLE_FinishSet(int battleindex) {
   return 0;
 }
 
+
+// 2026.09.07 Battle Finish 各种结算
 static int BATTLE_Finish(int battleindex) {
   BATTLE *pBattle;
   BATTLE_ENTRY *pEntry;
@@ -4488,7 +4489,7 @@ static int BATTLE_Finish(int battleindex) {
       snprintf(watch_detail, sizeof(watch_detail), "battle=%d,side=%d,slot=%d",
                battleindex, j, i);
       NETWATCH_set("BATTLE_Finish.GetProfit", char_index, watch_detail);
-      BATTLE_GetProfit(battleindex, j, i); // 包括取得经验值
+      BATTLE_GetProfit(battleindex, j, i); // 包括取得经验值、金钱、物品
       NETWATCH_set("BATTLE_Finish.Exit", char_index, watch_detail);
       BATTLE_Exit(char_index, battleindex);
     }

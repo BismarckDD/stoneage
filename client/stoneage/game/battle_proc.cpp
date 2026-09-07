@@ -24,7 +24,6 @@ extern void WindowDisp( ACTION *a0 );
 extern int piyo_point;
 extern void set_bc( void );
 extern void disp_kanji(ACTION *a0);
-extern BOOL bNewServer;
 
 #ifdef _PROFESSION_ADDSKILL
 extern ACTION *boundary_2,*boundary_mark[2];
@@ -943,13 +942,8 @@ void BattleProc( void )
                 BattlingFlag = FALSE;
 
                 clearPtActCharObj();
-                // ???????????????????
                 encountNowFlag = 0;
-                // ?????????????????????????
-                if( bNewServer)
-                    lssproto_EO_send( sockfd, 0 );
-                else
-                    old_lssproto_EO_send( sockfd, 0 );
+                lssproto_EO_send( sockfd, 0 );
                 if( battleResultMsg.useFlag >= 1 ){ 
                     BattleResultWndFlag = battleResultMsg.useFlag;    // ?????????
                     battleResultMsg.useFlag = FALSE; // ????????
@@ -966,8 +960,7 @@ void BattleProc( void )
                         // 检查玩家身上的道具有没有肉
                         if(pItem[i+9].useFlag && (pItem[i+9].graNo >= 24000 && pItem[i+9].graNo <= 24044)){
                             // 丢掉
-                            if(bNewServer) lssproto_DI_send(sockfd,nowGx,nowGy,i+9);
-                            else old_lssproto_DI_send(sockfd,nowGx,nowGy,i+9);
+                            lssproto_DI_send(sockfd,nowGx,nowGy,i+9);
                         }
                     }
                 }
@@ -981,23 +974,16 @@ void BattleProc( void )
 
 #ifndef _CHANNEL_MODIFY
     // Robin 0805 channel
-    if( bNewServer && joy_trg[1] & JOY_CTRL_C )
+    if(joy_trg[1] & JOY_CTRL_C )
     {
         char buf[64];
         if( pc.channel == -1 ) {
             if( (pc.quickChannel != -1) && (pc.familyName[0] != NULL) ) {
                 sprintf( buf, "C|J|%d", pc.quickChannel);
-                if( bNewServer)
-                    lssproto_FM_send( sockfd, buf );
-                else
-                    old_lssproto_FM_send( sockfd, buf );
+                lssproto_FM_send( sockfd, buf );
             }
-        }
-        else{
-            if( bNewServer)
-                lssproto_FM_send( sockfd, "C|J|-1" );
-            else
-                old_lssproto_FM_send( sockfd, "C|J|-1" );
+        } else{
+            lssproto_FM_send( sockfd, "C|J|-1" );
         }
     }
 #endif
@@ -1014,10 +1000,7 @@ void BattleProc( void )
         if( mouse.onceState & MOUSE_RIGHT_CRICK && BattleMyNo >= 20 ){
             DeathAction(pActAudienceExitWnd);
             pActAudienceExitWnd=NULL;
-            if( bNewServer)
                 lssproto_B_send( sockfd, "U" );
-            else
-                old_lssproto_B_send( sockfd, "U" );
         }
         // ????????
         if( pActAudienceExitWnd != NULL ){

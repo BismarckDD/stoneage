@@ -791,14 +791,9 @@ void StreetVendorWndfunc(bool bReset,char *data)
                                     if (pc.ridePetNo > -1)
                                     {
                                         char buf[64];
-
                                         sprintf_s(buf, "R|P|-1");
-                                        if (bNewServer) 
-                                            lssproto_FM_send(sockfd, buf);
-                                        else 
-                                            lssproto_FM_send(sockfd, buf);
-                                        if ((bNewServer & 0xf000000) == 0xf000000)
-                                            lssproto_PETST_send(sockfd, pc.ridePetNo, 0);
+                                        lssproto_FM_send(sockfd, buf);
+                                        lssproto_PETST_send(sockfd, pc.ridePetNo, 0);
                                     }
                                 }
                                 else
@@ -933,7 +928,7 @@ void StreetVendorWndfunc(bool bReset,char *data)
                     }else flg=TRUE;
                     if(flg){
                         StockDispBuffer(727-9,350+i*56, DISP_PRIO_IME3,55226+i, 1);
-                        if(MakeHitBox(717-9 ,322+i*56,717+20-9,319+i*56+60, DISP_PRIO_IME4)){
+                        if(MakeHitBox(708, 322+i*56, 748, 319+i*56+60, DISP_PRIO_IME4)){
                             if(mouse.onceState & MOUSE_LEFT_CRICK){
                                 gCurrInventoryPage=i;
                             }
@@ -2417,22 +2412,13 @@ void fieldProc( void )
     int focusId;
     BOOL walkFlag = FALSE;
     
-    // ??????
     rand2();
-    
-    // ???????????????????
     actionShortCutKeyProc();
-    
-    // ??????????????????????????
-    // ???????????
     if (etcSwitchChangeFlag && eventWarpSendFlag == 0 && eventEnemySendFlag == 0 && sendEnFlag == 0)
     {
         if (fieldBtnPushTime+FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
         {
-            if (bNewServer)
                 lssproto_FS_send(sockfd, pc.etcFlag);
-            else
-                old_lssproto_FS_send(sockfd, pc.etcFlag);
             fieldBtnPushTime = TimeGetTime();
             etcSwitchChangeFlag = 0;
         }
@@ -2620,10 +2606,7 @@ void fieldProc( void )
         pc.etcFlag &= ~PC_ETCFLAG_TRADE;
         pc.etcFlag &= ~PC_ETCFLAG_PARTY;
         pc.etcFlag &= ~PC_ETCFLAG_DUEL;
-        if (bNewServer)
             lssproto_FS_send(sockfd, pc.etcFlag);
-        else
-            old_lssproto_FS_send(sockfd, pc.etcFlag);
     }
     else
     if (sStreetVendorBtn == 2)
@@ -2774,11 +2757,7 @@ void fieldProc( void )
             {
                 if (fieldBtnPushTime+FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                 {
-                    // ??
-                    if (bNewServer)
-                        lssproto_AAB_send(sockfd, nowGx, nowGy);
-                    else
-                        old_lssproto_AAB_send(sockfd, nowGx, nowGy);
+                    lssproto_AAB_send(sockfd, nowGx, nowGy);
                     fieldBtnPushTime = TimeGetTime();
                 }
             }
@@ -2995,11 +2974,6 @@ void fieldProc( void )
             {
                 if (fieldBtnPushTime+FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                 {        
-                    //if (bNewServer)
-                    //    lssproto_TD_send(sockfd, "D|D");
-                    //else
-                    //    old_lssproto_TD_send(sockfd, "D|D");
-
                     joy_trg[0] |= JOY_CTRL_T;
                     fieldBtnPushTime = TimeGetTime();
                 }
@@ -3149,10 +3123,7 @@ void fieldProc( void )
 
             lssproto_TK_recv(sockfd, 0, "P|请先加入家族。", 0);
             sprintf_s(buf, "S|P", selId);
-            if (bNewServer)
-                lssproto_FM_send(sockfd, buf);
-            else
-                old_lssproto_FM_send(sockfd, buf);
+            lssproto_FM_send(sockfd, buf);
             return;
         }
         if (channelWNFlag == 0)
@@ -3175,27 +3146,20 @@ void fieldProc( void )
         joinChannelWN();
         
 #ifndef _CHANNEL_MODIFY
-    if (bNewServer && joy_trg[1] & JOY_CTRL_C)
+    if (joy_trg[1] & JOY_CTRL_C)
     {
         char buf[64];
-
         if (pc.channel == -1)
         {
             if ((pc.quickChannel != -1) && (pc.familyName[0] != NULL))
             {
                 sprintf_s(buf, "C|J|%d", pc.quickChannel);
-                if (bNewServer)
-                    lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
+                lssproto_FM_send(sockfd, buf);
             }
         }
         else
         {
-            if (bNewServer)
-                lssproto_FM_send(sockfd, "C|J|-1");
-            else
-                old_lssproto_FM_send(sockfd, "C|J|-1");
+            lssproto_FM_send(sockfd, "C|J|-1");
         }
     }
 #endif
@@ -3226,10 +3190,7 @@ void fieldProc( void )
                 {
                     if (fieldBtnPushTime+FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                     {
-                        if (bNewServer)
-                            lssproto_PR_send(sockfd, nowGx, nowGy, 1);
-                        else
-                            old_lssproto_PR_send(sockfd, nowGx, nowGy, 1);
+                        lssproto_PR_send(sockfd, nowGx, nowGy, 1);
                         prSendMode = 1;
                         prSendFlag = 1;
                         etcSendFlag = 1;
@@ -3251,10 +3212,7 @@ void fieldProc( void )
                 {
                     if (fieldBtnPushTime + FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                     {
-                        if (bNewServer)
-                            lssproto_PR_send(sockfd, nowGx, nowGy, 0);
-                        else
-                            old_lssproto_PR_send(sockfd, nowGx, nowGy, 0);
+                        lssproto_PR_send(sockfd, nowGx, nowGy, 0);
                         prSendMode = 0;
                         prSendFlag = 1;
                         etcSendFlag = 1;
@@ -3406,15 +3364,10 @@ void fieldProc( void )
             {
                 if (fieldBtnPushTime + FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                 {
-                    if (bNewServer)
-                    {
-                        if (nowFloor == 9000)
-                            lssproto_LB_send(sockfd, nowGx, nowGy);
-                        else
-                            lssproto_JB_send(sockfd, nowGx, nowGy);
-                    }
+                    if (nowFloor == 9000)
+                        lssproto_LB_send(sockfd, nowGx, nowGy);
                     else
-                        old_lssproto_JB_send(sockfd, nowGx, nowGy);
+                        lssproto_JB_send(sockfd, nowGx, nowGy);
                     jbSendFlag = 1;
                     etcSendFlag = 1;
                     fieldBtnPushTime = TimeGetTime();
@@ -3447,10 +3400,7 @@ void fieldProc( void )
             {
                 if (fieldBtnPushTime + FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                 {
-                    if (bNewServer)
-                        lssproto_DU_send(sockfd, nowGx, nowGy);
-                    else
-                        old_lssproto_DU_send(sockfd, nowGx, nowGy);
+                    lssproto_DU_send(sockfd, nowGx, nowGy);
                     duelSendFlag = 1;
                     etcSendFlag = 1;
                     fieldBtnPushTime = TimeGetTime();
@@ -3908,7 +3858,6 @@ void drawField(void)
 // LeiBoy 2002 Jan.26 --- Cell Phone's Messages Button -- END
 #else
 
-        if (bNewServer)
 #ifdef _SPECIAL_LOGO
 #ifdef _SA_VERSION_25
             StockDispBuffer(leftUpPanelX + 148, leftUpPanelY + 27, DISP_PRIO_MENU, CG_FIELD_MENU_LEFT_NEW, 0);
@@ -3917,9 +3866,6 @@ void drawField(void)
 #else
             StockDispBuffer(leftUpPanelX + 26 + 58, leftUpPanelY + 28, DISP_PRIO_MENU, CG_FIELD_MENU_LEFT_NEW, 0);
 #endif
-        else
-
-            StockDispBuffer(leftUpPanelX + 26 + 52, leftUpPanelY + 28, DISP_PRIO_MENU, CG_FIELD_MENU_LEFT, 0);
 #endif
 
 
@@ -4015,7 +3961,6 @@ void drawField(void)
         }
 #endif
 //#ifdef __FAMILY_UI_
-        if (bNewServer)
         {
             // Robin 06/01 Channel
 #ifndef _CHANNEL_MODIFY
@@ -4286,10 +4231,7 @@ int charActionAnimeChange(void)
             {
                 if (fieldBtnPushTime + FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                 {
-                    if (bNewServer)
                         lssproto_AC_send(sockfd, nowGx, nowGy, chgTbl[id]);
-                    else
-                        old_lssproto_AC_send(sockfd, nowGx, nowGy, chgTbl[id]);
                     setPcAction(chgTbl[id]);
                     fieldBtnPushTime = TimeGetTime();
                 }
@@ -4610,11 +4552,7 @@ int etcSwitch(void)
                 {
                     if (fieldBtnPushTime + FIELD_BTN_PUSH_WAIT < TimeGetTime())
                     {
-                        if (bNewServer)
                             lssproto_FS_send(sockfd, pc.etcFlag);
-                        else
-                            old_lssproto_FS_send(sockfd, pc.etcFlag);
-
                         fieldBtnPushTime = TimeGetTime();
                     }
                     else
@@ -4889,10 +4827,7 @@ int etcSwitch(void)
             {
                 if (fieldBtnPushTime + FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
                 {
-                    if (bNewServer)
                         lssproto_FS_send(sockfd, pc.etcFlag);
-                    else
-                        old_lssproto_FS_send(sockfd, pc.etcFlag);
                     fieldBtnPushTime = TimeGetTime();
                 }
                 else    // ?????????????????????? ????
@@ -5097,10 +5032,7 @@ void actionShortCutKeyProc(void)
 #endif
         if (fieldBtnPushTime + FIELD_BTN_PUSH_WAIT < TimeGetTime())// ??
         {
-            if (bNewServer)
                 lssproto_AC_send(sockfd, nowGx, nowGy, i);
-            else
-                old_lssproto_AC_send(sockfd, nowGx, nowGy, i);
             setPcAction(i);
             fieldBtnPushTime = TimeGetTime();
         }
@@ -5281,10 +5213,7 @@ void joinChannelWN(void)
                     break;
                 case 3:
                     sprintf_s(buf, "C|J|-1");
-                    if (bNewServer)
                         lssproto_FM_send(sockfd, buf);
-                    else
-                        old_lssproto_FM_send(sockfd, buf);
                     sprintf_s(buf, "S|SELF");
                     closeJoinChannelWN();
                     play_se(203, 320, 240);
@@ -5293,10 +5222,7 @@ void joinChannelWN(void)
 #endif
                 if (selId != -1)
                 {
-                    if (bNewServer)
                         lssproto_FM_send(sockfd, buf);
-                    else
-                        old_lssproto_FM_send(sockfd, buf);
                     return;
                 }
             }
@@ -5498,10 +5424,7 @@ void joinChannel2WN(void)
             {
             case 0:
                 sprintf_s(buf, "C|J|%d", channelData.index);
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeJoinChannelWN();
                 play_se(203, 320, 240);
                 break;                
@@ -5509,10 +5432,7 @@ void joinChannel2WN(void)
                 if (pc.channel == channelData.index)
                 {
                     sprintf_s(buf, "C|J|-1");
-                    if (bNewServer)
                         lssproto_FM_send(sockfd, buf);
-                    else
-                        old_lssproto_FM_send(sockfd, buf);
                 }
                 closeJoinChannel2WN();
                 play_se(203, 320, 240);
@@ -5638,10 +5558,7 @@ void leaderFuncWN(void)
 #endif
                     return;
                 sprintf_s(buf, "C|J|5");
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeJoinChannelWN();
                 play_se(203, 320, 240);    // ????????
                 return;
@@ -5649,10 +5566,7 @@ void leaderFuncWN(void)
             if (selId == 2)
             {
                 sprintf_s(buf, "L|F|1");
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeJoinChannelWN();
                 play_se(203, 320, 240);    // ????????
                 return;
@@ -5661,10 +5575,7 @@ void leaderFuncWN(void)
             if (selId == 3)
             {
                 sprintf_s(buf, "L|L|1");
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeJoinChannelWN();
                 play_se(203, 320, 240);    // ????????
                 return;
@@ -5672,10 +5583,7 @@ void leaderFuncWN(void)
             if (selId == 4)
             {
                 sprintf_s(buf, "L|L|2");
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeJoinChannelWN();
                 play_se(203, 320, 240);    // ????????
                 return;
@@ -5684,10 +5592,7 @@ void leaderFuncWN(void)
             if (selId == 5)
             {
                 sprintf_s(buf, "L|CHANGE|L");
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeJoinChannelWN();
                 play_se(203, 320, 240);    // ????????
                 return;
@@ -5696,10 +5601,7 @@ void leaderFuncWN(void)
             if (selId == 6) 
             {
                 sprintf_s(buf, "L|FMTAX|W");
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeJoinChannelWN();
                 play_se(203, 320, 240);    // ????????
                 return;

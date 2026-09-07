@@ -46,7 +46,7 @@
 #define _STANDBYPET                   // Robin 送待机宠列表到Server
 #define _MAILSHOWPLANET               // (可开放) Syu ADD 显示名片星球
 #define _EXTEND_AB                    // cyg 扩充名片功能
-#define _ITEM_EQUITSPACE              // (可开放) ANDY 新增装备栏位
+#define _ITEM_EQUIP_EXTRA             // (可开放) ANDY 新增装备栏位
 #define _EQUIT_ARRANGE                // (可开放) ANDY 格挡
 #define _EQUIT_NEWGLOVE               // (可开放) ANDY 手套栏位
 #endif
@@ -264,7 +264,7 @@ extern int viewOffsetY;
 
 #define _ITEM_PILENUMS                // (可开放) ANDY 道具素材堆叠
 
-#define _ITEM_EQUITSPACE            // (可开放) ANDY 新增装备栏位
+#define _ITEM_EQUIP_EXTRA
 #define _EQUIT_ARRANGE                // (可开放) ANDY 格挡
 #define _EQUIT_NEWGLOVE                // (可开放) ANDY 手套栏位
 
@@ -548,7 +548,7 @@ unsigned int TimeGetTime(void);
 #endif
 
 #ifdef _SA_VERSION_25
-#define _ITEM_EQUITSPACE            // 人物扩展装备栏：腰带、盾、鞋
+#define _ITEM_EQUIP_EXTRA           // 人物扩展装备栏：腰带、盾、鞋
 #define _EQUIT_NEWGLOVE             // 人物手套栏
 #define _DEFAULT_PKEY "shiqi"       // 默认的密钥
 #define _RUNNING_KEY  "shiqi.hk"    // 运行中密钥

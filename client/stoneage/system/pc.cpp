@@ -997,10 +997,7 @@ void getItem(void) {
   dir = (int)(tmpDir / 45);
 
   if (piSendTime + FIELD_BTN_PUSH_WAIT < TimeGetTime()) {
-    if (bNewServer) {
-      lssproto_PI_send(sockfd, nowGx, nowGy, dir);
-    } else
-      old_lssproto_PI_send(sockfd, nowGx, nowGy, dir);
+    lssproto_PI_send(sockfd, nowGx, nowGy, dir);
     piSendTime = TimeGetTime();
   }
 }
@@ -1050,12 +1047,8 @@ BOOL TalkToNPC(void) {
     else
       makeEscapeString("hi", dest, sizeof(dest));
     sprintf_s(m, "P|%s", dest);
-    if (bNewServer)
       lssproto_TK_send(sockfd, nowGx, nowGy, m, MyChatBuffer.color,
                        NowMaxVoice);
-    else
-      old_lssproto_TK_send(sockfd, nowGx, nowGy, m, MyChatBuffer.color,
-                           NowMaxVoice);
     talkSendTime = TimeGetTime();
   }
   return TRUE;
@@ -1126,11 +1119,7 @@ BOOL lookAtAround(void) {
 
   // ??
   if (lSendTime + FIELD_BTN_PUSH_WAIT < TimeGetTime()) {
-    // ??????
-    if (bNewServer)
-      lssproto_L_send(sockfd, dir);
-    else
-      old_lssproto_L_send(sockfd, dir);
+    lssproto_L_send(sockfd, dir);
     lSendTime = TimeGetTime();
   }
 
@@ -1239,15 +1228,10 @@ void addressBookWindow1(void) {
   }
   // ?????????????????????
   else if ((mode - 2) < MAX_ADR_BOOK_COUNT * 3 && ((mode - 2) % 3) == 2) {
-    if (bNewServer)
       lssproto_DAB_send(sockfd, addressBookPage * MAX_ADR_BOOK_COUNT +
                                     ((mode - 2) / 3));
-    else
-      old_lssproto_DAB_send(sockfd, addressBookPage * MAX_ADR_BOOK_COUNT +
-                                        ((mode - 2) / 3));
   }
 
-  // ?????????????????
   if (ptActAddressBookWin->hp >= 1) {
     for (i = 0; i < MAX_ADR_BOOK_COUNT; i++) {
       no = addressBookPage * MAX_ADR_BOOK_COUNT + i;

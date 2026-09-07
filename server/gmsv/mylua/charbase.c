@@ -491,8 +491,8 @@ static CharBase CharBaseEvent[] = {
   //,{{"循环事件2"},     CHAR_LOOPFUNCTEMP2}
   //,{{"未知事件"},     CHAR_BATTLEPROPERTY}
 #endif
-  ,{{"重叠事件"},     CHAR_OVERLAPEDFUNC}
-  ,{{"战后事件"},     CHAR_BATTLEOVERDFUNC}
+  // ,{{"重叠事件"},     CHAR_OVERLAPEDFUNC}
+  // ,{{"战后事件"},     CHAR_BATTLEOVERDFUNC}
 #ifdef _ALLBLUES_LUA_1_4
   ,{{"登出事件"},     CHAR_LOGINOUTFUNC}
 #endif

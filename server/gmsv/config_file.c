@@ -1972,17 +1972,7 @@ BOOL LoadMissionCleanList() {
   int i = 0;
 
   memset(missiontable, 0, sizeof(missiontable));
-
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  fp = fopen("./data/missionclean.txt.allblues", "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen("./data/missionclean.txt", "r");
-  }
+  fp = fopen("./data/missionclean.txt", "r");
   if (fp == NULL) {
     print("清除任务文件打开错误\n");
     return FALSE;
@@ -2131,19 +2121,7 @@ BOOL LoadEXP(char *filename) {
   FILE *fp;
   int i = 0;
   int MaxLevel = 0;
-
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  fp = fopen(realopfile, "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen(filename, "r");
-  }
+  fp = fopen(filename, "r");
   if (fp == NULL) {
     print("无法打开文件\n");
     return FALSE;
@@ -2153,11 +2131,6 @@ BOOL LoadEXP(char *filename) {
     char line[64], exp[64];
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     chop(line);
 
     if (line[0] == '#')

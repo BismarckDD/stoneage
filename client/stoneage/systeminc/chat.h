@@ -72,6 +72,10 @@ extern int NowMaxVoice;
 void StockStrBufferChar(char c);
 // 将双位字元放至目前输入StringBuffer
 void StockStrBufferDBChar(char *lpc);
+// 将 WM_CHAR 传入的 GBK(CP936) 位元组流放至目前输入StringBuffer
+//   DBCS 视窗下中文字元会被拆成两次 WM_CHAR（引导位元组 + 尾随位元组），
+//   此函式会缓存引导位元组，凑齐双位元组后转存为 UTF-8
+void StockStrBufferWmChar(WPARAM wParam);
 //
 void ChatBufferToFontBuffer(void);
 void ChatProc(void);

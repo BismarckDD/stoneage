@@ -948,11 +948,7 @@ void BattleButtonHelp(void) {
         } else {
           helpFlag = TRUE;
         }
-        if (bNewServer)
-          lssproto_HL_send(sockfd, helpFlag);
-        else
-          old_lssproto_HL_send(sockfd, helpFlag);
-
+        lssproto_HL_send(sockfd, helpFlag);
         play_se(217, 320, 240);
       }
     }
@@ -961,26 +957,15 @@ void BattleButtonHelp(void) {
 
 void BattleButtonGuard(void) {
   if (HitDispNo == battleButtonDispNo[4] && sBattleButtonFlag[4] == FALSE) {
-
     if (mouse.onceState & MOUSE_LEFT_CRICK) {
       BattleButtonOff();
-
       sBattleButtonFlag[4] = TRUE;
-
-      if (bNewServer)
-        lssproto_B_send(sockfd, "G");
-      else
-        old_lssproto_B_send(sockfd, "G");
-
+      lssproto_B_send(sockfd, "G");
       battleMenuReturn = TRUE;
-
       battleButtonBak = -1;
-
       battleButtonBak2 = -1;
-
       play_se(203, 320, 240);
     }
-
     strcpy(OneLineInfoStr, "防御。");
   }
 }
@@ -1180,11 +1165,7 @@ void BattleButtonItem(void) {
                     case ITEM_TARGET_NONE:
                       BattleButtonOff();
                       battleMenuReturn = TRUE;
-
-                      if (bNewServer)
-                        lssproto_ID_send(sockfd, nowGx, nowGy, i, 0);
-                      else
-                        old_lssproto_ID_send(sockfd, nowGx, nowGy, i, 0);
+                      lssproto_ID_send(sockfd, nowGx, nowGy, i, 0);
                       play_se(203, 320, 240);
                       battleTargetSelectFlag = FALSE;
                       break;
@@ -1301,10 +1282,7 @@ void BattleButtonPet(void) {
               if (HitFontNo == battleMenuPetFontNo[i]) {
                 if (pet[i].hp > 0 && i != pc.battlePetNo) {
                   sprintf_s(moji, "S|%d", i);
-                  if (bNewServer)
-                    lssproto_B_send(sockfd, moji);
-                  else
-                    old_lssproto_B_send(sockfd, moji);
+                  lssproto_B_send(sockfd, moji);
                   play_se(203, 320, 240); // 成功的声音，清脆
                   DeathAction(pActWnd);
                   pActWnd = NULL;
@@ -1320,11 +1298,7 @@ void BattleButtonPet(void) {
 
           if (HitDispNo == battleMenuPetFontNo[5] && pc.battlePetNo != -1) {
 
-            if (bNewServer)
-              lssproto_B_send(sockfd, "S|-1");
-            else
-              old_lssproto_B_send(sockfd, "S|-1");
-
+            lssproto_B_send(sockfd, "S|-1");
             play_se(203, 320, 240);
             DeathAction(pActWnd);
             pActWnd = NULL;
@@ -1775,10 +1749,7 @@ void BattleButtonEscape(void) {
     if (mouse.onceState & MOUSE_LEFT_CRICK) {
       BattleButtonOff();
       sBattleButtonFlag[7] = TRUE;
-      if (bNewServer)
-        lssproto_B_send(sockfd, "E");
-      else
-        old_lssproto_B_send(sockfd, "E");
+      lssproto_B_send(sockfd, "E");
       battlePlayerEscFlag = TRUE;
       battleMenuReturn = TRUE;
       battleButtonBak = -1;
@@ -2390,11 +2361,7 @@ void BattleButtonWaza(void) {
                       BattleButtonOff(); // ????????????
                       // battleMenuReturn = TRUE;
                       ClearBoxFlag();
-                      // ???????????
-                      if (bNewServer)
-                        lssproto_B_send(sockfd, "W|FF|FF");
-                      else
-                        old_lssproto_B_send(sockfd, "W|FF|FF");
+                      lssproto_B_send(sockfd, "W|FF|FF");
                       play_se(203, 320, 240);
                       battleWazaTargetBak = -1;
                       battleTargetSelectFlag = FALSE;
@@ -2500,41 +2467,23 @@ void BattleTargetSelect(void) {
       switch (BattleCmdNo) {
       case BATTLE_ATTACK:
         sprintf_s(moji, "H|%X", targetNo);
-        if (bNewServer)
-          lssproto_B_send(sockfd, moji);
-        else
-          old_lssproto_B_send(sockfd, moji);
+        lssproto_B_send(sockfd, moji);
         break;
-
       case BATTLE_CAPTURE:
         sprintf_s(moji, "T|%X", targetNo);
-        if (bNewServer)
-          lssproto_B_send(sockfd, moji);
-        else
-          old_lssproto_B_send(sockfd, moji);
+        lssproto_B_send(sockfd, moji);
         break;
-
       case BATTLE_JUJUTU:
-        // cary*
         switch (magic[BattleJujutuNo].target) {
-
 #ifdef __ATTACK_MAGIC
-
         // 敌军某一人
         case MAGIC_TARGET_SINGLE:
-
           sprintf_s(moji, "J|%X|%X", BattleJujutuNo, targetNo);
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
-
           break;
-
         // 敌军一整排
         case MAGIC_TARGET_ONE_ROW:
-
           // 23: 左上第一列 , 24: 左上第二列 , 25: 右下第一列 , 26: 右下第二列
           if (targetNo >= 0 && targetNo < 5)
             no = BATTLKPKPLYAERNUM + 6;
@@ -2544,104 +2493,59 @@ void BattleTargetSelect(void) {
             no = BATTLKPKPLYAERNUM + 3;
           else if (targetNo >= 15 && targetNo < 20)
             no = BATTLKPKPLYAERNUM + 4;
-
           sprintf_s(moji, "J|%X|%X", BattleJujutuNo, no);
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
-
           break;
-
         // 敌军全体
         case MAGIC_TARGET_ALL_ROWS:
-
           (BattleMyNo < 10) ? no = BATTLKPKPLYAERNUM + 1
                             : no = BATTLKPKPLYAERNUM;
           sprintf_s(moji, "J|%X|%X", BattleJujutuNo, no);
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
-
           break;
-
 #endif
-
         case MAGIC_TARGET_MYSELF:
         case MAGIC_TARGET_OTHER:
           sprintf_s(moji, "J|%X|%X", BattleJujutuNo, targetNo);
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
-
         case MAGIC_TARGET_ALLMYSIDE:
           if (BattleMyNo < 10)
             no = 20;
           else
             no = 21;
-
           sprintf_s(moji, "J|%X|%X", BattleJujutuNo, no);
-
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
-
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
-
         case MAGIC_TARGET_ALLOTHERSIDE:
           if (BattleMyNo < 10)
             no = 21;
           else
             no = 20;
-
           sprintf_s(moji, "J|%X|%X", BattleJujutuNo, no);
-
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
-
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
-
         case MAGIC_TARGET_ALL:
-
           sprintf_s(moji, "J|%X|%X", BattleJujutuNo, 22);
-
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
-
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
-          break;
 
         case MAGIC_TARGET_WHOLEOTHERSIDE:
           if (targetNo < 10)
             no = 20;
           else
             no = 21;
-
           sprintf_s(moji, "J|%X|%X", BattleJujutuNo, no);
-
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
-
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
         }
         break;
-
         // Change note 道具选择对象后送出封包
       case BATTLE_ITEM:
         // cary*
@@ -2651,57 +2555,31 @@ void BattleTargetSelect(void) {
         case ITEM_TARGET_OTHERWITHOUTMYSELF:
         case ITEM_TARGET_WITHOUTMYSELFANDPET:
           sprintf_s(moji, "I|%X|%X", BattleItemNo, targetNo);
-
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
-
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
-
         case ITEM_TARGET_ALLMYSIDE:
           if (BattleMyNo < 10)
             no = 20;
           else
             no = 21;
-
           sprintf_s(moji, "I|%X|%X", BattleItemNo, no);
-
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
-
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
-
         case ITEM_TARGET_ALLOTHERSIDE:
-
           if (BattleMyNo < 10)
             no = 21;
           else
             no = 20;
-
           sprintf_s(moji, "I|%X|%X", BattleItemNo, no);
-
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
-
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
 
         case ITEM_TARGET_ALL:
-
           sprintf_s(moji, "I|%X|%X", BattleItemNo, 22);
-
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
-
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
         }
@@ -2718,39 +2596,24 @@ void BattleTargetSelect(void) {
         case PETSKILL_TARGER_DEATH:
 #endif
           sprintf_s(moji, "W|%X|%X", BattleWazaNo, targetNo);
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
-
         case PETSKILL_TARGET_ALLMYSIDE:
           no = (BattleMyNo < 10) ? 21 : 20;
           sprintf_s(moji, "W|%X|%X", BattleWazaNo, no);
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
-
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
         case PETSKILL_TARGET_ALLOTHERSIDE:
           no = (BattleMyNo < 10) ? 21 : 20;
           sprintf_s(moji, "W|%X|%X", BattleWazaNo, no);
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
-
         case PETSKILL_TARGET_ALL:
           sprintf_s(moji, "W|%X|%X", BattleWazaNo, 22);
-          if (bNewServer)
-            lssproto_B_send(sockfd, moji);
-          else
-            old_lssproto_B_send(sockfd, moji);
+          lssproto_B_send(sockfd, moji);
           play_se(217, 320, 240);
           break;
 #ifdef _BATTLESKILL
@@ -2920,42 +2783,28 @@ void BattleCntDownDisp(void) {
     pActWnd = NULL;
     ClearBattleButton();
     if (battleMenuFlag & BATTLE_MENU && battleMenuReturn == FALSE) {
-      if (bNewServer)
-        lssproto_B_send(sockfd, "N");
-      else
-        old_lssproto_B_send(sockfd, "N");
+      lssproto_B_send(sockfd, "N");
       if (battlePetNoBak == -1 || p_party[BattleMyNo + 5]->hp <= 0) {
         //
       } else {
-        if (bNewServer)
-          lssproto_B_send(sockfd, "W|FF|FF");
-        else
-          old_lssproto_B_send(sockfd, "W|FF|FF");
+        lssproto_B_send(sockfd, "W|FF|FF");
       }
     } else {
       if ((battleMenuFlag & BATTLE_MENU && battleMenuReturn == TRUE) ||
           (battleMenuFlag & BATTLE_MENU_PET && battleMenuReturn == FALSE)) {
         if (battlePetNoBak == -1 || p_party[BattleMyNo + 5]->hp <= 0) {
         } else {
-          if (bNewServer)
-            lssproto_B_send(sockfd, "W|FF|FF");
-          else
-            old_lssproto_B_send(sockfd, "W|FF|FF");
+          lssproto_B_send(sockfd, "W|FF|FF");
         }
       }
     }
-    // ??????
     battleTargetSelectFlag = FALSE;
     battleMenuReturn = TRUE;
-    // ????????
     play_se(203, 320, 240);
-    // ????????
     battleButtonBak = battleButtonBak2;
-    // ???????????????
     DeathAction(pActInfoWnd);
     pActInfoWnd = NULL;
   }
-  // ???????
 
 #ifndef PK_SYSTEM_TIMER_BY_ZHU
   sprintf_s(moji, "%2d", BattleCntDownRest / 1000);
@@ -2996,15 +2845,11 @@ void BattleMenuProc(void) {
   char moji[256];
   int i;
   if (BattleMyNo >= BATTLKPKPLYAERNUM) {
-    if (bNewServer)
-      lssproto_B_send(sockfd, "N");
-    else
-      old_lssproto_B_send(sockfd, "N");
+    lssproto_B_send(sockfd, "N");
     InitBattleAnimFlag();
     SubProcNo++;
     return;
   }
-
   for (i = 0; i < 20; i++)
     HpMeterDisp(i); //
   if (p_party[BattleMyNo]->hp > 0 &&
@@ -3014,7 +2859,6 @@ void BattleMenuProc(void) {
     if (battleTargetSelectFlag) {
       BattleTargetSelect();
     } else {
-
       DeathAction(pActInfoWnd);
       pActInfoWnd = NULL;
     }
@@ -3049,17 +2893,11 @@ void BattleMenuProc(void) {
         BattleBpFlag & BATTLE_BP_PLAYER_MENU_NON) {
 
       if (BattleBpFlag & BATTLE_BP_PLAYER_MENU_NON) {
-        if (bNewServer)
-          lssproto_B_send(sockfd, "N");
-        else
-          old_lssproto_B_send(sockfd, "N");
+        lssproto_B_send(sockfd, "N");
       }
-
       p_party[BattleMyNo]->atr |= ACT_ATR_BTL_CMD_END;
-
       battlePetMenuFlag = TRUE;
     } else {
-
       battleMenuFlag |= BATTLE_MENU;
       battleMenuReturn = FALSE;
       battleTimeUpFlag = FALSE;
@@ -3226,11 +3064,7 @@ void BattleMenuProc(void) {
       SubProcNo++;
     } else if (BattleBpFlag & BATTLE_BP_PET_MENU_NON ||
                p_party[BattleMyNo]->hp <= 0 || battlePlayerEscFlag == TRUE) {
-      if (bNewServer)
-        lssproto_B_send(sockfd, "W|FF|FF");
-      else
-        old_lssproto_B_send(sockfd, "W|FF|FF");
-
+      lssproto_B_send(sockfd, "W|FF|FF");
       BattleCntDownFlag = FALSE;
       SubProcNo++;
     } else {

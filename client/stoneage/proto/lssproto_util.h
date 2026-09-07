@@ -34,8 +34,6 @@ EXTERN char **lssproto_stringwrapper;
 EXTERN char lssproto_readlogfilename[1024];
 EXTERN char lssproto_writelogfilename[1024];
 
-extern BOOL bNewServer;
-
 // function
 char *lssproto_escapeString(char *a);
 char *lssproto_descapeString(char *a);

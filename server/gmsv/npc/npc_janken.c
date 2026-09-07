@@ -21,7 +21,8 @@ BOOL NPC_JankenEntryItemCheck(int talker,char *buf);
 BOOL NPC_JankenEntryItemDel(int talker,char *buf);
 void NPC_WarpPointGet(int meindex,int talker,int *fl,int *x,int *y,int judge);
 
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 extern int CheckCharMaxItem(int charindex);
 #endif
 /*********************************
@@ -281,12 +282,7 @@ void NPC_JnakenJudge(int meindex,int talker,int sel)
 						 CHAR_getChar(talker,CHAR_NAME)
 						);
 
-//			    CHAR_talkToCli( talker , -1 ,token , CHAR_COLORCYAN );
-
-				//伐□皿
 			    CHAR_warpToSpecificPoint(talker, fl, x, y);
-			    
-			    //  匀凶午五反＞减少＝及失弁扑亦件毛允月［
 			    CHAR_sendWatchEvent( CHAR_getWorkInt( talker, CHAR_WORKOBJINDEX),	CHAR_ACTPLEASURE,NULL,0,TRUE);
 				CHAR_setWorkInt( talker, CHAR_WORKACTION, CHAR_ACTPLEASURE);
 
@@ -305,12 +301,7 @@ void NPC_JnakenJudge(int meindex,int talker,int sel)
 						 j_char[jankenman],j_char[player],
 						 CHAR_getChar(talker,CHAR_NAME)
 						);
-//			    CHAR_talkToCli( talker , -1 ,token , CHAR_COLORCYAN );
-
-				//伐□皿
 				CHAR_warpToSpecificPoint(talker, fl, x, y);
-
-				//  仃凶午五反＞  仄中＝失弁扑亦件毛允月
 			    CHAR_sendWatchEvent( CHAR_getWorkInt( talker, CHAR_WORKOBJINDEX),	CHAR_ACTSAD,NULL,0,TRUE);
 				CHAR_setWorkInt( talker, CHAR_WORKACTION, CHAR_ACTSAD);
 

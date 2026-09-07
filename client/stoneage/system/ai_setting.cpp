@@ -1586,10 +1586,7 @@ void AI_ChooseAction()
     battlePlayerEscFlag = FALSE;
     //观战中
     if( BattleMyNo >= 20 ){
-        if( bNewServer)
-            lssproto_B_send( sockfd, "N" );
-        else
-            old_lssproto_B_send( sockfd, "N" );
+        lssproto_B_send( sockfd, "N" );
         extern void InitBattleAnimFlag();
         InitBattleAnimFlag();
         SubProcNo++;
@@ -1598,10 +1595,7 @@ void AI_ChooseAction()
     if( p_party[ BattleMyNo ]->hp <= 0 ||
         BattleBpFlag & BATTLE_BP_PLAYER_MENU_NON ){
         if( BattleBpFlag & BATTLE_BP_PLAYER_MENU_NON ){
-            if(bNewServer)
-                lssproto_B_send( sockfd, "N" );
-            else
-                old_lssproto_B_send( sockfd, "N" );
+            lssproto_B_send( sockfd, "N" );
         }
     }else{
         if( AI_First){//第一次
@@ -1929,10 +1923,7 @@ void AI_ChooseAction()
 
             }
         }
-        if( bNewServer)
-            lssproto_B_send( sockfd, moji );
-        else
-            old_lssproto_B_send( sockfd, moji );
+        lssproto_B_send( sockfd, moji );
     }
     done = 0;
     strcpy( moji, "W|FF|FF");
@@ -1978,10 +1969,7 @@ void AI_ChooseAction()
             }
         }
     }
-    if( bNewServer)
-        lssproto_B_send( sockfd, moji);
-    else
-        old_lssproto_B_send( sockfd, moji);
+    lssproto_B_send( sockfd, moji);
     for( int i = 0; i < BATTLKPKPLYAERNUM; i++){
         if( 0 == (p_party[i]->atr & p_party[i]->atr) )
             p_party[i]->atr = ACT_ATR_INFO | ACT_ATR_HIT;

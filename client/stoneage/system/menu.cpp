@@ -93,14 +93,7 @@ static int sLastInventoryHitPage = -1; // 好像没啥用？
 
 int 判断玩家道具数量()
 {
-    int ret = MAX_MAXHAVEITEM + MAX_ITEMSTART;
-    if (pc.道具栏状态 & 1 << 1){
-        ret += MAX_MAXHAVEITEM;
-        if (pc.道具栏状态 & 1 << 2){
-            ret += MAX_MAXHAVEITEM;
-        }
-    }
-    return ret;
+    return MAX_ITEM;
 }
 #endif
 #ifdef _AniCrossFrame      // Syu ADD 动画层游过画面生物
@@ -1008,25 +1001,20 @@ void WindowDisp(ACTION *pAct)
                 }
 #endif
                 else if (i == pYobi->sizeX - 1) StockDispBuffer(x, y, DISP_PRIO_MENU, pYobi->wndType + 5, pYobi->hitFlag);
-                // ??
                 else StockDispBuffer(x, y, DISP_PRIO_MENU, pYobi->wndType + 4, pYobi->hitFlag);
-                x += 64; // ????
+                x += 64;
             }
-            x = pAct->x + 32;     // ????
-            y += 48;         // ????
+            x = pAct->x + 32;
+            y += 48;
         }
-        // ?????
         if (pYobi->titleNo != 0) StockDispBuffer(pYobi->titleX, pYobi->titleY, DISP_PRIO_IME3, pYobi->titleNo, pYobi->hitFlag);
         pAct->hp = 1;
         break;
-    case 3:    // ??????
-        // ????????
+    case 3:
         if (mouse.onceState & MOUSE_LEFT_CRICK){
-            // ????
             if (HitDispNo == pYobi->yesDispNo){
                 pYobi->yesNoResult = TRUE;
             }
-            // ?????
             if (HitDispNo == pYobi->noDispNo){
                 pYobi->yesNoResult = FALSE;
             }
@@ -1041,8 +1029,15 @@ void WindowDisp(ACTION *pAct)
 // 输入参数:
 // int x,y
 // int sizeX,sizeY
-// int titleNo
+// int titleNo: 绘制标题的图片编号，如果为0则不绘制标题
 // int wndType, 这个通常是-1？
+/* 当 wndType = 0、1、2、3 时:
+- sizeX 是横向图块数量，每格宽 64 像素。
+- sizeY 是纵向图块数量，每格高 48 像素。
+- 窗口尺寸约为 sizeX × 64 × sizeY × 48 像素。
+- 例如 sizeX=3, sizeY=2 对应约 192×96 像素。
+当 wndType = -1 或 4 时:- sizeX、sizeY 直接以像素为单位。
+*/
 ACTION *MakeWindowDisp(int x, int y, int sizeX, int sizeY,
                        int titleNo, int wndType)
 {
@@ -1562,15 +1557,8 @@ void AnimDisp(ACTION *pAct)
                         // ??????
                     }//ttom
                 }
-                // ???|????????
                 moji[strlen(moji) - 1] = NULL;
-
-                // ??????????????????
-                if (bNewServer)
-                    lssproto_PS_send(sockfd, mixPetNo, SelectWazaNo, 0, moji);
-                else
-                    old_lssproto_PS_send(sockfd, mixPetNo, SelectWazaNo, 0, moji);
-                // ??????
+                lssproto_PS_send(sockfd, mixPetNo, SelectWazaNo, 0, moji);
                 ItemMixRecvFlag = TRUE;
             }
 
@@ -8680,21 +8668,22 @@ int CheckPetSkill(int skillId)
 void InitItem(int x, int y, BOOL bPetItemFlag)
 {
     int i, j = 0, k = 0;
-#ifdef _ITEM_EQUITSPACE
-    struct tagInitXY{
+#ifdef _ITEM_EQUIP_EXTRA
+    struct tagInitXY {
         int x;
         int y;
-    }InitXY[CHAR_EQUIPPLACENUM] = {
-        { x + 85, y + 51 },
-        { x + 85, y + 102 },
-        { x + 33, y + 102 },
-        { x + 137, y + 51 },
-        { x + 33, y + 51 },
-        { x + 85, y + 153 },
-        { x + 137, y + 102 },
-        { x + 137, y + 153 }
+    }; // 2026.09.07 修正装备的坐标
+    tagInitXY InitXY[CHAR_EQUIPPLACENUM] = {
+        { x + 85, y + 34 },   // 头盔
+        { x + 85, y + 82 },   // 盔甲 
+        { x + 35, y + 82 },   // 主武器：斧、枪、弓
+        { x + 135, y + 34 },  // 左饰品
+        { x + 35, y + 34 },   // 右饰品
+        { x + 85, y + 130 },  // 腰带
+        { x + 135, y + 82 },  // 盾
+        { x + 135, y + 130 }  // 鞋
 #ifdef _EQUIT_NEWGLOVE
-        , { x + 33, y + 153 }
+        , { x + 35, y + 130 } // 手套
 #endif
     };
 #ifdef _PET_ITEM
@@ -9223,10 +9212,7 @@ void MenuProc(void)
             {
                 if (!(MenuToggleFlag & JOY_CTRL_T)) 
                 {
-                    if (bNewServer)
-                        lssproto_TD_send(sockfd, "D|D");
-                    else
-                        old_lssproto_TD_send(sockfd, "D|D");
+                    lssproto_TD_send(sockfd, "D|D");
                 }
             }
 #ifdef _STREET_VENDOR
@@ -10421,10 +10407,7 @@ void MenuProc(void)
                     for (i = 2; i < 6; i++) {
                         if (HitDispNo == statusWndFontNo[i]){
                             if (mouse.onceState & MOUSE_LEFT_CRICK){
-                                if (bNewServer)
-                                    lssproto_SKUP_send(sockfd, i - 2);
-                                else
-                                    old_lssproto_SKUP_send(sockfd, i - 2);
+                                lssproto_SKUP_send(sockfd, i - 2);
 #ifndef _CHAR_PROFESSION
                                 StatusUpPoint--;
 #endif
@@ -11058,8 +11041,7 @@ void MenuProc(void)
                                 if (i == pc.mailPetNo){
                                     pc.mailPetNo = -1;
                                     // shan
-                                    if ((bNewServer & 0xf000000) == 0xf000000)
-                                        lssproto_PETST_send(sockfd, i, 0);
+                                    lssproto_PETST_send(sockfd, i, 0);
 #ifndef  _RIDEPET_
                                     checkRidePet(i);
 #endif
@@ -11069,20 +11051,13 @@ void MenuProc(void)
                                          && pc.graNo != 100362){//金飞
                                     char buf[64];
                                     sprintf_s(buf, "R|P|-1");
-                                    if (bNewServer)
-                                        lssproto_FM_send(sockfd, buf);
-                                    else
-                                        lssproto_FM_send(sockfd, buf);
+                                    lssproto_FM_send(sockfd, buf);
                                     play_se(217, 320, 240);
                                     // shan
-                                    if ((bNewServer & 0xf000000) == 0xf000000)
-                                        lssproto_PETST_send(sockfd, i, 0);
+                                    lssproto_PETST_send(sockfd, i, 0);
                                 }
                                 else if (i == pc.battlePetNo && BattlePetReceiveFlag == FALSE){
-                                    if (bNewServer)
-                                        lssproto_KS_send(sockfd, -1);
-                                    else
-                                        old_lssproto_KS_send(sockfd, -1);
+                                    lssproto_KS_send(sockfd, -1);
                                     BattlePetReceiveFlag = TRUE;
                                     BattlePetReceivePetNo = i;
                                     pc.selectPetNo[i] = FALSE;
@@ -11090,28 +11065,21 @@ void MenuProc(void)
                                     if (pc.mailPetNo == -1){
                                         pc.mailPetNo = i;
                                         // shan
-                                        if ((bNewServer & 0xf000000) == 0xf000000)
-                                            lssproto_PETST_send(sockfd, i, 4);
+                                        lssproto_PETST_send(sockfd, i, 4);
                                     } else {
 #ifndef  _RIDEPET_
                                         checkRidePet(i);
 #endif
                                         // shan
-                                        if ((bNewServer & 0xf000000) == 0xf000000)
-                                            lssproto_PETST_send(sockfd, i, 0);
+                                        lssproto_PETST_send(sockfd, i, 0);
                                     }
                                     play_se(217, 320, 240); // ?????
                                 }
                                 else if (pc.selectPetNo[i] == TRUE){
                                     if (pc.battlePetNo == -1 && BattlePetReceiveFlag == FALSE){
                                         if (pet[i].hp > 0){
-                                            if (bNewServer)
                                                 lssproto_KS_send(sockfd, i);
-                                            else
-                                                old_lssproto_KS_send(sockfd, i);
-                                            // ??????
                                             BattlePetReceiveFlag = TRUE;
-                                            // ???????????
                                             BattlePetReceivePetNo = i;
                                             play_se(217, 320, 240); // ?????
                                         }
@@ -11121,9 +11089,7 @@ void MenuProc(void)
                                     } else {
                                         if (pc.mailPetNo == -1){
                                             pc.mailPetNo = i;
-                                            // shan
-                                            if ((bNewServer & 0xf000000) == 0xf000000)
-                                                lssproto_PETST_send(sockfd, i, 4);
+                                            lssproto_PETST_send(sockfd, i, 4);
                                         }
                                         // ride Pet
                                         else
@@ -11131,9 +11097,7 @@ void MenuProc(void)
 #ifndef  _RIDEPET_
                                             checkRidePet(i);
 #endif
-                                            // shan
-                                            if ((bNewServer & 0xf000000) == 0xf000000)
-                                                lssproto_PETST_send(sockfd, i, 0);
+                                            lssproto_PETST_send(sockfd, i, 0);
                                         }
                                         pc.selectPetNo[i] = FALSE;
                                         BattlePetStMenCnt--;
@@ -11143,22 +11107,18 @@ void MenuProc(void)
                                 }
                                 else
                                 if (pc.selectPetNo[i] == FALSE){
-                                    // ?????????
                                     if (BattlePetStMenCnt < 4){
-                                        // ???????
                                         pc.selectPetNo[i] = TRUE;
                                         BattlePetStMenCnt++; // ????????
                                         play_se(217, 320, 240); // ?????
                                         // shan
-                                        if ((bNewServer & 0xf000000) == 0xf000000)
-                                            lssproto_PETST_send(sockfd, i, 1);
+                                        lssproto_PETST_send(sockfd, i, 1);
                                     } else {
                                         if (pc.mailPetNo == -1){
                                             pc.mailPetNo = i;
                                             play_se(217, 320, 240); // ?????
                                             // shan
-                                            if ((bNewServer & 0xf000000) == 0xf000000)
-                                                lssproto_PETST_send(sockfd, i, 4);
+                                            lssproto_PETST_send(sockfd, i, 4);
                                         }
                                         else
                                         {
@@ -11236,20 +11196,14 @@ void MenuProc(void)
                                     DropPetWndflag = true;
                                     DropI = i;
 #else
-                                    if( bNewServer)
-                                        lssproto_DP_send( sockfd, nowGx, nowGy, i );
-                                    else
-                                        old_lssproto_DP_send( sockfd, nowGx, nowGy, i );
+                                    lssproto_DP_send( sockfd, nowGx, nowGy, i );
                                     if( pc.selectPetNo[ i ] == TRUE ){
                                         pc.selectPetNo[ i ] = FALSE; // ????
                                         BattlePetStMenCnt--; // ?????????
                                     }
                                     if( i == pc.battlePetNo ){
                                         // ?????
-                                        if( bNewServer)
                                             lssproto_KS_send( sockfd, -1 );
-                                        else
-                                            old_lssproto_KS_send( sockfd, -1 );
                                     }
                                     // ?????
                                     if( pc.mailPetNo == i ){
@@ -14401,7 +14355,7 @@ void MenuProc(void)
                 else
                     StockDispBuffer(((WINDOW_DISP*)pActMenuWnd2->pYobi)->mx - 14, ((WINDOW_DISP*)pActMenuWnd2->pYobi)->my, DISP_PRIO_MENU, CG_NEWITEM_WND, 1);
 #else
-#ifdef _ITEM_EQUITSPACE // 物品栏
+#ifdef _ITEM_EQUIP_EXTRA // 物品栏
                 StockDispBuffer(((WINDOW_DISP *)pActMenuWnd2->pYobi)->mx,
                                 ((WINDOW_DISP *)pActMenuWnd2->pYobi)->my,
                                 DISP_PRIO_MENU, CG_NEWITEM_WND, 1);
@@ -14505,10 +14459,7 @@ void MenuProc(void)
                     if (itemNo != -1 && MenuToggleFlag & JOY_CTRL_S && statusWndNo == 1){
                         for (i = 0; i < 11; i++){
                             if (HitFontNo == statusWndFontNo[i] && eventWarpSendFlag == FALSE){
-                                if (bNewServer)
                                     lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
-                                else
-                                    old_lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
                                 play_se(212, 320, 240);
                                 itemNo = -1;
 
@@ -14568,10 +14519,7 @@ void MenuProc(void)
                         if (mouse.onceState & MOUSE_LEFT_CRICK_UP && itemWndBtnFlag[2] == TRUE){
                             itemWndBtnFlag[2] = FALSE;
                             play_se(212, 320, 240);
-                            if (bNewServer)
                                 lssproto_DG_send(sockfd, nowGx, nowGy, itemWndDropGold);
-                            else
-                                old_lssproto_DG_send(sockfd, nowGx, nowGy, itemWndDropGold);
                             itemWndDropGold = 0;
 #ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
                             Moneyflag = false;
@@ -14679,7 +14627,7 @@ void MenuProc(void)
                         // 2026.09.06: 3页物品栏
                         for (i = 0; i < 3; i++){
                             if (i == gCurrInventoryPage){
-                                StockDispBuffer(513, 188 + i * 56, DISP_PRIO_IME3, 55113 + i, 1);
+                                StockDispBuffer(613, 188 + i * 56, DISP_PRIO_IME3, 55113 + i, 1);
                             } else {
                                 BOOL flg = FALSE;
                                 if (i){
@@ -14690,15 +14638,15 @@ void MenuProc(void)
                                 else 
                                   flg = TRUE;
                                 if (flg){
-                                    StockDispBuffer(518, 188 + i * 56, DISP_PRIO_IME3, 55110 + i, 1);
-                                    if (MakeHitBox(508, 160 + i * 56, 508 + 20, 157 + i * 56 + 60, DISP_PRIO_IME4)){
+                                    StockDispBuffer(618, 188 + i * 56, DISP_PRIO_IME3, 55110 + i, 1);
+                                    if (MakeHitBox(608, 160 + i * 56, 638, 157 + i * 56 + 60, DISP_PRIO_IME4)){
                                         if (mouse.onceState & MOUSE_LEFT_CRICK){
                                             gCurrInventoryPage = i;
                                         }
                                         if (mouse.itemNo != -1) gCurrInventoryPage = i;
                                     }
                                 }
-                                else StockDispBuffer(518, 188 + i * 56, DISP_PRIO_IME3, 55107 + i, 1);
+                                else StockDispBuffer(618, 188 + i * 56, DISP_PRIO_IME3, 55107 + i, 1);
                             }
                         }
 #endif
@@ -14732,13 +14680,11 @@ void MenuProc(void)
                             if (g_bPetItemWndFlag && (i >= PET_EQUIPNUM && i < MAX_ITEMSTART))
                                 continue;
 #endif
-// 为啥是这三个continue
-                            if (i == 5 || i == 6 || i == 7)
-                                continue;
-                            if (MakeHitBox(ItemBuffer[i].defX - 24,
-                                           ItemBuffer[i].defY - 24,
-                                           ItemBuffer[i].defX + 26,
-                                           ItemBuffer[i].defY + 23,
+// 2026.09.07: 绘制装备栏的HitBox
+                            if (MakeHitBox(ItemBuffer[i].defX - 25,
+                                           ItemBuffer[i].defY - 25,
+                                           ItemBuffer[i].defX + 25,
+                                           ItemBuffer[i].defY + 25,
                                            DISP_PRIO_IME3) == TRUE)
                             {
                                 if (i < MAX_ITEMSTART && sLastInventoryHitSlot != i) {
@@ -14864,19 +14810,13 @@ void MenuProc(void)
                                                     }
                                                     else
                                                     {
-                                                        if (bNewServer)
                                                             lssproto_MI_send(sockfd, mouse.itemNo, i);
-                                                        else
-                                                            old_lssproto_MI_send(sockfd, mouse.itemNo, i);
                                                     }
                                                 }
                                                 else
 #endif
                                                 {
-                                                    if (bNewServer)
                                                         lssproto_MI_send(sockfd, mouse.itemNo, i);
-                                                    else
-                                                        old_lssproto_MI_send(sockfd, mouse.itemNo, i);
                                                 }
                                                 play_se(217, 320, 240);
                                             }
@@ -14973,10 +14913,7 @@ void MenuProc(void)
                                                         break;
                                                     }
 #endif
-                                                    if (bNewServer)
                                                         lssproto_ID_send(sockfd, nowGx, nowGy, i, 0);
-                                                    else
-                                                        old_lssproto_ID_send(sockfd, nowGx, nowGy, i, 0);
                                                     play_se(212, 320, 240);
                                                 }
                                                 break;
@@ -15381,12 +15318,7 @@ void MenuProc(void)
                                         lssproto_PetItemEquip_send(sockfd, nowGx, nowGy, nSelectPet, mouse.itemNo, -2);
                                     else
 #endif
-                                    if (bNewServer) {
                                         lssproto_DI_send(sockfd, nowGx, nowGy, mouse.itemNo);
-                                    }
-                                    else
-                                        old_lssproto_DI_send(sockfd, nowGx, nowGy, mouse.itemNo);
-
                                 }
                                 ItemBuffer[mouse.itemNo].dragFlag = FALSE;
                                 mouse.itemNo = -1;
@@ -15546,10 +15478,7 @@ void MenuProc(void)
                                 switch (magic[i].target){
                                 case MAGIC_TARGET_MYSELF:
                                     if (eventWarpSendFlag == FALSE){
-                                        if (bNewServer)
                                             lssproto_MU_send(sockfd, nowGx, nowGy, i, 0);
-                                        else
-                                            old_lssproto_MU_send(sockfd, nowGx, nowGy, i, 0);
                                         play_se(100, 320, 240);
                                     }
                                     break;
@@ -15582,10 +15511,7 @@ void MenuProc(void)
                         if (jujutuNo != -1 && MenuToggleFlag & JOY_CTRL_S && statusWndNo == 1){
                             for (i = 0; i < 11; i++){
                                 if (HitFontNo == statusWndFontNo[i] && eventWarpSendFlag == FALSE){
-                                    if (bNewServer)
                                         lssproto_MU_send(sockfd, nowGx, nowGy, jujutuNo, i);
-                                    else
-                                        old_lssproto_MU_send(sockfd, nowGx, nowGy, jujutuNo, i);
                                     play_se(100, 320, 240);
                                     if (magic[jujutuNo].mp > pc.mp - magic[jujutuNo].mp) jujutuNo = -1;;    // ????
 
@@ -15637,10 +15563,7 @@ void MenuProc(void)
                     for (i = 0; i < 11; i++){
                         if (HitFontNo == itemWndFontNo[i] && eventWarpSendFlag == FALSE){
                             if (jujutuNo != -1){
-                                if (bNewServer)
                                     lssproto_MU_send(sockfd, nowGx, nowGy, jujutuNo, i);
-                                else
-                                    old_lssproto_MU_send(sockfd, nowGx, nowGy, jujutuNo, i);
                                 play_se(100, 320, 240);
                                 if (magic[jujutuNo].mp > pc.mp - magic[jujutuNo].mp){
                                     DeathAction(pActMenuWnd2);
@@ -15653,10 +15576,7 @@ void MenuProc(void)
                                     play_se(203, 320, 240);
                                 }
                             } else {
-                                if (bNewServer)
                                     lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
-                                else
-                                    old_lssproto_ID_send(sockfd, nowGx, nowGy, itemNo, i);
                                 play_se(212, 320, 240);
                                 DeathAction(pActMenuWnd2);
 #ifdef _MONEYINPUT //Syu ADD 手动输入金钱量
@@ -16040,10 +15960,7 @@ void MenuProc(void)
                         // ????
                         if (((WINDOW_DISP *)pActYesNoWnd->pYobi)->yesNoResult == TRUE){
                             // ??????
-                            if (bNewServer)
                                 lssproto_DAB_send(sockfd, nowDelNo);
-                            else
-                                old_lssproto_DAB_send(sockfd, nowDelNo);
                             play_se(217, 320, 240);
                             // ???????
                             DeathAction(pActYesNoWnd);
@@ -16241,16 +16158,9 @@ void MenuProc(void)
                                     // ????????
                                     if (mailWndSendFlag[i] == TRUE){
                                         char moji2[256];
-                                        // ????????
                                         strcpy(moji2, MailStr.buffer);
-                                        // ???????
                                         makeEscapeString(moji2, moji, sizeof(moji));
-                                        // ????
-                                        if (bNewServer)
                                             lssproto_MSG_send(sockfd, i, moji, FONT_PAL_WHITE);
-                                        else
-                                            old_lssproto_MSG_send(sockfd, i, moji, FONT_PAL_WHITE);
-
                                     }
                                 }
                                 play_se(101, 320, 240);
@@ -16585,10 +16495,7 @@ void MenuProc(void)
                                             // ???????
                                             makeEscapeString(moji2, moji, sizeof(moji));
                                             // ???????
-                                            if (bNewServer)
                                                 lssproto_PMSG_send(sockfd, i, pc.mailPetNo, mailItemNo, moji2, FONT_PAL_WHITE);
-                                            else
-                                                old_lssproto_PMSG_send(sockfd, i, pc.mailPetNo, mailItemNo, moji2, FONT_PAL_WHITE);
                                             pc.mailPetNo = -1;
                                             // ??????????
                                             ItemBuffer[mailItemNo].mixFlag = 0;
@@ -16823,7 +16730,7 @@ void MenuProc(void)
                                 else flg = TRUE;
                                 if (flg){
                                     StockDispBuffer(271 + 10, 39 + i * 56, DISP_PRIO_IME3, 55226 + i, 1);
-                                    if (MakeHitBox(261 + 10, 11 + i * 56, 281 + 10, 8 + i * 56 + 60, DISP_PRIO_IME3)){
+                                    if (MakeHitBox(271, 11 + i * 56, 311, 8 + i * 56 + 60, DISP_PRIO_IME3)){
                                         if (mouse.onceState & MOUSE_LEFT_CRICK){
                                             gCurrInventoryPage = i;
                                         }
@@ -18579,7 +18486,7 @@ void MenuProc(void)
                                 else flg = TRUE;
                                 if (flg){
                                     StockDispBuffer(727 - 11, 335 + i * 56, DISP_PRIO_IME2, 55226 + i, 1);
-                                    if (MakeHitBox(717 - 11, 307 + i * 56, 717 + 20 - 11, 304 + i * 56 + 60, DISP_PRIO_IME4)){
+                                    if (MakeHitBox(706, 307 + i * 56, 746, 304 + i * 56 + 60, DISP_PRIO_IME4)){
                                         if (mouse.onceState & MOUSE_LEFT_CRICK){
                                             gCurrInventoryPage = i;
                                         }
@@ -19245,10 +19152,7 @@ void MenuProc(void)
 
                     if (HitDispNo == bankWndFontNo[1]) {
                         sprintf_s(buffer, "B|G|%d", pc.gold - cashGold);
-                        if (bNewServer)
                             lssproto_FM_send(sockfd, buffer);
-                        else
-                            old_lssproto_FM_send(sockfd, buffer);
                         closeBankman();
                         return;
                     }
@@ -19606,10 +19510,7 @@ void lssproto_TD_recv(int fd, char *data)
                 MenuToggleFlag ^= JOY_CTRL_T;
                 play_se(203, 320, 240);
                 sprintf_s(buf, "W|%s|%s", opp_sockfd, opp_name);
-                if (bNewServer)
                     lssproto_TD_send(sockfd, buf);
-                else
-                    old_lssproto_TD_send(sockfd, buf);
                 sprintf_s(buf, "%s以不正常方式修改交易金钱，系统强制关闭交易视窗！", opp_name);
                 StockChatBufferLine(buf, FONT_PAL_RED);
                 return;
@@ -19912,10 +19813,7 @@ void checkRidePet(int pindex)
 {
     char buf[128];
     sprintf_s(buf, "R|P|%d", pindex);
-    if (bNewServer)
-        lssproto_FM_send(sockfd, buf);
-    else
-        old_lssproto_FM_send(sockfd, buf);
+    lssproto_FM_send(sockfd, buf);
     return;
 }
 #else
@@ -19925,10 +19823,6 @@ void checkRidePet(int pindex)
 #ifdef _PET_ITEM
     BOOL    bHavePetItem = FALSE;
 #endif
-    
-    if (!bNewServer)
-        return;
-
 #ifdef _PET_ITEM
     // 宠身上有装备不可骑
     for (j = 0; j < MAX_PET_ITEM; ++j){
@@ -19958,10 +19852,7 @@ void checkRidePet(int pindex)
             int leaderimageNo = 100700 + ((baseimageNo - 100000) / 20) * 10 + (pc.familySprite) * 5;
             char buf[64];
             sprintf(buf, "R|P|%d", pindex);
-            if (bNewServer)
                 lssproto_FM_send(sockfd, buf);
-            else
-                old_lssproto_FM_send(sockfd, buf);
             pc.ridePetNo = pindex;
             return;
 
@@ -19978,10 +19869,7 @@ void checkRidePet(int pindex)
                 }
 #endif
                 sprintf(buf, "R|P|%d", pindex);
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 pc.ridePetNo = pindex;
                 return;
             }
@@ -20017,10 +19905,7 @@ void checkRidePet(int pindex)
                     }
 #endif
                     sprintf(buf, "R|P|%d", pindex);
-                    if (bNewServer)
                         lssproto_FM_send(sockfd, buf);
-                    else
-                        old_lssproto_FM_send(sockfd, buf);
                     pc.ridePetNo = pindex;
                     return;
                 }

@@ -909,8 +909,6 @@ void getStrSplitNew(char str[][256]) {
   }
 }
 
-
-
 /**
  * @brief 判断该codepoint是否需要计为2个单位
  */

@@ -6,7 +6,6 @@
 #else
 #define EXTERN extern
 #endif
-EXTERN BOOL bNewServer;
 
 #ifdef _THEATER
 enum {

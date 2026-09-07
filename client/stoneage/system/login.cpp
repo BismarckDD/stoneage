@@ -482,29 +482,26 @@ int commonMsgWin(char *msg)
 {
     static int fontId[] = {-2};
     static ACTION *ptActMenuWin = NULL;
-    int id;
-    int i;
     static int x, y, w, h;
     int ret = 0;
 #ifdef _NEW_WGS_MSG // WON ADD WGS的新视窗?
     char temp[256], out_msg[5][128];
     int j, count = 0, temp_size = 0;
 #endif
+    int msgCharLen = getUtf8CharNum(msg);
 
     if (commonMsgWinProcNo == 0)
     {
         commonMsgWinProcNo = 1;
-        for (i = 0; i < sizeof(fontId) / sizeof(int); i++)
+        for (int i = 0; i < sizeof(fontId) / sizeof(int); i++)
             fontId[i] = -2;
-        w = getUtf8CharNum(msg) * 8 / 64 + 2;
-        h = (36 + 32) / 48;
-        if (h < 2)
-            h = 2;
+        w = msgCharLen * 8 / 64 + 2;
+        h = 2;
         x = (lpDraw->xSize - w * 64) / 2;
         y = (lpDraw->ySize - h * 48) / 2;
         ptActMenuWin = MakeWindowDisp(x, y, w, h, NULL, 1);
     }
-    id = selFontId(fontId, sizeof(fontId) / sizeof(int));
+    int id = selFontId(fontId, sizeof(fontId) / sizeof(int));
     if (id == 0)
     {
         ret = 1;
@@ -516,11 +513,11 @@ int commonMsgWin(char *msg)
         ptActMenuWin = NULL;
         return ret;
     }
-
     if (ptActMenuWin && ptActMenuWin->hp >= 1)
     {
-        int len = getUtf8CharNum(msg) + 1;
-        int xx = (w * 64 - len * 16) / 2;
+        int len = msgCharLen + 1;
+        // 2026.09.07 每个字符占8个像素?
+        int xx = (w * 64 - len * 8) / 2;
         StockFontBuffer(x + xx, y + 30, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg, 0);
         xx = (w * 64 - getUtf8CharNum("ＯＫ") * 8) / 2;
         fontId[0] = StockFontBuffer(x + xx, y + 56, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "ＯＫ", 2);
@@ -5041,11 +5038,7 @@ void serverWindowType0(int mode)
             btn = 1;
             btn <<= id;
             makeEscapeString(input.buffer, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-
             windowTypeWN = -1;
         }
 
@@ -5202,7 +5195,6 @@ void serverWindowType1(void)
                 id2 = 0;
             sprintf_s(data, "%d", id2);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
 #ifdef _MOVE_SCREEN
                 if (pc.bMoveScreenMode)
                     lssproto_WN_send(sockfd, nowGx - iScreenMoveX, nowGy - iScreenMoveY, indexWN, idWN, btn, msg);
@@ -5211,9 +5203,6 @@ void serverWindowType1(void)
 #else
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
 #endif
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-
             windowTypeWN = -1;
         }
 
@@ -5357,11 +5346,8 @@ void serverWindowType2(void)
                 id2 = 0;
             sprintf_s(data, "%d", id2);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-
+            old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
             windowTypeWN = -1;
         }
 
@@ -5539,11 +5525,7 @@ void serverWindowType3(void)
                 id2 = 0;
             sprintf_s(data, "%d", id2);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-
             windowTypeWN = -1;
         }
 
@@ -5730,11 +5712,7 @@ void serverWindowType4(void)
                 id2 = 0;
             sprintf_s(data, "%d", id2);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-
             windowTypeWN = -1;
         }
 
@@ -5926,11 +5904,7 @@ void serverWindowType9(void)
             // sprintf_s( data, "%d", id2 );//selectID
             sprintf_s(data, "%d|%d|%d", selectID[0], selectID[1], selectID[2]);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-
             for (i = 0; i < 3; i++)
             {
                 selectID[i] = -1;
@@ -6071,10 +6045,7 @@ void serverWindowType5(void)
         {
             sprintf_s(data, "0");
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             windowTypeWN = -1;
         }
         else if (ret == 2)
@@ -6139,10 +6110,7 @@ void serverWindowType5(void)
         {
             sprintf_s(data, "%d|%d", selShopItemNo + 1, sealItemCnt);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             nowUserItemCnt--;
             pc.gold -= sealItem[selShopItemNo].price * sealItemCnt;
 #ifdef _NEW_MANOR_LAW
@@ -6184,10 +6152,7 @@ void serverWindowType5(void)
         {
             sprintf_s(data, "0");
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             windowTypeWN = -1;
         }
         else if (ret == 2)
@@ -6221,10 +6186,7 @@ void serverWindowType5(void)
             sprintf_s(data, "%d|%d", userItem[selShopItemNo].tbl, userItem[selShopItemNo].price);
 #endif
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
 
             pc.gold += userItem[selShopItemNo].price;
             int i, j, k;
@@ -6349,10 +6311,7 @@ int shopWindow1(void)
         {
             sprintf_s(data, "%d", ret);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
         }
 
         if (id >= 0)
@@ -7687,10 +7646,7 @@ void serverWindowType6(void)
                       selShopSkillSlotNo,
                       sealSkill[selShopSkillNo].price);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
-                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
+            lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             pc.gold -= sealSkill[selShopSkillNo].price;
             windowTypeWN = -1;
         }
@@ -7806,11 +7762,7 @@ void profession_windows(void)
                       selShopSkillNo + 1,
                       sealSkill[selShopSkillNo].price);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
-                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-
+            lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             // Robin fix 20040707 修改Client自动扣钱bug
             // pc.gold -= sealSkill[selShopSkillNo].price;
             windowTypeWN = -1;
@@ -8227,13 +8179,8 @@ void profession_windows2(void)
                       selShopSkillNo + 1,
                       sealSkill[selShopSkillNo].price);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
-                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-
+            lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             pc.gold -= sealSkill[selShopSkillNo].price;
-
             windowTypeWN = -1;
         }
         else if (ret == 2)
@@ -8635,10 +8582,7 @@ void PetSkillShowType1(void)
                           selShopSkillSlotNo
                 );
                 makeEscapeString(data, msg, sizeof(msg) - 1);
-                if (bNewServer)
-                    lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-                else
-                    old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
+                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
                 pc.gold -= sealSkill[selShopSkillNo].price;
                 windowTypeWN = -1;
             }
@@ -9258,10 +9202,7 @@ void serverWindowType7(void)
         {
             sprintf_s(data, "0");
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
-                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
+            lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             windowTypeWN = -1;
         }
         else if (ret == 2)
@@ -9280,11 +9221,7 @@ void serverWindowType7(void)
         {
             sprintf_s(data, "%d", poolItem[selShopItemNo].tbl);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
-                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-
+            lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             pc.gold -= poolItem[selShopItemNo].price;
             restPoolSlot--;
             if (restPoolSlot < 0)
@@ -9351,10 +9288,7 @@ void serverWindowType7(void)
         {
             sprintf_s(data, "0");
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
-                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
+            lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             windowTypeWN = -1;
         }
         else if (ret == 2)
@@ -9376,11 +9310,7 @@ void serverWindowType7(void)
         {
             sprintf_s(data, "%d", selShopItemNo + 1);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
-                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-
+            lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
             poolItem[selShopItemNo].name[0] = '\0';
             poolItem[selShopItemNo].info[0][0] = '\0';
             poolItem[selShopItemNo].info[1][0] = '\0';
@@ -9488,10 +9418,7 @@ int poolShopWindow1(void)
         {
             sprintf_s(data, "%d", ret);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-            if (bNewServer)
-                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
+            lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
         }
 
         if (id >= 0)
@@ -10312,10 +10239,7 @@ void familyAddWN(void)
                 makeEscapeString(familyNameInput.buffer, buf2, sizeof(buf2));
                 makeEscapeString(familyRuleInput.buffer, buf3, sizeof(buf3));
                 sprintf_s(buf, "A|%s|%d|%d|%s|%d", buf2, familyPetIndex, familyElf, buf3, 徽章索引);
-                if (bNewServer)
-                    lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
+                lssproto_FM_send(sockfd, buf);
                 closeFamilyAddWN();
                 return;
                 break;
@@ -10665,18 +10589,12 @@ void familyListWN(void)
                     if (pagenum > 1)
                     {
                         sprintf_s(buf, "S|F|%d|0", pagenum - 1);
-                        if (bNewServer)
-                            lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
+                        lssproto_FM_send(sockfd, buf);
                     }
                     else
                     {
                         sprintf_s(buf, "S|F|%d|0", (familytotal - 1) / 10 + 1);
-                        if (bNewServer)
-                            lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
+                        lssproto_FM_send(sockfd, buf);
                     }
                     return;
                     break;
@@ -10685,18 +10603,12 @@ void familyListWN(void)
                     if (pagenum < (familytotal - 1) / 10 + 1)
                     {
                         sprintf_s(buf, "S|F|%d|0", pagenum + 1);
-                        if (bNewServer)
-                            lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
+                        lssproto_FM_send(sockfd, buf);
                     }
                     else
                     {
                         sprintf_s(buf, "S|F|1|0");
-                        if (bNewServer)
-                            lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
+                        lssproto_FM_send(sockfd, buf);
                     }
                     return;
                     break;
@@ -10705,18 +10617,12 @@ void familyListWN(void)
                     if (pagenum > 10)
                     {
                         sprintf_s(buf, "S|F|%d|0", pagenum - 10);
-                        if (bNewServer)
                             lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
                     }
                     else
                     {
                         sprintf_s(buf, "S|F|%d|0", (familytotal - 1) / 10 + 1);
-                        if (bNewServer)
                             lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
                     }
                     return;
                     break;
@@ -10725,18 +10631,12 @@ void familyListWN(void)
                     if (pagenum < (familytotal - 1) / 10 + 1 - 9)
                     {
                         sprintf_s(buf, "S|F|%d|0", pagenum + 10);
-                        if (bNewServer)
-                            lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
+                        lssproto_FM_send(sockfd, buf);
                     }
                     else
                     {
                         sprintf_s(buf, "S|F|1|0");
-                        if (bNewServer)
-                            lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
+                        lssproto_FM_send(sockfd, buf);
                     }
                     return;
                     break;
@@ -10747,10 +10647,7 @@ void familyListWN(void)
                     sprintf_s(buf, "S|D|%s|%d|%d",
                               makeEscapeString(familyList[selFontBtnId].name, buf2, sizeof(buf2)),
                               familyList[selFontBtnId].index, familyList[selFontBtnId].tempindex);
-                    if (bNewServer)
-                        lssproto_FM_send(sockfd, buf);
-                    else
-                        old_lssproto_FM_send(sockfd, buf);
+                    lssproto_FM_send(sockfd, buf);
                 }
             }
 
@@ -11003,10 +10900,7 @@ int familyDetailWN(void)
                               familyDetail.tempindex, familyDetail.index,
                               makeEscapeString(familyDetail.name, buf2, sizeof(buf2)),
                               familyDetail.sprite);
-                    if (bNewServer)
                         lssproto_FM_send(sockfd, buf);
-                    else
-                        old_lssproto_FM_send(sockfd, buf);
                     familyListProcNo = 1;
                     closeFamilyList();
                     GetKeyInputFocus(&MyChatBuffer);
@@ -11073,19 +10967,13 @@ int familyDetailWN(void)
                         (strcmp(familyRuleShow.buffer, familyDetail.rule) != 0))
                     {
                         sprintf_s(buf, "X|R|%s", familyRuleShow.buffer);
-                        if (bNewServer)
                             lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
                     }
 
                     if (changeData[1] == 1)
                     {
                         sprintf_s(buf, "X|P|%d", familyPetIndex);
-                        if (bNewServer)
                             lssproto_FM_send(sockfd, buf);
-                        else
-                            old_lssproto_FM_send(sockfd, buf);
                     }
 #ifdef _FAMILYBADGE_
                     if (徽章索引 != 1)
@@ -11093,10 +10981,7 @@ int familyDetailWN(void)
                         if (徽章数据[徽章索引] != familyDetail.badgeNo)
                         {
                             sprintf_s(buf, "X|B|%d", 徽章索引);
-                            if (bNewServer)
                                 lssproto_FM_send(sockfd, buf);
-                            else
-                                old_lssproto_FM_send(sockfd, buf);
                         }
                     }
 #endif
@@ -11709,27 +11594,16 @@ void FMWindowType(void)
             if (1 <= id2 && id2 < 11)
             {
                 sprintf_s(buf, "M|%s|%d|%d", FMnameWN[id2], FMpidWN[id2], FMmsgWN[id2]);
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
             }
             if (id2 == 11)
             {
                 sprintf_s(buf, "T|%d", FMmsgWN[id2]);
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
             }
-            /*if( FMmsgWN[id2] != FMMEMBER_ELDER && FMmsgWN[id2] != FMMEMBER_INVITE &&
-            FMmsgWN[id2] != FMMEMBER_BAILEE && FMmsgWN[id2] != FMMEMBER_VICELEADER )*/
             if (FMmsgWN[id2] == FMMEMBER_NONE || FMmsgWN[id2] == FMMEMBER_MEMBER || FMmsgWN[id2] == 0)
             {
-                if (bNewServer)
                     lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-                else
-                    old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
             }
             windowTypeWN = -1;
         }
@@ -12118,23 +11992,14 @@ void FMWindowType(void)
             if (1 <= id2 && id2 < 11)
             {
                 sprintf_s(buf, "M|%s|%d|%d", FMnameWN[id2], FMpidWN[id2], FMmsgWN[id2]);
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
             }
             if (id2 == 11)
             {
                 sprintf_s(buf, "T|%d", FMmsgWN[id2]);
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
             }
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
             windowTypeWN = -1;
         }
         if (id >= 0 || id2 >= 0)
@@ -12361,11 +12226,7 @@ void FMWindowType1(void)
 
                 makeEscapeString(input.buffer, msg1, sizeof(msg1) - 1);
                 sprintf_s(msg, "%d|%s", FMdengonidex, msg1);
-                if (bNewServer)
                     lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-                else
-                    old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-
                 windowTypeWN = -1;
             }
         if (id >= 0)
@@ -12652,10 +12513,7 @@ void FMWindowType2(void)
             if (1 <= id2 && id2 < 5)
             {
 #endif
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
             }
 
 #ifdef _FIX_9_FMPOINT // WON ADD 九大庄园
@@ -12665,9 +12523,6 @@ void FMWindowType2(void)
             if (0 <= id && id < 6)
             {
 #endif
-                if (bNewServer)
-                    lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-                else
                     lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
             }
             windowTypeWN = -1;
@@ -13117,10 +12972,7 @@ void FMWindowType4(void)
             sprintf_s(data, "%d|%d", FMdengonidex, id2);
             makeEscapeString(data, msg, sizeof(msg) - 1);
 
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
             windowTypeWN = -1;
         }
         if (id >= 0 || id2 >= 0)
@@ -13390,10 +13242,7 @@ void FMWindowType3(void)
             sprintf_s(data, "%d|%d", FMdengonidex, id2);
             makeEscapeString(data, msg, sizeof(msg) - 1);
 
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
             windowTypeWN = -1;
         }
         if (id >= 0 || id2 >= 0)
@@ -13612,10 +13461,7 @@ void FMWindowType3(void)
             sprintf_s(data, "%d|%d", FMdengonidex, id2);
             makeEscapeString(data, msg, sizeof(msg) - 1);
 
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
             windowTypeWN = -1;
         }
         if (id >= 0 || id2 >= 0)
@@ -13881,23 +13727,15 @@ void FMPKListWN(int mode)
             btn = 1;
             btn <<= id;
             // makeEscapeString( input.buffer, msg, sizeof( msg )-1 );
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, "");
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, "");
-
             windowTypeWN = -1;
         }
         else if ((6 <= id) && (id < 10))
         {
 
             int dataSel = id - 6;
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN,
                                  WINDOW_BUTTONTYPE_OK, FMPKDataList[dataSel].time);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN,
-                                     WINDOW_BUTTONTYPE_OK, FMPKDataList[dataSel].time);
         }
 
         if (id >= 0)
@@ -14137,12 +13975,7 @@ void FMPKSelectWN(int mode)
         {
             btn = 1;
             btn <<= id;
-            // makeEscapeString( input.buffer, msg, sizeof( msg )-1 );
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, "");
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, "");
-
             windowTypeWN = -1;
         }
         else if ((6 <= id) && (id < 6 + 8))
@@ -14151,12 +13984,8 @@ void FMPKSelectWN(int mode)
             int dataSel = id - 6;
             sprintf_s(dataBuf, "%d|%s", FMPKSelectData[dataSel].fmindex,
                       makeEscapeString(FMPKSelectData[dataSel].fmname, buf, sizeof(buf)));
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN,
                                  WINDOW_BUTTONTYPE_OK, dataBuf);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN,
-                                     WINDOW_BUTTONTYPE_OK, dataBuf);
         }
 
         if (id >= 0)
@@ -14323,11 +14152,7 @@ void FMPKDetailWN(int mode)
                       FMPKDetailData.readyTime,
                       FMPKDetailData.member,
                       FMPKDetailData.win);
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, dataBuf);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, dataBuf);
-
             windowTypeWN = -1;
         }
         else if (id == 6)
@@ -14517,11 +14342,7 @@ void familyTaxWN()
             {
             case 0:
                 sprintf_s(buf, "B|T|%d", familyTaxChange - familyTax);
-                // sprintf_s( buf, "B|T|%d", 79000000 );
-                if (bNewServer)
-                    lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
+                lssproto_FM_send(sockfd, buf);
                 closeFamilyTaxWN();
                 return;
                 break;
@@ -14840,13 +14661,7 @@ void showRidePetWN(void)
         {
             btn = 1;
             btn <<= id;
-
-            // makeEscapeString( input.buffer, msg, sizeof( msg )-1 );
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, "");
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, "");
-
             windowTypeWN = -1;
         }
         else if ((6 <= id) && (id < 6 + 8))
@@ -14855,12 +14670,8 @@ void showRidePetWN(void)
             int dataSel = id - 6;
             sprintf_s(dataBuf, "%d|%s", FMPKSelectData[dataSel].fmindex,
                       makeEscapeString(FMPKSelectData[dataSel].fmname, buf, sizeof(buf)));
-            if (bNewServer)
                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN,
                                  WINDOW_BUTTONTYPE_OK, dataBuf);
-            else
-                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN,
-                                     WINDOW_BUTTONTYPE_OK, dataBuf);
         }
 
         if (id >= 0)
@@ -15099,10 +14910,7 @@ void familyLeaderChangeQWN()
                 return;
             case 1:
                 sprintf_s(buf, "L|CHANGE|Q|%d|%s", memberIndex[changeWho], memberName[changeWho]);
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeFamilyLeaderChangeWN();
                 return;
             }
@@ -15178,20 +14986,14 @@ void familyLeaderChangeAWN()
                 sprintf_s(buf, "L|CHANGE|A|0|%s|%d",
                           makeEscapeString(oldLeaderName, buf2, sizeof(buf2)),
                           oldLeaderIndex);
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeFamilyLeaderChangeWN();
                 return;
             case 1:
                 sprintf_s(buf, "L|CHANGE|A|1|%s|%d",
                           makeEscapeString(oldLeaderName, buf2, sizeof(buf2)),
                           oldLeaderIndex);
-                if (bNewServer)
                     lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
                 closeFamilyLeaderChangeWN();
                 return;
             }
@@ -15457,10 +15259,7 @@ void BankProc(void)
                 if (HitDispNo == BankBtNo[0])
                 {
                     ZeroMemory(msg, sizeof(msg));
-                    if (bNewServer)
                         lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
-                    else
-                        old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 0, msg);
                     windowTypeWN = -1;
                     DeathAction(pBankProcWnd);
                     pBankProcWnd = NULL;
@@ -15473,11 +15272,7 @@ void BankProc(void)
                     sprintf_s(msg, "%d", Gold);
                     pc.gold -= Gold;
                     pc.personal_bankgold += Gold;
-                    if (bNewServer)
                         lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 4, msg);
-                    else
-                        old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, 4, msg);
-
                     windowTypeWN = -1;
                     DeathAction(pBankProcWnd);
                     pBankProcWnd = NULL;
@@ -15917,10 +15712,7 @@ void AuctionNewWT(void)
                             makeEscapeString(AuctionStr.buffer, szSendMsg[0], sizeof(AuctionStr.buffer));
                             sprintf_s(szSendMsg[1], "1|%d|%s|%d", nPetShow, szSendMsg[0], atoi(AuctionMoney.buffer));
                             makeEscapeString(szSendMsg[1], szSendMsg[2], sizeof(szSendMsg[1]));
-                            if (bNewServer)
                                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, WINDOW_BUTTONTYPE_YES, szSendMsg[2]);
-                            else
-                                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, WINDOW_BUTTONTYPE_YES, szSendMsg[2]);
                         }
                     }
                     // 若是要卖道具
@@ -15932,10 +15724,7 @@ void AuctionNewWT(void)
                             makeEscapeString(AuctionStr.buffer, szSendMsg[0], sizeof(AuctionStr.buffer));
                             sprintf_s(szSendMsg[1], "2|%d|%s|%d", nItemSelect, szSendMsg[0], atoi(AuctionMoney.buffer));
                             makeEscapeString(szSendMsg[1], szSendMsg[2], sizeof(szSendMsg[1]));
-                            if (bNewServer)
                                 lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, WINDOW_BUTTONTYPE_YES, szSendMsg[2]);
-                            else
-                                old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, WINDOW_BUTTONTYPE_YES, szSendMsg[2]);
                         }
                     }
                 }
@@ -16248,11 +16037,7 @@ void AuctionListWT(void)
                 ZeroMemory(szSendMsg, sizeof(szSendMsg));
                 sprintf_s(szSendMsg[1], "%d|", aldArea[nListSelect].index);
                 makeEscapeString(szSendMsg[1], szSendMsg[0], sizeof(szSendMsg[0]));
-                if (bNewServer)
                     lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, type, szSendMsg[0]);
-                else
-                    old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, type, szSendMsg[0]);
-
                 windowTypeWN = -1;
                 bNewData = FALSE;
                 DeathAction(pActAuctionWT);
@@ -16280,10 +16065,7 @@ void AuctionListWT(void)
                 ZeroMemory(szSendMsg, sizeof(szSendMsg));
                 sprintf_s(szSendMsg[1], "%d|", aldArea[0].index);
                 makeEscapeString(szSendMsg[1], szSendMsg[0], sizeof(szSendMsg[0]));
-                if (bNewServer)
-                    lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, type, szSendMsg[0]);
-                else
-                    old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, type, szSendMsg[0]);
+                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, type, szSendMsg[0]);
                 bPress = FALSE;
             }
             // 如果按了取消
@@ -16445,10 +16227,7 @@ void AuctionSurveyModifyWT(void)
                     ZeroMemory(szSendMsg, sizeof(szSendMsg));
                     sprintf_s(szSendMsg[0], "%d|", ald.index);
                     makeEscapeString(szSendMsg[0], szSendMsg[1], sizeof(szSendMsg[0]));
-                    if (bNewServer)
-                        lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, WINDOW_BUTTONTYPE_OK, szSendMsg[1]);
-                    else
-                        old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, WINDOW_BUTTONTYPE_OK, szSendMsg[1]);
+                    lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, WINDOW_BUTTONTYPE_OK, szSendMsg[1]);
                 }
                 windowTypeWN = -1;
                 DeathAction(pActAuctionWT);
@@ -16713,10 +16492,7 @@ void FMTAXWindowsType(void)
             {
             case 0:
                 sprintf_s(buf, "L|TAX|%d|%d", 1, fm_tax_num);
-                if (bNewServer)
-                    lssproto_FM_send(sockfd, buf);
-                else
-                    old_lssproto_FM_send(sockfd, buf);
+                lssproto_FM_send(sockfd, buf);
                 closeFamilyTaxWN();
                 return;
                 break;

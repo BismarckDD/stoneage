@@ -3,25 +3,25 @@
 //
 #include "systeminc/chat.h"
 //
-#include "systeminc/font.h"
-#include "systeminc/text_encoding.h"
-#include "sdk/caryime.h"
-#include "systeminc/netproc.h"
 #include "game/battle_proc.h"
-#include "systeminc/savedata.h"
-#include "systeminc/menu.h"
-#include "systeminc/t_music.h"
-#include "systeminc/tool.h"
 #include "proto/lssproto_cli.h"
 #include "proto/protocol.h"
+#include "sdk/caryime.h"
+#include "systeminc/font.h"
+#include "systeminc/menu.h"
 #include "systeminc/netmain.h"
+#include "systeminc/netproc.h"
+#include "systeminc/savedata.h"
+#include "systeminc/t_music.h"
+#include "systeminc/text_encoding.h"
+#include "systeminc/tool.h"
 #ifdef _TALK_WINDOW
 #include "systeminc/talkwindow.h"
 #endif
 #include "systeminc/EncryptClient.h"
 #include <atlconv.h>
-extern INPUT_HISTORY InputHistory ;
-extern STR_BUFFER SubBuffer; 
+extern INPUT_HISTORY InputHistory;
+extern STR_BUFFER SubBuffer;
 extern STR_BUFFER idKey;
 extern STR_BUFFER passwd;
 
@@ -29,7 +29,7 @@ extern STR_BUFFER passwd;
 extern BOOL OnlineGmFlag;
 #endif
 
-CHAT_BUFFER ChatBuffer[ MAX_CHAT_LINE ];
+CHAT_BUFFER ChatBuffer[MAX_CHAT_LINE];
 STR_BUFFER MyChatBuffer;
 STR_BUFFER *pNowStrBuffer = NULL;
 int NowChatLine = 0;
@@ -43,1271 +43,1324 @@ int NowMaxVoice = DEF_VOICE;
 // ????????
 int CursorFlashCnt = 0;
 // ??????????
-int ChatLineSmoothY = 0 ;
+int ChatLineSmoothY = 0;
 
 // 存储当前用户额历史记录
 #define CAHT_HISTORY_STR_FILE_NAME "data\\chathis.dat"
 CHAT_HISTORY ChatHistory;
 
 #define MAX_SHIELD_SIZE 5000
-//typedef CEncryptClient<0x55, 0x168, 0xC9, 0x3C, 0x6B, 0x49, 0x81, 0x65>    ENCRYPTCONF;
+// typedef CEncryptClient<0x55, 0x168, 0xC9, 0x3C, 0x6B, 0x49, 0x81, 0x65>
+// ENCRYPTCONF;
 char SayShieldList[MAX_SHIELD_SIZE][24];
 char NameShieldList[MAX_SHIELD_SIZE][24];
 
-// ??????? 
-void KeyboardTab( void );
+// ???????
+void KeyboardTab(void);
 
 // ??????
 FILE *chatLogFile = NULL;
 char chatLogFileName[256];
-void openChatLogFile( void );
+void openChatLogFile(void);
 
-void InitChat( void )
-{
-    memset( ChatBuffer, 0, sizeof( CHAT_BUFFER ) * MAX_CHAT_LINE );
-    memset( &MyChatBuffer, 0, sizeof( STR_BUFFER ) );
-    MyChatBuffer.len = _FONTDATALEN_-10;
+void InitChat(void) {
+  memset(ChatBuffer, 0, sizeof(CHAT_BUFFER) * MAX_CHAT_LINE);
+  memset(&MyChatBuffer, 0, sizeof(STR_BUFFER));
+  MyChatBuffer.len = _FONTDATALEN_ - 10;
 #ifndef _CHANNEL_MODIFY
-    MyChatBuffer.fontPrio = FONT_PRIO_BACK;
+  MyChatBuffer.fontPrio = FONT_PRIO_BACK;
 #else
-    MyChatBuffer.fontPrio = FONT_PRIO_CHATBUFFER;
+  MyChatBuffer.fontPrio = FONT_PRIO_CHATBUFFER;
 #endif
 #ifdef _MO_CHAT_EXPRESSION
-    MyChatBuffer.x = 8+20;
+  MyChatBuffer.x = 8 + 20;
 #else
-    MyChatBuffer.x = 8;
+  MyChatBuffer.x = 8;
 #endif
-    MyChatBuffer.y = 432 + DISPLACEMENT_Y;
-    getUserChatOption();
-    openChatLogFile();
+  MyChatBuffer.y = 432 + DISPLACEMENT_Y;
+  getUserChatOption();
+  openChatLogFile();
 #ifdef _CHANNEL_MODIFY
-    FILE *pf;
-    char buf[5];
-    
-    if ((pf = fopen("data\\channel.dat","r")) == NULL)
-    {
-        pc.etcFlag |= PC_ETCFLAG_CHAT_TELL;
-        if ((pf = fopen("data\\channel.dat", "w+")) == NULL)
-            return;
-        else
-        {
-            buf[0] = (pc.etcFlag & PC_ETCFLAG_CHAT_TELL) ? 1:0;
-            buf[1] = (pc.etcFlag & PC_ETCFLAG_CHAT_SAVE) ? 1:0;
-#ifdef _CHAR_PROFESSION
-            buf[2] = (pc.etcFlag & PC_ETCFLAG_CHAT_OCC) ? 1:0;
-#endif
-#ifdef _CHANNEL_WORLD
-            buf[3] = (pc.etcFlag & PC_ETCFLAG_CHAT_WORLD) ? 1:0;
-#endif
-#ifdef _CHANNEL_ALL_SERV
-            buf[4] = (pc.etcFlag & PC_ETCFLAG_ALL_SERV) ? 1:0;
-#endif
-            fwrite(buf, 1, sizeof(buf), pf);
-            fclose(pf);
-        }
-    }
-    else
-    {
-        fread(&buf,1,sizeof(char),pf);
-        if (buf)
-            pc.etcFlag |= PC_ETCFLAG_CHAT_TELL;
-        fread(&buf,1,sizeof(char),pf);
-        if (buf)
-            pc.etcFlag |= PC_ETCFLAG_CHAT_SAVE;
-        fread(&buf,1,sizeof(char),pf);
-#ifdef _CHAR_PROFESSION
-        if (buf)
-            pc.etcFlag |= PC_ETCFLAG_CHAT_OCC;
-#endif
-#ifdef _CHANNEL_WORLD
-        if (buf)
-            pc.etcFlag |= PC_ETCFLAG_CHAT_WORLD;
-#endif
-#ifdef _CHANNEL_ALL_SERV
-        if (buf)
-            pc.etcFlag |= PC_ETCFLAG_ALL_SERV;
-#endif
-        fclose(pf);
-    }
+  FILE *pf;
+  char buf[5];
 
-    if (pc.familyleader <= 0) pc.etcFlag &= ~PC_ETCFLAG_CHAT_FM;
-    else pc.etcFlag |= PC_ETCFLAG_CHAT_FM;
+  if ((pf = fopen("data\\channel.dat", "r")) == NULL) {
+    pc.etcFlag |= PC_ETCFLAG_CHAT_TELL;
+    if ((pf = fopen("data\\channel.dat", "w+")) == NULL)
+      return;
+    else {
+      buf[0] = (pc.etcFlag & PC_ETCFLAG_CHAT_TELL) ? 1 : 0;
+      buf[1] = (pc.etcFlag & PC_ETCFLAG_CHAT_SAVE) ? 1 : 0;
 #ifdef _CHAR_PROFESSION
-    if (pc.profession_class == 0) pc.etcFlag &= ~PC_ETCFLAG_CHAT_OCC;
-    else pc.etcFlag |= PC_ETCFLAG_CHAT_OCC;
+      buf[2] = (pc.etcFlag & PC_ETCFLAG_CHAT_OCC) ? 1 : 0;
 #endif
-    if(!pc.etcFlag &PC_ETCFLAG_PARTY){
-        pc.etcFlag |= PC_ETCFLAG_PARTY;
+#ifdef _CHANNEL_WORLD
+      buf[3] = (pc.etcFlag & PC_ETCFLAG_CHAT_WORLD) ? 1 : 0;
+#endif
+#ifdef _CHANNEL_ALL_SERV
+      buf[4] = (pc.etcFlag & PC_ETCFLAG_ALL_SERV) ? 1 : 0;
+#endif
+      fwrite(buf, 1, sizeof(buf), pf);
+      fclose(pf);
     }
-    //修复组队
+  } else {
+    fread(&buf, 1, sizeof(char), pf);
+    if (buf)
+      pc.etcFlag |= PC_ETCFLAG_CHAT_TELL;
+    fread(&buf, 1, sizeof(char), pf);
+    if (buf)
+      pc.etcFlag |= PC_ETCFLAG_CHAT_SAVE;
+    fread(&buf, 1, sizeof(char), pf);
+#ifdef _CHAR_PROFESSION
+    if (buf)
+      pc.etcFlag |= PC_ETCFLAG_CHAT_OCC;
+#endif
+#ifdef _CHANNEL_WORLD
+    if (buf)
+      pc.etcFlag |= PC_ETCFLAG_CHAT_WORLD;
+#endif
+#ifdef _CHANNEL_ALL_SERV
+    if (buf)
+      pc.etcFlag |= PC_ETCFLAG_ALL_SERV;
+#endif
+    fclose(pf);
+  }
+
+  if (pc.familyleader <= 0)
+    pc.etcFlag &= ~PC_ETCFLAG_CHAT_FM;
+  else
+    pc.etcFlag |= PC_ETCFLAG_CHAT_FM;
+#ifdef _CHAR_PROFESSION
+  if (pc.profession_class == 0)
+    pc.etcFlag &= ~PC_ETCFLAG_CHAT_OCC;
+  else
+    pc.etcFlag |= PC_ETCFLAG_CHAT_OCC;
+#endif
+  if (!pc.etcFlag & PC_ETCFLAG_PARTY) {
     pc.etcFlag |= PC_ETCFLAG_PARTY;
-    if (bNewServer) lssproto_FS_send(sockfd,pc.etcFlag);
-    else old_lssproto_FS_send(sockfd,pc.etcFlag);
+  }
+  // 修复组队
+  pc.etcFlag |= PC_ETCFLAG_PARTY;
+  lssproto_FS_send(sockfd, pc.etcFlag);
 #endif
 }
 
-void openChatLogFile( void )
-{
-    if( chatLogFile == NULL ){
-        static struct tm nowTime;
-        time_t longTime;
-        time( &longTime );
-        localtime_s(&nowTime, &longTime );
-        sprintf_s( chatLogFileName, ".\\chat\\CHAT_%02d%02d%02d.TXT",
-            (nowTime.tm_year % 100), nowTime.tm_mon+1, nowTime.tm_mday );
-        chatLogFile = fopen( chatLogFileName, "a" );
-        if( chatLogFile ){
-            fprintf( chatLogFile, "----- Login: %02d/%02d/%02d %02d:%02d:%02d -----\n",
-                (nowTime.tm_year % 100), nowTime.tm_mon+1, nowTime.tm_mday,
-                nowTime.tm_hour, nowTime.tm_min, nowTime.tm_sec );
-        }
+void openChatLogFile(void) {
+  if (chatLogFile == NULL) {
+    static struct tm nowTime;
+    time_t longTime;
+    time(&longTime);
+    localtime_s(&nowTime, &longTime);
+    sprintf_s(chatLogFileName, ".\\chat\\CHAT_%02d%02d%02d.TXT",
+              (nowTime.tm_year % 100), nowTime.tm_mon + 1, nowTime.tm_mday);
+    chatLogFile = fopen(chatLogFileName, "a");
+    if (chatLogFile) {
+      fprintf(chatLogFile, "----- Login: %02d/%02d/%02d %02d:%02d:%02d -----\n",
+              (nowTime.tm_year % 100), nowTime.tm_mon + 1, nowTime.tm_mday,
+              nowTime.tm_hour, nowTime.tm_min, nowTime.tm_sec);
     }
+  }
 }
 
-BOOL SaveChatHistoryStr( int no )
-{
-    FILE *fp; 
-    
-    if( ( fp = fopen( CAHT_HISTORY_STR_FILE_NAME, "r+b" ) ) == NULL )
-        return FALSE;
-    // ?????????????????????
-    fseek( fp, sizeof( ChatHistory.str[ 0 ] ) * no, SEEK_SET );
-    // ?????????
-    if( fwrite( &ChatHistory.str[ no ], sizeof( ChatHistory.str[ 0 ] ), 1, fp ) < 1 ){
-    
-        fclose( fp );// ????????
-        return FALSE;
-    }
-    fseek( fp, sizeof( ChatHistory.str[ 0 ] ) * MAX_CHAT_HISTORY, SEEK_SET );
-    if( fwrite( &no, sizeof( int ), 1, fp ) < 1 ){
-    
-        fclose( fp );// ????????
-        return FALSE;
-    }
-    fclose( fp );
-    return TRUE;
+BOOL SaveChatHistoryStr(int no) {
+  FILE *fp;
+
+  if ((fp = fopen(CAHT_HISTORY_STR_FILE_NAME, "r+b")) == NULL)
+    return FALSE;
+  // ?????????????????????
+  fseek(fp, sizeof(ChatHistory.str[0]) * no, SEEK_SET);
+  // ?????????
+  if (fwrite(&ChatHistory.str[no], sizeof(ChatHistory.str[0]), 1, fp) < 1) {
+
+    fclose(fp); // ????????
+    return FALSE;
+  }
+  fseek(fp, sizeof(ChatHistory.str[0]) * MAX_CHAT_HISTORY, SEEK_SET);
+  if (fwrite(&no, sizeof(int), 1, fp) < 1) {
+
+    fclose(fp); // ????????
+    return FALSE;
+  }
+  fclose(fp);
+  return TRUE;
 }
 
-// ???????????? ****************************************************************/
-BOOL LoadChatHistoryStr( void )
-{
-    FILE *fp;
+// ????????????
+// ****************************************************************/
+BOOL LoadChatHistoryStr(void) {
+  FILE *fp;
 
-    // ??????????????
-    ChatHistory.nowNo = -1;
+  // ??????????????
+  ChatHistory.nowNo = -1;
 
-    // ???????????
-    if( ( fp = fopen( CAHT_HISTORY_STR_FILE_NAME, "rb" ) ) == NULL ){
-        // ???????
-        if( ( fp = fopen( CAHT_HISTORY_STR_FILE_NAME, "wb" ) ) != NULL ){
-            // ???????
-            fwrite( &ChatHistory, sizeof( CHAT_HISTORY ) - sizeof( int ), 1, fp );
-            fclose( fp );    // ????????
-        }
-        
-        // ?????????????
-        ChatHistory.nowNo = MAX_CHAT_HISTORY - 1;
-        
-        return FALSE;
+  // ???????????
+  if ((fp = fopen(CAHT_HISTORY_STR_FILE_NAME, "rb")) == NULL) {
+    // ???????
+    if ((fp = fopen(CAHT_HISTORY_STR_FILE_NAME, "wb")) != NULL) {
+      // ???????
+      fwrite(&ChatHistory, sizeof(CHAT_HISTORY) - sizeof(int), 1, fp);
+      fclose(fp); // ????????
     }
-    
-    // ??????
-    if( fread( &ChatHistory, sizeof( CHAT_HISTORY ) - sizeof( int ), 1, fp ) < 1 ){
-        
-        fclose( fp );    // ????????
-        return FALSE;
-    }
-    // ????????
-    fclose( fp );
-    
-    return TRUE;
+
+    // ?????????????
+    ChatHistory.nowNo = MAX_CHAT_HISTORY - 1;
+
+    return FALSE;
+  }
+
+  // ??????
+  if (fread(&ChatHistory, sizeof(CHAT_HISTORY) - sizeof(int), 1, fp) < 1) {
+
+    fclose(fp); // ????????
+    return FALSE;
+  }
+  // ????????
+  fclose(fp);
+
+  return TRUE;
 }
 
 /* ???????????? ****************************************************/
-//加载屏蔽字
-void* EncryptFileName( LPCTSTR pszResFile,unsigned int &nSize )
-{
-    //ENCRYPTCONF    myConfFileCncryp;
-    //if( NULL != pszResFile ) ; //  [Chancy2008-4-16 21:51]
+// 加载屏蔽字
+void *EncryptFileName(LPCTSTR pszResFile, unsigned int &nSize) {
+  // ENCRYPTCONF    myConfFileCncryp;
+  // if( NULL != pszResFile ) ; //  [Chancy2008-4-16 21:51]
 
-    char szFile[MAX_PATH] = "";
-    char szResFileTemp[MAX_PATH] = "" ;
-    lstrcpyn( szResFileTemp , pszResFile , sizeof( szResFileTemp ) ) ;
-    char* pszReadName;
-    _strlwr_s(pszReadName=_strdup(szResFileTemp),256); //  [Chancy2008-4-16 21:52]
+  char szFile[MAX_PATH] = "";
+  char szResFileTemp[MAX_PATH] = "";
+  lstrcpyn(szResFileTemp, pszResFile, sizeof(szResFileTemp));
+  char *pszReadName;
+  _strlwr_s(pszReadName = _strdup(szResFileTemp),
+            256); //  [Chancy2008-4-16 21:52]
 
-    if ( !pszReadName )
-        return NULL;
+  if (!pszReadName)
+    return NULL;
 
-    sprintf_s(szFile,"data/%s.bin",pszReadName);
+  sprintf_s(szFile, "data/%s.bin", pszReadName);
 
-    FILE* fp = fopen(szFile, "rb");
-    if ( !fp )
-    {
-        return false;
-    }
+  FILE *fp = fopen(szFile, "rb");
+  if (!fp) {
+    return false;
+  }
 
-    //(myConfFileCncryp).Init();
+  //(myConfFileCncryp).Init();
 
-    fseek(fp,0,SEEK_END);//move file pointer to file end
-    unsigned int unFileSize =  ftell( fp );
-    nSize = ftell( fp );
-    fseek( fp,0,SEEK_SET );// RESTORE
+  fseek(fp, 0, SEEK_END); // move file pointer to file end
+  unsigned int unFileSize = ftell(fp);
+  nSize = ftell(fp);
+  fseek(fp, 0, SEEK_SET); // RESTORE
 
-    void* pBuffer = new char[ unFileSize + 1 ]; // apply 1 char memory for '\0' because char pointer
+  void *pBuffer =
+      new char[unFileSize +
+               1]; // apply 1 char memory for '\0' because char pointer
 
-    if( !pBuffer )
-        return false;
-    memset( pBuffer,0,sizeof( char ) * ( unFileSize + 1 ) );
-    fread( pBuffer,unFileSize,1,fp );
-    //(myConfFileCncryp).Encrypt((unsigned char *)pBuffer,unFileSize);
-    fclose(fp);
+  if (!pBuffer)
+    return false;
+  memset(pBuffer, 0, sizeof(char) * (unFileSize + 1));
+  fread(pBuffer, unFileSize, 1, fp);
+  //(myConfFileCncryp).Encrypt((unsigned char *)pBuffer,unFileSize);
+  fclose(fp);
 
-    return pBuffer;
+  return pBuffer;
 }
 
-BOOL MoveFilePointInt( const char * pBuffer ,unsigned int nSize , unsigned int &nRead, BOOL &bRead ,int nResult) // 移动文件指针 [11/27/2007]
+BOOL MoveFilePointInt(const char *pBuffer, unsigned int nSize,
+                      unsigned int &nRead, BOOL &bRead,
+                      int nResult) // 移动文件指针 [11/27/2007]
 {
-    unsigned int nReadCount = nRead;    // 记录上次指针的位置 [11/28/2007]
-    const char* pFind = strstr( pBuffer + nRead,"\n");//find \n
-    if( pFind )
-    {
-        nRead = ( pFind - pBuffer + 1 );    // 得到当前指针的位置 [11/28/2007]  //得到相对与文件开始位置的偏移位置// 最先的注释不准确 [杨文鸽 2007-12-14]
-    }
-    if ((2 == nRead - nReadCount && nResult !=0)|| nResult == 0)    // /    判断读到真实数据（2个字节表示“\r\n”）  [11/28/2007]
-    {
-        bRead = FALSE;
-    }
-    else
-    {
-        bRead = TRUE;
-    }
-    if( nRead > nSize )
-        return false;
+  unsigned int nReadCount = nRead; // 记录上次指针的位置 [11/28/2007]
+  const char *pFind = strstr(pBuffer + nRead, "\n"); // find \n
+  if (pFind) {
+    nRead = (pFind - pBuffer + 1); // 得到当前指针的位置 [11/28/2007]
+                                   // //得到相对与文件开始位置的偏移位置//
+                                   // 最先的注释不准确 [杨文鸽 2007-12-14]
+  }
+  if ((2 == nRead - nReadCount && nResult != 0) ||
+      nResult == 0) // /    判断读到真实数据（2个字节表示“\r\n”）  [11/28/2007]
+  {
+    bRead = FALSE;
+  } else {
+    bRead = TRUE;
+  }
+  if (nRead > nSize)
+    return false;
+  return true;
+}
+
+BOOL LoadReadSayShield(void) {
+  char szName[] = "ShieldWorld";
+  unsigned int nSize;
+  char *pBuffer = (char *)EncryptFileName((char *)szName, nSize);
+  if (!pBuffer)
+    return FALSE;
+
+  unsigned int nRead = 0; // 已经读了的
+  BOOL bRead = FALSE;
+  int i = 0;
+  static char szWord[20] = "";
+  while (nRead < nSize) {
+    int nResult = sscanf_s(pBuffer + nRead, "%s", &szWord);
+    if (!MoveFilePointInt(pBuffer, nSize, nRead, bRead, nResult))
+      break;
+    if (bRead == FALSE)
+      continue;
+    if (1 == nResult) {
+      if (i >= MAX_SHIELD_SIZE) {
+        break;
+      }
+      strcpy(SayShieldList[i], szWord);
+      i++;
+    } else
+      break;
+  }
+  delete[] pBuffer;
+  pBuffer = NULL;
+  return TRUE;
+}
+
+BOOL LoadReadNameShield(void) {
+  char szName[] = "ShieldName";
+  unsigned int nSize;
+  char *pBuffer = (char *)EncryptFileName((char *)szName, nSize);
+  if (!pBuffer)
+    return FALSE;
+
+  unsigned int nRead = 0;
+  BOOL bRead = FALSE;
+  int i = 0;
+  static char szName_[20] = "";
+
+  while (nRead < nSize) {
+
+    int nResult = sscanf_s(pBuffer + nRead, "%s", &szName_);
+    if (!MoveFilePointInt(pBuffer, nSize, nRead, bRead, nResult))
+      break;
+    if (bRead == FALSE)
+      continue;
+    if (1 == nResult) {
+      if (i >= MAX_SHIELD_SIZE) {
+        break;
+      }
+      strcpy(NameShieldList[i], szName_);
+      i++;
+    } else
+      break;
+  }
+  delete[] pBuffer;
+  pBuffer = NULL;
+  return TRUE;
+}
+bool CheckSay(const char *strSay, const char szReplace) {
+  if (NULL == strSay)
     return true;
-}
-
-BOOL LoadReadSayShield( void )
-{
-    char szName[]="ShieldWorld";
-    unsigned int nSize;
-    char* pBuffer =    (char*)EncryptFileName((char*)szName,nSize);
-    if( !pBuffer )
-        return FALSE;
-
-    unsigned int nRead = 0;        //已经读了的
-    BOOL bRead = FALSE;
-    int i = 0;
-    static char szWord[20] = "";
-    while(nRead < nSize)
-    {
-            int nResult = sscanf_s(pBuffer + nRead , "%s", &szWord);
-            if ( !MoveFilePointInt(pBuffer,nSize,nRead,bRead,nResult))
-                break;
-            if ( bRead == FALSE )
-                continue;
-            if ( 1 == nResult )
-            {    
-                if(i >= MAX_SHIELD_SIZE)
-                {
-                    break;
-                }
-                strcpy(SayShieldList[i], szWord );
-                i++;
-            }
-            else
-                break;
-    }
-    delete[] pBuffer;
-    pBuffer = NULL;
-    return TRUE;
-}
-
-BOOL LoadReadNameShield( void )
-{
-    char szName[]="ShieldName";
-    unsigned int nSize;
-    char* pBuffer =    (char*)EncryptFileName((char*)szName,nSize);
-    if( !pBuffer ) return FALSE;
-
-    unsigned int nRead = 0;
-    BOOL bRead = FALSE;
-    int i = 0;
-    static char szName_[20] = "";
-
-    while(nRead < nSize)
-    {
-        
-        int nResult = sscanf_s(pBuffer + nRead , "%s", &szName_);
-        if ( !MoveFilePointInt(pBuffer,nSize,nRead,bRead,nResult))
-            break;
-        if ( bRead == FALSE )
-            continue;
-        if ( 1 == nResult )
-        {    
-            if(i >= MAX_SHIELD_SIZE)
-            {
-                break;
-            }
-            strcpy(NameShieldList[i], szName_ );
-            i++;
-        }
-        else
-            break;
-    }
-    delete[] pBuffer;
-    pBuffer = NULL;
-    return TRUE;
-
-}
-bool CheckSay( const char* strSay, const char szReplace )
-{
-    if ( NULL==strSay ) return true;
-    if ( strlen(strSay)==0 ) return true;
-
-    for ( size_t i=0;i<MAX_SHIELD_SIZE;i++ )
-    {
-        if ( const char *szRe = strstr( strSay,SayShieldList[i] ) )
-        {
-            //    g_objGameMsg.AddMsg( SayShieldList[i].c_str() );             // 测试时显示出来 
-            //memset( (void*)szRe,szReplace,strlen(SayShieldList[i]) );
-            return false;
-        }
-    }
+  if (strlen(strSay) == 0)
     return true;
+
+  for (size_t i = 0; i < MAX_SHIELD_SIZE; i++) {
+    if (const char *szRe = strstr(strSay, SayShieldList[i])) {
+      //    g_objGameMsg.AddMsg( SayShieldList[i].c_str() );             //
+      //    测试时显示出来
+      // memset( (void*)szRe,szReplace,strlen(SayShieldList[i]) );
+      return false;
+    }
+  }
+  return true;
 }
 
-bool CheckName( const char* strSay )
-{
-    if ( NULL==strSay ) return true;
-    if ( strlen(strSay)==0 ) return true;
-
-    for ( size_t i=0;i<MAX_SHIELD_SIZE;i++ )
-    {
-        if ( const char *szRe = strstr( strSay,NameShieldList[i] ) )
-        {
-            //    g_objGameMsg.AddMsg( SayShieldList[i].c_str() );             // 测试时显示出来 
-            //    memset( (void*)szRe,szReplace,NameShieldList[i].length() );
-            //word = NameShieldList[i];
-            return false;
-        }
-    }
+bool CheckName(const char *strSay) {
+  if (NULL == strSay)
     return true;
-}
-void StrToNowStrBuffer( char *str )
-{
-    int strLen = strlen(str);
-    if(strLen > 86) strLen = 86;
-    for(int i = 0; i < strLen; i++){
-        if(IsDBCSLeadByteEx(936, str[i])){
-            StockStrBufferDBChar(str + i);
-            i++;
-        }else{
-            StockStrBufferChar(str[i]);
-        }
+  if (strlen(strSay) == 0)
+    return true;
+
+  for (size_t i = 0; i < MAX_SHIELD_SIZE; i++) {
+    if (const char *szRe = strstr(strSay, NameShieldList[i])) {
+      //    g_objGameMsg.AddMsg( SayShieldList[i].c_str() );             //
+      //    测试时显示出来 memset(
+      //    (void*)szRe,szReplace,NameShieldList[i].length() );
+      // word = NameShieldList[i];
+      return false;
     }
+  }
+  return true;
+}
+void StrToNowStrBuffer(char *str) {
+  int strLen = strlen(str);
+  if (strLen > 86)
+    strLen = 86;
+  for (int i = 0; i < strLen; i++) {
+    if (IsDBCSLeadByteEx(936, str[i])) {
+      StockStrBufferDBChar(str + i);
+      i++;
+    } else {
+      StockStrBufferChar(str[i]);
+    }
+  }
 }
 
-
-void StrToNowStrBuffer1( char *str )
-{
-    if (str == NULL || pNowStrBuffer == NULL)
+void StrToNowStrBuffer1(char *str) {
+  if (str == NULL || pNowStrBuffer == NULL)
+    return;
+  // Quick phrases and recalled chat are already UTF-8, unlike IME input.
+  // Snapshot the source in case it aliases the destination input buffer.
+  const std::string text(str);
+  const size_t limit = text.size() < 86 ? text.size() : 86;
+  for (size_t i = 0; i < limit;) {
+    const int bytes = getUtf8SequenceLength(text.c_str() + i, text.size() - i);
+    if (bytes == 0 || i + bytes > limit)
+      break;
+    if (bytes == 1) {
+      StockStrBufferChar(text[i]);
+    } else {
+      const int count = pNowStrBuffer->cnt;
+      const int cursor = pNowStrBuffer->cursor;
+      if (cursor > count || count + bytes > pNowStrBuffer->len ||
+          count + bytes >= STR_BUFFER_SIZE)
+        break;
+      // Preserve the same field restrictions as StockStrBufferDBChar.
+      if (pNowStrBuffer == &idKey || pNowStrBuffer == &passwd)
         return;
-    // Quick phrases and recalled chat are already UTF-8, unlike IME input.
-    // Snapshot the source in case it aliases the destination input buffer.
-    const std::string text(str);
-    const size_t limit = text.size() < 86 ? text.size() : 86;
-    for (size_t i = 0; i < limit;) {
-        const int bytes = getUtf8SequenceLength(text.c_str() + i, text.size() - i);
-        if (bytes == 0 || i + bytes > limit)
-            break;
-        if (bytes == 1) {
-            StockStrBufferChar(text[i]);
-        } else {
-            const int count = pNowStrBuffer->cnt;
-            const int cursor = pNowStrBuffer->cursor;
-            if (cursor > count || count + bytes > pNowStrBuffer->len ||
-                count + bytes >= STR_BUFFER_SIZE)
-                break;
-            // Preserve the same field restrictions as StockStrBufferDBChar.
-            if (pNowStrBuffer == &idKey || pNowStrBuffer == &passwd)
-                return;
-            char *buffer = pNowStrBuffer->buffer;
-            if (pNowStrBuffer == &petNameChange &&
-                getUtf8CharNum(buffer) >= PET_NAME_LEN)
-                break;
-            memmove(buffer + cursor + bytes, buffer + cursor, count - cursor + 1);
-            memcpy(buffer + cursor, text.data() + i, bytes);
-            pNowStrBuffer->cnt += bytes;
-            pNowStrBuffer->cursor += bytes;
-            CursorFlashCnt = 20;
-        }
-        i += bytes;
+      char *buffer = pNowStrBuffer->buffer;
+      if (pNowStrBuffer == &petNameChange &&
+          getUtf8CharNum(buffer) >= PET_NAME_LEN)
+        break;
+      memmove(buffer + cursor + bytes, buffer + cursor, count - cursor + 1);
+      memcpy(buffer + cursor, text.data() + i, bytes);
+      pNowStrBuffer->cnt += bytes;
+      pNowStrBuffer->cursor += bytes;
+      CursorFlashCnt = 20;
     }
+    i += bytes;
+  }
 }
 
-void ChatProc( void )
-{
-    // ???????????
-    //if( joy_trg[ 1 ] & JOY_RETURN ) KeyboardReturn();
-    
-    // ??????????
-    if( joy_trg[ 1 ] & JOY_TAB ) KeyboardTab();
-    
-    // ??????
-    //if( joy_trg[ 0 ] & JOY_CTRL_C ){
-        // ???????????
-    //    SetClipboad();
-    //}
-    // ??????
-    if( joy_trg[ 0 ] & JOY_CTRL_V ){
-        // ??????????????????
-        GetClipboad();
-    }
+void ChatProc(void) {
+  // ???????????
+  // if( joy_trg[ 1 ] & JOY_RETURN ) KeyboardReturn();
+
+  // ??????????
+  if (joy_trg[1] & JOY_TAB)
+    KeyboardTab();
+
+  // ??????
+  // if( joy_trg[ 0 ] & JOY_CTRL_C ){
+  // ???????????
+  //    SetClipboad();
+  //}
+  // ??????
+  if (joy_trg[0] & JOY_CTRL_V) {
+    // ??????????????????
+    GetClipboad();
+  }
 
 #ifdef __ONLINEGM
-    if(OnlineGmFlag == TRUE)    TalkMode = 0;
+  if (OnlineGmFlag == TRUE)
+    TalkMode = 0;
 #endif
-    
-#ifdef _TELLCHANNEL                //ROG ADD 密语频道
-    if( joy_trg[ 1 ] & JOY_CTRL_R 
+
+#ifdef _TELLCHANNEL // ROG ADD 密语频道
+  if (joy_trg[1] & JOY_CTRL_R
 #ifdef __ONLINEGM
-        && OnlineGmFlag == FALSE
+      && OnlineGmFlag == FALSE
 #endif
-    )
-    {
-        pNowStrBuffer->buffer[ 0 ] = NULL;
-        pNowStrBuffer->cursor=0;
-        pNowStrBuffer->cnt = 0;
-        StrToNowStrBuffer1(secretName);
-        TalkMode = 1;
-    }
+  ) {
+    pNowStrBuffer->buffer[0] = NULL;
+    pNowStrBuffer->cursor = 0;
+    pNowStrBuffer->cnt = 0;
+    StrToNowStrBuffer1(secretName);
+    TalkMode = 1;
+  }
 #else
 #ifdef _FRIENDCHANNEL
-    StrToNowStrBuffer1( secretName );
+  StrToNowStrBuffer1(secretName);
 #endif
-#endif    
-    
-    // ??????????????????
-    if( pNowStrBuffer == &MyChatBuffer || pNowStrBuffer == &MailStr ){
-        if(    joy_trg[ 1 ] & JOY_F1 ) StrToNowStrBuffer1( chatRegistryStr[ 0 ].buffer );
-        if( joy_trg[ 1 ] & JOY_F2 ) StrToNowStrBuffer1( chatRegistryStr[ 1 ].buffer );
-        if( joy_trg[ 1 ] & JOY_F3 ) StrToNowStrBuffer1( chatRegistryStr[ 2 ].buffer );
-        if( joy_trg[ 1 ] & JOY_F4 ) StrToNowStrBuffer1( chatRegistryStr[ 3 ].buffer );
-    
-        if( joy_trg[ 1 ] & JOY_F5 ) StrToNowStrBuffer1( chatRegistryStr[ 4 ].buffer );
-        if( joy_trg[ 1 ] & JOY_F6 ) StrToNowStrBuffer1( chatRegistryStr[ 5 ].buffer );
-        if( joy_trg[ 1 ] & JOY_F7 ) StrToNowStrBuffer1( chatRegistryStr[ 6 ].buffer );
-        if( joy_trg[ 1 ] & JOY_F8 ) StrToNowStrBuffer1( chatRegistryStr[ 7 ].buffer );
-    }
-    if( pNowStrBuffer == &MyChatBuffer && GetImeString() == NULL ){
-        // ???????
-        if( joy_auto[ 0 ] & JOY_UP ){
-            static UINT oldtime = 0;
-            if(oldtime < TimeGetTime()){
-                oldtime = TimeGetTime() + 100;
-                int bak = ChatHistory.nowNo;
-                if( ChatHistory.nowNo == -1 ) ChatHistory.nowNo = ChatHistory.newNo;
-                else ChatHistory.nowNo--;
-                if( ChatHistory.nowNo < 0 ) ChatHistory.nowNo = MAX_CHAT_HISTORY - 1;
-                if( ChatHistory.str[ ChatHistory.nowNo ][ 0 ] != 0 && ( ChatHistory.nowNo != ChatHistory.newNo || bak == -1 ) ){
-                    pNowStrBuffer->cnt = 0;
-                    pNowStrBuffer->buffer[ 0 ] = NULL;
-                    pNowStrBuffer->cursor=0;
-                    StrToNowStrBuffer1( ChatHistory.str[ ChatHistory.nowNo ] );
-                }else{
-                    ChatHistory.nowNo = bak;
-                }
-#ifdef _TALK_WINDOW
-                if(g_bTalkWindow) TalkWindow.Update();
 #endif
-            }
-        }else
-        // ????????
-        if( joy_auto[ 0 ] & JOY_DOWN ){
-            static UINT oldtime = 0;
-            if(oldtime < TimeGetTime()){
 
+  // ??????????????????
+  if (pNowStrBuffer == &MyChatBuffer || pNowStrBuffer == &MailStr) {
+    if (joy_trg[1] & JOY_F1)
+      StrToNowStrBuffer1(chatRegistryStr[0].buffer);
+    if (joy_trg[1] & JOY_F2)
+      StrToNowStrBuffer1(chatRegistryStr[1].buffer);
+    if (joy_trg[1] & JOY_F3)
+      StrToNowStrBuffer1(chatRegistryStr[2].buffer);
+    if (joy_trg[1] & JOY_F4)
+      StrToNowStrBuffer1(chatRegistryStr[3].buffer);
 
-                oldtime = TimeGetTime() + 100;
-
-                // ??????????????
-                if( ChatHistory.nowNo != -1 ){
-                    // ????????????
-                    if( ChatHistory.nowNo == ChatHistory.newNo ){ 
-                        ChatHistory.nowNo = -1;
-                        // ??????????
-                        pNowStrBuffer->cnt = 0;
-                        pNowStrBuffer->buffer[ 0 ] = NULL;
-                        pNowStrBuffer->cursor=0;
-                    }else{
-                        ChatHistory.nowNo++;
-                        // ????????
-                        if( ChatHistory.nowNo >= MAX_CHAT_HISTORY ) ChatHistory.nowNo = 0;
-                        // ??????????
-                        pNowStrBuffer->cnt = 0;
-                        pNowStrBuffer->buffer[ 0 ] = NULL;
-                        pNowStrBuffer->cursor=0;
-                        // ????????????????
-                        StrToNowStrBuffer1( ChatHistory.str[ ChatHistory.nowNo ] );
-                    }
-#ifdef _TALK_WINDOW
-                    if(g_bTalkWindow) TalkWindow.Update();
-#endif
-                }
-            }
+    if (joy_trg[1] & JOY_F5)
+      StrToNowStrBuffer1(chatRegistryStr[4].buffer);
+    if (joy_trg[1] & JOY_F6)
+      StrToNowStrBuffer1(chatRegistryStr[5].buffer);
+    if (joy_trg[1] & JOY_F7)
+      StrToNowStrBuffer1(chatRegistryStr[6].buffer);
+    if (joy_trg[1] & JOY_F8)
+      StrToNowStrBuffer1(chatRegistryStr[7].buffer);
+  }
+  if (pNowStrBuffer == &MyChatBuffer && GetImeString() == NULL) {
+    // ???????
+    if (joy_auto[0] & JOY_UP) {
+      static UINT oldtime = 0;
+      if (oldtime < TimeGetTime()) {
+        oldtime = TimeGetTime() + 100;
+        int bak = ChatHistory.nowNo;
+        if (ChatHistory.nowNo == -1)
+          ChatHistory.nowNo = ChatHistory.newNo;
+        else
+          ChatHistory.nowNo--;
+        if (ChatHistory.nowNo < 0)
+          ChatHistory.nowNo = MAX_CHAT_HISTORY - 1;
+        if (ChatHistory.str[ChatHistory.nowNo][0] != 0 &&
+            (ChatHistory.nowNo != ChatHistory.newNo || bak == -1)) {
+          pNowStrBuffer->cnt = 0;
+          pNowStrBuffer->buffer[0] = NULL;
+          pNowStrBuffer->cursor = 0;
+          StrToNowStrBuffer1(ChatHistory.str[ChatHistory.nowNo]);
+        } else {
+          ChatHistory.nowNo = bak;
         }
-    }
+#ifdef _TALK_WINDOW
+        if (g_bTalkWindow)
+          TalkWindow.Update();
+#endif
+      }
+    } else
+      // ????????
+      if (joy_auto[0] & JOY_DOWN) {
+        static UINT oldtime = 0;
+        if (oldtime < TimeGetTime()) {
+
+          oldtime = TimeGetTime() + 100;
+
+          // ??????????????
+          if (ChatHistory.nowNo != -1) {
+            // ????????????
+            if (ChatHistory.nowNo == ChatHistory.newNo) {
+              ChatHistory.nowNo = -1;
+              // ??????????
+              pNowStrBuffer->cnt = 0;
+              pNowStrBuffer->buffer[0] = NULL;
+              pNowStrBuffer->cursor = 0;
+            } else {
+              ChatHistory.nowNo++;
+              // ????????
+              if (ChatHistory.nowNo >= MAX_CHAT_HISTORY)
+                ChatHistory.nowNo = 0;
+              // ??????????
+              pNowStrBuffer->cnt = 0;
+              pNowStrBuffer->buffer[0] = NULL;
+              pNowStrBuffer->cursor = 0;
+              // ????????????????
+              StrToNowStrBuffer1(ChatHistory.str[ChatHistory.nowNo]);
+            }
+#ifdef _TALK_WINDOW
+            if (g_bTalkWindow)
+              TalkWindow.Update();
+#endif
+          }
+        }
+      }
+  }
 }
 
 // ??????????? **************************************************/
-void FlashKeyboardCursor( void )
-{
-    if(pNowStrBuffer==NULL) return;
-    if(CursorFlashCnt >= 20){
-        StockFontBuffer(pNowStrBuffer->imeX, pNowStrBuffer->imeY , pNowStrBuffer->fontPrio, pNowStrBuffer->color, "_" , 0 );
-    }
-    CursorFlashCnt++;
-    if( CursorFlashCnt >= 40 ) CursorFlashCnt = 0;
+void FlashKeyboardCursor(void) {
+  if (pNowStrBuffer == NULL)
+    return;
+  if (CursorFlashCnt >= 20) {
+    StockFontBuffer(pNowStrBuffer->imeX, pNowStrBuffer->imeY,
+                    pNowStrBuffer->fontPrio, pNowStrBuffer->color, "_", 0);
+  }
+  CursorFlashCnt++;
+  if (CursorFlashCnt >= 40)
+    CursorFlashCnt = 0;
 }
 
 static int Utf8CodePointLength(const char *text) {
-    const unsigned char lead = (unsigned char)*text;
-    if (lead < 0x80) return 1;
-    if ((lead & 0xe0) == 0xc0) return 2;
-    if ((lead & 0xf0) == 0xe0) return 3;
-    if ((lead & 0xf8) == 0xf0) return 4;
+  const unsigned char lead = (unsigned char)*text;
+  if (lead < 0x80)
     return 1;
+  if ((lead & 0xe0) == 0xc0)
+    return 2;
+  if ((lead & 0xf0) == 0xe0)
+    return 3;
+  if ((lead & 0xf8) == 0xf0)
+    return 4;
+  return 1;
 }
 
 static int Utf8PreviousCodePointLength(const char *begin, const char *cursor) {
-    const char *previous = cursor - 1;
-    while (previous > begin && (((unsigned char)*previous & 0xc0) == 0x80))
-        --previous;
-    return (int)(cursor - previous);
+  const char *previous = cursor - 1;
+  while (previous > begin && (((unsigned char)*previous & 0xc0) == 0x80))
+    --previous;
+  return (int)(cursor - previous);
 }
 
 // ?????? ***************************************************************/
-void KeyboardBackSpace( void )
-{
-    int byte,cursor;
-    if(pNowStrBuffer==NULL) return;
+void KeyboardBackSpace(void) {
+  int byte, cursor;
+  if (pNowStrBuffer == NULL)
+    return;
 #ifdef __ONLINEGM
-    if (pNowStrBuffer==&SubBuffer ){
-        if (pNowStrBuffer->cursor==0 && InputHistory.newNo>0 && (InputHistory.newNo-1)>InputHistory.lockNo){
-            InputHistory.str[InputHistory.newNo][0] = '\0';
-            StrToNowStrBuffer1( InputHistory.str[ InputHistory.newNo-1 ] );
-            byte = lstrlen(InputHistory.str[ InputHistory.newNo-1 ]);
-            pNowStrBuffer->cnt = byte;
-            pNowStrBuffer->cursor = byte;
-            InputHistory.newNo--;
-            InputHistory.addNo--;
-            if (InputHistory.newNo < 3+1 ){    
-                InputHistory.nowNo = 0;
-                pNowStrBuffer->y -= pNowStrBuffer->lineDist;
-                if(pNowStrBuffer->y<325-5)
-                    pNowStrBuffer->y = 325-5 ;
-            }
-            else
-                InputHistory.nowNo = InputHistory.newNo-3-1;
-        }
+  if (pNowStrBuffer == &SubBuffer) {
+    if (pNowStrBuffer->cursor == 0 && InputHistory.newNo > 0 &&
+        (InputHistory.newNo - 1) > InputHistory.lockNo) {
+      InputHistory.str[InputHistory.newNo][0] = '\0';
+      StrToNowStrBuffer1(InputHistory.str[InputHistory.newNo - 1]);
+      byte = lstrlen(InputHistory.str[InputHistory.newNo - 1]);
+      pNowStrBuffer->cnt = byte;
+      pNowStrBuffer->cursor = byte;
+      InputHistory.newNo--;
+      InputHistory.addNo--;
+      if (InputHistory.newNo < 3 + 1) {
+        InputHistory.nowNo = 0;
+        pNowStrBuffer->y -= pNowStrBuffer->lineDist;
+        if (pNowStrBuffer->y < 325 - 5)
+          pNowStrBuffer->y = 325 - 5;
+      } else
+        InputHistory.nowNo = InputHistory.newNo - 3 - 1;
     }
+  }
 #endif
-    if((cursor=pNowStrBuffer->cursor) > 0){
-        char *lpstr=pNowStrBuffer->buffer;
-        char *lpstr1=lpstr+cursor;
-        byte=Utf8PreviousCodePointLength(lpstr, lpstr1);
-        for(;cursor<=pNowStrBuffer->cnt;cursor++){
-            lpstr[cursor-byte]=lpstr[cursor];
-        }
-        pNowStrBuffer->cnt-=byte;
-        pNowStrBuffer->cursor-=byte;
-        CursorFlashCnt=20;
+  if ((cursor = pNowStrBuffer->cursor) > 0) {
+    char *lpstr = pNowStrBuffer->buffer;
+    char *lpstr1 = lpstr + cursor;
+    byte = Utf8PreviousCodePointLength(lpstr, lpstr1);
+    for (; cursor <= pNowStrBuffer->cnt; cursor++) {
+      lpstr[cursor - byte] = lpstr[cursor];
     }
-}    
-
-// ??????? ***************************************************************/
-void KeyboardTab( void )
-{
-    int i,flag = 0;
-    
-    // ????????
-    if( pNowStrBuffer == NULL ) return;
-    
-    // ?????? *******************************
-    for( i = 0 ; i < MAX_CHAT_REGISTY_STR ; i++ ){
-        if( pNowStrBuffer == &chatRegistryStr[ i ] ){ 
-            flag = TRUE;
-            break;
-        }
-    }
-    // ???? *******************************
-    if( flag == TRUE ){
-        // ???????????
-        if( joy_con[ 1 ] & JOY_RSHIFT || joy_con[ 1 ] & JOY_LSHIFT ){
-            i--;
-            if( i < 0 ) i = MAX_CHAT_REGISTY_STR - 1;
-        }else{
-            i++;
-            if( i >= MAX_CHAT_REGISTY_STR ) i = 0;
-        }
-        GetKeyInputFocus( &chatRegistryStr[ i ] );
-    }
-    
-    // ???????????????
+    pNowStrBuffer->cnt -= byte;
+    pNowStrBuffer->cursor -= byte;
     CursorFlashCnt = 20;
-#ifdef _CHANNEL_MODIFY
-    static DWORD dwChannelChangeTime = TimeGetTime();
-    if(dwChannelChangeTime + 250 < TimeGetTime()){
-        dwChannelChangeTime = TimeGetTime();
-
-        TalkMode = (TalkMode + 1) % PC_ETCFLAG_CHAT_WORLD_NUM;
-
-        switch(TalkMode){
-        case PC_ETCFLAG_CHAT_MODE_ID:
-            strcpy(secretName,"");
-            // 已在队伍频道切回一般频道
-            if(pc.etcFlag & PC_ETCFLAG_CHAT_MODE){
-                pc.etcFlag &= ~PC_ETCFLAG_CHAT_MODE;
-                if(bNewServer) lssproto_FS_send(sockfd,pc.etcFlag);
-                else old_lssproto_FS_send(sockfd,pc.etcFlag);
-            }
-            break;
-        case PC_ETCFLAG_CHAT_TELL_ID:
-            // 密语频道关闭,跳到下一个频道
-            if(!(pc.etcFlag & PC_ETCFLAG_CHAT_TELL)) TalkMode++;
-            else break;
-        case PC_ETCFLAG_CHAT_PARTY_ID:
-            // 无队伍跳到下一个频道
-            if(partyModeFlag == 0) TalkMode++;
-            else{
-                pc.etcFlag |= PC_ETCFLAG_CHAT_MODE;
-                if(bNewServer) lssproto_FS_send(sockfd,pc.etcFlag);
-                else old_lssproto_FS_send(sockfd,pc.etcFlag);
-                break;
-            }
-        case PC_ETCFLAG_CHAT_FM_ID:
-            // 若队频有开,关掉队频
-            if(pc.etcFlag & PC_ETCFLAG_CHAT_MODE){
-                pc.etcFlag &= ~PC_ETCFLAG_CHAT_MODE;
-                if(bNewServer) lssproto_FS_send(sockfd,pc.etcFlag);
-                else old_lssproto_FS_send(sockfd,pc.etcFlag);
-            }
-            // 家族频道关闭,跳到下一个频道
-            if(!(pc.etcFlag & PC_ETCFLAG_CHAT_FM)) TalkMode++;
-            else break;
-#ifdef _CHAR_PROFESSION
-        case PC_ETCFLAG_CHAT_OCC_ID:
-            // 职业频道关闭,跳到下一个频道
-            if(!(pc.etcFlag & PC_ETCFLAG_CHAT_OCC))    
-                TalkMode++;
-            break;
-#endif
-#ifdef _CHATROOMPROTOCOL
-        case PC_ETCFLAG_CHAT_CHAT_ID:
-            // 聊天室频道
-            if(!(pc.etcFlag & PC_ETCFLAG_CHAT_CHAT)){
-                secretFlag = FALSE;
-                selChar = -1;
-                strcpy(secretName,"");
-            }
-            break;
-#endif
-#ifdef _CHANNEL_WORLD
-        case PC_ETCFLAG_CHAT_WORLD_ID:
-            // 世界频道
-            if(!(pc.etcFlag & PC_ETCFLAG_CHAT_WORLD)){
-                if((pc.etcFlag & PC_ETCFLAG_ALL_SERV)){
-                    TalkMode++;
-                }else{
-                    TalkMode = 0;
-                }
-            }
-            break;
-#endif
-#ifdef _CHANNEL_ALL_SERV
-        case PC_ETCFLAG_ALL_SERV_ID:
-            // 星球频道
-            if(!(pc.etcFlag & PC_ETCFLAG_ALL_SERV)){
-                TalkMode = 0;
-            }
-
-            break;
-#endif
-        default:
-            TalkMode++;
-            break;
-        }
-#ifdef _TALK_WINDOW
-        if(g_bTalkWindow) TalkWindow.Update();
-#endif
-    }
-#else
-    #ifdef _FRIENDCHANNEL
-        TalkMode = (TalkMode + 1) % 3;
-        if(TalkMode == 2 ){
-            secretFlag = FALSE;
-            selChar = -1;
-            pNowStrBuffer->buffer[ 0 ] = NULL;
-            pNowStrBuffer->cursor=0;
-            pNowStrBuffer->cnt = 0;
-            StrToNowStrBuffer("");
-            if(strcmp(pc.chatRoomNum, "") == 0)    TalkMode = 0;
-        }else    strcpy(secretName,"");
-    #else
-        #ifdef _TELLCHANNEL
-            TalkMode = (TalkMode + 1) % 2;
-            pNowStrBuffer->buffer[ 0 ] = NULL;
-            pNowStrBuffer->cursor=0;
-            pNowStrBuffer->cnt = 0;
-            StrToNowStrBuffer("");
-        #endif
-    #endif
-#endif
-}    
-
-void KeyboardLeft()
-{
-    int byte,cursor;
-    if(pNowStrBuffer==NULL) return;
-    if((cursor=pNowStrBuffer->cursor) > 0){
-        char *lpstr=pNowStrBuffer->buffer;
-        char *lpstr1=lpstr+cursor;
-        byte=Utf8PreviousCodePointLength(lpstr, lpstr1);
-        pNowStrBuffer->cursor-=byte;
-        CursorFlashCnt=20;
-    }
+  }
 }
 
-void KeyboardRight()
-{
-    int byte=1,cursor;
-    if(pNowStrBuffer==NULL) return;
-    if((cursor=pNowStrBuffer->cursor) < (pNowStrBuffer->cnt)){
-        char *lpstr=pNowStrBuffer->buffer;
-        lpstr+=cursor;
-        if (*lpstr)
-            byte = Utf8CodePointLength(lpstr);
-        pNowStrBuffer->cursor+=byte;
+// ??????? ***************************************************************/
+void KeyboardTab(void) {
+  int i, flag = 0;
+
+  // ????????
+  if (pNowStrBuffer == NULL)
+    return;
+
+  // ?????? *******************************
+  for (i = 0; i < MAX_CHAT_REGISTY_STR; i++) {
+    if (pNowStrBuffer == &chatRegistryStr[i]) {
+      flag = TRUE;
+      break;
     }
-    CursorFlashCnt=20;
+  }
+  // ???? *******************************
+  if (flag == TRUE) {
+    // ???????????
+    if (joy_con[1] & JOY_RSHIFT || joy_con[1] & JOY_LSHIFT) {
+      i--;
+      if (i < 0)
+        i = MAX_CHAT_REGISTY_STR - 1;
+    } else {
+      i++;
+      if (i >= MAX_CHAT_REGISTY_STR)
+        i = 0;
+    }
+    GetKeyInputFocus(&chatRegistryStr[i]);
+  }
+
+  // ???????????????
+  CursorFlashCnt = 20;
+#ifdef _CHANNEL_MODIFY
+  static DWORD dwChannelChangeTime = TimeGetTime();
+  if (dwChannelChangeTime + 250 < TimeGetTime()) {
+    dwChannelChangeTime = TimeGetTime();
+
+    TalkMode = (TalkMode + 1) % PC_ETCFLAG_CHAT_WORLD_NUM;
+
+    switch (TalkMode) {
+    case PC_ETCFLAG_CHAT_MODE_ID:
+      strcpy(secretName, "");
+      // 已在队伍频道切回一般频道
+      if (pc.etcFlag & PC_ETCFLAG_CHAT_MODE) {
+        pc.etcFlag &= ~PC_ETCFLAG_CHAT_MODE;
+        lssproto_FS_send(sockfd, pc.etcFlag);
+      }
+      break;
+    case PC_ETCFLAG_CHAT_TELL_ID:
+      // 密语频道关闭,跳到下一个频道
+      if (!(pc.etcFlag & PC_ETCFLAG_CHAT_TELL))
+        TalkMode++;
+      else
+        break;
+    case PC_ETCFLAG_CHAT_PARTY_ID:
+      // 无队伍跳到下一个频道
+      if (partyModeFlag == 0)
+        TalkMode++;
+      else {
+        pc.etcFlag |= PC_ETCFLAG_CHAT_MODE;
+        lssproto_FS_send(sockfd, pc.etcFlag);
+        break;
+      }
+    case PC_ETCFLAG_CHAT_FM_ID:
+      // 若队频有开,关掉队频
+      if (pc.etcFlag & PC_ETCFLAG_CHAT_MODE) {
+        pc.etcFlag &= ~PC_ETCFLAG_CHAT_MODE;
+          lssproto_FS_send(sockfd, pc.etcFlag);
+      }
+      // 家族频道关闭,跳到下一个频道
+      if (!(pc.etcFlag & PC_ETCFLAG_CHAT_FM))
+        TalkMode++;
+      else
+        break;
+#ifdef _CHAR_PROFESSION
+    case PC_ETCFLAG_CHAT_OCC_ID:
+      // 职业频道关闭,跳到下一个频道
+      if (!(pc.etcFlag & PC_ETCFLAG_CHAT_OCC))
+        TalkMode++;
+      break;
+#endif
+#ifdef _CHATROOMPROTOCOL
+    case PC_ETCFLAG_CHAT_CHAT_ID:
+      // 聊天室频道
+      if (!(pc.etcFlag & PC_ETCFLAG_CHAT_CHAT)) {
+        secretFlag = FALSE;
+        selChar = -1;
+        strcpy(secretName, "");
+      }
+      break;
+#endif
+#ifdef _CHANNEL_WORLD
+    case PC_ETCFLAG_CHAT_WORLD_ID:
+      // 世界频道
+      if (!(pc.etcFlag & PC_ETCFLAG_CHAT_WORLD)) {
+        if ((pc.etcFlag & PC_ETCFLAG_ALL_SERV)) {
+          TalkMode++;
+        } else {
+          TalkMode = 0;
+        }
+      }
+      break;
+#endif
+#ifdef _CHANNEL_ALL_SERV
+    case PC_ETCFLAG_ALL_SERV_ID:
+      // 星球频道
+      if (!(pc.etcFlag & PC_ETCFLAG_ALL_SERV)) {
+        TalkMode = 0;
+      }
+
+      break;
+#endif
+    default:
+      TalkMode++;
+      break;
+    }
+#ifdef _TALK_WINDOW
+    if (g_bTalkWindow)
+      TalkWindow.Update();
+#endif
+  }
+#else
+#ifdef _FRIENDCHANNEL
+  TalkMode = (TalkMode + 1) % 3;
+  if (TalkMode == 2) {
+    secretFlag = FALSE;
+    selChar = -1;
+    pNowStrBuffer->buffer[0] = NULL;
+    pNowStrBuffer->cursor = 0;
+    pNowStrBuffer->cnt = 0;
+    StrToNowStrBuffer("");
+    if (strcmp(pc.chatRoomNum, "") == 0)
+      TalkMode = 0;
+  } else
+    strcpy(secretName, "");
+#else
+#ifdef _TELLCHANNEL
+  TalkMode = (TalkMode + 1) % 2;
+  pNowStrBuffer->buffer[0] = NULL;
+  pNowStrBuffer->cursor = 0;
+  pNowStrBuffer->cnt = 0;
+  StrToNowStrBuffer("");
+#endif
+#endif
+#endif
+}
+
+void KeyboardLeft() {
+  int byte, cursor;
+  if (pNowStrBuffer == NULL)
+    return;
+  if ((cursor = pNowStrBuffer->cursor) > 0) {
+    char *lpstr = pNowStrBuffer->buffer;
+    char *lpstr1 = lpstr + cursor;
+    byte = Utf8PreviousCodePointLength(lpstr, lpstr1);
+    pNowStrBuffer->cursor -= byte;
+    CursorFlashCnt = 20;
+  }
+}
+
+void KeyboardRight() {
+  int byte = 1, cursor;
+  if (pNowStrBuffer == NULL)
+    return;
+  if ((cursor = pNowStrBuffer->cursor) < (pNowStrBuffer->cnt)) {
+    char *lpstr = pNowStrBuffer->buffer;
+    lpstr += cursor;
+    if (*lpstr)
+      byte = Utf8CodePointLength(lpstr);
+    pNowStrBuffer->cursor += byte;
+  }
+  CursorFlashCnt = 20;
 }
 
 #include <tlhelp32.h>
-void KeyboardReturn( void )
-{
-    //ttom
-    static bool first_keydown=true;
-    if(!first_keydown) {
-        //cary 十七
-        static DWORD PreTime=TimeGetTime(),CurTime;
-        if(((CurTime=TimeGetTime())-PreTime)<500)
-        return;
-        PreTime=CurTime;
-    }
+void KeyboardReturn(void) {
+  // ttom
+  static bool first_keydown = true;
+  if (!first_keydown) {
+    // cary 十七
+    static DWORD PreTime = TimeGetTime(), CurTime;
+    if (((CurTime = TimeGetTime()) - PreTime) < 500)
+      return;
+    PreTime = CurTime;
+  }
 #ifdef __NEW_CLIENT
-    extern HANDLE hProcessSnap, hParentProcess;
-    extern DWORD dwPID;
-    extern PROCESSENTRY32 pe32;
-    if( dwPID){
-        pe32.dwSize = sizeof(PROCESSENTRY32);
-        if( Process32First( hProcessSnap, &pe32)){ 
-            do{
-                if( pe32.th32ProcessID == dwPID){
-                    if( !strstr( pe32.szExeFile, "explorer.exe") && (hParentProcess = OpenProcess( PROCESS_ALL_ACCESS, FALSE, dwPID))){
-    #ifndef NO_TERMINATER
-                        TerminateProcess( hParentProcess, 0);
-    #endif
-                        CloseHandle( hParentProcess);
-                    }
-                    break;
-                }
-            }while( Process32Next( hProcessSnap, &pe32));
-        }
-        dwPID = 0;
-    }
+  extern HANDLE hProcessSnap, hParentProcess;
+  extern DWORD dwPID;
+  extern PROCESSENTRY32 pe32;
+  if (dwPID) {
+    pe32.dwSize = sizeof(PROCESSENTRY32);
+    if (Process32First(hProcessSnap, &pe32)) {
+      do {
+        if (pe32.th32ProcessID == dwPID) {
+          if (!strstr(pe32.szExeFile, "explorer.exe") &&
+              (hParentProcess =
+                   OpenProcess(PROCESS_ALL_ACCESS, FALSE, dwPID))) {
+#ifndef NO_TERMINATER
+            TerminateProcess(hParentProcess, 0);
 #endif
-    first_keydown=false;
-    //ttom
-    char bakNo;
-    if( GetImeString() != NULL )
-        return;
-    if( pNowStrBuffer == &MyChatBuffer ){
-        if( pNowStrBuffer->cnt == 0 )
-            return;
-        pNowStrBuffer->buffer[ pNowStrBuffer->cnt ] = '\0';
-        bakNo = ChatHistory.newNo;
-        ChatHistory.newNo++;
-        if( ChatHistory.newNo >= MAX_CHAT_HISTORY )
-            ChatHistory.newNo = 0;
-//cary
-        BOOL bSave=TRUE;
-        if(('['==pNowStrBuffer->buffer[0])&&(']'==pNowStrBuffer->buffer[pNowStrBuffer->cnt-1]))
-            bSave=FALSE;
-        if(!bSave){
-            ChatHistory.newNo = bakNo;
-        }else{
-            if( strcmp( pNowStrBuffer->buffer, ChatHistory.str[ bakNo ] ) != 0 ){
-                strcpy( ChatHistory.str[ ChatHistory.newNo ], pNowStrBuffer->buffer );
-                SaveChatHistoryStr( ChatHistory.newNo );
-            }else{
-                ChatHistory.newNo = bakNo;
-            }
+            CloseHandle(hParentProcess);
+          }
+          break;
         }
-        ChatHistory.nowNo = -1;
-        if( offlineFlag == FALSE )
-        chatStrSendForServer( pNowStrBuffer->buffer, MyChatBuffer.color );
-        pNowStrBuffer->cnt = 0;
-        pNowStrBuffer->cursor=0;
-        *( pNowStrBuffer->buffer )= '\0';
-    }else
-    
+      } while (Process32Next(hProcessSnap, &pe32));
+    }
+    dwPID = 0;
+  }
+#endif
+  first_keydown = false;
+  // ttom
+  char bakNo;
+  if (GetImeString() != NULL)
+    return;
+  if (pNowStrBuffer == &MyChatBuffer) {
+    if (pNowStrBuffer->cnt == 0)
+      return;
+    pNowStrBuffer->buffer[pNowStrBuffer->cnt] = '\0';
+    bakNo = ChatHistory.newNo;
+    ChatHistory.newNo++;
+    if (ChatHistory.newNo >= MAX_CHAT_HISTORY)
+      ChatHistory.newNo = 0;
+    // cary
+    BOOL bSave = TRUE;
+    if (('[' == pNowStrBuffer->buffer[0]) &&
+        (']' == pNowStrBuffer->buffer[pNowStrBuffer->cnt - 1]))
+      bSave = FALSE;
+    if (!bSave) {
+      ChatHistory.newNo = bakNo;
+    } else {
+      if (strcmp(pNowStrBuffer->buffer, ChatHistory.str[bakNo]) != 0) {
+        strcpy(ChatHistory.str[ChatHistory.newNo], pNowStrBuffer->buffer);
+        SaveChatHistoryStr(ChatHistory.newNo);
+      } else {
+        ChatHistory.newNo = bakNo;
+      }
+    }
+    ChatHistory.nowNo = -1;
+    if (offlineFlag == FALSE)
+      chatStrSendForServer(pNowStrBuffer->buffer, MyChatBuffer.color);
+    pNowStrBuffer->cnt = 0;
+    pNowStrBuffer->cursor = 0;
+    *(pNowStrBuffer->buffer) = '\0';
+  } else
+
     // ???? **********************************
-    if( pNowStrBuffer == &shougouChange ){
-        // ??????
-        DeathAction( pActMenuWnd3 );
-        pActMenuWnd3 = NULL;
-        // ????????
-        GetKeyInputFocus( &MyChatBuffer );
-        // ????????
-        play_se( 203, 320, 240 );
-        // ??
-        if( bNewServer)
-            lssproto_FT_send( sockfd, shougouChange.buffer ) ; /* ../doc/lssproto.html line 1792 */
-        else
-            old_lssproto_FT_send( sockfd, shougouChange.buffer ) ; /* ../doc/lssproto.html line 1792 */
-    }else
-    
-    if( pNowStrBuffer == &petNameChange ){
-        // 2026.09.03
-        // Unlike the chat branch above, this branch historically relied on
-        // insertion preserving the old terminator.  Explicitly terminate it
-        // before the protocol encoder reads the name.
-        petNameChange.buffer[petNameChange.cnt] = '\0';
-        // An empty edit explicitly restores the species name.  Send that
-        // name through the normal rename request and wait for server status.
-        char *requestedName = petNameChange.cnt == 0
-            ? pet[petStatusNo].name : petNameChange.buffer;
-        DeathAction( pActMenuWnd3 );
-        pActMenuWnd3 = NULL;
-        // ????????
-        GetKeyInputFocus( &MyChatBuffer );
-        // ????????
-        play_se( 203, 320, 240 );
-        // ??
-        if( bNewServer)
-            lssproto_KN_send( sockfd, petStatusNo, requestedName ) ; /* ../doc/lssproto.html line 1792 */
-        else
-            old_lssproto_KN_send( sockfd, petStatusNo, requestedName ) ; /* ../doc/lssproto.html line 1792 */
-    }else
-    
-    if( pNowStrBuffer == &MailStr
+    if (pNowStrBuffer == &shougouChange) {
+      // ??????
+      DeathAction(pActMenuWnd3);
+      pActMenuWnd3 = NULL;
+      // ????????
+      GetKeyInputFocus(&MyChatBuffer);
+      // ????????
+      play_se(203, 320, 240);
+      // ??
+      lssproto_FT_send(
+          sockfd, shougouChange.buffer); /* ../doc/lssproto.html line 1792 */
+    } else
+        if (pNowStrBuffer == &petNameChange) {
+      // 2026.09.03
+      // Unlike the chat branch above, this branch historically relied on
+      // insertion preserving the old terminator.  Explicitly terminate it
+      // before the protocol encoder reads the name.
+      petNameChange.buffer[petNameChange.cnt] = '\0';
+      // An empty edit explicitly restores the species name.  Send that
+      // name through the normal rename request and wait for server status.
+      char *requestedName =
+          petNameChange.cnt == 0 ? pet[petStatusNo].name : petNameChange.buffer;
+      DeathAction(pActMenuWnd3);
+      pActMenuWnd3 = NULL;
+      // ????????
+      GetKeyInputFocus(&MyChatBuffer);
+      // ????????
+      play_se(203, 320, 240);
+        lssproto_KN_send(sockfd, petStatusNo,
+                         requestedName); /* ../doc/lssproto.html line 1792 */
+    } else if (pNowStrBuffer == &MailStr
 #ifdef __EDEN_AUCTION
-        || pNowStrBuffer == &AuctionStr){
+      || pNowStrBuffer == &AuctionStr) {
 #else
-        ){
+        ) {
 #endif
+      char *buffer = pNowStrBuffer->buffer;
+      // 尚可放入新行时
+      if (pNowStrBuffer->cnt < pNowStrBuffer->len - pNowStrBuffer->lineLen) {
+        // 放入一行全部为space的新行
+        if ((pNowStrBuffer->cursor) % pNowStrBuffer->lineLen == 0)
+          StockStrBufferChar(' ');
+        while ((pNowStrBuffer->cursor) % pNowStrBuffer->lineLen)
+          StockStrBufferChar(' ');
+      }
+    } else
 
-        char *buffer=pNowStrBuffer->buffer;
-        //尚可放入新行时
-        if(pNowStrBuffer->cnt < pNowStrBuffer->len-pNowStrBuffer->lineLen){
-            //放入一行全部为space的新行
-            if((pNowStrBuffer->cursor)%pNowStrBuffer->lineLen == 0)
-                StockStrBufferChar(' ');
-            while((pNowStrBuffer->cursor)%pNowStrBuffer->lineLen)
-                StockStrBufferChar(' ');
-        }
-    }else
-    
-    // ????? **********************************
-    if( pNowStrBuffer == &MailStr ){
+      // ????? **********************************
+      if (pNowStrBuffer == &MailStr) {
         // ????????????
-        if( MailStr.cnt < MailStr.len - MailStr.lineLen ){
-            // ???
-            if( MailStr.cnt % MailStr.lineLen == 0 )
-                StockStrBufferChar( ' ' );
-            // ???????????
-            while( MailStr.cnt % MailStr.lineLen )
-                StockStrBufferChar( ' ' );
+        if (MailStr.cnt < MailStr.len - MailStr.lineLen) {
+          // ???
+          if (MailStr.cnt % MailStr.lineLen == 0)
+            StockStrBufferChar(' ');
+          // ???????????
+          while (MailStr.cnt % MailStr.lineLen)
+            StockStrBufferChar(' ');
         }
-    }
+      }
 
-    // ??????? ****************************
-#ifdef _FRIENDCHANNEL       //聊天室命名
-    char temp[STR_BUFFER_SIZE];
-    if( pNowStrBuffer == &chatRoomName ){
-        GetKeyInputFocus( &MyChatBuffer );
-        play_se( 203, 320, 240 );
-        sprintf_s(temp,"C|%s",chatRoomName.buffer);
-        lssproto_CHATROOM_send ( sockfd , temp ) ; 
-         DeathAction(pSetRoomWnd);
-        pSetRoomWnd = NULL;
-        setRoomFlag = FALSE;
-    }
+      // ??????? ****************************
+#ifdef _FRIENDCHANNEL // 聊天室命名
+  char temp[STR_BUFFER_SIZE];
+  if (pNowStrBuffer == &chatRoomName) {
+    GetKeyInputFocus(&MyChatBuffer);
+    play_se(203, 320, 240);
+    sprintf_s(temp, "C|%s", chatRoomName.buffer);
+    lssproto_CHATROOM_send(sockfd, temp);
+    DeathAction(pSetRoomWnd);
+    pSetRoomWnd = NULL;
+    setRoomFlag = FALSE;
+  }
 #endif
 
 #ifdef _TELLCHANNEL
-    if(TalkMode == 1){               //聊天密语显示人名
-        pNowStrBuffer->buffer[ 0 ] = NULL;
-        pNowStrBuffer->cursor=0;
-        pNowStrBuffer->cnt = 0;
-        StrToNowStrBuffer1(secretName);
-    }
+  if (TalkMode == 1) { // 聊天密语显示人名
+    pNowStrBuffer->buffer[0] = NULL;
+    pNowStrBuffer->cursor = 0;
+    pNowStrBuffer->cnt = 0;
+    StrToNowStrBuffer1(secretName);
+  }
 #endif
 
-    extern STR_BUFFER *idPasswordStr;
-    extern short idKeyReturn;
-    if( pNowStrBuffer == idPasswordStr )
-    {
-        idKeyReturn = 1;
-    }
-    
-    // ???????????????
-    CursorFlashCnt = 20;
-    
+  extern STR_BUFFER *idPasswordStr;
+  extern short idKeyReturn;
+  if (pNowStrBuffer == idPasswordStr) {
+    idKeyReturn = 1;
+  }
+
+  // ???????????????
+  CursorFlashCnt = 20;
 }
 extern STR_BUFFER selCharName;
-/*    将单一字元储放至目前的输入String buffer
-parameter:    c:    字元                    */
-void StockStrBufferChar(char c)
-{
-    if(BYTE(c)>0x1f){
-        int cnt,cursor;
-        if(pNowStrBuffer==NULL || (cnt=pNowStrBuffer->cnt) >= pNowStrBuffer->len)
-            return;
-        char *buffer=pNowStrBuffer->buffer;
-        if (pNowStrBuffer == &petNameChange) {
-            if (c == '|' || c == '\\' ||
-                getUtf8CharNum(buffer) >= PET_NAME_LEN)
-                return;
-        }
-         if(pNowStrBuffer==&idKey || pNowStrBuffer==&passwd){
-            /*if(!(('0'<=c && c<='9') || ('A'<=c && c<='Z') || ('a'<=c && c<='z')))
-                return;*/
-        }else if(pNowStrBuffer==&selCharName){
-            if(' '==c || '　'==c|| ','==c || '|'==c || '\\'==c)
-                return;
-        }else if(pNowStrBuffer==&SubBuffer){
-            if('&'==c || '|'==c )
-                return;
-        }
-        for(cursor=pNowStrBuffer->cursor++;cursor<=cnt;cnt--)
-            buffer[cnt+1]=buffer[cnt];
-        buffer[cursor++]=c;
-        pNowStrBuffer->cnt++;
-        CursorFlashCnt=20;
-#ifdef _TALK_WINDOW
-        if(g_bTalkWindow) TalkWindow.Update();
-#endif
+/* 将单一字元储放至目前的输入String buffer
+parameter:  c:字元 */
+void StockStrBufferChar(char c) {
+  if (BYTE(c) > 0x1f) {
+    int cnt, cursor;
+    if (pNowStrBuffer == NULL ||
+        (cnt = pNowStrBuffer->cnt) >= pNowStrBuffer->len)
+      return;
+    char *buffer = pNowStrBuffer->buffer;
+    if (pNowStrBuffer == &petNameChange) {
+      if (c == '|' || c == '\\' || getUtf8CharNum(buffer) >= PET_NAME_LEN)
+        return;
     }
+    if (pNowStrBuffer == &idKey || pNowStrBuffer == &passwd) {
+      /*if(!(('0'<=c && c<='9') || ('A'<=c && c<='Z') || ('a'<=c && c<='z')))
+          return;*/
+    } else if (pNowStrBuffer == &selCharName) {
+      if (' ' == c || '　' == c || ',' == c || '|' == c || '\\' == c)
+        return;
+    } else if (pNowStrBuffer == &SubBuffer) {
+      if ('&' == c || '|' == c)
+        return;
+    }
+    for (cursor = pNowStrBuffer->cursor++; cursor <= cnt; cnt--)
+      buffer[cnt + 1] = buffer[cnt];
+    buffer[cursor++] = c;
+    pNowStrBuffer->cnt++;
+    CursorFlashCnt = 20;
+#ifdef _TALK_WINDOW
+    if (g_bTalkWindow)
+      TalkWindow.Update();
+#endif
+  }
 }
 
 /*    将双位元字元储放至目前的输入String buffer
 parameter:    lpc:    双位元的字元            */
-void StockStrBufferDBChar(char *lpc)
-{
-    int cnt,cursor;
-    char gbk[3] = {lpc[0], lpc[1], '\0'};
-    const std::string utf8 = GbkToUtf8(gbk);
-    if (utf8.empty())
-        return;
-    const int byte = (int)utf8.size();
-    if(pNowStrBuffer==NULL || (cnt=pNowStrBuffer->cnt) > pNowStrBuffer->len-byte)
-        return;
-    char *buffer=pNowStrBuffer->buffer;
-    if (pNowStrBuffer == &petNameChange &&
-        getUtf8CharNum(buffer) >= PET_NAME_LEN)
-        return;
-    if(pNowStrBuffer==&idKey || pNowStrBuffer==&passwd)
-        return;
-    else{
-        for(cursor=pNowStrBuffer->cursor;cursor<=cnt;cnt--)
-            buffer[cnt+byte]=buffer[cnt];
-        memcpy(buffer + cursor, utf8.data(), byte);
-        pNowStrBuffer->cnt+=byte;
-        pNowStrBuffer->cursor+=byte;
-        CursorFlashCnt=20;
-    }
+void StockStrBufferDBChar(char *lpc) {
+  int cnt, cursor;
+  char gbk[3] = {lpc[0], lpc[1], '\0'};
+  const std::string utf8 = GbkToUtf8(gbk);
+  if (utf8.empty())
+    return;
+  const int byte = (int)utf8.size();
+  if (pNowStrBuffer == NULL ||
+      (cnt = pNowStrBuffer->cnt) > pNowStrBuffer->len - byte)
+    return;
+  char *buffer = pNowStrBuffer->buffer;
+  if (pNowStrBuffer == &petNameChange && getUtf8CharNum(buffer) >= PET_NAME_LEN)
+    return;
+  if (pNowStrBuffer == &idKey || pNowStrBuffer == &passwd)
+    return;
+  else {
+    for (cursor = pNowStrBuffer->cursor; cursor <= cnt; cnt--)
+      buffer[cnt + byte] = buffer[cnt];
+    memcpy(buffer + cursor, utf8.data(), byte);
+    pNowStrBuffer->cnt += byte;
+    pNowStrBuffer->cursor += byte;
+    CursorFlashCnt = 20;
+  }
 }
 
+/*    将 WM_CHAR 传入的位元组放至目前的输入String buffer
+    说明：DBCS(CP936) 视窗下，一个中文字元会被拆成两次 WM_CHAR 传入
+          （先引导位元组、后尾随位元组）。这里缓存引导位元组，凑齐双位元组后
+          交给 StockStrBufferDBChar 做 GBK->UTF-8 转换，单字节(ASCII)则维持
+          原 StockStrBufferChar 行为。
+parameter:    wParam:    WM_CHAR 的 wParam            */
+void StockStrBufferWmChar(WPARAM wParam) {
+  static char leadByte = 0;
+  const BYTE b = (BYTE)(wParam & 0xff);
 
+  if (leadByte != 0) {
+    // 已经收到引导位元组，本次的位元组即为尾随位元组
+    char gbk[3] = {leadByte, (char)b, '\0'};
+    leadByte = 0;
+    StockStrBufferDBChar(gbk);
+    return;
+  }
 
+  if (IsDBCSLeadByteEx(936, b)) {
+    // 引导位元组，等待下一次 WM_CHAR 送来尾随位元组
+    leadByte = (char)b;
+    return;
+  }
 
+  StockStrBufferChar((char)b);
+}
 
 // Keep line breaks on code-point boundaries. GetStrLastByte()==3 also
 // describes a complete Chinese UTF-8 character, not just a broken DBCS pair.
-static size_t ChatLinePrefixBytes(const char *text, size_t byteLimit)
-{
-    const size_t total = strlen(text);
-    size_t offset = 0;
-    while (offset < total) {
-        int bytes = getUtf8SequenceLength(text + offset, total - offset);
-        if (bytes == 0) bytes = 1; // Preserve unsupported legacy bytes.
-        if (offset + bytes > byteLimit) break;
-        offset += bytes;
-    }
-    return offset;
+static size_t ChatLinePrefixBytes(const char *text, size_t byteLimit) {
+  const size_t total = strlen(text);
+  size_t offset = 0;
+  while (offset < total) {
+    int bytes = getUtf8SequenceLength(text + offset, total - offset);
+    if (bytes == 0)
+      bytes = 1; // Preserve unsupported legacy bytes.
+    if (offset + bytes > byteLimit)
+      break;
+    offset += bytes;
+  }
+  return offset;
 }
 
 #ifdef _FONT_SIZE
-void StockChatBufferLine( char *str, unsigned char color )
-{
-    StockChatBufferLineExt( str, color, 0 );
+void StockChatBufferLine(char *str, unsigned char color) {
+  StockChatBufferLineExt(str, color, 0);
 }
-void StockChatBufferLineExt( char *str_, unsigned char color, int fontsize )
+void StockChatBufferLineExt(char *str_, unsigned char color, int fontsize)
 #else
-void StockChatBufferLine( char *str_, unsigned char color )
+void StockChatBufferLine(char *str_, unsigned char color)
 #endif
 {
-    char *str=str_;
+  char *str = str_;
 #ifdef _SA_LIAOTIAN_
-    if(NowChatLine_Bak != NowChatLine) NowChatLine = NowChatLine_Bak;
+  if (NowChatLine_Bak != NowChatLine)
+    NowChatLine = NowChatLine_Bak;
 #endif
 #ifdef _MO_CHAT_EXPRESSION
-    char strtemp[1024];
-    delFontBuffer(&ChatBuffer[ NowChatLine ]);
-    int splitPoint = 0;
-    unsigned int MyChatBufferLen = _FONTDATALEN_;
-    if( strlen( str ) > MyChatBufferLen ){
-        splitPoint = (int)ChatLinePrefixBytes(str, MyChatBufferLen);
-        strncpy_s( strtemp, str, splitPoint );
-        strtemp[splitPoint]=0;
-        NewStockFontBuffer(&ChatBuffer[ NowChatLine ],0,color,strtemp,fontsize);
-    }else NewStockFontBuffer(&ChatBuffer[ NowChatLine ],0,color,str,fontsize);
+  char strtemp[1024];
+  delFontBuffer(&ChatBuffer[NowChatLine]);
+  int splitPoint = 0;
+  unsigned int MyChatBufferLen = _FONTDATALEN_;
+  if (strlen(str) > MyChatBufferLen) {
+    splitPoint = (int)ChatLinePrefixBytes(str, MyChatBufferLen);
+    strncpy_s(strtemp, str, splitPoint);
+    strtemp[splitPoint] = 0;
+    NewStockFontBuffer(&ChatBuffer[NowChatLine], 0, color, strtemp, fontsize);
+  } else
+    NewStockFontBuffer(&ChatBuffer[NowChatLine], 0, color, str, fontsize);
 #ifdef _SA_LIAOTIAN_
-    NowChatLine_Bak++;
+  NowChatLine_Bak++;
 #endif
-    NowChatLine++;
-    if( NowChatLine >= MAX_CHAT_LINE ){
-        NowChatLine = 0;
-#ifdef _SA_LIAOTIAN_
-        NowChatLine_Bak=0;
-#endif
-    }
-    if( chatLogFile ){
-        fprintf( chatLogFile, "%s\n", str );
-    }
-    ChatLineSmoothY = 20;
-    if( splitPoint != 0 ){
-#ifdef _FONT_SIZE
-        StockChatBufferLineExt( str + splitPoint, color, fontsize );
-#else
-        StockChatBufferLine( str + splitPoint, color );
-#endif
-    }
-#else
-    int splitPoint = 0;
-#ifdef _NEWFONT_
-    unsigned int MyChatBufferLen = 87;
-#else
-    unsigned int MyChatBufferLen = 112;
-#endif
-#ifdef _FONT_SIZE
-    if( fontsize > 0 ) {
-        MyChatBufferLen = (int)(MyChatBufferLen*((float)FONT_SIZE/(float)fontsize));
-    }
-#endif
-    // Reserve space for the terminator and always fit one UTF-8 character.
-    if (MyChatBufferLen < 4) MyChatBufferLen = 4;
-    if (MyChatBufferLen > STR_BUFFER_SIZE) MyChatBufferLen = STR_BUFFER_SIZE;
-    if( strlen( str ) > MyChatBufferLen ){
-        splitPoint = (int)ChatLinePrefixBytes(str, MyChatBufferLen);
-        strncpy_s( ChatBuffer[ NowChatLine ].buffer, str, splitPoint );
-
-        *( ChatBuffer[ NowChatLine ].buffer + splitPoint ) = NULL; 
-#ifdef _TALK_WINDOW
-        TalkWindow.AddString(ChatBuffer[NowChatLine].buffer,color);
-#endif    
-    }else{
-        strcpy( ChatBuffer[ NowChatLine ].buffer, str );
-#ifdef _TALK_WINDOW
-        TalkWindow.AddString(str,color);
-#endif    
-    }
-    if( chatLogFile ){
-        fprintf( chatLogFile, "%s\n", ChatBuffer[ NowChatLine ].buffer );
-    }
-    ChatBuffer[ NowChatLine ].color = color;
-#ifdef _FONT_SIZE
-    ChatBuffer[ NowChatLine ].fontsize = fontsize;
-#endif
-    NowChatLine++;
-    if( NowChatLine >= MAX_CHAT_LINE ) NowChatLine = 0;
-    if( splitPoint != 0 ){
-#ifdef _FONT_SIZE
-        StockChatBufferLineExt( str + splitPoint, color, fontsize );
-#else
-        StockChatBufferLine( str + splitPoint, color );
-#endif
-    }
-
-    ChatLineSmoothY = 20;
-    //ChatLineSmoothY = 20 - ChatBuffer[ NowChatLine-1 ].fontsize;
-
-#ifdef _TALK_WINDOW
-    if(g_bTalkWindow) TalkWindow.Update();
-#endif
-#endif
-}
-
-void ClearChatBuffer( void )
-{
-    int i;
-    for( i = 0 ; i < MAX_CHAT_LINE ; i++ ){
-        ChatBuffer[ i ].buffer[ 0 ] = '\0';
-    }
+  NowChatLine++;
+  if (NowChatLine >= MAX_CHAT_LINE) {
     NowChatLine = 0;
 #ifdef _SA_LIAOTIAN_
-    NowChatLine_Bak=0;
+    NowChatLine_Bak = 0;
+#endif
+  }
+  if (chatLogFile) {
+    fprintf(chatLogFile, "%s\n", str);
+  }
+  ChatLineSmoothY = 20;
+  if (splitPoint != 0) {
+#ifdef _FONT_SIZE
+    StockChatBufferLineExt(str + splitPoint, color, fontsize);
+#else
+    StockChatBufferLine(str + splitPoint, color);
+#endif
+  }
+#else
+  int splitPoint = 0;
+#ifdef _NEWFONT_
+  unsigned int MyChatBufferLen = 87;
+#else
+  unsigned int MyChatBufferLen = 112;
+#endif
+#ifdef _FONT_SIZE
+  if (fontsize > 0) {
+    MyChatBufferLen =
+        (int)(MyChatBufferLen * ((float)FONT_SIZE / (float)fontsize));
+  }
+#endif
+  // Reserve space for the terminator and always fit one UTF-8 character.
+  if (MyChatBufferLen < 4)
+    MyChatBufferLen = 4;
+  if (MyChatBufferLen > STR_BUFFER_SIZE)
+    MyChatBufferLen = STR_BUFFER_SIZE;
+  if (strlen(str) > MyChatBufferLen) {
+    splitPoint = (int)ChatLinePrefixBytes(str, MyChatBufferLen);
+    strncpy_s(ChatBuffer[NowChatLine].buffer, str, splitPoint);
+
+    *(ChatBuffer[NowChatLine].buffer + splitPoint) = NULL;
+#ifdef _TALK_WINDOW
+    TalkWindow.AddString(ChatBuffer[NowChatLine].buffer, color);
+#endif
+  } else {
+    strcpy(ChatBuffer[NowChatLine].buffer, str);
+#ifdef _TALK_WINDOW
+    TalkWindow.AddString(str, color);
+#endif
+  }
+  if (chatLogFile) {
+    fprintf(chatLogFile, "%s\n", ChatBuffer[NowChatLine].buffer);
+  }
+  ChatBuffer[NowChatLine].color = color;
+#ifdef _FONT_SIZE
+  ChatBuffer[NowChatLine].fontsize = fontsize;
+#endif
+  NowChatLine++;
+  if (NowChatLine >= MAX_CHAT_LINE)
+    NowChatLine = 0;
+  if (splitPoint != 0) {
+#ifdef _FONT_SIZE
+    StockChatBufferLineExt(str + splitPoint, color, fontsize);
+#else
+    StockChatBufferLine(str + splitPoint, color);
+#endif
+  }
+
+  ChatLineSmoothY = 20;
+  // ChatLineSmoothY = 20 - ChatBuffer[ NowChatLine-1 ].fontsize;
+
+#ifdef _TALK_WINDOW
+  if (g_bTalkWindow)
+    TalkWindow.Update();
+#endif
 #endif
 }
 
+void ClearChatBuffer(void) {
+  int i;
+  for (i = 0; i < MAX_CHAT_LINE; i++) {
+    ChatBuffer[i].buffer[0] = '\0';
+  }
+  NowChatLine = 0;
+#ifdef _SA_LIAOTIAN_
+  NowChatLine_Bak = 0;
+#endif
+}
 
-
-void ChatBufferToFontBuffer( void )
-{
+void ChatBufferToFontBuffer(void) {
 #ifdef _TALK_WINDOW
-    if(g_bTalkWindow) return;
+  if (g_bTalkWindow)
+    return;
 #endif
-    int i, j, k = 0;
-    int x = 8, y = 400; // ?
-    
+  int i, j, k = 0;
+  int x = 8, y = 400; // ?
 
+  j = NowChatLine - 1;
+  // ????????
+  if (j < 0)
+    j = MAX_CHAT_LINE - 1;
 
-    j = NowChatLine - 1;
-    // ????????
-    if( j < 0 )
-        j = MAX_CHAT_LINE - 1;
-    
-    // ???????????
-    if( ChatLineSmoothY > 0 )
-        k = NowMaxChatLine + 1;
-    else
-        k = NowMaxChatLine;
-    
-    // ????????
-    if( k > MAX_CHAT_LINE )
-        k = MAX_CHAT_LINE;
-    
-    // ??????????
-    for( i = 0 ; i < k; i++ ){
-        // ?????????
-        if( *ChatBuffer[ j ].buffer != NULL
-            ){
+  // ???????????
+  if (ChatLineSmoothY > 0)
+    k = NowMaxChatLine + 1;
+  else
+    k = NowMaxChatLine;
+
+  // ????????
+  if (k > MAX_CHAT_LINE)
+    k = MAX_CHAT_LINE;
+
+  // ??????????
+  for (i = 0; i < k; i++) {
+    // ?????????
+    if (*ChatBuffer[j].buffer != NULL) {
 #ifdef _FONT_SIZE
 #ifdef _MO_CHAT_EXPRESSION
-            CHAT_BUFFER * temp = &ChatBuffer[j];
-            while(temp){
-                if(temp->x>760) break;
-                if(temp->BmpNo){
-                    StockDispBuffer(temp->x+x+14, y + ChatLineSmoothY + DISPLACEMENT_Y+7, DISP_PRIO_IME1,temp->BmpNo, 0);
-                }else{
-                    StockFontBufferExt(temp->x+x, y + ChatLineSmoothY + DISPLACEMENT_Y, FONT_PRIO_BACK, temp->color, ( char *)temp->buffer, 0,temp->fontsize );
-                }
-                temp = temp->NextChatBuffer;
-            }
+      CHAT_BUFFER *temp = &ChatBuffer[j];
+      while (temp) {
+        if (temp->x > 760)
+          break;
+        if (temp->BmpNo) {
+          StockDispBuffer(temp->x + x + 14,
+                          y + ChatLineSmoothY + DISPLACEMENT_Y + 7,
+                          DISP_PRIO_IME1, temp->BmpNo, 0);
+        } else {
+          StockFontBufferExt(temp->x + x, y + ChatLineSmoothY + DISPLACEMENT_Y,
+                             FONT_PRIO_BACK, temp->color, (char *)temp->buffer,
+                             0, temp->fontsize);
+        }
+        temp = temp->NextChatBuffer;
+      }
 #else
-            StockFontBufferExt( x, y + ChatLineSmoothY + DISPLACEMENT_Y - (int)((ChatBuffer[j].fontsize/2)*1.4), FONT_PRIO_BACK, ChatBuffer[ j ].color, ( char *)ChatBuffer[ j ].buffer, 0, ChatBuffer[ j ].fontsize );
+      StockFontBufferExt(x,
+                         y + ChatLineSmoothY + DISPLACEMENT_Y -
+                             (int)((ChatBuffer[j].fontsize / 2) * 1.4),
+                         FONT_PRIO_BACK, ChatBuffer[j].color,
+                         (char *)ChatBuffer[j].buffer, 0,
+                         ChatBuffer[j].fontsize);
 #endif
-            //StockFontBufferExt( temp->x+x, y + ChatLineSmoothY + DISPLACEMENT_Y, FONT_PRIO_BACK, temp->color, ( char *)temp->buffer, 0, 0);
+      // StockFontBufferExt( temp->x+x, y + ChatLineSmoothY + DISPLACEMENT_Y,
+      // FONT_PRIO_BACK, temp->color, ( char *)temp->buffer, 0, 0);
 #else
 #ifdef _MO_CHAT_EXPRESSION
-            CHAT_BUFFER * temp = &ChatBuffer[j];
-            while(temp){
-                if(temp->x>760) break;
-                if(temp->BmpNo){
-                    StockDispBuffer(temp->x+x+14, y + ChatLineSmoothY + DISPLACEMENT_Y+7, DISP_PRIO_IME1,temp->BmpNo, 0);
-                }else{
-                    StockFontBuffer(temp->x+x, y + ChatLineSmoothY + DISPLACEMENT_Y, FONT_PRIO_BACK, temp->color, ( char *)temp->buffer, 0 );
-                }
-                temp = temp->NextChatBuffer;
-            }
-#else
-            StockFontBuffer(    x, y + ChatLineSmoothY + DISPLACEMENT_Y, FONT_PRIO_BACK, ChatBuffer[ j ].color, ( char *)ChatBuffer[ j ].buffer, 0 );
-#endif
-#endif
+      CHAT_BUFFER *temp = &ChatBuffer[j];
+      while (temp) {
+        if (temp->x > 760)
+          break;
+        if (temp->BmpNo) {
+          StockDispBuffer(temp->x + x + 14,
+                          y + ChatLineSmoothY + DISPLACEMENT_Y + 7,
+                          DISP_PRIO_IME1, temp->BmpNo, 0);
+        } else {
+          StockFontBuffer(temp->x + x, y + ChatLineSmoothY + DISPLACEMENT_Y,
+                          FONT_PRIO_BACK, temp->color, (char *)temp->buffer, 0);
         }
-        y -= _CHAT_SPACING;  //
+        temp = temp->NextChatBuffer;
+      }
+#else
+      StockFontBuffer(x, y + ChatLineSmoothY + DISPLACEMENT_Y, FONT_PRIO_BACK,
+                      ChatBuffer[j].color, (char *)ChatBuffer[j].buffer, 0);
+#endif
+#endif
+    }
+    y -= _CHAT_SPACING; //
 #ifdef _FONT_SIZE
-        y -= (int)((ChatBuffer[j].fontsize/2)*1.4);
+    y -= (int)((ChatBuffer[j].fontsize / 2) * 1.4);
 #endif
-        j--;
-        if( j < 0 )
-            j = MAX_CHAT_LINE - 1;
-    }
-    if( ChatLineSmoothY > 0 )
-        ChatLineSmoothY--;
-     
-    // 2026.09.06 暂时移除这个代码
-    // extern char g_szChannelTitle[][13];
-    // StockFontBuffer(2, 430 + DISPLACEMENT_Y, FONT_PRIO_BACK, MyChatBuffer.color, g_szChannelTitle[TalkMode] , 0 );
-#ifdef _MO_CHAT_EXPRESSION
-    extern void ShowBottomLineString(int iColor,LPSTR lpstr);
-    extern int focusGraId( int *id, int cnt );
-    extern int pushGraId( int *id, int cnt );
-    extern int selGraId( int *id, int cnt );
-    int 表情按钮ID = -1;
-    static int 表情图片索引 = 0;
-    static int 表情窗口状态=FALSE;
-    static int 表情当前页=0;
-    static int 表情总页 = (EXPRESSION_NOID_NUM)%48?(EXPRESSION_NOID_NUM)/48+1:(EXPRESSION_NOID_NUM)/48;
-    int chatBtnGraNo[] =
-    {
-        CG_FIELD_CHAT_BTN_OFF,
-        CG_FIELD_CHAT_BTN_ON
-    };
-    StockDispBuffer(40, 559, DISP_PRIO_IME3, chatBtnGraNo[表情图片索引], 1);
+    j--;
+    if (j < 0)
+      j = MAX_CHAT_LINE - 1;
+  }
+  if (ChatLineSmoothY > 0)
+    ChatLineSmoothY--;
 
-    if( MakeHitBox(40-10, 559-10,40+10,559+10, DISP_PRIO_IME4 ) == TRUE )
-    {
-        ShowBottomLineString(FONT_PAL_WHITE, "聊天表情。");
-        if(mouse.onceState & MOUSE_LEFT_CRICK){
-            表情当前页=1;
-            表情图片索引=1;
-            if(表情窗口状态) 表情窗口状态=FALSE;
-            else 表情窗口状态=TRUE;
-            play_se(203, 320, 240);
-        }else 表情图片索引=0;
+  // 2026.09.06 暂时移除这个代码
+  // extern char g_szChannelTitle[][13];
+  // StockFontBuffer(2, 430 + DISPLACEMENT_Y, FONT_PRIO_BACK,
+  // MyChatBuffer.color, g_szChannelTitle[TalkMode] , 0 );
+#ifdef _MO_CHAT_EXPRESSION
+  extern void ShowBottomLineString(int iColor, LPSTR lpstr);
+  extern int focusGraId(int *id, int cnt);
+  extern int pushGraId(int *id, int cnt);
+  extern int selGraId(int *id, int cnt);
+  int 表情按钮ID = -1;
+  static int 表情图片索引 = 0;
+  static int 表情窗口状态 = FALSE;
+  static int 表情当前页 = 0;
+  static int 表情总页 = (EXPRESSION_NOID_NUM) % 48
+                            ? (EXPRESSION_NOID_NUM) / 48 + 1
+                            : (EXPRESSION_NOID_NUM) / 48;
+  int chatBtnGraNo[] = {CG_FIELD_CHAT_BTN_OFF, CG_FIELD_CHAT_BTN_ON};
+  StockDispBuffer(40, 559, DISP_PRIO_IME3, chatBtnGraNo[表情图片索引], 1);
+
+  if (MakeHitBox(40 - 10, 559 - 10, 40 + 10, 559 + 10, DISP_PRIO_IME4) ==
+      TRUE) {
+    ShowBottomLineString(FONT_PAL_WHITE, "聊天表情。");
+    if (mouse.onceState & MOUSE_LEFT_CRICK) {
+      表情当前页 = 1;
+      表情图片索引 = 1;
+      if (表情窗口状态)
+        表情窗口状态 = FALSE;
+      else
+        表情窗口状态 = TRUE;
+      play_se(203, 320, 240);
+    } else
+      表情图片索引 = 0;
+  }
+  if (表情窗口状态) {
+    if (joy_trg[0] & JOY_ESC) {
+      MenuToggleFlag |= JOY_ESC;
+      play_se(203, 320, 240);
+      表情窗口状态 = FALSE;
     }
-    if(表情窗口状态){
-        if( joy_trg[ 0 ] & JOY_ESC ) {
-            MenuToggleFlag|=JOY_ESC;
-            play_se(203, 320, 240);
-            表情窗口状态=FALSE;
-        }
-        int 方向按钮ID[2];
-        StockDispBuffer(120, 447, DISP_PRIO_IME3, 55103, 1);
-        方向按钮ID[0]=StockDispBuffer(89, 535, DISP_PRIO_IME4, 55104, 2);
-        方向按钮ID[1]=StockDispBuffer(152, 535, DISP_PRIO_IME4, 55105, 2);
-        int 按下ID= selGraId(方向按钮ID,2);
-        if(按下ID==0){//按方向左
-            if(表情当前页>1) 表情当前页--; 
-        }else if(按下ID==1){//按方向右
-            if(表情当前页 < 表情总页) 表情当前页++;
-        }
-        int start=(表情当前页-1)*48;
-        int end = (表情当前页*48 < EXPRESSION_NOID_NUM ?表情当前页*48:EXPRESSION_NOID_NUM);
-        int x,y;
-        for(y=0;y<6;y++){
-            for(x=0;x<8;x++){
-                表情按钮ID=StockDispBuffer(19+x*29, 362+y*29, DISP_PRIO_IME4, EXPRESSION_NOID_START+start, 2);
-                if(selGraId(&表情按钮ID,1)!=-1){
-                    表情窗口状态=FALSE;
-                    play_se(203, 320, 240);
-                    char 表情内容[128];
-                    sprintf_s(表情内容,"#%d",start+1);
-                    strcat_s(MyChatBuffer.buffer,表情内容);
-                    MyChatBuffer.cursor=strlen(MyChatBuffer.buffer);
-                    MyChatBuffer.cnt=strlen(MyChatBuffer.buffer);
-                }
-                start++;
-                if(EXPRESSION_NOID_NUM < start) break;
-            }
-            if(EXPRESSION_NOID_NUM < start) break;
-        }
+    int 方向按钮ID[2];
+    StockDispBuffer(120, 447, DISP_PRIO_IME3, 55103, 1);
+    方向按钮ID[0] = StockDispBuffer(89, 535, DISP_PRIO_IME4, 55104, 2);
+    方向按钮ID[1] = StockDispBuffer(152, 535, DISP_PRIO_IME4, 55105, 2);
+    int 按下ID = selGraId(方向按钮ID, 2);
+    if (按下ID == 0) { // 按方向左
+      if (表情当前页 > 1)
+        表情当前页--;
+    } else if (按下ID == 1) { // 按方向右
+      if (表情当前页 < 表情总页)
+        表情当前页++;
     }
+    int start = (表情当前页 - 1) * 48;
+    int end = (表情当前页 * 48 < EXPRESSION_NOID_NUM ? 表情当前页 * 48
+                                                     : EXPRESSION_NOID_NUM);
+    int x, y;
+    for (y = 0; y < 6; y++) {
+      for (x = 0; x < 8; x++) {
+        表情按钮ID = StockDispBuffer(19 + x * 29, 362 + y * 29, DISP_PRIO_IME4,
+                                     EXPRESSION_NOID_START + start, 2);
+        if (selGraId(&表情按钮ID, 1) != -1) {
+          表情窗口状态 = FALSE;
+          play_se(203, 320, 240);
+          char 表情内容[128];
+          sprintf_s(表情内容, "#%d", start + 1);
+          strcat_s(MyChatBuffer.buffer, 表情内容);
+          MyChatBuffer.cursor = strlen(MyChatBuffer.buffer);
+          MyChatBuffer.cnt = strlen(MyChatBuffer.buffer);
+        }
+        start++;
+        if (EXPRESSION_NOID_NUM < start)
+          break;
+      }
+      if (EXPRESSION_NOID_NUM < start)
+        break;
+    }
+  }
 #endif
-    StockFontBuffer2( &MyChatBuffer );
+  StockFontBuffer2(&MyChatBuffer);
 }
 
 /*******************************************************************************/
@@ -1344,81 +1397,76 @@ int GetStrLastByte( char *str )
 }
 #endif
 
-int GetStrLastByte(char *str)
-{
-    int lastBytes = 0;
-    const size_t total = strlen(str);
-    size_t offset = 0;
-    while (offset < total) {
-        const int length = getUtf8SequenceLength(str + offset, total - offset);
-        if (length == 0)
-            return 3;
-        lastBytes = length;
-        offset += length;
-    }
-    return lastBytes;
+int GetStrLastByte(char *str) {
+  int lastBytes = 0;
+  const size_t total = strlen(str);
+  size_t offset = 0;
+  while (offset < total) {
+    const int length = getUtf8SequenceLength(str + offset, total - offset);
+    if (length == 0)
+      return 3;
+    lastBytes = length;
+    offset += length;
+  }
+  return lastBytes;
 }
 
-void GetKeyInputFocus( STR_BUFFER *pStrBuffer )
-{    
-    pNowStrBuffer = pStrBuffer;
-}
+void GetKeyInputFocus(STR_BUFFER *pStrBuffer) { pNowStrBuffer = pStrBuffer; }
 
 // ?????????????????? ********************************************/
-void GetClipboad( void )
-{
-    HGLOBAL hMem;
-    LPTSTR lpMem;
+void GetClipboad(void) {
+  HGLOBAL hMem;
+  LPTSTR lpMem;
 
-    /* ???????????? */
-    OpenClipboard( hWnd );
-    /* ????????????????????? */
-    hMem = GetClipboardData( CF_TEXT );
-    /* ?????????? */
-    if( hMem == NULL ){
-        CloseClipboard();
-        return;
-    }
-    /* ????????????? */
-    lpMem = (LPTSTR)GlobalLock( hMem );
-    /* ????????????????? */
-//    SetWindowText( hwStrE, lpMem );
-//    lstrcpy( chat_input_buf, lpMem );
-
-    StrToNowStrBuffer( lpMem );
-
-    GlobalUnlock( hMem );
+  /* ???????????? */
+  OpenClipboard(hWnd);
+  /* ????????????????????? */
+  hMem = GetClipboardData(CF_TEXT);
+  /* ?????????? */
+  if (hMem == NULL) {
     CloseClipboard();
+    return;
+  }
+  /* ????????????? */
+  lpMem = (LPTSTR)GlobalLock(hMem);
+  /* ????????????????? */
+  //    SetWindowText( hwStrE, lpMem );
+  //    lstrcpy( chat_input_buf, lpMem );
+
+  StrToNowStrBuffer(lpMem);
+
+  GlobalUnlock(hMem);
+  CloseClipboard();
 }
 
+void SetClipboad(void) {
+  HGLOBAL hMem;
+  LPTSTR lpMem;
 
-void SetClipboad( void )
-{
-    HGLOBAL hMem;
-    LPTSTR lpMem;
+  // ????????
+  if (pNowStrBuffer == NULL)
+    return;
+  // ???????
+  if (pNowStrBuffer->buffer[0] == NULL)
+    return;
 
-    // ????????
-    if( pNowStrBuffer == NULL ) return;
-    // ???????
-    if( pNowStrBuffer->buffer[ 0 ] == NULL ) return;
-    
-    /* ?????????? */
-    hMem = GlobalAlloc( GHND, 512 );
-    /* ???????????????????? */
-    lpMem = ( LPTSTR )GlobalLock( hMem );
-//    lstrcpy( lpMem, chat_input_buf );
-    /* ????????????????? */
-    lstrcpy( lpMem, pNowStrBuffer->buffer );
-    /* ??????????????? */
-    GlobalUnlock( hMem );
-    /* ???????????? */
-    OpenClipboard( hWnd );
-    /* ??????????? */
-    EmptyClipboard();
-    /* ???????????????????????? */
-    SetClipboardData( CF_TEXT, hMem );
-    /* ???????????? */
-    CloseClipboard();
-    /* ?????????? */
-    //GlobalFree( hMem );
+  /* ?????????? */
+  hMem = GlobalAlloc(GHND, 512);
+  /* ???????????????????? */
+  lpMem = (LPTSTR)GlobalLock(hMem);
+  //    lstrcpy( lpMem, chat_input_buf );
+  /* ????????????????? */
+  lstrcpy(lpMem, pNowStrBuffer->buffer);
+  /* ??????????????? */
+  GlobalUnlock(hMem);
+  /* ???????????? */
+  OpenClipboard(hWnd);
+  /* ??????????? */
+  EmptyClipboard();
+  /* ???????????????????????? */
+  SetClipboardData(CF_TEXT, hMem);
+  /* ???????????? */
+  CloseClipboard();
+  /* ?????????? */
+  // GlobalFree( hMem );
 }
