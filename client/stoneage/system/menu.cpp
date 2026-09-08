@@ -521,6 +521,9 @@ ACTION *pActMenuWnd5;
 
 
 void checkRidePet(int);
+#ifdef _RIDEPET_
+static void writeRideDebugLog(int pindex, const char *stage);
+#endif
 //andy_add 2002/06/24
 int RIDEPET_getNOindex(int baseNo);
 int RIDEPET_getPETindex(int PetNo, int learnCode);
@@ -11034,6 +11037,14 @@ void MenuProc(void)
                     if (pc.selectPetNo[i] == TRUE) BattlePetStMenCnt++;
 
                 if (mouse.onceState & MOUSE_LEFT_CRICK){
+#ifdef _RIDEPET_
+                    for (i = 0; i < MAX_PET; i++) {
+                        if (pet[i].useFlag == TRUE)
+                            writeRideDebugLog(i, "pet-window-click");
+                    }
+                    StockChatBufferLine("骑宠调试：已记录宠物面板点击。",
+                                        FONT_PAL_YELLOW);
+#endif
                     for (i = 0; i < 5; i++){
                         if (pet[i].useFlag == TRUE && BattlePetReceivePetNo != i){
                             if (HitDispNo == petWndFontNo[i]){
@@ -11308,9 +11319,18 @@ void MenuProc(void)
                             petWndFontNo[i] = StockDispBuffer(x - 27, y - 14, DISP_PRIO_IME3, CG_PET_WND_REST_BTN + btnNo, 2);
 
 #ifdef _RIDEPET_
-                            if (pet[i].rideflg == 1 && pet[i].ai == 100){
+                            /*
+                             * Some server builds omit the optional ride flag from
+                             * the pet status packet.  The protocol parser represents
+                             * that missing field as -1.  Treat it as "unknown" and
+                             * let the server's authoritative ride table decide; an
+                             * explicit zero still means the pet is not rideable.
+                             */
+                            if (pet[i].rideflg != 0 && pet[i].ai == 100){
                                 if ((i == pc.ridePetNo) || pc.ridePetNo < 0){
-                                    int rideid = StockDispBuffer(x - 27, y + 11, DISP_PRIO_IME3, 55257, 2);
+                                    int rideid = StockDispBuffer(
+                                        x - 27, y + 11, DISP_PRIO_IME3,
+                                        CG_PET_WND_RIDE_BTN, 2);
                                     if (mouse.onceState & MOUSE_LEFT_CRICK){
                                         if (HitDispNo == rideid){
                                             checkRidePet(i);
@@ -14625,28 +14645,23 @@ void MenuProc(void)
                             sLastInventoryHitPage = gCurrInventoryPage;
                         }
                         // 2026.09.06: 3页物品栏
+                        // 对于当前页，直接显示选中。
+                        // 对于非当前页，要看是否是第1页，第1页始终开放；对于2、3页，要看玩家是否解锁。
                         for (i = 0; i < 3; i++){
                             if (i == gCurrInventoryPage){
-                                StockDispBuffer(613, 188 + i * 56, DISP_PRIO_IME3, 55113 + i, 1);
+                                StockDispBuffer2(353, 188 + i * 56, DISP_PRIO_IME3, 55113 + i, 1);
                             } else {
-                                BOOL flg = FALSE;
-                                if (i){
-                                    if (pc.道具栏状态 & 1 << i){
-                                        flg = TRUE;
-                                    }
-                                }
-                                else 
-                                  flg = TRUE;
-                                if (flg){
-                                    StockDispBuffer(618, 188 + i * 56, DISP_PRIO_IME3, 55110 + i, 1);
-                                    if (MakeHitBox(608, 160 + i * 56, 638, 157 + i * 56 + 60, DISP_PRIO_IME4)){
+                                if ((i == 0) || (pc.道具栏状态 & (1 << i)))
+                                {
+                                    StockDispBuffer2(358, 188 + i * 56, DISP_PRIO_IME3, 55110 + i, 1);
+                                    if (MakeHitBox(348, 160 + i * 56, 368, 157 + i * 56 + 60, DISP_PRIO_IME4)){
                                         if (mouse.onceState & MOUSE_LEFT_CRICK){
                                             gCurrInventoryPage = i;
                                         }
                                         if (mouse.itemNo != -1) gCurrInventoryPage = i;
                                     }
                                 }
-                                else StockDispBuffer(618, 188 + i * 56, DISP_PRIO_IME3, 55107 + i, 1);
+                                else StockDispBuffer2(358, 188 + i * 56, DISP_PRIO_IME3, 55107 + i, 14);
                             }
                         }
 #endif
@@ -16718,7 +16733,7 @@ void MenuProc(void)
 #ifdef _NEW_ITEM_
                         for (i = 0; i < 3; i++){
                             if (i == gCurrInventoryPage){
-                                StockDispBuffer(287, 39 + i * 56, DISP_PRIO_BOX2, 55223 + i, 1);
+                                StockDispBuffer2(287, 39 + i * 56, DISP_PRIO_BOX2, 55223 + i, 1);
                             }
                             else{
                                 BOOL flg = FALSE;
@@ -16729,14 +16744,14 @@ void MenuProc(void)
                                 }
                                 else flg = TRUE;
                                 if (flg){
-                                    StockDispBuffer(271 + 10, 39 + i * 56, DISP_PRIO_IME3, 55226 + i, 1);
+                                    StockDispBuffer2(271 + 10, 39 + i * 56, DISP_PRIO_IME3, 55226 + i, 1);
                                     if (MakeHitBox(271, 11 + i * 56, 311, 8 + i * 56 + 60, DISP_PRIO_IME3)){
                                         if (mouse.onceState & MOUSE_LEFT_CRICK){
                                             gCurrInventoryPage = i;
                                         }
                                     }
                                 }
-                                else StockDispBuffer(271 + 10, 39 + i * 56, DISP_PRIO_IME3, 55229 + i, 1);
+                                else StockDispBuffer2(271 + 10, 39 + i * 56, DISP_PRIO_IME3, 55229 + i, 1);
                             }
                         }
 #endif
@@ -18474,7 +18489,7 @@ void MenuProc(void)
 #ifdef _NEW_ITEM_
                         for (i = 0; i < 3; i++){
                             if (i == gCurrInventoryPage){
-                                StockDispBuffer(722, 335 + i * 56, DISP_PRIO_IME2, 55223 + i, 1);
+                                StockDispBuffer2(722, 335 + i * 56, DISP_PRIO_IME2, 55223 + i, 1);
                             }
                             else{
                                 BOOL flg = FALSE;
@@ -18485,14 +18500,14 @@ void MenuProc(void)
                                 }
                                 else flg = TRUE;
                                 if (flg){
-                                    StockDispBuffer(727 - 11, 335 + i * 56, DISP_PRIO_IME2, 55226 + i, 1);
+                                    StockDispBuffer2(727 - 11, 335 + i * 56, DISP_PRIO_IME2, 55226 + i, 1);
                                     if (MakeHitBox(706, 307 + i * 56, 746, 304 + i * 56 + 60, DISP_PRIO_IME4)){
                                         if (mouse.onceState & MOUSE_LEFT_CRICK){
                                             gCurrInventoryPage = i;
                                         }
                                     }
                                 }
-                                else StockDispBuffer(727 - 11, 335 + i * 56, DISP_PRIO_IME2, 55229 + i, 1);
+                                else StockDispBuffer2(727 - 11, 335 + i * 56, DISP_PRIO_IME2, 55229 + i, 1);
                             }
                         }
 #endif
@@ -19809,11 +19824,58 @@ void closeBankman(void) {
 
 }
 #ifdef  _RIDEPET_
+static void writeRideDebugLog(int pindex, const char *stage)
+{
+    char logPath[MAX_PATH];
+    DWORD pathLength = GetModuleFileNameA(NULL, logPath, sizeof(logPath));
+    if (pathLength == 0 || pathLength >= sizeof(logPath))
+        strcpy_s(logPath, "ride_debug.log");
+    else {
+        char *separator = strrchr(logPath, '\\');
+        if (separator != NULL)
+            strcpy_s(separator + 1,
+                     sizeof(logPath) - (separator + 1 - logPath),
+                     "ride_debug.log");
+        else
+            strcpy_s(logPath, "ride_debug.log");
+    }
+
+    FILE *fp = fopen(logPath, "a+");
+    if (fp == NULL)
+        return;
+
+    SYSTEMTIME now;
+    GetLocalTime(&now);
+    if (pindex >= 0 && pindex < MAX_PET) {
+        fprintf(fp,
+                "%04d-%02d-%02d %02d:%02d:%02d.%03d [%s] socket=%d "
+                "petSlot=%d petUse=%d rideFlag=%d petGra=%d petLv=%d petLoyalty=%d "
+                "rideSlot=%d learnRide=%d playerLv=%d playerGra=%d "
+                "playerBaseGra=%d hitDisp=%d hitFont=%d mouseState=%d\n",
+                now.wYear, now.wMonth, now.wDay, now.wHour, now.wMinute,
+                now.wSecond, now.wMilliseconds, stage, sockfd, pindex,
+                pet[pindex].useFlag, pet[pindex].rideflg, pet[pindex].graNo,
+                pet[pindex].level, pet[pindex].ai, pc.ridePetNo,
+                pc.learnride, pc.level, pc.graNo, pc.baseGraNo, HitDispNo,
+                HitFontNo, mouse.onceState);
+    } else {
+        fprintf(fp,
+                "%04d-%02d-%02d %02d:%02d:%02d.%03d [%s] socket=%d "
+                "invalid petSlot=%d rideSlot=%d learnRide=%d\n",
+                now.wYear, now.wMonth, now.wDay, now.wHour, now.wMinute,
+                now.wSecond, now.wMilliseconds, stage, sockfd, pindex,
+                pc.ridePetNo, pc.learnride);
+    }
+    fclose(fp);
+}
+
 void checkRidePet(int pindex)
 {
     char buf[128];
+    writeRideDebugLog(pindex, "before-send");
     sprintf_s(buf, "R|P|%d", pindex);
     lssproto_FM_send(sockfd, buf);
+    writeRideDebugLog(pindex, "after-send");
     return;
 }
 #else

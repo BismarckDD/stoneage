@@ -55,6 +55,9 @@ set(GMSV_ROOT_SOURCES
   gmsv/optional_features.c
   gmsv/const.c)
 
+# The Lua binding layers are feature-gated in version.h.  They must not be
+# compiled merely because their source directories exist: with the feature
+# macros disabled most entry points are omitted, leaving unresolved symbols.
 set(GMSV_COMPONENT_SOURCES)
 foreach(component char npc net map item battle magic)
   file(GLOB component_sources CONFIGURE_DEPENDS
@@ -103,12 +106,33 @@ set(STONEAGE_GNU_OPTIONS
   -Wno-incompatible-pointer-types
   -Wno-int-conversion)
 
+# --------------------------------------------------------------------------
+# Lua
+# --------------------------------------------------------------------------
+# server/lua/libluajit.a is a *Linux* ELF64 archive (built 2026-08-23 with
+# Ubuntu GCC) and cannot be linked by MinGW. The server only ever uses the
+# plain Lua 5.1 C API (no luajit.h, no ffi, no jit.* from the scripts), so we
+# link a stock PUC-Rio Lua 5.1 instead:
+#
+#   server/lua/liblua51.a       -- MinGW x86_64 COFF static lib, built from
+#                                  client/third_party/lua (the same 29 files
+#                                  the client compiles into its exe)
+#   server/lua/headers-lua51/   -- matching lua.h / lauxlib.h / lualib.h /
+#                                  luaconf.h
+#
+# Keep the LuaJIT headers in server/lua/ for reference, but do NOT put that
+# directory on the include path: it is 2.1 while this library is 5.1.4.
+set(LUA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lua/headers-lua51")
+set(LUA_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/lua/liblua51.a")
+
 target_include_directories(gmsv PRIVATE
   "${CMAKE_BINARY_DIR}/generated/gmsv"
   "${CMAKE_CURRENT_SOURCE_DIR}/gmsv/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/gmsv"
+  "${CMAKE_CURRENT_SOURCE_DIR}"
   "${CMAKE_CURRENT_SOURCE_DIR}/common"
-  "${CMAKE_CURRENT_SOURCE_DIR}/common/utils")
+  "${CMAKE_CURRENT_SOURCE_DIR}/common/utils"
+  "${LUA_INCLUDE_DIR}")
 target_include_directories(saac PRIVATE
   "${CMAKE_BINARY_DIR}/generated/saac"
   "${CMAKE_CURRENT_SOURCE_DIR}/saac/include"
@@ -141,7 +165,9 @@ else()
   target_link_libraries(saac PRIVATE mysqlclient)
 endif()
 target_link_libraries(saac PRIVATE z)
-target_link_libraries(gmsv PRIVATE z)
+target_link_libraries(gmsv PRIVATE z m)
+# Lua must come after the objects that reference it.
+target_link_libraries(gmsv PRIVATE "${LUA_LIBRARY}")
 
 # MinGW links zlib dynamically. Keep the runtime DLL next to gmsv.exe so the
 # server can be launched from a deployment directory without an MSYS2 PATH.

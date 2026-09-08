@@ -1,10 +1,12 @@
-#include "version.h"
 #include "battle.h"
-#include "config_file.h"
 #include "char.h"
+#include "config_file.h"
 #include "item.h"
 #include "mylua/base.h"
 #include "mylua/mylua.h"
+#include "version.h"
+
+#ifdef _ALLBLUES_LUA
 
 extern MY_Lua MYLua;
 
@@ -1045,7 +1047,7 @@ BOOL WalkFunction(int char_index) {
 
     if (lua_pcall(mylua->lua, 1, 1, 0) != 0)
       luaL_error(mylua->lua, "error running function `f': %s",
-            lua_tostring(mylua->lua, -1));
+                 lua_tostring(mylua->lua, -1));
 
     if (!lua_isnumber(mylua->lua, -1))
       luaL_error(mylua->lua, "function `f' must return a number");
@@ -1285,7 +1287,7 @@ BOOL CharVsEnemyFunction(int char_index) {
 
     if (lua_pcall(mylua->lua, 1, 1, 0) != 0)
       luaL_error(mylua->lua, "error running function `f': %s",
-            lua_tostring(mylua->lua, -1));
+                 lua_tostring(mylua->lua, -1));
 
     if (!lua_isnumber(mylua->lua, -1))
       luaL_error(mylua->lua, "function `f' must return a number");
@@ -1485,7 +1487,7 @@ BOOL FreePartyJoin(int char_index, int toindex) {
 
     if (lua_pcall(mylua->lua, 2, 1, 0) != 0)
       luaL_error(mylua->lua, "error running function `f': %s",
-            lua_tostring(mylua->lua, -1));
+                 lua_tostring(mylua->lua, -1));
 
     if (!lua_isnumber(mylua->lua, -1))
       luaL_error(mylua->lua, "function `f' must return a number");
@@ -1575,6 +1577,7 @@ BOOL OffLineCommand(int battleindex, int char_index, int side) {
 }
 #endif
 
+/*
 void ABNPC_Lua_NEWSHOP_Recv(int char_index) {
   static lua_State *lua;
   if (lua == NULL) {
@@ -1594,7 +1597,7 @@ void ABNPC_Lua_NEWSHOP_Recv(int char_index) {
   docall(lua, 1, 1);
 
   return;
-}
+}*/
 
 #ifdef _PETSKILL_SHOP_LUA
 BOOL FreePetSkillShop(int talkerindex, int petindex, int oldSkillID,
@@ -1860,4 +1863,6 @@ BOOL RedMoneyFunction(int char_index, char *data) {
   docall(lua, 2, 1);
   return TRUE;
 }
+#endif
+
 #endif

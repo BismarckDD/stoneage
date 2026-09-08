@@ -136,10 +136,8 @@ void initConnectServer(void) { connectServerCounter = 0; }
 
 void LogToRecvdata2(char *data) {
   char lssproto_readlogfilename[256] = "recvdata.txt";
-
   if (lssproto_readlogfilename[0] != '\0') {
-    FILE *rfp;
-    rfp = fopen(lssproto_readlogfilename, "a+");
+    FILE *rfp = fopen(lssproto_readlogfilename, "a+");
     if (rfp) {
       fprintf(rfp, "收到：\t%s\n", data);
       fclose(rfp);
@@ -576,15 +574,11 @@ void lssproto_ClientLogin_recv(int fd, char *result) {
       localtime_s(&serverAliveTime, &serverAliveLongTime);
     } else if (strcmp(result, CANCLE) == 0) {
       // ChangeProc(PROC_TITLE_MENU , 6 );
-
       cleanupNetwork();
-      // ????????????
       PaletteChange(DEF_PAL, 0);
-      // ??????
       // cary
       ChangeProc(PROC_ID_PASSWORD);
       SubProcNo = 5;
-      // ??????
       DeathAllAction();
     }
   }
@@ -916,12 +910,10 @@ void lssproto_S_recv(int fd, char *data) {
       i = 2;
       for (; mask > 0; mask <<= 1) {
         if (kubun & mask) {
-          if (mask == 0x00000002) // ( 1 << 1 )
-          {
+          if (mask == 0x00000002) {
             pc.hp = getIntegerToken(data, S_DELIM, i); // 0x00000002
             i++;
-          } else if (mask == 0x00000004) // ( 1 << 2 )
-          {
+          } else if (mask == 0x00000004) {
             pc.maxHp = getIntegerToken(data, S_DELIM, i); // 0x00000004
             i++;
           } else if (mask == 0x00000008) {
@@ -996,27 +988,20 @@ void lssproto_S_recv(int fd, char *data) {
             makeStringFromEscaped(name);
             copyUtf8WithLimit(pc.name, sizeof(pc.name), name, CHAR_NAME_LEN);
             i++;
-          } else if (mask == 0x04000000) {
+          } else if (mask == (1 << 26)) {
             getStringToken(data, S_DELIM, i, sizeof(freeName) - 1,
                            freeName); // 0x02000000
             makeStringFromEscaped(freeName);
             copyUtf8WithLimit(pc.freeName, sizeof(pc.freeName), freeName,
                               CHAR_FREENAME_LEN);
             i++;
-          } else if (mask == 0x08000000) // ( 1 << 27 )
-          {
-            pc.ridePetNo = getIntegerToken(data, S_DELIM, i); // 0x08000000
-            i++;
-          } else if (mask == 0x10000000) // ( 1 << 28 )
-          {
-            pc.learnride = getIntegerToken(data, S_DELIM, i); // 0x10000000
-            i++;
-          } else if (mask == 0x20000000) // ( 1 << 29 )
-          {
-            pc.baseGraNo = getIntegerToken(data, S_DELIM, i); // 0x20000000
-            i++;
-          } else if (mask == 0x40000000) // ( 1 << 30 )
-          {
+          } else if (mask == (1 << 27)) {
+            pc.ridePetNo = getIntegerToken(data, S_DELIM, i++); // 0x08000000
+          } else if (mask == (1 << 28)) {
+            pc.learnride = getIntegerToken(data, S_DELIM, i++); // 0x10000000
+          } else if (mask == (1 << 29)) {
+            pc.baseGraNo = getIntegerToken(data, S_DELIM, i++); // 0x20000000
+          } else if (mask == (1 << 30)) {
             pc.skywalker = getIntegerToken(data, S_DELIM, i); // 0x40000000
             i++;
           }
@@ -3307,9 +3292,7 @@ void lssproto_PME_recv(int fd, int objindex, int graphicsno, int x, int y,
 
 char *pCommand = NULL;
 DWORD dwDiceTimer;
-// ?????????? /////////////////////////////////////////////
 void lssproto_EF_recv(int fd, int effect, int level, char *option) {
-  // ??????????
   if (effect == 0) {
     mapEffectRainLevel = 0;
     mapEffectSnowLevel = 0;
@@ -3320,15 +3303,12 @@ void lssproto_EF_recv(int fd, int effect, int level, char *option) {
 #endif
     return;
   }
-  // ???????
   if (effect & 1) {
     mapEffectRainLevel = level;
   }
-  // ??????
   if (effect & 2) {
     mapEffectSnowLevel = level;
   }
-  // ????
   if (effect & 4) {
     mapEffectKamiFubukiLevel = level;
   }

@@ -14,9 +14,17 @@
 
 #define DME() print("<DME(%d)%d:%d>", fd, __LINE__, func)
 
-char charname[CHARNAMELEN];
+extern int cliretfunc; // 定义于msignal，用于发生错误时记录环境
 
-extern int cliretfunc;
+char charname[CHARNAMELEN];
+char message[1 << 16]; // 64K长度，不应放在栈上
+char buffer[1 << 16]; // 64K长度, 放在栈上
+char raw[1 << 16];
+int check_sum_recv = 0;
+int check_sum_calc = 0;
+int x, y, dir, dummy;
+int request_index, item_index, pet_index, color;
+
 int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   /* No client RPC is valid while the account server is authenticating it. */
   if (CONNECT_getState(fd) == WHILEAUTH)
@@ -35,7 +43,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   }
 #endif
   int func, fieldcount;
-  char raw[1024 * 64];
 #ifdef _SERVER_DEF
   util_DiscardMessage();
 #endif
@@ -58,36 +65,30 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return -1;
   }
   cliretfunc = func;
+  // check_sum_calc = 0;
   if (func == LSSPROTO_W_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    char direction[1024 * 64];
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_destring(4, direction);
-    util_deint(5, &checksumrecv);
-
-    if (checksum != checksumrecv) {
+    check_sum_calc = 0;
+    check_sum_calc += util_deint(2, &x);        // s step
+    check_sum_calc += util_deint(3, &y);        // y step
+    check_sum_calc += util_destring(4, buffer); // direction
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
       return -1;
     }
-    GmsvServer_W_recv(fd, x, y, direction);
+    GmsvServer_W_recv(fd, x, y, buffer);
     util_DiscardMessage();
     return 0;
   }
   if (func == LSSPROTO_W2_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    char direction[1024 * 64];
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_destring(4, direction);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = 0;
+    check_sum_calc += util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_destring(4, buffer);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -96,24 +97,19 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_W2_RECV-x:%d,y:%d,direction:%s\n", x, y, direction);
 #endif
-    GmsvServer_W2_recv(fd, x, y, direction);
+    GmsvServer_W2_recv(fd, x, y, buffer);
     util_DiscardMessage();
     return 0;
   }
   if (func == LSSPROTO_EV_RECV) {
-    int checksum = 0, checksumrecv;
-    int event;
-    int seqno;
-    int x;
-    int y;
-    int dir;
-    checksum += util_deint(2, &event);
-    checksum += util_deint(3, &seqno);
-    checksum += util_deint(4, &x);
-    checksum += util_deint(5, &y);
-    checksum += util_deint(6, &dir);
-    util_deint(7, &checksumrecv);
-    if (checksum != checksumrecv) {
+    int event, seqno;
+    check_sum_calc = util_deint(2, &event);
+    check_sum_calc += util_deint(3, &seqno);
+    check_sum_calc += util_deint(4, &x);
+    check_sum_calc += util_deint(5, &y);
+    check_sum_calc += util_deint(6, &dir);
+    util_deint(7, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -128,13 +124,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_DU_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = 0;
+    check_sum_calc += util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -148,11 +142,9 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_EO_RECV) {
-    int checksum = 0, checksumrecv;
-    int dummy;
-    checksum += util_deint(2, &dummy);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &dummy);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -167,11 +159,9 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   }
 
   if (func == LSSPROTO_BU_RECV) {
-    int checksum = 0, checksumrecv;
-    int dummy;
-    checksum += util_deint(2, &dummy);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &dummy);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -185,13 +175,10 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_JB_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -205,13 +192,10 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_LB_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -225,78 +209,64 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_B_RECV) {
-    int checksum = 0, checksumrecv;
-    char command[1024 * 64];
-    checksum += util_destring(2, command);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_destring(2, buffer); // buffer => command
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
       return -1;
     }
 #ifdef _DEBUG_RET_CLI
-    printf("[接收]LSSPROTO_B_RECV-command:%s\n", command);
+    printf("[接收]LSSPROTO_B_RECV-command:%s\n", buffer);
 #endif
-    GmsvServer_B_recv(fd, command);
+    GmsvServer_B_recv(fd, buffer);
     util_DiscardMessage();
     return 0;
   }
   if (func == LSSPROTO_SKD_RECV) {
-    int checksum = 0, checksumrecv;
-    int dir;
-    int index;
-    checksum += util_deint(2, &dir);
-    checksum += util_deint(3, &index);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &dir);
+    check_sum_calc += util_deint(3, &request_index);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
       return -1;
     }
 #ifdef _DEBUG_RET_CLI
-    printf("[接收]LSSPROTO_SKD_RECV-dir:%d,index:%d\n", dir, index);
+    printf("[接收]LSSPROTO_SKD_RECV-dir:%d,index:%d\n", dir, request_index);
 #endif
-    GmsvServer_SKD_recv(fd, dir, index);
+    GmsvServer_SKD_recv(fd, dir, request_index);
     util_DiscardMessage();
     return 0;
   }
   if (func == LSSPROTO_ID_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    int haveitemindex;
-    int toindex;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &haveitemindex);
-    checksum += util_deint(5, &toindex);
-    util_deint(6, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &item_index);
+    check_sum_calc += util_deint(5, &request_index);
+    util_deint(6, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
       return -1;
     }
 #ifdef _DEBUG_RET_CLI
-    printf("[接收]LSSPROTO_ID_RECV-x:%d,y:%d,haveitemindex:%d,toindex:%d\n", x,
-           y, haveitemindex, toindex);
+    printf("[接收]LSSPROTO_ID_RECV-x:%d,y:%d,item_index:%d,toindex:%d\n", x,
+           y, item_index, toindex);
 #endif
-    GmsvServer_ID_recv(fd, x, y, haveitemindex, toindex);
+    GmsvServer_ID_recv(fd, x, y, item_index, request_index);
     util_DiscardMessage();
     return 0;
   }
   if (func == LSSPROTO_PI_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    int dir;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &dir);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &dir);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -310,37 +280,30 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_DI_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    int itemindex;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &itemindex);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &item_index);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
       return -1;
     }
 #ifdef _DEBUG_RET_CLI
-    printf("[接收]LSSPROTO_DI_RECV-x:%d,y:%d,itemindex:%d\n", x, y, itemindex);
+    printf("[接收]LSSPROTO_DI_RECV-x:%d,y:%d,item_index:%d\n", x, y, item_index);
 #endif
-    GmsvServer_DI_recv(fd, x, y, itemindex);
+    GmsvServer_DI_recv(fd, x, y, item_index);
     util_DiscardMessage();
     return 0;
   }
   if (func == LSSPROTO_DG_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
     int amount;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &amount);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &amount);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -354,15 +317,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_DP_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    int petindex;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &petindex);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &pet_index);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -371,18 +330,18 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_DP_RECV-x:%d,y:%d,petindex:%d\n", x, y, petindex);
 #endif
-    GmsvServer_DP_recv(fd, x, y, petindex);
+    GmsvServer_DP_recv(fd, x, y, pet_index);
     util_DiscardMessage();
     return 0;
   }
   if (func == LSSPROTO_MI_RECV) {
-    int checksum = 0, checksumrecv;
+    check_sum_calc = 0;
     int fromindex;
     int toindex;
-    checksum += util_deint(2, &fromindex);
-    checksum += util_deint(3, &toindex);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &fromindex);
+    check_sum_calc += util_deint(3, &toindex);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -396,61 +355,53 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     util_DiscardMessage();
     return 0;
   }
+  // 邮件？
   if (func == LSSPROTO_MSG_RECV) {
-    int checksum = 0, checksumrecv;
-    int index;
-    char message[1024 * 64];
-    int color;
-    checksum += util_deint(2, &index);
-    checksum += util_destring(3, message);
-    checksum += util_deint(4, &color);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &request_index);
+    check_sum_calc += util_destring(3, message);
+    check_sum_calc += util_deint(4, &color);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
       return -1;
     }
 #ifdef _DEBUG_RET_CLI
-    printf("[接收]LSSPROTO_MSG_RECV-index:%d,message:%s,color:%d\n", index,
+    printf("[接收]LSSPROTO_MSG_RECV-index:%d,message:%s,color:%d\n", request_index,
            message, color);
 #endif
-    GmsvServer_MSG_recv(fd, index, message, color);
+    GmsvServer_MSG_recv(fd, request_index, message, color);
     util_DiscardMessage();
     return 0;
   }
+  // 宠物邮件?
   if (func == LSSPROTO_PMSG_RECV) {
-    int checksum = 0, checksumrecv;
-    int index;
-    int petindex;
-    int itemindex;
-    char message[1024 * 64];
-    int color;
-    checksum += util_deint(2, &index);
-    checksum += util_deint(3, &petindex);
-    checksum += util_deint(4, &itemindex);
-    checksum += util_destring(5, message);
-    checksum += util_deint(6, &color);
-    util_deint(7, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &request_index);
+    check_sum_calc += util_deint(3, &pet_index);
+    check_sum_calc += util_deint(4, &item_index);
+    check_sum_calc += util_destring(5, message);
+    check_sum_calc += util_deint(6, &color);
+    util_deint(7, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
       return -1;
     }
 #ifdef _DEBUG_RET_CLI
-    printf("[接收]LSSPROTO_PMSG_RECV-index:%d,petindex:%d,itemindex:%d,message:"
+    printf("[接收]LSSPROTO_PMSG_RECV-index:%d,petindex:%d,item_index:%d,message:"
            "%s,color:%d\n",
-           index, petindex, itemindex, message, color);
+           request_index, petindex, item_index, message, color);
 #endif
-    GmsvServer_PMSG_recv(fd, index, petindex, itemindex, message, color);
+    GmsvServer_PMSG_recv(fd, request_index, pet_index, item_index, message, color);
     util_DiscardMessage();
     return 0;
   }
   if (func == LSSPROTO_AB_RECV) {
-    int checksum = 0, checksumrecv;
-    util_deint(2, &checksumrecv);
-    if (checksum != checksumrecv) {
+    int check_sum_calc = 0, check_sum_recv;
+    util_deint(2, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -464,11 +415,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_DAB_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int index;
-    checksum += util_deint(2, &index);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &index);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -482,13 +433,13 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_AAB_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int x;
     int y;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -502,11 +453,9 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_L_RECV) {
-    int checksum = 0, checksumrecv;
-    int dir;
-    checksum += util_deint(2, &dir);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &dir);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -520,19 +469,18 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_TK_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int x;
     int y;
-    char message[1024 * 64];
     int color;
     int area;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_destring(4, message);
-    checksum += util_deint(5, &color);
-    checksum += util_deint(6, &area);
-    util_deint(7, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_destring(4, message);
+    check_sum_calc += util_deint(5, &color);
+    check_sum_calc += util_deint(6, &area);
+    util_deint(7, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -547,19 +495,14 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_M_RECV) {
-    int checksum = 0, checksumrecv;
-    int fl;
-    int x1;
-    int y1;
-    int x2;
-    int y2;
-    checksum += util_deint(2, &fl);
-    checksum += util_deint(3, &x1);
-    checksum += util_deint(4, &y1);
-    checksum += util_deint(5, &x2);
-    checksum += util_deint(6, &y2);
-    util_deint(7, &checksumrecv);
-    if (checksum != checksumrecv) {
+    int fl, x1, y1, x2, y2;
+    check_sum_calc = util_deint(2, &fl);
+    check_sum_calc += util_deint(3, &x1);
+    check_sum_calc += util_deint(4, &y1);
+    check_sum_calc += util_deint(5, &x2);
+    check_sum_calc += util_deint(6, &y2);
+    util_deint(7, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -574,11 +517,10 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_C_RECV) {
-    int checksum = 0, checksumrecv;
     int index;
-    checksum += util_deint(2, &index);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &index);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -592,11 +534,9 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_S_RECV) {
-    int checksum = 0, checksumrecv;
-    char category[1024 * 64];
-    checksum += util_destring(2, category);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_destring(2, buffer); // buffer -> category
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -605,16 +545,15 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_S_RECV-category:%s\n", category);
 #endif
-    GmsvServer_S_recv(fd, category);
+    GmsvServer_S_recv(fd, buffer);
     util_DiscardMessage();
     return 0;
   }
   if (func == LSSPROTO_FS_RECV) {
-    int checksum = 0, checksumrecv;
     int flg;
-    checksum += util_deint(2, &flg);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &flg);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -628,11 +567,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_HL_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int flg;
-    checksum += util_deint(2, &flg);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &flg);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -646,15 +585,15 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_PR_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int x;
     int y;
     int request;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &request);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &request);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -668,11 +607,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_KS_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int petarray;
-    checksum += util_deint(2, &petarray);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &petarray);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -687,11 +626,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   }
 #ifdef _STANDBYPET
   if (func == LSSPROTO_SPET_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int standbypet;
-    checksum += util_deint(2, &standbypet);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &standbypet);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -707,13 +646,13 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _RIGHTCLICK
   if (func == LSSPROTO_RCLICK_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int type;
     char data[1024];
-    checksum += util_deint(2, &type);
-    checksum += util_destring(3, data);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &type);
+    check_sum_calc += util_destring(3, data);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -728,15 +667,13 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   }
 #endif
   if (func == LSSPROTO_AC_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
+    check_sum_calc = 0;
     int actionno;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &actionno);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &actionno);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -750,17 +687,15 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_MU_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
+    check_sum_calc = 0;
     int array;
     int toindex;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &array);
-    checksum += util_deint(5, &toindex);
-    util_deint(6, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &array);
+    check_sum_calc += util_deint(5, &toindex);
+    util_deint(6, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -775,18 +710,18 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_PS_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int havepetindex;
     int havepetskill;
     int toindex;
     char data[1024 * 64];
 
-    checksum += util_deint(2, &havepetindex);
-    checksum += util_deint(3, &havepetskill);
-    checksum += util_deint(4, &toindex);
-    checksum += util_destring(5, data);
-    util_deint(6, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &havepetindex);
+    check_sum_calc += util_deint(3, &havepetskill);
+    check_sum_calc += util_deint(4, &toindex);
+    check_sum_calc += util_destring(5, data);
+    util_deint(6, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -803,11 +738,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_ST_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int titleindex;
-    checksum += util_deint(2, &titleindex);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &titleindex);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -821,11 +756,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_DT_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int titleindex;
-    checksum += util_deint(2, &titleindex);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &titleindex);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -839,11 +774,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_FT_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     char data[1024 * 64];
-    checksum += util_destring(2, data);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_destring(2, data);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -857,11 +792,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_SKUP_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int skillid;
-    checksum += util_deint(2, &skillid);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &skillid);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -875,13 +810,13 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_KN_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int havepetindex;
     char data[1024 * 64];
-    checksum += util_deint(2, &havepetindex);
-    checksum += util_destring(3, data);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &havepetindex);
+    check_sum_calc += util_destring(3, data);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -896,22 +831,22 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_WN_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int x;
     int y;
     int seqno;
     int objindex;
     int select;
     char data[1024 * 64];
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &seqno);
-    checksum += util_deint(5, &objindex);
-    checksum += util_deint(6, &select);
-    checksum += util_destring(7, data);
+    check_sum_calc += util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &seqno);
+    check_sum_calc += util_deint(5, &objindex);
+    check_sum_calc += util_deint(6, &select);
+    check_sum_calc += util_destring(7, data);
 
-    util_deint(8, &checksumrecv);
-    if (checksum != checksumrecv) {
+    util_deint(8, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -927,15 +862,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_SP_RECV) {
-    int checksum = 0, checksumrecv;
-    int x;
-    int y;
-    int dir;
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &dir);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &dir);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -949,34 +880,34 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_CLIENTLOGIN_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     char cdkey[CDKEYLEN];
     char passwd[PASSWDLEN];
     char mac[512] = "";
     char ip[128];
     int servid = 0;
     strcpy(PersonalKey, _DEFAULT_PKEY);
-    checksum += util_destring(2, cdkey);
-    checksum += util_destring(3, passwd);
-    util_deint(4, &checksumrecv);
-    if (checksum == checksumrecv) {
+    check_sum_calc += util_destring(2, cdkey);
+    check_sum_calc += util_destring(3, passwd);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc == check_sum_recv) {
 #ifdef _DEBUG_RET_CLI
       printf("[接收]LSSPROTO_CLIENTLOGIN_RECV-cdkey:%s,passwd:%s\n", cdkey,
              passwd);
 #endif
     } else {
-      checksum += util_destring(4, mac);
-      util_deint(5, &checksumrecv);
-      if (checksum == checksumrecv) {
+      check_sum_calc += util_destring(4, mac);
+      util_deint(5, &check_sum_recv);
+      if (check_sum_calc == check_sum_recv) {
 #ifdef _DEBUG_RET_CLI
         printf("[接收]LSSPROTO_CLIENTLOGIN_RECV-cdkey:%s,passwd:%s,mac:%s\n",
                cdkey, passwd, mac);
 #endif
       } else {
-        checksum += util_deint(5, &servid);
-        checksum += util_destring(6, ip);
-        util_deint(7, &checksumrecv);
-        if (checksum != checksumrecv) {
+        check_sum_calc += util_deint(5, &servid);
+        check_sum_calc += util_destring(6, ip);
+        util_deint(7, &check_sum_recv);
+        if (check_sum_calc != check_sum_recv) {
           util_DiscardMessage();
           logHack(fd, HACK_CHECKSUMERROR);
           DME();
@@ -999,7 +930,7 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_CREATENEWCHAR_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int dataplacenum;
     int imgno;
     int faceimgno;
@@ -1012,21 +943,21 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     int fire;
     int wind;
     int hometown;
-    checksum += util_deint(2, &dataplacenum);
-    checksum += util_destring(3, charname);
-    checksum += util_deint(4, &imgno);
-    checksum += util_deint(5, &faceimgno);
-    checksum += util_deint(6, &vital);
-    checksum += util_deint(7, &str);
-    checksum += util_deint(8, &tgh);
-    checksum += util_deint(9, &dex);
-    checksum += util_deint(10, &earth);
-    checksum += util_deint(11, &water);
-    checksum += util_deint(12, &fire);
-    checksum += util_deint(13, &wind);
-    checksum += util_deint(14, &hometown);
-    util_deint(15, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &dataplacenum);
+    check_sum_calc += util_destring(3, charname);
+    check_sum_calc += util_deint(4, &imgno);
+    check_sum_calc += util_deint(5, &faceimgno);
+    check_sum_calc += util_deint(6, &vital);
+    check_sum_calc += util_deint(7, &str);
+    check_sum_calc += util_deint(8, &tgh);
+    check_sum_calc += util_deint(9, &dex);
+    check_sum_calc += util_deint(10, &earth);
+    check_sum_calc += util_deint(11, &water);
+    check_sum_calc += util_deint(12, &fire);
+    check_sum_calc += util_deint(13, &wind);
+    check_sum_calc += util_deint(14, &hometown);
+    util_deint(15, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1046,13 +977,13 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_CHARDELETE_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     char charname[CHARNAMELEN];
     char passwd[PASSWDLEN];
-    checksum += util_destring(2, charname);
-    checksum += util_destring(3, passwd);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_destring(2, charname);
+    check_sum_calc += util_destring(3, passwd);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1066,17 +997,17 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_UPSHOP_RECV) {
-    int checksumrecv;
-    int checksum = 0;
+    int check_sum_recv;
+    int check_sum_calc = 0;
     char shop[5][1024] = {0};
 
-    checksum += util_destring(2, shop[0]);
-    checksum += util_destring(3, shop[1]);
-    checksum += util_destring(4, shop[2]);
-    checksum += util_destring(5, shop[3]);
-    checksum += util_destring(6, shop[4]);
-    util_deint(7, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_destring(2, shop[0]);
+    check_sum_calc += util_destring(3, shop[1]);
+    check_sum_calc += util_destring(4, shop[2]);
+    check_sum_calc += util_destring(5, shop[3]);
+    check_sum_calc += util_destring(6, shop[4]);
+    util_deint(7, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       return -1;
     }
@@ -1085,15 +1016,15 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_CHARLOGIN_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     char charname[CHARNAMELEN];
-    checksum += util_destring(2, charname);
+    check_sum_calc += util_destring(2, charname);
     // 2026.08.24 查看收到的charname原始编码
     // for (size_t i = 0; i < strlen(charname); ++i)
     //   printf("%02X ", (unsigned char)charname[i]);
     // printf("\n");
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1107,9 +1038,9 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_CHARLIST_RECV) {
-    int checksum = 0, checksumrecv;
-    util_deint(2, &checksumrecv);
-    if (checksum != checksumrecv) {
+    int check_sum_calc = 0, check_sum_recv;
+    util_deint(2, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1123,15 +1054,15 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_CHARLOGOUT_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int Flg = 1;
 #ifdef _CHAR_NEWLOGOUT
-    checksum += util_deint(2, &Flg);
-    util_deint(3, &checksumrecv);
+    check_sum_calc += util_deint(2, &Flg);
+    util_deint(3, &check_sum_recv);
 #else
-    util_deint(2, &checksumrecv);
+    util_deint(2, &check_sum_recv);
 #endif
-    if (checksum != checksumrecv) {
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1145,11 +1076,10 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_PROCGET_RECV) {
-    int checksum = 0, checksumrecv;
-
+    check_sum_calc = 0;
     strcpy(PersonalKey, _DEFAULT_PKEY);
-    util_deint(2, &checksumrecv);
-    if (checksum != checksumrecv) {
+    util_deint(2, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1163,9 +1093,9 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_PLAYERNUMGET_RECV) {
-    int checksum = 0, checksumrecv;
-    util_deint(2, &checksumrecv);
-    if (checksum != checksumrecv) {
+    int check_sum_calc = 0, check_sum_recv;
+    util_deint(2, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1179,11 +1109,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_ECHO_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     char test[1024 * 64];
-    checksum += util_destring(2, test);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_destring(2, test);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1198,13 +1128,13 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   }
   /*
           if (func==LSSPROTO_SHUTDOWN_RECV) {
-                  int checksum=0, checksumrecv;
+                  int check_sum_calc=0, check_sum_recv;
                   char passwd[1024 * 64];
                   int min;
-                  checksum += util_destring(2, passwd);
-                  checksum += util_deint(3, &min);
-                  util_deint(4, &checksumrecv);
-                  if (checksum!=checksumrecv) {
+                  check_sum_calc += util_destring(2, passwd);
+                  check_sum_calc += util_deint(3, &min);
+                  util_deint(4, &check_sum_recv);
+                  if (check_sum_calc!=check_sum_recv) {
                           util_DiscardMessage();
                           logHack(fd, HACK_CHECKSUMERROR);
                           DME(); return -1;
@@ -1218,11 +1148,9 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
           }
   */
   if (func == LSSPROTO_TD_RECV) {
-    int checksum = 0, checksumrecv;
-    char message[1024 * 64];
-    checksum += util_destring(2, message);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_destring(2, message);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1236,11 +1164,9 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_FM_RECV) {
-    int checksum = 0, checksumrecv;
-    char message[1024 * 64];
-    checksum += util_destring(2, message);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_destring(2, message);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1255,13 +1181,12 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   }
 
   if (func == LSSPROTO_PETST_RECV) {
-    int checksum = 0, checksumrecv;
     int nPet;
     int sPet;
-    checksum += util_deint(2, &nPet);
-    checksum += util_deint(3, &sPet);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &nPet);
+    check_sum_calc += util_deint(3, &sPet);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1276,8 +1201,6 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   }
 #ifdef _CHECK_GAMESPEED
   if (func == LSSPROTO_CS_RECV) {
-    char buffer[2];
-    buffer[0] = '\0';
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_CS_RECV\n");
 #endif
@@ -1288,11 +1211,10 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _TEAM_KICKPARTY
   if (func == LSSPROTO_KTEAM_RECV) {
-    int checksum = 0, checksumrecv;
     int sindex;
-    checksum += util_deint(2, &sindex);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &sindex);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1308,15 +1230,12 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _MIND_ICON
   if (func == LSSPROTO_MA_RECV) {
-    int checksum = 0, checksumrecv;
     int nMind;
-    int x, y;
-
-    checksum += util_deint(2, &nMind);
-    checksum += util_deint(3, &x);
-    checksum += util_deint(4, &y);
-    util_deint(5, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &nMind);
+    check_sum_calc += util_deint(3, &x);
+    check_sum_calc += util_deint(4, &y);
+    util_deint(5, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1332,28 +1251,24 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _CHATROOMPROTOCOL // (不可开) Syu ADD 聊天室频道
   if (func == LSSPROTO_CHATROOM_RECV) {
-    int checksum = 0, checksumrecv;
-    char test[1024 * 64];
-    checksum += util_destring(2, test);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_destring(2, buffer); // buffer -> test
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
       return -1;
     }
 #ifdef _DEBUG_RET_CLI
-    printf("[接收]LSSPROTO_CHATROOM_RECV-test:%s\n", test);
+    printf("[接收]LSSPROTO_CHATROOM_RECV-test:%s\n", buffer);
 #endif
-    GmsvServer_CHATROOM_recv(fd, test);
+    GmsvServer_CHATROOM_recv(fd, buffer);
     util_DiscardMessage();
     return 0;
   }
 #endif
 #ifdef _NEWREQUESTPROTOCOL // (不可开) Syu ADD 新增Protocol要求细项
   if (func == LSSPROTO_RESIST_RECV) {
-    char buffer[2];
-    buffer[0] = '\0';
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_RESIST_RECV\n");
 #endif
@@ -1364,12 +1279,10 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _OUTOFBATTLESKILL // (不可开) Syu ADD 非战斗时技能Protocol
   if (func == LSSPROTO_BATTLESKILL_RECV) {
-    int checksum = 0, checksumrecv;
     int iNum;
-
-    checksum += util_deint(2, &iNum);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_deint(2, &iNum);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1385,11 +1298,10 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _STREET_VENDOR
   if (func == LSSPROTO_STREET_VENDOR_RECV) {
-    int checksum = 0, checksumrecv;
-    char message[1024 * 64];
-    checksum += util_destring(2, message);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    int check_sum_calc = 0, check_sum_recv;
+    check_sum_calc += util_destring(2, message);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1405,11 +1317,9 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _JOBDAILY
   if (func == LSSPROTO_JOBDAILY_RECV) {
-    int checksum = 0, checksumrecv;
-    char buffer[1024 * 32];
-    checksum += util_destring(2, buffer);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc = util_destring(2, buffer);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1425,11 +1335,10 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _TEACHER_SYSTEM
   if (func == LSSPROTO_TEACHER_SYSTEM_RECV) {
-    int checksum = 0, checksumrecv;
-    char message[1024 * 64];
-    checksum += util_destring(2, message);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    int check_sum_calc = 0, check_sum_recv;
+    check_sum_calc += util_destring(2, message);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1453,19 +1362,19 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _PET_ITEM
   if (func == LSSPROTO_PET_ITEM_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int petindex;
     int x, y;
     int fromindex;
     int toindex;
 
-    checksum += util_deint(2, &x);
-    checksum += util_deint(3, &y);
-    checksum += util_deint(4, &petindex);
-    checksum += util_deint(5, &fromindex);
-    checksum += util_deint(6, &toindex);
-    util_deint(7, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &x);
+    check_sum_calc += util_deint(3, &y);
+    check_sum_calc += util_deint(4, &petindex);
+    check_sum_calc += util_deint(5, &fromindex);
+    check_sum_calc += util_deint(6, &toindex);
+    util_deint(7, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1483,12 +1392,12 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _ASSESS_ABILITY
   if (func == LSSPROTO_ASSESS_ABILITY_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     char data[256];
 
-    checksum += util_destring(2, data);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_destring(2, data);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1507,13 +1416,13 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _ONLINE_SHOP
   if (func == LSSPROTO_VIP_SHOP_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int type, page;
 
-    checksum += util_deint(2, &type);
-    checksum += util_deint(3, &page);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &type);
+    check_sum_calc += util_deint(3, &page);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1529,15 +1438,15 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _ONLINE_SHOP
   if (func == LSSPROTO_VIP_SHOP_BUY_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int type, page, id, num;
 
-    checksum += util_deint(2, &type);
-    checksum += util_deint(3, &page);
-    checksum += util_deint(4, &id);
-    checksum += util_deint(5, &num);
-    util_deint(6, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &type);
+    check_sum_calc += util_deint(3, &page);
+    check_sum_calc += util_deint(4, &id);
+    check_sum_calc += util_deint(5, &num);
+    util_deint(6, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1554,15 +1463,15 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _ONLINE_SHOP
   if (func == LSSPROTO_VIP_SHOP_AMPOINT_BUY_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int type, page, id, num;
 
-    checksum += util_deint(2, &type);
-    checksum += util_deint(3, &page);
-    checksum += util_deint(4, &id);
-    checksum += util_deint(5, &num);
-    util_deint(6, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &type);
+    check_sum_calc += util_deint(3, &page);
+    check_sum_calc += util_deint(4, &id);
+    check_sum_calc += util_deint(5, &num);
+    util_deint(6, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1579,10 +1488,10 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
   // 2026.09.04: 开启/关闭原地遇敌
   if (func == LSSPROTO_SAMENU_RECV) {
-    int checksum = 0, checksumrecv, index;
-    checksum += util_deint(2, &index); // 从workspace中解析int
-    util_deint(3, &checksumrecv);
-    // TODO: 这里是否要校验checksum和checksumRecv?
+    int check_sum_calc = 0, check_sum_recv, index;
+    check_sum_calc += util_deint(2, &index); // 从workspace中解析int
+    util_deint(3, &check_sum_recv);
+    // TODO: 这里是否要校验check_sum_calc和check_sum_recv?
 #ifdef _DEBUG_RET_CLI
     printf("[接收]LSSPROTO_SAMENU_RECV. index:%d\n", index);
 #endif
@@ -1591,11 +1500,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
     return 0;
   }
   if (func == LSSPROTO_SHOPOK_RECV) {
-    int escindex, checksumrecv;
-    int checksum = 0;
-    checksum += util_deint(2, &escindex);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    int escindex, check_sum_recv;
+    int check_sum_calc = 0;
+    check_sum_calc += util_deint(2, &escindex);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       return -1;
     }
@@ -1606,11 +1515,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
   }
 #ifdef _FAMILYBADGE_
   if (func == LSSPROTO_FAMILYBADGE_RECV) {
-    int checksum = 0, checksumrecv;
+    int check_sum_calc = 0, check_sum_recv;
     int test;
-    checksum += util_deint(2, &test);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &test);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       logHack(fd, HACK_CHECKSUMERROR);
       DME();
@@ -1626,11 +1535,11 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _NEW_TITLE
   if (func == LSSPROTO_CHARTITLE_RECV) {
-    int chartitleindex, checksumrecv;
-    int checksum = 0;
-    checksum += util_deint(2, &chartitleindex);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv) {
+    int chartitleindex, check_sum_recv;
+    int check_sum_calc = 0;
+    check_sum_calc += util_deint(2, &chartitleindex);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       DME();
       return -1;
@@ -1646,14 +1555,14 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _VISUAL_BEATITUDE
   if (func == LSSPROTO_VB_RECV) {
-    int checksumrecv;
-    int checksum = 0;
+    int check_sum_recv;
+    int check_sum_calc = 0;
     int petindex = 0;
     int type = 0;
-    checksum += util_deint(2, &petindex);
-    checksum += util_deint(3, &type);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &petindex);
+    check_sum_calc += util_deint(3, &type);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       DME();
       return -1;
@@ -1667,12 +1576,12 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _RIDEQUERY_
   if (func == LSSPROTO_RIDEQUERY_RECV) {
-    int checksumrecv;
-    int checksum = 0;
+    int check_sum_recv;
+    int check_sum_calc = 0;
     int id = 0;
-    checksum += util_deint(2, &id);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv || id != 1458) {
+    check_sum_calc += util_deint(2, &id);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv || id != 1458) {
       util_DiscardMessage();
       DME();
       return -1;
@@ -1684,14 +1593,14 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _RED_MEMOY_
   if (func == LSSPROTO_REDMEMOY_RECV) {
-    int checksumrecv;
-    int checksum = 0;
+    int check_sum_recv;
+    int check_sum_calc = 0;
     int type;
     char str[512];
-    checksum += util_deint(2, &type);
-    checksum += util_destring(3, str);
-    util_deint(4, &checksumrecv);
-    if (checksum != checksumrecv) {
+    check_sum_calc += util_deint(2, &type);
+    check_sum_calc += util_destring(3, str);
+    util_deint(4, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv) {
       util_DiscardMessage();
       DME();
       return -1;
@@ -1709,12 +1618,12 @@ int GmsvServer_ServerDispatchMessage(int fd, char *encoded) {
 #endif
 #ifdef _CHARSIGNDAY_
   if (func == LSSPROTO_SIGNDAY_RECV) {
-    int checksumrecv;
-    int checksum = 0;
+    int check_sum_recv;
+    int check_sum_calc = 0;
     int id = 0;
-    checksum += util_deint(2, &id);
-    util_deint(3, &checksumrecv);
-    if (checksum != checksumrecv || id != 1458) {
+    check_sum_calc += util_deint(2, &id);
+    util_deint(3, &check_sum_recv);
+    if (check_sum_calc != check_sum_recv || id != 1458) {
       util_DiscardMessage();
       DME();
       return -1;
@@ -1737,15 +1646,13 @@ void GmsvServer_XYD_send(int fd, int x, int y, int dir) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_XYD_SEND-x:%d,y:%d,dir:%d\n", x, y, dir);
 #endif
-  char buffer[65500];
-  int checksum = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, x);
-  checksum += util_mkint(buffer, y);
-  checksum += util_mkint(buffer, dir);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkint(buffer, x);
+  check_sum_calc += util_mkint(buffer, y);
+  check_sum_calc += util_mkint(buffer, dir);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_XYD_SEND, buffer);
 }
 void GmsvServer_EV_send(int fd, int seqno, int result) {
@@ -1754,14 +1661,12 @@ void GmsvServer_EV_send(int fd, int seqno, int result) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_EV_SEND-seqno:%d,result:%d\n", seqno, result);
 #endif
-  char buffer[65500];
-  int checksum = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, seqno);
-  checksum += util_mkint(buffer, result);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkint(buffer, seqno);
+  check_sum_calc += util_mkint(buffer, result);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_EV_SEND, buffer);
 }
 void GmsvServer_EN_send(int fd, int result, int field) {
@@ -1770,15 +1675,12 @@ void GmsvServer_EN_send(int fd, int result, int field) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_EN_SEND-result:%d,field:%d\n", result, field);
 #endif
-  char buffer[65500];
-  int checksum = 0;
-  // print(" EN_send ");
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, result);
-  checksum += util_mkint(buffer, field);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkint(buffer, result);
+  check_sum_calc += util_mkint(buffer, field);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_EN_SEND, buffer);
 }
 void GmsvServer_RS_send(int fd, char *data) {
@@ -1787,13 +1689,11 @@ void GmsvServer_RS_send(int fd, char *data) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_RS_SEND-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_RS_SEND, buffer);
 }
 void GmsvServer_RD_send(int fd, char *data) {
@@ -1802,13 +1702,11 @@ void GmsvServer_RD_send(int fd, char *data) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_RD_SEND-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_RD_SEND, buffer);
 }
 void GmsvServer_B_send(int fd, char *command) {
@@ -1817,16 +1715,14 @@ void GmsvServer_B_send(int fd, char *command) {
   if (strlen(command) == 0) {
     sprintf(command, "FF|");
   }
-  char buffer[65500];
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_B_SEND-command:%s\n", command);
 #endif
-  int checksum = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, command);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkstring(buffer, command);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_B_SEND, buffer);
 }
 void GmsvServer_I_send(int fd, char *data) {
@@ -1835,15 +1731,14 @@ void GmsvServer_I_send(int fd, char *data) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_I_SEND-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_I_SEND, buffer);
 }
+//
 void GmsvServer_SI_send(int fd, int fromindex, int toindex) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
@@ -1851,14 +1746,12 @@ void GmsvServer_SI_send(int fd, int fromindex, int toindex) {
   printf("[发送]LSSPROTO_SI_SEND-fromindex:%d,toindex:%d\n", fromindex,
          toindex);
 #endif
-  char buffer[65500];
-  int checksum = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, fromindex);
-  checksum += util_mkint(buffer, toindex);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkint(buffer, fromindex);
+  check_sum_calc += util_mkint(buffer, toindex);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_SI_SEND, buffer);
 }
 void GmsvServer_MSG_send(int fd, int aindex, char *text, int color) {
@@ -1868,17 +1761,17 @@ void GmsvServer_MSG_send(int fd, int aindex, char *text, int color) {
   printf("[发送]GmsvServer_MSG_send-aindex:%d,text:%s,color:%d\n", aindex, text,
          color);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, aindex);
-  checksum += util_mkstring(buffer, text);
-  checksum += util_mkint(buffer, color);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, aindex);
+  check_sum_calc += util_mkstring(buffer, text);
+  check_sum_calc += util_mkint(buffer, color);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_MSG_SEND, buffer);
 }
+
 void GmsvServer_PME_send(int fd, int objindex, int graphicsno, int x, int y,
                        int dir, int flg, int no, char *cdata) {
   if (CONNECT_checkfd(fd) == FALSE)
@@ -1888,22 +1781,22 @@ void GmsvServer_PME_send(int fd, int objindex, int graphicsno, int x, int y,
          "flg:%d,no:%d,cdata:%s\n",
          objindex, graphicsno, x, y, dir, flg, no, cdata);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, objindex);
-  checksum += util_mkint(buffer, graphicsno);
-  checksum += util_mkint(buffer, x);
-  checksum += util_mkint(buffer, y);
-  checksum += util_mkint(buffer, dir);
-  checksum += util_mkint(buffer, flg);
-  checksum += util_mkint(buffer, no);
-  checksum += util_mkstring(buffer, cdata);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, objindex);
+  check_sum_calc += util_mkint(buffer, graphicsno);
+  check_sum_calc += util_mkint(buffer, x);
+  check_sum_calc += util_mkint(buffer, y);
+  check_sum_calc += util_mkint(buffer, dir);
+  check_sum_calc += util_mkint(buffer, flg);
+  check_sum_calc += util_mkint(buffer, no);
+  check_sum_calc += util_mkstring(buffer, cdata);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_PME_SEND, buffer);
 }
+
 void GmsvServer_AB_send(int fd, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
@@ -1911,12 +1804,12 @@ void GmsvServer_AB_send(int fd, char *data) {
   printf("[发送]LSSPROTO_AB_SEND-data:%s\n", data);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_AB_SEND, buffer);
 }
 void GmsvServer_ABI_send(int fd, int num, char *data) {
@@ -1925,14 +1818,13 @@ void GmsvServer_ABI_send(int fd, int num, char *data) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_ABI_SEND-num:%d,data:%s\n", num, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, num);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, num);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_ABI_SEND, buffer);
 }
 void GmsvServer_TK_send(int fd, int index, char *message, int color) {
@@ -1942,15 +1834,14 @@ void GmsvServer_TK_send(int fd, int index, char *message, int color) {
   printf("[发送]LSSPROTO_TK_SEND-index:%d,message:%s,color:%d\n", index,
          message, color);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, index);
-  checksum += util_mkstring(buffer, message);
-  checksum += util_mkint(buffer, color);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, index);
+  check_sum_calc += util_mkstring(buffer, message);
+  check_sum_calc += util_mkint(buffer, color);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_TK_SEND, buffer);
 }
 void GmsvServer_MC_send(int fd, int fl, int x1, int y1, int x2, int y2,
@@ -1962,23 +1853,24 @@ void GmsvServer_MC_send(int fd, int fl, int x1, int y1, int x2, int y2,
          "objsum:%d,eventsum:%d,data:%s\n",
          fl, x1, y1, x2, y2, tilesum, objsum, eventsum, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, fl);
-  checksum += util_mkint(buffer, x1);
-  checksum += util_mkint(buffer, y1);
-  checksum += util_mkint(buffer, x2);
-  checksum += util_mkint(buffer, y2);
-  checksum += util_mkint(buffer, tilesum);
-  checksum += util_mkint(buffer, objsum);
-  checksum += util_mkint(buffer, eventsum);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, fl);
+  check_sum_calc += util_mkint(buffer, x1);
+  check_sum_calc += util_mkint(buffer, y1);
+  check_sum_calc += util_mkint(buffer, x2);
+  check_sum_calc += util_mkint(buffer, y2);
+  check_sum_calc += util_mkint(buffer, tilesum);
+  check_sum_calc += util_mkint(buffer, objsum);
+  check_sum_calc += util_mkint(buffer, eventsum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_MC_SEND, buffer);
 }
+
+//
 void GmsvServer_M_send(int fd, int fl, int x1, int y1, int x2, int y2,
                      char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
@@ -1987,18 +1879,17 @@ void GmsvServer_M_send(int fd, int fl, int x1, int y1, int x2, int y2,
   printf("[发送]LSSPROTO_M_SEND-fl:%d,x1:%d,y1:%d,x2:%d,y2:%d,data:%s\n", fl,
          x1, y1, x2, y2, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, fl);
-  checksum += util_mkint(buffer, x1);
-  checksum += util_mkint(buffer, y1);
-  checksum += util_mkint(buffer, x2);
-  checksum += util_mkint(buffer, y2);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, fl);
+  check_sum_calc += util_mkint(buffer, x1);
+  check_sum_calc += util_mkint(buffer, y1);
+  check_sum_calc += util_mkint(buffer, x2);
+  check_sum_calc += util_mkint(buffer, y2);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_M_SEND, buffer);
 }
 /* Inspect only the numeric header of the receiver's own C record. Never log
@@ -2066,13 +1957,12 @@ void GmsvServer_C_send(int fd, char *data) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_C_SEND-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_C_SEND, buffer);
 }
 
@@ -2082,13 +1972,12 @@ void GmsvServer_CA_send(const int fd, char *data) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CA_SEND-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CA_SEND, buffer);
 }
 
@@ -2098,45 +1987,48 @@ void GmsvServer_CD_send(const int fd, char *data) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CD_SEND-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CD_SEND, buffer);
 }
+
+// R命令
 void GmsvServer_R_send(int fd, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_R_SEND-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_R_SEND, buffer);
 }
+
+// S命令
 void GmsvServer_S_send(int fd, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_S_SEND-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_S_SEND, buffer);
 }
+
+// D命令
 void GmsvServer_D_send(int fd, int category, int dx, int dy, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
@@ -2144,31 +2036,31 @@ void GmsvServer_D_send(int fd, int category, int dx, int dy, char *data) {
   printf("[发送]LSSPROTO_D_SEND-category:%d,dx:%d,dy:%d,data:%s\n", category,
          dx, dy, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, category);
-  checksum += util_mkint(buffer, dx);
-  checksum += util_mkint(buffer, dy);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, category);
+  check_sum_calc += util_mkint(buffer, dx);
+  check_sum_calc += util_mkint(buffer, dy);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_D_SEND, buffer);
 }
+
+// FS命令
 void GmsvServer_FS_send(int fd, int flg) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_FS_SEND-flg:%d\n", flg);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, flg);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, flg);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_FS_SEND, buffer);
 }
 void GmsvServer_HL_send(int fd, int flg) {
@@ -2177,13 +2069,12 @@ void GmsvServer_HL_send(int fd, int flg) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_HL_SEND-flg:%d\n", flg);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, flg);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, flg);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_HL_SEND, buffer);
 }
 void GmsvServer_PR_send(int fd, int request, int result) {
@@ -2192,14 +2083,13 @@ void GmsvServer_PR_send(int fd, int request, int result) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_PR_SEND-request:%d,result:%d\n", request, result);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, request);
-  checksum += util_mkint(buffer, result);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, request);
+  check_sum_calc += util_mkint(buffer, result);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_PR_SEND, buffer);
 }
 #ifdef _PETS_SELECTCON
@@ -2209,33 +2099,35 @@ void GmsvServer_PETS_send(int fd, int petarray, int result) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_PETST_SEND-petarray:%d,result:%d\n", petarray, result);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, petarray);
-  checksum += util_mkint(buffer, result);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, petarray);
+  check_sum_calc += util_mkint(buffer, result);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_PETST_SEND, buffer);
 }
 #endif
+
+// KS命令
 void GmsvServer_KS_send(int fd, int petarray, int result) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_KS_SEND-petarray:%d,result:%d\n", petarray, result);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, petarray);
-  checksum += util_mkint(buffer, result);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, petarray);
+  check_sum_calc += util_mkint(buffer, result);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_KS_SEND, buffer);
 }
+
+// SPET命令
 void GmsvServer_SPET_send(int fd, int standbypet, int result) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
@@ -2243,14 +2135,13 @@ void GmsvServer_SPET_send(int fd, int standbypet, int result) {
   printf("[发送]LSSPROTO_SPET_SEND-standbypet:%d,result:%d\n", standbypet,
          result);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, standbypet);
-  checksum += util_mkint(buffer, result);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, standbypet);
+  check_sum_calc += util_mkint(buffer, result);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_SPET_SEND, buffer);
 }
 void GmsvServer_PS_send(int fd, int result, int havepetindex, int havepetskill,
@@ -2262,51 +2153,50 @@ void GmsvServer_PS_send(int fd, int result, int havepetindex, int havepetskill,
          "toindex:%d\n",
          result, havepetindex, havepetskill, toindex);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, result);
-  checksum += util_mkint(buffer, havepetindex);
-  checksum += util_mkint(buffer, havepetskill);
-  checksum += util_mkint(buffer, toindex);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, result);
+  check_sum_calc += util_mkint(buffer, havepetindex);
+  check_sum_calc += util_mkint(buffer, havepetskill);
+  check_sum_calc += util_mkint(buffer, toindex);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_PS_SEND, buffer);
 }
+
+//
 void GmsvServer_SKUP_send(int fd, int point) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_SKUP_SEND-point:%d\n", point);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, point);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, point);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_SKUP_SEND, buffer);
 }
 void GmsvServer_WN_send(int fd, int windowtype, int buttontype, int seqno,
                       int objindex, char *data) {
-  char buffer[65500];
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_WN_SEND-windowtype:%d,buttontype:%d,seqno:%d,objindex:"
          "%d,data:%s\n",
          windowtype, buttontype, seqno, objindex, data);
 #endif
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, windowtype);
-  checksum += util_mkint(buffer, buttontype);
-  checksum += util_mkint(buffer, seqno);
-  checksum += util_mkint(buffer, objindex);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, windowtype);
+  check_sum_calc += util_mkint(buffer, buttontype);
+  check_sum_calc += util_mkint(buffer, seqno);
+  check_sum_calc += util_mkint(buffer, objindex);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_WN_SEND, buffer);
 }
 void GmsvServer_EF_send(int fd, int effect, int level, char *option) {
@@ -2316,15 +2206,14 @@ void GmsvServer_EF_send(int fd, int effect, int level, char *option) {
   printf("[发送]LSSPROTO_EF_SEND-effect:%d,level:%d,char:%s\n", effect, level,
          option);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, effect);
-  checksum += util_mkint(buffer, level);
-  checksum += util_mkstring(buffer, option);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, effect);
+  check_sum_calc += util_mkint(buffer, level);
+  check_sum_calc += util_mkstring(buffer, option);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_EF_SEND, buffer);
 }
 void GmsvServer_SE_send(int fd, int x, int y, int senumber, int sw) {
@@ -2334,16 +2223,15 @@ void GmsvServer_SE_send(int fd, int x, int y, int senumber, int sw) {
   printf("[发送]LSSPROTO_SE_SEND-x:%d,y:%d,senumber:%d,sw:%d\n", x, y, senumber,
          sw);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, x);
-  checksum += util_mkint(buffer, y);
-  checksum += util_mkint(buffer, senumber);
-  checksum += util_mkint(buffer, sw);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, x);
+  check_sum_calc += util_mkint(buffer, y);
+  check_sum_calc += util_mkint(buffer, senumber);
+  check_sum_calc += util_mkint(buffer, sw);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_SE_SEND, buffer);
 }
 void GmsvServer_ClientLogin_send(int fd, char *result) {
@@ -2355,13 +2243,12 @@ void GmsvServer_ClientLogin_send(int fd, char *result) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CLIENTLOGIN_SEND-result:%s\n", result);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, result);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, result);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CLIENTLOGIN_SEND, buffer);
 }
 void _GmsvServer_CreateNewChar_send(int fd, char *result, char *data, char *file,
@@ -2371,30 +2258,30 @@ void _GmsvServer_CreateNewChar_send(int fd, char *result, char *data, char *file
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CREATENEWCHAR_SEND-result:%s,data:%s\n", result, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, result);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, result);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CREATENEWCHAR_SEND, buffer);
 }
+
+// CHAR_DELETE
 void GmsvServer_CharDelete_send(int fd, char *result, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CHARDELETE_SEND-result:%s,data:%s\n", result, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, result);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, result);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CHARDELETE_SEND, buffer);
 }
 void GmsvServer_CharLogin_send(int fd, char *result, char *data) {
@@ -2404,65 +2291,67 @@ void GmsvServer_CharLogin_send(int fd, char *result, char *data) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CHARLOGIN_SEND-result:%s,data:%s\n", result, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, result);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, result);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CHARLOGIN_SEND, buffer);
 }
+
+// CHAR LIST: 获取Char列表:2个
 void GmsvServer_CharList_send(int fd, char *result, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CHARLIST_SEND-result:%s,data:%s\n", result, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, result);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, result);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CHARLIST_SEND, buffer);
 }
+
+// CHAR LOGOUT
 void GmsvServer_CharLogout_send(int fd, char *result, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CHARLOGOUT_SEND-result:%s,data:%s\n", result, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, result);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, result);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CHARLOGOUT_SEND, buffer);
 }
+
+//
 void GmsvServer_ProcGet_send(int fd, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_PROCGET_SEND-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
-
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_PROCGET_SEND, buffer);
 }
+
+//
 void GmsvServer_PlayerNumGet_send(int fd, int logincount, int player) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
@@ -2470,16 +2359,17 @@ void GmsvServer_PlayerNumGet_send(int fd, int logincount, int player) {
   printf("[发送]LSSPROTO_PLAYERNUMGET_SEND-logincount:%d,player:%d\n",
          logincount, player);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, logincount);
-  checksum += util_mkint(buffer, player);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, logincount);
+  check_sum_calc += util_mkint(buffer, player);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_PLAYERNUMGET_SEND, buffer);
 }
+
+//
 void GmsvServer_Echo_send(int fd, char *test) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
@@ -2487,12 +2377,12 @@ void GmsvServer_Echo_send(int fd, char *test) {
   printf("[发送]LSSPROTO_ECHO_SEND-test:%s\n", test);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, test);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, test);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_ECHO_SEND, buffer);
 }
 // CoolFish: Trade 2001/4/18
@@ -2503,14 +2393,16 @@ void GmsvServer_TD_send(int fd, char *message) {
   printf("[发送]LSSPROTO_TD_SEND-message:%s\n", message);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, message);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, message);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_TD_SEND, buffer);
 }
+
+
 #ifdef _CHATROOMPROTOCOL // (不可开) Syu ADD 聊天室频道
 void GmsvServer_CHATROOM_send(int fd, char *message) {
   if (CONNECT_checkfd(fd) == FALSE)
@@ -2518,13 +2410,12 @@ void GmsvServer_CHATROOM_send(int fd, char *message) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CHATROOM_SEND-message:%s\n", message);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, message);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, message);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CHATROOM_SEND, buffer);
 }
 #endif
@@ -2535,13 +2426,12 @@ void GmsvServer_RESIST_send(int fd, char *message) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_RESIST_SEND-message:%s\n", message);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, message);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, message);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_RESIST_SEND, buffer);
 }
 #endif
@@ -2553,12 +2443,12 @@ void GmsvServer_BATTLESKILL_send(int fd, char *message) {
   printf("[发送]LSSPROTO_BATTLESKILL_SEND-message:%s\n", message);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, message);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, message);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_BATTLESKILL_SEND, buffer);
 }
 #endif
@@ -2570,28 +2460,29 @@ void GmsvServer_CHAREFFECT_send(int fd, char *message) {
   printf("[发送]LSSPROTO_BATTLESKILL_SEND-message:%s\n", message);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, message);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, message);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CHAREFFECT_SEND, buffer);
 }
 #endif
+
+//
 void GmsvServer_NU_send(int fd, int nu) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_NU_SEND-nu:%d\n", nu);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, nu);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, nu);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_NU_SEND, buffer);
 }
 void GmsvServer_FM_send(int fd, char *message) {
@@ -2600,13 +2491,12 @@ void GmsvServer_FM_send(int fd, char *message) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_FM_SEND-message:%s\n", message);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, message);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, message);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_FM_SEND, buffer);
 }
 void GmsvServer_WO_send(int fd, int effect) {
@@ -2615,13 +2505,12 @@ void GmsvServer_WO_send(int fd, int effect) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_WO_SEND-effect:%d\n", effect);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, effect);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, effect);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_WO_SEND, buffer);
 }
 #ifdef _ITEM_CRACKER
@@ -2631,14 +2520,13 @@ void GmsvServer_IC_send(int fd, int x, int y) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]GmsvServer_IC_send-x:%d,y:%d\n", x, y);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, x);
-  checksum += util_mkint(buffer, y);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, x);
+  check_sum_calc += util_mkint(buffer, y);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_IC_SEND, buffer);
 }
 #endif
@@ -2649,13 +2537,12 @@ void GmsvServer_NC_send(int fd, int flg) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_NC_SEND-flg:%d\n", flg);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, flg);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, flg);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_NC_SEND, buffer);
 }
 #endif
@@ -2666,13 +2553,12 @@ void GmsvServer_STREET_VENDOR_send(int fd, char *message) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSSTREET_VENDOR_SEND-message:%s\n", message);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, message);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, message);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_STREET_VENDOR_SEND, buffer);
 }
 #endif
@@ -2684,14 +2570,14 @@ void GmsvServer_RCLICK_send(int fd, int type, char *data) {
   printf("[发送]LSSPROTO_RCLICK_SEND-type:%d,data:%s\n", type, data);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   print("\n RCLICK_send( type=%d data=%s) ", type, data);
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, type);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, type);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_RCLICK_SEND, buffer);
 }
 #endif
@@ -2703,12 +2589,12 @@ void GmsvServer_JOBDAILY_send(int fd, char *data) {
   printf("[发送]LSSPROTO_JOBDAILY_SEND-data:%s\n", data);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_JOBDAILY_SEND, buffer);
 }
 #endif
@@ -2720,12 +2606,12 @@ void GmsvServer_TEACHER_SYSTEM_send(int fd, char *data) {
   printf("[发送]LSSPROTO_TEACHER_SYSTEM_SEND-data:%s\n", data);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_TEACHER_SYSTEM_SEND, buffer);
 }
 #endif
@@ -2737,12 +2623,12 @@ void GmsvServer_S2_send(int fd, char *data) {
   printf("[发送]LSSPROTO_S2_SEND-data:%s\n", data);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_S2_SEND, buffer);
 }
 #endif
@@ -2756,18 +2642,17 @@ void GmsvServer_VIP_SHOP_send(int fd, int num, int BJ, int type, int shoppage,
          "d,data:%s\n",
          num, BJ, type, shoppage, page, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, num);      // 有效数目
-  checksum += util_mkint(buffer, BJ);       // 贝币数目
-  checksum += util_mkint(buffer, shoppage); // 显示页面
-  checksum += util_mkint(buffer, page);     // 总共页数
-  checksum += util_mkint(buffer, type);     // 显示类别
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, num);      // 有效数目
+  check_sum_calc += util_mkint(buffer, BJ);       // 贝币数目
+  check_sum_calc += util_mkint(buffer, shoppage); // 显示页面
+  check_sum_calc += util_mkint(buffer, page);     // 总共页数
+  check_sum_calc += util_mkint(buffer, type);     // 显示类别
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_VIP_SHOP_SEND, buffer);
 }
 #endif
@@ -2779,48 +2664,51 @@ void GmsvServer_ASSESS_ABILITY_send(int fd, char *data) {
   printf("[发送]GmsvServer_ASSESS_ABILITY_send-data:%s\n", data);
 #endif
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_ASSESS_ABILITY_SEND, buffer);
 }
 #endif
+
+// 地牢相关的请求
 void GmsvServer_DENGON_send(int fd, char *data, int color, int num) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]GmsvServer_DENGON_send-data:%s,%d,%d\n", data, color, num);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  checksum += util_mkint(buffer, color);
-  checksum += util_mkint(buffer, num);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  check_sum_calc += util_mkint(buffer, color);
+  check_sum_calc += util_mkint(buffer, num);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_DENGON_SEND, buffer);
 }
+
+//
 void GmsvServer_SAMENU_send(int fd, int index, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]GmsvServer_SAMENU_send-data:%d,%s\n", index, data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, index);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, index);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_SAMENU_SEND, buffer);
 }
+
 void GmsvServer_UpShopData_send(int fd, char *data, char *md5, int id) {
   unsigned long len = strlen(data);
   unsigned long comprLen = 1024 * 100 - 55;
@@ -2865,13 +2753,14 @@ void GmsvServer_UpShopData_send(int fd, char *data, char *md5, int id) {
   }
 }
 void GmsvServer_ShopOK_send(int fd) {
-  char buffer[1024 * 64];
   strcpy(buffer, "");
-  int checksum = 0;
-  checksum += util_mkint(buffer, 0);
-  util_mkint(buffer, checksum);
+  int check_sum_calc = 0;
+  check_sum_calc += util_mkint(buffer, 0);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_SHOPOK_SEND, buffer);
 }
+
+// 家族勋章
 #ifdef _FAMILYBADGE_
 void GmsvServer_FamilyBadge_send(int fd, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
@@ -2879,26 +2768,25 @@ void GmsvServer_FamilyBadge_send(int fd, char *data) {
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]GmsvServer_FamilyBadge_send-data:%s\n", data);
 #endif
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_FAMILYBADGE_SEND, buffer);
 }
 #endif
+
+// 头衔
 #ifdef _NEW_TITLE
 void GmsvServer_CharTitle_send(int fd, char *data) // 发送新数据
 {
-  char buffer[1024 * 64];
-  int checksum = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CHARTITLE_SEND, buffer);
   char msg[256];
   int fd_charaindex = CONNECT_getCharaindex(fd);
@@ -2906,61 +2794,62 @@ void GmsvServer_CharTitle_send(int fd, char *data) // 发送新数据
   GmsvServer_CHAREFFECT_send(getfdFromCharaIndex(fd_charaindex), msg);
 }
 #endif
+
+// 虚拟
 #ifdef _VISUAL_BEATITUDE
 void GmsvServer_VisualBeatitude_send(int fd, char *data) {
-  char buffer[1024 * 64];
-  int checksum = 0;
+  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_VB_SEND, buffer);
 }
 #endif
+
+//
 #ifdef _RED_MEMOY_
 void GmsvServer_RedMemoy_send(int fd, int type, int time, int vip, char *name,
                             int index) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
-  char buffer[65500];
-  int checksum = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  checksum += util_mkint(buffer, type);
-  checksum += util_mkint(buffer, time);
-  checksum += util_mkint(buffer, vip);
-  checksum += util_mkstring(buffer, name);
-  checksum += util_mkint(buffer, index);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkint(buffer, type);
+  check_sum_calc += util_mkint(buffer, time);
+  check_sum_calc += util_mkint(buffer, vip);
+  check_sum_calc += util_mkstring(buffer, name);
+  check_sum_calc += util_mkint(buffer, index);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_REDMEMOY_SEND, buffer);
 }
 #endif
+
+// 
 #ifdef _MOVE_SCREEN
 void GmsvServer_MoveScreen_send(int fd, BOOL bMoveScreenMove, int iXY) {
-  char szBuffer[65500];
-  int iChecksum = 0;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_MOVESCREEN_SEND-fd:%d,bMoveScreenMove:%d,iXY:%d\n", fd,
          bMoveScreenMove, iXY);
 #endif
-  szBuffer[0] = '\0';
+  buffer[0] = '\0'; // 2026.09.08 豆包推荐这种写法
   CONNECT_getCdkey(fd, PersonalKey, 4096);
 #ifdef _NEW_ENCRYT
   CONNECT_catRunKey(fd, PersonalKey);
 #else
   strcat(PersonalKey, _RUNNING_KEY);
 #endif
-  iChecksum += util_mkint(szBuffer, bMoveScreenMove);
-  iChecksum += util_mkint(szBuffer, iXY);
-  util_mkint(szBuffer, iChecksum);
-  util_SendMesg(fd, LSSPROTO_MOVE_SCREEN_SEND, szBuffer);
+  icheck_sum_calc += util_mkint(buffer, bMoveScreenMove);
+  icheck_sum_calc += util_mkint(buffer, iXY);
+  util_mkint(buffer, icheck_sum_calc);
+  util_SendMesg(fd, LSSPROTO_MOVE_SCREEN_SEND, buffer);
 }
 #endif
 #ifdef _THEATER
 void GmsvServer_TheaterData_send(int fd, char *pData) {
-  int iChecksum = 0;
+  int icheck_sum_calc = 0;
   char szBuffer[65500];
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_TheaterData_SEND-fd:%d,pData:%s\n", fd, pData);
@@ -2972,15 +2861,15 @@ void GmsvServer_TheaterData_send(int fd, char *pData) {
 #else
   strcat(PersonalKey, _RUNNING_KEY);
 #endif
-  iChecksum += util_mkstring(szBuffer, pData);
-  util_mkint(szBuffer, iChecksum);
+  icheck_sum_calc += util_mkstring(szBuffer, pData);
+  util_mkint(szBuffer, icheck_sum_calc);
   util_SendMesg(fd, LSSPROTO_THEATER_DATA_SEND, szBuffer);
 }
 #endif
 #ifdef _NPC_MAGICCARD
 void GmsvServer_MagiccardAction_send(int fd, char *data) {
   char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_MagiccardAction_SEND-fd:%d,data:%s\n", fd, data);
 #endif
@@ -2991,14 +2880,12 @@ void GmsvServer_MagiccardAction_send(int fd, char *data) {
 #else
   strcat(PersonalKey, _RUNNING_KEY);
 #endif
-  checksum += util_mkstring(buffer, data);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkstring(buffer, data);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_MAGICCARD_ACTION_SEND, buffer);
 }
 void GmsvServer_MagiccardDamage_send(int fd, int position, int damage,
                                    int offsetx, int offsety) {
-  char buffer[65500];
-  int checksum = 0;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTOMagiccardDamage_SEND-fd:%d,position:%d,damage:%d,"
          "offsetx:%d,offsety:%d\n",
@@ -3011,18 +2898,17 @@ void GmsvServer_MagiccardDamage_send(int fd, int position, int damage,
 #else
   strcat(PersonalKey, _RUNNING_KEY);
 #endif
-  checksum += util_mkint(buffer, position);
-  checksum += util_mkint(buffer, damage);
-  checksum += util_mkint(buffer, offsetx);
-  checksum += util_mkint(buffer, offsety);
-  util_mkint(buffer, checksum);
+  check_sum_calc = util_mkint(buffer, position);
+  check_sum_calc += util_mkint(buffer, damage);
+  check_sum_calc += util_mkint(buffer, offsetx);
+  check_sum_calc += util_mkint(buffer, offsety);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_MAGICCARD_DAMAGE_SEND, buffer);
 }
 #endif
 #ifdef _NPC_DANCE
 void GmsvServer_DancemanOption_send(int fd, int option) {
-  char buffer[65500];
-  int checksum = 0;
+  int check_sum_calc = 0;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]GmsvServer_DancemanOption_send-fd:%d,option:%d\n", fd, option);
 #endif
@@ -3033,8 +2919,8 @@ void GmsvServer_DancemanOption_send(int fd, int option) {
 #else
   strcat(PersonalKey, _RUNNING_KEY);
 #endif
-  checksum += util_mkint(buffer, option);
-  util_mkint(buffer, checksum);
+  check_sum_calc += util_mkint(buffer, option);
+  util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_DANCEMAN_OPTION_SEND, buffer);
 }
 #endif

@@ -59,6 +59,12 @@ extern int familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
 extern tagRidePetTable ridePetTable[296];
 extern int BATTLE_getRidePet(int char_index);
 
+// 2026.09.08 临时实现
+BOOL FamilyRideCheck(int charaindex, int petindex, int petno) {
+  return 1;
+}
+
+
 #ifdef _CHANNEL_MODIFY
 extern int InitOccChannel(void);
 #endif

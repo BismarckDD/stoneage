@@ -38,6 +38,9 @@
 #endif
 extern int player_online;
 
+char message[256];
+char buf[256];
+
 // Forward declarations for functions defined in gmsv source
 extern int CheckCharMaxItem(int charindex);
 BOOL checkStringErr(char *);
@@ -87,7 +90,6 @@ static BOOL isValidUtf8CharacterName(const char *name) {
     }
     return FALSE;
   }
-
   return TRUE;
 }
 
@@ -347,7 +349,6 @@ void GmsvServer_CharLogout_recv(int fd, int flg) {
   } else
 #endif
   {
-
     int fl, x, y;
     // CoolFish: 2001/10/18
     if (!CHAR_CHECKINDEX(char_index))
@@ -356,22 +357,20 @@ void GmsvServer_CharLogout_recv(int fd, int flg) {
     if (CHAR_getInt(char_index, CHAR_LASTTALKELDER) >= 0) {
       if (CHAR_getElderPosition(CHAR_getInt(char_index, CHAR_LASTTALKELDER),
                                 &fl, &x, &y) == FALSE) {
-        CHAR_talkToCli(char_index, -1, "����ǰ�ļ�¼����������¼�¼��",
-                       CHAR_COLORYELLOW);
+        CHAR_talkToCli(char_index, -1, "LASTTALKELDER检测出错", CHAR_COLORYELLOW);
         return;
       }
 #ifdef _NO_TEAMWARP_SKYLAND
       if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE &&
           fl == 30691) {
-        CHAR_talkToCli(char_index, -1,
-                       "�Ŷ����޷������֮����",
-                       CHAR_COLORYELLOW);
+        // 30691 这张地图，如果是组队的话, 不能登出
+        CHAR_talkToCli(char_index, -1, "", CHAR_COLORYELLOW);
         return;
       }
 #endif
 
 #ifdef _CHAR_NEWLOGOUT
-      if (flg == 1) { // �ؼ�¼��
+      if (flg == 1) {
         if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) !=
             BATTLE_CHARMODE_NONE) {
           CHAR_talkToCli(char_index, -1,
@@ -389,17 +388,12 @@ void GmsvServer_CharLogout_recv(int fd, int flg) {
 #endif
         if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) ==
             CHAR_PARTY_CLIENT) {
-          CHAR_talkToCli(char_index, -1,
-                         "�Ŷ����޷��ؼ�¼�㣡",
-                         CHAR_COLORYELLOW);
+          CHAR_talkToCli(char_index, -1, "", CHAR_COLORYELLOW);
           return;
         }
 #ifdef _ITEM_CHECKDROPATLOGOUT
         if (CheckDropatLogout(char_index)) {
-          CHAR_talkToCli(
-              char_index, -1,
-              "Я������Ʒʹ���޷��ؼ�¼�㣡",
-              CHAR_COLORYELLOW);
+          CHAR_talkToCli(char_index, -1, "有丢掉的物品", CHAR_COLORYELLOW);
           return;
         }
 #endif
@@ -776,7 +770,6 @@ void GmsvServer_W2_recv(int fd, int x, int y, char *direction) {
   ix = CHAR_getInt(char_index, CHAR_X);
   iy = CHAR_getInt(char_index, CHAR_Y);
   i_fl = CHAR_getInt(char_index, CHAR_FLOOR);
-
   // ttom avoid the warp at will 11/6
   {
     int i_diff_x, i_diff_y;
@@ -799,15 +792,13 @@ void GmsvServer_W2_recv(int fd, int x, int y, char *direction) {
 
 void GmsvServer_SKD_recv(int fd, int dir, int index) { CHECKFDANDTIME; }
 
+//
 void GmsvServer_ID_recv(int fd, int x, int y, int haveitemindex, int toindex) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
-  int to_char_index;
-  int char_index;
-
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
-
+  const int char_index = CONNECT_getCharaindex(fd);
+  // 不在战斗、交易、摆摊;
   // CoolFish: Prevent Trade Cheat 2001/4/18
   if (CHAR_getWorkInt(char_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE)
     return;
@@ -817,81 +808,60 @@ void GmsvServer_ID_recv(int fd, int x, int y, int haveitemindex, int toindex) {
 #endif
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return;
-  // ttom avoid the warp at will 12/5
-  {
-    int ix, iy;
-    ix = CHAR_getInt(char_index, CHAR_X);
-    iy = CHAR_getInt(char_index, CHAR_Y);
-    x = ix;
-    y = iy;
-  }
+  x = CHAR_getInt(char_index, CHAR_X);
+  y = CHAR_getInt(char_index, CHAR_Y);
   CHAR_setMyPosition(char_index, x, y, TRUE);
-  to_char_index = Callfromcli_Util_getTargetCharaindex(fd, toindex);
+  const int to_char_index = Callfromcli_Util_getTargetCharaindex(fd, toindex);
+  // 2026.09.08 看一下这个ITEM USE是啥
   CHAR_ItemUse(char_index, to_char_index, haveitemindex);
 }
 
-/*------------------------------------------------------------
- * ��įë����
- ------------------------------------------------------------*/
+// ST: SELECT TITLE
 void GmsvServer_ST_recv(int fd, int titleindex) {
   CHECKFDANDTIME;
   CHAR_selectTitle(CONNECT_getCharaindex(fd), titleindex);
 }
-/*------------------------------------------------------------
- * ��įë��������
- ------------------------------------------------------------*/
+
+// DT: DELETE TITLE
 void GmsvServer_DT_recv(int fd, int titleindex) {
   CHECKFDANDTIME;
   CHAR_deleteTitle(CONNECT_getCharaindex(fd), titleindex);
 }
 
-/*------------------------------------------------------------
- ------------------------------------------------------------*/
+// FT: 
 void GmsvServer_FT_recv(int fd, char *data) {
   CHECKFDANDTIME;
-
   // Robin 04/23 debug
   if (strlen(data) > 12)
     return;
-
   if (checkStringErr(data))
     return;
-
   CHAR_inputOwnTitle(CONNECT_getCharaindex(fd), data);
 }
 
-/*------------------------------------------------------------
- ------------------------------------------------------------*/
+// PI: PICK ITEM
 void GmsvServer_PI_recv(int fd, int x, int y, int dir) {
-  int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
-  { // ttom avoid warp at will
-    int ix, iy;
-    ix = CHAR_getInt(char_index, CHAR_X);
-    iy = CHAR_getInt(char_index, CHAR_Y);
-    if ((ix != x) || (iy != y)) {
-      // print("\n<PI>--Error!!!!");
-      // print("\n<PI>origion x=%d,y=%d",ix,iy);
-      // print("\n<PI>modify  X=%d,Y=%d",x,y);
-      x = ix;
-      y = iy;
-    }
-  } // ttom end
-
+  const int char_index = CONNECT_getCharaindex(fd);
+  // 那还要x，y干啥？
+  int ix = CHAR_getInt(char_index, CHAR_X);
+  int iy = CHAR_getInt(char_index, CHAR_Y);
+  if ((ix != x) || (iy != y)) {
+    x = ix;
+    y = iy;
+  }
   CHAR_setMyPosition(char_index, x, y, TRUE);
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return;
   CHAR_PickUpItem(char_index, dir);
 }
 
+// DI: DROP ITEM
 void GmsvServer_DI_recv(int fd, int x, int y, int itemindex) {
   CHECKFDANDTIME;
   const int charaindex = CONNECT_getCharaindex(fd);
-
   if (CHAR_getWorkInt(charaindex, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE)
     return;
-
 #ifdef _STREET_VENDOR
   if (CHAR_getWorkInt(charaindex, CHAR_WORKSTREETVENDOR) != -1)
     return;
@@ -899,10 +869,7 @@ void GmsvServer_DI_recv(int fd, int x, int y, int itemindex) {
 
 #ifdef _ITEM_PET_LOCKED
   if (CHAR_getInt(charaindex, CHAR_LOCKED) == 1) {
-    char message[256];
-    char buf[256];
-    sprintf(message, "Ϊ��ȷ�������Ʒ��ȫ����������İ�ȫ������н�����\n");
-
+    sprintf(message, "当前角色已被锁定，请首先解锁\n");
     GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
                        CHAR_WINDOWTYPE_ITEM_PET_LOCKED, -1,
@@ -911,15 +878,12 @@ void GmsvServer_DI_recv(int fd, int x, int y, int itemindex) {
     return;
   }
 #endif
-
   if (CHAR_getWorkInt(charaindex, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE)
     return;
   if (CHAR_getWorkInt(charaindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return;
-
   CHAR_setMyPosition(charaindex, CHAR_getInt(charaindex, CHAR_X),
                      CHAR_getInt(charaindex, CHAR_Y), TRUE);
-
   CHAR_DropItem(charaindex, itemindex);
 }
 
@@ -1445,7 +1409,6 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
   }
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_CLIENT) {
     int i;
-    // ��ʬ�Υ���ǥå���
     charaindex = char_index;
     CHAR_setMyPosition(charaindex, x, y, TRUE);
     /* WALKARRAY�򥯥ꥢ���� */
@@ -2584,6 +2547,7 @@ void GmsvServer_TD_recv(int fd, char *message) {
   CHAR_Trade(fd, char_index, message);
 }
 
+// 2026.09.08 客户端发起家族请求
 void GmsvServer_FM_recv(int fd, char *message) {
   const int char_index = CONNECT_getCharaindex(fd);
   if (checkStringErr(message))
@@ -2778,9 +2742,7 @@ void GmsvServer_STREET_VENDOR_recv(int fd, char *message) {
 
 #ifdef _ITEM_PET_LOCKED
   if (CHAR_getInt(charaindex, CHAR_LOCKED) == 1) {
-    char message[256];
-    char buf[256];
-    sprintf(message, "Ϊ��ȷ�������Ʒ��ȫ����������İ�ȫ������н�����\n");
+    sprintf(message, "当前角色已被锁定, 请首先解锁\n");
     GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
                        CHAR_WINDOWTYPE_ITEM_PET_LOCKED, -1,
@@ -2792,7 +2754,7 @@ void GmsvServer_STREET_VENDOR_recv(int fd, char *message) {
   if (CHAR_getWorkInt(charaindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return;
   if (CHAR_getWorkInt(charaindex, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE) {
-    CHAR_talkToCli(charaindex, -1, "当前角色不属于任何帮派", CHAR_COLORYELLOW);
+    CHAR_talkToCli(charaindex, -1, "组队条件下不能摆摊, CHAR_COLORYELLOW);
     return;
   }
 
@@ -2827,15 +2789,15 @@ void GmsvServer_TEACHER_SYSTEM_recv(int fd, char *data) {
 
 #ifdef _ASSESS_ABILITY
 void GmsvServer_ASSESS_ABILITY_recv(int fd) {
-  const int charaindex = CONNECT_getCharaindex(fd);
-  if (!CHAR_CHECKINDEX(charaindex))
+  const int chara_index = CONNECT_getCharaindex(fd);
+  if (!CHAR_CHECKINDEX(chara_index))
     return;
   char data[512];
   char tmp[512];
   memset(data, 0, sizeof(data));
   int i;
   for (i = 0; i < 25; i++) {
-    sprintf(tmp, "%d|", CHAR_getInt(charaindex, CHAR_MATERIAL01 + i));
+    sprintf(tmp, "%d|", CHAR_getInt(chara_index, CHAR_MATERIAL01 + i));
     strcat(data, tmp);
   }
 
@@ -2847,7 +2809,8 @@ void GmsvServer_ASSESS_ABILITY_recv(int fd) {
 BOOL FreeSaMenu(int char_index, int menu_index) {
   return 0;
 }
-// 2026.09.04: 处理SAMENU相关的指令: 原地遇敌
+
+// 2026.09.04: 处理SA_MENU(ESC)相关的指令: 开启/取消原地遇敌，开启/取消不遇敌
 void GmsvServer_SaMenu_recv(int fd, int index) {
   CHECKFDANDTIME; // check fd.
   const int chara_index = CONNECT_getCharaindex(fd);

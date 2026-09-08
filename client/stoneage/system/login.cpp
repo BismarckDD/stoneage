@@ -5346,8 +5346,7 @@ void serverWindowType2(void)
                 id2 = 0;
             sprintf_s(data, "%d", id2);
             makeEscapeString(data, msg, sizeof(msg) - 1);
-                lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
-            old_lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
+            lssproto_WN_send(sockfd, nowGx, nowGy, indexWN, idWN, btn, msg);
             windowTypeWN = -1;
         }
 

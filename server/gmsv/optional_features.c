@@ -38,12 +38,6 @@ BOOL FreePlayerExp(int char_index) {
   return 100;
 }
 
-BOOL FreeSaMenu(int char_index, int menu_index) {
-  (void)char_index;
-  (void)menu_index;
-  return FALSE;
-}
-
 BOOL BattleFinishPvEFunction(int battle_index, int char_index) {
   (void)battle_index;
   (void)char_index;

@@ -918,7 +918,7 @@ void StreetVendorWndfunc(bool bReset,char *data)
 #ifdef _NEW_ITEM_
             for(i=0;i<3;i++){
                 if(i==gCurrInventoryPage){
-                    StockDispBuffer(722,350+i*56, DISP_PRIO_IME3,55223+i, 1);
+                    StockDispBuffer2(722,350+i*56, DISP_PRIO_IME3,55223+i, 1);
                 }else{
                     BOOL flg=FALSE;
                     if(i){
@@ -927,13 +927,13 @@ void StreetVendorWndfunc(bool bReset,char *data)
                         }
                     }else flg=TRUE;
                     if(flg){
-                        StockDispBuffer(727-9,350+i*56, DISP_PRIO_IME3,55226+i, 1);
+                        StockDispBuffer2(727-9,350+i*56, DISP_PRIO_IME3,55226+i, 1);
                         if(MakeHitBox(708, 322+i*56, 748, 319+i*56+60, DISP_PRIO_IME4)){
                             if(mouse.onceState & MOUSE_LEFT_CRICK){
                                 gCurrInventoryPage=i;
                             }
                         }
-                    }else StockDispBuffer(727-9,350+i*56, DISP_PRIO_IME3,55229+i, 1);
+                    }else StockDispBuffer2(727-9,350+i*56, DISP_PRIO_IME3,55229+i, 1);
                 }
             }
 #endif
@@ -4904,8 +4904,7 @@ int disconnectServer( void )
         if (ptActMenuWin->hp >= 1)
         {
             id = selFontId(btnId, sizeof(btnId) / sizeof(int));
-            if (
-                id >= 0
+            if (id >= 0
 #ifdef _AIDENGLU_
                 || 自动登陆是否开启
 #endif
@@ -4919,11 +4918,11 @@ int disconnectServer( void )
             yy = (h * 48) / 4;
             for (i = 0; i < sizeof(msg) / sizeof(char*); i++)
             {
-                xx = (w * 64 - strlen(msg[i]) / 2 * 17) / 2;
+                xx = (w * 64 - getUtf8CharNum(msg[i]) * 8) / 2;
                 StockFontBuffer(x+ xx, y + (i + 1) * yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, msg[i], 0);
             }
 
-            xx = (w * 64 - strlen("确定") / 2 * 17) / 2;
+            xx = (w * 64 - getUtf8CharNum("确定") * 8) / 2;
             btnId[0] = StockFontBuffer(x + xx, y + 3 * yy, FONT_PRIO_FRONT, FONT_PAL_YELLOW, "确定", 2);
         }
     }
@@ -4980,7 +4979,7 @@ void drawFieldInfoWin(void)
         }
         if (ptActMenuWin->hp >= 1)
         {
-            xx = (w * 64 - strlen(nowFloorName) / 2 * 17) / 2;
+            xx = (w * 64 - getUtf8CharNum(nowFloorName) * 8) / 2;
             yy = (h * 48 - 16) / 2;
             StockFontBuffer(x + xx, y + yy, FONT_PRIO_FRONT, FONT_PAL_WHITE, nowFloorName, 0);
         }

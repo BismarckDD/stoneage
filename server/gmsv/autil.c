@@ -9,9 +9,7 @@
 #include "autil.h"
 #include "net.h"
 #include <stdint.h>
-#ifdef __STONEAGE
 #include "server_util.h"
-#endif
 
 char *MesgSlice[SLICE_MAX];
 int SliceCount;
@@ -201,7 +199,9 @@ int util_GetFunctionFromSlice(int *func, int *fieldcount) {
   return 0; // failed: message not complete
 }
 
+// 2026.09.08 丢掉剩余信息？
 void util_DiscardMessage(void) { SliceCount = 0; }
+
 extern int clisendfunc;
 void _util_SendMesg(char *file, int line, int fd, int func, char *buffer) {
   //  char t1[16384], t2[16384];
