@@ -109,21 +109,19 @@ set(STONEAGE_GNU_OPTIONS
 # --------------------------------------------------------------------------
 # Lua
 # --------------------------------------------------------------------------
-# server/lua/libluajit.a is a *Linux* ELF64 archive (built 2026-08-23 with
-# Ubuntu GCC) and cannot be linked by MinGW. The server only ever uses the
-# plain Lua 5.1 C API (no luajit.h, no ffi, no jit.* from the scripts), so we
-# link a stock PUC-Rio Lua 5.1 instead:
-#
-#   server/lua/liblua51.a       -- MinGW x86_64 COFF static lib, built from
-#                                  client/third_party/lua (the same 29 files
-#                                  the client compiles into its exe)
-#   server/lua/headers-lua51/   -- matching lua.h / lauxlib.h / lualib.h /
-#                                  luaconf.h
-#
-# Keep the LuaJIT headers in server/lua/ for reference, but do NOT put that
-# directory on the include path: it is 2.1 while this library is 5.1.4.
-set(LUA_INCLUDE_DIR "${CMAKE_CURRENT_SOURCE_DIR}/lua/headers-lua51")
-set(LUA_LIBRARY "${CMAKE_CURRENT_SOURCE_DIR}/lua/liblua51.a")
+# Client and GMSV consume one Lua 5.1 source tree, but each toolchain builds
+# its own static library.  This avoids mixing the Client's MSVC/Win32 ABI with
+# GMSV's MinGW-w64 ABI while keeping headers and runtime behavior in sync.
+set(LUA_ROOT "${CMAKE_CURRENT_SOURCE_DIR}/../shared/lua51")
+set(LUA_INCLUDE_DIR "${LUA_ROOT}")
+set(LUA_SOURCES
+  lapi.c lauxlib.c lbaselib.c lcode.c ldblib.c ldebug.c ldo.c ldump.c
+  lfunc.c lgc.c linit.c liolib.c llex.c lmathlib.c lmem.c loadlib.c
+  lobject.c lopcodes.c loslib.c lparser.c lstate.c lstring.c lstrlib.c
+  ltable.c ltablib.c ltm.c lundump.c lvm.c lzio.c)
+list(TRANSFORM LUA_SOURCES PREPEND "${LUA_ROOT}/")
+add_library(lua51_gmsv STATIC ${LUA_SOURCES})
+target_include_directories(lua51_gmsv PUBLIC "${LUA_INCLUDE_DIR}")
 
 target_include_directories(gmsv PRIVATE
   "${CMAKE_BINARY_DIR}/generated/gmsv"
@@ -167,7 +165,13 @@ endif()
 target_link_libraries(saac PRIVATE z)
 target_link_libraries(gmsv PRIVATE z m)
 # Lua must come after the objects that reference it.
-target_link_libraries(gmsv PRIVATE "${LUA_LIBRARY}")
+target_link_libraries(gmsv PRIVATE lua51_gmsv)
+
+# Legacy SAAC handlers place several CHARDATASIZE (1 MiB) work buffers on the
+# stack; some paths have four of them live at once.  GNU ld's Windows default
+# reserve is only 2 MiB, which terminates the process with STATUS_STACK_OVERFLOW
+# (0xC00000FD) after a game server starts sending database/family requests.
+target_link_options(saac PRIVATE "LINKER:--stack,33554432")
 
 # MinGW links zlib dynamically. Keep the runtime DLL next to gmsv.exe so the
 # server can be launched from a deployment directory without an MSYS2 PATH.
@@ -212,4 +216,35 @@ if(BUILD_TESTING)
     ${STONEAGE_WINDOWS_DEFINITIONS})
   target_compile_options(protocol_security_test PRIVATE ${STONEAGE_GNU_OPTIONS})
   add_test(NAME protocol_security_test COMMAND protocol_security_test)
+
+  add_executable(windows_socket_test
+    tests/windows_socket_test.c
+    common/tcp_transport.c
+    common/windows_compat.c)
+  target_include_directories(windows_socket_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/common")
+  target_compile_definitions(windows_socket_test PRIVATE
+    ${STONEAGE_WINDOWS_DEFINITIONS})
+  target_compile_options(windows_socket_test PRIVATE ${STONEAGE_GNU_OPTIONS})
+  target_link_libraries(windows_socket_test PRIVATE ws2_32)
+  add_test(NAME windows_socket_test COMMAND windows_socket_test)
+
+  add_executable(saac_db_test
+    tests/saac_db_test.c
+    saac/db.c
+    common/server_util.c
+    common/workspace.c
+    common/utils/util_file.c
+    common/utils/util_string.c
+    common/windows_compat.c)
+  target_include_directories(saac_db_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/saac/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/saac"
+    "${CMAKE_CURRENT_SOURCE_DIR}/common"
+    "${CMAKE_CURRENT_SOURCE_DIR}/common/utils")
+  target_compile_definitions(saac_db_test PRIVATE
+    ${STONEAGE_WINDOWS_DEFINITIONS})
+  target_compile_options(saac_db_test PRIVATE ${STONEAGE_GNU_OPTIONS})
+  target_link_libraries(saac_db_test PRIVATE ws2_32)
+  add_test(NAME saac_db_test COMMAND saac_db_test)
 endif()

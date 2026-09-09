@@ -3,7 +3,7 @@ param(
     [ValidateSet('VER25_Release', 'VER25_Debug')]
     [string]$Configuration = 'VER25_Release',
 
-    [ValidateSet('Win32', 'x64')]
+    [ValidateSet('Win32')]
     [string]$Platform = 'Win32',
 
     [string]$PlatformToolset = 'v145',

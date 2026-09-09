@@ -976,6 +976,8 @@ static char *NPC_Util_MargeStrFromArgFile(char *filename, char *buf, int len) {
     fclose(fp);
     // print("[MargeStrFromArgFile] final buf:%s\n", buf);
     cret = buf;
+  } else {
+    print("[GetArgStr] cannot open '%s': %s\n", opfile, strerror(errno));
   }
   return (cret);
 }

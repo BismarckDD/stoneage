@@ -3,7 +3,9 @@ param(
     [ValidateSet('Debug', 'Release', 'RelWithDebInfo')]
     [string]$Configuration = 'Release',
 
-    [string]$BuildDirectory
+    [string]$BuildDirectory,
+
+    [switch]$Reconfigure
 )
 
 $ErrorActionPreference = 'Stop'
@@ -43,13 +45,28 @@ $gcc = Find-Tool -Name 'gcc.exe' -Candidates @(
 )
 
 $env:PATH = "$ucrtBin;$env:PATH"
-Write-Host "Configuring the Windows server build: $BuildDirectory"
-& $cmake -S $serverRoot -B $BuildDirectory -G Ninja `
-    "-DCMAKE_MAKE_PROGRAM=$ninja" `
-    "-DCMAKE_C_COMPILER=$gcc" `
-    "-DCMAKE_BUILD_TYPE=$Configuration"
-if ($LASTEXITCODE -ne 0) {
-    throw "CMake configuration failed with exit code $LASTEXITCODE."
+$cachePath = Join-Path $BuildDirectory 'CMakeCache.txt'
+$cachedConfiguration = $null
+if (Test-Path -LiteralPath $cachePath -PathType Leaf) {
+    $cacheEntry = Select-String -LiteralPath $cachePath `
+        -Pattern '^CMAKE_BUILD_TYPE:STRING=(.*)$' | Select-Object -First 1
+    if ($cacheEntry) {
+        $cachedConfiguration = $cacheEntry.Matches[0].Groups[1].Value
+    }
+}
+
+if ($Reconfigure -or !(Test-Path -LiteralPath $cachePath -PathType Leaf) -or
+    $cachedConfiguration -ne $Configuration) {
+    Write-Host "Configuring the Windows server build: $BuildDirectory"
+    & $cmake -S $serverRoot -B $BuildDirectory -G Ninja `
+        "-DCMAKE_MAKE_PROGRAM=$ninja" `
+        "-DCMAKE_C_COMPILER=$gcc" `
+        "-DCMAKE_BUILD_TYPE=$Configuration"
+    if ($LASTEXITCODE -ne 0) {
+        throw "CMake configuration failed with exit code $LASTEXITCODE."
+    }
+} else {
+    Write-Host "Using existing CMake configuration: $BuildDirectory ($Configuration)"
 }
 
 & $cmake --build $BuildDirectory --parallel

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="VER25_DEBUG|Win32"><Configuration>VER25_DEBUG</Configuration><Platform>Win32</Platform></ProjectConfiguration>
+    <ProjectConfiguration Include="VER25_RELEASE|Win32"><Configuration>VER25_RELEASE</Configuration><Platform>Win32</Platform></ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{B4A1106E-9456-42F5-8E92-A764FA51D2BC}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>lua51</RootNamespace>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VER25_DEBUG|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType><UseDebugLibraries>true</UseDebugLibraries><PlatformToolset>v143</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='VER25_RELEASE|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType><UseDebugLibraries>false</UseDebugLibraries><PlatformToolset>v143</PlatformToolset><WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="PropertySheets"><Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" /></ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup><OutDir>$(ProjectDir)..\build\$(Configuration)\</OutDir><IntDir>$(ProjectDir)..\build\$(Configuration)\lua51\</IntDir><TargetName>lua51-client</TargetName></PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='VER25_DEBUG|Win32'">
+    <ClCompile><WarningLevel>TurnOffAllWarnings</WarningLevel><RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary><AdditionalIncludeDirectories>$(ProjectDir)..\shared\lua51;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories><PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions></ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='VER25_RELEASE|Win32'">
+    <ClCompile><WarningLevel>TurnOffAllWarnings</WarningLevel><RuntimeLibrary>MultiThreaded</RuntimeLibrary><AdditionalIncludeDirectories>$(ProjectDir)..\shared\lua51;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories><PreprocessorDefinitions>WIN32;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions></ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\shared\lua51\lapi.c" /><ClCompile Include="..\shared\lua51\lauxlib.c" /><ClCompile Include="..\shared\lua51\lbaselib.c" />
+    <ClCompile Include="..\shared\lua51\lcode.c" /><ClCompile Include="..\shared\lua51\ldblib.c" /><ClCompile Include="..\shared\lua51\ldebug.c" />
+    <ClCompile Include="..\shared\lua51\ldo.c" /><ClCompile Include="..\shared\lua51\ldump.c" /><ClCompile Include="..\shared\lua51\lfunc.c" />
+    <ClCompile Include="..\shared\lua51\lgc.c" /><ClCompile Include="..\shared\lua51\linit.c" /><ClCompile Include="..\shared\lua51\liolib.c" />
+    <ClCompile Include="..\shared\lua51\llex.c" /><ClCompile Include="..\shared\lua51\lmathlib.c" /><ClCompile Include="..\shared\lua51\lmem.c" />
+    <ClCompile Include="..\shared\lua51\loadlib.c" /><ClCompile Include="..\shared\lua51\lobject.c" /><ClCompile Include="..\shared\lua51\lopcodes.c" />
+    <ClCompile Include="..\shared\lua51\loslib.c" /><ClCompile Include="..\shared\lua51\lparser.c" /><ClCompile Include="..\shared\lua51\lstate.c" />
+    <ClCompile Include="..\shared\lua51\lstring.c" /><ClCompile Include="..\shared\lua51\lstrlib.c" /><ClCompile Include="..\shared\lua51\ltable.c" />
+    <ClCompile Include="..\shared\lua51\ltablib.c" /><ClCompile Include="..\shared\lua51\ltm.c" /><ClCompile Include="..\shared\lua51\lundump.c" />
+    <ClCompile Include="..\shared\lua51\lvm.c" /><ClCompile Include="..\shared\lua51\lzio.c" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+</Project>

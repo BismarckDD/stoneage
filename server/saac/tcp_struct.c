@@ -12,6 +12,20 @@
 extern int releaseMemBuf(const int index);
 static int mem_buffer_has_data(int top);
 
+static int tcpstruct_init_failed(int result) {
+  int saved_errno = errno;
+  if (g_main_sock_fd >= 0) {
+    sa_tcp_close(g_main_sock_fd);
+    g_main_sock_fd = -1;
+  }
+  free(g_con);
+  g_con = NULL;
+  free(g_mem_buffer);
+  g_mem_buffer = NULL;
+  errno = saved_errno;
+  return result;
+}
+
 static void saac_session_attach(SaacSession *session, int fd,
                                 const struct sockaddr_in *peer) {
   session->fd = fd;
@@ -26,6 +40,8 @@ static void saac_session_mark_remote_closed(SaacSession *session) {
 
 int tcpstruct_init(char *addr, int p, int timeout_ms, int mem_use, int db) {
 
+  g_main_sock_fd = -1;
+
   // 初始化 g_mem_buffer
   g_mem_buffer_size = mem_use / sizeof(MemBuffer);
   g_mem_buffer_used = 0;
@@ -39,6 +55,7 @@ int tcpstruct_init(char *addr, int p, int timeout_ms, int mem_use, int db) {
   g_con = (SaacSession *)calloc(1, MAXCONNECTION * sizeof(SaacSession));
   if (g_con == NULL) {
     free(g_mem_buffer);
+    g_mem_buffer = NULL;
     return TCPSTRUCT_ENOMEM;
   }
   int i;
@@ -52,10 +69,10 @@ int tcpstruct_init(char *addr, int p, int timeout_ms, int mem_use, int db) {
   /* socket */
   g_main_sock_fd = socket(AF_INET, SOCK_STREAM, 0);
   if (g_main_sock_fd < 0)
-    return TCPSTRUCT_ESOCK;
+    return tcpstruct_init_failed(TCPSTRUCT_ESOCK);
   sa_tcp_set_reuseaddr(g_main_sock_fd);
   if (sa_tcp_set_nonblocking(g_main_sock_fd) < 0)
-    return TCPSTRUCT_ESOCK;
+    return tcpstruct_init_failed(TCPSTRUCT_ESOCK);
 
   /* bind */
   memset(&g_local_addr, 0, sizeof(g_local_addr));
@@ -68,11 +85,11 @@ int tcpstruct_init(char *addr, int p, int timeout_ms, int mem_use, int db) {
     g_local_addr.sin_addr.s_addr = htonl(INADDR_ANY);
   }
   if (bind(g_main_sock_fd, (struct sockaddr *)&g_local_addr, sizeof(g_local_addr)) < 0)
-    return TCPSTRUCT_EBIND;
+    return tcpstruct_init_failed(TCPSTRUCT_EBIND);
 
   /* listen */
   if (listen(g_main_sock_fd, BACKLOGNUM) < 0)
-    return TCPSTRUCT_ELISTEN;
+    return tcpstruct_init_failed(TCPSTRUCT_ELISTEN);
 
   return TCPSTRUCT_OK;
 }

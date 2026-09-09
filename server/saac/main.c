@@ -29,6 +29,23 @@
 #include "sasql.h"
 #endif
 
+#ifdef _WIN32
+static LONG WINAPI saac_unhandled_exception_filter(
+    EXCEPTION_POINTERS *exception_info) {
+  const DWORD code = exception_info && exception_info->ExceptionRecord
+                         ? exception_info->ExceptionRecord->ExceptionCode
+                         : 0;
+  const void *address = exception_info && exception_info->ExceptionRecord
+                            ? exception_info->ExceptionRecord->ExceptionAddress
+                            : NULL;
+  fprintf(stderr,
+          "\nSAAC Windows fatal exception: code=0x%08lX address=%p\n",
+          (unsigned long)code, address);
+  fflush(stderr);
+  return EXCEPTION_EXECUTE_HANDLER;
+}
+#endif
+
 int worksockfd;
 
 WorkSpace gSaacWorkSpace;
@@ -450,6 +467,7 @@ int main(int argc, char **argv) {
   enable_core_dump();
 #endif
 #ifdef _WIN32
+  SetUnhandledExceptionFilter(saac_unhandled_exception_filter);
   if (sa_platform_init() != 0) {
     fprintf(stderr, "WinSock initialization failed: %d\n", errno);
     return 1;
@@ -521,7 +539,9 @@ int main(int argc, char **argv) {
       // break 是TCP INIT 成功
       break;
     }
-    logErr("监听TCP端口失败, 错误代码: %d, 1s后重新尝试...\n", tcpr);
+    logErr("监听TCP端口失败, 阶段代码: %d, 系统错误: %d (%s), "
+           "1s后重新尝试...\n",
+           tcpr, errno, strerror(errno));
 #ifdef _WIN32
     sa_sleep(1);
 #else

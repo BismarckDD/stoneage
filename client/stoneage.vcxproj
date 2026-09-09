@@ -86,35 +86,6 @@
     <ClInclude Include="stoneage\tools\math2.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="third_party\lua\lapi.c" />
-    <ClCompile Include="third_party\lua\lauxlib.c" />
-    <ClCompile Include="third_party\lua\lbaselib.c" />
-    <ClCompile Include="third_party\lua\lcode.c" />
-    <ClCompile Include="third_party\lua\ldblib.c" />
-    <ClCompile Include="third_party\lua\ldebug.c" />
-    <ClCompile Include="third_party\lua\ldo.c" />
-    <ClCompile Include="third_party\lua\ldump.c" />
-    <ClCompile Include="third_party\lua\lfunc.c" />
-    <ClCompile Include="third_party\lua\lgc.c" />
-    <ClCompile Include="third_party\lua\linit.c" />
-    <ClCompile Include="third_party\lua\liolib.c" />
-    <ClCompile Include="third_party\lua\llex.c" />
-    <ClCompile Include="third_party\lua\lmathlib.c" />
-    <ClCompile Include="third_party\lua\lmem.c" />
-    <ClCompile Include="third_party\lua\loadlib.c" />
-    <ClCompile Include="third_party\lua\lobject.c" />
-    <ClCompile Include="third_party\lua\lopcodes.c" />
-    <ClCompile Include="third_party\lua\loslib.c" />
-    <ClCompile Include="third_party\lua\lparser.c" />
-    <ClCompile Include="third_party\lua\lstate.c" />
-    <ClCompile Include="third_party\lua\lstring.c" />
-    <ClCompile Include="third_party\lua\lstrlib.c" />
-    <ClCompile Include="third_party\lua\ltable.c" />
-    <ClCompile Include="third_party\lua\ltablib.c" />
-    <ClCompile Include="third_party\lua\ltm.c" />
-    <ClCompile Include="third_party\lua\lundump.c" />
-    <ClCompile Include="third_party\lua\lvm.c" />
-    <ClCompile Include="third_party\lua\lzio.c" />
     <ClCompile Include="stoneage\char_title.cpp" />
     <ClCompile Include="stoneage\red_memoy.cpp" />
     <ClCompile Include="stoneage\mylua\pet_data.cpp" />
@@ -261,6 +232,8 @@
         stoneage;
         resources;
         third_party;
+        ..\shared;
+        ..\shared\lua51;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
     </ClCompile>
@@ -301,6 +274,8 @@ dsound.lib;winmm.lib;imm32.lib;dinput.lib;
         stoneage;
         resources;
         third_party;
+        ..\shared;
+        ..\shared\lua51;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
       <ExceptionHandling>Sync</ExceptionHandling>
@@ -352,6 +327,12 @@ dsound.lib;winmm.lib;imm32.lib;dinput.lib;
       <AdditionalOptions>%(AdditionalOptions) /utf-8 /we4828</AdditionalOptions>
     </ClCompile>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ProjectReference Include="lua51.vcxproj">
+      <Project>{B4A1106E-9456-42F5-8E92-A764FA51D2BC}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

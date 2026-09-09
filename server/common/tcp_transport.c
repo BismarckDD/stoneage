@@ -47,15 +47,10 @@ int sa_tcp_poll(SaTcpPollItem *items, int count, int timeout_ms) {
 }
 
 int sa_tcp_set_nonblocking(int fd) {
-#ifdef _WIN32
-  u_long enabled = 1;
-  return ioctlsocket(fd, FIONBIO, &enabled);
-#else
   int flags = fcntl(fd, F_GETFL, 0);
   if (flags < 0)
     return -1;
   return fcntl(fd, F_SETFL, flags | O_NONBLOCK);
-#endif
 }
 
 int sa_tcp_set_nodelay(int fd) {
@@ -79,42 +74,21 @@ int sa_tcp_configure_connected(int fd) {
 }
 
 int sa_tcp_read(int fd, void *buffer, int length) {
-#ifdef _WIN32
-  return recv(fd, (char *)buffer, length, 0);
-#else
   return (int)read(fd, buffer, (size_t)length);
-#endif
 }
 
 int sa_tcp_write(int fd, const void *buffer, int length) {
-#ifdef _WIN32
-  return send(fd, (const char *)buffer, length, 0);
-#else
   return (int)write(fd, buffer, (size_t)length);
-#endif
 }
 
 int sa_tcp_close(int fd) {
-#ifdef _WIN32
-  return closesocket(fd);
-#else
   return close(fd);
-#endif
 }
 
 int sa_tcp_error_is_interrupted(void) {
-#ifdef _WIN32
-  return WSAGetLastError() == WSAEINTR;
-#else
   return errno == EINTR;
-#endif
 }
 
 int sa_tcp_error_is_would_block(void) {
-#ifdef _WIN32
-  int error = WSAGetLastError();
-  return error == WSAEWOULDBLOCK;
-#else
   return errno == EAGAIN || errno == EWOULDBLOCK;
-#endif
 }

@@ -102,14 +102,14 @@ static int dbAllocNode() {
       return dbent_finder;
     }
   }
-  logErr("数据进入队列失败. 重新分配中....\n");
+  logErr("数据库节点池尚未分配，正在初始化....\n");
   if (reallocDB() < 0) {
     logErr("重新分配失败\n");
   } else {
     // return dbAllocNode( type );
     //  Spock 2000/10/13
     gDBEntry[dbent_finder].use = 1;
-    logErr("数据探测=%d\n", dbent_finder);
+    logErr("数据库节点池初始化完成，首个节点=%d\n", dbent_finder);
     return dbent_finder;
     // Spock end
   }
