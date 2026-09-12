@@ -40,7 +40,9 @@ static int ItemPetLocked(lua_State *L)
   int char_index=luaL_checkint(L, 1);
   int fd = getfdFromCharaIndex( char_index);
   char *data=luaL_checklstring(L, 2, &l);
+  #ifdef _ITEM_PET_LOCKED
   SaacClient_ItemPetLocked_send( fd, CHAR_getChar(char_index, CHAR_CDKEY), data);
+  #endif
   return 1;
 }
 

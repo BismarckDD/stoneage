@@ -42,7 +42,11 @@ static int GetFamilyBadge(lua_State *L)
 {
 	const int index = luaL_checkint(L, 1);
 	if (CHAR_CHECKINDEX(index)){
+		#ifdef _FAMILY_BADGE
 		lua_pushinteger(L,getFamilyBadge(index));
+		#else
+		lua_pushinteger(L,0);
+		#endif
 	}else lua_pushinteger(L,0);
 	return 1;
 }

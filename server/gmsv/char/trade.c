@@ -408,20 +408,18 @@ void CHAR_Trade(int fd, int index, char* message)
 
 BOOL TRADE_Search(int fd, int meindex, char* message)
 {
-   int		objbuf[16];
-   int		front_x, front_y, i, found_count;
-   BOOL		found =  FALSE, searchflg = FALSE;
-   int 		cnt = 0, tofd = -1, checkfd = -1;
-   char		msgbuf[1024], mycharaname[256], tocharaname[256];
-   char		token[256];
-
-   if (!CHAR_CHECKINDEX(meindex))	return FALSE;
+   int objbuf[16];
+   int front_x, front_y, i, found_count;
+   BOOL	found =  FALSE, searchflg = FALSE;
+   int cnt = 0, tofd = -1, checkfd = -1;
+   char	msgbuf[1024], mycharaname[256], tocharaname[256];
+   char	token[256];
+   if (!CHAR_CHECKINDEX(meindex)) return FALSE;
 
    // 若玩家状态为交易中或交易锁定中则不予处理
    if (CHAR_getWorkInt(meindex, CHAR_WORKTRADEMODE) == CHAR_TRADE_TRADING
    	|| CHAR_getWorkInt(meindex, CHAR_WORKTRADEMODE) == CHAR_TRADE_LOCK)
    		return FALSE;
-
    // 若玩家状态为组队或战斗中则不予处理
    if ((CHAR_getWorkInt(meindex, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE)
    	|| (CHAR_getWorkInt(meindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE))

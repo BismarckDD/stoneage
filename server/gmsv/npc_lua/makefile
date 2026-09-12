@@ -1,4 +1,4 @@
-INCFLAGS=-I../.. -I../include -I../../lua -I../../common
+INCFLAGS=-I../.. -I../include -I../../../shared/lua51 -I../../common
 FLTFLAGS="-s 1331200"   
 export FLTFLAGS
 BUILD ?= release

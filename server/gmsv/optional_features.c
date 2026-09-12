@@ -9,9 +9,7 @@
 #include "npc_roomadminnew.h"
 #include "util.h"
 
-#ifdef _WIN32
-int luaplayernum = 0;
-
+#if defined(_WIN32) && !defined(_ALLBLUES_LUA)
 BOOL FamilyRideFunction(int char_index, int pet_index, int pet_id) {
   (void)char_index;
   (void)pet_index;
@@ -44,13 +42,16 @@ BOOL BattleFinishPvEFunction(int battle_index, int char_index) {
   return FALSE;
 }
 
+#endif
+
+#ifdef _WIN32
 void NPC_Lua_NEWSHOP_Recv(char *function_name, int char_index) {
   (void)function_name;
   (void)char_index;
 }
 #endif
 
-#if !defined(_WIN32) && !defined(_OFFLINE_SYSTEM)
+#if !defined(_OFFLINE_SYSTEM)
 int luaplayernum = 0;
 #endif
 

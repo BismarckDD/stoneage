@@ -9,16 +9,26 @@
 #define _NEW_FUNC_DECRYPT
 #define DENGLUKEY1 "6D27AEB8326A2A8E7D04B9F9B44C59C7"
 
-// #define _ALLBLUES_LUA
-// #define _ALLBLUES_LUA_1_1
-// #define _ALLBLUES_LUA_1_2
-// #define _ALLBLUES_LUA_1_3
-// #define _ALLBLUES_LUA_1_4
-// #define _ALLBLUES_LUA_1_5
-// #define _ALLBLUES_LUA_1_6
-// #define _ALLBLUES_LUA_1_7
-// #define _ALLBLUES_LUA_1_8
-// #define _ALLBLUES_LUA_1_9
+// #define _SA_18 // 1.0经典版本：3个岛，开放转生5转120
+// #define _SA_20 // 家族开拓史: 家族特性，骑宠，新装备/宠物
+// #define _SA_25 // 精灵王传说: 天空之岛地图/任务，新装备/宠物
+// #define _SA_30 // 伊甸新大陆: 伊甸大陆地图/任务，新装备/宠物
+// #define _SA_40 // 新九大家族: 九个/十个庄园
+// #define _SA_50 // 宠物进化史: 宠物转生、融合
+// #define _SA_60 // 石头就业所: 新增职业
+// #define _SA_70 // 精灵的召唤: 
+// #define _SA_80 // 失落的世界: 
+// #define _SA_85 // 魔域大冒险：先不管
+#define _ALLBLUES_LUA
+#define _ALLBLUES_LUA_1_1
+#define _ALLBLUES_LUA_1_2
+#define _ALLBLUES_LUA_1_3
+#define _ALLBLUES_LUA_1_4
+#define _ALLBLUES_LUA_1_5
+#define _ALLBLUES_LUA_1_6
+#define _ALLBLUES_LUA_1_7
+#define _ALLBLUES_LUA_1_8
+#define _ALLBLUES_LUA_1_9
 
 /*  网络模型  */
 //#define _EPOLL_ET_MODE         // EPOLL_ET模型
@@ -126,18 +136,18 @@
 #define _data_newreadfile        // (可开放) 新的server setup.cf 档案 包含 itemset1.txt petskill1.txt 两个新档
 #define _ITEM_MAXUSERNUM         // (可开放) 新 itemset1.txt ITEM 使用次数
 // -------------------------------------------------------------------
-//新功能：伊甸二期    人员：彦豪
+//新功能：伊甸二期  人员：彦豪
 #define _PET_TALKPRO             // (可开放) 宠物对话加强  & 改 END
 #define _PRO_NPCFIX              // (可开放) NPC功能加强
 #define _PRO_BATTLEENEMYSKILL    // (可开放) 战斗加强  提升NPC的AI技能
 #define _NEW_WARPPOINT           // (可开放) 传送点多重条件判断WARP
 #define _FIX_CHECKITEM           // (可开放) 道具不做非法检查
 // -------------------------------------------------------------------
-//新功能：伊甸二  人员：小民,WON
+//新功能：伊甸二期  人员：小民, WON
 #define _ADD_ENCOUNT             // (可开放) WON 增加敌遭遇触发修件
 #define _WON_PET_MAIL_LOG        // (可开放) WON 玩家寄宠邮 LOG
 // -------------------------------------------------------------------
-// 新功能：伊甸叁期  4.0  人员：彦豪, 志伟 , 又荣 , 志旺
+// 新功能：伊甸叁期 4.0  人员：彦豪, 志伟, 又荣, 志旺
 //#define _LOSE_FINCH_           // (不可开) ANDY 朱雀技能
 #define _ADD_POOL_ITEM           // (可开放) WON 增加可寄放的道具
 #define _ITEM_METAMO             // (可开放) shan metamo sprite. code:robin->shan

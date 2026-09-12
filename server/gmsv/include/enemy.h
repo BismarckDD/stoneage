@@ -22,12 +22,12 @@ typedef enum
     E_T_WATERAT,
     E_T_FIREAT,
     E_T_WINDAT,
-    E_T_POISON,               /*   汹仁凶太卞母丢□斥          */
-    E_T_PARALYSIS,            /* 仄太木｝1  及垫  互匹五卅中［ */
-    E_T_SLEEP,                /* 戽曰［垫  匹五卅中            */
-    E_T_STONE,                /* 檗［垫  匹五卅中              */
-    E_T_DRUNK,                /* 办丹［      互票互月     */
-    E_T_CONFUSION,            /* 渔刭［  猾    毛赀月     */
+    E_T_POISON,               /* 中毒 */
+    E_T_PARALYSIS,            /* 瘟疫 */
+    E_T_SLEEP,                /* 睡眠 */
+    E_T_STONE,                /* 石化 */
+    E_T_DRUNK,                /* 醉酒 */
+    E_T_CONFUSION,            /* 迷惑 */
     E_T_PETSKILL1,
     E_T_PETSKILL2,
     E_T_PETSKILL3,
@@ -85,11 +85,10 @@ typedef enum
     ENEMY_CREATEMAXNUM,
     ENEMY_CREATEMINNUM,
     ENEMY_TACTICS,
-  ENEMY_EXP,
+    ENEMY_EXP,
     ENEMY_DUELPOINT,
-  ENEMY_STYLE,
-    ENEMY_PETFLG,               /* 矢永玄卞卅月井升丹井 */
-
+    ENEMY_STYLE,
+    ENEMY_PETFLG,  /*  */
     ENEMY_ITEM1,
     ENEMY_ITEM2,
     ENEMY_ITEM3,
@@ -110,9 +109,7 @@ typedef enum
     ENEMY_ITEMPROB8,
     ENEMY_ITEMPROB9,
     ENEMY_ITEMPROB10,
-
     ENEMY_DATAINTNUM,
-
 }ENEMY_DATAINT;
 
 typedef enum

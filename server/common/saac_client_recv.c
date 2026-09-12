@@ -112,7 +112,9 @@ void SaacClient_ACCharLoad_recv(int fd, char *result, char *data, int ret_fd,
   if ((strcmp(result, SUCCESSFUL) == 0) && (data[0])) {
     // print("Before CHAR_login, client_fd: %d, data: %s, save_index:%d\n",
     //   client_fd, data, save_index);
+    NETWATCH_set("ACCharLoad.CHAR_login", client_fd, "ACCharLoad");
     CHAR_login(client_fd, data, save_index);
+    NETWATCH_set("SAAC_dispatch", fd, "ACCharLoad.complete");
   } else {
     char cdkey[64];
 #ifndef _FIX_MESSAGE

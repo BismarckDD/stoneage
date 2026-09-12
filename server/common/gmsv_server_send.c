@@ -2251,18 +2251,16 @@ void GmsvServer_ClientLogin_send(int fd, char *result) {
   util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CLIENTLOGIN_SEND, buffer);
 }
-void _GmsvServer_CreateNewChar_send(int fd, char *result, char *data, char *file,
-                                  int line) {
+void GmsvServer_CreateNewChar_send(int fd, char *result, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI
   printf("[发送]LSSPROTO_CREATENEWCHAR_SEND-result:%s,data:%s\n", result, data);
 #endif
-  int check_sum_calc = 0;
   strcpy(buffer, "");
   CONNECT_getCdkey(fd, PersonalKey, 4096);
   strcat(PersonalKey, _RUNNING_KEY);
-  check_sum_calc += util_mkstring(buffer, result);
+  check_sum_calc = util_mkstring(buffer, result);
   check_sum_calc += util_mkstring(buffer, data);
   util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CREATENEWCHAR_SEND, buffer);
@@ -2284,8 +2282,8 @@ void GmsvServer_CharDelete_send(int fd, char *result, char *data) {
   util_mkint(buffer, check_sum_calc);
   util_SendMesg(fd, LSSPROTO_CHARDELETE_SEND, buffer);
 }
-void GmsvServer_CharLogin_send(int fd, char *result, char *data) {
 
+void GmsvServer_CharLogin_send(int fd, char *result, char *data) {
   if (CONNECT_checkfd(fd) == FALSE)
     return;
 #ifdef _DEBUG_SEND_CLI

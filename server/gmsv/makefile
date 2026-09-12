@@ -6,7 +6,7 @@ export RANLIB=ranlib
 export SED=sed
 export SHELL=/bin/sh
 
-INCFLAGS=-I./include -I../lua -I../common -I../common/utils
+INCFLAGS=-I./include -I../../shared/lua51 -I../common -I../common/utils
 BUILD ?= release
 ifeq ($(BUILD),debug)
 CFLAGS=-m64 -O0 -g3 -ggdb -fno-omit-frame-pointer -fno-inline -pipe -Wall \
@@ -25,7 +25,7 @@ endif
 COMMON_LIBS=../common/libsaacclient.a ../common/libgmsvserver.a ../common/libserverutil.a ../common/libutil.a
 SUBDIR=char npc net map item battle magic mylua npc_lua
 SUBDIR_LIBS=$(foreach dir,$(SUBDIR),$(dir)/lib$(dir).a)
-PREBUILT_LIBS=../lua/libluajit.a
+PREBUILT_LIBS=../../shared/lua51/liblua51.a
 LIBS=$(SUBDIR_LIBS) $(PREBUILT_LIBS) $(COMMON_LIBS)
 
 SRC=main.c init.c config_file.c buf.c msignal.c shop.c object.c handletime.c function.c log.c autil.c descrypt.c legacy_util.c optional_features.c const.c

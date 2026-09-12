@@ -3,10 +3,26 @@
 #include "util.h"
 #include "mylua/mylua.h"
 #include "mylua/base.h"
+#include <sys/stat.h>
 
 #ifdef _ALLBLUES_LUA
 
 extern MY_Lua MYLua;
+
+/* struct dirent on MinGW/Windows has no d_type member.  Detect regular
+   files with stat() there and keep using d_type elsewhere. */
+static int ablua_is_regular_file(const char *fullpath,
+                                const struct dirent *ent)
+{
+#if defined(_WIN32) || defined(_WIN64)
+	struct stat st;
+	(void)ent;
+	return (stat(fullpath, &st) == 0 && S_ISREG(st.st_mode));
+#else
+	(void)fullpath;
+	return (ent->d_type == 8); /* DT_REG */
+#endif
+}
 
 static void LoadAllbluesLUARecursive(char *path, int *loaded, int *failed)
 {
@@ -23,16 +39,14 @@ static void LoadAllbluesLUARecursive(char *path, int *loaded, int *failed)
 	while(NULL != (ent=readdir(pDir)))
 	{
 		if(ent->d_name[0] == '.')continue;
-		if (ent->d_type==8){
+		memset(filename, 0, 256);
+		sprintf(filename, "%s/%s", path, ent->d_name);
+		if (ablua_is_regular_file(filename, ent)){
 		  if( strcmptail( ent->d_name, ".allblues" ) == 0
 #ifndef _NOT_NOCRYPTO_LUA
 		  	|| strcmptail( ent->d_name, ".lua" ) == 0
 #endif
 		  	){
-		  	char filename[256];
-		  	memset(filename, 0, 256);
-		  	sprintf(filename, "%s/%s", path, ent->d_name);
-
 			if (myluaload(filename))
 				(*loaded)++;
 			else

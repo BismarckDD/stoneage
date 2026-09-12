@@ -572,7 +572,9 @@ static CharBase CharBaseFlg[] = {
 #endif
 #endif
 #endif
+   #ifdef _CHANNEL_MODIFY
    ,{{"AI模式"},       CHAR_AI_MOD}
+   #endif
 };
 
 static CharBase CharBaseAction[] = {
@@ -768,12 +770,12 @@ static int setFunctionPointer(lua_State *L)
     MY_Lua *mylua = &MYLua;
     while(mylua->next != NULL){
       if(strcmp(mylua->luapath, luafunctablepath) == 0){
-        return 0; // TODO: CHAR_setLUAFunction( index, functype, mylua->lua, luafunctable );
+        return CHAR_setLUAFunction(index, functype, mylua->lua, luafunctable);
       }
       mylua = mylua->next;
     }
   }else{
-    return 1; // TODO: CHAR_setLUAFunction( index, functype, L, luafunctable );
+    return CHAR_setLUAFunction(index, functype, L, luafunctable);
   }
   return 1;
 }
@@ -782,7 +784,7 @@ static int delFunctionPointer(lua_State *L)
 {
   const int index = luaL_checkint(L, 1);
   const int functype = getCharBaseValue(L, 2, CharBaseEvent, arraysizeof(CharBaseEvent));
-  return 0; //CHAR_delLUAFunction( index, functype );
+  return CHAR_delLUAFunction(index, functype);
 }
 
 static int TalkToCli(lua_State *L) 
@@ -1171,6 +1173,7 @@ static int AB_WriteShopData(lua_State *L)
   return 1;
 }
 
+#ifdef _CHAR_POOLPET
 static int setDepotPetIndex(lua_State *L) 
 {
   const int index = luaL_checkint(L, 1);
@@ -1194,6 +1197,7 @@ static int getDepotPetIndex(lua_State *L)
   lua_pushinteger(L, CHAR_getDepotPetIndex( index, havepetid));
   return 1;
 }
+#endif
 
 static int DelItem(lua_State *L) 
 {
@@ -2067,13 +2071,15 @@ static int logou(lua_State *L)
   return 1;
 }
 
- int talkToAllServer(lua_State *L)
+#ifdef _ALL_SERV_SEND
+static int talkToAllServer(lua_State *L)
 {
   size_t l;
   char *message=luaL_checklstring(L, 1, &l);
   SaacClient_AllServSend_send(message);
   return 1;
 }
+#endif
 
 #endif
 
@@ -2308,15 +2314,21 @@ static int PileItemFromItemBoxToItemBox(lua_State *L)
 static int CheckUserItem(lua_State *L)
 {
   int char_index=luaL_checkint(L, 1);
+  #ifdef _ROOKIE_ITEM
   CHAR_CheckUserItem(char_index);
+  #endif
   return 1;
 }
 
+  #ifdef _JZ_NEWSCRIPT_LUA
 extern int NPC_Lua_NLG_UpChar(lua_State *_NLL);
+  #endif
 static const luaL_Reg charlib[] = {
   {"PileItemFromItemBoxToItemBox", PileItemFromItemBoxToItemBox},
   {"getMyMaxPilenum", lua_getMyMaxPilenum},
+  #ifdef _JZ_NEWSCRIPT_LUA
   {"upchar",             NPC_Lua_NLG_UpChar},
+  #endif
   {"getCharNum",             getCharNum},
   {"UpCahrData",             UpCahrData},
   {"getPlayerMaxNum",       getPlayerMaxNum},
@@ -2358,8 +2370,10 @@ static const luaL_Reg charlib[] = {
   {"getCharPet",             getCharPet},
   {"setCharPoolPet",         setCharPoolPet},
   {"getCharPoolPet",         getCharPoolPet},  
+#ifdef _CHAR_POOLPET
   {"setDepotPetIndex",       setDepotPetIndex},
-  {"getDepotPetIndex",       getDepotPetIndex},    
+  {"getDepotPetIndex",       getDepotPetIndex},
+#endif
   {"DelItem",               DelItem},  
   {"getFd",                 getFd},
   {"Updata",                 Updata},
@@ -2409,7 +2423,9 @@ static const luaL_Reg charlib[] = {
 #ifdef _ALLBLUES_LUA_1_9
   {"logou",                 logou},
   {"copyChar",               copyChar},
-  {"talkToAllServer",       talkToAllServer},  
+#ifdef _ALL_SERV_SEND
+  {"talkToAllServer",       talkToAllServer},
+#endif
 #endif
   {"earnFame",               earnFame},
   {"Encounter",             Encounter},
@@ -2422,7 +2438,9 @@ static const luaL_Reg charlib[] = {
   {"setCharSkill",           setCharSkill},
   {"DelSProfeesionSkill",     DelSProfeesionSkill},
 #endif
+  #ifdef _ALLBLUES_LUA_1_3
   {"WriteShopData",     AB_WriteShopData},
+  #endif
   {"GetEmptyItemBoxNum",     GetEmptyItemBoxNum},
   {"ClearEncounter",     ClearEncounter},
 #ifdef _NEW_TITLE

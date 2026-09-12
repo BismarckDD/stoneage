@@ -8,6 +8,8 @@ void easyGetTokenFromString(const char *src, const int count, char *output,
 BOOL GeneralSplitImpl(const char *src, const char *delim, const int index,
                       char *buf, const int buflen, const char *file,
                       const int line);
+BOOL getStringFromCursorWithDelim(const char **cursor, const char *delim,
+                                  char *buf, const int buflen);
 #define getStringFromIndexWithDelim(src, delim, index, buf, buflen)            \
   GeneralSplitImpl(src, delim, index, buf, buflen, __FILE__, __LINE__)
 

@@ -2,255 +2,258 @@
 #define __CHAR_H__
 
 #include "common.h"
+//
 #include "char_base.h"
 #include "char_data.h"
 #include "net.h"
 
 #ifdef _NEW_STREET_VENDOR
-typedef enum
-{
-	STREET_VENDOR_GOLD,
-	STREET_VENDOR_FAME,
+typedef enum {
+  STREET_VENDOR_GOLD,
+  STREET_VENDOR_FAME,
 #ifndef _VERSION_NEW
-	STREET_VENDOR_AMPOINT,
+  STREET_VENDOR_AMPOINT,
 #endif
 /*
 #ifdef _NEW_MANOR_LAW
-	STREET_VENDOR_MOMENTUM,
+        STREET_VENDOR_MOMENTUM,
 #endif
 
-	STREET_VENDOR_DP,
+        STREET_VENDOR_DP,
 #ifdef _CAMEO_MONEY
-	STREET_VENDOR_CAMEO,
+        STREET_VENDOR_CAMEO,
 #endif
 */
 #ifdef _ACTIVE_GAME
-	STREET_VENDOR_ACTIVE,
+  STREET_VENDOR_ACTIVE,
 #endif
 #ifdef _STREET_VENDOR_MYSQL
-	STREET_VENDOR_MYSQL,
+  STREET_VENDOR_MYSQL,
 #endif
-	STREET_VENDOR_NUM,
-}STREET_VENDOR;
+  STREET_VENDOR_NUM,
+} STREET_VENDOR;
 #endif
 
-typedef enum
-{
-	CHAR_COLORWHITE,
-	CHAR_COLORCYAN,
-	CHAR_COLORPURPLE,
-	CHAR_COLORBLUE,
-	CHAR_COLORYELLOW,
-	CHAR_COLORGREEN,
-	CHAR_COLORRED,
-	CHAR_COLORGRAY,
-	CHAR_COLORBLUE2,
-	CHAR_COLORGREEN2,
-	CHAR_COLORNUM
+typedef enum {
+  CHAR_COLORWHITE,
+  CHAR_COLORCYAN,
+  CHAR_COLORPURPLE,
+  CHAR_COLORBLUE,
+  CHAR_COLORYELLOW,
+  CHAR_COLORGREEN,
+  CHAR_COLORRED,
+  CHAR_COLORGRAY,
+  CHAR_COLORBLUE2,
+  CHAR_COLORGREEN2,
+  CHAR_COLORNUM
 } CHAR_COLOR;
 
-void CHAR_createNewChar(int clifd, int dataplacenum, char* charname,
-						  int imgno, int faceimgno,
-						  int vital, int str, int tgh, int dex,
-						  int earth, int water, int fire, int wind,
-						  int hometown, char *cdkey);
+void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
+                        int faceimgno, int vital, int str, int tgh, int dex,
+                        int earth, int water, int fire, int wind, int hometown,
+                        char *cdkey);
 
-void CHAR_login(int clifd, char* data, int saveindex);
+void CHAR_login(int clifd, char *data, int saveindex);
 
-#define	CHAR_warpToSpecificPoint(cindex, fl, x, y)\
-_CHAR_warpToSpecificPoint(__FILE__, __LINE__, cindex, fl, x, y)
+#define CHAR_warpToSpecificPoint(cindex, fl, x, y)                             \
+  _CHAR_warpToSpecificPoint(__FILE__, __LINE__, cindex, fl, x, y)
 
-BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int fl, int x, int y);
+BOOL _CHAR_warpToSpecificPoint(char *file, int line, int char_index, int fl,
+                               int x, int y);
 
-
-BOOL CHAR_charSaveFromConnectAndChar(int fd, Char* ch, int unlock);
-BOOL CHAR_charSaveFromConnect( int char_index,int unlock );
-#define	CHAR_logout( char_index, save)	_CHAR_logout( __FILE__, __LINE__, char_index, save)
-BOOL _CHAR_logout( char *file, int line, int char_index, BOOL save);
+BOOL CHAR_charSaveFromConnectAndChar(int fd, Char *ch, int unlock);
+BOOL CHAR_charSaveFromConnect(int char_index, int unlock);
+#define CHAR_logout(char_index, save)                                          \
+  _CHAR_logout(__FILE__, __LINE__, char_index, save)
+BOOL _CHAR_logout(char *file, int line, int char_index, BOOL save);
 
 /*==================== watch event    ====================*/
-void CHAR_sendWatchEvent( int objindex, int chac, int* opt,int optlen,BOOL myflg );
+void CHAR_sendWatchEvent(int objindex, int chac, int *opt, int optlen,
+                         BOOL myflg);
 
 /*====================旦平伙====================*/
-BOOL CHAR_Skillupsend(int char_index );
-void CHAR_SkillUp(  int char_index, int skillid );
-void CHAR_useSkill( int char_index, int dir ,int skindex );
+BOOL CHAR_Skillupsend(int char_index);
+void CHAR_SkillUp(int char_index, int skillid);
+void CHAR_useSkill(int char_index, int dir, int skindex);
 
-typedef enum
-{
-    CHAR_WALKSUCCESSED,     /* 岳      */
-    CHAR_WALKSYSTEMERROR,   /* 扑旦  丞巨仿□    及index民尼永弁卞
-                             * 夫匀井井匀凶午井 */
-    CHAR_WALKEXTEND,        /*    区左□田□仄化汹仇丹午仄凶［NPC卞及心*/
-    CHAR_WALKHITOBJECT,     /*  窒井  卞癫匀化｝汹仃卅井匀凶    */
-    CHAR_WALKPREWALK,       /*  prewalk奶矛件玄匹汹仃卅井匀凶( 檗祭 ) */
-    CHAR_WALKDIE,           /*  韶氏匹中化汹仃卅中  */
-    CHAR_WALK1357,          /*  标户  轾卞汹仇丹午仄化汹仃卅井匀凶  */
+typedef enum {
+  CHAR_WALKSUCCESSED,   /* 岳      */
+  CHAR_WALKSYSTEMERROR, /* 扑旦  丞巨仿□    及index民尼永弁卞
+                        * 夫匀井井匀凶午井 */
+  CHAR_WALKEXTEND,        /*    区左□田□仄化汹仇丹午仄凶［NPC卞及心*/
+  CHAR_WALKHITOBJECT,   /*  窒井  卞癫匀化｝汹仃卅井匀凶    */
+  CHAR_WALKPREWALK,     /*  prewalk奶矛件玄匹汹仃卅井匀凶( 檗祭 ) */
+  CHAR_WALKDIE,         /*  韶氏匹中化汹仃卅中  */
+  CHAR_WALK1357,        /*  标户  轾卞汹仇丹午仄化汹仃卅井匀凶  */
 } CHAR_WALKRET;
 
 /*====================平乓仿及啖  卞楮允月楮醒====================*/
-void CHAR_ctodirmode(char moji , int* dir , int* mode);
-INLINE void CHAR_getDXDY( int dir , int* dx, int* dy );
-INLINE int CHAR_getDX( int dir );
-INLINE int CHAR_getDY( int dir );
-int CHAR_getSameCoordinateObjects(int* objbuf, int siz,int ff, int fx, int fy);
-void CHAR_walkcall( int index );
-void CHAR_walk_start(int index, int x, int y, char* dir, BOOL mapsendmode);
-void CHAR_walk_init( int fd, int x, int y, char *direction, BOOL mapsendmode);
+void CHAR_ctodirmode(char moji, int *dir, int *mode);
+INLINE void CHAR_getDXDY(int dir, int *dx, int *dy);
+INLINE int CHAR_getDX(int dir);
+INLINE int CHAR_getDY(int dir);
+int CHAR_getSameCoordinateObjects(int *objbuf, int siz, int ff, int fx, int fy);
+void CHAR_walkcall(int index);
+void CHAR_walk_start(int index, int x, int y, char *dir, BOOL mapsendmode);
+void CHAR_walk_init(int fd, int x, int y, char *direction, BOOL mapsendmode);
 
 CHAR_WALKRET CHAR_walk(int index, int dir, int mode);
 #ifdef _MO_LNS_NLGSUOXU
-CHAR_WALKRET CHAR_walk_jjc( int index, int floor, int ox, int oy, int dir);
-CHAR_WALKRET CHAR_walk_jc( int char_index, int of, int ox, int oy, int dir );//检查前方障碍
+CHAR_WALKRET CHAR_walk_jjc(int index, int floor, int ox, int oy, int dir);
+CHAR_WALKRET CHAR_walk_jc(int char_index, int of, int ox, int oy,
+                          int dir); // 检查前方障碍
 #endif
-char* CHAR_makeOptionString( Char* ch );
-char* CHAR_makeStatusString( int index, char* category );
-void CHAR_LoginBesideSetWorkInt( int char_index, int clifd);
-#define CHAR_makeObjectCString( objindex, buf, buflen) _CHAR_makeObjectCString( __FILE__, __LINE__, objindex, buf, buflen)
-BOOL _CHAR_makeObjectCString( char *file, int line, int objindex, char* buf, int buflen );
+char *CHAR_makeOptionString(Char *ch);
+char *CHAR_makeStatusString(int index, char *category);
+void CHAR_LoginBesideSetWorkInt(int char_index, int clifd);
+#define CHAR_makeObjectCString(objindex, buf, buflen)                          \
+  _CHAR_makeObjectCString(__FILE__, __LINE__, objindex, buf, buflen)
+BOOL _CHAR_makeObjectCString(char *file, int line, int objindex, char *buf,
+                             int buflen);
 
 #ifdef _NPC_EVENT_NOTICE
-#define CHAR_makeObjectCStringNew( objindex, playerindex, buf, buflen) _CHAR_makeObjectCStringNew( __FILE__, __LINE__, objindex, playerindex, buf, buflen)
-BOOL _CHAR_makeObjectCStringNew( char *file, int line, int objindex, int playerindex, char* buf, int buflen );
+#define CHAR_makeObjectCStringNew(objindex, playerindex, buf, buflen)          \
+  _CHAR_makeObjectCStringNew(__FILE__, __LINE__, objindex, playerindex, buf,   \
+                             buflen)
+BOOL _CHAR_makeObjectCStringNew(char *file, int line, int objindex,
+                                int playerindex, char *buf, int buflen);
 #endif
 
-//BOOL CHAR_sendStatusString( int char_index, char* category );
-#define CHAR_sendStatusString( A, B) _CHAR_sendStatusString( A, B, __FILE__, __LINE__ )
-BOOL _CHAR_sendStatusString( int char_index, char* category, char* file, int line );
-BOOL CHAR_sendItemData( int char_index, int *itemgroup, int num);
-BOOL CHAR_sendItemDataOne( int char_index, int haveitem_index);
-BOOL CHAR_send_P_StatusString( int char_index, unsigned int indextable );
-BOOL CHAR_send_N_StatusString( int char_index, int num, unsigned int indextable );
-BOOL CHAR_send_K_StatusString( int char_index, int num, unsigned int indextable );
+// BOOL CHAR_sendStatusString( int char_index, char* category );
+#define CHAR_sendStatusString(A, B)                                            \
+  _CHAR_sendStatusString(A, B, __FILE__, __LINE__)
+BOOL _CHAR_sendStatusString(int char_index, char *category, char *file,
+                            int line);
+BOOL CHAR_sendItemData(int char_index, int *itemgroup, int num);
+BOOL CHAR_sendItemDataOne(int char_index, int haveitem_index);
+BOOL CHAR_send_P_StatusString(int char_index, unsigned int indextable);
+BOOL CHAR_send_N_StatusString(int char_index, int num, unsigned int indextable);
+BOOL CHAR_send_K_StatusString(int char_index, int num, unsigned int indextable);
+void CHAR_inputOwnTitle(int index, char *name);
+void CHAR_selectTitle(int index, int titleindex);
+void CHAR_deleteTitle(int index, int titleindex);
 
-void CHAR_inputOwnTitle( int index ,char* name );
+#define CHAR_complianceParameter(index)                                        \
+  _CHAR_complianceParameter(index, __FILE__, __LINE__)
+int _CHAR_complianceParameter(int index, char *FILE, int LINE);
 
-void CHAR_selectTitle( int index, int titleindex );
-void CHAR_deleteTitle( int index, int titleindex );
+int CHAR_findSurplusItemBox(int index);
+int CHAR_findEmptyItemBox(int index);
+int CHAR_findEmptyPoolItemBox(int index);
+int CHAR_findEmptyItemBoxNo(int index);
 
-#define CHAR_complianceParameter( index) _CHAR_complianceParameter( index, __FILE__, __LINE__)
-int _CHAR_complianceParameter( int index, char *FILE, int LINE);
-
-int CHAR_findSurplusItemBox( int index );
-int CHAR_findEmptyItemBox( int index );
-int CHAR_findEmptyPoolItemBox( int index );
-int CHAR_findEmptyItemBoxNo( int index );
-
-void CHAR_moveEquipItem( int index, int fromindex, int toindex );
+void CHAR_moveEquipItem(int index, int fromindex, int toindex);
 #ifdef _PET_ITEM
-void CHAR_movePetItem( int index, int petid, int fromindex, int toindex );
-void CHAR_sendPetItemData( int char_index, int petid);
+void CHAR_movePetItem(int index, int petid, int fromindex, int toindex);
+void CHAR_sendPetItemData(int char_index, int petid);
 #endif
-void CHAR_ItemUse( int char_index, int to_char_index, int haveitem_index );
-void CHAR_DropItem( int char_index,  int item_index );
-int CHAR_DropItemAbsolute( int item_index, int floor, int x, int y,BOOL net);
-BOOL CHAR_DropItemFXY( int char_index, int itemchar_index, int fl,
-							  int x, int y, int* objindex );
-int  CHAR_addItemSpecificItemIndex( int char_index, int item_index );
+void CHAR_ItemUse(int char_index, int to_char_index, int haveitem_index);
+void CHAR_DropItem(int char_index, int item_index);
+int CHAR_DropItemAbsolute(int item_index, int floor, int x, int y, BOOL net);
+BOOL CHAR_DropItemFXY(int char_index, int itemchar_index, int fl, int x, int y,
+                      int *objindex);
+int CHAR_addItemSpecificItemIndex(int char_index, int item_index);
 
-void CHAR_PickUpItem( int char_index, int dir );
-void CHAR_DropMoney( int char_index,  int amount );
-int CHAR_addItem( int char_index, int itemid );
-int CHAR_addItemToChar( Char* ch, int itemid );
+void CHAR_PickUpItem(int char_index, int dir);
+void CHAR_DropMoney(int char_index, int amount);
+int CHAR_addItem(int char_index, int itemid);
+int CHAR_addItemToChar(Char *ch, int itemid);
 
-int CHAR_pickupFollowPet( int char_index, int petindex );
+int CHAR_pickupFollowPet(int char_index, int petindex);
 
 #ifdef _GAMBLE_ROULETTE
-int NPC_MAPCLEANGOLD( int meindex , int floor);
+int NPC_MAPCLEANGOLD(int meindex, int floor);
 #endif
 
 #ifdef _DROPSTAKENEW
-#define MAXSTAKENUM	5
-int CasinoAccumulation(int charindex, int npcindex, int floor, int wincasinotype);
-void CHAR_talkToFloor(int floor, int talkindex, char* message, CHAR_COLOR color);
+#define MAXSTAKENUM 5
+int CasinoAccumulation(int charindex, int npcindex, int floor,
+                       int wincasinotype);
+void CHAR_talkToFloor(int floor, int talkindex, char *message,
+                      CHAR_COLOR color);
 int SetCasinoMap(int npcindex, int casinotype, int mapdropflag);
 int CasinoPay(int npcindex, int wincasinotype);
 #endif
-void CHAR_sendCSpecifiedObjindex( int fd, int index);
-void CHAR_sendSpecifiedobjindexCToCharaindex(int char_index,int objindex);
+void CHAR_sendCSpecifiedObjindex(int fd, int index);
+void CHAR_sendSpecifiedobjindexCToCharaindex(int char_index, int objindex);
 
-void CHAR_sendCToArroundCharacter( int char_index );
+void CHAR_sendCToArroundCharacter(int char_index);
 
-void CHAR_sendArroundCharaData( int char_index );
+void CHAR_sendArroundCharaData(int char_index);
 
-void CHAR_sendCDArroundChar( int fl, int x, int y, int objindex );
-void CHAR_sendCDArroundChar_Main( int fl, int x, int y, int objindex, BOOL mode );
+void CHAR_sendCDArroundChar(int fl, int x, int y, int objindex);
+void CHAR_sendCDArroundChar_Main(int fl, int x, int y, int objindex, BOOL mode);
 
-
-void CHAR_Look( int char_index, int dir );
+void CHAR_Look(int char_index, int dir);
 
 void CHAR_initChatMagic(void);
 
-char* CHAR_appendNameAndTitle( int char_index, char* src, char* buf,
-                               int buflen );
-void CHAR_Talk( int fd, int index,char* message,int color, int area );
+char *CHAR_appendNameAndTitle(int char_index, char *src, char *buf, int buflen);
+void CHAR_Talk(int fd, int index, char *message, int color, int area);
 
-void CHAR_Loop( void );
+void CHAR_Loop(void);
 
 #ifdef _PET_ITEM
-void CHAR_sendPetItemData( int char_index, int petid);
-void CHAR_sendPetItemEmpty( int char_index, int petid);
+void CHAR_sendPetItemData(int char_index, int petid);
+void CHAR_sendPetItemEmpty(int char_index, int petid);
 #endif
 
-#define		WINDOW_BUTTONTYPE_NONE		(0)
-#define		WINDOW_BUTTONTYPE_OK		(1 << 0)
-#define		WINDOW_BUTTONTYPE_CANCEL	(1 << 1)
-#define		WINDOW_BUTTONTYPE_YES		(1 << 2)
-#define		WINDOW_BUTTONTYPE_NO		(1 << 3)
-#define		WINDOW_BUTTONTYPE_PREV		(1 << 4)
-#define		WINDOW_BUTTONTYPE_NEXT		(1 << 5)
+#define WINDOW_BUTTONTYPE_NONE (0)
+#define WINDOW_BUTTONTYPE_OK (1 << 0)
+#define WINDOW_BUTTONTYPE_CANCEL (1 << 1)
+#define WINDOW_BUTTONTYPE_YES (1 << 2)
+#define WINDOW_BUTTONTYPE_NO (1 << 3)
+#define WINDOW_BUTTONTYPE_PREV (1 << 4)
+#define WINDOW_BUTTONTYPE_NEXT (1 << 5)
 
-#define		WINDOW_BUTTONTYPE_OKCANCEL	(WINDOW_BUTTONTYPE_OK | WINDOW_BUTTONTYPE_CANCEL)
-#define		WINDOW_BUTTONTYPE_YESNO	(WINDOW_BUTTONTYPE_YES | WINDOW_BUTTONTYPE_NO)
+#define WINDOW_BUTTONTYPE_OKCANCEL                                             \
+  (WINDOW_BUTTONTYPE_OK | WINDOW_BUTTONTYPE_CANCEL)
+#define WINDOW_BUTTONTYPE_YESNO (WINDOW_BUTTONTYPE_YES | WINDOW_BUTTONTYPE_NO)
 
+typedef enum {
+  WINDOW_MESSAGETYPE_MESSAGE,
+  WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
+  WINDOW_MESSAGETYPE_SELECT,
+  WINDOW_MESSAGETYPE_PETSELECT,
+  WINDOW_MESSAGETYPE_PARTYSELECT,
+  WINDOW_MESSAGETYPE_PETANDPARTYSELECT,
+  WINDOW_MESSAGETYPE_ITEMSHOPMENU,
+  WINDOW_MESSAGETYPE_ITEMSHOPMAIN,
+  WINDOW_MESSAGETYPE_LIMITITEMSHOPMAIN,
+  WINDOW_MESSAGETYPE_PETSKILLSHOP,
+  WINDOW_MESSAGETYPE_WIDEMESSAGE,
+  WINDOW_MESSAGETYPE_WIDEMESSAGEANDLINEINPUT,
+  WINDOW_MESSAGETYPE_POOLITEMSHOPMENU,
+  WINDOW_MESSAGETYPE_POOLITEMSHOPMAIN,
 
-typedef enum
-{
-	WINDOW_MESSAGETYPE_MESSAGE,
-	WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
-	WINDOW_MESSAGETYPE_SELECT,
-	WINDOW_MESSAGETYPE_PETSELECT,
-	WINDOW_MESSAGETYPE_PARTYSELECT,
-	WINDOW_MESSAGETYPE_PETANDPARTYSELECT,
-	WINDOW_MESSAGETYPE_ITEMSHOPMENU,
-	WINDOW_MESSAGETYPE_ITEMSHOPMAIN,
-	WINDOW_MESSAGETYPE_LIMITITEMSHOPMAIN,
-	WINDOW_MESSAGETYPE_PETSKILLSHOP,
-	WINDOW_MESSAGETYPE_WIDEMESSAGE,
-	WINDOW_MESSAGETYPE_WIDEMESSAGEANDLINEINPUT,
-	WINDOW_MESSAGETYPE_POOLITEMSHOPMENU,
-	WINDOW_MESSAGETYPE_POOLITEMSHOPMAIN,
-
-	WINDOW_MESSAGETYPE_FAMILYADD,
-	WINDOW_MESSAGETYPE_FAMILYJOIN,
-	WINDOW_MESSAGETYPE_FAMILYOUT,
-	WINDOW_MESSAGETYPE_FAMILYEND,
-//=======================================
-        // shan add	
-        WINDOW_FMMESSAGETYPE_SELECT,
-        WINDOW_FMMESSAGETYPE_DENGON,
-        WINDOW_FMMESSAGETYPE_FMSDENGON,
-        WINDOW_FMMESSAGETYPE_POINTLIST,
+  WINDOW_MESSAGETYPE_FAMILYADD,
+  WINDOW_MESSAGETYPE_FAMILYJOIN,
+  WINDOW_MESSAGETYPE_FAMILYOUT,
+  WINDOW_MESSAGETYPE_FAMILYEND,
+  //=======================================
+  // shan add
+  WINDOW_FMMESSAGETYPE_SELECT,
+  WINDOW_FMMESSAGETYPE_DENGON,
+  WINDOW_FMMESSAGETYPE_FMSDENGON,
+  WINDOW_FMMESSAGETYPE_POINTLIST,
 #ifdef _FMVER21
-        WINDOW_FMMESSAGETYPE_TOP30DP,
+  WINDOW_FMMESSAGETYPE_TOP30DP,
 #endif
-        WINDOW_FMMESSAGETYPE_DP,
-        WINDOW_MESSAGETYPE_BANK,
+  WINDOW_FMMESSAGETYPE_DP,
+  WINDOW_MESSAGETYPE_BANK,
 
-	// Arminius 7.12 scheduleman
-	WINDOW_MESSAGETYPE_PKSCHEDULELIST,
-	WINDOW_MESSAGETYPE_PKSCHEDULESELECTFAMILY,
-	WINDOW_MESSAGETYPE_PKSCHEDULEDETAIL,
-	
-	// Robin
-	WINDOW_MESSAGETYPE_LOGINMESSAGE,
-	WINDOW_MESSAGETYPE_FAMILYTAX,
-	WINDOW_MESSAGETYPE_SHOWRIDEPET,
-	WINDOW_MESSAGETYPE_FAMILYDETAIL,
-
-	WINDOW_MESSAGETYPE_LEADERSELECT,
-	WINDOW_MESSAGETYPE_LEADERSELECTQ,
-	WINDOW_MESSAGETYPE_LEADERSELECTA,
+  // Arminius 7.12 scheduleman
+  WINDOW_MESSAGETYPE_PKSCHEDULELIST,
+  WINDOW_MESSAGETYPE_PKSCHEDULESELECTFAMILY,
+  WINDOW_MESSAGETYPE_PKSCHEDULEDETAIL,
+  // Robin
+  WINDOW_MESSAGETYPE_LOGINMESSAGE,
+  WINDOW_MESSAGETYPE_FAMILYTAX,
+  WINDOW_MESSAGETYPE_SHOWRIDEPET,
+  WINDOW_MESSAGETYPE_FAMILYDETAIL,
+  WINDOW_MESSAGETYPE_LEADERSELECT,
+  WINDOW_MESSAGETYPE_LEADERSELECTQ,
+  WINDOW_MESSAGETYPE_LEADERSELECTA,
 
   // Arminius 1.3 Auctioneer
   WINDOW_MESSAGETYPE_AUCTIONNEW,
@@ -259,213 +262,205 @@ typedef enum
   WINDOW_MESSAGETYPE_AUCTIONMODIFY,
   WINDOW_MESSAGETYPE_AUCTIONLIST_MODIFY,
 
-//#ifdef _NPC_FUSION
-	WINDOWS_MESSAGETYPE_PETFUSION,
-//#endif
+  // #ifdef _NPC_FUSION
+  WINDOWS_MESSAGETYPE_PETFUSION,
+  // #endif
 
-//#ifdef _PETSKILL_CANNEDFOOD
-	WINDOWS_MESSAGETYPE_PETSKILLSHOW,
-//#endif
+  // #ifdef _PETSKILL_CANNEDFOOD
+  WINDOWS_MESSAGETYPE_PETSKILLSHOW,
+  // #endif
 
-//#ifdef _PROFESSION_SKILL			// WON ADD 人物职业技能
-	WINDOW_MESSAGETYPE_PROFESSIONSHOP,
-//#endif
+  // #ifdef _PROFESSION_SKILL			// WON ADD 人物职业技能
+  WINDOW_MESSAGETYPE_PROFESSIONSHOP,
+  // #endif
 
-//#ifdef _NEW_MANOR_LAW
-	WINDOW_FMMESSAGETYPE_10_MEMONTUM,	// 十大气势家族
-	WINDOW_FMMESSAGETYPE_FM_MEMONTUM,	// 自己家族气势排名
-	WINDOW_FMMESSAGETYPE_MANOR_SCHEDULE,	// 挑战庄园排行
-//#endif
+  // #ifdef _NEW_MANOR_LAW
+  WINDOW_FMMESSAGETYPE_10_MEMONTUM,    // 十大气势家族
+  WINDOW_FMMESSAGETYPE_FM_MEMONTUM,    // 自己家族气势排名
+  WINDOW_FMMESSAGETYPE_MANOR_SCHEDULE, // 挑战庄园排行
+                                       // #endif
 
-//#ifdef _ANGEL_SUMMON
-	WINDOW_MESSAGETYPE_ANGELMESSAGE = 101,
-	WINDOW_MESSAGETYPE_ANGELASK,
-//#endif
+  // #ifdef _ANGEL_SUMMON
+  WINDOW_MESSAGETYPE_ANGELMESSAGE = 101,
+  WINDOW_MESSAGETYPE_ANGELASK,
+  // #endif
 
-//#ifdef _MOUSE_DBL_CLICK
-	WINDOW_MESSAGETYPE_MOUSEGETNAME,
-//#endif
+  // #ifdef _MOUSE_DBL_CLICK
+  WINDOW_MESSAGETYPE_MOUSEGETNAME,
+  // #endif
 
-//#ifdef _RACEMAN
-	WINDOW_MESSAGETYPE_RACEMAN_RANK,
-//#endif
+  // #ifdef _RACEMAN
+  WINDOW_MESSAGETYPE_RACEMAN_RANK,
+  // #endif
 
-}WINDOW_MESSAGETYPE;
+} WINDOW_MESSAGETYPE;
 
-typedef enum
-{
-    CHAR_WINDOWTYPE_RETURNTOELDER=-1,   /*  赢  尺  月它奴件玉它    */
-    CHAR_WINDOWTYPE_RESURRECTION=-2,   /*  汊唾允月它奴件玉它    */
+typedef enum {
+  CHAR_WINDOWTYPE_RETURNTOELDER = -1, /*  赢  尺  月它奴件玉它    */
+  CHAR_WINDOWTYPE_RESURRECTION = -2,  /*  汊唾允月它奴件玉它    */
 
-	CHAR_WINDOWTYPE_SELECTBATTLE = 1,		/*   月爵  毛蓟  允月它奴件玉它 */
-	CHAR_WINDOWTYPE_SELECTDUEL = 2,  		/*   月DUEL毛蓟  允月它奴件玉它 */
-	CHAR_WINDOWTYPE_SELECTTRADECARD = 3, 	/*   铜跟晶毛蓟  允月它奴件玉它 */
-	CHAR_WINDOWTYPE_SELECTPARTY = 4, 		/* 由□  奴毛蓟  允月它奴件玉它 */
-	CHAR_WINDOWTYPE_SELECTBATTLEWATCH = 5, 	/* 棋爵毛蓟  允月它奴件玉它 */
-	CHAR_WINDOWTYPE_MICMESSAGE = 6,			/* MICNPC毛银匀化请月它奴件玉它 */
+  CHAR_WINDOWTYPE_SELECTBATTLE = 1,      /*   月爵  毛蓟  允月它奴件玉它 */
+  CHAR_WINDOWTYPE_SELECTDUEL = 2,        /*   月DUEL毛蓟  允月它奴件玉它 */
+  CHAR_WINDOWTYPE_SELECTTRADECARD = 3,   /*   铜跟晶毛蓟  允月它奴件玉它 */
+  CHAR_WINDOWTYPE_SELECTPARTY = 4,       /* 由□  奴毛蓟  允月它奴件玉它 */
+  CHAR_WINDOWTYPE_SELECTBATTLEWATCH = 5, /* 棋爵毛蓟  允月它奴件玉它 */
+  CHAR_WINDOWTYPE_MICMESSAGE = 6,        /* MICNPC毛银匀化请月它奴件玉它 */
 
-	// CoolFish: Trade 2001/4/18
-	CHAR_WINDOWTYPE_SELECTTRADE = 7,	/* 交易 Window */
+  // CoolFish: Trade 2001/4/18
+  CHAR_WINDOWTYPE_SELECTTRADE = 7, /* 交易 Window */
+  CHAR_WINDOWTYPE_SELECTRENAMEITEM_PAGE1 = 10,
+  CHAR_WINDOWTYPE_SELECTRENAMEITEM_PAGE2 = 11,
+  CHAR_WINDOWTYPE_SELECTRENAMEITEM_PAGE3 = 12,
+  CHAR_WINDOWTYPE_SELECTRENAMEITEM_PAGE4 = 13,
+  CHAR_WINDOWTYPE_SELECTRENAMEITEM_RENAME = 14,
+  CHAR_WINDOWTYPE_SELECTRENAMEITEM_RENAME_ATTENTION = 15,
+  CHAR_WINDOWTYPE_DENGON = 50, /* 鳗蜕   */
+  CHAR_WINDOWTYPE_WINDOWMAN_START = 100,
+  CHAR_WINDOWTYPE_WINDOWMAN_STARTMSG = CHAR_WINDOWTYPE_WINDOWMAN_START,
+  CHAR_WINDOWTYPE_WINDOWMAN_END = 200,
 
-	CHAR_WINDOWTYPE_SELECTRENAMEITEM_PAGE1 = 10,	/*   蟆毛  凳允月失奶  丞毛蓟  允月它奴件玉它 */
-	CHAR_WINDOWTYPE_SELECTRENAMEITEM_PAGE2 = 11,	/*   蟆毛  凳允月失奶  丞毛蓟  允月它奴件玉它 */
-	CHAR_WINDOWTYPE_SELECTRENAMEITEM_PAGE3 = 12,	/*   蟆毛  凳允月失奶  丞毛蓟  允月它奴件玉它 */
-	CHAR_WINDOWTYPE_SELECTRENAMEITEM_PAGE4 = 13,	/*   蟆毛  凳允月失奶  丞毛蓟  允月它奴件玉它 */
-	CHAR_WINDOWTYPE_SELECTRENAMEITEM_RENAME = 14,	/*   蟆毛    允月它奴件玉它 */
-	CHAR_WINDOWTYPE_SELECTRENAMEITEM_RENAME_ATTENTION  = 15,	/*   蟆毛    允月它奴件玉它 */
-	
-	CHAR_WINDOWTYPE_DENGON = 50,			/* 鳗蜕   */
+  CHAR_WINDOWTYPE_JANKEN_START = 210,
+  CHAR_WINDOWTYPE_JANKEN_MAIN = 211,
+  CHAR_WINDOWTYPE_JANKEN_END = 212,
 
-	CHAR_WINDOWTYPE_WINDOWMAN_START = 100,
-	CHAR_WINDOWTYPE_WINDOWMAN_STARTMSG = CHAR_WINDOWTYPE_WINDOWMAN_START,
-	CHAR_WINDOWTYPE_WINDOWMAN_END = 200,
+  CHAR_WINDOWTYPE_TRANSMIGRATION_START = 213,
+  CHAR_WINDOWTYPE_TRANSMIGRATION_MAIN = 214,
+  CHAR_WINDOWTYPE_TRANSMIGRATION_END = 215,
+  CHAR_WINDOWTYPE_TRANSMIGRATION_NONE = 216,
 
-	CHAR_WINDOWTYPE_JANKEN_START = 210,
-	CHAR_WINDOWTYPE_JANKEN_MAIN = 211,
-	CHAR_WINDOWTYPE_JANKEN_END = 212,
-	
-	CHAR_WINDOWTYPE_TRANSMIGRATION_START = 213,
-	CHAR_WINDOWTYPE_TRANSMIGRATION_MAIN = 214,
-	CHAR_WINDOWTYPE_TRANSMIGRATION_END = 215,
-	CHAR_WINDOWTYPE_TRANSMIGRATION_NONE = 216,
-	
+  CHAR_WINDOWTYPE_WINDOWHEALER_START = 220,
+  CHAR_WINDOWTYPE_WINDOWHEALER_STARTMSG = CHAR_WINDOWTYPE_WINDOWHEALER_START,
+  CHAR_WINDOWTYPE_WINDOWHEALER_HPMSG = 221,
+  CHAR_WINDOWTYPE_WINDOWHEALER_OKHPMSG = 222,
+  CHAR_WINDOWTYPE_WINDOWHEALER_SPIRITMSG = 223,
+  CHAR_WINDOWTYPE_WINDOWHEALER_OKSPIRITMSG = 224,
+  CHAR_WINDOWTYPE_WINDOWHEALER_ALLMSG = 225,
+  CHAR_WINDOWTYPE_WINDOWHEALER_OKALLMSG = 226,
+  CHAR_WINDOWTYPE_WINDOWHEALER_END = 227,
 
-	CHAR_WINDOWTYPE_WINDOWHEALER_START = 220,
-	CHAR_WINDOWTYPE_WINDOWHEALER_STARTMSG = CHAR_WINDOWTYPE_WINDOWHEALER_START,
-	CHAR_WINDOWTYPE_WINDOWHEALER_HPMSG = 221,
-	CHAR_WINDOWTYPE_WINDOWHEALER_OKHPMSG = 222,
-	CHAR_WINDOWTYPE_WINDOWHEALER_SPIRITMSG = 223,
-	CHAR_WINDOWTYPE_WINDOWHEALER_OKSPIRITMSG = 224,
-	CHAR_WINDOWTYPE_WINDOWHEALER_ALLMSG = 225,
-	CHAR_WINDOWTYPE_WINDOWHEALER_OKALLMSG = 226,
-	CHAR_WINDOWTYPE_WINDOWHEALER_END = 227,
+  CHAR_WINDOWTYPE_WINDOWSAVEPOINT_START = 230,
 
-	CHAR_WINDOWTYPE_WINDOWSAVEPOINT_START = 230,
+  CHAR_WINDOWTYPE_WINDOWEVENT_STARTMSG = 231,
+  CHAR_WINDOWTYPE_WINDOWEVENT_NOWEVENT = 232,
+  CHAR_WINDOWTYPE_WINDOWEVENT_ENDEVENT = 233,
+  CHAR_WINDOWTYPE_WINDOWEVENT_REQMAINMSG = 234,
+  CHAR_WINDOWTYPE_WINDOWEVENT_ACCMAINMSG = 235,
+  CHAR_WINDOWTYPE_WINDOWEVENT_NOMALMSG = 236,
+  CHAR_WINDOWTYPE_WINDOWEVENT_CLEANMSG = 237,
+  CHAR_WINDOWTYPE_WINDOWEVENT_REQTHANK = 238,
+  CHAR_WINDOWTYPE_WINDOWEVENT_ACCTHANK = 239,
 
-	CHAR_WINDOWTYPE_WINDOWEVENT_STARTMSG = 231,
-	CHAR_WINDOWTYPE_WINDOWEVENT_NOWEVENT = 232,
-	CHAR_WINDOWTYPE_WINDOWEVENT_ENDEVENT = 233,
-	CHAR_WINDOWTYPE_WINDOWEVENT_REQMAINMSG = 234,
-	CHAR_WINDOWTYPE_WINDOWEVENT_ACCMAINMSG = 235,
-	CHAR_WINDOWTYPE_WINDOWEVENT_NOMALMSG = 236,
-	CHAR_WINDOWTYPE_WINDOWEVENT_CLEANMSG = 237,
-	CHAR_WINDOWTYPE_WINDOWEVENT_REQTHANK = 238,
-	CHAR_WINDOWTYPE_WINDOWEVENT_ACCTHANK = 239,
-	
+  CHAR_WINDOWTYPE_WINDOWITEMSHOP_START = 240,
+  CHAR_WINDOWTYPE_WINDOWITEMSHOP_STARTMSG =
+      CHAR_WINDOWTYPE_WINDOWITEMSHOP_START,
+  CHAR_WINDOWTYPE_WINDOWITEMSHOP_MENU = 241,
+  CHAR_WINDOWTYPE_WINDOWITEMSHOP_BUY_MSG = 242,
+  CHAR_WINDOWTYPE_WINDOWITEMSHOP_SELL_MSG = 243,
+  CHAR_WINDOWTYPE_WINDOWITEMSHOP_END = 244,
+  CHAR_WINDOWTYPE_WINDOWITEMSHOP_LIMIT = 245,
+  CHAR_WINDOWTYPE_WINDOWITEMSHOP_EXPRESS = 246,
 
-	CHAR_WINDOWTYPE_WINDOWITEMSHOP_START = 240,
-	CHAR_WINDOWTYPE_WINDOWITEMSHOP_STARTMSG = CHAR_WINDOWTYPE_WINDOWITEMSHOP_START,
-	CHAR_WINDOWTYPE_WINDOWITEMSHOP_MENU = 241,
-	CHAR_WINDOWTYPE_WINDOWITEMSHOP_BUY_MSG = 242,
-	CHAR_WINDOWTYPE_WINDOWITEMSHOP_SELL_MSG = 243,
-	CHAR_WINDOWTYPE_WINDOWITEMSHOP_END = 244,
-	CHAR_WINDOWTYPE_WINDOWITEMSHOP_LIMIT = 245,
-	CHAR_WINDOWTYPE_WINDOWITEMSHOP_EXPRESS = 246,
+  CHAR_WINDOWTYPE_DUELRANKING_START = 250,
+  CHAR_WINDOWTYPE_DUELRANKING_TOPRANKING = 251,
+  CHAR_WINDOWTYPE_DUELRANKING_MYRANKING = 252,
+  CHAR_WINDOWTYPE_DUELRANKING_WAIT = 253,
+  CHAR_WINDOWTYPE_DEFEND_BILLDBOARD = 254,
+  CHAR_WINDOWTYPE_WINDOWPETSKILLSHOP = 260,
+  CHAR_WINDOWTYPE_WINDOWPETSHOP_START = 261,
+  CHAR_WINDOWTYPE_WINDOWPETSHOP_PETSELECT = 262,
+  CHAR_WINDOWTYPE_WINDOWPETSHOP_MAIN = 263,
+  CHAR_WINDOWTYPE_WINDOWPETSHOP_GOLDOVER = 264,
+  CHAR_WINDOWTYPE_WINDOWPETSHOP_PETSELECT2 = 265,
+  CHAR_WINDOWTYPE_WINDOWPETSHOP_MAIN2 = 266,
+  CHAR_WINDOWTYPE_WINDOWPETSHOP_DRAWSELECT = 267,
+  CHAR_WINDOWTYPE_WINDOWPETSHOP_ASKDRAW = 268,
+  CHAR_WINDOWTYPE_WINDOWPETSHOP_END = 269,
 
-	CHAR_WINDOWTYPE_DUELRANKING_START = 250,
-	CHAR_WINDOWTYPE_DUELRANKING_TOPRANKING = 251,
-	CHAR_WINDOWTYPE_DUELRANKING_MYRANKING = 252,
-	CHAR_WINDOWTYPE_DUELRANKING_WAIT = 253,
-	CHAR_WINDOWTYPE_DEFEND_BILLDBOARD = 254,
+  CHAR_WINDOWTYPE_WINDOWWARPMAN_MAIN = 271,
+  CHAR_WINDOWTYPE_WINDOWWARPMAN_ERR = 272,
+  CHAR_WINDOWTYPE_WINDOWWARPMAN_END = 273,
 
-	CHAR_WINDOWTYPE_WINDOWPETSKILLSHOP = 260,
+  CHAR_WINDOWTYPE_NPCENEMY_START = 281,
+  CHAR_WINDOWTYPE_CHARM_START = 282,
+  CHAR_WINDOWTYPE_CHARM_END = 283,
 
-	CHAR_WINDOWTYPE_WINDOWPETSHOP_START = 261,
-	CHAR_WINDOWTYPE_WINDOWPETSHOP_PETSELECT = 262,
-	CHAR_WINDOWTYPE_WINDOWPETSHOP_MAIN = 263,
-	CHAR_WINDOWTYPE_WINDOWPETSHOP_GOLDOVER 	= 264,
-	CHAR_WINDOWTYPE_WINDOWPETSHOP_PETSELECT2 = 265,
-	CHAR_WINDOWTYPE_WINDOWPETSHOP_MAIN2 = 266,
-	CHAR_WINDOWTYPE_WINDOWPETSHOP_DRAWSELECT = 267,
-	CHAR_WINDOWTYPE_WINDOWPETSHOP_ASKDRAW = 268,
-	CHAR_WINDOWTYPE_WINDOWPETSHOP_END = 269,
+  CHAR_WINDOWTYPE_QUIZ_START = 284,
+  CHAR_WINDOWTYPE_QUIZ_MAIN = 285,
+  CHAR_WINDOWTYPE_QUIZ_END = 286,
 
-	CHAR_WINDOWTYPE_WINDOWWARPMAN_MAIN = 271,
-	CHAR_WINDOWTYPE_WINDOWWARPMAN_ERR = 272,
-	CHAR_WINDOWTYPE_WINDOWWARPMAN_END = 273,
+  CHAR_WINDOWTYPE_CHECKMAN_START = 287,
+  CHAR_WINDOWTYPE_CHECKMAN_MAIN = 288,
+  CHAR_WINDOWTYPE_CHECKMAN_END = 289,
 
-	CHAR_WINDOWTYPE_NPCENEMY_START = 281,
-	
-	CHAR_WINDOWTYPE_CHARM_START = 282,
-	CHAR_WINDOWTYPE_CHARM_END = 283,
-
-	CHAR_WINDOWTYPE_QUIZ_START = 284,
-	CHAR_WINDOWTYPE_QUIZ_MAIN = 285,
-	CHAR_WINDOWTYPE_QUIZ_END = 286,
-
-	CHAR_WINDOWTYPE_CHECKMAN_START = 287,
-	CHAR_WINDOWTYPE_CHECKMAN_MAIN = 288,
-	CHAR_WINDOWTYPE_CHECKMAN_END = 289,
-
-	CHAR_WINDOWTYPE_FAMILYMAN_START = 320,
-	CHAR_WINDOWTYPE_FAMILYMAN_ADD = 321,
-	CHAR_WINDOWTYPE_FAMILYMAN_JOIN = 322,
-	CHAR_WINDOWTYPE_FAMILYMAN_OUT = 323,
-	CHAR_WINDOWTYPE_FAMILYMAN_BROKEN = 324,
+  CHAR_WINDOWTYPE_FAMILYMAN_START = 320,
+  CHAR_WINDOWTYPE_FAMILYMAN_ADD = 321,
+  CHAR_WINDOWTYPE_FAMILYMAN_JOIN = 322,
+  CHAR_WINDOWTYPE_FAMILYMAN_OUT = 323,
+  CHAR_WINDOWTYPE_FAMILYMAN_BROKEN = 324,
 #ifdef _FMPOINT_PKTIME_SELECT
-	CHAR_WINDOWTYPE_FAMILYMAN_PKTIME = 325,	// 选择PK的时间
+  CHAR_WINDOWTYPE_FAMILYMAN_PKTIME = 325, // 选择PK的时间
 #endif
-	CHAR_WINDOWTYPE_BANKMAN = 330,
-	
-	// CoolFish: FMPKMan 2001/7/4
-	CHAR_WINDOWTYPE_FMPKMAN_START = 340,
-	CHAR_WINDOWTYPE_FMPKMAN_VIEW = 341,
-	CHAR_WINDOWTYPE_FMPKMAN_LEAVEPK = 342,
-	CHAR_WINDOWTYPE_FMPKCALLMAN_START = 345,
-	CHAR_WINDOWTYPE_FMPKCALLMAN_CALL = 346,
-	CHAR_WINDOWTYPE_FMPKCALLMAN_COME = 347,
-	CHAR_WINDOWTYPE_FMPKCALLMAN_LEAVE = 348,
-	
-	// Arminius 7.13 scheduleman
-	CHAR_WINDOWTYPE_SCHEDULEMAN_START = 350,
-	CHAR_WINDOWTYPE_SCHEDULEMAN_SELECT = 351,
-	CHAR_WINDOWTYPE_SCHEDULEMAN_DETAIL = 352,
-	
-	// Arminius 7.27
-	CHAR_WINDOWTYPE_MANORPK_START = 360,
-	CHAR_WINDOWTYPE_MANORPK_ASK = 361,
-	CHAR_WINDOWTYPE_MANORPK_END = 362,
+  CHAR_WINDOWTYPE_BANKMAN = 330,
 
-        // shan
-        CHAR_WINDOWTYPE_FM_DENGON      = 370,     // 家族留言板
-        CHAR_WINDOWTYPE_FM_FMSDENGON   = 371,     // 家族之间留言板
-        CHAR_WINDOWTYPE_FM_MESSAGE1    = 372,     // 说明视窗(据点)
-        CHAR_WINDOWTYPE_FM_MESSAGE2    = 373,     // 说明视窗(成员)
-        CHAR_WINDOWTYPE_FM_SELECT      = 374,     // 选项视窗
-        CHAR_WINDOWTYPE_FM_MEMBERLIST  = 375,     // 成员列表
-        CHAR_WINDOWTYPE_FM_POINTLIST   = 376,     // 据点列表
-        CHAR_WINDOWTYPE_FM_DPTOP       = 377,     // 强者表(前叁十大列榜)
-        CHAR_WINDOWTYPE_FM_DPME        = 378,     // 强者表(自己的列榜)
-        CHAR_WINDOWTYPE_FM_DPSELECT    = 379,     // 强者表的选项视窗
+  // CoolFish: FMPKMan 2001/7/4
+  CHAR_WINDOWTYPE_FMPKMAN_START = 340,
+  CHAR_WINDOWTYPE_FMPKMAN_VIEW = 341,
+  CHAR_WINDOWTYPE_FMPKMAN_LEAVEPK = 342,
+  CHAR_WINDOWTYPE_FMPKCALLMAN_START = 345,
+  CHAR_WINDOWTYPE_FMPKCALLMAN_CALL = 346,
+  CHAR_WINDOWTYPE_FMPKCALLMAN_COME = 347,
+  CHAR_WINDOWTYPE_FMPKCALLMAN_LEAVE = 348,
+
+  // Arminius 7.13 scheduleman
+  CHAR_WINDOWTYPE_SCHEDULEMAN_START = 350,
+  CHAR_WINDOWTYPE_SCHEDULEMAN_SELECT = 351,
+  CHAR_WINDOWTYPE_SCHEDULEMAN_DETAIL = 352,
+
+  // Arminius 7.27
+  CHAR_WINDOWTYPE_MANORPK_START = 360,
+  CHAR_WINDOWTYPE_MANORPK_ASK = 361,
+  CHAR_WINDOWTYPE_MANORPK_END = 362,
+
+  // shan
+  CHAR_WINDOWTYPE_FM_DENGON = 370,     // 家族留言板
+  CHAR_WINDOWTYPE_FM_FMSDENGON = 371,  // 家族之间留言板
+  CHAR_WINDOWTYPE_FM_MESSAGE1 = 372,   // 说明视窗(据点)
+  CHAR_WINDOWTYPE_FM_MESSAGE2 = 373,   // 说明视窗(成员)
+  CHAR_WINDOWTYPE_FM_SELECT = 374,     // 选项视窗
+  CHAR_WINDOWTYPE_FM_MEMBERLIST = 375, // 成员列表
+  CHAR_WINDOWTYPE_FM_POINTLIST = 376,  // 据点列表
+  CHAR_WINDOWTYPE_FM_DPTOP = 377,      // 强者表(前叁十大列榜)
+  CHAR_WINDOWTYPE_FM_DPME = 378,       // 强者表(自己的列榜)
+  CHAR_WINDOWTYPE_FM_DPSELECT = 379,   // 强者表的选项视窗
 
 #ifdef _PET_TRANS
-		CHAR_WINDOWTYPE_PETTRANS_START		= 384,
-		CHAR_WINDOWTYPE_PETTRANS_SELECT		= 385,
-		CHAR_WINDOWTYPE_PETTRANS_SELPET		= 386,
-		CHAR_WINDOWTYPE_PETTRANS_MAIN1		= 387,
-		CHAR_WINDOWTYPE_PETTRANS_END		= 389,
+  CHAR_WINDOWTYPE_PETTRANS_START = 384,
+  CHAR_WINDOWTYPE_PETTRANS_SELECT = 385,
+  CHAR_WINDOWTYPE_PETTRANS_SELPET = 386,
+  CHAR_WINDOWTYPE_PETTRANS_MAIN1 = 387,
+  CHAR_WINDOWTYPE_PETTRANS_END = 389,
 #endif
 
 #ifdef _GAMBLE_BANK
-		NPC_GambleBank_START				= 390,
-		NPC_GambleBank_SELECT,
-		NPC_GambleBank_BANK,
-		NPC_GambleBank_CHANG1,
-		NPC_GambleBank_CHANG2,
-		NPC_GambleBank_END,
+  NPC_GambleBank_START = 390,
+  NPC_GambleBank_SELECT,
+  NPC_GambleBank_BANK,
+  NPC_GambleBank_CHANG1,
+  NPC_GambleBank_CHANG2,
+  NPC_GambleBank_END,
 #endif
 
 #ifdef _PETRACE
-	CHAR_WINDOWTYPE_PETRACEMASTER_START = 410,
-	CHAR_WINDOWTYPE_PETRACEMASTER_RULE,
-	CHAR_WINDOWTYPE_PETRACEMASTER_PET,
-	CHAR_WINDOWTYPE_PETRACEMASTER_LEAVE,
+  CHAR_WINDOWTYPE_PETRACEMASTER_START = 410,
+  CHAR_WINDOWTYPE_PETRACEMASTER_RULE,
+  CHAR_WINDOWTYPE_PETRACEMASTER_PET,
+  CHAR_WINDOWTYPE_PETRACEMASTER_LEAVE,
 #endif
-	
+
 #ifdef _GAMBLE_ROULETTE
-	WINDOWTYPE_GAMBLEROULETTE_START = 415,
-	WINDOWTYPE_GAMBLEROULETTE_SELECT,
-	WINDOWTYPE_GAMBLEROULETTE_END,
+  WINDOWTYPE_GAMBLEROULETTE_START = 415,
+  WINDOWTYPE_GAMBLEROULETTE_SELECT,
+  WINDOWTYPE_GAMBLEROULETTE_END,
 #endif
 
 #ifdef _NEWEVENT
@@ -473,145 +468,141 @@ typedef enum
 #endif
 
 #ifdef _TRANSER_MAN
-	NPC_TRANSERMAN_START = 440,
-	NPC_TRANSERMAN_SELECT,
-	NPC_TRANSERMAN_WARP,
-	NPC_TRANSERMAN_END,
+  NPC_TRANSERMAN_START = 440,
+  NPC_TRANSERMAN_SELECT,
+  NPC_TRANSERMAN_WARP,
+  NPC_TRANSERMAN_END,
 #endif
 #ifdef _ITEM_NPCCHANGE
-	NPC_ITEMCHANGE_START = 445,
-	NPC_ITEMCHANGE_SELECT,
-	NPC_ITEMCHANGE_MESSAGE,
-	NPC_ITEMCHANGE_END,
+  NPC_ITEMCHANGE_START = 445,
+  NPC_ITEMCHANGE_SELECT,
+  NPC_ITEMCHANGE_MESSAGE,
+  NPC_ITEMCHANGE_END,
 #endif
 
 #ifdef _ALLDOMAN // (不可开) Syu ADD 排行榜NPC
-	NPC_ALLDOMAN_START = 460,
-	NPC_ALLDOMAN_START2,
-	NPC_ALLDOMAN_START3,
-	NPC_ALLDOMAN_HEAL,
-	NPC_ALLDOMAN_GIVEMONEY,
-	NPC_ALLDOMAN_MAIN_WND , 
-	NPC_ALLDOMAN_SELECT_WND , 
-	NPC_ALLDOMAN_LIST_WND , 
+  NPC_ALLDOMAN_START = 460,
+  NPC_ALLDOMAN_START2,
+  NPC_ALLDOMAN_START3,
+  NPC_ALLDOMAN_HEAL,
+  NPC_ALLDOMAN_GIVEMONEY,
+  NPC_ALLDOMAN_MAIN_WND,
+  NPC_ALLDOMAN_SELECT_WND,
+  NPC_ALLDOMAN_LIST_WND,
 #endif
 
 #ifdef _PETSKILL_CANNEDFOOD
-	ITEM_WINDOWTYPE_SELECTPETSKILL_SELECT = 470,
-	ITEM_WINDOWTYPE_SELECTPETSKILL_END,
+  ITEM_WINDOWTYPE_SELECTPETSKILL_SELECT = 470,
+  ITEM_WINDOWTYPE_SELECTPETSKILL_END,
 #endif
 
 #ifdef _NPC_WELFARE
-    NPC_WELFARE_START = 480,
-	NPC_WELFARE_END,
+  NPC_WELFARE_START = 480,
+  NPC_WELFARE_END,
 #endif
 
 #ifdef _NPC_DEPOTPET
-	CHAR_WINDOWTYPE_DEPOTPETSHOP_MENU = 510,
-	CHAR_WINDOWTYPE_DEPOTPETSHOP_HANDLE,
-	CHAR_WINDOWTYPE_DEPOTPETSHOP_ADD,
-	CHAR_WINDOWTYPE_DEPOTPETSHOP_GET,
-	CHAR_WINDOWTYPE_DEPOTPETSHOP_ASKADD,
-	CHAR_WINDOWTYPE_DEPOTPETSHOP_ASKGET,
+  CHAR_WINDOWTYPE_DEPOTPETSHOP_MENU = 510,
+  CHAR_WINDOWTYPE_DEPOTPETSHOP_HANDLE,
+  CHAR_WINDOWTYPE_DEPOTPETSHOP_ADD,
+  CHAR_WINDOWTYPE_DEPOTPETSHOP_GET,
+  CHAR_WINDOWTYPE_DEPOTPETSHOP_ASKADD,
+  CHAR_WINDOWTYPE_DEPOTPETSHOP_ASKGET,
 #endif
 
 #ifdef _ANGEL_SUMMON
-	CHAR_WINDOWTYPE_ANGEL_ASK = 520,
-	CHAR_WINDOWTYPE_ANGEL_CLEAN,
+  CHAR_WINDOWTYPE_ANGEL_ASK = 520,
+  CHAR_WINDOWTYPE_ANGEL_CLEAN,
 #endif
 
 #ifdef _ITEM_PET_LOCKED
-	CHAR_WINDOWTYPE_ITEM_PET_LOCKED = 530,
-	CHAR_WINDOWTYPE_ITEM_PET_LOCKED_PASSWD,
+  CHAR_WINDOWTYPE_ITEM_PET_LOCKED = 530,
+  CHAR_WINDOWTYPE_ITEM_PET_LOCKED_PASSWD,
 #endif
-#ifdef _NPC_MAGICCARD				//魔法卡
-	CHAR_WINDOWTYPE_MAGIC_START	= 570,				//魔法卡
-	CHAR_WINDOWTYPE_MAGIC_RULES,
-	CHAR_WINDOWTYPE_MAGIC_NORMAL,
-	CHAR_WINDOWTYPE_MAGIC_SELECT,
+#ifdef _NPC_MAGICCARD                // 魔法卡
+  CHAR_WINDOWTYPE_MAGIC_START = 570, // 魔法卡
+  CHAR_WINDOWTYPE_MAGIC_RULES,
+  CHAR_WINDOWTYPE_MAGIC_NORMAL,
+  CHAR_WINDOWTYPE_MAGIC_SELECT,
 #endif
 #ifdef _ONLINE_COST
-	CHAR_WINDOWTYPE_ONLINE_COST,
+  CHAR_WINDOWTYPE_ONLINE_COST,
 #endif
 
 #ifdef _SQL_BUY_FUNC
-	CHAR_WINDOWTYPE_ONLINE_BUY,
+  CHAR_WINDOWTYPE_ONLINE_BUY,
 #endif
 
 #ifdef _NULL_CHECK_ITEM
-	CHAR_WINDOWTYPE_NULL_CHECK,
+  CHAR_WINDOWTYPE_NULL_CHECK,
 #endif
 
 #ifdef _ITEM_UPLEVEL
-	CHAR_WINDOWTYPE_ITEM_UPLEVEL,
+  CHAR_WINDOWTYPE_ITEM_UPLEVEL,
 #endif
 
 #ifdef _NEW_STREET_VENDOR
-	CHAR_WINDOWTYPE_STREET_VENDOR_TYPE,  // 摆摊类型
+  CHAR_WINDOWTYPE_STREET_VENDOR_TYPE, // 摆摊类型
 #endif
 
 #ifdef _LOTTERY_SYSTEM
-	CHAR_WINDOWTYPE_LOTTERYBUY,
+  CHAR_WINDOWTYPE_LOTTERYBUY,
 #endif
 
 #ifdef _BATTLE_PK_TYPE
-	CHAR_WINDOWTYPE_BATTLEPKTYPE,
+  CHAR_WINDOWTYPE_BATTLEPKTYPE,
 #endif
 
 #ifdef _PAUCTION_MAN
-	NPC_PAUCTION_START,
-	NPC_PAUCTION_SELECT,
-	NPC_PAUCTION_NEW,
-	NPC_PAUCTION_AUCTIONSURVEY,
-	NPC_PAUCTION_LIST_BUY_ALL,
-	NPC_PAUCTION_LIST_BUY_PET,
-	NPC_PAUCTION_LIST_BUY_ITEM,
-	NPC_PAUCTION_LIST_MODIFY,
+  NPC_PAUCTION_START,
+  NPC_PAUCTION_SELECT,
+  NPC_PAUCTION_NEW,
+  NPC_PAUCTION_AUCTIONSURVEY,
+  NPC_PAUCTION_LIST_BUY_ALL,
+  NPC_PAUCTION_LIST_BUY_PET,
+  NPC_PAUCTION_LIST_BUY_ITEM,
+  NPC_PAUCTION_LIST_MODIFY,
 #endif
 
 #ifdef _ITEM_OVER_LAP
-	CHAR_WINDOWTYPE_ITEMOVERLAP,
+  CHAR_WINDOWTYPE_ITEMOVERLAP,
 #endif
 #ifdef _LOCK_PET_ITEM
-	CHAR_WINDOWTYPE_DROPITEM,
+  CHAR_WINDOWTYPE_DROPITEM,
 #endif
 #ifdef _RED_MEMOY_
-	CHAR_WINDOWTYPE_REDMEMOY,
+  CHAR_WINDOWTYPE_REDMEMOY,
 #endif
-}CHAR_WINDOWTYPE;
+} CHAR_WINDOWTYPE;
 
 #ifdef _GMRELOAD
-typedef struct tagGMInfo
-{
-	char cdkey[24];
-	int level;
-}GMInfo;
+typedef struct tagGMInfo {
+  char cdkey[24];
+  int level;
+} GMInfo;
 #endif
-
 
 #ifdef _ANGEL_SUMMON
 
 #define MAXMISSION 100
 #define MAXMISSIONTABLE 200
 
-struct MissionInfo
-{
-	int id;
-	char detail[1024];
-	int level;
-	char eventflag[1024];
-	//char bonus[1024];
-	int limittime;
+struct MissionInfo {
+  int id;
+  char detail[1024];
+  int level;
+  char eventflag[1024];
+  // char bonus[1024];
+  int limittime;
 };
 
-struct MissionTable
-{
-	char angelinfo[128];
-	char heroinfo[128];
-	int mission;
-	int flag;
-	int time;
-	int limittime;
+struct MissionTable {
+  char angelinfo[128];
+  char heroinfo[128];
+  int mission;
+  int flag;
+  int time;
+  int limittime;
 };
 
 extern struct MissionInfo missionlist[MAXMISSION];
@@ -623,147 +614,145 @@ extern struct MissionTable missiontable[MAXMISSIONTABLE];
 
 #define MAXDAILYLIST 1000
 #define MAXMISSIONFLAG 1000
-typedef struct _DailyFileType
-{
-	int jobid;			//任务编号
-	char rule[64];		//条件判断
-	char explain[64];		//任务说明
-	char state[64];			//状态说明
-}DailyFileType;
-//extern struct DailyFileType dailyfile[MAXDAILYLIST];
+typedef struct _DailyFileType {
+  int jobid;        // 任务编号
+  char rule[64];    // 条件判断
+  char explain[64]; // 任务说明
+  char state[64];   // 状态说明
+} DailyFileType;
+// extern struct DailyFileType dailyfile[MAXDAILYLIST];
 
 #endif
 int getPartyNum(int char_index);
-BOOL CHAR_talkToCli( int talkedchar_index,int talkchar_index, char* message, CHAR_COLOR color );
-void CHAR_talkToCliAndParty( int talkedchar_index,int talkchar_index,char* message, CHAR_COLOR color );
-void CHAR_talkToAll(int talkindex, char* message, CHAR_COLOR color);
-void CHAR_getCoordinationDir( int dir , int x, int y ,int c,
-                              int *xout , int *yout );
-BOOL CHAR_createCharacter( int type, int floor, int x, int y, int dir,
-                           int* char_index, int* objindex, BOOL seemap );
-void CHAR_CharaDelete( int char_index );
-void CHAR_ObjectDelete( int objindex );
-int CHAR_makeDBKey( int char_index, char *pszBuffer, int size );
-int CHAR_getEmptyPartyArray( int char_index);
-BOOL CHAR_JoinParty( int char_index );
-BOOL CHAR_JoinParty_Main( int char_index, int targetindex);
-BOOL CHAR_JoinParty_Main_New( int char_index, int targetindex,int flg);
-BOOL CHAR_DischargeParty( int char_index, int flg);
-BOOL CHAR_DischargeParty_New( int char_index, int flg);
-BOOL CHAR_DischargePartyNoMsg( int char_index);
-BOOL CHAR_setMyPosition_main( int index, int x, int y, int setdir, BOOL CAFlg);
-BOOL CHAR_setMyPosition( int index, int x, int y, BOOL CAFlg);
+BOOL CHAR_talkToCli(int talkedchar_index, int talkchar_index, char *message,
+                    CHAR_COLOR color);
+void CHAR_talkToCliAndParty(int talkedchar_index, int talkchar_index,
+                            char *message, CHAR_COLOR color);
+void CHAR_talkToAll(int talkindex, char *message, CHAR_COLOR color);
+void CHAR_getCoordinationDir(int dir, int x, int y, int c, int *xout,
+                             int *yout);
+BOOL CHAR_createCharacter(int type, int floor, int x, int y, int dir,
+                          int *char_index, int *objindex, BOOL seemap);
+void CHAR_CharaDelete(int char_index);
+void CHAR_ObjectDelete(int objindex);
+int CHAR_makeDBKey(int char_index, char *pszBuffer, int size);
+int CHAR_getEmptyPartyArray(int char_index);
+BOOL CHAR_JoinParty(int char_index);
+BOOL CHAR_JoinParty_Main(int char_index, int targetindex);
+BOOL CHAR_JoinParty_Main_New(int char_index, int targetindex, int flg);
+BOOL CHAR_DischargeParty(int char_index, int flg);
+BOOL CHAR_DischargeParty_New(int char_index, int flg);
+BOOL CHAR_DischargePartyNoMsg(int char_index);
+BOOL CHAR_setMyPosition_main(int index, int x, int y, int setdir, BOOL CAFlg);
+BOOL CHAR_setMyPosition(int index, int x, int y, BOOL CAFlg);
 
-void CHAR_CharaDeleteHavePet( int char_index);
-int CHAR_sendAction( int char_index, int action, int mode);
-void CHAR_sendLeader( int objindex, int leader);
-void CHAR_sendBattleWatch( int objindex, int onoff);
-void CHAR_sendBattleEffect( int char_index, int onoff);
+void CHAR_CharaDeleteHavePet(int char_index);
+int CHAR_sendAction(int char_index, int action, int mode);
+void CHAR_sendLeader(int objindex, int leader);
+void CHAR_sendBattleWatch(int objindex, int onoff);
+void CHAR_sendBattleEffect(int char_index, int onoff);
 
 // shan
-void CHAR_sendTradeEffect( int char_index, int onoff);
+void CHAR_sendTradeEffect(int char_index, int onoff);
 #ifdef _MIND_ICON
-void CHAR_sendMindEffect( int char_index, int onoff);
+void CHAR_sendMindEffect(int char_index, int onoff);
 #endif
 #ifdef _ITEM_CRACKER
-void CHAR_sendCrackerEffect( int char_index, int onoff);
+void CHAR_sendCrackerEffect(int char_index, int onoff);
 #endif
 
-void CHAR_inputUserPetName( int index , int havepetindex, char* name );
-int CHAR_getPartyIndex( int index, int num);
-void CHAR_processWindow(int char_index, int seqno, int select,
-						int objindex, char* data );
-void CHAR_AddCharm( int char_index, int iValue );
-void CHAR_PetAddVariableAi( int petindex, int iValue );
-void CHAR_PartyUpdate( int char_index, int senddata );
-char *CHAR_getUseName( int char_index );
-char *CHAR_getUseID( int char_index );
-EXTERN int EnemyMoveNum;	/*   凛卞  嫖  仃月衬及醒 */
+void CHAR_inputUserPetName(int index, int havepetindex, char *name);
+int CHAR_getPartyIndex(int index, int num);
+void CHAR_processWindow(int char_index, int seqno, int select, int objindex,
+                        char *data);
+void CHAR_AddCharm(int char_index, int iValue);
+void CHAR_PetAddVariableAi(int petindex, int iValue);
+void CHAR_PartyUpdate(int char_index, int senddata);
+char *CHAR_getUseName(int char_index);
+char *CHAR_getUseID(int char_index);
+EXTERN int EnemyMoveNum; /*   凛卞  嫖  仃月衬及醒 */
 
-#define DB_DUELPOINT	"db_duel"			// 犯亘巨伙禾奶件玄犯□正矛□旦
-#define DB_ADDRESSBOOK	"db_addressbook"	// 失玉伊旦皮永弁犯□正矛□旦
+#define DB_DUELPOINT "db_duel"          // 犯亘巨伙禾奶件玄犯□正矛□旦
+#define DB_ADDRESSBOOK "db_addressbook" // 失玉伊旦皮永弁犯□正矛□旦
 
-BOOL CHAR_send_DpDBUpdate( int char_index );
-BOOL CHAR_send_DpDBUpdate_AddressBook( int char_index, int mode );
+BOOL CHAR_send_DpDBUpdate(int char_index);
+BOOL CHAR_send_DpDBUpdate_AddressBook(int char_index, int mode);
 
+void CHAR_sendPMEToArroundCharacter(int char_index, int petindex, int flg,
+                                    int no);
+void CHAR_sendPMEToArroundCharacterFLXY(int petindex, int fl, int x, int y,
+                                        int dir, int flg, int no);
 
-void CHAR_sendPMEToArroundCharacter( int char_index, int petindex, int flg, int no );
-void CHAR_sendPMEToArroundCharacterFLXY( int petindex, 
-								int fl, int x, int y, int dir, int flg, int no );
+void CHAR_sendSEoArroundCharacter(int fl, int x, int y, int senumber, int sw);
 
-void CHAR_sendSEoArroundCharacter( int fl, int x, int y, int senumber, int sw );
+BOOL CHAR_initEffectSetting(char *filename);
+void CHAR_checkEffect(int char_index);
+void CHAR_checkEffectLoop(void);
+void CHAR_initDebugChatCdkey(void);
+int CHAR_setChatMagicCDKey(int mode, char *cdkey);
 
-BOOL CHAR_initEffectSetting( char* filename );
-void CHAR_checkEffect( int char_index);
-void CHAR_checkEffectLoop( void);
-void CHAR_initDebugChatCdkey( void);
-int CHAR_setChatMagicCDKey( int mode, char *cdkey);
-
-
-float GetRecoveryRate( int char_index );
-int storeCharaData( void );
-#ifdef _MAGIC_REHPAI	//补血AI
-int Magic_RideGetHP( int toindex, int petindex, int flg);
+float GetRecoveryRate(int char_index);
+int storeCharaData(void);
+#ifdef _MAGIC_REHPAI // 补血AI
+int Magic_RideGetHP(int toindex, int petindex, int flg);
 #endif
 // CoolFish: Trade 2001/4/18
 int CHAR_findTotalEmptyItem(int index);
 
-
 #ifdef _FIX_METAMORIDE
-int CHAR_CHECKJOINENEMY( int index);
+int CHAR_CHECKJOINENEMY(int index);
 #endif
 
-#ifdef _SEND_EFFECT	   	        // WON ADD AC送下雪、下雨等特效
-#define		CHAR_EFFECT_SETTINGBUFFER	256
-typedef struct tagCHAR_effectsetting
-{
-    int     floor;								//	白夫失
-	int		effect;								//	梢请  寞
-	int		level;								//	梢请及伊矛伙［  蜇及雄今［
-	int		sendflg;							//	  憎巨白尼弁玄毛霜匀凶井升丹井［
-	char	month[CHAR_EFFECT_SETTINGBUFFER];	//	  垫允月畸
-	char	day[CHAR_EFFECT_SETTINGBUFFER];		//	  垫允月
-	char	hour[CHAR_EFFECT_SETTINGBUFFER];	//	  垫允月凛棉
-	char	min[CHAR_EFFECT_SETTINGBUFFER];		//	  垫允月坌
-	char	expire[CHAR_EFFECT_SETTINGBUFFER];	//	  垫仄化中月赢今［(
-	
-}CHAR_effectsetting;
+#ifdef _SEND_EFFECT // WON ADD AC送下雪、下雨等特效
+#define CHAR_EFFECT_SETTINGBUFFER 256
+typedef struct tagCHAR_effectsetting {
+  int floor;   //	白夫失
+  int effect;  //	梢请  寞
+  int level;   //	梢请及伊矛伙［  蜇及雄今［
+  int sendflg; //	  憎巨白尼弁玄毛霜匀凶井升丹井［
+  char month[CHAR_EFFECT_SETTINGBUFFER];  //	  垫允月畸
+  char day[CHAR_EFFECT_SETTINGBUFFER];    //	  垫允月
+  char hour[CHAR_EFFECT_SETTINGBUFFER];   //	  垫允月凛棉
+  char min[CHAR_EFFECT_SETTINGBUFFER];    //	  垫允月坌
+  char expire[CHAR_EFFECT_SETTINGBUFFER]; //	  垫仄化中月赢今［(
 
-CHAR_effectsetting*    CHAR_effect;
-int                    CHAR_effectnum;
+} CHAR_effectsetting;
+
+CHAR_effectsetting *CHAR_effect;
+int CHAR_effectnum;
 #endif
 
 #ifdef _ITEM_PILENUMS
-int CHAR_getMyMaxPilenum( int char_index);
+int CHAR_getMyMaxPilenum(int char_index);
 #endif
 
 #ifdef _PET_LOSTPET
-BOOL CHAR_CharSaveLostPet( int petindex, int type);
+BOOL CHAR_CharSaveLostPet(int petindex, int type);
 #endif
 #ifdef _ALLDOMAN
-void InitHeroList( void);
+void InitHeroList(void);
 #endif
-
 
 #ifdef _STREET_VENDOR
-void CHAR_sendStreetVendor(int char_index,char *message);
-void CHAR_sendStreetVendorDataToCli(int char_index,int toindex);
-void CHAR_sendStreetVendorOneDataToCli(int char_index,int toindex,int sendindex);
+void CHAR_sendStreetVendor(int char_index, char *message);
+void CHAR_sendStreetVendorDataToCli(int char_index, int toindex);
+void CHAR_sendStreetVendorOneDataToCli(int char_index, int toindex,
+                                       int sendindex);
 #endif
 
-BOOL checkUnlawWarpFloor( int floor);
+BOOL checkUnlawWarpFloor(int floor);
 
 #ifdef _HELP_NEWHAND
-void CHAR_loginAddItemForNew( int char_index );
+void CHAR_loginAddItemForNew(int char_index);
 #endif
 
 #ifdef _JOBDAILY
-void CHAR_JobDaily(int char_index,char *data);
+void CHAR_JobDaily(int char_index, char *data);
 #endif
 
 #ifdef _TEACHER_SYSTEM
-void CHAR_Teacher_system(int char_index,char *data);
-void CHAR_Teacher_system_View(int char_index,int iOnLine,char *data);
+void CHAR_Teacher_system(int char_index, char *data);
+void CHAR_Teacher_system_View(int char_index, int iOnLine, char *data);
 #endif
 
 #ifdef _TIME_TICKET
@@ -772,19 +761,20 @@ int check_TimeTicketMap(int floor);
 #endif
 
 #ifdef _ANGEL_SUMMON
-int checkIfAngel( int char_index);
-int checkIfOnlyAngel( int char_index);
-void selectAngel( int char_index, int heroindex, int mission, int gm_cmd);
-char* getMissionNameInfo( int char_index, char* nameinfo);
-void CHAR_sendAngelMark( int objindex, int flag);
-void Use_AngelToken( int char_index, int toindex, int haveitem_index );
-void Use_HeroToken( int char_index, int toindex, int haveitem_index );
-int AngelCreate( int angelindex);
-void sendAngelCleanToCli( int fd);
+int checkIfAngel(int char_index);
+int checkIfOnlyAngel(int char_index);
+void selectAngel(int char_index, int heroindex, int mission, int gm_cmd);
+char *getMissionNameInfo(int char_index, char *nameinfo);
+void CHAR_sendAngelMark(int objindex, int flag);
+void Use_AngelToken(int char_index, int toindex, int haveitem_index);
+void Use_HeroToken(int char_index, int toindex, int haveitem_index);
+int AngelCreate(int angelindex);
+void sendAngelCleanToCli(int fd);
 #endif
 #ifdef _ITEM_CHECKDROPATLOGOUT
-BOOL CheckDropatLogout(int char_index );
+BOOL CheckDropatLogout(int char_index);
 #endif
-void CHAR_CheckUserItem( int char_index );
-BOOL CHAR_PileItemFromItemBoxToItemBox(int char_index, int fromindex, int toindex);
+void CHAR_CheckUserItem(int char_index);
+BOOL CHAR_PileItemFromItemBoxToItemBox(int char_index, int fromindex,
+                                       int toindex);
 #endif

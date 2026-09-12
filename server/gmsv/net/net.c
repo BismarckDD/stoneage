@@ -83,15 +83,29 @@ static void nettrace_poll_result(SaTcpPollItem *items, int poll_result) {
 static void netwatch_copy_command(char *destination, size_t destination_size,
                                   const char *message) {
   size_t i = 0;
+  size_t source = 0;
   if (destination_size == 0)
     return;
   if (message != NULL) {
-    while (message[i] != '\0' && message[i] != ' ' && message[i] != '\t' &&
-           message[i] != '\r' && message[i] != '\n' &&
+    /* SAAC messages begin with a numeric sequence id.  Report the following
+     * function name instead, otherwise stalls misleadingly look like command
+     * numbers (for example "2015") rather than "ACCharLoad". */
+    while (message[source] >= '0' && message[source] <= '9')
+      source++;
+    if (source > 0 && (message[source] == ' ' || message[source] == '\t')) {
+      while (message[source] == ' ' || message[source] == '\t')
+        source++;
+    } else {
+      source = 0;
+    }
+    while (message[source] != '\0' && message[source] != ' ' &&
+           message[source] != '\t' && message[source] != '\r' &&
+           message[source] != '\n' &&
            i + 1 < destination_size) {
-      unsigned char c = (unsigned char)message[i];
+      unsigned char c = (unsigned char)message[source];
       destination[i] = (c >= 32 && c < 127) ? (char)c : '?';
       i++;
+      source++;
     }
   }
   destination[i] = '\0';
@@ -3330,7 +3344,6 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
 
   for (i = 0; i < c_max; i++) {
     CONNECT_LOCK(i);
-
     if (Connect[i].use) {
       c_use++;
       switch (Connect[i].ctype) {
@@ -3392,17 +3405,14 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
   }
 
   {
-
     int i;
     int item_max = ITEM_getITEM_sItemNum();
     int item_use = 0;
-
     for (i = 0; i < item_max; i++) {
       if (ITEM_getITEM_use(i)) {
         item_use++;
       }
     }
-
     snprintf(buffer2, sizeof(buffer2),
              "item_use=%d\n"
              "item_max=%d\n",
@@ -3413,13 +3423,11 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
   {
     int i, obj_use = 0;
     int obj_max = OBJECT_getNum();
-
     for (i = 0; i < obj_max; i++) {
       if (OBJECT_getType(i) != OBJTYPE_NOUSE) {
         obj_use++;
       }
     }
-
     snprintf(buffer2, sizeof(buffer2),
              "object_use=%d\n"
              "object_max=%d\n",
@@ -3444,7 +3452,6 @@ ANY_THREAD int getfdFromCdkeyWithLogin(const char *cdkey) {
       CONNECT_UNLOCK(i);
       return i;
     }
-
     CONNECT_UNLOCK(i);
   }
   return -1;

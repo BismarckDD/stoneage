@@ -35,6 +35,7 @@ BOOL FreeCharCreate(int char_index);
 BOOL NetLoopFunction(void);
 #endif
 #ifdef _ALLBLUES_LUA_1_6
+BOOL FamilyRideCheck(int meindex, int petindex, int petid);
 BOOL FamilyRideFunction(int meindex, int petindex, int petid);
 BOOL CharTalkFunction(int char_index, char *message, int color);
 #endif

@@ -171,7 +171,9 @@ int charSave(int ti, char *id, char *charname, char *opt, char *charinfo,
 #else
   int char_index;
 #endif
-  char savebuf[CHARDATASIZE];
+  /* SAAC dispatches requests on one thread.  Keep MiB-sized scratch storage
+   * out of the small native Windows thread stack. */
+  static char savebuf[CHARDATASIZE];
   int ret = -1;
 
   memset(savebuf, 0, sizeof(savebuf));
@@ -238,7 +240,7 @@ int charSave(int ti, char *id, char *charname, char *opt, char *charinfo,
 
 void charListCallback(int ti, int auth, char *c0, char *c1, char *c2, char *c3,
                       char *c4, int i0, int i1, int charlistflg) {
-  char listbuf[CHARDATASIZE];
+  static char listbuf[CHARDATASIZE];
   char *id = c0;
   int mesgid = i0;
   if (auth != 0) {
@@ -625,35 +627,25 @@ int saveCharOne(char *id, int num, char *input) {
 
 static int makeSaveCharString(char *output, int outputlen, char *nm, char *opt,
                               char *info) {
-  char nmwork[CHARDATASIZE];
-  char optwork[CHARDATASIZE];
-  char infowork[CHARDATASIZE];
-  char outputwork[CHARDATASIZE];
+  static char nmwork[CHARDATASIZE];
+  static char optwork[CHARDATASIZE];
+  static char infowork[CHARDATASIZE];
   char *nmwork_p, *optwork_p, *infowork_p;
-  int l;
 
-  strncpy(nmwork, nm, sizeof(nmwork));
-  nmwork[strlen(nm)] = 0;
-
-  strncpy(optwork, opt, sizeof(optwork));
-  optwork[strlen(opt)] = 0;
-
-  strncpy(infowork, info, sizeof(infowork));
-  infowork[strlen(info)] = 0;
+  if (outputlen <= 0)
+    return -1;
 
   nmwork_p = makeEscapeString(nm, nmwork, sizeof(nmwork));
   optwork_p = makeEscapeString(opt, optwork, sizeof(optwork));
   infowork_p = makeEscapeString(info, infowork, sizeof(infowork));
 
-  snprintf(outputwork, sizeof(outputwork),
-           "%s" SPACESTRING "%s" SPACESTRING "%s", nmwork_p, optwork_p,
-           infowork_p);
-
-  l = strlen(outputwork);
-  if (l >= (outputlen - 1)) {
+  const int written = snprintf(output, outputlen,
+                               "%s" SPACESTRING "%s" SPACESTRING "%s",
+                               nmwork_p, optwork_p, infowork_p);
+  if (written < 0 || written >= outputlen) {
+    output[0] = '\0';
     return -1;
   }
-  memcpy(output, outputwork, l + 1);
   return 0;
 }
 
@@ -679,7 +671,7 @@ int getCharIndexByName(char *id, char *charname) {
 
 static int findBlankCharIndex(char *id) {
   int i;
-  char output[CHARDATASIZE];
+  static char output[CHARDATASIZE];
   for (i = 0; i < MAXCHAR_PER_USER; i++) {
     if (loadCharOne(id, i, output, sizeof(output)) < 0) {
       return i;

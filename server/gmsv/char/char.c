@@ -31,6 +31,7 @@
 #include "readmap.h"
 #include "saac_client.h"
 #include "util.h"
+#include "mylua/function.h"
 
 #ifdef _JOBDAILY
 #include "npc_checkman.h"
@@ -58,12 +59,6 @@ extern int familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
 
 extern tagRidePetTable ridePetTable[296];
 extern int BATTLE_getRidePet(int char_index);
-
-// 2026.09.08 临时实现
-BOOL FamilyRideCheck(int charaindex, int petindex, int petno) {
-  return 1;
-}
-
 
 #ifdef _CHANNEL_MODIFY
 extern int InitOccChannel(void);
@@ -478,6 +473,12 @@ static void CHAR_setCharFuncTable(Char *ch) {
       "", //  CHAR_LOOPFUNCTEMP1, = 17
       "", //  CHAR_LOOPFUNCTEMP2, = 18
       "", // CHAR_BATTLEPROPERTY, = 19
+#endif
+#ifdef _ALLBLUES_LUA_1_4
+      "", // CHAR_LOGINOUTFUNC = 20,
+#endif
+#ifdef _ALLBLUES_LUA_1_9
+      "", // CHAR_BATTLESETFUNC = 21,
 #endif
   };
   for (i = 0; i < CHAR_FUNCTABLENUM; i++) {
@@ -1041,6 +1042,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   int char_index, objindex, pet;
   Char ch;
   int per;
+  NETWATCH_set("CHAR_login.parse", clifd, "ACCharLoad");
   if (CHAR_makeCharFromStringToArg(data, &ch) == FALSE) {
     printEx("制作人物错误！\n");
     goto MAKECHARDATAERROR;
@@ -1055,6 +1057,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   }
   // 这里面有strncpysafe
   CHAR_setCharFuncTable(&ch);
+  NETWATCH_set("CHAR_login.allocate", clifd, "ACCharLoad");
   char_index = CHAR_initCharOneArray(&ch);
   if (char_index == -1) {
     printEx("制作人物错误！\n");
@@ -1332,6 +1335,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   CONNECT_setState(clifd, LOGIN);
   CONNECT_setCharaindex(clifd, char_index);
 
+  NETWATCH_set("CHAR_login.character_check", clifd, "ACCharLoad");
   CHAR_complianceParameter(char_index);
   // 检查人物身上
   {
@@ -1447,6 +1451,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
     int i;
     int ID1;
     BOOL b_find = FALSE;
+    NETWATCH_set("CHAR_login.pool_pet_check", clifd, "ACCharLoad");
     for (i = 0; i < CHAR_MAXPOOLPETHAVE; i++) {
       int petindex = CHAR_getCharPoolPet(char_index, i);
       if (CHAR_CHECKINDEX(petindex)) {
@@ -1504,6 +1509,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
 #ifdef _CHAR_PROFESSION
   CHAR_CheckProfessionSkill(char_index);
 #endif
+  NETWATCH_set("CHAR_login.item_check", clifd, "ACCharLoad");
   CHAR_loginCheckUserItem(char_index);
   CHAR_complianceParameter(char_index);
 #ifdef _PET_FUSION
@@ -1579,6 +1585,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   }
 #endif
 
+  NETWATCH_set("CHAR_login.initial_packets", clifd, "ACCharLoad");
   GmsvServer_CharLogin_send(clifd, SUCCESSFUL, "");
   per = ENCOUNT_getEncountPercentMin(
       char_index, CHAR_getInt(char_index, CHAR_FLOOR),
@@ -1662,6 +1669,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
     GmsvServer_FS_send(clifd, flg);
   }
 
+  NETWATCH_set("CHAR_login.map_broadcast", clifd, "ACCharLoad");
   MAP_sendArroundCharNeedFD(clifd, char_index);
   CHAR_setInt(char_index, CHAR_LOGINCOUNT,
               CHAR_getInt(char_index, CHAR_LOGINCOUNT) + 1);
@@ -1738,6 +1746,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
     }
   }
 #else
+    NETWATCH_set("CHAR_login.announce", clifd, "ACCharLoad");
     AnnounceToPlayerWN(clifd);
 #endif
 
@@ -1764,6 +1773,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
 #endif
   // print("\n登陆人物名称:%s ", CHAR_getChar(char_index, CHAR_NAME ) );
 
+  NETWATCH_set("CHAR_login.login_log", clifd, "ACCharLoad");
   {
     unsigned long ip;
     char ipstr[512];
@@ -1785,6 +1795,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
 #endif
     );
   }
+  NETWATCH_set("CHAR_login.online_notifications", clifd, "ACCharLoad");
   {
     int i;
     int playernum = CHAR_getPlayerMaxNum();
@@ -1936,6 +1947,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
     CHAR_setInt(char_index, CHAR_LOCKED, 1);
   }
 #endif
+  NETWATCH_set("ACCharLoad.CHAR_login", clifd, "complete");
   return;
 
 DELETECHARDATA:

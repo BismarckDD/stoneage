@@ -15,7 +15,7 @@ else
 $(error BUILD must be either debug or release)
 endif
 SAAC_CFLAGS=$(CFLAGS) -I../saac/include
-GMSV_CFLAGS=$(CFLAGS) -I../gmsv/include -I../lua
+GMSV_CFLAGS=$(CFLAGS) -I../gmsv/include -I../../shared/lua51
 
 LIBUTIL=libutil.a
 LIBSERVERUTIL=libserverutil.a

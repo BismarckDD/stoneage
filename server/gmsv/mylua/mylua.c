@@ -183,16 +183,6 @@ void Cryptodofile(lua_State *L, char *filename) {
   } else {
     return;
   }
-  /*
-          CryptoLua(buff, maxlen, _ATTESTAION_ID);
-          char token[256];
-          sprintf(token, "%s.allblues", filename);
-                  if ((f=fopen(token,"w+"))!=NULL) {
-                          fwrite(buff,1,maxlen,f);
-                          fclose(f);
-                  }
-  */
-
   DecryptLua(luabuff, luamaxlen, _ATTESTAION_ID);
   loadfilename[strlen(loadfilename) - 9] = '\0';
 

@@ -22,7 +22,11 @@ static int checkIp(lua_State *L)
 {
   int ip = luaL_checkint(L, 1);
 
+	#ifdef _CHECK_SEVER_IP
 	lua_pushinteger(L, checkServerIp(ip));
+	#else
+	lua_pushinteger(L, 0);
+	#endif
 	return 1;
 }
 
@@ -69,7 +73,9 @@ int PlayerNum(lua_State *L)
 {
   int num = luaL_checkint(L, 1);
 	
+	#ifdef _PLAYER_NUM
 	setPlayerNum(num);
+	#endif
 	return 1;
 }
 static const luaL_Reg configlib[] = {

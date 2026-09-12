@@ -5,7 +5,7 @@ export MV=mv
 export RANLIB=ranlib
 export SED=sed
 
-INCFLAGS=-I../include -I../../lua -I../../common -I../../common/utils
+INCFLAGS=-I../include -I../../../shared/lua51 -I../../common -I../../common/utils
 BUILD ?= release
 ifeq ($(BUILD),debug)
 CFLAGS=-m64 -O0 -g3 -ggdb -fno-omit-frame-pointer -fno-inline -pipe -Wall \

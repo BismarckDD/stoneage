@@ -172,7 +172,7 @@ BOOL CHAR_JoinParty_Main_New(int char_index, int targetindex, int flg) {
 }
 
 /*------------------------------------------------------------
- * 由□  奴卞  欠丹午允月［
+ * 加入队伍
  ------------------------------------------------------------*/
 BOOL CHAR_JoinParty(int char_index) {
 
@@ -189,26 +189,19 @@ BOOL CHAR_JoinParty(int char_index) {
     print("%s : %d err\n", __FILE__, __LINE__);
     return FALSE;
   }
-
-  /* 愤坌互由□  奴赚氏匹凶日蛲   */
+  // 角色不能在其他队伍中
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE) {
     GmsvServer_PR_send(fd, 1, FALSE);
     return FALSE;
   }
-
-  /*   及蟆及甄  毛  月 */
+  //
   CHAR_getCoordinationDir(CHAR_getInt(char_index, CHAR_DIR),
                           CHAR_getInt(char_index, CHAR_X),
                           CHAR_getInt(char_index, CHAR_Y), 1, &x, &y);
-
-  /* 赓渝祭允月 */
   for (i = 0; i < CONNECT_WINDOWBUFSIZE; i++) {
     CONNECT_setJoinpartychar_index(fd, i, -1);
   }
   cnt = 0;
-
-  /*愤坌及  及蟆及平乓仿毛潸  允月 */
-
   for (object = MAP_getTopObj(CHAR_getInt(char_index, CHAR_FLOOR), x, y);
        object; object = NEXT_OBJECT(object)) {
     int toindex;
@@ -255,18 +248,13 @@ BOOL CHAR_JoinParty(int char_index) {
       } else {
         targetindex = toindex;
       }
-
-      /*   褪午  ㄠ汹动  卞中月井 */
       if (NPC_Util_CharDistance(char_index, targetindex) > 1) {
         continue;
       }
-
-      /* 爵    反匹卅中仪［*/
       if (CHAR_getWorkInt(targetindex, CHAR_WORKBATTLEMODE) !=
           BATTLE_CHARMODE_NONE) {
         continue;
       }
-      /* 醮棉袱第乒□玉井 */
       if (!CHAR_getFlg(targetindex, CHAR_ISPARTY))
         continue;
 
@@ -323,33 +311,18 @@ BOOL CHAR_JoinParty(int char_index) {
             CHAR_setInt(char_index, CHAR_RIDEPET, -1);
             CHAR_send_P_StatusString(char_index, CHAR_P_STRING_RIDEPET);
           }
-          /*
-              CHAR_sendPMEToArroundCharacterFLXY(char_index,
-                  CHAR_getInt( char_index, CHAR_FLOOR),
-                  CHAR_getInt( char_index, CHAR_X),
-                  CHAR_getInt( char_index, CHAR_Y),
-                  0,1,CHAR_getInt( char_index, CHAR_PETMAILEFFECT)
-                  );
-          */
         }
       }
-    }
-    /* 皿伊奶乩□坭反穴件乒旦田旦动陆反  骰允月 */
-    else {
+    } else {
       continue;
     }
-    /* 锹澎由□  奴及谛醒反    井＂ */
     parray = CHAR_getEmptyPartyArray(targetindex);
     if (parray == -1)
       continue;
-
-    /* 仇仇引匹仁木壬     */
     CONNECT_setJoinpartychar_index(fd, cnt, toindex);
     cnt++;
     if (cnt == CONNECT_WINDOWBUFSIZE)
       break;
-
-    /* 穴件乒旦田旦  苇仄分中］伙□皿毛  仃月［ */
     if (CHAR_getInt(targetindex, CHAR_WHICHTYPE) == CHAR_TYPEBUS)
       break;
   }

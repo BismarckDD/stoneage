@@ -1274,7 +1274,7 @@ int CheckFM(int *index, char *fmname, int fmindex) {
 #ifdef _DEATH_FAMILY_LOGIN_CHECK
 void delovertimeFMMem(int time) {
   int i = 0, j = 0, k = 0;
-  char data[150 * MAX_FAMILY];
+  static char data[150 * MAX_FAMILY];
   for (i = 0; i <= fmindexmaxnum; i++) {
     if (CheckFMUse(i) == 0)
       continue;
@@ -3913,7 +3913,7 @@ int readOneFamilyFromTi(int ti) {
 
 // andy_add 2003/06/16
 int readOneFamily(char *filename, int i) {
-  char line[40000], data[40000];
+  static char line[40000], data[40000];
   FILE *fp = NULL;
   int j;
   int m = 0, fmnum1 = 0, fmnum2 = 0;

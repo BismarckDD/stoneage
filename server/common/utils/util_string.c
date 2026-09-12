@@ -278,3 +278,26 @@ BOOL GeneralSplitImpl(const char *src, const char *delim, const int index,
   // printf("%s,%s,%d\n", buf, src, buflen);
   return TRUE;
 }
+
+BOOL getStringFromCursorWithDelim(const char **cursor, const char *delim,
+                                  char *buf, const int buflen) {
+  const char *start;
+  const char *last;
+  size_t delim_len;
+
+  if (cursor == NULL || *cursor == NULL || delim == NULL || buf == NULL ||
+      buflen <= 0 || **cursor == '\0')
+    return FALSE;
+
+  start = *cursor;
+  delim_len = strlen(delim);
+  last = delim_len > 0 ? strstr(start, delim) : NULL;
+  if (last == NULL) {
+    strncpysafe(buf, buflen, start);
+    *cursor = start + strlen(start);
+  } else {
+    strncpysafe2(buf, buflen, start, last);
+    *cursor = last + delim_len;
+  }
+  return TRUE;
+}

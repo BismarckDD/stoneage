@@ -2,6 +2,12 @@
 #define __CHAR_BASE_H__
 
 #include "version.h"
+#ifdef _ALLBLUES_LUA
+#include "lua.h"
+#endif
+#ifdef _ALLBLUES_LUA
+#include "lua.h"
+#endif
 //
 #include "addressbook.h"
 #include "skill.h"
@@ -1786,6 +1792,10 @@ typedef struct tagChar {
   STRING64 workchar[CHAR_WORKDATACHARNUM];
   int CharMakeSequenceNumber;
   void *functable[CHAR_FUNCTABLENUM];
+#ifdef _ALLBLUES_LUA
+  lua_State *lua[CHAR_FUNCTABLENUM];
+  char *luafunctable[CHAR_FUNCTABLENUM];
+#endif
 #ifdef _STREET_VENDOR
   StreetVendor_t StreetVendor[MAX_SELL_ITEM];
 #endif
@@ -1909,6 +1919,12 @@ extern Char *CHAR_chara;
 INLINE int CHAR_getCharMakeSequenceNumber(int char_index);
 void CHAR_constructFunctable(int char_index);
 void *CHAR_getFunctionPointer(int char_index, int functype);
+#ifdef _ALLBLUES_LUA
+INLINE BOOL CHAR_setLUAFunction(int char_index, int functype, lua_State *L,
+                                const char *luafunctable);
+INLINE BOOL CHAR_delLUAFunction(int char_index, int functype);
+INLINE lua_State *CHAR_getLUAFunction(int char_index, int functype);
+#endif
 BOOL CHAR_initCharArray(int pnum, int petnum, int onum);
 BOOL CHAR_endCharArray(void);
 int CHAR_initCharOneArray(Char *ch);

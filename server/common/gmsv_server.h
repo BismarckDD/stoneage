@@ -337,13 +337,8 @@ void GmsvServer_CreateNewChar_recv(int fd, int dataplacenum, char *charname,
                                    int imgno, int faceimgno, int vital, int str,
                                    int tgh, int dex, int earth, int water,
                                    int fire, int wind, int hometown);
-
-#define GmsvServer_CreateNewChar_send(fd, result, data)                        \
-  _GmsvServer_CreateNewChar_send(fd, result, data, __FILE__, __LINE__)
-void _GmsvServer_CreateNewChar_send(int fd, char *result, char *data,
-                                    char *file, int line);
+void GmsvServer_CreateNewChar_send(int fd, char *result, char *data);
 void GmsvServer_CharDelete_recv(int fd, char *charname, char *a);
-void GmsvServer_NewCharDelete_recv(int fd, char *charname, char *passwd);
 void GmsvServer_CharDelete_send(int fd, char *result, char *data);
 void GmsvServer_CharLogin_recv(int fd, char *charname);
 void GmsvServer_CharLogin_send(int fd, char *result, char *data);

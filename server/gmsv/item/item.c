@@ -9,6 +9,7 @@
 #include "config_file.h"
 #include "function.h"
 #include "magic_base.h"
+#include "item.h"
 #ifndef _WIN32
 #include <strings.h>
 #endif

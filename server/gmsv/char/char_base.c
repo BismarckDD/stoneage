@@ -2153,6 +2153,50 @@ void *CHAR_getFunctionPointer(int char_index, int functype) {
   return CHAR_chara[char_index].functable[functype];
 }
 
+#ifdef _ALLBLUES_LUA
+INLINE BOOL CHAR_setLUAFunction(int char_index, int functype, lua_State *L,
+                                const char *luafunctable) {
+  if (!CHAR_CHECKINDEX(char_index) || functype < CHAR_FIRSTFUNCTION ||
+      functype >= CHAR_LASTFUNCTION || L == NULL || luafunctable == NULL)
+    return FALSE;
+
+  size_t name_length = strlen(luafunctable) + 1;
+  char *name = allocateMemory(name_length);
+  if (name == NULL)
+    return FALSE;
+  memcpy(name, luafunctable, name_length);
+
+  if (CHAR_chara[char_index].luafunctable[functype] != NULL)
+    freeMemory(CHAR_chara[char_index].luafunctable[functype]);
+  CHAR_chara[char_index].lua[functype] = L;
+  CHAR_chara[char_index].luafunctable[functype] = name;
+  return TRUE;
+}
+
+INLINE BOOL CHAR_delLUAFunction(int char_index, int functype) {
+  if (!CHAR_CHECKINDEX(char_index) || functype < CHAR_FIRSTFUNCTION ||
+      functype >= CHAR_LASTFUNCTION)
+    return FALSE;
+  CHAR_chara[char_index].lua[functype] = NULL;
+  if (CHAR_chara[char_index].luafunctable[functype] != NULL) {
+    freeMemory(CHAR_chara[char_index].luafunctable[functype]);
+    CHAR_chara[char_index].luafunctable[functype] = NULL;
+  }
+  return TRUE;
+}
+
+INLINE lua_State *CHAR_getLUAFunction(int char_index, int functype) {
+  if (!CHAR_CHECKINDEX(char_index) || functype < CHAR_FIRSTFUNCTION ||
+      functype >= CHAR_LASTFUNCTION ||
+      CHAR_chara[char_index].lua[functype] == NULL ||
+      CHAR_chara[char_index].luafunctable[functype] == NULL)
+    return NULL;
+  lua_getglobal(CHAR_chara[char_index].lua[functype],
+                CHAR_chara[char_index].luafunctable[functype]);
+  return CHAR_chara[char_index].lua[functype];
+}
+#endif
+
 BOOL CHAR_initCharArray(int pnum, int petnum, int onum) {
   int i;
   BOOL CHAR_checksetdata(void);
@@ -2607,7 +2651,8 @@ char *CHAR_makeStringFromCharIndex(int index) {
 
 BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
   int i;
-  int readindex = 1, rightData = 0;
+  int rightData = 0;
+  const char *read_cursor;
 
   if (data[0] == '\0')
     return FALSE;
@@ -2642,17 +2687,13 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
   one->data[CHAR_BECOMEPIG_BBI] = 100250;
 #endif
 
-  while (TRUE) {
+  read_cursor = data;
+  while (getStringFromCursorWithDelim(&read_cursor, CHAR_DELIMITER, linebuf,
+                                      sizeof(linebuf))) {
     BOOL ret;
-    memset(linebuf, 0, sizeof(linebuf));
     memset(firstToken, 0, sizeof(firstToken));
     memset(secondToken, 0, sizeof(secondToken));
-    ret = getStringFromIndexWithDelim(data, CHAR_DELIMITER, readindex, linebuf,
-                                      sizeof(linebuf));
-    if (ret == FALSE)
-      break;
     if (linebuf[0] == '#' || linebuf[0] == '\n' || linebuf[0] == '\0') {
-      readindex++;
       continue;
     }
     ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
@@ -2833,7 +2874,7 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
     }
 
   NEXT:
-    readindex++;
+    ;
   }
   // Robin 0913  bad_chardata
   {
@@ -2962,9 +3003,9 @@ void LodBadPetString(char *data, char *err, int ti) {
   fclose(fp);
 }
 int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
-  int readnum = 1;
   int rc;
   BOOL found;
+  const char *read_cursor = src;
   char buff[1024 * 8];
   char petfirstToken[1024];
   char petsecondToken[1024 * 8];
@@ -2980,16 +3021,14 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
   }
 
   while (1) {
-    rc = getStringFromIndexWithDelim(src, NONCHAR_DELIMITER, readnum, buff,
-                                     sizeof(buff));
+    rc = getStringFromCursorWithDelim(&read_cursor, NONCHAR_DELIMITER, buff,
+                                      sizeof(buff));
     if (rc == TRUE) {
       if (buff[0] == '#' || buff[0] == '\n' || buff[0] == '\0') {
-        readnum++;
         continue;
       }
     }
     if (rc == TRUE) {
-      readnum++;
       rc = getStringFromIndexWithDelim(buff, ":", 1, petfirstToken,
                                        sizeof(petfirstToken));
       if (rc == FALSE)

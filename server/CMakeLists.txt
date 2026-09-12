@@ -64,6 +64,15 @@ foreach(component char npc net map item battle magic)
        "${CMAKE_CURRENT_SOURCE_DIR}/gmsv/${component}/*.c")
   list(APPEND GMSV_COMPONENT_SOURCES ${component_sources})
 endforeach()
+# ABLUA (gmsv/mylua) is feature-gated by _ALLBLUES_LUA* in version.h and is
+# deliberately kept out of the loop above.  Opt in explicitly so these sources
+# are only pulled in when the corresponding macros are actually enabled.
+option(GMSV_ABLUA "Build the ABLUA (gmsv/mylua) Lua binding layer" ON)
+if(GMSV_ABLUA)
+  file(GLOB gmsv_mylua_sources CONFIGURE_DEPENDS
+       "${CMAKE_CURRENT_SOURCE_DIR}/gmsv/mylua/*.c")
+  list(APPEND GMSV_COMPONENT_SOURCES ${gmsv_mylua_sources})
+endif()
 # epoll is Linux-only. The default select-based network loop is used on Windows.
 list(FILTER GMSV_COMPONENT_SOURCES EXCLUDE REGEX "[/\\\\]epollnet\\.c$")
 

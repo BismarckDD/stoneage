@@ -1,10 +1,10 @@
+#include "version.h"
 #include "battle.h"
 #include "char.h"
 #include "config_file.h"
 #include "item.h"
 #include "mylua/base.h"
 #include "mylua/mylua.h"
-#include "version.h"
 
 #ifdef _ALLBLUES_LUA
 

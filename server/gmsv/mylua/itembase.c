@@ -75,7 +75,9 @@ static CharBase ItemBaseInt[] = {
 	,{{"份量2"},						ITEM_INGVALUE2}
 	,{{"份量3"},						ITEM_INGVALUE3}
 	,{{"份量4"},						ITEM_INGVALUE4}
+	#ifdef _ITEM_COLOER
 	,{{"颜色"},							ITEM_COLOER}
+	#endif
 	,{{"物品等级"},					ITEM_LEAKLEVEL}
 #ifdef _ITEM_USE_TIME
 	,{{"物品时间"},					ITEM_USETIME}

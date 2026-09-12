@@ -45,12 +45,20 @@ static int addLUAListFunction(lua_State *L)
 		MY_Lua *mylua = &MYLua;
 	  while(mylua->next != NULL){
 	  	if(strcmp(mylua->luapath, luafunctablepath) == 0){
+				#ifdef _MAGIC_LUA
 				return MAGIC_addLUAListFunction( mylua->lua, luafuncname, luafunctable, gmlevel, usestring );
+				#else
+				return 1;
+				#endif
 	  	}
 	  	mylua = mylua->next;
 	  }
 	}else{
+		#ifdef _MAGIC_LUA
 		return MAGIC_addLUAListFunction( L, luafuncname, luafunctable, gmlevel, usestring );
+		#else
+		return 1;
+		#endif
 	}
 	return 1;
 	

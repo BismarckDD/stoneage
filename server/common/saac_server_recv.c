@@ -602,7 +602,7 @@ void SaacServer_ACDelFM_recv(int fd, char *fmname, int fmindex, int index,
 void SaacServer_ACShowFMList_recv(int fd) {
 #ifdef _FAMILY
   int r = 0;
-  char data[150 * MAX_FAMILY];
+  static char data[150 * MAX_FAMILY];
   r = ACShowFMList(data);
   if (r < 0) {
     SaacServer_ACShowFMList_send(fd, FAILED, r, "Nothing");
@@ -1182,7 +1182,7 @@ void SaacServer_ACCharSavePoolItem_recv(int fd, char *cdkey, int userindex,
 
 void SaacServer_ACCharGetPoolItem_recv(int fd, char *cdkey, int userindex,
                                        int clifdid, int npcid) {
-  char loadbuf[CHARDATASIZE];
+  static char loadbuf[CHARDATASIZE];
   int ret = -1;
   if (!is_game_server_login(fd)) {
     return;
@@ -1222,7 +1222,7 @@ void SaacServer_ACCharSavePoolPet_recv(int fd, char *cdkey, int userindex,
 
 void SaacServer_ACCharGetPoolPet_recv(int fd, char *cdkey, int userindex,
                                       int clifdid, int npcid) {
-  char loadbuf[CHARDATASIZE];
+  static char loadbuf[CHARDATASIZE];
   int ret = -1;
   if (!is_game_server_login(fd)) {
     return;

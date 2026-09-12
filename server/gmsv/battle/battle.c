@@ -11059,6 +11059,39 @@ void BATTLE_ProfessionStatusSeq(int battleindex, int char_index) {
 
 #endif
 
+#ifdef _ALLBLUES_LUA_1_4
+INLINE BOOL BATTLE_setLUAFunction(int battleindex, int functype, lua_State *L,
+                                  const char *luafunctable) {
+  if (!BATTLE_CHECKINDEX(battleindex) || functype < 0 ||
+      functype >= BATTLE_FUNCTABLENUM || L == NULL || luafunctable == NULL)
+    return FALSE;
+
+  size_t name_length = strlen(luafunctable) + 1;
+  char *name = allocateMemory(name_length);
+  if (name == NULL)
+    return FALSE;
+  memcpy(name, luafunctable, name_length);
+
+  if (BattleArray[battleindex].luafunctable[functype] != NULL)
+    freeMemory(BattleArray[battleindex].luafunctable[functype]);
+  BattleArray[battleindex].lua[functype] = L;
+  BattleArray[battleindex].luafunctable[functype] = name;
+  return TRUE;
+}
+
+INLINE lua_State *BATTLE_getLUAFunction(int battleindex, int functype) {
+  if (!BATTLE_CHECKINDEX(battleindex) || functype < 0 ||
+      functype >= BATTLE_FUNCTABLENUM ||
+      BattleArray[battleindex].lua[functype] == NULL ||
+      BattleArray[battleindex].luafunctable[functype] == NULL)
+    return NULL;
+
+  lua_getglobal(BattleArray[battleindex].lua[functype],
+                BattleArray[battleindex].luafunctable[functype]);
+  return BattleArray[battleindex].lua[functype];
+}
+#endif
+
 int BATTLE_getType(int battleindex) {
   if (battleindex >= BATTLE_battlenum || battleindex < 0)
     return -1;

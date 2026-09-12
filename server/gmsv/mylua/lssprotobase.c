@@ -105,7 +105,9 @@ static int effect(lua_State *L)
 	if(CHAR_CHECKINDEX(char_index) == FALSE) return 0;
 	int fd = getfdFromCharaIndex( char_index);
   char *data=luaL_checklstring(L, 2, &l);
+	#ifdef _DEBUG_RET_CLI
 	GmsvServer_BATTLESKILL_send(fd, data);
+	#endif
 
 	return 1;
 }
@@ -117,7 +119,9 @@ static int MagiccardAction(lua_State *L)
 	if(CHAR_CHECKINDEX(char_index) == FALSE) return 0;
 	int fd = getfdFromCharaIndex( char_index);
   char *data=luaL_checklstring(L, 2, &l);
+	#ifdef _DEBUG_RET_CLI
 	GmsvServer_MagiccardAction_send(fd, data);
+	#endif
 
 	return 1;
 }
@@ -134,7 +138,9 @@ static int MagiccardDamage(lua_State *L)
 	const int offsetx = luaL_checkint(L, 4);
 	const int offsety = luaL_checkint(L, 5);
 
+	#ifdef _DEBUG_RET_CLI
 	GmsvServer_MagiccardDamage_send(fd, position, damage, offsetx, offsety);
+	#endif
 
 	return 1;
 }
@@ -150,7 +156,9 @@ static int MoveScreen(lua_State *L)
 	const int bMoveScreenMove = luaL_checkint(L, 2);
 	const int iXY = luaL_checkint(L, 3);
 
+	#ifdef _DEBUG_RET_CLI
 	GmsvServer_MoveScreen_send(fd, bMoveScreenMove, iXY);
+	#endif
 
 	return 1;
 }

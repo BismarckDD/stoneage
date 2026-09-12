@@ -184,7 +184,11 @@ static int AddRandItem (lua_State *L)
 		TM_ItemId = atoi(TM_ItemIdData);
 	}
   if(TM_ItemId > -1){
+		#ifdef _JZ_NEWSCRIPT_LUA
 		TM_ItemIndex = NPC_GiveItem(TM_Index, TM_ItemId);
+		#else
+		TM_ItemIndex = -1;
+		#endif
 	}
 	lua_pushinteger(L, TM_ItemIndex);
   return 1;

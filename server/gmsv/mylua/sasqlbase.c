@@ -53,15 +53,13 @@ static int setPayPoint(lua_State *L)
 {
 	const int char_index = luaL_checkint(L, 1);
 	const int point = luaL_checkint(L, 2);
-
-  sasql_setPayPoint(char_index, point);
+    sasql_setPayPoint(char_index, point);
 	return 1;
 }
 
 static int getPayPoint(lua_State *L) 
 {
 	const int char_index = luaL_checkint(L, 1);
-
 	lua_pushinteger(L, sasql_getPayPoint(char_index));
 	return 1;
 }
@@ -72,15 +70,13 @@ static int setGamblePoint(lua_State *L)
 {
 	const int char_index = luaL_checkint(L, 1);
 	const int point = luaL_checkint(L, 2);
-
-  sasql_setGamblePoint(char_index, point);
+    sasql_setGamblePoint(char_index, point);
 	return 1;
 }
 
 static int getGamblePoint(lua_State *L)
 {
 	const int char_index = luaL_checkint(L, 1);
-
 	lua_pushinteger(L, sasql_getGamblePoint(char_index));
 	return 1;
 }
@@ -91,15 +87,13 @@ static int setTrialPoint(lua_State *L)
 {
 	const int char_index = luaL_checkint(L, 1);
 	const int point = luaL_checkint(L, 2);
-
-  sasql_setTrialPoint(char_index, point);
+    sasql_setTrialPoint(char_index, point);
 	return 1;
 }
 
 static int getTrialPoint(lua_State *L)
 {
 	const int char_index = luaL_checkint(L, 1);
-
 	lua_pushinteger(L, sasql_getTrialPoint(char_index));
 	return 1;
 }

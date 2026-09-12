@@ -427,3 +427,11 @@ char *ITEM_petmakeItemStatusString(int petindex, int item_id);
 BOOL ITEM_checksetdata(void);
 
 #endif
+
+
+#ifdef _ALLBLUES_LUA_1_2
+
+#include "mylua/mylua.h"
+INLINE BOOL ITEM_setLUAFunction(int item_index, int functype,
+                                const char *luafuncname);
+#endif
