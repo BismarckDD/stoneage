@@ -656,6 +656,9 @@ void *_ITEM_getFunctionPointer(int item_index, int functype, char *file,
 }
 
 #ifdef _ALLBLUES_LUA_1_2
+/* ABLUA 物品回调注册链表的哨兵节点 */
+ITEM_LuaFunc ITEM_luaFunc;
+
 INLINE BOOL ITEM_setLUAFunction(int item_index, int functype,
                                 const char *luafuncname) {
   if (!ITEM_CHECKINDEX(item_index))
@@ -664,18 +667,23 @@ INLINE BOOL ITEM_setLUAFunction(int item_index, int functype,
     print("FunctionType is illegal :%d\n", functype);
     return FALSE;
   }
-  ITEM_LuaFunc *luaFunc = &ITEM_luaFunc;
+  /* ITEM_luaFunc 为哨兵节点，真正的数据从 next 开始；原循环条件会漏掉尾结点 */
+  ITEM_LuaFunc *luaFunc = ITEM_luaFunc.next;
 
-  while (luaFunc->next != NULL) {
+  while (luaFunc != NULL) {
     if (strcmp(luaFunc->luafuncname, luafuncname) == 0) {
       ITEM_gExists[item_index].item.lua[functype - ITEM_FIRSTFUNCTION] =
           luaFunc->lua;
+      if (ITEM_gExists[item_index]
+              .item.luafunctable[functype - ITEM_FIRSTFUNCTION] != NULL)
+        freeMemory(ITEM_gExists[item_index]
+                       .item.luafunctable[functype - ITEM_FIRSTFUNCTION]);
       ITEM_gExists[item_index]
           .item.luafunctable[functype - ITEM_FIRSTFUNCTION] =
-          allocateMemory(strlen(luaFunc->luafunctable));
-      memset(ITEM_gExists[item_index]
-                 .item.luafunctable[functype - ITEM_FIRSTFUNCTION],
-             0, strlen(luaFunc->luafunctable));
+          allocateMemory(strlen(luaFunc->luafunctable) + 1);
+      if (ITEM_gExists[item_index]
+              .item.luafunctable[functype - ITEM_FIRSTFUNCTION] == NULL)
+        return FALSE;
       strcpy(ITEM_gExists[item_index]
                  .item.luafunctable[functype - ITEM_FIRSTFUNCTION],
              luaFunc->luafunctable);
@@ -700,13 +708,13 @@ BOOL ITEM_addLUAListFunction(lua_State *L, const char *luafuncname,
   }
 
   luaFunc->next = allocateMemory(sizeof(ITEM_LuaFunc));
-  memset(luaFunc->next, 0, sizeof(ITEM_luaFunc));
   if (luaFunc->next == NULL)
     return FALSE;
+  memset(luaFunc->next, 0, sizeof(ITEM_LuaFunc));
 
-  luaFunc->lua = L;
-  strncpysafe(luaFunc->luafuncname, 128, luafuncname);
-  strncpysafe(luaFunc->luafunctable, 128, luafunctable);
+  luaFunc->next->lua = L;
+  strncpysafe(luaFunc->next->luafuncname, 128, luafuncname);
+  strncpysafe(luaFunc->next->luafunctable, 128, luafunctable);
 
   return TRUE;
 }

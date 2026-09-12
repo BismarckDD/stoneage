@@ -1,5 +1,5 @@
+#ifndef __MYLUA_MYLUA__H__
 #define __MYLUA_MYLUA__H__
-#ifdef __MYLUA_MYLUA__H__
 
 #include "lauxlib.h"
 #include "lua.h"
