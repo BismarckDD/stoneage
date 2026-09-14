@@ -13,6 +13,8 @@ int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debug_msg) {
   char funcname[1024];
   int token_count = SplitString(encoded, ws);
   if (token_count < 2) {
+    logErr("[SAAC_DISCONNECT] fd=%d reason=invalid_message tokens=%d "
+           "message=%.240s\n", fd, token_count, encoded);
     if (debug_msg != NULL)
       snprintf(debug_msg, 256, "invalid or oversized SAAC message");
     logout_game_server(fd);
@@ -24,6 +26,8 @@ int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debug_msg) {
   /* Authentication is a protocol invariant, not an individual RPC option. */
   if (strcmp(funcname, "ACServerLogin") != 0 &&
       !is_game_server_login(fd)) {
+    logErr("[SAAC_DISCONNECT] fd=%d reason=unauthenticated function=%.200s "
+           "tokens=%d message=%.240s\n", fd, funcname, token_count, encoded);
     if (debug_msg != NULL)
       snprintf(debug_msg, 256, "unauthenticated SAAC function: %.200s",
                funcname);
@@ -37,6 +41,8 @@ int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debug_msg) {
 #if _ATTESTAION_ID == 1
     int id;
     if (token_count < 5) {
+      logErr("[SAAC_DISCONNECT] fd=%d reason=short_login tokens=%d "
+             "message=%.240s\n", fd, token_count, encoded);
       logout_game_server(fd);
       return -1;
     }
@@ -49,6 +55,8 @@ int SaacServer_ServerDispatchMessage(int fd, char *encoded, char *debug_msg) {
     return 0;
 #else
     if (token_count < 4) {
+      logErr("[SAAC_DISCONNECT] fd=%d reason=short_login tokens=%d "
+             "message=%.240s\n", fd, token_count, encoded);
       logout_game_server(fd);
       return -1;
     }

@@ -114,6 +114,7 @@ void main_loop(void) {
     print("失败.\n");
     return;
   }
+  print("成功.\n");
 #endif
 
 #ifdef _ASSESS_SYSEFFICACY
@@ -165,6 +166,7 @@ void main_loop(void) {
 
   NETWATCH_start();
   while (TRUE) {
+
     NETWATCH_set("main_time_update", -1, NULL);
 #ifdef _ASSESS_SYSEFFICACY
     Assess_SysEfficacy(0);
