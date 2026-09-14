@@ -58,13 +58,10 @@ void BattleCommandDispach(int fd, char *command) {
     EscapeFree = 0;
     if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEWATCH) != TRUE) {
       CHAR_talkToCli(char_index, -1,
-                     "华义大魔王使出定身法，定定定定定定把你定在战斗里。"
-                     "",
+                     "孙悟空使出定身法，把你定在战斗里^_^",
                      CHAR_COLORYELLOW);
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_GUARD);
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_C_OK);
-      // 历史注释的原始编码已损坏，无法可靠恢复。
-      // );
       endFlg = 1;
       BATTLE_MpDown(char_index, 2);
     } else {
@@ -83,9 +80,8 @@ void BattleCommandDispach(int fd, char *command) {
     for (i = 0; i < 32; i++) {
       if (getNotEscape(i) == CHAR_getInt(char_index, CHAR_FLOOR)) {
         CHAR_talkToCli(char_index, -1,
-                       "大魔王使出定身法，定定定定定定把你定在战斗里。"
-                       "",
-                       CHAR_COLORYELLOW);
+                    "孙悟空使出定身法，把你定在战斗里^_^",
+                    CHAR_COLORYELLOW);
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_GUARD);
         break;
       }

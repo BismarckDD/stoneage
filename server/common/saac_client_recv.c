@@ -614,7 +614,7 @@ void SaacClient_ACFixFMData_recv(int fd, char *result, int kindflag,
   if (!CHAR_CHECKINDEX(charaindex))
     return;
   if (kindflag == FM_FIX_FMRULE) {
-    CHAR_talkToCli(charaindex, -1, "������ּ�޸ģϣˣ�",
+    CHAR_talkToCli(charaindex, -1, "这样OK吗？",
                    CHAR_COLORWHITE);
   } else if (kindflag == FM_FIX_FMGOLD) {
     intdata = atoi(data1);
@@ -633,7 +633,7 @@ void SaacClient_ACFixFMData_recv(int fd, char *result, int kindflag,
       }
       LogStone(atoi(data2), CHAR_getChar(charaindex, CHAR_NAME),
                CHAR_getChar(charaindex, CHAR_CDKEY), -intdata,
-               CHAR_getInt(charaindex, CHAR_GOLD), "FMBank(��������)",
+               CHAR_getInt(charaindex, CHAR_GOLD), "FMBank(家族银行)",
                CHAR_getInt(charaindex, CHAR_FLOOR),
                CHAR_getInt(charaindex, CHAR_X),
                CHAR_getInt(charaindex, CHAR_Y));
@@ -686,7 +686,7 @@ void SaacClient_ACFixFMPK_recv(int fd, char *result, int data, int winindex,
   if (ret == 1) {
     char tmpbuf[256];
     ACFixFMPK(winindex, loseindex, data);
-    sprintf(tmpbuf, "FMPK(����PK)::win(��ʤ����):%d lose(��ܼ���):%d point:%d",
+    sprintf(tmpbuf, "FMPK(家族PK)::win(优胜家族):%d lose(落败家族):%d point:%d",
             winindex, loseindex, data);
     // print("FixFMPK tmpbuf:%s\n", tmpbuf);
     LogFMPOP(tmpbuf);
@@ -694,50 +694,36 @@ void SaacClient_ACFixFMPK_recv(int fd, char *result, int data, int winindex,
 }
 void SaacClient_ACGMFixFMData_recv(int fd, char *result, char *fmname,
                                    int charfdid) {
-  int ret;
   int clifd = getfdFromFdid(charfdid);
   char buf[256];
   if (CONNECT_checkfd(clifd) == FALSE)
     return;
-
-  if (strcmp(result, SUCCESSFUL) == 0)
-    ret = 1;
-  else
-    ret = 0;
-
+  int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   print("GMFixFMData_recv result:%s\n", result);
-
   if (ret == 1) {
-    sprintf(buf, "�޸�%s���ϣϣˣ�", fmname);
+    sprintf(buf, "修改%s家族数据成功.", fmname);
     CHAR_talkToCli(CONNECT_getCharaindex(clifd), -1, buf, CHAR_COLORWHITE);
   } else {
-    sprintf(buf, "�޸�%s����ʧ�ܣ�", fmname);
+    sprintf(buf, "修改%s家族数据失败.", fmname);
     CHAR_talkToCli(CONNECT_getCharaindex(clifd), -1, buf, CHAR_COLORWHITE);
   }
 }
+
 extern int familyTax[];
 void SaacClient_ACGetFMData_recv(int fd, char *result, int kindflag, int data,
                                  int charfdid) {
-  int ret;
   char buf[256];
   int clifd = getfdFromFdid(charfdid);
   if (CONNECT_checkfd(clifd) == FALSE)
     return;
-
-  if (strcmp(result, SUCCESSFUL) == 0)
-    ret = 1;
-  else
-    ret = 0;
-
-  // print(" FMBank2_%d_%d_%d ", ret, kindflag, data );
+  int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   if (ret == 0)
     return;
-
   if (kindflag == 1) {
     int fmindex =
         CHAR_getWorkInt(CONNECT_getCharaindex(clifd), CHAR_WORKFMINDEXI);
     if (fmindex < 0 || fmindex >= FAMILY_MAXNUM) {
-      print(" fmindex:%d if FALSE !!\n", fmindex);
+      print(" fmindex: %d 异常!!\n", fmindex);
       return;
     }
     familyTax[fmindex] = data;
@@ -747,26 +733,21 @@ void SaacClient_ACGetFMData_recv(int fd, char *result, int kindflag, int data,
 }
 void SaacClient_ACFMClearPK_recv(int fd, char *result, char *fmname,
                                  int fmindex, int index) {
-  int ret, i = 0;
+  int i = 0;
 
-  if (strcmp(result, SUCCESSFUL) == 0)
-    ret = 1;
-  else
-    ret = 0;
+  int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   for (i = 0; i < MAX_SCHEDULEMAN * MAX_SCHEDULE; i++) {
-    {
-      if (fmpks[i].flag == -1)
-        continue;
-      if (fmpks[i].host_index == index || fmpks[i].guest_index == index) {
-        fmpks[i].host_index = -1;
-        strcpy(fmpks[i].host_name, "");
-        fmpks[i].guest_index = -1;
-        strcpy(fmpks[i].guest_name, "");
-        fmpks[i].prepare_time = -1;
-        fmpks[i].max_player = -1;
-        fmpks[i].win = -1;
-        fmpks[i].flag = -1;
-      }
+    if (fmpks[i].flag == -1)
+      continue;
+    if (fmpks[i].host_index == index || fmpks[i].guest_index == index) {
+      fmpks[i].host_index = -1;
+      strcpy(fmpks[i].host_name, "");
+      fmpks[i].guest_index = -1;
+      strcpy(fmpks[i].guest_name, "");
+      fmpks[i].prepare_time = -1;
+      fmpks[i].max_player = -1;
+      fmpks[i].win = -1;
+      fmpks[i].flag = -1;
     }
   }
 }
@@ -778,7 +759,7 @@ void SaacClient_ACSendFmPk_recv(int fd, int to_index, int flg) {
     sprintf(buf, "家族PK.");
     CHAR_talkToCli(to_index, -1, buf, CHAR_COLORRED);
   } else {
-    sprintf(buf, "%s ��������սׯ԰�ʸ�",
+    sprintf(buf, "%s 将获得挑战庄园资格",
             CHAR_getChar(to_index, CHAR_FMNAME));
     int i;
     for (i = 0; i < CHAR_getPlayerMaxNum(); i++) {
@@ -807,11 +788,11 @@ void SaacClient_ACLoadFmPk_recv(int fd, char *data) {
   if (getStringFromIndexWithDelim(data, "|", 2, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].dueltime = atoi(token);
   }
-  // ���� familyindex
+  // 主队 familyindex
   if (getStringFromIndexWithDelim(data, "|", 3, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].host_index = atoi(token);
   }
-  // ���� ������
+  // 主队 家族名
   if (getStringFromIndexWithDelim(data, "|", 4, token, sizeof(token))) {
     strcpy(fmpks[fmpks_pos + 1].host_name, makeStringFromEscaped(token));
   }
@@ -819,27 +800,27 @@ void SaacClient_ACLoadFmPk_recv(int fd, char *data) {
   if (getStringFromIndexWithDelim(data, "|", 5, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].guest_index = atoi(token);
   }
-  // �Ͷ� ������
+  // 客队 家族名
   if (getStringFromIndexWithDelim(data, "|", 6, token, sizeof(token))) {
     strcpy(fmpks[fmpks_pos + 1].guest_name, makeStringFromEscaped(token));
   }
-  // ׼��ʱ��
+  // 准备时间
   if (getStringFromIndexWithDelim(data, "|", 7, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].prepare_time = atoi(token);
   }
-  // �������
+  // 精灵管理
   if (getStringFromIndexWithDelim(data, "|", 8, token, sizeof(token))) {
     int maxnum = atoi(token);
     if (maxnum < 50)
       maxnum = 50;
     fmpks[fmpks_pos + 1].max_player = maxnum;
   }
-  // ���
+  // 管理
   if (getStringFromIndexWithDelim(data, "|", 9, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].flag = atoi(token);
   }
   if (fmpks[fmpks_pos + 1].flag == FMPKS_FLAG_MANOR_OTHERPLANET) {
-    // ��ս����
+    // 对战星球
     if (getStringFromIndexWithDelim(data, "|", 10, token, sizeof(token))) {
       strcpy(fmpks[fmpks_pos + 2].host_name, makeStringFromEscaped(token));
       strcpy(skip, makeStringFromEscaped(token));
@@ -856,7 +837,7 @@ void SaacClient_ACLoadFmPk_recv(int fd, char *data) {
 #endif
 
 void SaacClient_ACManorPKAck_recv(int fd, char *data) {
-  // ������� server �� ׯ԰ pk scheduleman
+  // 精灵管理 server 与 庄园 pk scheduleman
   int i;
   char token[256], skip[256];
   int char_max = CHAR_getCharNum();
@@ -870,7 +851,7 @@ void SaacClient_ACManorPKAck_recv(int fd, char *data) {
           if (CHAR_getWorkInt(i, CHAR_NPCWORKINT2) == atoi(token)) { // manor id
             int fmpks_pos = CHAR_getWorkInt(i, CHAR_NPCWORKINT1) * MAX_SCHEDULE;
 
-            // ��ս����
+            // 对战星球
             if (getStringFromIndexWithDelim(data, "|", 10, token,
                                             sizeof(token))) {
               strcpy(skip, makeStringFromEscaped(token));
@@ -879,49 +860,49 @@ void SaacClient_ACManorPKAck_recv(int fd, char *data) {
               if (strcmp(getGameservername(), skip) != 0) {
                 strcpy(fmpks[fmpks_pos + 2].host_name, skip);
 
-                // ʱ��
+                // 时间
                 if (getStringFromIndexWithDelim(data, "|", 2, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].dueltime = atoi(token);
                 }
-                // ���� familyindex
+                // 主队 familyindex
                 if (getStringFromIndexWithDelim(data, "|", 3, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].host_index = atoi(token);
                 }
-                // ���� ������
+                // 主队 家族名
                 if (getStringFromIndexWithDelim(data, "|", 4, token,
                                                 sizeof(token))) {
                   strcpy(fmpks[fmpks_pos + 1].host_name,
                          makeStringFromEscaped(token));
                 }
-                // �Ͷ� familyindex
+                // 客队 familyindex
                 if (getStringFromIndexWithDelim(data, "|", 5, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].guest_index = atoi(token);
                 }
-                // �Ͷ� ������
+                // 客队 家族名
                 if (getStringFromIndexWithDelim(data, "|", 6, token,
                                                 sizeof(token))) {
                   strcpy(fmpks[fmpks_pos + 1].guest_name,
                          makeStringFromEscaped(token));
                 }
-                // ׼��ʱ��
+                // 准备时间
                 if (getStringFromIndexWithDelim(data, "|", 7, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].prepare_time = atoi(token);
                 }
-                // �������
+                // 精灵管理
                 if (getStringFromIndexWithDelim(data, "|", 8, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].max_player = atoi(token);
                 }
-                // ���
+                // 管理
                 if (getStringFromIndexWithDelim(data, "|", 9, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].flag = atoi(token);
                 }
-                // ��ս����
+                // 对战星球
                 if (getStringFromIndexWithDelim(data, "|", 10, token,
                                                 sizeof(token))) {
                   strcpy(fmpks[fmpks_pos + 2].host_name,
@@ -968,7 +949,7 @@ void SaacClient_ACKick_recv(int fd, int act, char *data, int retfd) {
           } else
 #endif
           {
-            CHAR_talkToCli(i, -1, "���ʺ��ظ���½������!", CHAR_COLORYELLOW);
+            CHAR_talkToCli(i, -1, "因重复登陆而掉线!", CHAR_COLORYELLOW);
 
 #ifdef _NETLOG_
             char cdkey[16];
@@ -976,7 +957,7 @@ void SaacClient_ACKick_recv(int fd, int act, char *data, int retfd) {
             CONNECT_getCharname(CHAR_getWorkInt(i, CHAR_WORKFD), charname, 32);
             CONNECT_getCdkey(CHAR_getWorkInt(i, CHAR_WORKFD), cdkey, 16);
             LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
-                       "�����쳣������");
+                       "封包异常而断线");
 #endif
             CONNECT_setCloseRequest(getfdFromCharaIndex(i), 1);
           }
@@ -985,7 +966,7 @@ void SaacClient_ACKick_recv(int fd, int act, char *data, int retfd) {
     }
     if (find == TRUE && retfd != -1 && CHAR_CHECKINDEX(cindex)) {
       char buf1[256]; //, buf2[256];
-      sprintf(buf1, "ϵͳ��[%s]����ŷ�����",
+      sprintf(buf1, "系统公告[%s]因重复登陆而断线",
               /*CHAR_getChar( cindex, CHAR_NAME),*/ szName);
       for (i = 0; i < MAX_USER; i++) {
         if (CONNECT_getUse(i)) {
@@ -1015,7 +996,7 @@ void SaacClient_ACCharSavePoolItem_recv(int fd, char *result, char *data,
   if (!CHAR_CHECKINDEX(charaindex))
     return;
   if (strstr(result, FAILED) != NULL) {
-    CHAR_talkToCli(charaindex, -1, "���ֿ߲����ϴ浵ʧ�ܣ�", CHAR_COLORYELLOW);
+    CHAR_talkToCli(charaindex, -1, "道具仓库资料存档失败！", CHAR_COLORYELLOW);
     return;
   }
 }
@@ -1035,7 +1016,7 @@ void SaacClient_ACCharGetPoolItem_recv(int fd, char *result, char *data,
     return;
   clifd = getfdFromCharaIndex(charaindex);
   if (CHAR_CheckDepotItem(charaindex))
-    return; // �ֿ��Ѵ���
+    return; // 仓库已处理
 
   if ((ch = CHAR_getCharPointer(charaindex)) == NULL)
     return;
@@ -1047,7 +1028,7 @@ void SaacClient_ACCharGetPoolItem_recv(int fd, char *result, char *data,
     ch->indexOfExistDepotItems[i] = -1;
 
   if (CHAR_makeDepotItemStringToChar(charaindex, data) == FALSE) {
-    CHAR_talkToCli(charaindex, -1, "���ֿ߲����϶�ȡʧ�ܣ�", CHAR_COLORYELLOW);
+    CHAR_talkToCli(charaindex, -1, "道具仓库资料读取失败！", CHAR_COLORYELLOW);
     CHAR_removeDepotItem(charaindex);
     return;
   }
@@ -1057,9 +1038,9 @@ void SaacClient_ACCharGetPoolItem_recv(int fd, char *result, char *data,
     char message[1024];
     char buf[1024];
     strcpy(message, "3\n\n"
-                    "          ʹ�õ��ֿ߲�\n\n"
-                    "          ����ŵ��ߣ�\n"
-                    "          ��ȡ�ص��ߣ�\n");
+                    "          使用道具仓库\n\n"
+                    "          ＜存放道具＞\n"
+                    "          ＜取回道具＞\n");
     GmsvServer_WN_send(clifd, WINDOW_MESSAGETYPE_SELECT,
                        WINDOW_BUTTONTYPE_CANCEL,
                        311, // CHAR_WINDOWTYPE_DEPOTITEMSHOP_HANDLE,
@@ -1078,7 +1059,7 @@ void SaacClient_ACCharSavePoolPet_recv(int fd, char *result, char *data,
   if (!CHAR_CHECKINDEX(charaindex))
     return;
   if (strstr(result, FAILED) != NULL) {
-    CHAR_talkToCli(charaindex, -1, "����ֿ����ϴ浵ʧ�ܣ�", CHAR_COLORYELLOW);
+    CHAR_talkToCli(charaindex, -1, "宠物仓库资料存档失败！", CHAR_COLORYELLOW);
     return;
   }
 }
@@ -1096,7 +1077,7 @@ void SaacClient_ACCharGetPoolPet_recv(int fd, char *result, char *data,
     return;
   clifd = getfdFromCharaIndex(charaindex);
   if (CHAR_CheckDepotPet(charaindex))
-    return; // �ֿ��Ѵ���
+    return; // 仓库已处理
 
   if ((ch = CHAR_getCharPointer(charaindex)) == NULL)
     return;
@@ -1108,7 +1089,7 @@ void SaacClient_ACCharGetPoolPet_recv(int fd, char *result, char *data,
     ch->indexOfExistDepotPets[i] = -1;
 
   if (CHAR_makeDepotPetStringToChar(charaindex, data) == FALSE) {
-    CHAR_talkToCli(charaindex, -1, "����ֿ����϶�ȡʧ�ܣ�", CHAR_COLORYELLOW);
+    CHAR_talkToCli(charaindex, -1, "宠物仓库资料读取失败！", CHAR_COLORYELLOW);
     CHAR_removeDepotPet(charaindex);
     return;
   }
@@ -1120,14 +1101,11 @@ void SaacClient_ACCharGetPoolPet_recv(int fd, char *result, char *data,
     strcpy(
         message,
         "3\n"
-        "              ʹ�ó���ֿ�\n"
-        "���ر�ע�⣺���𽫹��س�����빫���"
-        "ֿ"
-        "�"
-        "\n"
-        "�����������������﹫���ֿ⡻\n"
-        "          ��������ų������\n"
-        "          ������ȡ�س������\n");
+        "              使用宠物仓库\n"
+        "◆特别注意：请勿将贵重宠物存入公共仓库\n"
+        "　　　　　　『宠物公共仓库』\n"
+        "          ＜＜＜存放宠物＞＞＞\n"
+        "          ＜＜＜取回宠物＞＞＞\n");
     GmsvServer_WN_send(clifd, WINDOW_MESSAGETYPE_SELECT,
                        WINDOW_BUTTONTYPE_CANCEL,
                        CHAR_WINDOWTYPE_DEPOTPETSHOP_HANDLE,
@@ -1153,10 +1131,10 @@ void SaacClient_ACMissionTable_recv(int fd, int num, int type, char *data,
       char onedata[1024], token[1024];
 
       if (num == -1) {
-        print("������о����ٻ�����!!\n");
+        print("精灵任务资料回收完成!!\n");
         memset(missiontable, 0, sizeof(missiontable));
       } else
-        print("���һ������!!:%s\n", data);
+        print("取得一笔资料!!:%s\n", data);
 
       for (di = 1; di < MAXMISSIONTABLE; di++) {
         if (!getStringFromIndexWithDelim(data, " ", di, onedata,
@@ -1164,7 +1142,7 @@ void SaacClient_ACMissionTable_recv(int fd, int num, int type, char *data,
           break;
         if (onedata[0] == '\0' || onedata[0] == ' ')
           break;
-        print("����%d:%s\n", di, onedata);
+        print("资料%d:%s\n", di, onedata);
         getStringFromIndexWithDelim(onedata, "|", 1, token, sizeof(token));
         ti = atoi(token);
         if (ti < 0 || ti >= MAXMISSIONTABLE)
@@ -1188,13 +1166,13 @@ void SaacClient_ACMissionTable_recv(int fd, int num, int type, char *data,
     char nameinfo[128], msgbuf[1024];
 
     if (num == -1) {
-      sprintf(msg, "��������\n");
+      sprintf(msg, "币提货卡\n");
       print(msg);
       LogAngel(msg);
       return;
     }
 
-    sprintf(msgbuf, "�յ�AC��Ӧ(add data) num=%d nameinfo=%s ", num, angelinfo);
+    sprintf(msgbuf, "收到AC回应(add data) num=%d nameinfo=%s ", num, angelinfo);
     print(msgbuf);
     LogAngel(msgbuf);
 
@@ -1211,21 +1189,21 @@ void SaacClient_ACMissionTable_recv(int fd, int num, int type, char *data,
     }
 
     if (angelindex == -1) {
-      print("ʹ��������\n");
+      print("使用者不在\n");
       return;
     }
 
     GmsvServer_WN_send(
         getfdFromCharaIndex(angelindex), WINDOW_MESSAGETYPE_ANGELMESSAGE,
         WINDOW_BUTTONTYPE_YESNO, CHAR_WINDOWTYPE_ANGEL_ASK, -1,
-        "Ŀǰħ����Ű����������Ҫ��İ�æ��ǰ��Ѱ��������������Щħ�壬���Ƿ�Ը���æ��");
+        "目前魔界之门正遭受攻击，精灵需要你的帮忙，请前往寻找并驱除这些魔物，你是否愿意帮忙？");
 
-    CHAR_talkToCli(angelindex, -1, "���������ٻ��㡣", CHAR_COLORYELLOW);
+    CHAR_talkToCli(angelindex, -1, "精灵正在召唤你。", CHAR_COLORYELLOW);
   } else if (type == 3) {
     if (num < 0 || num >= MAXMISSIONTABLE)
       return;
 
-    sprintf(msg, " AC��� ����:%d %s %s ", num, missiontable[num].angelinfo,
+    sprintf(msg, " AC值 对象:%d %s %s ", num, missiontable[num].angelinfo,
             missiontable[num].heroinfo);
     print(msg);
     LogAngel(msg);
@@ -1285,18 +1263,18 @@ void SaacClient_ACCharLogin_recv(int fd, int client_fdid, int flag) {
 void SaacClient_QueryPoint_recv(int fd, int point) {
   const int char_index = CONNECT_getCharaindex(fd);
   char token[64];
-  sprintf(token, "��Ŀǰ�ĸ����ػر���Ϊ��%d", point);
+  sprintf(token, "你目前的个人重回币数为：%d", point);
   CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
 }
 
 void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
   int charaindex = CONNECT_getCharaindex(fd);
   if (point == -1) {
-    CHAR_talkToCli(charaindex, -1, "����ػرҲ��㣡", CHAR_COLORYELLOW);
+    CHAR_talkToCli(charaindex, -1, "你的重回币不足！", CHAR_COLORYELLOW);
     return;
   }
   if (strcmp(buf, "") == 0) {
-    CHAR_talkToCli(charaindex, -1, "û�и�����Ʒ���ݣ�", CHAR_COLORYELLOW);
+    CHAR_talkToCli(charaindex, -1, "没有该项物品数据！", CHAR_COLORYELLOW);
     return;
   }
   char token[256];
@@ -1310,7 +1288,7 @@ void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
 
     itemindex = CHAR_findEmptyItemBox(charaindex);
     if (itemindex < 0) {
-      CHAR_talkToCli(charaindex, -1, "��Ʒ���ռ䲻�㣡��", CHAR_COLORYELLOW);
+      CHAR_talkToCli(charaindex, -1, "物品栏空间不足！！", CHAR_COLORYELLOW);
       return;
     }
 
@@ -1326,7 +1304,7 @@ void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
         return;
       }
 
-      sprintf(token, "�õ�%s", ITEM_getChar(itemindex, ITEM_NAME));
+      sprintf(token, "拿到%s", ITEM_getChar(itemindex, ITEM_NAME));
       CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
 
       CHAR_sendItemDataOne(charaindex, ret);
@@ -1334,7 +1312,7 @@ void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
 
 #ifdef _SQL_VIPPOINT_LOG
     LogSqlVipPoint(CHAR_getChar(charaindex, CHAR_NAME),
-                   CHAR_getChar(charaindex, CHAR_CDKEY), "(����ʣ��)", point,
+                   CHAR_getChar(charaindex, CHAR_CDKEY), "(购宠剩点)", point,
                    CHAR_getInt(charaindex, CHAR_FLOOR),
                    CHAR_getInt(charaindex, CHAR_X),
                    CHAR_getInt(charaindex, CHAR_Y));
@@ -1342,7 +1320,7 @@ void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
 
 #ifdef _SAMETHING_SAVEPOINT
     if (CHAR_charSaveFromConnect(charaindex, FALSE)) {
-      CHAR_talkToCli(charaindex, -1, "ϵͳ�Զ�Ϊ���浵!", CHAR_COLORRED);
+      CHAR_talkToCli(charaindex, -1, "系统自动为您存档!", CHAR_COLORRED);
     }
 #endif
 
@@ -1384,7 +1362,7 @@ void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
     }
 
     if (i == CHAR_MAXPETHAVE) {
-      snprintf(token, sizeof(token), "������������");
+      snprintf(token, sizeof(token), "宠物栏已满！");
       CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
       return;
     }
@@ -1465,7 +1443,7 @@ void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
     petindex2 = CHAR_getCharPet(charaindex, i);
     if (!CHAR_CHECKINDEX(petindex2))
       return;
-    snprintf(token, sizeof(token), "�õ�%s��",
+    snprintf(token, sizeof(token), "拿到%s。",
              CHAR_getChar(petindex2, CHAR_NAME));
     CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
     for (j = 0; j < CHAR_MAXPETHAVE; j++) {
@@ -1481,19 +1459,19 @@ void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
 
 #ifdef _SQL_VIPPOINT_LOG
     LogSqlVipPoint(CHAR_getChar(charaindex, CHAR_NAME),
-                   CHAR_getChar(charaindex, CHAR_CDKEY), "(����ʣ��)", point,
+                   CHAR_getChar(charaindex, CHAR_CDKEY), "(购宠剩点)", point,
                    CHAR_getInt(charaindex, CHAR_FLOOR),
                    CHAR_getInt(charaindex, CHAR_X),
                    CHAR_getInt(charaindex, CHAR_Y));
 #endif
 #ifdef _SAMETHING_SAVEPOINT
     if (CHAR_charSaveFromConnect(charaindex, FALSE)) {
-      CHAR_talkToCli(charaindex, -1, "ϵͳ�Զ�Ϊ���浵!", CHAR_COLORRED);
+      CHAR_talkToCli(charaindex, -1, "系统自动为您存档!", CHAR_COLORRED);
     }
 #endif
   }
 
-  snprintf(token, sizeof(token), "����ǰ�ػر�ʣ�� %d", point);
+  snprintf(token, sizeof(token), "您当前重回币剩余 %d", point);
   CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
 }
 
@@ -1567,17 +1545,17 @@ void SaacClient_OnlineBuy_recv(int fd, char *data) {
       }
     }
     if (i == enemynum) {
-      CHAR_talkToCli(charaindex, -1, "�˳��ﲻ���ڣ����뱾������Ա��ϵ��",
+      CHAR_talkToCli(charaindex, -1, "此宠物不存在，请与本服管理员联系！",
                      CHAR_COLORGREEN);
       return;
     }
 
     ret = ENEMY_createPetFromEnemyIndex(charaindex, i);
     if (!CHAR_CHECKINDEX(ret)) {
-      CHAR_talkToCli(charaindex, -1, "��ȡ����ʧ��", CHAR_COLORGREEN);
+      CHAR_talkToCli(charaindex, -1, "领取宠物失败", CHAR_COLORGREEN);
       return;
     }
-    snprintf(token, sizeof(token), "��ȡ���� %s ��",
+    snprintf(token, sizeof(token), "领取宠物 %s ！",
              ENEMY_getChar(i, ENEMY_NAME));
     CHAR_talkToCli(charaindex, -1, token, CHAR_COLORGREEN);
     for (i = 0; i < CHAR_MAXPETHAVE; i++) {
@@ -1642,7 +1620,7 @@ void SaacClient_OnlineBuy_recv(int fd, char *data) {
                 CHAR_getInt(charaindex, CHAR_GOLD) + gold);
     CHAR_complianceParameter(charaindex);
     CHAR_send_P_StatusString(charaindex, CHAR_P_STRING_GOLD);
-    sprintf(token, "��ȡ %d ʯ�ң�", gold);
+    sprintf(token, "领取 %d 石币！", gold);
     CHAR_talkToCli(charaindex, -1, token, CHAR_COLORGREEN);
   } else {
     CHAR_talkToCli(charaindex, -1, data, CHAR_COLORGREEN);
@@ -1656,7 +1634,7 @@ void SaacClient_OldToNew_recv(int fd, char *data) {
 #ifdef _AMPOINT_LOG
   LogAmPoint(CHAR_getChar(charaindex, CHAR_NAME),
              CHAR_getChar(charaindex, CHAR_CDKEY),
-             -CHAR_getInt(charaindex, CHAR_AMPOINT), 0, "(����ת��)",
+             -CHAR_getInt(charaindex, CHAR_AMPOINT), 0, "(积分转换)",
              CHAR_getInt(charaindex, CHAR_FLOOR),
              CHAR_getInt(charaindex, CHAR_X), CHAR_getInt(charaindex, CHAR_Y));
 #endif

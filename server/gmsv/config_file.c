@@ -1074,12 +1074,10 @@ ReadConf gReadConf[] = {
 // Arminius 7.12 login announce
 char announcetext[8192];
 void AnnounceToPlayer(int char_index) {
-  char *ptr, *qtr;
-
-  ptr = announcetext;
+  char *qtr;
+  char *ptr = announcetext;
   while ((qtr = strstr(ptr, "\n")) != NULL) {
     qtr[0] = '\0';
-    //    printf("ptr=%s\n",ptr);
     CHAR_talkToCli(char_index, -1, ptr, CHAR_COLORYELLOW);
     qtr[0] = '\n';
     ptr = qtr + 1;
@@ -1175,11 +1173,6 @@ void LoadPetTalk(void) {
         if (fp != NULL) {
           char line[4096];
           while (fgets(line, sizeof(line), fp)) {
-#ifdef _CRYPTO_DATA
-            if (crypto == TRUE) {
-              DecryptKey(line);
-            }
-#endif
             if (strlen(pettalktext[maxid].DATA) != 0) {
               if (pettalktext[maxid]
                       .DATA[strlen(pettalktext[maxid].DATA) - 1] != '|') {
@@ -1223,7 +1216,6 @@ GAMBLEBANK_ITEMS GB_ITEMS[GAMBLEBANK_ITEMSMAX];
 
 void Load_GambleBankItems(void) {
 
-  FILE *fp;
   char filename[256];
   char buf1[256];
   char name[128];
@@ -1231,25 +1223,9 @@ void Load_GambleBankItems(void) {
   int i = 0;
   sprintf(filename, "./data/gambleitems.txt");
   print("\n加载赌博物品文件 %s ...", filename);
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  fp = fopen(realopfile, "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen(filename, "r");
-  }
+  FILE *fp = fopen(filename, "r");
   if (fp != NULL) {
     while (fgets(buf1, sizeof(buf1), fp) != NULL) {
-#ifdef _CRYPTO_DATA
-      if (crypto == TRUE) {
-        DecryptKey(buf1);
-      }
-#endif
       if (strstr(buf1, "#") != 0)
         continue;
       sscanf(buf1, "%s %d %d %d", name, &ID, &num, &type);
@@ -1886,20 +1862,9 @@ char *getBattleFloorCF(void) {
 extern int mission_num;
 
 BOOL LoadMissionList(void) {
-  FILE *fp;
   int i = 0;
-
   mission_num = 0;
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  fp = fopen("./data/mission.txt.allblues", "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen("./data/mission.txt", "r");
-  }
+  FILE fp = fopen("./data/mission.txt", "r");
   if (fp == NULL) {
     print("任务文件打开错误\n");
     return FALSE;
@@ -1913,11 +1878,6 @@ BOOL LoadMissionList(void) {
     int mindex;
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     chop(line);
     // 以#为注解*******
     if (line[0] == '#')
@@ -1983,11 +1943,6 @@ BOOL LoadMissionCleanList() {
 
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     chop(line);
     if (line[0] == '#')
       continue;
@@ -2043,17 +1998,7 @@ BOOL LoadJobdailyfile(void) {
   char token[16384];
   int listindex = 0;
   int i;
-  FILE *fp;
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  fp = fopen("./data/jobdaily.txt.allblues", "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen("./data/jobdaily.txt", "r");
-  }
+  FILE *fp = fopen("./data/jobdaily.txt", "r");
   if (fp == NULL) {
     print("日常工作文件打开错误\n");
     return FALSE;
@@ -2065,11 +2010,6 @@ BOOL LoadJobdailyfile(void) {
     line[0] = '\0';
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     // print("\n %s ", line);
     chop(line);
 

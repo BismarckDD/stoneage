@@ -504,30 +504,18 @@ void NPC_setDefaultNPCTemplate(NPC_Template *temp) {
 }
 
 BOOL NPC_IsNPCTemplateFile(char *filename) {
-  FILE *f;
   char line1[128];
   char *ret;
   if (filename == NULL || strlen(filename) < 1 ||
       filename[strlen(filename) - 1] == '~' || filename[0] == '#' ||
       strcmptail(filename, ".bak") == 0)
     return FALSE;
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  if (strcmptail(filename, ".allblues") == 0) {
-    crypto = TRUE;
-  }
-#endif
-  f = fopen(filename, "r");
+  FILE *f = fopen(filename, "r");
   if (f == NULL)
     goto RETURNFALSE;
   ret = fgets(line1, sizeof(line1), f);
   if (ret == NULL)
     goto FCLOSERETURNFALSE;
-#ifdef _CRYPTO_DATA
-  if (crypto == TRUE) {
-    DecryptKey(line1);
-  }
-#endif
   if (strcmp(NPC_TEMPLATEFILEMAGIC, line1) == 0) {
     fclose(f);
     return TRUE;
@@ -606,23 +594,12 @@ BOOL NPC_readTemplateFile(char *filename) {
     randomdata[i] = 0;
 
   NPC_setDefaultNPCTemplate(&temp);
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  if (strcmptail(filename, ".allblues") == 0) {
-    crypto = TRUE;
-  }
-#endif
   f = fopen(filename, "r");
   if (f == NULL)
     return FALSE;
   ret = fgets(line, sizeof(line), f);
   if (ret == NULL)
     goto FCLOSERETURNFALSE;
-#ifdef _CRYPTO_DATA
-  if (crypto == TRUE) {
-    DecryptKey(line);
-  }
-#endif
   if (strcmp(NPC_TEMPLATEFILEMAGIC, line) != 0) {
     print("这不是模块文件.\n");
     goto FCLOSERETURNFALSE;

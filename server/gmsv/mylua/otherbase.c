@@ -48,69 +48,56 @@ static int getString(lua_State *L)
 
 static int CallFunction(lua_State *L) 
 {
-	size_t l;
-	char *funcname = luaL_checklstring(L, 1, &l);
-	char *filename = luaL_checklstring(L, 2, &l);
-	char newfilename[256];
-	luaL_checktype(L, 3, LUA_TTABLE);
-	int n = luaL_getn(L, 3);
-
-	lua_State *lua = NULL;
-
-	MY_Lua *mylua = &MYLua;
+  size_t l;
+  char *funcname = luaL_checklstring(L, 1, &l);
+  char *filename = luaL_checklstring(L, 2, &l);
+  char newfilename[256];
+  luaL_checktype(L, 3, LUA_TTABLE);
+  int n = luaL_getn(L, 3);
+  lua_State *lua = NULL;
+  MY_Lua *mylua = &MYLua;
   while(mylua->next != NULL){
-  	if(strcmptail( mylua->luapath, ".allblues" ) == 0 
-  		&& strcmptail( filename, ".lua" ) == 0 ){
-  		sprintf(newfilename, "%s.allblues", filename);
-  	}else{
-  		sprintf(newfilename, "%s", filename);
-  	}
-
+  	sprintf(newfilename, "%s", filename);
   	if(strcmp(newfilename, mylua->luapath) == 0){
-  		lua = mylua->lua;
-			break;
-		}
+  	  lua = mylua->lua;
+	  break;
+    }
   	mylua = mylua->next;
   }
   if (lua == NULL) {
-		return FALSE;
-	}
-
-	lua_getglobal(lua, funcname);
-
-	if (!lua_isfunction(lua, -1)) {
     return FALSE;
   }
+  lua_getglobal(lua, funcname);
+  if (!lua_isfunction(lua, -1)) {
+    return FALSE;
+  }
+  int i;
 
-	int i;
-
-	for(i = 0; i < n; i++){
-		lua_pushnumber(lua, getArrayInt(L, i)); 
-	}
-	int TM_Ret = lua_pcall(lua, n, 1, 0);
-	if(TM_Ret != 0)
-	{
-		//失败-输出错误信息
-		print("CallFunction Lua Err :%d(%s)\n", TM_Ret, lua_tostring(lua, -1));
-		//出栈
-		lua_pop(lua, 1);
-		return FALSE;
-	}
-	lua_isnumber(lua, -1);
-
-	int ret = lua_tonumber(lua, -1);
-	lua_pushinteger(L, ret);
-  return TRUE;
+  for(i = 0; i < n; i++){
+  	lua_pushnumber(lua, getArrayInt(L, i)); 
+  }
+  int TM_Ret = lua_pcall(lua, n, 1, 0);
+  if(TM_Ret != 0)
+  {
+  	//失败-输出错误信息
+  	print("CallFunction Lua Err :%d(%s)\n", TM_Ret, lua_tostring(lua, -1));
+  	//出栈
+  	lua_pop(lua, 1);
+  	return FALSE;
+  }
+  lua_isnumber(lua, -1);
+  
+  int ret = lua_tonumber(lua, -1);
+  lua_pushinteger(L, ret);
+    return TRUE;
 }
 
 
 static int c10to62(lua_State *L) 
 {
 	const int index = luaL_checkint(L, 1);
-	
 	char token[256];
-	cnv10to62( index,	token, sizeof(token));
-	
+	cnv10to62(index, token, sizeof(token));
 	lua_pushstring(L, token);
 	return 1;
 }

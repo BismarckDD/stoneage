@@ -176,11 +176,11 @@ target_link_libraries(gmsv PRIVATE z m)
 # Lua must come after the objects that reference it.
 target_link_libraries(gmsv PRIVATE lua51_gmsv)
 
-# Legacy SAAC handlers place several CHARDATASIZE (1 MiB) work buffers on the
-# stack; some paths have four of them live at once.  GNU ld's Windows default
-# reserve is only 2 MiB, which terminates the process with STATUS_STACK_OVERFLOW
-# (0xC00000FD) after a game server starts sending database/family requests.
+# Legacy server handlers place large work buffers on the stack. GNU ld's
+# Windows default reserve is only 2 MiB, which terminates the process with
+# STATUS_STACK_OVERFLOW (0xC00000FD) in otherwise valid startup/runtime paths.
 target_link_options(saac PRIVATE "LINKER:--stack,33554432")
+target_link_options(gmsv PRIVATE "LINKER:--stack,33554432")
 
 # MinGW links zlib dynamically. Keep the runtime DLL next to gmsv.exe so the
 # server can be launched from a deployment directory without an MSYS2 PATH.

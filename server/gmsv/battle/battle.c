@@ -1690,15 +1690,12 @@ BOOL BATTLE_RescueTry(int char_index) {
   fd = getfdFromchar_index(char_index);
   if (CONNECT_checkfd(fd) == FALSE)
     return FALSE;
-#if 1 // 修正利用参战重复加入战斗	Robin
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) !=
       BATTLE_CHARMODE_NONE) {
     CHAR_talkToCli(char_index, -1, " 重复加入战斗! ", CHAR_COLORRED);
-    print("\n 改封包!!重复加入战斗!:%s ", CHAR_getChar(char_index, CHAR_CDKEY));
-    // GmsvServer_EN_send( fd, FALSE, 0 );
+    print("角色重复加入战斗!:%s.\n", CHAR_getChar(char_index, CHAR_CDKEY));
     return FALSE;
   }
-#endif
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE) {
     GmsvServer_EN_send(fd, FALSE, 0);
     return FALSE;
@@ -8432,13 +8429,9 @@ static int BATTLE_Battling(int battleindex) {
             COM == BATTLE_COM_WAIT || COM == BATTLE_COM_PETIN ||
             COM == BATTLE_COM_PETOUT)) {
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_GUARD);
-        // CHAR_talkToCli( char_index, -1,
-        // 历史注释的原始编码已损坏，无法可靠恢复。
         CHAR_talkToCli(char_index, -1,
                        "变成乌力後不能使用咒术和职业技能！"
-                       "变成乌力後不能使用咒术和职业技能！"
-                       "ܣ"
-                       "变成乌力後不能使用咒术和职业技能！",
+                       "ܣ",
                        CHAR_COLORYELLOW);
       }
     }

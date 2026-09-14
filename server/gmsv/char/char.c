@@ -8416,9 +8416,6 @@ static BOOL CHAR_checkEffectTime(int num) {
                                             sizeof(token));
           if (ret == FALSE)
             break;
-          //  ㄠ勾匹手域谯仄化中木壬公木匹中中
-
-          //  涩烂仄凶坌井日］  躲渝棉及  区卞  匀化中月井＂
           tm_work = t;
           tm_work.tm_sec = 0;
           tm_work.tm_min = atoi(token);
@@ -8434,8 +8431,6 @@ static BOOL CHAR_checkEffectTime(int num) {
           break;
       }
     }
-    // 坌互隙烂  仄分匀凶日手丹OK
-
     returnflg = TRUE;
     break;
   }
@@ -8669,8 +8664,6 @@ int storeCharaData(void) {
     if (makeSaveCharString(outbuff, sizeof(outbuff), CHAR_getChar(i, CHAR_NAME),
                            CHAR_makeOptionString(ch), chardata) == 0) {
       fprintf(fp, outbuff);
-    } else {
-      //      fprintf( fp, "本□皮撩  \n" );
     }
 
     fclose(fp);

@@ -779,10 +779,14 @@ SINGLETHREAD BOOL GetOneLine_fix(int fd, char *buf, int max) {
   if (fd == acfd && strstr(Connect[fd].rb, "ACCharLoad") != NULL &&
 #endif
       logRBuseErr >= 50) { // Connect[fd].rb
-    char buf[AC_RBSIZE];
-    memcpy(buf, Connect[fd].rb, Connect[fd].rbuse + 1);
-    buf[Connect[fd].rbuse + 1] = 0;
-    LogAcMess(fd, "RBUFFER", buf);
+    const size_t log_size = (size_t)Connect[fd].rbuse + 1;
+    char *log_buf = allocateMemory(log_size);
+    if (log_buf != NULL) {
+      memcpy(log_buf, Connect[fd].rb, (size_t)Connect[fd].rbuse);
+      log_buf[Connect[fd].rbuse] = '\0';
+      LogAcMess(fd, "RBUFFER", log_buf);
+      freeMemory(log_buf);
+    }
     logRBuseErr = 0;
   }
   Connect[fd].check_rb_oneline_b = Connect[fd].rbuse;

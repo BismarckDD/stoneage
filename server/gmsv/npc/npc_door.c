@@ -97,45 +97,21 @@ BOOL NPC_DoorInit(int meindex) {
     int closeg = CHAR_getWorkInt(meindex, CHAR_WORKDOORCLOSEG);
     int dir = -1;
     switch (closeg) {
-    case 11900:
-      dir = 6;
-      break;
-    case 11902:
-      dir = 0;
-      break; /*          夫分曰丹尹 */
-    case 11904:
-      dir = 2;
-      break; /*          心亢丹尹 */
-    case 11906:
-      dir = 4;
-      break; /*          心亢仄凶 */
-    case 11908:
-      dir = 6;
-      break; /* 赢中霁及玉失 夫分曰仄凶 */
-    case 11910:
-      dir = 0;
-      break; /*              夫分曰丹尹 */
-    case 11912:
-      dir = 2;
-      break; /*              心亢丹尹 */
-    case 11914:
-      dir = 4;
-      break; /*              心亢仄凶 */
-    case 11916:
-      dir = 6;
-      break; /* 嗡及玉失 夫分曰仄凶 */
-    case 11918:
-      dir = 0;
-      break; /*          夫分曰丹尹 */
-    case 11920:
-      dir = 2;
-      break; /*          心亢丹尹 */
-    case 11922:
-      dir = 4;
-      break; /*          心亢仄凶 */
+    case 11900: dir = 6; break;
+    case 11902: dir = 0; break;
+    case 11904: dir = 2; break;
+    case 11906: dir = 4; break;
+    case 11908: dir = 6; break;
+    case 11910: dir = 0; break;
+    case 11912: dir = 2; break;
+    case 11914: dir = 4; break;
+    case 11916: dir = 6; break;
+    case 11918: dir = 0; break;
+    case 11920: dir = 2; break;
+    case 11922: dir = 4; break;
     case 11924:
       dir = 6;
-      break; /* 赢中嗡及玉失 夫分曰仄凶 */
+      break;
     case 11926:
       dir = 0;
       break; /*              夫分曰丹尹 */
@@ -193,7 +169,6 @@ BOOL NPC_DoorInit(int meindex) {
     case 11992:
       dir = 0;
       break; /*          夫分曰丹尹 */
-
     default:
       break;
     }
@@ -271,7 +246,6 @@ void NPC_DoorWatch(int myobjindex, int moveobjindex, CHAR_ACTION act, int x,
                    int y, int dir, int *opt, int optlen) {
   unsigned long closetime;
   int meindex, moveindex;
-
   if (OBJECT_getType(moveobjindex) != OBJTYPE_CHARA) {
     return;
   }
@@ -297,14 +271,11 @@ void NPC_DoorWatch(int myobjindex, int moveobjindex, CHAR_ACTION act, int x,
   }
 }
 
-#if 1
 void NPC_DoorOff(int meindex, int movedindex) {
   if (CHAR_getWorkInt(meindex, CHAR_WORKDOORSOONFLG)) {
     NPC_DoorClose(meindex, -1);
-  } else {
   }
 }
-#endif
 
 void NPC_DoorPostOver(int meindex, int movedindex) {
   if (CHAR_getWorkInt(meindex, CHAR_WORKDOORSOONFLG)) {
@@ -320,24 +291,19 @@ void NPC_DoorLooked(int meindex, int lookedindex) {
     char token[32];
     char *p = CHAR_getWorkChar(meindex, CHAR_WORKDOORTITLE);
     int i, j, ok = FALSE;
-    for (i = 0;; i++) {
+    for (i = 0; !ok; ++i) {
       int r;
       r = getStringFromIndexWithDelim(p, ":", 2 + i, token, sizeof(token));
       if (r) {
         int titleind = atoi(token);
-        for (j = 0; j < CHAR_TITLEMAXHAVE; j++) {
+        for (j = 0; j < CHAR_TITLEMAXHAVE && !ok; j++) {
           if (CHAR_getCharHaveTitle(lookedindex, j) == titleind) {
             ok = TRUE;
-            break;
           }
-          if (ok)
-            break;
         }
       } else {
         break;
       }
-      if (ok)
-        break;
     }
     if (ok) {
       NPC_DoorFlip(meindex, lookedindex);
@@ -378,7 +344,6 @@ void NPC_DoorLooked(int meindex, int lookedindex) {
         char msgbuf[128];
 
         NPC_ROOMINFO roominfo;
-        /* 由旦午  躲渝蜃毛本永玄允月 */
         NPC_RoomAdminNew_ReadFile(CHAR_getWorkChar(meindex, CHAR_WORKDOORNAME),
                                   &roominfo);
         memcpy(&tmwk, localtime(&expire), sizeof(tmwk));
@@ -481,8 +446,8 @@ void NPC_DoorFlip(int meindex, int doindex) {
     NPC_DoorOpen(meindex, doindex);
   }
 }
-void NPC_DoorClose(int meindex, int doindex) {
 
+void NPC_DoorClose(int meindex, int doindex) {
   CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
               CHAR_getWorkInt(meindex, CHAR_WORKDOORCLOSEG));
   NPC_DoorRefreshOverFlg(meindex);
@@ -533,6 +498,5 @@ BOOL NPC_DoorSetRopeFlag(int fl, int x, int y, int flag) {
   }
   NPC_DoorRefreshOverFlg(ind);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(ind, CHAR_WORKOBJINDEX));
-
   return TRUE;
 }

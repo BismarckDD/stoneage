@@ -3776,19 +3776,9 @@ NEEDITEMENEMY NeedEnemy[] = {
 
 #ifdef _NEED_ITEM_ENEMY
 int need_item_eneny_init() {
-  FILE *fp;
   int i;
   int num = 0;
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  fp = fopen("data/needitemeneny.txt.allblues", "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen("data/needitemeneny.txt", "r");
-  }
+  FILE *fp = fopen("data/needitemeneny.txt", "r");
   if (fp == NULL) {
     print("无法打开文件\n");
     return FALSE;
@@ -3797,11 +3787,6 @@ int need_item_eneny_init() {
     char line[128], buf[16];
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     chop(line);
     if (line[0] == '#')
       continue;

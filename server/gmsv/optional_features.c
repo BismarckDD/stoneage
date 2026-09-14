@@ -1,55 +1,9 @@
-/*
- * Safe defaults for optional scripting modules that are not part of the
- * native Windows build.  These preserve the non-scripted game behavior while
- * keeping the call sites shared with scripting-enabled builds intact.
- */
 #include "version.h"
 
-#include "char_base.h"
+#include "net.h"
 #include "npc_roomadminnew.h"
 #include "util.h"
 
-#if defined(_WIN32) && !defined(_ALLBLUES_LUA)
-BOOL FamilyRideFunction(int char_index, int pet_index, int pet_id) {
-  (void)char_index;
-  (void)pet_index;
-  (void)pet_id;
-  return FALSE;
-}
-
-int FreeTradeItem(int char_index, int item_index) {
-  (void)char_index;
-  (void)item_index;
-  return FALSE;
-}
-
-int FreeTradePet(int char_index, int pet_index) {
-  (void)char_index;
-  (void)pet_index;
-  return FALSE;
-}
-
-int FreeFmPk(void) { return 50; }
-
-BOOL FreePlayerExp(int char_index) {
-  (void)char_index;
-  return 100;
-}
-
-BOOL BattleFinishPvEFunction(int battle_index, int char_index) {
-  (void)battle_index;
-  (void)char_index;
-  return FALSE;
-}
-
-#endif
-
-#ifdef _WIN32
-void NPC_Lua_NEWSHOP_Recv(char *function_name, int char_index) {
-  (void)function_name;
-  (void)char_index;
-}
-#endif
 
 #if !defined(_OFFLINE_SYSTEM)
 int luaplayernum = 0;

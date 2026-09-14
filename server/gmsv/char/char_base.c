@@ -3474,19 +3474,12 @@ INLINE int _CHAR_DelItem(char *file, int line, int char_index, int ti, int num,
   ITEM_setInt(item_index, ITEM_USEPILENUMS, pilenum);
   if (pilenum <= 0) {
 #endif
-    /*
-        if( flg == 1 ){
-          sprintf( token, "交出%s。", ITEM_getChar( item_index, ITEM_NAME));
-          CHAR_talkToCli( char_index, -1, token, CHAR_COLORYELLOW);
-        }
-    */
     CHAR_setItemIndex(char_index, ti, -1);
     ITEM_endExistItemsOne(item_index);
 #ifdef _ITEM_PILENUMS
   }
 #endif
   CHAR_sendItemDataOne(char_index, ti);
-
   return 1;
 }
 
@@ -4172,18 +4165,8 @@ int CHAR_getCharDepotPetElement(int char_index) {
 
 #if defined(_RIDE_CF) && defined(_NEW_RIDEPETS)
 int CHAR_Ride_CF_init() {
-  FILE *fp;
   int i = 0;
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  fp = fopen("data/ride.txt.allblues", "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen("data/ride.txt", "r");
-  }
+  FILE fp = fopen("data/ride.txt", "r");
   if (fp == NULL) {
     print("无法打开文件\n");
     return FALSE;
@@ -4192,11 +4175,6 @@ int CHAR_Ride_CF_init() {
     char line[1024], buf[16];
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     chop(line);
     if (line[0] == '#')
       continue;
@@ -4284,18 +4262,8 @@ int CHAR_Ride_CF_init() {
 
 #ifdef _FM_LEADER_RIDE
 int CHAR_FmLeaderRide_init() {
-  FILE *fp;
   int i;
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  fp = fopen("data/leaderride.txt.allblues", "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen("data/leaderride.txt", "r");
-  }
+  FILE fp = fopen("data/leaderride.txt", "r");
   if (fp == NULL) {
     print("无法打开文件\n");
     return FALSE;
@@ -4304,13 +4272,7 @@ int CHAR_FmLeaderRide_init() {
     char line[64], buf[16];
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     chop(line);
-
     getStringFromIndexWithDelim(line, "|", 2, buf, sizeof(buf));
     FmLeaderRide[i].fmfloor = atoi(buf);
     getStringFromIndexWithDelim(line, "|", 3, buf, sizeof(buf));

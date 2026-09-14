@@ -374,14 +374,14 @@ void GmsvServer_CharLogout_recv(int fd, int flg) {
         if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) !=
             BATTLE_CHARMODE_NONE) {
           CHAR_talkToCli(char_index, -1,
-                         "ս�����޷��ؼ�¼�㣡",
+                         "战斗中无法回纪录点！",
                          CHAR_COLORYELLOW);
           return;
         }
 #ifdef _ITEM_CHECKWARES
         if (CHAR_CheckInItemForWares(char_index, 0) == FALSE) {
           CHAR_talkToCli(char_index, -1,
-                         "Я�������޷�ʹ�á�",
+                         "携带货物无法使用。",
                          CHAR_COLORYELLOW);
           return;
         }
@@ -405,7 +405,7 @@ void GmsvServer_CharLogout_recv(int fd, int flg) {
           char buf[64];
           int i, num = 0, winindex = -1;
           int playernum = CHAR_getPlayerMaxNum();
-          sprintf(buf, "��С�� %s �˳���ǰ������",
+          sprintf(buf, "胆小鬼 %s 退出当前比赛！",
                   CHAR_getChar(char_index, CHAR_NAME));
           AutoPk_PKSystemTalk(buf, buf);
           if (AutoPk_PKTimeGet() <= 0) {
@@ -538,13 +538,13 @@ void GmsvServer_CharList_recv(int fd) {
           if (!CHAR_logout(i, TRUE)) {
             print("err %s:%d\n", __FILE__, __LINE__);
           }
-          GmsvServer_CharList_send(fd, FAILED, "�����˺��������ߣ������µ�¼��Ϸ��");
+          GmsvServer_CharList_send(fd, FAILED, "该账号已在线上，请重新登录游戏！");
           CONNECT_setCloseRequest(getfdFromCharaIndex(i), 1);
           break;
         } else
 #endif
         {
-          CHAR_talkToCli(i, -1, "���ظ���½������!", CHAR_COLORYELLOW);
+          CHAR_talkToCli(i, -1, "因重复登陆而掉线!", CHAR_COLORYELLOW);
           int oldfd = getfdFromCharaIndex(i);
           CONNECT_endOne_debug(oldfd);
           charlistflg = 1;
@@ -621,7 +621,7 @@ void GmsvServer_W_recv(int fd, int x, int y, char *direction) {
     char charname[32];
     CONNECT_getCharname(CHAR_getWorkInt(char_index, CHAR_WORKFD), charname, 32);
     CONNECT_getCdkey(CHAR_getWorkInt(char_index, CHAR_WORKFD), cdkey, 16);
-    LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, "Ѷ�Ŵ���");
+    LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, "讯号错误");
 #endif
 
     CONNECT_setCloseRequest(fd, 1);
@@ -726,8 +726,8 @@ void GmsvServer_W2_recv(int fd, int x, int y, char *direction) {
           if (CHAR_getInt(char_index, CHAR_GOLD) < getNoSTWNenemyPoint()) {
             char token[256];
             sprintf(token,
-                    "������ʯ�Ҳ���%"
-                    "d���޷�ԭ������",
+                    "你身上的石币不够%"
+                    "d，无法进行挑战！",
                     getNoSTWNenemyPoint());
             CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
             return;
@@ -874,7 +874,7 @@ void GmsvServer_DP_recv(int fd, int x, int y, int pet_index) {
   if (CHAR_getInt(char_index, CHAR_LOCKED) == 1) {
     char message[256];
     char buf[256];
-    sprintf(message, "Ϊ��ȷ�������Ʒ��ȫ����������İ�ȫ������н�����\n");
+    sprintf(message, "为了确保你的物品安全，请输入你的安全密码进行解锁！\n");
 
     GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
@@ -953,13 +953,11 @@ void GmsvServer_MI_recv(int fd, int fromid, int toid) {
             armtype == ITEM_BOW || armtype == ITEM_BOOMERANG ||
             armtype == ITEM_BOUNDTHROW || armtype == ITEM_BREAKTHROW ||
             armtype == ITEM_HELM || armtype == ITEM_ARMOUR) {
-          sprintf(message, "�Ƿ�Ը���Ʒ�������������Ķ�����ϸ��\n\n"
-                           "1��������Ʒ������װ���������˷�����ʯͷ\n"
-                           "2��������Ʒ�ɹ��ȼ�+1��ʧ����ȼ�-1\n"
-                           "3��װ���ȼ�Խ�ߣ������ɹ�������Խ��\n"
-                           "4�����ʹ��ͣ��Ƿ��Ǹ����߼�������ʯ�"
-                           "�"
-                           "\n");
+          sprintf(message, "是否对该物品进行升级？请阅读以下细则：\n\n"
+                           "1、升级物品必需是装备，否则浪费升级石头\n"
+                           "2、升级物品成功等级+1，失败则等级-1\n"
+                           "3、装备等级越高，升级成功机率则越低\n"
+                           "4、机率过低，是否考虑更换高级的升级石呢\n");
 
           GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE,
                              WINDOW_BUTTONTYPE_YESNO,
@@ -993,7 +991,7 @@ void GmsvServer_PETITEM_recv(int fd, int x, int y, int petindex, int fromindex,
   if (CHAR_getInt(char_index, CHAR_LOCKED) == 1) {
     char message[256];
     char buf[256];
-    sprintf(message, "Ϊ��ȷ�������Ʒ��ȫ����������İ�ȫ������н�����\n");
+    sprintf(message, "为了确保你的物品安全，请输入你的安全密码进行解锁！\n");
 
     GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
@@ -1018,14 +1016,14 @@ void GmsvServer_SKUP_recv(int fd, int skillid) {
   CHECKFDANDTIME;
   char_index = CONNECT_getCharaindex(fd);
 
-  /* ��Ʈ��Ͻ��� �ʥ饰�Ǥ���˰��ä������ǽ�������*/
+  /* 服务器关闭时把宠物资料存回去的处理 */
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return;
   CHAR_SkillUp(char_index, skillid);
 }
 
 /*------------------------------------------------------------
- * ���ͥ���������˥�å�����������
+ * 宠物的能力值再计算
  ------------------------------------------------------------*/
 void GmsvServer_MSG_recv(int fd, int index, char *message, int color) {
   int char_index;
@@ -1035,7 +1033,7 @@ void GmsvServer_MSG_recv(int fd, int index, char *message, int color) {
 }
 
 /*------------------------------------------------------------
- * ���ɥ쥹�֥å������Ƥ����������ɤ����׵᤬�褿
+ * 从记录缓冲区取出宠物资料
  ------------------------------------------------------------*/
 void GmsvServer_AB_recv(int fd) {
   int char_index;
@@ -1045,7 +1043,7 @@ void GmsvServer_AB_recv(int fd) {
 }
 
 /*------------------------------------------------------------
- * ���ɥ쥹�֥å��ι��ܤ�������
+ * 记录缓冲区的构造
  ------------------------------------------------------------*/
 void GmsvServer_DAB_recv(int fd, int index) {
   int char_index;
@@ -1078,16 +1076,15 @@ void GmsvServer_L_recv(int fd, int dir) {
   CHAR_Look(char_index, dir);
 }
 
-// TALK.
+// TALK.的一些限制
 void GmsvServer_TK_recv(int fd, int x, int y, char *message, int color,
                         int area) {
-  int char_index, ix, iy; // ttom+2
+  int char_index; // ttom+2
   int fmindex, channel;
   CHECKFD;
   char_index = CONNECT_getCharaindex(fd);
   fmindex = CHAR_getInt(char_index, CHAR_FMINDEX);
   channel = CHAR_getWorkInt(char_index, CHAR_WORKFMCHANNEL);
-
   { // Robin 0629 silent
     int silentSec, talkCount;
     silentSec = CHAR_getInt(char_index, CHAR_SILENT);
@@ -1105,9 +1102,9 @@ void GmsvServer_TK_recv(int fd, int x, int y, char *message, int color,
         CHAR_setInt(char_index, CHAR_SILENT, 0);
         return;
       }
-      silentSec += 10; // ���10��
+      silentSec += 10; //
       leftSec = silentSec - ((int)NowTime.tv_sec - loginTime);
-      sprintf(buf, "������!!����%d�룬�ٽ����10���ӡ�", leftSec);
+      sprintf(buf, "被禁言!!还有%d秒，再讲话加10分钟。", leftSec);
       CHAR_talkToCli(char_index, -1, buf, color);
       CHAR_setInt(char_index, CHAR_SILENT, silentSec);
       return;
@@ -1122,9 +1119,7 @@ void GmsvServer_TK_recv(int fd, int x, int y, char *message, int color,
         CHAR_setInt(char_index, CHAR_SILENT, 60);
         CHAR_setWorkInt(char_index, CHAR_WORKLOGINTIME, (int)NowTime.tv_sec);
         CHAR_talkToCli(char_index, -1,
-                       "��̫�໰��ࡣ�������������Ϣ��һ���Ӱ"
-                       "ɣ"
-                       "�",
+                       "你太多话了唷，请等一分钟后再发信息吧！",
                        color);
         CHAR_setWorkInt(char_index, CHAR_WORKTALKCOUNT, 0);
         return;
@@ -1134,15 +1129,13 @@ void GmsvServer_TK_recv(int fd, int x, int y, char *message, int color,
       }
     }
   }
-  ix = CHAR_getInt(char_index, CHAR_X);
-  iy = CHAR_getInt(char_index, CHAR_Y);
-  x = ix;
-  y = iy;
+  x = CHAR_getInt(char_index, CHAR_X);
+  y = CHAR_getInt(char_index, CHAR_Y);
   CHAR_setMyPosition(char_index, x, y, TRUE);
 
   if (CHAR_getInt(char_index, CHAR_LV) < 5 &&
       message[strlen(message) - 1] != ']') {
-    CHAR_talkToCli(char_index, -1, "���ĵȼ�С��5��,Ŀǰֻ��˵hi", CHAR_COLORYELLOW);
+    CHAR_talkToCli(char_index, -1, "你的等级小于5级,目前只能说hi", CHAR_COLORYELLOW);
     CHAR_Talk(fd, char_index, "P|hi", color, area);
   } else {
     CHAR_Talk(fd, char_index, message, color, area);
@@ -1354,7 +1347,7 @@ void GmsvServer_EN_recv(int fd, int x, int y) {
   }
 }
 /*------------------------------------------------------------
- * �ץ쥤�䡼Ʊ�Τǥ��󥫥���ȡʷ�Ʈ��ȯ��
+ * 玩家同士的决斗（淘汰赛发生）
  ------------------------------------------------------------*/
 void GmsvServer_DU_recv(int fd, int x, int y) {
   OBJECT object;
@@ -1365,23 +1358,13 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
   BOOL found = FALSE;
   CHECKFDANDTIME;
   char_index = CONNECT_getCharaindex(fd);
-  { // ttom avoid warp at will
-    int ix, iy;
-    ix = CHAR_getInt(char_index, CHAR_X);
-    iy = CHAR_getInt(char_index, CHAR_Y);
-    if ((ix != x) || (iy != y)) {
-      x = ix;
-      y = iy;
-    }
-  }
+  x = CHAR_getInt(char_index, CHAR_X);
+  y = CHAR_getInt(char_index, CHAR_Y);
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_CLIENT) {
     int i;
     charaindex = char_index;
     CHAR_setMyPosition(charaindex, x, y, TRUE);
-    /* WALKARRAY�򥯥ꥢ���� */
     CHAR_setWorkChar(charaindex, CHAR_WORKWALKARRAY, "");
-
-    /* ��������� */
     for (i = 0; i < CONNECT_WINDOWBUFSIZE; i++) {
       CONNECT_setDuelcharaindex(fd, i, -1);
     }
@@ -1396,7 +1379,6 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
       if (OBJECT_getType(objindex) != OBJTYPE_CHARA)
         continue;
       toindex = OBJECT_getIndex(objindex);
-      /* �ץ쥤�䡼����ʤ� */
       if (CHAR_getInt(toindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER
 #ifdef _PLAYER_NPC
           && CHAR_getInt(toindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYERNPC
@@ -1421,7 +1403,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
 #ifdef _AUTO_PK
         if (floor == 20000) {
           if (AutoPk_PKTimeGet() > 0) {
-            CHAR_talkToCli(charaindex, -1, "��ȱ�����ʼ�ٽ���PK��",
+            CHAR_talkToCli(charaindex, -1, "请等比赛开始再进行PK！",
                            CHAR_COLORYELLOW);
             continue;
           } else {
@@ -1436,7 +1418,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
 #endif
 #ifdef _BATTLE_FLOOR
         {
-          if (strcmp(getBattleFloorCF(), "��") != 0) {
+          if (strcmp(getBattleFloorCF(), "否") != 0) {
             int i;
             for (i = 0; i < 32; i++) {
               if (floor == getBattleFloor(i)) {
@@ -1464,15 +1446,15 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
           if (CHAR_getWorkInt(charaindex, CHAR_WORKPARTYMODE) !=
                   CHAR_PARTY_NONE ||
               CHAR_getWorkInt(toindex, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE) {
-            CHAR_talkToCli(charaindex, toindex, "��ϵ�P����", CHAR_COLORYELLOW);
+            CHAR_talkToCli(charaindex, toindex, "目前无法进行队伍PK！", CHAR_COLORYELLOW);
             continue;
           }
           break;
-        case 2: // �����P
+        case 2: // 队伍PK
           if (CHAR_getWorkInt(charaindex, CHAR_WORKPARTYMODE) ==
                   CHAR_PARTY_NONE ||
               CHAR_getWorkInt(toindex, CHAR_WORKPARTYMODE) == CHAR_PARTY_NONE) {
-            CHAR_talkToCli(charaindex, toindex, "�����P����", CHAR_COLORYELLOW);
+            CHAR_talkToCli(charaindex, toindex, "双方都必须组队才能进行队伍PK！", CHAR_COLORYELLOW);
             continue;
           }
           oyaindex1 = CHAR_getWorkInt(charaindex, CHAR_WORKPARTYINDEX1);
@@ -1484,7 +1466,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
               if (CHAR_CHECKINDEX(workindex)) {
                 if (CHAR_getWorkInt(workindex, CHAR_WORKPARTYMODE) ==
                     CHAR_PARTY_NONE) {
-                  CHAR_talkToCli(charaindex, workindex, "�����P����",
+                  CHAR_talkToCli(charaindex, workindex, "双方都必须组队才能进行队伍PK！",
                                  CHAR_COLORYELLOW);
                   continue;
                 }
@@ -1493,7 +1475,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
               if (CHAR_CHECKINDEX(workindex)) {
                 if (CHAR_getWorkInt(workindex, CHAR_WORKPARTYMODE) ==
                     CHAR_PARTY_NONE) {
-                  CHAR_talkToCli(charaindex, workindex, "�����P����",
+                  CHAR_talkToCli(charaindex, workindex, "双方都必须组队才能进行队伍PK！",
                                  CHAR_COLORYELLOW);
                   continue;
                 }
@@ -1503,21 +1485,21 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
 
           break;
 #ifdef _CHAR_PROFESSION
-        case 3: // ��ְҵ��P
+        case 3: // 职业组队PK
           if (CHAR_getWorkInt(charaindex, CHAR_WORKPARTYMODE) !=
                   CHAR_PARTY_NONE ||
               CHAR_getWorkInt(toindex, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE ||
               CHAR_getInt(charaindex, PROFESSION_CLASS) == 0) {
-            CHAR_talkToCli(charaindex, toindex, "��ְҵ��P����", CHAR_COLORYELLOW);
+            CHAR_talkToCli(charaindex, toindex, "职业状态不符，无法进行职业PK！", CHAR_COLORYELLOW);
             continue;
           }
           break;
-        case 4: // ��ְҵ��P
+        case 4: // 职业单人PK
           if (CHAR_getWorkInt(charaindex, CHAR_WORKPARTYMODE) ==
                   CHAR_PARTY_NONE ||
               CHAR_getWorkInt(toindex, CHAR_WORKPARTYMODE) == CHAR_PARTY_NONE ||
               CHAR_getInt(charaindex, PROFESSION_CLASS) == 0) {
-            CHAR_talkToCli(charaindex, toindex, "��ְҵ��P����", CHAR_COLORYELLOW);
+            CHAR_talkToCli(charaindex, toindex, "双方职业状态不符，无法进行职业PK！", CHAR_COLORYELLOW);
             continue;
           }
           oyaindex1 = CHAR_getWorkInt(charaindex, CHAR_WORKPARTYINDEX1);
@@ -1530,7 +1512,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
                 if (CHAR_getWorkInt(workindex, CHAR_WORKPARTYMODE) ==
                         CHAR_PARTY_NONE ||
                     CHAR_getInt(charaindex, PROFESSION_CLASS) == 0) {
-                  CHAR_talkToCli(workindex, workindex, "�����P����",
+                  CHAR_talkToCli(workindex, workindex, "双方职业状态不符，无法进行职业PK！",
                                  CHAR_COLORYELLOW);
                   continue;
                 }
@@ -1540,7 +1522,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
                 if (CHAR_getWorkInt(workindex, CHAR_WORKPARTYMODE) ==
                         CHAR_PARTY_NONE ||
                     CHAR_getInt(workindex, PROFESSION_CLASS) == 0) {
-                  CHAR_talkToCli(charaindex, workindex, "�����P����",
+                  CHAR_talkToCli(charaindex, workindex, "双方职业状态不符，无法进行职业PK！",
                                  CHAR_COLORYELLOW);
                   continue;
                 }
@@ -1548,21 +1530,21 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
             }
           }
           break;
-        case 5: // ��ְҵ��P
+        case 5: // 职业队伍PK
           if (CHAR_getWorkInt(charaindex, CHAR_WORKPARTYMODE) !=
                   CHAR_PARTY_NONE ||
               CHAR_getWorkInt(toindex, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE ||
               CHAR_getInt(charaindex, PROFESSION_CLASS) > 0) {
-            CHAR_talkToCli(charaindex, toindex, "��ְҵ��P����", CHAR_COLORYELLOW);
+            CHAR_talkToCli(charaindex, toindex, "职业状态不符，无法进行职业PK！", CHAR_COLORYELLOW);
             continue;
           }
           break;
-        case 6: // ��ְҵ��P
+        case 6: // 职业个人PK
           if (CHAR_getWorkInt(charaindex, CHAR_WORKPARTYMODE) ==
                   CHAR_PARTY_NONE ||
               CHAR_getWorkInt(toindex, CHAR_WORKPARTYMODE) == CHAR_PARTY_NONE ||
               CHAR_getInt(charaindex, PROFESSION_CLASS) > 0) {
-            CHAR_talkToCli(charaindex, toindex, "��ְҵ��P����", CHAR_COLORYELLOW);
+            CHAR_talkToCli(charaindex, toindex, "双方职业状态不符，无法进行职业PK！", CHAR_COLORYELLOW);
             continue;
           }
           oyaindex1 = CHAR_getWorkInt(charaindex, CHAR_WORKPARTYINDEX1);
@@ -1575,7 +1557,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
                 if (CHAR_getWorkInt(workindex, CHAR_WORKPARTYMODE) ==
                         CHAR_PARTY_NONE ||
                     CHAR_getInt(workindex, PROFESSION_CLASS) > 0) {
-                  CHAR_talkToCli(charaindex, workindex, "�����P����",
+                  CHAR_talkToCli(charaindex, workindex, "双方职业状态不符，无法进行职业PK！",
                                  CHAR_COLORYELLOW);
                   continue;
                 }
@@ -1585,7 +1567,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
                 if (CHAR_getWorkInt(workindex, CHAR_WORKPARTYMODE) ==
                         CHAR_PARTY_NONE ||
                     CHAR_getInt(workindex, PROFESSION_CLASS) > 0) {
-                  CHAR_talkToCli(charaindex, workindex, "�����P����",
+                  CHAR_talkToCli(charaindex, workindex, "双方职业状态不符，无法进行职业PK！",
                                  CHAR_COLORYELLOW);
                   continue;
                 }
@@ -1682,10 +1664,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
 
           if (menum != tonum) {
             sprintf(token,
-                    "�ҷ�ս������%d���Է�ս������%"
-                    "d�������������Գƣ��޷���ս"
-                    "�"
-                    "�",
+                    "我方战斗人数%d，对方战斗人数%d，双方人数不相等，无法对战！",
                     menum, tonum);
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
             GmsvServer_EN_send(fd, FALSE, 0);
@@ -1698,14 +1677,14 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
           if (CHAR_getInt(charaindex, CHAR_AMPOINT) < getVipPointPK(3)) {
             sprintf(
                 token,
-                "��Ļ��ֵ㲻��%d���޷�����PK��",
+                "您的点数不足%d，无法进行PK！",
                 getVipPointPK(3));
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
             goto GmsvServer_DU_recv_Err;
           } else if (CHAR_getInt(enemyindex, CHAR_AMPOINT) < getVipPointPK(3)) {
             sprintf(token,
-                    "�Է����ֵ㲻��%"
-                    "d���޷�����PK��",
+                    "对方的点数不足%"
+                    "d，无法进行PK！",
                     getVipPointPK(3));
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
             goto GmsvServer_DU_recv_Err;
@@ -1715,14 +1694,14 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
           if (CHAR_getInt(charaindex, CHAR_AMPOINT) < getVipPointPK(2)) {
             sprintf(
                 token,
-                "��Ļ��ֵ㲻��%d���޷�����PK��",
+                "您的点数不足%d，无法进行PK！",
                 getVipPointPK(2));
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
             goto GmsvServer_DU_recv_Err;
           } else if (CHAR_getInt(enemyindex, CHAR_AMPOINT) < getVipPointPK(2)) {
             sprintf(token,
-                    "�Է����ֵ㲻��%"
-                    "d���޷�����PK��",
+                    "对方的点数不足%"
+                    "d，无法进行PK！",
                     getVipPointPK(2));
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
             goto GmsvServer_DU_recv_Err;
@@ -1732,14 +1711,14 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
           if (CHAR_getInt(charaindex, CHAR_AMPOINT) < getVipPointPK(1)) {
             sprintf(
                 token,
-                "��Ļ��ֵ㲻��%d���޷�����PK��",
+                "您的点数不足%d，无法进行PK！",
                 getVipPointPK(1));
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
             goto GmsvServer_DU_recv_Err;
           } else if (CHAR_getInt(enemyindex, CHAR_AMPOINT) < getVipPointPK(1)) {
             sprintf(token,
-                    "�Է����ֵ㲻��%"
-                    "d���޷�����PK��",
+                    "对方的点数不足%"
+                    "d，无法进行PK！",
                     getVipPointPK(1));
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
             goto GmsvServer_DU_recv_Err;
@@ -1749,14 +1728,14 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
           if (CHAR_getInt(charaindex, CHAR_AMPOINT) < getVipPointPK(0)) {
             sprintf(
                 token,
-                "��Ļ��ֵ㲻��%d���޷�����PK��",
+                "您的点数不足%d，无法进行PK！",
                 getVipPointPK(0));
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
             goto GmsvServer_DU_recv_Err;
           } else if (CHAR_getInt(enemyindex, CHAR_AMPOINT) < getVipPointPK(0)) {
             sprintf(token,
-                    "�Է����ֵ㲻��%"
-                    "d���޷�����PK��",
+                    "对方的点数不足%"
+                    "d，无法进行PK！",
                     getVipPointPK(0));
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
             goto GmsvServer_DU_recv_Err;
@@ -1776,7 +1755,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
       int strlength;
       char msgbuf[1024];
       char escapebuf[2048];
-      strcpy(msgbuf, "1\nҪ��˭ս����\n");
+      strcpy(msgbuf, "1\n要跟谁战斗？\n");
       strlength = strlen(msgbuf);
       for (i = 0;
            CONNECT_getDuelcharaindex(fd, i) != -1 && i < CONNECT_WINDOWBUFSIZE;
@@ -1786,10 +1765,10 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
         snprintf(buf, sizeof(buf), "%s [%s]\n", a,
                  CHAR_getWorkInt(CONNECT_getDuelcharaindex(fd, i),
                                  CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE
-                     ? "����"
-                     : "����");
+                     ? "队伍"
+                     : "个人");
         if (strlength + strlen(buf) > arraysizeof(msgbuf)) {
-          print("%s:%d�Ӵ�ѶϢbuffer���㡣\n", __FILE__, __LINE__);
+          print("%s:%d视窗讯息buffer不足。\n", __FILE__, __LINE__);
           break;
         }
         strcpy(&msgbuf[strlength], buf);
@@ -1806,14 +1785,14 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
 
 GmsvServer_DU_recv_Err:;
   if (ret == FALSE) {
-    /* ����˪�� */
+    /* 瑛绊霜耨 */
     GmsvServer_EN_send(fd, FALSE, 0);
     if (cnt > 0)
       return;
     else if (found)
-      CHAR_talkToCli(charaindex, -1, "���˿��Զ�ս��", CHAR_COLORYELLOW);
+      CHAR_talkToCli(charaindex, -1, "无人可以对战。", CHAR_COLORYELLOW);
     else
-      CHAR_talkToCli(charaindex, -1, "����û���κ��ˡ�", CHAR_COLORYELLOW);
+      CHAR_talkToCli(charaindex, -1, "那里没有任何人。", CHAR_COLORYELLOW);
   }
 }
 /*------------------------------------------------------------
@@ -1899,15 +1878,15 @@ void GmsvServer_FS_recv(int fd, int flg) {
     CHAR_setWorkInt(char_index, CHAR_WORK_BATTLEPKTYPE, 0);
     char message[256];
     char buf[256];
-    sprintf(message, "��ѡ������ϣ����PK����\n"
-                     "����PK\n"
-                     "��ϵ�P\n"
-                     "�����P\n"
+    sprintf(message, "请选择你希望进行的PK方式\n"
+                     "个人PK\n"
+                     "队伍PK\n"
+                     "组队PK\n"
 #ifdef _CHAR_PROFESSION
-                     "��ְҵ��P\n"
-                     "��ְҵ��P\n"
-                     "��ְҵ��P\n"
-                     "��ְҵ��P\n"
+                     "职业组队PK\n"
+                     "职业单人PK\n"
+                     "职业队伍PK\n"
+                     "职业个人PK\n"
 #endif
     );
 
@@ -2076,7 +2055,7 @@ void GmsvServer_JB_recv(int fd, int x, int y) {
 #ifdef _WATCH_FLOOR
       || floor == getWatchFloor(1) || floor == getWatchFloor(2) ||
       floor == getWatchFloor(3) || floor == getWatchFloor(4) ||
-      floor == getWatchFloor(5) || !strcmp(getWatchFloorCF(), "��")
+      floor == getWatchFloor(5) || !strcmp(getWatchFloorCF(), "否")
 #endif
   ) {
     BATTLE_WatchTry(charaindex);
@@ -2169,7 +2148,7 @@ void GmsvServer_WN_recv(int fd, int x, int y, int seqno, int objindex,
       SaacClient_ACMissionTable_send(acfd, mindex, 3, name_info, "");
       GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
                          -1, -1,
-                         "�����ź���\n������İ���������ħ������Σ����½�������ˡ�");
+                         "取消讯号后将会中断精灵的帮忙，\n魔界之门将陷入危险，请三思而后行！");
       sendAngelCleanToCli(fd);
     }
   }
@@ -2236,7 +2215,7 @@ void GmsvServer_WN_recv(int fd, int x, int y, int seqno, int objindex,
       FIRST:
 
         GmsvServer_EN_send(fd, FALSE, 0);
-        CHAR_talkToCli(char_index, -1, "�¼�����", CHAR_COLORYELLOW);
+        CHAR_talkToCli(char_index, -1, "事件设置", CHAR_COLORYELLOW);
         goto END_WN;
       }
     }
@@ -2269,7 +2248,7 @@ void GmsvServer_HL_recv(int fd, int flg) {
       BATTLE_CHARMODE_NONE) {
     return;
   }
-#ifdef _LOCKHELP_OK // (���ɿ�) Syu ADD �������ɼ���ս��
+#ifdef _LOCKHELP_OK // (不可开) Syu ADD 锁定不可加入战斗
   if ((CHAR_getInt(char_index, CHAR_FLOOR) >= 8200 &&
        CHAR_getInt(char_index, CHAR_FLOOR) <= 8213) ||
       (CHAR_getInt(char_index, CHAR_FLOOR) >= 30017 &&
@@ -2297,14 +2276,14 @@ void GmsvServer_HL_recv(int fd, int flg) {
         .Side[CHAR_getWorkInt(char_index, CHAR_WORKBATTLESIDE)]
         .flg |= BSIDE_FLG_HELP_OK;
 
-    snprintf(msgbuf, sizeof(msgbuf), "%s ����ȣ�",
+    snprintf(msgbuf, sizeof(msgbuf), "%s 在求救！",
              CHAR_getChar(char_index, CHAR_NAME));
   } else {
     BattleArray[CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX)]
         .Side[CHAR_getWorkInt(char_index, CHAR_WORKBATTLESIDE)]
         .flg &= ~BSIDE_FLG_HELP_OK;
 
-    snprintf(msgbuf, sizeof(msgbuf), "%s �����ܾ�������",
+    snprintf(msgbuf, sizeof(msgbuf), "%s 决定拒绝帮助。",
              CHAR_getChar(char_index, CHAR_NAME));
   }
 
@@ -2386,7 +2365,7 @@ void GmsvServer_PMSG_recv(int fd, int index, int petindex, int itemindex,
   if (CHAR_getInt(char_index, CHAR_LOCKED) == 1) {
     char message[256];
     char buf[256];
-    sprintf(message, "Ϊ��ȷ�������Ʒ��ȫ����������İ�ȫ������н�����\n");
+    sprintf(message, "为了确保你的物品安全，请输入你的安全密码进行解锁！\n");
     GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
                        CHAR_WINDOWTYPE_ITEM_PET_LOCKED, -1,
@@ -2560,7 +2539,7 @@ void GmsvServer_CHATROOM_recv(int fd, char *data) {
 }
 #endif
 
-#ifdef _NEWREQUESTPROTOCOL // (���ɿ�) Syu ADD ����ProtocolҪ��ϸ��
+#ifdef _NEWREQUESTPROTOCOL // (不可开) Syu ADD 新增Protocol要求细项
 void GmsvServer_RESIST_recv(int fd) {
   int charindex = -1;
 

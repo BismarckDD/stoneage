@@ -161,12 +161,6 @@ int NPC_readCreateFile(char *filename) {
   }
 
   NPC_setDefaultNPCCreate(&cr);
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  if (strcmptail(filename, ".allblues") == 0) {
-    crypto = TRUE;
-  }
-#endif
   f = fopen(filename, "r");
   if (f == NULL)
     return FALSE;

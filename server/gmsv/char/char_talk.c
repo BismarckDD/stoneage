@@ -1539,14 +1539,11 @@ BOOL CHAR_talkToCliExt(int talkedchar_index, int talkchar_index, char *message,
   if (!CHAR_CHECKINDEX(talkedchar_index))
     return FALSE;
   if (CHAR_getInt(talkedchar_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER) {
-    //		print("err CHAR_talkToCli CHAR_WHICHTYPE != CHAR_TYPEPLAYER\n");
     return FALSE;
   }
 
   fd = getfdFromCharaIndex(talkedchar_index);
   if (fd == -1) {
-    //		print("err CHAR_talkToCli can't get fd from:%d \n",
-    //talkedchar_index);
     return FALSE;
   }
 
@@ -1590,14 +1587,11 @@ BOOL CHAR_talkToCli(int talkedchar_index, int talkchar_index, char *message,
   if (!CHAR_CHECKINDEX(talkedchar_index))
     return FALSE;
   if (CHAR_getInt(talkedchar_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER) {
-    //		print("err CHAR_talkToCli CHAR_WHICHTYPE != CHAR_TYPEPLAYER\n");
     return FALSE;
   }
 
   fd = getfdFromCharaIndex(talkedchar_index);
   if (fd == -1) {
-    //		print("err CHAR_talkToCli can't get fd from:%d \n",
-    //talkedchar_index);
     return FALSE;
   }
 
