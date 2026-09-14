@@ -2,13 +2,13 @@
 #include <cstdint>
 #include <cstdio>
 #include <cstring>
-const char *copyUtf8CharByNum(const char *, char *, int);
+char *copyUtf8CharByNum(char *, char *, int);
 int getUtf8CharNum(const char *);
 
 static void check(const char *src, int limit, const char *expected, size_t consumed) {
     char output[128];
     memset(output, 0x7f, sizeof(output));
-    const char *next = copyUtf8CharByNum(src, output, limit);
+    const char *next = copyUtf8CharByNum(output, const_cast<char *>(src), limit);
     assert(next == src + consumed);
     assert(strcmp(output, expected) == 0);
     assert(getUtf8CharNum(output) <= (limit > 0 ? limit : 0));
@@ -36,11 +36,12 @@ int main() {
     char part[32], joined[64] = "";
     while (*next) {
         const char *previous = next;
-        next = copyUtf8CharByNum(next, part, 3);
+        next = copyUtf8CharByNum(part, const_cast<char *>(next), 3);
         assert(next > previous);
         strcat(joined, part);
     }
     assert(next == text + strlen(text) && *next == '\0');
     assert(strcmp(joined, text) == 0);
+    check("\xFF" "A", 9, "?", 1);
     puts("UTF-8 copy regression tests passed.");
 }

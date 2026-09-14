@@ -40,6 +40,7 @@ void CHAR_CHAT_DEBUG_debug( int char_index, char* message );
 void CHAR_CHAT_DEBUG_exp( int charindex , char *message );
 void CHAR_CHAT_DEBUG_dp( int charindex , char *message );
 void CHAR_CHAT_DEBUG_setTrans( int char_index, char *message);
+void CHAR_CHAT_DEBUG_visaudit(int char_index, char* message);
 void CHAR_CHAT_DEBUG_getuser(int charindex ,char *message);//ttom +1 14/11/2000
 void CHAR_CHAT_DEBUG_shutup(int charindex ,char *message);//ttom 22/11/2000
 void CHAR_CHAT_DEBUG_waeikick( int charindex, char* message );//ttom 12/02/2000

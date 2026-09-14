@@ -103,6 +103,13 @@ MAP_Objlink* _MAP_getTopObj( char *file, int line, int floor, int x, int y );
 #define    MAP_objmove( objindex, of, ox, oy, nfl, nx, ny) _MAP_objmove( __FILE__, __LINE__, objindex, of, ox, oy, nfl, nx, ny)
 BOOL _MAP_objmove( char *file, int line, int objindex, int ofloor, int ox, int oy, int nfloor,
                   int nx, int ny );
+/* diag: is objindex really linked into cell (floor,x,y) */
+BOOL MAP_isObjAttachedAt( int floor, int x, int y, int objindex );
+/* diag: count olink nodes of objindex on a whole floor, first cell */
+int  MAP_countObjAttach( int floor, int objindex, int* px, int* py );
+/* diag: reproduce the visibility-scan predicate - is objindex linked into
+   any cell within +-half of (cx,cy) on this floor? */
+BOOL MAP_isObjInWindow( int floor, int cx, int cy, int objindex, int half );
 char *MAP_getFloorName( int floor);
 BOOL MAP_setObjData( int ff ,int fx, int fy, int obj, int objhp );
 

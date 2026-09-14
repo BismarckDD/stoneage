@@ -123,6 +123,17 @@ int sa_socket_setsockopt(int fd, int level, int option, const char *value,
                          int value_length);
 int sa_socket_fcntl(int fd, int command, ...);
 
+/* Returns 1 when another process already owns 0.0.0.0:<port>.
+ *
+ * WinSock's SO_REUSEADDR lets a later bind() succeed on a port that is
+ * already owned, while every incoming connection keeps being delivered to
+ * the first owner.  The newer listener is therefore never readable and
+ * select()/accept() never fire, which looks exactly like a dead peer.  A
+ * listen socket must be validated explicitly, so probe with
+ * SO_EXCLUSIVEADDRUSE and use a loopback connect to tell a real foreign
+ * listener apart from harmless TIME_WAIT leftovers. */
+int sa_tcp_port_owned_by_other(int port);
+
 #ifndef SA_WINDOWS_COMPAT_IMPLEMENTATION
 #define socket sa_socket_open
 #define accept sa_socket_accept

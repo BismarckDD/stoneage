@@ -4170,8 +4170,8 @@ BOOL procRecvEpoll(int sockfd) {
   if (ret == -1) {
     if (errno != EAGAIN && errno != EINTR) {
       if (sockfd == acfd) {
-        print("读取返回:%d %s\n", ret, strerror(errno));
-        print("gmsv与acsv失去连接! 异常终止...\n");
+        print("读取返回:ret=%d,errno=%s\n", ret, strerror(errno));
+        print("GMSV与SAAC失去连接! 程序异常退出......");
         sigshutdown(-1);
         exit(1);
       } else {

@@ -104,5 +104,6 @@ void set_nodelay(int sock);
 #define TCPSTRUCT_ETOOLONG -12    /* 数据太长 */
 #define TCPSTRUCT_EMBFULL -13     /* 内存缓冲区已满  */
 #define TCPSTRUCT_ECLOSEAGAIN -14 /* 重复关闭链接 */
+#define TCPSTRUCT_EADDRUSED -15   /* 监听端口被其他进程占用 */
 
 #endif /* __TCP_TOOL_H__ */

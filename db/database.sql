@@ -394,3 +394,6 @@ CREATE TABLE IF NOT EXISTS `yuxiaxielog` (
 
 INSERT INTO CSAlogin (username, password) values ('aaa', 'aaa');
 INSERT INTO CSAlogin (username, password) values ('aaaa', 'aaaa');
+INSERT INTO CSAlogin (username, password) values ('user1', 'aaa');
+INSERT INTO CSAlogin (username, password) values ('user2', 'aaa');
+INSERT INTO CSAlogin (username, password) values ('user3', 'aaa');

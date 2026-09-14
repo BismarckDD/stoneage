@@ -42,6 +42,19 @@ int tcpstruct_init(char *addr, int p, int timeout_ms, int mem_use, int db) {
 
   g_main_sock_fd = -1;
 
+#ifdef _WIN32
+  /* Windows 的 SO_REUSEADDR 允许 bind 到一个已被别的进程占用的端口且不报错，
+   * 但之后所有入站连接仍然投递给先占者，本进程永远 accept
+   * 不到。提前用独占绑定探测，把这种静默失败变成一条明确的启动错误。 */
+  if (sa_tcp_port_owned_by_other(p)) {
+    fprintf(stderr,
+            "[SAAC] 监听端口 %d 已被其他进程占用: Windows 下 "
+            "SO_REUSEADDR 会让 bind 假成功, 但连接不会投递给"
+            "本进程。\n", p);
+    return TCPSTRUCT_EADDRUSED;
+  }
+#endif
+
   // 初始化 g_mem_buffer
   g_mem_buffer_size = mem_use / sizeof(MemBuffer);
   g_mem_buffer_used = 0;
@@ -134,10 +147,9 @@ int tcpstruct_accept(int *tis, int ticount) {
     int send_rounds = 1;
     if (item->fd < 0)
       continue;
-    if (item->error) {
-      saac_session_mark_remote_closed(&g_con[i]);
-      continue;
-    }
+    /* 对端断开由下面的 read()/write() 返回值判定，不再使用 select()
+     * 的 exceptfds：把健康会话直接标成 closed_by_remote 会在接收缓冲区
+     * 仍有未读数据时关闭 socket，对端只会看到 connection reset。 */
     if (item->readable) {
       int fr = getFreeMem();
       int rr, readsize;
@@ -187,8 +199,8 @@ int tcpstruct_accept(int *tis, int ticount) {
     }
   }
 
-  if (items[0].error)
-    return TCPSTRUCT_ESOCK;
+  /* 必须优先服务监听套接字：原先在这里提前 return，会让 GMSV 的入站
+   * 连接一直挂在 backlog 里得不到 accept，最终被对端看到为 reset。 */
   if (items[0].readable) {
     for (i = 0; i < ticount; i++) {
       struct sockaddr_in c;
@@ -210,6 +222,22 @@ int tcpstruct_accept(int *tis, int ticount) {
       saac_session_attach(&g_con[newcon], newsockfd, &c);
       tis[accepted] = newcon;
       accepted++;
+    }
+  }
+  {
+    static int saac_accept_dbg = 0;
+    static int saac_listen_readable = -1;
+    int readable_now = items[0].readable ? 1 : 0;
+    /* 可读状态的每一次翻转都要落盘（不限次数），否则端口被
+     * 占用时只会看到一片 readable=0，无法区分 "不可读" 与 "无人连"。 */
+    if (readable_now != saac_listen_readable) {
+      saac_listen_readable = readable_now;
+      logFileToday("[SAAC] listen fd=%d readable=%d res=%d\n",
+                   g_main_sock_fd, readable_now, poll_result);
+    } else if (readable_now == 0 && saac_accept_dbg < 20) {
+      saac_accept_dbg++;
+      logFileToday("[SAAC] acceptpoll n=%d res=%d listen_fd=%d readable=0\n",
+                   saac_accept_dbg, poll_result, g_main_sock_fd);
     }
   }
   return accepted;

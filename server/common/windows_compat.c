@@ -244,6 +244,52 @@ int sa_inet_aton(const char *address, struct in_addr *result) {
   return InetPtonA(AF_INET, address, result) == 1 ? 1 : 0;
 }
 
+int sa_tcp_port_owned_by_other(int port) {
+  SOCKET probe;
+  struct sockaddr_in address;
+  int exclusive;
+  int exclusive_bind_failed = 0;
+  int owned = 0;
+
+  if (port <= 0 || port > 65535)
+    return 0;
+  if (sa_platform_init() != 0)
+    return 0;
+
+  /* A foreign listener -- or a TIME_WAIT leftover -- blocks an exclusive
+   * bind.  Only the connect probe below can tell the two apart. */
+  probe = socket(AF_INET, SOCK_STREAM, 0);
+  if (probe == INVALID_SOCKET)
+    return 0;
+  exclusive = 1;
+  if (setsockopt(probe, SOL_SOCKET, SO_EXCLUSIVEADDRUSE,
+                 (const char *)&exclusive, sizeof(exclusive)) == 0) {
+    memset(&address, 0, sizeof(address));
+    address.sin_family = AF_INET;
+    address.sin_port = htons((u_short)port);
+    address.sin_addr.s_addr = htonl(INADDR_ANY);
+    if (bind(probe, (struct sockaddr *)&address, sizeof(address)) ==
+        SOCKET_ERROR)
+      exclusive_bind_failed = 1;
+  }
+  closesocket(probe);
+  if (!exclusive_bind_failed)
+    return 0;
+
+  /* The port is unusable, but only a live listener answers a connect. */
+  probe = socket(AF_INET, SOCK_STREAM, 0);
+  if (probe == INVALID_SOCKET)
+    return 0;
+  memset(&address, 0, sizeof(address));
+  address.sin_family = AF_INET;
+  address.sin_port = htons((u_short)port);
+  address.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+  if (connect(probe, (struct sockaddr *)&address, sizeof(address)) == 0)
+    owned = 1;
+  closesocket(probe);
+  return owned;
+}
+
 int sa_socket_open(int domain, int type, int protocol) {
   SOCKET native_socket;
   int fd;

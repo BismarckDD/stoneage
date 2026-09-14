@@ -154,6 +154,7 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
     {"petmake", CHAR_CHAT_DEBUG_petmake, TRUE, 0, 3, "宠物ID ((等级) (账号))"},
 #endif
     {"gold", CHAR_CHAT_DEBUG_gold, TRUE, 0, 2, "数量 (账号)"},
+    {"visaudit", CHAR_CHAT_DEBUG_visaudit, TRUE, 0, 2, "all"},
 
     // 家族工具
     {"manorpk", CHAR_CHAT_DEBUG_manorpk, TRUE, 0, 2, "allpeace/peace 庄园编号"},

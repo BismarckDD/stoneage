@@ -1073,9 +1073,21 @@ char *copyUtf8CharByNum(char *des, char *src, int Num)
     }
 
     const size_t bytes = getUtf8PrefixBytes(src, Num);
-    memmove(des, src, bytes);
-    des[bytes] = '\0';
-    return src + bytes;
+    if (bytes > 0 || src[0] == '\0' || Num <= 0 ||
+        getUtf8SequenceLength(src, strlen(src)) > 0) {
+        memmove(des, src, bytes);
+        des[bytes] = '\0';
+        return src + bytes;
+    }
+
+    // Some legacy game data still contains isolated CP936 or otherwise invalid
+    // UTF-8 bytes.  Returning the original pointer makes every caller that
+    // splits text in a loop spin forever (the pet-skill menu is one such
+    // caller).  Consume the bad byte and render a replacement so the UI keeps
+    // responding even when the source data is malformed.
+    des[0] = '?';
+    des[1] = '\0';
+    return src + 1;
 }
 
 BOOL copyUtf8WithLimit(char *destination, size_t destinationSize,

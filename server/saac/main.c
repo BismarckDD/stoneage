@@ -154,6 +154,7 @@ int login_game_server(const int ti, const char *server_name,
 #if _ATTESTAION_ID == 1
   if (id != _ATTESTAION_ID) {
     logErr("服务端版本错误\n");
+    logFileToday("[SAAC] login reject reason=attestation id=%d\n", id);
     snprintf(result, result_len, "失败");
     snprintf(retdata, ret_data_len, "版本错误");
     return 0;
@@ -162,8 +163,10 @@ int login_game_server(const int ti, const char *server_name,
   // svpass 是一个外部变量
   if (strcmp(server_pass, g_saac_config.svpass) == 0) {
     logErr("服务器密码正确 %s\n", server_name);
+    logFileToday("[SAAC] login ok name=%s pass=%s\n", server_name, server_pass);
   } else {
     logErr("服务器密码错误 %s\n", server_name);
+    logFileToday("[SAAC] login badpass name=%s pass=%s\n", server_name, server_pass);
     snprintf(result, result_len, "失败");
     snprintf(retdata, ret_data_len, "密码错误");
     return 0;
@@ -539,6 +542,17 @@ int main(int argc, char **argv) {
       // break 是TCP INIT 成功
       break;
     }
+    if (tcpr == TCPSTRUCT_EADDRUSED) {
+      logErr("\n[SAAC] 监听端口 %d 已被其他进程占用，无法监听。\n"
+             "  Windows 下 SO_REUSEADDR 会让 bind 假成功，但连接永远不会\n"
+             "  投递给本进程（表现为 listen 成功却 accept 不到）。\n"
+             "  请关闭占用该端口的程序，或修改 acserv.cf 的 port 与\n"
+             "  setup.cf 的 acservport 后重新启动。\n\n",
+             g_saac_config.port);
+      logFileToday("[SAAC] FATAL port %d occupied by another process\n",
+                   g_saac_config.port);
+      exit(1);
+    }
     logErr("监听TCP端口失败, 阶段代码: %d, 系统错误: %d (%s), "
            "1s后重新尝试...\n",
            tcpr, errno, strerror(errno));
@@ -550,6 +564,7 @@ int main(int argc, char **argv) {
   } while (TRUE);
   printf("TCP连接建立成功: %d %d\n", CHARDATASIZE,
          SAAC_SERVER_MAXLSRPCARGS);
+  logFileToday("[SAAC] listen ok port=%d\n", g_saac_config.port);
   InitWorkSpace(&gSaacWorkSpace, tcpstruct_write, CHARDATASIZE,
                 SAAC_SERVER_MAXLSRPCARGS);
 
@@ -577,6 +592,7 @@ int main(int argc, char **argv) {
 #endif
   logErr("\n服务端版本: <%s>\n", SERVER_VERSION);
   logErr("\n开始工作.....\n");
+  logFileToday("[SAAC] enter main loop\n");
 
   int new_ti, i, j;
   static BOOL lottery = FALSE;
@@ -701,6 +717,13 @@ int main(int argc, char **argv) {
     if (new_ti >= 0) {
       logErr("建立连接: %d\n", new_ti);
       gs[new_ti].use = 1;
+      logFileToday("[SAAC] accept ti=%d\n", new_ti);
+    } else {
+      static int saac_accept_rc_dbg = 0;
+      if (saac_accept_rc_dbg < 8) {
+        saac_accept_rc_dbg++;
+        logFileToday("[SAAC] accept1 rc=%d\n", new_ti);
+      }
     }
 
     for (i = 0; i < MAXCONNECTION; i++) {
@@ -709,6 +732,13 @@ int main(int argc, char **argv) {
       const int read_bytes = tcpstruct_readline_chop(i, sTcpBuf, sizeof(sTcpBuf) - 1);
       if (read_bytes > 0) {
         sTcpBuf[read_bytes] = 0;
+        {
+          static int saac_recv_dbg_ = 0;
+          if (saac_recv_dbg_ < 20) {
+            saac_recv_dbg_++;
+            logFileToday("[SAAC] recv ti=%d n=%d line=%.180s\n", i, read_bytes, sTcpBuf);
+          }
+        }
         int rc = SaacServer_ServerDispatchMessage(i, sTcpBuf, sDebugFun);
         // print("rc: %d\n", rc);
         if (rc < 0) {
@@ -731,6 +761,7 @@ int main(int argc, char **argv) {
         logout_game_server(i);
       } else if (read_bytes < 0) {
         logErr("关闭连接: %d, 服务器名:%s, read_bytes:%d\n", i, gs[i].name, read_bytes);
+        logFileToday("[SAAC] close ti=%d name=%s rb=%d\n", i, gs[i].name, read_bytes);
         logout_game_server(i);
       } else if (read_bytes == 0) {
       }

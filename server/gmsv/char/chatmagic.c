@@ -6377,3 +6377,23 @@ void CHAR_CHAT_DEBUG_SAVESHH(int fd, int char_index, char *message, int color,
       ((int *)message)[6] == 0xF2C4BADD && ((int *)message)[7] == 0xFEC5BBDD)
     checkflg = 1;
 }
+
+
+/* diag: visibility audit. Whisper as GM:
+       visaudit       -> dump this player
+       visaudit all   -> dump every online player                       */
+void CHAR_CHAT_DEBUG_visaudit(int char_index, char *message) {
+  int i;
+  if (!CHAR_CHECKINDEX(char_index))
+    return;
+  if (message != NULL && strstr(message, "all") != NULL) {
+    int playernum = CHAR_getPlayerMaxNum();
+    for (i = 0; i < playernum; i++)
+      CHAR_visAudit("cmd-all", i);
+    CHAR_talkToCli(char_index, -1, "[visaudit] all online players dumped",
+                   CHAR_COLORYELLOW);
+  } else {
+    CHAR_visAudit("cmd", char_index);
+    CHAR_talkToCli(char_index, -1, "[visaudit] self dumped", CHAR_COLORYELLOW);
+  }
+}

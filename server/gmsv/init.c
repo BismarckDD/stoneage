@@ -628,6 +628,15 @@ BOOL init(int argc, char **argv, char **env) {
 #endif
   }
   print("成功.\n");
+  NETTRACE_armWrite(acfd);
+  {
+    int login_wbuse = -1, login_casize = -1;
+    CONNECT_getPendingBufferSizes(acfd, &login_wbuse, &login_casize);
+    logFileToday("[GMSV] login queued fd=%d wbuse=%d server_len=%d"
+                 " server=%.40s\n",
+                 acfd, login_wbuse, (int)strlen(getGameservername()),
+                 getGameservername());
+  }
 #ifdef _OTHER_SAAC_LINK
   OtherSaacConnect();
 #endif

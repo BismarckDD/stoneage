@@ -1676,6 +1676,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   CHAR_sendCToArroundCharacter(objindex);
   CHAR_sendArroundCharaData(char_index);
   CHAR_sendWatchEvent(objindex, CHAR_ACTSTAND, NULL, 0, TRUE);
+  CHAR_visAudit("login", char_index);
   ADDRESSBOOK_notifyLoginLogout(char_index, 1);
   CHAR_setWorkInt(char_index, CHAR_WORKLASTATTACKCHARAINDEX, -1);
   if (CHAR_getInt(char_index, CHAR_HP) <= 0) {
@@ -5214,6 +5215,19 @@ void CHAR_sendArroundCharaData(int char_index) {
         int is_npc = FALSE;
 
         objects_seen++;
+        {
+          /* diag: dump every scanned node so we can see what the mesh holds */
+          int dbg_type = CHECKOBJECT(objindex) ? OBJECT_getType(objindex) : -99;
+          int dbg_idx =
+              (dbg_type == OBJTYPE_CHARA) ? OBJECT_getIndex(objindex) : -1;
+          int dbg_ok = (dbg_type == OBJTYPE_CHARA) && CHAR_CHECKINDEX(dbg_idx);
+          print("[NPC_SEND_OBJ] scan=%d cell=%d,%d obj=%d type=%d cidx=%d "
+                "ckchar=%d wtype=%d vis=%d self=%d\n",
+                char_index, i, j, objindex, dbg_type, dbg_idx, dbg_ok,
+                dbg_ok ? CHAR_getInt(dbg_idx, CHAR_WHICHTYPE) : -1,
+                dbg_ok ? CHAR_getFlg(dbg_idx, CHAR_ISVISIBLE) : -1,
+                (dbg_ok && (dbg_idx == char_index)) ? 1 : 0);
+        }
         if (OBJECT_getType(objindex) == OBJTYPE_CHARA &&
             CHAR_CHECKINDEX(c_index)) {
           characters_seen++;
@@ -5467,6 +5481,85 @@ void CHAR_sendArroundCharaData(int char_index) {
           char_index, fd, objects_seen, characters_seen, npcs_seen,
           invisible_characters, invisible_npcs, encoded_objects, encoded_npcs,
           encode_failed, message_full, strpos, write_size, ca_size);
+  }
+}
+
+/* ------------------------------------------------------------------
+ * Visibility audit (diagnostic). Prints, for the given player and for every
+ * online player, all three coordinates that matter:
+ *     char coords (CHAR_X/Y/FLOOR)  - what the server thinks
+ *     object coords (obj[].x/y/floor) - what the object record says
+ *     mesh attachment              - where the olink node actually is
+ * plus the distance, so we can tell apart:
+ *     (a) object missing from the map mesh (desync),
+ *     (b) player simply out of the 20x20 view range,
+ *     (c) something else entirely.
+ * ------------------------------------------------------------------ */
+void CHAR_visAudit(const char *tag, int char_index) {
+  int i;
+  int playernum;
+  int my_obj, my_fl, my_x, my_y;
+  int found_x, found_y, found_n;
+  if (!CHAR_CHECKINDEX(char_index))
+    return;
+  if (CHAR_getInt(char_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
+    return;
+  my_obj = CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX);
+  my_fl = CHAR_getInt(char_index, CHAR_FLOOR);
+  my_x = CHAR_getInt(char_index, CHAR_X);
+  my_y = CHAR_getInt(char_index, CHAR_Y);
+  found_n = MAP_countObjAttach(my_fl, my_obj, &found_x, &found_y);
+  print("[VIS_AUDIT] tag=%s SELF char=%d fd=%d name=%s obj=%d char_at=%d,%d,%d "
+        "obj_at=%d,%d,%d attach_at_own=%d attach_count=%d first_attach=%d,%d\n",
+        tag, char_index, getfdFromCharaIndex(char_index),
+        CHAR_getChar(char_index, CHAR_NAME), my_obj, my_fl, my_x, my_y,
+        CHECKOBJECT(my_obj) ? OBJECT_getFloor(my_obj) : -1,
+        CHECKOBJECT(my_obj) ? OBJECT_getX(my_obj) : -1,
+        CHECKOBJECT(my_obj) ? OBJECT_getY(my_obj) : -1,
+        MAP_isObjAttachedAt(my_fl, my_x, my_y, my_obj), found_n, found_x,
+        found_y);
+  playernum = CHAR_getPlayerMaxNum();
+  for (i = 0; i < playernum; i++) {
+    int fd, o_obj, o_fl, o_x, o_y, o_ax, o_ay, o_n;
+    int dx, dy, in_range, in_my_window, me_in_peer_window;
+    if (i == char_index || !CHAR_CHECKINDEX(i))
+      continue;
+    if (CHAR_getInt(i, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
+      continue;
+    fd = getfdFromCharaIndex(i);
+    if (fd == -1)
+      continue;
+    o_obj = CHAR_getWorkInt(i, CHAR_WORKOBJINDEX);
+    o_fl = CHAR_getInt(i, CHAR_FLOOR);
+    o_x = CHAR_getInt(i, CHAR_X);
+    o_y = CHAR_getInt(i, CHAR_Y);
+    o_n = MAP_countObjAttach(o_fl, o_obj, &o_ax, &o_ay);
+    /* diag: the two server-side visibility predicates, exactly as the
+       real scan computes them.
+       peerNodeInMyWindow: my scan around MY coords finds HIS node.
+       myNodeInPeerWindow: HIS scan around HIS coords finds MY node. */
+    in_my_window =
+        MAP_isObjInWindow(my_fl, my_x, my_y, o_obj, CHAR_DEFAULTSEESIZ / 2);
+    me_in_peer_window =
+        MAP_isObjInWindow(o_fl, o_x, o_y, my_obj, CHAR_DEFAULTSEESIZ / 2);
+    dx = o_x - my_x;
+    dy = o_y - my_y;
+    if (dx < 0)
+      dx = -dx;
+    if (dy < 0)
+      dy = -dy;
+    in_range = (o_fl == my_fl) && dx <= (CHAR_DEFAULTSEESIZ / 2) &&
+               dy <= (CHAR_DEFAULTSEESIZ / 2);
+    print("[VIS_AUDIT] tag=%s PEER self=%d char=%d fd=%d name=%s obj=%d "
+          "char_at=%d,%d,%d obj_at=%d,%d,%d dist=%d,%d in_range=%d "
+          "attach_at_own=%d attach_count=%d first_attach=%d,%d "
+          "peerNodeInMyWindow=%d myNodeInPeerWindow=%d\n",
+          tag, char_index, i, fd, CHAR_getChar(i, CHAR_NAME), o_obj, o_fl, o_x,
+          o_y, CHECKOBJECT(o_obj) ? OBJECT_getFloor(o_obj) : -1,
+          CHECKOBJECT(o_obj) ? OBJECT_getX(o_obj) : -1,
+          CHECKOBJECT(o_obj) ? OBJECT_getY(o_obj) : -1, dx, dy, in_range,
+          MAP_isObjAttachedAt(o_fl, o_x, o_y, o_obj), o_n, o_ax, o_ay,
+          in_my_window, me_in_peer_window);
   }
 }
 

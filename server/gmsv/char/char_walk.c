@@ -325,6 +325,15 @@ static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
       of = OBJECT_setFloor(objindex, CHAR_getInt(char_index, CHAR_FLOOR));
       ox = OBJECT_setX(objindex, CHAR_getInt(char_index, CHAR_X));
       oy = OBJECT_setY(objindex, CHAR_getInt(char_index, CHAR_Y));
+      if (!MAP_objmove(objindex, of, ox, oy, ff, fx, fy)) {
+        /* 修复：走路必须同步 olink 网格挂点。可见性扫描
+           (CHAR_sendArroundCharaData / CHAR_sendCToArroundCharacter) 只按
+           网格格子取候选对象，挂点不更新则玩家走出 ±10 格后彻底失联。
+           该调用在 a578d7c(2026.08.27 fix tcp) 中被删除。 */
+        print("%s:%d:[MAP_OBJMOVE_FAIL] walk objindex=%d cell(%d,%d,%d)->"
+              "(%d,%d,%d) char=%d\n",
+              __FILE__, __LINE__, objindex, of, ox, oy, ff, fx, fy, char_index);
+      }
     }
 
     CHAR_setInt(char_index, CHAR_WALKCOUNT,
@@ -511,6 +520,27 @@ CHAR_AFTERWALK:
                         CHAR_EVENT_ENEMY) {
                   CHAR_setInt(char_index, CHAR_X, ox);
                   CHAR_setInt(char_index, CHAR_Y, oy);
+                  /* 修复：撞到敌人被弹回时，CHAR 坐标回滚了，OBJECT 坐标和
+                     olink 网格挂点也必须一起回滚，否则角色位置与网格脱节，
+                     周围玩家看不到他（与走路不更新网格是同一类 bug）。 */
+                  {
+                    int rb_obj, rb_of, rb_ox, rb_oy;
+                    rb_obj = CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX);
+                    rb_of = OBJECT_setFloor(
+                        rb_obj, CHAR_getInt(char_index, CHAR_FLOOR));
+                    rb_ox =
+                        OBJECT_setX(rb_obj, CHAR_getInt(char_index, CHAR_X));
+                    rb_oy =
+                        OBJECT_setY(rb_obj, CHAR_getInt(char_index, CHAR_Y));
+                    if (!MAP_objmove(rb_obj, rb_of, rb_ox, rb_oy,
+                                     CHAR_getInt(char_index, CHAR_FLOOR),
+                                     CHAR_getInt(char_index, CHAR_X),
+                                     CHAR_getInt(char_index, CHAR_Y))) {
+                      print("%s:%d:[MAP_OBJMOVE_FAIL] walk-rollback "
+                            "objindex=%d\n",
+                            __FILE__, __LINE__, rb_obj);
+                    }
+                  }
                   GmsvServer_XYD_send(getfdFromCharaIndex(char_index),
                                     CHAR_getInt(char_index, CHAR_X),
                                     CHAR_getInt(char_index, CHAR_Y),
@@ -1775,6 +1805,15 @@ CHAR_WALKRET CHAR_walk_jc(int char_index, int of, int ox, int oy, int dir) {
       of = OBJECT_setFloor(objindex, CHAR_getInt(char_index, CHAR_FLOOR));
       ox = OBJECT_setX(objindex, CHAR_getInt(char_index, CHAR_X));
       oy = OBJECT_setY(objindex, CHAR_getInt(char_index, CHAR_Y));
+      if (!MAP_objmove(objindex, of, ox, oy, ff, fx, fy)) {
+        /* 修复：走路必须同步 olink 网格挂点。可见性扫描
+           (CHAR_sendArroundCharaData / CHAR_sendCToArroundCharacter) 只按
+           网格格子取候选对象，挂点不更新则玩家走出 ±10 格后彻底失联。
+           该调用在 a578d7c(2026.08.27 fix tcp) 中被删除。 */
+        print("%s:%d:[MAP_OBJMOVE_FAIL] walk objindex=%d cell(%d,%d,%d)->"
+              "(%d,%d,%d) char=%d\n",
+              __FILE__, __LINE__, objindex, of, ox, oy, ff, fx, fy, char_index);
+      }
     }
 
     CHAR_setInt(char_index, CHAR_WALKCOUNT,
@@ -1969,6 +2008,27 @@ CHAR_AFTERWALK:
                         CHAR_EVENT_ENEMY) {
                   CHAR_setInt(char_index, CHAR_X, ox);
                   CHAR_setInt(char_index, CHAR_Y, oy);
+                  /* 修复：撞到敌人被弹回时，CHAR 坐标回滚了，OBJECT 坐标和
+                     olink 网格挂点也必须一起回滚，否则角色位置与网格脱节，
+                     周围玩家看不到他（与走路不更新网格是同一类 bug）。 */
+                  {
+                    int rb_obj, rb_of, rb_ox, rb_oy;
+                    rb_obj = CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX);
+                    rb_of = OBJECT_setFloor(
+                        rb_obj, CHAR_getInt(char_index, CHAR_FLOOR));
+                    rb_ox =
+                        OBJECT_setX(rb_obj, CHAR_getInt(char_index, CHAR_X));
+                    rb_oy =
+                        OBJECT_setY(rb_obj, CHAR_getInt(char_index, CHAR_Y));
+                    if (!MAP_objmove(rb_obj, rb_of, rb_ox, rb_oy,
+                                     CHAR_getInt(char_index, CHAR_FLOOR),
+                                     CHAR_getInt(char_index, CHAR_X),
+                                     CHAR_getInt(char_index, CHAR_Y))) {
+                      print("%s:%d:[MAP_OBJMOVE_FAIL] walk-rollback "
+                            "objindex=%d\n",
+                            __FILE__, __LINE__, rb_obj);
+                    }
+                  }
                   GmsvServer_XYD_send(getfdFromCharaIndex(char_index),
                                     CHAR_getInt(char_index, CHAR_X),
                                     CHAR_getInt(char_index, CHAR_Y),

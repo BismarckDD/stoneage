@@ -1204,36 +1204,44 @@ BOOL _MAP_objmove(char *file, int line, int objindex, int ofloor, int ox,
     c = c->next;
   }
   if (!pointer) {
-    // 诊断：物体在旧格(ofloor,ox,oy)的 olink 中找不到，说明
-    // 物体记录坐标与地图 olink 网格不一致。扫描整张旧地图定位其真实挂点。
+    /* The object is not linked into the expected old cell. Its recorded
+       position and the map olink grid have drifted apart. Scan the whole old
+       floor for the real attachment: if it is found, detach it there and
+       carry on moving it. Only give up when it is nowhere to be found, so a
+       single desync cannot leave the object stuck in the wrong cell. */
     int found = FALSE;
     int scan_x, scan_y;
     int scan_xsiz = MAP_map[oldmapindex].xsiz;
     int scan_ysiz = MAP_map[oldmapindex].ysiz;
-    MAP_Objlink *s;
     for (scan_y = 0; scan_y < scan_ysiz && !found; scan_y++) {
-      for (scan_x = 0; scan_x < scan_xsiz; scan_x++) {
-        for (s = MAP_map[oldmapindex].olink[scan_y * scan_xsiz + scan_x]; s;
-             s = s->next) {
-          if (s->objindex == objindex) {
-            print("%s:%d:[MAP_OBJMOVE_FAIL] objindex=%d 期望旧格(%d,%d,%d)"
-                  "未找到,实际挂在(%d,%d,%d);目标(%d,%d,%d) caller=%s:%d\n",
-                  __FILE__, __LINE__, objindex, ofloor, ox, oy,
-                  oldmapindex, scan_x, scan_y, nfloor, nx, ny, file, line);
+      for (scan_x = 0; scan_x < scan_xsiz && !found; scan_x++) {
+        MAP_Objlink **pp =
+            &MAP_map[oldmapindex].olink[scan_y * scan_xsiz + scan_x];
+        while (*pp) {
+          if ((*pp)->objindex == objindex) {
+            print("%s:%d:[MAP_OBJMOVE_FAIL] objindex=%d expected_old_cell(%d,%d,%d) "
+                  "not_found, actually linked at(%d,%d,%d); auto-detached and "
+                  "moving to(%d,%d,%d) caller=%s:%d\n",
+                  __FILE__, __LINE__, objindex, ofloor, ox, oy, ofloor, scan_x,
+                  scan_y, nfloor, nx, ny, file, line);
+            pointer = *pp;
+            *pp = pointer->next;
+            pointer->next = NULL;
             found = TRUE;
             break;
           }
+          pp = &(*pp)->next;
         }
       }
     }
     if (!found) {
-      print("%s:%d:[MAP_OBJMOVE_FAIL] objindex=%d 旧格(%d,%d,%d)未找到,"
-            "且整张旧地图均无该 object 的 olink(可能已被移除/从未上图);"
-            "目标(%d,%d,%d) caller=%s:%d\n",
-            __FILE__, __LINE__, objindex, ofloor, ox, oy,
-            nfloor, nx, ny, file, line);
+      print("%s:%d:[MAP_OBJMOVE_FAIL] objindex=%d old_cell(%d,%d,%d) not_found, "
+            "no olink node for this object on the whole old floor "
+            "(removed already / never linked); target(%d,%d,%d) caller=%s:%d\n",
+            __FILE__, __LINE__, objindex, ofloor, ox, oy, nfloor, nx, ny, file,
+            line);
+      return FALSE;
     }
-    return FALSE;
   }
   {
     int newmapindex;
@@ -1306,6 +1314,67 @@ MAP_Objlink *_MAP_getTopObj(char *file, int line, int floor, int x, int y) {
   else
     return NULL;
 #endif
+}
+
+/* diag helper: is objindex really linked into cell (floor,x,y)? */
+BOOL MAP_isObjAttachedAt(int floor, int x, int y, int objindex) {
+  MAP_Objlink *c;
+  for (c = MAP_getTopObj(floor, x, y); c; c = c->next) {
+    if (c->objindex == objindex)
+      return TRUE;
+  }
+  return FALSE;
+}
+
+/* diag helper: scan the whole floor and count how many olink nodes carry
+   objindex. Returns the count and the first cell found (px/py may be NULL). */
+int MAP_countObjAttach(int floor, int objindex, int *px, int *py) {
+  int mapindex;
+  int xsiz, ysiz, i;
+  int count = 0;
+  if (px)
+    *px = -1;
+  if (py)
+    *py = -1;
+  mapindex = MAP_getfloorIndex(floor);
+  if (mapindex == -1 || MAP_map[mapindex].olink == NULL)
+    return 0;
+  xsiz = MAP_map[mapindex].xsiz;
+  ysiz = MAP_map[mapindex].ysiz;
+  for (i = 0; i < xsiz * ysiz; i++) {
+    MAP_Objlink *c;
+    for (c = MAP_map[mapindex].olink[i]; c; c = c->next) {
+      if (c->objindex == objindex) {
+        if (count == 0) {
+          if (px)
+            *px = i % xsiz;
+          if (py)
+            *py = i / xsiz;
+        }
+        count++;
+      }
+    }
+  }
+  return count;
+}
+
+/* diag helper: reproduce the exact predicate used by the visibility scan
+   (char.c CHAR_sendArroundCharaData): it walks the olink cells in
+   [cx-half, cx+half] x [cy-half, cy+half] and takes every object found there.
+   So a player is visible to another player iff his olink node falls inside the
+   other's window. */
+BOOL MAP_isObjInWindow(int floor, int cx, int cy, int objindex, int half) {
+  int i, j;
+  for (i = cx - half; i <= cx + half; i++) {
+    for (j = cy - half; j <= cy + half; j++) {
+      MAP_Objlink *c;
+      for (c = MAP_getTopObj(floor, i, j); c; c = c->next) {
+        if (c->objindex == objindex)
+          return TRUE;
+      }
+    }
+  }
+  return FALSE;
 }
 
 BOOL MAP_addNewObj(int floor, int x, int y, int objindex) {

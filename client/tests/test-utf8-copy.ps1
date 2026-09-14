@@ -1,7 +1,7 @@
 $ErrorActionPreference = 'Stop'
 $source = Get-Content -LiteralPath (Join-Path $PSScriptRoot '../stoneage/proto/autil.cpp') -Raw -Encoding UTF8
 $definitions = foreach ($name in @('is_double_unit', 'getUtf8CharNum', 'getUtf8SequenceLength', 'getUtf8PrefixBytes', 'copyUtf8CharByNum')) {
-    $match = [regex]::Match($source, '(?ms)^(?:static )?(?:int |size_t |const char \*)' + $name + '\(.*?^\}')
+    $match = [regex]::Match($source, '(?ms)^(?:static )?(?:int |size_t |(?:const )?char \*)' + $name + '\(.*?^\}')
     if (-not $match.Success) { throw "Cannot extract $name" }
     $match.Value
 }

@@ -403,29 +403,25 @@ int PASCAL WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
   }
 #endif
 
+// 2026.09.14 限制多开真正可用, 使用内核对象而不是文件
 #ifdef _MULTI_CLIENT_DECTION_
-  char strname[128];
-  BOOL checkClientFlag = FALSE;
-  char *pathvar = getenv("TEMP");
-  if (pathvar == NULL) {
-    MessageBoxNew(NULL, "缺少本机必要的环境变量", DEF_APPNAME, MB_OK | MB_ICONSTOP);
-    return FALSE;
-  }
-  for (int ds = 0; ds < _MULTI_CLIENT_DECTION_; ds++) {
-    sprintf(strname, "%s\\Etemp%d", pathvar, ds);
-    HANDLE file_handle;
-    file_handle =
-        CreateFile(strname, GENERIC_READ, 0, NULL, OPEN_EXISTING, NULL, NULL);
-    if (INVALID_HANDLE_VALUE != file_handle) {
-      if (INVALID_FILE_SIZE != (DWORD)file_handle) {
-        checkClientFlag = TRUE;
-        break;
-      }
+  static HANDLE hMultiSlot = NULL;
+  for (int i = 0; i < _MULTI_CLIENT_DECTION_; i++) {
+    char mtxName[64];
+    _snprintf(mtxName, sizeof(mtxName), "Global\\SA_MultiSlot_%d", i);
+    HANDLE h = CreateMutex(NULL, FALSE, mtxName);
+    if (h == NULL) continue;
+    if (GetLastError() == ERROR_ALREADY_EXISTS) {  // 该槽已被占用
+      CloseHandle(h);
+      continue;
     }
+    hMultiSlot = h;   // 占住此槽，进程退出时自动释放
+    break;
   }
-  if (!checkClientFlag) {
-    sprintf_s(strname, "游戏限制%d开！", _MULTI_CLIENT_DECTION_);
-    MessageBoxNew(NULL, strname, DEF_APPNAME, MB_OK | MB_ICONSTOP);
+  if (hMultiSlot == NULL) {
+    char msg[64];
+    _snprintf(msg, sizeof(msg), "游戏限制%d开！", _MULTI_CLIENT_DECTION_);
+    MessageBoxNew(NULL, msg, DEF_APPNAME, MB_OK | MB_ICONSTOP);
     return FALSE;
   }
 #endif

@@ -180,6 +180,7 @@ void CHAR_sendSpecifiedobjindexCToCharaindex(int char_index, int objindex);
 void CHAR_sendCToArroundCharacter(int char_index);
 
 void CHAR_sendArroundCharaData(int char_index);
+void CHAR_visAudit(const char *tag, int char_index);
 
 void CHAR_sendCDArroundChar(int fl, int x, int y, int objindex);
 void CHAR_sendCDArroundChar_Main(int fl, int x, int y, int objindex, BOOL mode);
