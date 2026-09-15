@@ -92,13 +92,10 @@
 
 #define _SASQL                   // 石器资料库
 #ifdef _SASQL
-  #define _SQL_BACKGROUND        //网页后台功能   需同时开放_SASQL1
-  #define _SQL_REGISTER          //自动注册功能   需同时开放_SASQL1
+  #define _SQL_BACKGROUND        //网页后台功能
+  #define _SQL_REGISTER          //自动注册功能
 #endif
 
-#if _ATTESTAION_ID != 11
-#define _LOGNZORO_FUNC_ALL       // 龙zoro新增功能
-#endif
 #ifdef _LOGNZORO_FUNC_ALL
   #define _NEW_VIP_SHOP            // 会员商店
   
@@ -139,27 +136,16 @@
   #define FAMILY_MAX_MEMBER       50    // 家族人数
 #endif
 
-#if 1
-  #define _ONE_SERVER              // 单机绑定
-#endif
+#define _ONE_SERVER              // 单机绑定
 
 #if _ATTESTAION_ID == 1 || _ATTESTAION_ID == 2 || _ATTESTAION_ID == 3 || _ATTESTAION_ID == 21 || _ATTESTAION_ID ==31 || _ATTESTAION_ID ==33 || _ATTESTAION_ID >=35
   #define _ALL_SERV_SEND       // 星球频道
-#endif
-#if _ATTESTAION_ID == 1 || _ATTESTAION_ID == 2 || _ATTESTAION_ID == 3 || _ATTESTAION_ID == 21 || _ATTESTAION_ID ==31 || _ATTESTAION_ID ==33 || _ATTESTAION_ID ==35 || _ATTESTAION_ID >=42
-  #if _ATTESTAION_ID != 43 && _ATTESTAION_ID != 47 && _ATTESTAION_ID != 49 
-    //#define _DEATH_FAMILY_LOGIN_CHECK      //删除人数不足之家族或太久未上线之成员
-  #endif
 #endif
 
 
 #if _ATTESTAION_ID == 1
   #define _NEWCLISETMAC
   #define _FAMILY_PAY_POINT      //家族充值积分
-#endif
-
-#if _ATTESTAION_ID == 0
-  #define _DEBUG
 #endif
 
 #endif

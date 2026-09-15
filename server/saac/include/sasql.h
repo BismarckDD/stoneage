@@ -58,6 +58,21 @@ void sasql_OldpsToMd5ps(void);
 void sasql_CleanCdkey(int date);
 void sasql_CleanLockCdkey(void);
 
+typedef struct tagConfig {
+  char sql_IP[32];        // Server Host
+  int sql_Port;           // Server Port
+  char sql_ID[16];        // Server Username
+  char sql_PS[32];        // Server Password
+  char sql_DataBase[16];  // Database
+  char sql_Table[16];     // Table
+  char sql_LOCK[16];      // ???
+  char sql_NAME[16];      // 
+  char sql_PASS[16];
+  int AutoReg;
+  int uLoginDay;
+  int openbackground;
+} Config;
+
 #endif // _SASQL
 
 #endif // __SASQL_H__

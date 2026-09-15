@@ -53,7 +53,7 @@ BOOL MergeCallBack(int char_index, int petindex, char *data, int flg) {
 }
 #endif
 
-#ifdef _RIDEFLG_
+#ifdef _RIDE_CF
 BOOL FamilyRideCheck(int meindex, int petindex, int petid) {
   static lua_State *lua;
 

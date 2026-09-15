@@ -1965,11 +1965,10 @@ INLINE int CHAR_HandleExp(int char_index);
 
 // ride Pet table
 typedef struct tagtagRidePetTable {
-  int rideNo;
-  int charNo;
-  int petNo;
-  int petId;
-
+  int rideNo; // 骑乘后整体形象
+  int charNo; // 人物基础形象
+  int petNo;  // 宠物基础形象
+  int petId;  // 宠物在Enemy中的ID
 } tagRidePetTable;
 
 // CoolFish: Family Member Kind 2001/8/28
@@ -2084,18 +2083,18 @@ typedef struct {
   int petNo2;
 #endif
 #endif
-  unsigned int learnCode;
+  unsigned int learnCode; // 骑乘这只宠物需要哪本教程
 } tagRideCodeMode;
 
 typedef struct {
-  int RideNo[MAXNOINDEX];
-  int flg;
+  int RideNo[MAXNOINDEX]; // 启程后的形象
+  int flg;        // 这是啥？
 } tagRideNoList;
 
 typedef struct {
-  int charNo;
-  int Noindex;
-  int sex;
+  int charNo;    // 人物形象
+  int Noindex;   // 人物形象ID(例如辣妹有4种charNo, 但是NoIndex都是12, 骑乘蓝暴后是一种形象)
+  int sex;       // 性别 1:男;2:女
 } tagRidePetList;
 
 int RIDEPET_getNOindex(int baseNo);

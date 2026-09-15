@@ -540,11 +540,11 @@ BOOL init(int argc, char **argv, char **env) {
     print("succeed.\n");
 #endif
 #if defined(_RIDE_CF) && defined(_NEW_RIDEPETS)
-  print("Start to init Ride CF......");
+  print("开始初始化骑宠设置......");
   if (!CHAR_Ride_CF_init())
-    print("......failed.\n");
+    print("失败.\n");
   else
-    print("succeed.\n");
+    print("成功.\n");
 #endif
 #ifdef _FM_LEADER_RIDE
   print("Start to init FM Leader Ride......");

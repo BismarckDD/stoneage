@@ -408,7 +408,6 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
   CHAR_loginAddItemForNew(char_index);
 #endif
 
-#if 1
   if (CHAR_makeDBKey(char_index, szKey, sizeof(szKey)) != FALSE) {
     int dp;
     char info[512];
@@ -423,14 +422,10 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
     SaacClient_DBUpdateEntryInt_send(acfd, DB_DUELPOINT, szKey, (max(dp, 0)),
                                     info, CONNECT_getFdid(clifd), 0);
   }
-#endif
   chwk = CHAR_getCharPointer(char_index);
-
   CHAR_charSaveFromConnectAndChar(clifd, chwk, FALSE);
-
   CHAR_CharaDeleteHavePet(char_index);
   CHAR_CharaDelete(char_index);
-
   // CHAR_endCharData(&ch);
   // CHAR_endCharOneArray( char_index);
 
@@ -487,9 +482,6 @@ static void CHAR_setCharFuncTable(Char *ch) {
     strncpysafe(ch->charfunctable[i].string, sizeof(ch->charfunctable[i]),
                func_table[i]);
   }
-}
-
-void CHAR_loginAddItem(int char_index) {
 }
 
 void CHAR_loginCheckUserItem(int char_index) {
@@ -2860,12 +2852,9 @@ char *CHAR_makeStatusString(int index, char *category) {
         CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER)
 #ifdef _NEW_RIDEPETS
 #ifdef _RIDEMODE_20
-            ,
-        playerlowsride
+        , playerlowsride
 #else
-
-            ,
-        CHAR_getInt(index, CHAR_LOWRIDEPETS)
+        , CHAR_getInt(index, CHAR_LOWRIDEPETS)
 #endif
 #endif
 
@@ -2874,7 +2863,6 @@ char *CHAR_makeStatusString(int index, char *category) {
     for (i = 0; i < arraysizeof(getCharDataArray); i++) {
       char token[256];
       char escapebuffer[128];
-
       snprintf(token, sizeof(token), "%s" STATUSSENDDELIMITER,
                makeEscapeString(CHAR_getChar(index, getCharDataArray[i]),
                                 escapebuffer, sizeof(escapebuffer)));
@@ -2897,12 +2885,10 @@ char *CHAR_makeStatusString(int index, char *category) {
              "|%d"
 #endif
 #ifdef _NEW_ITEM_
-             ,
-             (1 << 1) | (1 << 2)
+            , (1 << 1) | (1 << 2)
 #endif
 #ifdef CHAR_RECORD_POINT
-                 ,
-             NPC_StartpointCheck(0, index)
+            , NPC_StartpointCheck(0, index)
 #endif
     );
 #endif
@@ -2953,20 +2939,11 @@ char *CHAR_makeStatusString(int index, char *category) {
     int big4fm = 0;
 #ifndef _NEW_RIDEPETS
     switch (CHAR_getWorkInt(index, CHAR_WORKFMFLOOR)) {
-    case 1041:
-      big4fm = 1;
-      break;
-    case 2031:
-      big4fm = 2;
-      break;
-    case 3031:
-      big4fm = 3;
-      break;
-    case 4031:
-      big4fm = 4;
-      break;
-    default:
-      big4fm = 0;
+    case 1041: big4fm = 1; break;
+    case 2031: big4fm = 2; break;
+    case 3031: big4fm = 3; break;
+    case 4031: big4fm = 4; break;
+    default: big4fm = 0;
     }
 #endif
 #ifdef _FIX_FMNAME_RULE // WON ADD 家族未成立，不显示名称
@@ -3092,19 +3069,14 @@ char *CHAR_makeStatusString(int index, char *category) {
     return "\0";
 
   case 'n': {
-    int num;
-
-    int i, nindex = -1;
+    int i;
     int getCharDataArray[] = {CHAR_NAME};
-    num = tolower(category[1]) - '0';
-
+    int num = tolower(category[1]) - '0';
     if (num < 0 || num >= getPartyNum(index)) {
       print("1朋友模式失败 %d  %s\n", num, CHAR_getChar(index, CHAR_NAME));
       break;
     }
-
-    nindex = CHAR_getPartyIndex(index, num);
-
+    int nindex = CHAR_getPartyIndex(index, num);
     if (nindex == -1) {
       snprintf(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), "N%d|0|",
                num);
@@ -3116,7 +3088,6 @@ char *CHAR_makeStatusString(int index, char *category) {
                CHAR_getInt(nindex, CHAR_LV),
                CHAR_getWorkInt(nindex, CHAR_WORKMAXHP),
                CHAR_getInt(nindex, CHAR_HP), CHAR_getInt(nindex, CHAR_MP)
-
       );
     }
     strlength = strlen(CHAR_statusSendBuffer);
@@ -3179,20 +3150,12 @@ char *CHAR_makeStatusString(int index, char *category) {
 
       snprintf(
           CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer),
-#ifdef _VERSION_NEW
-          "K%d|1|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|",
-#else
-#ifdef _VERSION_25
-            "K%d|1|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|",
-#else
 // Syu ADD 改变交易时宠物转生颜色
-#ifdef _SHOW_FUSION
+#ifdef _PET_STATUS_FUSION_FIELD
             "K%d|1|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%"
             "d|",
 #else
             "K%d|1|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|",
-#endif
-#endif
 #endif
           num, CHAR_getInt(pindex, CHAR_BASEIMAGENUMBER),
           CHAR_getInt(pindex, CHAR_HP), CHAR_getWorkInt(pindex, CHAR_WORKMAXHP),
@@ -3207,12 +3170,11 @@ char *CHAR_makeStatusString(int index, char *category) {
           attr[3], CHAR_getInt(pindex, CHAR_SLOT),
           // Syu ADD 改变交易时宠物转生颜色
           changenameflg, CHAR_getInt(pindex, CHAR_TRANSMIGRATION)
-#ifdef _VERSION_NEW
-#ifdef _SHOW_FUSION
+#ifdef _PET_STATUS_FUSION_FIELD
                              ,
+#ifdef _PET_FUSION
           CHAR_getInt(pindex, CHAR_FUSIONBEIT)
 #else
-                             ,
           0
 #endif
 #endif
@@ -3297,7 +3259,7 @@ char *CHAR_makeStatusString(int index, char *category) {
              CHAR_getInt(pindex, CHAR_YDEF), CHAR_getInt(pindex, CHAR_YQUICK),
              CHAR_getInt(pindex, CHAR_YLV));
 #endif
-#ifdef _RIDEFLG_
+#ifdef _RIDE_CF
     strlength = strlen(CHAR_statusSendBuffer);
     snprintf(CHAR_statusSendBuffer + strlength,
              sizeof(CHAR_statusSendBuffer) - strlength - 1, "%d|",

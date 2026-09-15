@@ -238,16 +238,32 @@ void CHAR_Family(int fd, int index, char *message) {
       // 修改家族主旨
       FAMILY_FixRule(fd, index, message);
       break;
-#ifdef _RIDEFLG_
+      // 2026.09.15 开启骑宠逻辑, 是RIDE_CF, 这里要梳理一下
+#ifdef _RIDE_CF
     case 'r':
-      // 骑乘宠物
-      if (!FAMILY_RidePet(fd, index, message)) {
-        CHAR_setInt(index, CHAR_RIDEPET, -1);
-        CHAR_setInt(index, CHAR_BASEIMAGENUMBER,
-                    CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER));
-        CHAR_complianceParameter(index);
-        CHAR_sendCToArroundCharacter(CHAR_getWorkInt(index, CHAR_WORKOBJINDEX));
-        CHAR_send_P_StatusString(index, CHAR_P_STRING_RIDEPET);
+      {
+        char ridePetSlot[32];
+        /*
+         * Only R|P|-1 is an explicit dismount.  A rejected request for a
+         * different pet must not clear the pet the character is currently
+         * riding (for example, while changing that other pet's status).
+         */
+        if (getStringFromIndexWithDelim(message, "|", 3, ridePetSlot,
+                                        sizeof(ridePetSlot)) &&
+            atoi(ridePetSlot) == -1) {
+          printf("[RIDE] dismount: char=%d currentSlot=%d\n", index,
+                 CHAR_getInt(index, CHAR_RIDEPET));
+          CHAR_setInt(index, CHAR_RIDEPET, -1);
+          CHAR_setInt(index, CHAR_BASEIMAGENUMBER,
+                      CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER));
+          CHAR_complianceParameter(index);
+          CHAR_sendCToArroundCharacter(
+              CHAR_getWorkInt(index, CHAR_WORKOBJINDEX));
+          CHAR_send_P_StatusString(index, CHAR_P_STRING_RIDEPET);
+        } else if (!FAMILY_RidePet(fd, index, message)) {
+          printf("[RIDE] request rejected; preserving currentSlot=%d\n",
+                 CHAR_getInt(index, CHAR_RIDEPET));
+        }
       }
       break;
 #endif
@@ -2468,14 +2484,33 @@ void LeaveMemberIndex(int meindex, int fmindexi) {
 #endif
 }
 
+// static int FAMILY_getExtendedRideImage(int playerBaseImage,
+//                                        int petBaseImage) {
+//   /* Native copies of the two extended mappings formerly supplied by
+//    * familyridefunction.lua.  RIDEPET_getNOindex returns the 0-based player
+//    * archetype used by these arrays. */
+//   static const int peruxiaRideImages[] = {
+//       104025, 104026, 104027, 104028, 104029, 104030,
+//       104031, 104032, 104033, 104034, 104035, 104036};
+//   static const int baduolanenRideImages[] = {
+//       101009, 101019, 101029, 101039, 101049, 101059,
+//       101069, 101079, 101089, 101099, 101109, 101119};
+//   int playerType = RIDEPET_getNOindex(playerBaseImage);
+// 
+//   if (playerType < 0 || playerType >= arraysizeof(peruxiaRideImages))
+//     return 0;
+//   if (petBaseImage == 100872) /* 佩露夏 */
+//     return peruxiaRideImages[playerType];
+//   if (petBaseImage == 100373) /* 巴朵兰恩 */
+//     return baduolanenRideImages[playerType];
+//   return 0;
+// }
+
 int FAMILY_RidePet(int fd, int meindex, char *message) {
   char token[64], token2[64];
   int petindex, rideGraNo = 0, leaderimageNo;
   // Arminius 8.25 recover
   int i;
-#ifndef _NEW_RIDEPETS
-  int big4fm = 0;
-#endif
   if (!CHAR_CHECKINDEX(meindex)) {
     printf("[RIDE] reject invalid character: fd=%d index=%d message='%s'\n", fd,
            meindex, message != NULL ? message : "(null)");
@@ -2622,6 +2657,14 @@ int FAMILY_RidePet(int fd, int meindex, char *message) {
           break;
         }
       }
+
+      // if (rideGraNo == 0) {
+      //   rideGraNo = FAMILY_getExtendedRideImage(
+      //       CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER),
+      //       CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
+      //   if (rideGraNo != 0)
+      //     printf("[RIDE] extended mapping matched: rideGra=%d\n", rideGraNo);
+      // }
 
       if (rideGraNo != 0) {
 #ifdef _ITEM_METAMO

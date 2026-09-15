@@ -464,12 +464,10 @@ void NPC_FMWarpManLoop(int meindex)
 						   if( CHAR_getInt( meindex, CHAR_RIDEPET ) != -1 )
 						   {
 							   int rideindex = CHAR_getCharPet( iCharindex, CHAR_getInt( iCharindex, CHAR_RIDEPET) );
-							
 							   if( CHAR_getInt( rideindex, CHAR_BASEBASEIMAGENUMBER) == 100372 || CHAR_getInt( rideindex, CHAR_BASEBASEIMAGENUMBER) == 100373 )
 							   {
 								   CHAR_setInt( iCharindex, CHAR_RIDEPET, -1);
 								   CHAR_send_P_StatusString( iCharindex, CHAR_P_STRING_RIDEPET );
-								
 								   CHAR_sendStatusString(iCharindex, "f");
 								   CHAR_complianceParameter( iCharindex );
 								   CHAR_sendCToArroundCharacter( CHAR_getWorkInt( iCharindex , CHAR_WORKOBJINDEX ));

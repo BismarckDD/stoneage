@@ -15,22 +15,6 @@ MYSQL_RES *mysql_result;
 MYSQL_ROW mysql_row;
 MYSQL_FIELD *fields;
 
-typedef struct tagConfig {
-  char sql_IP[32];
-  int sql_Port;
-  char sql_Port1[16];
-  char sql_ID[16];
-  char sql_PS[32];
-  char sql_DataBase[16];
-  char sql_Table[16];
-  char sql_LOCK[16];
-  char sql_NAME[16];
-  char sql_PASS[16];
-  int AutoReg;
-  int uLoginDay;
-  int openbackground;
-} Config;
-
 Config config;
 
 char md5string[64]; // 用于存储md5String
@@ -53,7 +37,6 @@ static int readSqlConfig(char *path) {
       printf("\n数据库地址：  %s", config.sql_IP);
     } else if (strcmp(command, "sql_Port") == 0) {
       config.sql_Port = atoi(param);
-      snprintf(config.sql_Port1, sizeof(config.sql_Port1), param);
       printf("\n数据库端口：  %d", config.sql_Port);
     } else if (strcmp(command, "sql_ID") == 0) {
       snprintf(config.sql_ID, sizeof(config.sql_ID), param);
@@ -128,7 +111,6 @@ BOOL sasql_init(void) {
 }
 
 int sasql_mysql_query(char *sqlstr) {
-  mysql_query(&mysql, "SET NAMES 'utf8mb4'");
   return mysql_query(&mysql, sqlstr);
 }
 

@@ -6659,22 +6659,22 @@ void CheckNewPet(int sprNo)
     if (tblNo > 1800){ // 小恶魔
         tblNo -= 1208;
     }
-    else if (tblNo > 1755){                    //间隔南瓜魔王后的 狐猴
+    else if (tblNo > 1755){   // 间隔南瓜魔王后的 狐猴
         tblNo -= 1201;
     }
-    else if (tblNo > 1739){ //1710 ){            //    间隔骑宠后的 飞蛇
+    else if (tblNo > 1739){   // 间隔骑宠后的 飞蛇
         tblNo -= 1200;
     }
-    else if (tblNo > 1686){            //海底融合宠
+    else if (tblNo > 1686){   //海底融合宠
         tblNo -= 1175;
     }
-    else if (tblNo > 1641){            //鸡年兽4 甲虫2    8.0第一次整合测试
+    else if (tblNo > 1641){   // 鸡年兽4 甲虫2 8.0第一次整合测试
         tblNo -= 1167;
     }
-    else if (tblNo > 1635){    //麒麟
+    else if (tblNo > 1635){   //麒麟
         tblNo -= 1148;
     }
-    else if (tblNo > 1634){    //猫女1 猫女2 
+    else if (tblNo > 1634){   //猫女1 猫女2 
         tblNo -= 1149;
     }
     else if (tblNo > 1616){//布里萨尔  蜜蜂1 蜜蜂2 蝴蝶1 蝴蝶2 暗黑乌力王 狮人1 狮人2 灰人熔 白狼 布伊酷
@@ -11042,8 +11042,8 @@ void MenuProc(void)
                         if (pet[i].useFlag == TRUE)
                             writeRideDebugLog(i, "pet-window-click");
                     }
-                    StockChatBufferLine("骑宠调试：已记录宠物面板点击。",
-                                        FONT_PAL_YELLOW);
+                    // StockChatBufferLine("骑宠调试：已记录宠物面板点击。",
+                    //                    FONT_PAL_YELLOW);
 #endif
                     for (i = 0; i < 5; i++){
                         if (pet[i].useFlag == TRUE && BattlePetReceivePetNo != i){
@@ -11051,20 +11051,22 @@ void MenuProc(void)
                                 // ride Pet
                                 if (i == pc.mailPetNo){
                                     pc.mailPetNo = -1;
-                                    // shan
                                     lssproto_PETST_send(sockfd, i, 0);
-#ifndef  _RIDEPET_
-                                    checkRidePet(i);
+                                    // 邮件 -> 骑乘
+#ifdef  _RIDEPET_
+                                    if (pc.ridePetNo < 0)
+                                        checkRidePet(i);
 #endif
-                                    play_se(217, 320, 240); // ?????
+                                    play_se(217, 320, 240);
                                 }
-                                else if (i == pc.ridePetNo && pc.graNo != SPR_pet021
+                                else if (i == pc.ridePetNo
+                                         && pc.graNo != SPR_pet021
                                          && pc.graNo != 100362){//金飞
+                                    // 骑乘 -> 休息
                                     char buf[64];
                                     sprintf_s(buf, "R|P|-1");
                                     lssproto_FM_send(sockfd, buf);
                                     play_se(217, 320, 240);
-                                    // shan
                                     lssproto_PETST_send(sockfd, i, 0);
                                 }
                                 else if (i == pc.battlePetNo && BattlePetReceiveFlag == FALSE){
@@ -11073,15 +11075,16 @@ void MenuProc(void)
                                     BattlePetReceivePetNo = i;
                                     pc.selectPetNo[i] = FALSE;
                                     BattlePetStMenCnt--;
+                                    // 战斗 -> 邮件
+                                    // 战斗 -> 骑乘
                                     if (pc.mailPetNo == -1){
                                         pc.mailPetNo = i;
-                                        // shan
                                         lssproto_PETST_send(sockfd, i, 4);
                                     } else {
-#ifndef  _RIDEPET_
-                                        checkRidePet(i);
+#ifdef  _RIDEPET_
+                                        if (pc.ridePetNo < 0)
+                                            checkRidePet(i);
 #endif
-                                        // shan
                                         lssproto_PETST_send(sockfd, i, 0);
                                     }
                                     play_se(217, 320, 240); // ?????
@@ -11105,8 +11108,9 @@ void MenuProc(void)
                                         // ride Pet
                                         else
                                         {
-#ifndef  _RIDEPET_
-                                            checkRidePet(i);
+#ifdef  _RIDEPET_
+                                            if (pc.ridePetNo < 0)
+                                                checkRidePet(i);
 #endif
                                             lssproto_PETST_send(sockfd, i, 0);
                                         }
@@ -11116,37 +11120,30 @@ void MenuProc(void)
                                     }
 
                                 }
-                                else
-                                if (pc.selectPetNo[i] == FALSE){
+                                else if (pc.selectPetNo[i] == FALSE){
                                     if (BattlePetStMenCnt < 4){
                                         pc.selectPetNo[i] = TRUE;
                                         BattlePetStMenCnt++; // ????????
                                         play_se(217, 320, 240); // ?????
-                                        // shan
                                         lssproto_PETST_send(sockfd, i, 1);
-                                    } else {
-                                        if (pc.mailPetNo == -1){
-                                            pc.mailPetNo = i;
-                                            play_se(217, 320, 240); // ?????
-                                            // shan
-                                            lssproto_PETST_send(sockfd, i, 4);
-                                        }
-                                        else
-                                        {
-#ifndef  _RIDEPET_
+                                    } else if (pc.mailPetNo == -1) {
+                                        pc.mailPetNo = i;
+                                        play_se(217, 320, 240); // ?????
+                                        // shan
+                                        lssproto_PETST_send(sockfd, i, 4);
+                                    }
+#ifdef  _RIDEPET_
+                                    else
+                                        if (pc.ridePetNo < 0)
                                             checkRidePet(i);
 #endif
-                                        }
-                                    }
                                 }
                             }
                             if (HitFontNo == petWndFontNo[i + 5]){
-                                petStatusNo = i; // ??????
+                                petStatusNo = i;
                                 petWndNo = 1;
-                                // ??????
                                 DeathAction(pActMenuWnd);
                                 pActMenuWnd = NULL;
-                                // ????????
                                 play_se(202, 320, 240);
                             }
 
@@ -11213,10 +11210,8 @@ void MenuProc(void)
                                         BattlePetStMenCnt--; // ?????????
                                     }
                                     if( i == pc.battlePetNo ){
-                                        // ?????
-                                            lssproto_KS_send( sockfd, -1 );
+                                        lssproto_KS_send( sockfd, -1 );
                                     }
-                                    // ?????
                                     if( pc.mailPetNo == i ){
                                         pc.mailPetNo = -1;
                                     }
@@ -11224,10 +11219,7 @@ void MenuProc(void)
 #endif
                                 }
                                 else
-                                {
-                                    // ???
                                     play_se(220, 320, 240);
-                                }
                             }
                         }
                     }
@@ -11244,10 +11236,9 @@ void MenuProc(void)
                     int flag = FALSE;
                     int color;
                     int btnNo;
-                    int atrFlag = FALSE;
                     int atrGraNo[4];
-
-                    x = pActMenuWnd->x + 16 + 50, y = pActMenuWnd->y + 31;
+                    x = pActMenuWnd->x + 16 + 50;
+                    y = pActMenuWnd->y + 31;
                     for (i = 0; i < 5; i++){
                         if (pet[i].useFlag == TRUE){
                             color = FONT_PAL_WHITE; 
@@ -11287,58 +11278,45 @@ void MenuProc(void)
                             sprintf_s(moji, "%d转", pet[i].trn);
                             StockFontBuffer(x + 122, y - 24, FONT_PRIO_FRONT, color, moji, 2);
 #endif
-                            atrFlag = FALSE;
+                            int atrFlag = 0;
                             if (pet[i].earth > 0){
                                 if (pet[i].earth > 50) atrGraNo[atrFlag] = CG_ATR_ICON_EARTH_BIG;
                                 else atrGraNo[atrFlag] = CG_ATR_ICON_EARTH_SML;
                                 atrFlag++;
                             }
-                            if (pet[i].water > 0){    // ?
-                                // ??
+                            if (pet[i].water > 0){
                                 if (pet[i].water > 50) atrGraNo[atrFlag] = CG_ATR_ICON_WATER_BIG;
-                                // ??
                                 else atrGraNo[atrFlag] = CG_ATR_ICON_WATER_SML;
-                                atrFlag++; // ?????
+                                atrFlag++;
                             }
-                            if (pet[i].fire > 0){    // ?
-                                // ??
+                            if (pet[i].fire > 0){
                                 if (pet[i].fire > 50) atrGraNo[atrFlag] = CG_ATR_ICON_FIRE_BIG;
-                                // ??
                                 else atrGraNo[atrFlag] = CG_ATR_ICON_FIRE_SML;
-                                atrFlag++; // ?????
+                                atrFlag++;
                             }
-                            if (pet[i].wind > 0){    // ?
-                                // ??
+                            if (pet[i].wind > 0){
                                 if (pet[i].wind > 50) atrGraNo[atrFlag] = CG_ATR_ICON_WIND_BIG;
-                                // ??
                                 else atrGraNo[atrFlag] = CG_ATR_ICON_WIND_SML;
-                                atrFlag++; // ?????
+                                atrFlag++;
                             }
                             if (atrFlag > 0) StockDispBuffer(pActMenuWnd->x + 228, y - 16, DISP_PRIO_IME3, atrGraNo[0], 0);
                             if (atrFlag > 1) StockDispBuffer(pActMenuWnd->x + 228 + 16, y - 16, DISP_PRIO_IME3, atrGraNo[1], 0);
                             petWndFontNo[i] = StockDispBuffer(x - 27, y - 14, DISP_PRIO_IME3, CG_PET_WND_REST_BTN + btnNo, 2);
 
-#ifdef _RIDEPET_
-                            /*
-                             * Some server builds omit the optional ride flag from
-                             * the pet status packet.  The protocol parser represents
-                             * that missing field as -1.  Treat it as "unknown" and
-                             * let the server's authoritative ride table decide; an
-                             * explicit zero still means the pet is not rideable.
-                             */
-                            if (pet[i].rideflg != 0 && pet[i].ai == 100){
-                                if ((i == pc.ridePetNo) || pc.ridePetNo < 0){
-                                    int rideid = StockDispBuffer(
-                                        x - 27, y + 11, DISP_PRIO_IME3,
-                                        CG_PET_WND_RIDE_BTN, 2);
-                                    if (mouse.onceState & MOUSE_LEFT_CRICK){
-                                        if (HitDispNo == rideid){
-                                            checkRidePet(i);
-                                        }
-                                    }
-                                }
-                            }
-#endif
+// #ifdef _RIDEPET_
+                            // if (pet[i].rideflg != 0 && pet[i].ai == 100){
+                                // if ((i == pc.ridePetNo) || pc.ridePetNo < 0){
+                                    // int rideid = StockDispBuffer(
+                                        // x - 27, y + 11, DISP_PRIO_IME3,
+                                        // CG_PET_WND_RIDE_BTN, 2);
+                                    // if (mouse.onceState & MOUSE_LEFT_CRICK){
+                                        // if (HitDispNo == rideid){
+                                            // checkRidePet(i);
+                                        // }
+                                    // }
+                                // }
+                            // }
+// #endif
 #ifdef _NEWFONT_
                             sprintf_s(moji, "%3d", pet[i].level);
                             StockFontBuffer(x + 15 + 27, y, FONT_PRIO_FRONT, color, moji, 0);

@@ -14,25 +14,11 @@ MYSQL_RES *mysql_result;
 MYSQL_ROW mysql_row;
 MYSQL_FIELD *fields;
 
-typedef struct tagConfig {
-  char sql_IP[32];
-  int sql_Port;
-  char sql_Port1[16];
-  char sql_ID[16];
-  char sql_PS[32];
-  char sql_DataBase[16];
-  char sql_Table[16];
-  char sql_LOCK[16];
-  char sql_NAME[16];
-  char sql_PASS[16];
-  int AutoReg;
-  int uLoginDay;
-  int openbackground;
-} Config;
 
 Config config;
 
 char md5string[64]; // 用于存储md5String
+char sqlstr[1024];
 
 static int readSqlConfig(char *path) {
   char buf[255];
@@ -52,7 +38,6 @@ static int readSqlConfig(char *path) {
       printf("\n数据库地址：%s", config.sql_IP);
     } else if (strcmp(command, "sql_Port") == 0) {
       config.sql_Port = atoi(param);
-      snprintf(config.sql_Port1, sizeof(config.sql_Port1), param);
       printf("\n数据库端口：%d", config.sql_Port);
     } else if (strcmp(command, "sql_ID") == 0) {
       snprintf(config.sql_ID, sizeof(config.sql_ID), param);
@@ -125,9 +110,8 @@ BOOL sasql_init(void) {
   return TRUE;
 }
 
-int sasql_mysql_query(char *sqlstr) {
-  mysql_query(&mysql, "SET NAMES 'utf8mb4'");
-  return mysql_query(&mysql, sqlstr);
+int sasql_mysql_query(char *p_sqlstr) {
+  return mysql_query(&mysql, p_sqlstr);
 }
 
 void sasql_close(void) { mysql_close(&mysql); }
@@ -144,8 +128,6 @@ BOOL sasql_ckeckStrint(char *str) {
 }
 
 int sasql_query(char *username, char *password) {
-
-  char sqlstr[1024];
   char md5str[64];
   if (sasql_ckeckStrint(username) == FALSE) {
     printf("异常字符的用户名%s\n", username);
@@ -227,7 +209,6 @@ BOOL sasql_online(char *ID, char *username, char *IP, char *MAC, int flag) {
         return TRUE;
       }
     }
-    char sqlstr[256];
     if (flag == 0)
       sprintf(sqlstr, "update %s set Online=0 where %s=BINARY'%s'",
               config.sql_Table, config.sql_NAME, ID);
@@ -256,7 +237,6 @@ BOOL sasql_online(char *ID, char *username, char *IP, char *MAC, int flag) {
 #ifdef _SQL_REGISTER
 // 允许直接通过sql注册
 BOOL sasql_register(const char *username, const char *password) {
-  char sqlstr[256];
   char md5password[64];
   if (config.AutoReg != 1)
     return FALSE;
@@ -300,7 +280,6 @@ BOOL sasql_check_lock(char *idip) {
     printf("异常字符%s\n", idip);
     return FALSE;
   }
-  char sqlstr[256];
   sprintf(sqlstr, "select * from `%s` where Name='%s'", config.sql_LOCK, idip);
   if (!sasql_mysql_query(sqlstr)) {
     int num_row = 0;
@@ -323,7 +302,6 @@ BOOL sasql_add_lock(char *idip) {
     printf("异常字符%s\n", idip);
     return FALSE;
   }
-  char sqlstr[256];
   sprintf(sqlstr, "INSERT INTO `%s` (Name) VALUES (BINARY'%s')",
           config.sql_LOCK, idip);
   if (!sasql_mysql_query(sqlstr)) {
@@ -338,7 +316,6 @@ BOOL sasql_del_lock(char *idip) {
     printf("异常字符%s\n", idip);
     return FALSE;
   }
-  char sqlstr[256];
   sprintf(sqlstr, "delete from `%s` where Name=BINARY'%s'", config.sql_LOCK,
           idip);
   if (!sasql_mysql_query(sqlstr)) {
@@ -354,8 +331,6 @@ int sasql_query_point(char *name) {
     printf("异常字符%s\n", name);
     return -1;
   }
-
-  char sqlstr[256];
   sprintf(sqlstr, "select VipPoint from `%s` where %s=BINARY'%s'",
           config.sql_Table, config.sql_NAME, name);
 
@@ -382,8 +357,6 @@ BOOL sasql_add_vippoint(char *ID, int point) {
     printf("异常字符%s\n", ID);
     return -1;
   }
-
-  char sqlstr[256];
   sprintf(sqlstr, "select VipPoint from %s where %s=BINARY'%s'",
           config.sql_Table, config.sql_NAME, ID);
   if (!sasql_mysql_query(sqlstr)) {
@@ -420,8 +393,6 @@ BOOL sasql_add_Paypoint(char *ID, int point) {
     printf("异常字符%s\n", ID);
     return -1;
   }
-
-  char sqlstr[256];
   sprintf(sqlstr, "select PayPoint from %s where %s=BINARY'%s'",
           config.sql_Table, config.sql_NAME, ID);
   if (!sasql_mysql_query(sqlstr)) {
@@ -465,7 +436,6 @@ char *sasql_ItemPetLocked(char *id, char *safepasswd) {
     printf("异常字符%s\n", safepasswd);
     return "无法解锁，请与本服管理员联系！";
   }
-  char sqlstr[256];
   sprintf(sqlstr, "select SafePasswd from `%s` where %s=BINARY'%s'",
           config.sql_Table, config.sql_NAME, id);
 
@@ -505,10 +475,8 @@ char *sasql_ItemPetLocked_Passwd(char *id, char *safepasswd) {
     printf("异常字符%s\n", safepasswd);
     return "安全密码修改失败，请与本服管理员联系！";
   }
-  char sqlstr[256];
   sprintf(sqlstr, "select safepasswd from %s where %s=BINARY'%s'",
           config.sql_Table, config.sql_NAME, id);
-
   if (!sasql_mysql_query(sqlstr)) {
     int num_row = 0;
     mysql_free_result(mysql_result);
@@ -523,7 +491,6 @@ char *sasql_ItemPetLocked_Passwd(char *id, char *safepasswd) {
       if (mysql_row[0] != NULL && strlen(mysql_row[0]) > 0) {
         return "安全密码已存在,无法再进行修改！";
       } else {
-        char sqlstr[256];
         sprintf(sqlstr,
                 "update %s set SafePasswd=BINARY'%s' where %s=BINARY'%s'",
                 config.sql_Table, safepasswd, config.sql_NAME, id);
@@ -555,7 +522,6 @@ int sasql_ItemPetLocked_Char(char *id, char *safepasswd) {
     printf("异常字符%s\n", safepasswd);
     return 0;
   }
-  char sqlstr[256];
   sprintf(sqlstr, "select safepasswd from %s where %s=BINARY'%s'",
           config.sql_Table, config.sql_NAME, id);
 
@@ -604,7 +570,6 @@ char *sasql_OnlineCost(char *id, char *costpasswd, int fmindex, char *fmname) {
     printf("异常字符%s\n", costpasswd);
     return "充值失败，请与本服管理员联系！";
   }
-  char sqlstr[256];
   static char token[256] = "";
   sprintf(sqlstr,
           "select `CostVal`, `PayVal`, `check` from `OnlineCost` where "
@@ -649,7 +614,6 @@ char *sasql_OnlineCost(char *id, char *costpasswd, int fmindex, char *fmname) {
 }
 
 char *sasql_TransOnlineCost() {
-  char sqlstr[256];
   static char token[256] = "";
   sprintf(sqlstr,
           "select `PayVal`, `cdkey` from `OnlineCost` where `check` = 0");
@@ -680,7 +644,6 @@ char *sasql_TransOnlineCost() {
 }
 
 void sasql_OnlineCost_add(int cost, int num, int point) {
-  char sqlstr[256];
   char CostPasswd[32];
   memset(CostPasswd, 0, sizeof(CostPasswd));
   int i, j, k = 0;
@@ -718,7 +681,6 @@ char *sasql_OnlineBuy(char *id, char *costpasswd) {
     printf("异常字符%s\n", costpasswd);
     return "提货失败，请与本服管理员联系！";
   }
-  char sqlstr[256];
   static char token[256] = "";
   sprintf(sqlstr,
           "select `CostStr`, `check` from `OnlineBuy` where CostPasswd = "
@@ -784,7 +746,6 @@ char *sasql_OnlineBuy(char *id, char *costpasswd) {
 }
 
 void sasql_OnlineBuy_add(char *coststr, int type, int num) {
-  char sqlstr[256];
   char CostPasswd[32];
   int i, j, k = 0;
   for (i = 0; i < num; i++) {
@@ -820,7 +781,6 @@ void sasql_OnlineBuy_add(char *coststr, int type, int num) {
 #endif
 
 int sasql_onlinenum(char *MAC) {
-  char sqlstr[256];
   sprintf(sqlstr, "select count(*) from %s where Online=1 and MAC='%s'",
           config.sql_Table, MAC);
   if (!sasql_mysql_query(sqlstr)) {
@@ -842,7 +802,6 @@ int sasql_onlinenum(char *MAC) {
 
 #ifdef _OLDPS_TO_MD5PS
 void sasql_OldpsToMd5ps() {
-  char sqlstr[256];
   char md5str[64];
   sprintf(sqlstr, "select %s, %s from %s", config.sql_NAME, config.sql_PASS,
           config.sql_Table);
@@ -873,8 +832,6 @@ void sasql_OldpsToMd5ps() {
 #endif
 
 void sasql_CleanCdkey(int date) {
-  char sqlstr[256];
-
   sprintf(sqlstr,
           "select `%s` from `%s` where TO_DAYS( NOW( ) ) - TO_DAYS( LoginTime "
           ") > %d",
@@ -925,8 +882,6 @@ void sasql_CleanCdkey(int date) {
 }
 
 void sasql_CleanLockCdkey() {
-  char sqlstr[256];
-
   sprintf(sqlstr, "select `%s` from `%s` where `%s` LIKE '%!%'",
           config.sql_NAME, config.sql_Table, config.sql_PASS);
 

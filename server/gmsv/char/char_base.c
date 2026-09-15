@@ -238,14 +238,12 @@ tagRidePetTable ridePetTable[296] = {
 #endif
     {101179, 101177, 101178, 1804}, {101179, 101178, 101177, 1926},
 
-// #ifndef _RIDEMODE_20
 #ifndef _GM_METAMO_RIDE
     {100420, 100710, 100369, 348},  {100425, 100710, 100370, 349},
     {100445, 100710, 100904, 1642},
     {100420, 100715, 100369, 348},  {100425, 100715, 100370, 349},
     {100445, 100715, 100904, 1642},
 #endif
-    // #endif
 };
 
 #ifdef _FM_LEADER_RIDE
@@ -942,54 +940,50 @@ char *CHAR_setintdata[CHAR_DATAINTNUM] = {
     "dir", /*  CHAR_DIR 12凛毛0卞凛煌璃曰卞 */
     "lv",  /*  CHAR_LV  */
     "gld", /*  CHAR_GOLD    */
-
     "hp",  /*  CHAR_HP  */
     "mp",  /*  CHAR_MP  */
     "mmp", /*  CHAR_MAXMP   */
-
     "vi",  /*  CHAR_VITAL   */
     "str", /*  CHAR_STR */
     "tou", /*  CHAR_TOUGH */
     "dx",  /*  CHAR_DEX   */
-
     "chr", /*  CHAR_CHARM  */
     "luc", /*  CHAR_LUCK  */
     "aea", /*  哗箪岭 */
     "awa", /*    箪岭 */
     "afi", /*  绍箪岭 */
     "awi", /*  氘箪岭 */
-
-    "slt",    /*  CHAR_SLOT */
-    "cr",     /*  CHAR_CRITIAL */
-    "cou",    /*  CHAR_COUNTER */
-    "rar",    /*  CHAR_RARE */
-    "rst",    /*  CHAR_RADARSTRLENGTH */
-    "cvo",    /*  CHAR_CHATVOLUME */
-    "ml",     /*  CHAR_MERCHANTLEVEL */
-    "hl",     /*  CHAR_HEALERLEVEL */
-    "di",     /*  CHAR_DETERMINEITEM  */
-    "ieqt",   /*  CHAR_INDEXOFEQTITLE  */
-    "poi",    /*  CHAR_POISON  */
-    "par",    /*  CHAR_PARALYSIS  */
-    "sil",    /*  CHAR_SILENCE    */
-    "sto",    /*  CHAR_STONE  */
-    "dar",    /*  CHAR_DARKNESS   */
-    "con",    /*  CHAR_CONFUSION  */
-    "loc",    /*  CHAR_LOGINCOUNT */
-    "dc",     /*  CHAR_DEADCOUNT  */
-    "wc",     /*  CHAR_WALKCOUNT  */
-    "tc",     /*  CHAR_TALKCOUNT  */
-    "dmc",    /*  CHAR_DAMAGECOUNT */
-    "gpc",    /*  CHAR_GETPETCOUNT */
-    "kpc",    /*  CHAR_KILLPETCOUNT */
-    "dpc",    /*  CHAR_DEADPETCOUNT */
-    "smc",    /*  CHAR_SENDMAILCOUNT */
-    "mic",    /*  CHAR_MERGEITEMCOUNT */
-    "dbc",    /*  CHAR_DUELBATTLECOUNT */
-    "dwc",    /*  CHAR_DUELWINCOUNT */
-    "dlc",    /*  CHAR_DUELLOSECOUNT */
-    "dswc",   /*  CHAR_DUELSTWINCOUNT */
-    "dslc",   /*  CHAR_DUELSTLOSECOUNT */
+    "slt", /*  CHAR_SLOT */
+    "cr",  /*  CHAR_CRITIAL */
+    "cou", /*  CHAR_COUNTER */
+    "rar", /*  CHAR_RARE */
+    "rst", /*  CHAR_RADARSTRLENGTH */
+    "cvo", /*  CHAR_CHATVOLUME */
+    "ml",  /*  CHAR_MERCHANTLEVEL */
+    "hl",  /*  CHAR_HEALERLEVEL */
+    "di",  /*  CHAR_DETERMINEITEM  */
+    "ieqt",/*  CHAR_INDEXOFEQTITLE  */
+    "poi", /*  CHAR_POISON  */
+    "par", /*  CHAR_PARALYSIS  */
+    "sil", /*  CHAR_SILENCE    */
+    "sto", /*  CHAR_STONE  */
+    "dar", /*  CHAR_DARKNESS   */
+    "con", /*  CHAR_CONFUSION  */
+    "loc", /*  CHAR_LOGINCOUNT */
+    "dc",  /*  CHAR_DEADCOUNT  */
+    "wc",  /*  CHAR_WALKCOUNT  */
+    "tc",  /*  CHAR_TALKCOUNT  */
+    "dmc", /*  CHAR_DAMAGECOUNT */
+    "gpc", /*  CHAR_GETPETCOUNT */
+    "kpc", /*  CHAR_KILLPETCOUNT */
+    "dpc", /*  CHAR_DEADPETCOUNT */
+    "smc", /*  CHAR_SENDMAILCOUNT */
+    "mic", /*  CHAR_MERGEITEMCOUNT */
+    "dbc", /*  CHAR_DUELBATTLECOUNT */
+    "dwc", /*  CHAR_DUELWINCOUNT */
+    "dlc", /*  CHAR_DUELLOSECOUNT */
+    "dswc",/*  CHAR_DUELSTWINCOUNT */
+    "dslc",/*  CHAR_DUELSTLOSECOUNT */
     "dmswc",  /*  CHAR_DUELMAXSTWINCOUNT */
     "wht",    /*  CHAR_WHICHTYPE  */
     "wint",   /*  CHAR_WALKNTERVAL */
@@ -1056,8 +1050,8 @@ char *CHAR_setintdata[CHAR_DATAINTNUM] = {
     "nev6", /*  CHAR_NOWEVENT6  */
 #endif
 #ifdef _ADD_NEWEVENT // WON 多增任务旗标
-    "nev7",          /*  CHAR_NOWEVENT7  */
-    "nev8",          //  CHAR_NOWEVENT8, 224~255 精灵召唤专用
+    "nev7", /*  CHAR_NOWEVENT7  */
+    "nev8", /*  CHAR_NOWEVENT8, 224~255 精灵召唤专用 */
 #endif
 #ifdef _ADD_NEWEVENT_1024 // WON 多增任务旗标
     "nev9",               /*  CHAR_NOWEVENT9 */
@@ -1094,9 +1088,6 @@ char *CHAR_setintdata[CHAR_DATAINTNUM] = {
     "fmi",    // CoolFish: Family 2001/5/24 家族 index
     "fmlf",   // CoolFish: Family 2001/5/24 是否为家族族长
     "fmspr",  // CoolFish: Family 2001/7/13 家族守护精灵
-              // #ifndef _SAEX_TW_25
-    //   "fmbdg",
-    // #endif
     "bankgld",   /* CHAR_BANKGOLD */
     "ridepet",   /* CHAR_RIDEPET */
     "learnride", /* CHAR_LEARNRIDE */
@@ -4166,7 +4157,7 @@ int CHAR_getCharDepotPetElement(int char_index) {
 #if defined(_RIDE_CF) && defined(_NEW_RIDEPETS)
 int CHAR_Ride_CF_init() {
   int i = 0;
-  FILE fp = fopen("data/ride.txt", "r");
+  FILE *fp = fopen("data/ride.txt", "r");
   if (fp == NULL) {
     print("无法打开文件\n");
     return FALSE;

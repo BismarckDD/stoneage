@@ -316,9 +316,11 @@ static void parse_opts(int argc, char **argv) {
 #endif
       exit(0);
     case 't':
+#ifdef _ONLINE_COST
       sasql_init();
       sasql_TransOnlineCost();
       sasql_close();
+#endif
       exit(0);
     case 'd':
       printf("输入时间:");
@@ -684,20 +686,6 @@ int main(int argc, char **argv) {
         logErr("处理过期邮件, %fsecs.\n", time_diff(et, st));
       }
 #ifdef _FAMILY
-#ifdef _DEATH_FAMILY_LOGIN_CHECK
-      // if ((counter % 300) == 0) // 300( -> 60)
-      if ((counter4 % 1800) == 0) // 3hr( -> 1min)
-      {
-        counter4 = 0;
-        struct timeval st, et;
-        time_t t1;
-        gettimeofday(&st, NULL);
-        time(&t1);
-        delovertimeFMMem(t1);
-        gettimeofday(&et, NULL);
-        logErr("删除过期家族或家族成员, %fsecs.\n", time_diff(et, st));
-      }
-#endif
       if (counter5 > g_saac_config.Write_Family) // 300( -> 60)
       {
         counter5 = 0;

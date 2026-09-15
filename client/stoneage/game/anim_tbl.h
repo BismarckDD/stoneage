@@ -1660,18 +1660,18 @@
 #define CG_PETCOM_WND 55220        // 宠物计算成长背景
 #endif
 
-#define CG_PET_WND_REST_BTN 26052    // ????????
-#define CG_PET_WND_STANDBY_BTN 26053 // ???????
-#define CG_PET_WND_BTL_BTN 26054     // ?????????
-#define CG_PET_WND_MAIL_BTN 26055    // ?????????
+#define CG_PET_WND_REST_BTN 26052    // 宠物状态：休息
+#define CG_PET_WND_STANDBY_BTN 26053 // 宠物状态：等待
+#define CG_PET_WND_BTL_BTN 26054     // 宠物状态：战斗
+#define CG_PET_WND_MAIL_BTN 26055    // 宠物状态：邮件
 #define CG_PET_WND_FAMILY_BTN 26245  //
-#define CG_PET_WND_STATUS_BTN 26056  // ???????
-#define CG_PET_WND_RIDE_BTN 26247    //
+#define CG_PET_WND_STATUS_BTN 26056  //
+#define CG_PET_WND_RIDE_BTN 26247    // 宠物状态：骑乘
 
 // ?????????
-#define CG_ITEM_WND_0 26060                  // ?????????
-#define CG_ITEM_WND_GOLD_DROP_BTN_UP 26062   // ????????
-#define CG_ITEM_WND_GOLD_DROP_BTN_DOWN 26063 // ?????????
+#define CG_ITEM_WND_0 26060                  // 物品
+#define CG_ITEM_WND_GOLD_DROP_BTN_UP 26062   // 物品栏：石币上
+#define CG_ITEM_WND_GOLD_DROP_BTN_DOWN 26063 // 物品栏：石币下
 #define CG_ITEM_WND_GOLD_INC_BTN_UP 26064    // ????????
 #define CG_ITEM_WND_GOLD_INC_BTN_DOWN 26065  // ?????????
 #define CG_ITEM_WND_GOLD_DEC_BTN_UP 26066    // ????????

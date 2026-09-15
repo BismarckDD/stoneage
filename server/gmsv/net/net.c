@@ -3061,7 +3061,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       sweep_did_work = 1;
       errno = 0;
       char buf[1024 * 128];
-      memset(buf, 0, sizeof(buf));
+      // memset(buf, 0, sizeof(buf));
       NETWATCH_set("tcp_read", fdremember, NULL);
       ret = sa_tcp_read(fdremember, buf, sizeof(buf));
       NETWATCH_set("netloop", -1, NULL);
@@ -3149,7 +3149,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
     }
 
     for (j = 0; j < 3; j++) {
-      memset(rbmess, 0, sizeof(rbmess));
+      // 2026.09.15 注释memset，节省内存操作
+      // memset(rbmess, 0, sizeof(rbmess));
       if (GetOneLine_fix(fdremember, rbmess, sizeof(rbmess)) == FALSE)
         continue;
 
@@ -3834,10 +3835,6 @@ void saveforsaac() {
 
     if (ret > 0 && FD_ISSET(acfd, &wfds)) {
       // Nuke start 0907: Protect gmsv
-
-#ifdef _DEBUG
-      printf("发送SAAC内容:%s\n", Connect[acfd].wb);
-#endif
       ret = write(acfd, Connect[acfd].wb,
                   (Connect[acfd].wbuse < acwritesize) ? Connect[acfd].wbuse
                                                       : acwritesize);

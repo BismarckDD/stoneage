@@ -43,6 +43,7 @@
 #define _ADD_SHOW_ITEMDAMAGE // 与正式客户端一致：物品耐久度字段
 #define _ITEM_PILENUMS       // 与正式客户端一致：物品堆叠数字段
 #define _ALCHEMIST           // 与正式客户端一致：精炼字段
+#define _PET_STATUS_FUSION_FIELD // 与客户端一致：K 包保留宠物融合值字段
 
 #define UNIQUE_KEYCODEITEM 100
 #define UNIQUE_KEYCODEPET  "i"
@@ -79,7 +80,6 @@
 //#define _COMFIRM_TRADE_REQUEST  // 接收交易请求确认
 
 #define _EVERYONE_RIDE           // (可开放) Robin 0924 骑宠平民化
-#define _RIDEFLG_                // 启用骑宠协议分发及宠物骑乘许可字段
 // -------------------------------------------------------------------
 //专案：攻击性咒术的制作  人员：笃志
 #define _ATTACK_MAGIC            // (可开放)  提供战场中的攻击性咒术
@@ -92,6 +92,7 @@
 
 #define _RIDE_CF
 #define _ADD_RIDE_CF
+#define _NEW_RIDEPETS
 
 // -------------------------------------------------------------------
 //专案：新版人物储存pn 及 当机不回朔 1018  人员：彦勋
