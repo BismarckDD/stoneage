@@ -652,25 +652,21 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
   }
 
   if (strcmp(funcname, "ACCharLoad") == 0) {
-    char *result = NULL;
-    char *data = NULL;
-    int id;
 #ifdef _NEWSAVE
     int saveindex;
 #endif
-    result = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
-                          demkstr_string(ws->token_list[2]));
-    data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
-                        demkstr_string(ws->token_list[3]));
-    id = demkstr_int(ws->token_list[4]);
+    char *result = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
+                               demkstr_string(ws->token_list[2]));
+    char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
+                             demkstr_string(ws->token_list[3]));
+    int client_fdid = demkstr_int(ws->token_list[4]);
     if (data == NULL)
       return 0;
     if (result == NULL)
       return 0;
-
 #ifdef _NEWSAVE
     saveindex = demkstr_int(ws->token_list[5]);
-    SaacClient_ACCharLoad_recv(fd, result, data, id, saveindex);
+    SaacClient_ACCharLoad_recv(fd, result, data, client_fdid, saveindex);
 #else
     SaacClient_ACCharLoad_recv(fd, result, data, id, -1);
 #endif
@@ -1246,13 +1242,14 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     int kindflag, charfdid;
     char *result, *data1, *data2;
     result = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
-                          demkstr_string(ws->token_list[2]));
+                         demkstr_string(ws->token_list[2]));
     kindflag = demkstr_int(ws->token_list[3]);
     data1 = strncpysafe(ws->string_buffer[3], ws->work_buf_size,
-                         demkstr_string(ws->token_list[4]));
+                        demkstr_string(ws->token_list[4]));
     data2 = strncpysafe(ws->string_buffer[4], ws->work_buf_size,
-                         demkstr_string(ws->token_list[5]));
+                        demkstr_string(ws->token_list[5]));
     charfdid = demkstr_int(ws->token_list[6]);
+    // 这里的fd是saac_fd
     SaacClient_ACFixFMData_recv(fd, result, kindflag, data1, data2, charfdid);
     return 0;
   }

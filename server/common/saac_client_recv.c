@@ -90,23 +90,24 @@ void SaacClient_ACServerLogin_recv(int fd, char *result, char *data) {
 }
 
 void SaacClient_ACCharList_recv(int fd, char *result, char *data, int retfd) {
-  int clifd = getfdFromFdid(retfd);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(retfd);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
 #ifdef _ALLBLUES_LUA_1_9
 #ifdef _NEWCLISETMAC
-  if (FreeLoginCheck(clifd) == 0) {
+  if (FreeLoginCheck(client_fd) == 0) {
     return;
   }
 #endif
 #endif
-  GmsvServer_CharList_send(clifd, result, data);
-  CONNECT_setState(clifd, NOTLOGIN);
+  GmsvServer_CharList_send(client_fd, result, data);
+  CONNECT_setState(client_fd, NOTLOGIN);
 }
 
-void SaacClient_ACCharLoad_recv(int fd, char *result, char *data, int ret_fd,
+void SaacClient_ACCharLoad_recv(int fd, char *result, char *data,
+                                int client_fdid,
                                 int save_index) {
-  const int client_fd = getfdFromFdid(ret_fd);
+  const int client_fd = getfdFromFdid(client_fdid);
   if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if ((strcmp(result, SUCCESSFUL) == 0) && (data[0])) {
@@ -127,44 +128,44 @@ void SaacClient_ACCharLoad_recv(int fd, char *result, char *data, int ret_fd,
   }
 }
 
-void SaacClient_ACCharSave_recv(int fd, char *result, char *data, int retfd) {
-  int clifd = getfdFromFdid(retfd), fdid;
+void SaacClient_ACCharSave_recv(int fd, char *result, char *data, int client_fdid) {
+  const int client_fd = getfdFromFdid(client_fdid);
   char cdkey[CDKEYLEN], passwd[PASSWDLEN], charname[CHARNAMELEN];
-  if (CONNECT_checkfd(clifd) == FALSE)
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
-  CONNECT_getCdkey(clifd, cdkey, sizeof(cdkey));
-  CONNECT_getPasswd(clifd, passwd, sizeof(passwd));
-  CONNECT_getCharname(clifd, charname, sizeof(charname));
-  fdid = CONNECT_getFdid(clifd);
-  switch (CONNECT_getState(clifd)) {
+  CONNECT_getCdkey(client_fd, cdkey, sizeof(cdkey));
+  CONNECT_getPasswd(client_fd, passwd, sizeof(passwd));
+  CONNECT_getCharname(client_fd, charname, sizeof(charname));
+  const int fdid = CONNECT_getFdid(client_fd);
+  switch (CONNECT_getState(client_fd)) {
   case WHILECREATE:
     if (strcmp(result, FAILED) == 0)
       data = "";
-    GmsvServer_CreateNewChar_send(clifd, result, data);
-    CONNECT_setState(clifd, NOTLOGIN);
+    GmsvServer_CreateNewChar_send(client_fd, result, data);
+    CONNECT_setState(client_fd, NOTLOGIN);
     break;
 
   case WHILELOGOUTSAVE:
     if (strcmp(result, SUCCESSFUL) == 0)
-      GmsvServer_CharLogout_send(clifd, result, "success");
+      GmsvServer_CharLogout_send(client_fd, result, "success");
     else
-      GmsvServer_CharLogout_send(clifd, result, "Cannot save");
-    CONNECT_setState(clifd, NOTLOGIN);
-    CONNECT_setCharaindex(clifd, -1);
+      GmsvServer_CharLogout_send(client_fd, result, "Cannot save");
+    CONNECT_setState(client_fd, NOTLOGIN);
+    CONNECT_setCharaindex(client_fd, -1);
     break;
 
   case WHILELOSTCHARSAVE:
     SaacClient_ACCharDelete_send(acfd, cdkey, passwd, charname, "", fdid);
-    CONNECT_setState(clifd, WHILELOSTCHARDELETE);
-    CONNECT_setCharaindex(clifd, -1);
-    // CONNECT_setCloseRequest( clifd , 1 );
+    CONNECT_setState(client_fd, WHILELOSTCHARDELETE);
+    CONNECT_setCharaindex(client_fd, -1);
+    // CONNECT_setCloseRequest( client_fd , 1 );
     break;
 
   case WHILECLOSEALLSOCKETSSAVE:
-    CONNECT_setState(clifd, NOTLOGIN);
+    CONNECT_setState(client_fd, NOTLOGIN);
     // Arminius debug
-    // CONNECT_endOne_debug(clifd);
-    CONNECT_setUse(clifd, FALSE);
+    // CONNECT_endOne_debug(client_fd);
+    CONNECT_setUse(client_fd, FALSE);
 
     SERVSTATE_decrementCloseallsocketnum();
     if (SERVSTATE_getCloseallsocketnum() == 0) {
@@ -181,22 +182,22 @@ void SaacClient_ACCharSave_recv(int fd, char *result, char *data, int retfd) {
 }
 
 void SaacClient_ACCharDelete_recv(int fd, char *result, char *data, int retfd) {
-  int clifd = getfdFromFdid(retfd);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(retfd);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
-  switch (CONNECT_getState(clifd)) {
+  switch (CONNECT_getState(client_fd)) {
   case WHILELOSTCHARDELETE:
-    CONNECT_setState(clifd, NOTLOGIN);
-    CONNECT_setCharaindex(clifd, -1);
-    // CONNECT_setCloseRequest(clifd, 1);
+    CONNECT_setState(client_fd, NOTLOGIN);
+    CONNECT_setCharaindex(client_fd, -1);
+    // CONNECT_setCloseRequest(client_fd, 1);
     break;
   case WHILECHARDELETE:
     if (strcmp(result, FAILED) == 0)
       data = "";
-    GmsvServer_CharDelete_send(clifd, result, data);
-    CONNECT_setState(clifd, NOTLOGIN);
-    CONNECT_setCharaindex(clifd, -1);
-    // CONNECT_setCloseRequest(clifd, 1);
+    GmsvServer_CharDelete_send(client_fd, result, data);
+    CONNECT_setState(client_fd, NOTLOGIN);
+    CONNECT_setCharaindex(client_fd, -1);
+    // CONNECT_setCloseRequest(client_fd, 1);
     break;
   default:
     break;
@@ -204,10 +205,10 @@ void SaacClient_ACCharDelete_recv(int fd, char *result, char *data, int retfd) {
 }
 
 void SaacClient_ACLock_recv(int fd, char *result, char *data, int retfd) {
-  int clifd = getfdFromFdid(retfd);
+  int client_fd = getfdFromFdid(retfd);
   char cdkey[CDKEYLEN];
   int cindex = getCharindexFromFdid(retfd);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   // Arminius 7.25 GM unlock test
   if (strncmp(data, "USRLOCKED", 9) == 0) {
@@ -228,20 +229,20 @@ void SaacClient_ACLock_recv(int fd, char *result, char *data, int retfd) {
     CHAR_talkToCli(cindex, -1, "Server unlocked", CHAR_COLORYELLOW);
     return;
   }
-  CONNECT_getCdkey(clifd, cdkey, sizeof(cdkey));
+  CONNECT_getCdkey(client_fd, cdkey, sizeof(cdkey));
 
-  switch (CONNECT_getState(clifd)) {
+  switch (CONNECT_getState(client_fd)) {
   case WHILECANNOTLOGIN:
     if (strcmp(result, SUCCESSFUL) == 0) {
-      CONNECT_setState(clifd, NOTLOGIN);
+      CONNECT_setState(client_fd, NOTLOGIN);
 
     } else {
       char mesg[128];
       snprintf(mesg, sizeof(mesg), "%s hasn't been locked", cdkey);
       if (strcmp(data, mesg) == 0) {
-        CONNECT_setState(clifd, NOTLOGIN);
+        CONNECT_setState(client_fd, NOTLOGIN);
       } else {
-        SaacClient_ACLock_send(fd, cdkey, UNLOCK, CONNECT_getFdid(clifd));
+        SaacClient_ACLock_send(fd, cdkey, UNLOCK, CONNECT_getFdid(client_fd));
       }
     }
     break;
@@ -416,28 +417,28 @@ void SaacClient_ACAddFM_recv(int fd, char *result, int family_index,
 /* 收到从客户端发送加入family的请求 */
 void SaacClient_ACJoinFM_recv(int fd, char *result, int recv, int charfdid) {
   int ret;
-  int clifd = getfdFromFdid(charfdid);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(charfdid);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
   else
     ret = 0;
-  ACJoinFM(clifd, ret, recv);
+  ACJoinFM(client_fd, ret, recv);
 }
 
 /* 收到从客户端发送离开family的请求 */
 void SaacClient_ACLeaveFM_recv(int fd, char *result, int resultflag,
                                int charfdid) {
   int ret;
-  int clifd = getfdFromFdid(charfdid);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(charfdid);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
   else
     ret = 0;
-  ACLeaveFM(clifd, ret, resultflag);
+  ACLeaveFM(client_fd, ret, resultflag);
   print("ACLeaveFM_%d", ret);
 }
 
@@ -446,14 +447,14 @@ void SaacClient_ACChangeFM_recv(int fd, char *result, int charfdid) {}
 /* Saac客户端收到服务端的发送删除family的请求 */
 void SaacClient_ACDelFM_recv(int fd, char *result, int charfdid) {
   int ret;
-  int clifd = getfdFromFdid(charfdid);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(charfdid);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
   else
     ret = 0;
-  ACDelFM(clifd, ret);
+  ACDelFM(client_fd, ret);
   print("ACDelFM_%d", ret);
 }
 
@@ -490,14 +491,14 @@ void SaacClient_ACShowMemberList_recv(int fd, char *result, int index,
 void SaacClient_ACFMDetail_recv(int fd, char *result, char *data,
                                 int charfdid) {
   int ret;
-  int clifd = getfdFromFdid(charfdid);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(charfdid);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
   else
     ret = 0;
-  ACFMDetail(ret, data, clifd);
+  ACFMDetail(ret, data, client_fd);
 }
 void SaacClient_ACMemberJoinFM_recv(int fd, char *result, char *data,
                                     int charfdid) {}
@@ -520,15 +521,15 @@ void SaacClient_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
 #endif
 {
   int ret;
-  int clifd = getfdFromFdid(charfdid);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(charfdid);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
   else
     ret = 0;
 #ifdef _PERSONAL_FAME // Arminius:
-  ACFMCharLogin(clifd, ret, index, floor, fmdp, joinflag, fmsetupflag, flag,
+  ACFMCharLogin(client_fd, ret, index, floor, fmdp, joinflag, fmsetupflag, flag,
                 charindex, charfame
 #ifdef _NEW_MANOR_LAW
                 ,
@@ -536,7 +537,7 @@ void SaacClient_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
 #endif
   );
 #else
-  ACFMCharLogin(clifd, ret, index, floor, fmdp, joinflag, fmsetupflag, flag,
+  ACFMCharLogin(client_fd, ret, index, floor, fmdp, joinflag, fmsetupflag, flag,
                 charindex);
 #endif
 }
@@ -562,36 +563,27 @@ void SaacClient_ACFMPointList_recv(int fd, char *result, char *data) {
 
 void SaacClient_ACSetFMPoint_recv(int fd, char *result, int r, int charfdid) {
   int ret;
-  int clifd = getfdFromFdid(charfdid);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(charfdid);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   if (strcmp(result, SUCCESSFUL) == 0) {
     ret = 1;
   } else {
     ret = 0;
   }
-  ACSetFMPoint(ret, r, clifd);
+  ACSetFMPoint(ret, r, client_fd);
 }
 void SaacClient_ACFixFMPoint_recv(int fd, char *result, int r) {}
 void SaacClient_ACFMAnnounce_recv(int fd, char *result, char *fmname,
                                   int fmindex, int index, int kindflag,
                                   char *data, int color) {
-  int ret;
-  if (strcmp(result, SUCCESSFUL) == 0) {
-    ret = 1;
-  } else {
-    ret = 0;
-  }
+  int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   ACFMAnnounce(ret, fmname, fmindex, index, kindflag, data, color);
 }
 
 void SaacClient_ACShowTopFMList_recv(int fd, char *result, int kindflag,
                                      int num, char *data) {
-  int ret;
-  if (strcmp(result, SUCCESSFUL) == 0)
-    ret = 1;
-  else
-    ret = 0;
+  int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   ACShowDpTop(ret, num, data, kindflag);
 }
 #ifdef _NEW_MANOR_LAW
@@ -600,17 +592,13 @@ extern struct FMS_DPTOP fmdptop;
 
 void SaacClient_ACFixFMData_recv(int fd, char *result, int kindflag,
                                  char *data1, char *data2, int charfdid) {
-  int ret;
   int intdata;
-  int clifd = getfdFromFdid(charfdid);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(charfdid);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
-  int charaindex = CONNECT_getCharaindex(clifd);
+  int charaindex = CONNECT_getCharaindex(client_fd);
 
-  if (strcmp(result, SUCCESSFUL) == 0)
-    ret = 1;
-  else
-    ret = 0;
+  int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   if (!CHAR_CHECKINDEX(charaindex))
     return;
   if (kindflag == FM_FIX_FMRULE) {
@@ -639,7 +627,7 @@ void SaacClient_ACFixFMData_recv(int fd, char *result, int kindflag,
                CHAR_getInt(charaindex, CHAR_Y));
     }
   } else if (kindflag == FM_FIX_FMLEADERCHANGE) {
-    ACFMJob(clifd, ret, data1, data2);
+    ACFMJob(client_fd, ret, data1, data2);
   }
   // CoolFish: 2001/10/03
   else if (kindflag == FM_FIX_FMADV || kindflag == FM_FIX_FMFEED ||
@@ -694,18 +682,18 @@ void SaacClient_ACFixFMPK_recv(int fd, char *result, int data, int winindex,
 }
 void SaacClient_ACGMFixFMData_recv(int fd, char *result, char *fmname,
                                    int charfdid) {
-  int clifd = getfdFromFdid(charfdid);
+  int client_fd = getfdFromFdid(charfdid);
   char buf[256];
-  if (CONNECT_checkfd(clifd) == FALSE)
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   print("GMFixFMData_recv result:%s\n", result);
   if (ret == 1) {
     sprintf(buf, "修改%s家族数据成功.", fmname);
-    CHAR_talkToCli(CONNECT_getCharaindex(clifd), -1, buf, CHAR_COLORWHITE);
+    CHAR_talkToCli(CONNECT_getCharaindex(client_fd), -1, buf, CHAR_COLORWHITE);
   } else {
     sprintf(buf, "修改%s家族数据失败.", fmname);
-    CHAR_talkToCli(CONNECT_getCharaindex(clifd), -1, buf, CHAR_COLORWHITE);
+    CHAR_talkToCli(CONNECT_getCharaindex(client_fd), -1, buf, CHAR_COLORWHITE);
   }
 }
 
@@ -713,22 +701,22 @@ extern int familyTax[];
 void SaacClient_ACGetFMData_recv(int fd, char *result, int kindflag, int data,
                                  int charfdid) {
   char buf[256];
-  int clifd = getfdFromFdid(charfdid);
-  if (CONNECT_checkfd(clifd) == FALSE)
+  int client_fd = getfdFromFdid(charfdid);
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   if (ret == 0)
     return;
   if (kindflag == 1) {
     int fmindex =
-        CHAR_getWorkInt(CONNECT_getCharaindex(clifd), CHAR_WORKFMINDEXI);
+        CHAR_getWorkInt(CONNECT_getCharaindex(client_fd), CHAR_WORKFMINDEXI);
     if (fmindex < 0 || fmindex >= FAMILY_MAXNUM) {
       print(" fmindex: %d 异常!!\n", fmindex);
       return;
     }
     familyTax[fmindex] = data;
     sprintf(buf, "B|T|%d", data);
-    GmsvServer_FM_send(clifd, buf);
+    GmsvServer_FM_send(client_fd, buf);
   }
 }
 void SaacClient_ACFMClearPK_recv(int fd, char *result, char *fmname,
@@ -919,13 +907,13 @@ void SaacClient_ACManorPKAck_recv(int fd, char *data) {
 
 #ifdef _WAEI_KICK
 void SaacClient_ACKick_recv(int fd, int act, char *data, int retfd) {
-  int clifd = getfdFromFdid(retfd);
-  // if( CONNECT_checkfd(clifd) == FALSE )return;
+  int client_fd = getfdFromFdid(retfd);
+  // if( CONNECT_checkfd(client_fd) == FALSE )return;
   // char cdkey[CDKEYLEN];
   int cindex = getCharindexFromFdid(retfd);
   switch (act) {
   case 0: // FAIL
-    if (CONNECT_checkfd(clifd) == FALSE)
+    if (CONNECT_checkfd(client_fd) == FALSE)
       return;
     CHAR_talkToCli(cindex, -1, data, CHAR_COLORYELLOW);
     break;
@@ -1005,7 +993,7 @@ void SaacClient_ACCharGetPoolItem_recv(int fd, char *result, char *data,
                                        int retfd, int meindex) {
 #ifdef _NPC_DEPOTITEM
   Char *ch = NULL;
-  int i, clifd, charaindex;
+  int i, client_fd, charaindex;
 
   // print("\n ACCharGetPoolItem_recv:%s ", data);
 
@@ -1014,7 +1002,7 @@ void SaacClient_ACCharGetPoolItem_recv(int fd, char *result, char *data,
   charaindex = getCharindexFromFdid(retfd);
   if (!CHAR_CHECKINDEX(charaindex))
     return;
-  clifd = getfdFromCharaIndex(charaindex);
+  client_fd = getfdFromCharaIndex(charaindex);
   if (CHAR_CheckDepotItem(charaindex))
     return; // 仓库已处理
 
@@ -1034,14 +1022,14 @@ void SaacClient_ACCharGetPoolItem_recv(int fd, char *result, char *data,
   }
   if (!CHAR_CHECKINDEX(meindex))
     return;
-  if (clifd != -1) {
+  if (client_fd != -1) {
     char message[1024];
     char buf[1024];
     strcpy(message, "3\n\n"
                     "          使用道具仓库\n\n"
                     "          ＜存放道具＞\n"
                     "          ＜取回道具＞\n");
-    GmsvServer_WN_send(clifd, WINDOW_MESSAGETYPE_SELECT,
+    GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_SELECT,
                        WINDOW_BUTTONTYPE_CANCEL,
                        311, // CHAR_WINDOWTYPE_DEPOTITEMSHOP_HANDLE,
                        CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX),
@@ -1068,14 +1056,14 @@ void SaacClient_ACCharGetPoolPet_recv(int fd, char *result, char *data,
                                       int retfd, int meindex) {
 #ifdef _NPC_DEPOTPET
   Char *ch = NULL;
-  int i, clifd, charaindex;
+  int i, client_fd, charaindex;
 
   if (strcmp(result, SUCCESSFUL) != 0)
     return;
   charaindex = getCharindexFromFdid(retfd);
   if (!CHAR_CHECKINDEX(charaindex))
     return;
-  clifd = getfdFromCharaIndex(charaindex);
+  client_fd = getfdFromCharaIndex(charaindex);
   if (CHAR_CheckDepotPet(charaindex))
     return; // 仓库已处理
 
@@ -1095,7 +1083,7 @@ void SaacClient_ACCharGetPoolPet_recv(int fd, char *result, char *data,
   }
   if (!CHAR_CHECKINDEX(meindex))
     return;
-  if (clifd != -1) {
+  if (client_fd != -1) {
     char message[1024];
     char buf[1024];
     strcpy(
@@ -1106,7 +1094,7 @@ void SaacClient_ACCharGetPoolPet_recv(int fd, char *result, char *data,
         "　　　　　　『宠物公共仓库』\n"
         "          ＜＜＜存放宠物＞＞＞\n"
         "          ＜＜＜取回宠物＞＞＞\n");
-    GmsvServer_WN_send(clifd, WINDOW_MESSAGETYPE_SELECT,
+    GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_SELECT,
                        WINDOW_BUTTONTYPE_CANCEL,
                        CHAR_WINDOWTYPE_DEPOTPETSHOP_HANDLE,
                        CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX),
@@ -1233,12 +1221,14 @@ void SaacClient_ACCheckCharacterOnLine_recv(int acfd, int charaindex,
 }
 #endif
 
-void SaacClient_ACCharLogin_recv(int fd, int client_fdid, int flag) {
+// saac_fd: saac端的sock fd
+// client_fd: client端的sock fd
+// client_fdid: 自增，永不重复
+// 为什么要使用client_fdid：client可能会断联, 如果使用client_fd, 可能会发错
+void SaacClient_ACCharLogin_recv(int saac_fd, int client_fdid, int flag) {
   const int client_fd = getfdFromFdid(client_fdid);
-  (void)fd;
-
-  printf("[GMSV收到验证结果] fd=%d client_fdid=%d client_fd=%d flag=%d\n",
-         fd, client_fdid, client_fd, flag);
+  printf("[GMSV收到验证结果] saac_fd=%d client_fdid=%d client_fd=%d flag=%d\n",
+         saac_fd, client_fdid, client_fd, flag);
 
   if (CONNECT_checkfd(client_fd) == FALSE ||
       CONNECT_getState(client_fd) != WHILEAUTH) {

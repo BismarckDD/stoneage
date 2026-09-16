@@ -42,7 +42,7 @@ extern int getConnectnum(void);
 extern Player_Diy_Map PlayerDiyMap[Player_Diy_Map_NUM];
 #endif
 
-char rbmess[1024 * 256];
+char rbmess[1024 * 256]; // 256KB
 
 typedef struct NetWatchState {
   char stage[48];

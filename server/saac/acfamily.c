@@ -45,7 +45,12 @@ static char *FAMILY_INTDATA[familymaxint] = {
 
 // 家族 char 资料
 static char *FAMILY_CHARDATA[familymaxchar] = {
-    "fmname",      "fmleadername", "fmleaderid", "petname", "petattr", "fmrule",
+    "fmname",
+    "fmleadername",
+    "fmleaderid",
+    "petname",
+    "petattr",
+    "fmrule",
 #ifdef _FAMILY_TOTEM
     "familytotem",
 #endif
@@ -53,7 +58,12 @@ static char *FAMILY_CHARDATA[familymaxchar] = {
 
 // 家族成员 int 资料
 static char *MEMBER_INTDATA[memberdatamaxint] = {
-    "charlv",    "charflag", "onlineflag", "charfdid", "predeltime", "popular",
+    "charlv",
+    "charflag",
+    "onlineflag",
+    "charfdid",
+    "predeltime",
+    "popular",
 #ifdef _FMVER21
     "eventflag",
 #endif
