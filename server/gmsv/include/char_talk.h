@@ -21,12 +21,6 @@ void OneByOneTkChannel ( int fd , char *tmp1 , char *tmp2 , int color) ;
 typedef void (*CHATMAGICFUNC)(int,char*);
 CHATMAGICFUNC CHAR_getChatMagicFuncPointer(char* name, BOOL isDebug);
 
-
-#ifdef _RE_GM_COMMAND
-int re_gm_command();
-#endif
-
-
 #ifdef _FILTER_TALK
 int ReadFilterTalk();
 char *getFilterTalk(int index);

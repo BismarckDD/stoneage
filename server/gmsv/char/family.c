@@ -244,9 +244,8 @@ void CHAR_Family(int fd, int index, char *message) {
       {
         char ridePetSlot[32];
         /*
-         * Only R|P|-1 is an explicit dismount.  A rejected request for a
-         * different pet must not clear the pet the character is currently
-         * riding (for example, while changing that other pet's status).
+         * R|P|-1 是明确的骑宠指令, 只有接受到这条指令才取消骑宠.
+         * 不能因为改变其他宠物的状态, 而取消骑宠.
          */
         if (getStringFromIndexWithDelim(message, "|", 3, ridePetSlot,
                                         sizeof(ridePetSlot)) &&
@@ -2484,35 +2483,14 @@ void LeaveMemberIndex(int meindex, int fmindexi) {
 #endif
 }
 
-// static int FAMILY_getExtendedRideImage(int playerBaseImage,
-//                                        int petBaseImage) {
-//   /* Native copies of the two extended mappings formerly supplied by
-//    * familyridefunction.lua.  RIDEPET_getNOindex returns the 0-based player
-//    * archetype used by these arrays. */
-//   static const int peruxiaRideImages[] = {
-//       104025, 104026, 104027, 104028, 104029, 104030,
-//       104031, 104032, 104033, 104034, 104035, 104036};
-//   static const int baduolanenRideImages[] = {
-//       101009, 101019, 101029, 101039, 101049, 101059,
-//       101069, 101079, 101089, 101099, 101109, 101119};
-//   int playerType = RIDEPET_getNOindex(playerBaseImage);
-// 
-//   if (playerType < 0 || playerType >= arraysizeof(peruxiaRideImages))
-//     return 0;
-//   if (petBaseImage == 100872) /* 佩露夏 */
-//     return peruxiaRideImages[playerType];
-//   if (petBaseImage == 100373) /* 巴朵兰恩 */
-//     return baduolanenRideImages[playerType];
-//   return 0;
-// }
-
+// 2026.09.16 骑宠的关键逻辑在这里
+// message: R|P|X
+// Return 0: 骑宠失败
+// Return 1: 骑宠成功
 int FAMILY_RidePet(int fd, int meindex, char *message) {
   char token[64], token2[64];
-  int petindex, rideGraNo = 0, leaderimageNo;
-  // Arminius 8.25 recover
-  int i;
   if (!CHAR_CHECKINDEX(meindex)) {
-    printf("[RIDE] reject invalid character: fd=%d index=%d message='%s'\n", fd,
+    printf("[RIDE] reject invalid character: fd=%d char_index=%d message='%s'\n", fd,
            meindex, message != NULL ? message : "(null)");
     return 0;
   }
@@ -2551,142 +2529,108 @@ int FAMILY_RidePet(int fd, int meindex, char *message) {
   }
 #endif
   if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
-      FALSE) {
+      FALSE || strcmp(token, "P") != 0) {
     printf("[RIDE] reject: missing protocol token 2\n");
     return 0;
   }
-  if (strcmp(token, "P") == 0) {
-    if (getStringFromIndexWithDelim(message, "|", 3, token2, sizeof(token2)) ==
-        FALSE) {
-      printf("[RIDE] reject: missing pet-slot token\n");
-      return 0;
-    }
-
-    if (atoi(token2) != -1) {
-      petindex = CHAR_getCharPet(meindex, atoi(token2));
-      if (!CHAR_CHECKINDEX(petindex)) {
-        printf("[RIDE] reject: invalid pet slot=%d petIndex=%d\n", atoi(token2),
-               petindex);
-        return 0;
-      }
-      printf("[RIDE] pet: slot=%d index=%d name='%s' baseGra=%d lv=%d "
-             "loyalty=%d trans=%d\n",
-             atoi(token2), petindex, CHAR_getChar(petindex, CHAR_NAME),
-             CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER),
-             CHAR_getInt(petindex, CHAR_LV),
-             CHAR_getWorkInt(petindex, CHAR_WORKFIXAI),
-             CHAR_getInt(petindex, CHAR_TRANSMIGRATION));
-      // 取消禁止卡骑战
-      // if( CHAR_getInt( meindex, CHAR_DEFAULTPET ) == atoi( token2 ) )
-      // return 0;
-      if (CHAR_getInt(meindex, CHAR_RIDEPET) != -1) {
-        printf("[RIDE] reject: already riding slot=%d\n",
-               CHAR_getInt(meindex, CHAR_RIDEPET));
-        return 0;
-      }
-      if (CHAR_getInt(meindex, CHAR_LEARNRIDE) <
-          CHAR_getInt(petindex, CHAR_LV)) {
-        char buff[255];
-        sprintf(buff, "你目前只能骑乘等级小于%d级的宠。",
-                CHAR_getInt(meindex, CHAR_LEARNRIDE));
-        CHAR_talkToCli(meindex, -1, buff, CHAR_COLORYELLOW);
-        return 0;
-      }
-      if (CHAR_getWorkInt(petindex, CHAR_WORKFIXAI) < 100) {
-        printf("[RIDE] reject: pet loyalty=%d, required=100\n",
-               CHAR_getWorkInt(petindex, CHAR_WORKFIXAI));
-        CHAR_talkToCli(meindex, -1, "该骑宠的忠小于100", CHAR_COLORYELLOW);
-        return 0;
-      }
-
+  if (getStringFromIndexWithDelim(message, "|", 3, token2, sizeof(token2)) ==
+      FALSE) {
+    printf("[RIDE] reject: missing pet-slot token\n");
+    return 0;
+  }
+  int petSlot = atoi(token2);
+  if (petSlot == -1) {
+    return 0;
+  }
+  int petindex = CHAR_getCharPet(meindex, petSlot);
+  if (!CHAR_CHECKINDEX(petindex)) {
+    printf("[RIDE] reject: invalid pet slot=%d petIndex=%d\n", petSlot,
+           petindex);
+    return 0;
+  }
+  printf("[RIDE] pet: slot=%d pet_index=%d name='%s' baseGra=%d lv=%d "
+         "loyalty=%d trans=%d\n",
+         atoi(token2), petindex, CHAR_getChar(petindex, CHAR_NAME),
+         CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER),
+         CHAR_getInt(petindex, CHAR_LV),
+         CHAR_getWorkInt(petindex, CHAR_WORKFIXAI),
+         CHAR_getInt(petindex, CHAR_TRANSMIGRATION));
+  if (CHAR_getInt(meindex, CHAR_RIDEPET) != -1) {
+    printf("[RIDE] reject: already riding slot=%d\n",
+           CHAR_getInt(meindex, CHAR_RIDEPET));
+    return 0;
+  }
+  if (CHAR_getInt(meindex, CHAR_LEARNRIDE) <
+      CHAR_getInt(petindex, CHAR_LV)) {
+    char buff[255];
+    sprintf(buff, "你目前只能骑乘等级小于%d级的宠。",
+            CHAR_getInt(meindex, CHAR_LEARNRIDE));
+    CHAR_talkToCli(meindex, -1, buff, CHAR_COLORYELLOW);
+    return 0;
+  }
+  if (CHAR_getWorkInt(petindex, CHAR_WORKFIXAI) < 100) {
+    printf("[RIDE] reject: pet loyalty=%d, required=100\n",
+           CHAR_getWorkInt(petindex, CHAR_WORKFIXAI));
+    CHAR_talkToCli(meindex, -1, "该骑宠的忠小于100", CHAR_COLORYELLOW);
+    return 0;
+  }
 #ifdef _PET_BEATITUDE
-      if (CHAR_getInt(petindex, CHAR_BEATITUDE) > 0) {
-        CHAR_talkToCli(meindex, -1, "提升过的宠物无法骑宠！", CHAR_COLORYELLOW);
-        return 0;
-      }
+  if (CHAR_getInt(petindex, CHAR_BEATITUDE) > 0) {
+    CHAR_talkToCli(meindex, -1, "提升过的宠物无法骑宠！", CHAR_COLORYELLOW);
+    return 0;
+  }
 #endif
-
 #ifdef _PET_VALIDITY
-      if (CHAR_getInt(petindex, CHAR_PETVALIDITY) > 0 &&
-          CHAR_getInt(petindex, CHAR_PETVALIDITY) < time(NULL)) {
-        CHAR_talkToCli(meindex, -1, "该宠物已经失效了！", CHAR_COLORYELLOW);
-        int s_pet = CHAR_getWorkInt(meindex, CHAR_WORKSTANDBYPET);
-        s_pet ^= (1 << atoi(token2));
-        CHAR_setWorkInt(meindex, CHAR_WORKSTANDBYPET, s_pet);
-
-        GmsvServer_SPET_send(fd, s_pet, TRUE);
-        return FALSE;
-      }
+  if (CHAR_getInt(petindex, CHAR_PETVALIDITY) > 0 &&
+      CHAR_getInt(petindex, CHAR_PETVALIDITY) < time(NULL)) {
+    CHAR_talkToCli(meindex, -1, "该宠物已经失效了！", CHAR_COLORYELLOW);
+    int s_pet = CHAR_getWorkInt(meindex, CHAR_WORKSTANDBYPET);
+    s_pet ^= (1 << atoi(token2));
+    CHAR_setWorkInt(meindex, CHAR_WORKSTANDBYPET, s_pet);
+    GmsvServer_SPET_send(fd, s_pet, TRUE);
+    return FALSE;
+  }
 #endif
-
 #ifdef _RIDELEVEL
-      if (CHAR_getInt(meindex, CHAR_LV) + getRideLevel() <
-          CHAR_getInt(petindex, CHAR_LV)) {
-        char buff[255];
-        sprintf(buff, "你最高只能骑宠等级比你大%d级的宠。", getRideLevel());
-        CHAR_talkToCli(meindex, -1, buff, CHAR_COLORYELLOW);
-        return 0;
-      }
+  if (CHAR_getInt(meindex, CHAR_LV) + getRideLevel() <
+      CHAR_getInt(petindex, CHAR_LV)) {
+    char buff[255];
+    sprintf(buff, "你最高只能骑宠等级比你大%d级的宠。", getRideLevel());
+    CHAR_talkToCli(meindex, -1, buff, CHAR_COLORYELLOW);
+    return 0;
+  }
 #else
-      if (CHAR_getInt(meindex, CHAR_LV) + 5 < CHAR_getInt(petindex, CHAR_LV)) {
-        char buff[255];
-        sprintf(buff, "你最高只能骑宠等级比你大5级的宠。");
-        CHAR_talkToCli(meindex, -1, buff, CHAR_COLORYELLOW);
-        return 0;
-      }
+  if (CHAR_getInt(meindex, CHAR_LV) + 5 < CHAR_getInt(petindex, CHAR_LV)) {
+    CHAR_talkToCli(meindex, -1, "你最高只能骑宠等级比你大5级的宠。", CHAR_COLORYELLOW);
+    return 0;
+  }
 #endif
 #ifdef _PET_2TRANS
-      if (CHAR_getInt(petindex, CHAR_TRANSMIGRATION) > getRideTrans())
-        return 0;
+  if (CHAR_getInt(petindex, CHAR_TRANSMIGRATION) > getRideTrans())
+    return 0;
 #endif
+  // 2026.09.16 根据人物ID和宠物ID获取骑宠形象NO
+  int rideGraNo = RIDEPET_getRideImage(meindex, petindex);
+  printf("[RIDE] mapping: playerBaseGra=%d petBaseGra=%d rideGra=%d\n",
+         CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER),
+         CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER), rideGraNo);
 
-      /*
-       * Riding used to be resolved by FamilyRideFunction().  The Lua ride
-       * module is not part of the native Windows build, so leaving the call
-       * removed and forcing zero made every otherwise valid ride attempt
-       * fail.  The canonical character/pet/ride mapping already lives in
-       * ridePetTable; use it directly for the native riding path.
-       */
-      for (i = 0; i < arraysizeof(ridePetTable); i++) {
-        if (ridePetTable[i].charNo ==
-                CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER) &&
-            ridePetTable[i].petNo ==
-                CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER)) {
-          rideGraNo = ridePetTable[i].rideNo;
-          printf("[RIDE] mapping matched: table=%d rideGra=%d\n", i, rideGraNo);
-          break;
-        }
-      }
-
-      // if (rideGraNo == 0) {
-      //   rideGraNo = FAMILY_getExtendedRideImage(
-      //       CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER),
-      //       CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
-      //   if (rideGraNo != 0)
-      //     printf("[RIDE] extended mapping matched: rideGra=%d\n", rideGraNo);
-      // }
-
-      if (rideGraNo != 0) {
-#ifdef _ITEM_METAMO
-        //	CHAR_setWorkInt( meindex, CHAR_WORKITEMMETAMO, 0);
-#endif
-        CHAR_setInt(meindex, CHAR_RIDEPET, atoi(token2));
-        CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER, rideGraNo);
-        CHAR_complianceParameter(meindex);
-        CHAR_sendCToArroundCharacter(
-            CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
-        CHAR_send_P_StatusString(meindex, CHAR_P_STRING_RIDEPET);
-        printf("[RIDE] success: char=%d petSlot=%d rideGra=%d\n", meindex,
-               atoi(token2), rideGraNo);
-        return 1;
-      }
-      printf("[RIDE] reject: no mapping for playerBaseGra=%d petBaseGra=%d\n",
-             CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER),
-             CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
-      CHAR_talkToCli(meindex, -1, "你的角色造型无法骑乘该宠物。",
-                     CHAR_COLORYELLOW);
-    }
+  if (rideGraNo > 0) {
+    CHAR_setInt(meindex, CHAR_RIDEPET, atoi(token2));
+    CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER, rideGraNo);
+    CHAR_complianceParameter(meindex);
+    CHAR_sendCToArroundCharacter(
+        CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
+    CHAR_send_P_StatusString(meindex, CHAR_P_STRING_RIDEPET);
+    printf("[RIDE] success: char=%d petSlot=%d rideGra=%d\n", meindex,
+           atoi(token2), rideGraNo);
+    return 1;
   }
+  printf("[RIDE] reject: no mapping for playerBaseGra=%d petBaseGra=%d\n",
+         CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER),
+         CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
+  CHAR_talkToCli(meindex, -1, "你的角色造型无法骑乘该宠物。",
+                 CHAR_COLORYELLOW);
   return 0;
 }
 

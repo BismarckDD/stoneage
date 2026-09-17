@@ -2046,15 +2046,15 @@ int IsFemale(int charindex);
 #define RIDE_TPYE_ALL (0xFFFFFFFF)
 
 #ifdef _ADD_RIDE_CF
-#define MAXNOINDEX 32 * 3
+#define MAX_RIDE_PET_NO_NUM 32 * 3
 #else
-#define MAXNOINDEX 32 * 2
+#define MAX_RIDE_PET_NO_NUM 32 * 2
 #endif
 #else
 #define RIDE_PET_ALL                                                           \
   (RIDE_PET0 | RIDE_PET1 | RIDE_PET2 | RIDE_PET3 | RIDE_PET4 | RIDE_PET5 |     \
    RIDE_PET6 | RIDE_PET7 | RIDE_PET8 | RIDE_PET9 | RIDE_PET10 | RIDE_PET11)
-#define MAXNOINDEX 15
+#define MAX_RIDE_PET_NO_NUM 15
 #endif
 
 #ifdef _PET_BEATITUDE
@@ -2069,9 +2069,6 @@ typedef struct {
   int fmfloor;
   int ride[3];
 } tagFmLeaderRide;
-#endif
-
-#ifdef _FM_LEADER_RIDE
 int CHAR_FmLeaderRide(int meindex, int pet);
 #endif
 
@@ -2084,32 +2081,31 @@ typedef struct {
 #endif
 #endif
   unsigned int learnCode; // 骑乘这只宠物需要哪本教程
-} tagRideCodeMode;
+} RideCodeMode;
 
 typedef struct {
-  int RideNo[MAXNOINDEX]; // 启程后的形象
-  int flg;        // 这是啥？
-} tagRideNoList;
+  int rideNo[MAX_RIDE_PET_NO_NUM]; // 骑乘后的形象
+  int flg;                // 这是啥？
+} CharRideNoList;
 
 typedef struct {
   int charNo;    // 人物形象
-  int Noindex;   // 人物形象ID(例如辣妹有4种charNo, 但是NoIndex都是12, 骑乘蓝暴后是一种形象)
+  int charNoIdx; // 人物形象ID(例如辣妹有4种charNo, 但是NoIndex都是12, 骑乘蓝暴后是一种形象)
   int sex;       // 性别 1:男;2:女
-} tagRidePetList;
+} CharNoIdxMap;
 
-int RIDEPET_getNOindex(int baseNo);
+int RIDEPET_getCharNoIdxByCharNo(const int charNo);
+int RIDEPET_getPetIdx(int petNo,
+                      unsigned int learnCode
 #ifdef _RIDE_CF
+                    , unsigned int learnCode1
 #ifdef _ADD_RIDE_CF
-int RIDEPET_getPETindex(int PetNo, unsigned int learnCode,
-                        int unsigned learnCode1, int unsigned learnCode2);
-#else
-int RIDEPET_getPETindex(int PetNo, unsigned int learnCode,
-                        int unsigned learnCode1);
+                    , unsigned int learnCode2
 #endif
-#else
-int RIDEPET_getPETindex(int PetNo, unsigned int learnCode);
 #endif
-int RIDEPET_getRIDEno(int index, int ti);
+);
+int RIDEPET_getRideNo(int index, int ti);
+int RIDEPET_getRideImage(int charindex, int petindex);
 
 #ifdef _FUSION_TWO
 int CHAR_OldFusion_init();

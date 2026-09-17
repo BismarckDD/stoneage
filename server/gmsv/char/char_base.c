@@ -50,6 +50,7 @@ typedef struct tagINITCHARCOUNTER {
 static INITCHARCOUNTER initCharCounter[3] = {
     {-1, -1, -1}, {-1, -1, -1}, {-1, -1, -1}};
 
+// 2.0骑宠: 红/黄/绿/金虎, 红/黄/绿/蓝雷龙
 tagRidePetTable ridePetTable[296] = {
     {101000, 100000, 100352, 331},  {101001, 100005, 100352, 331},
     {101002, 100010, 100352, 331},  {101003, 100015, 100352, 331},
@@ -83,7 +84,6 @@ tagRidePetTable ridePetTable[296] = {
     {101014, 100715, 100328, 308},  {101015, 100715, 100329, 309},
     {101016, 100715, 100327, 307},  {101017, 100715, 100330, 310},
 #endif
-
     {101020, 100040, 100351, 330},  {101021, 100045, 100351, 330},
     {101022, 100050, 100351, 330},  {101023, 100055, 100351, 330},
     {101024, 100040, 100328, 308},  {101025, 100045, 100330, 310},
@@ -100,7 +100,6 @@ tagRidePetTable ridePetTable[296] = {
     {101024, 100725, 100328, 308},  {101025, 100725, 100330, 310},
     {101026, 100725, 100327, 307},  {101027, 100725, 100329, 309},
 #endif
-
     {101030, 100060, 100353, 332},  {101031, 100065, 100353, 332},
     {101032, 100070, 100353, 332},  {101033, 100075, 100353, 332},
     {101034, 100060, 100329, 309},  {101035, 100065, 100327, 307},
@@ -117,7 +116,6 @@ tagRidePetTable ridePetTable[296] = {
     {101034, 100735, 100329, 309},  {101035, 100735, 100327, 307},
     {101036, 100735, 100330, 310},  {101037, 100735, 100328, 308},
 #endif
-
     {101040, 100080, 100396, 483},  {101041, 100085, 100396, 483},
     {101042, 100090, 100396, 483},  {101043, 100095, 100396, 483},
     {101044, 100080, 100328, 308},  {101045, 100085, 100327, 307},
@@ -134,7 +132,6 @@ tagRidePetTable ridePetTable[296] = {
     {101044, 100745, 100328, 308},  {101045, 100745, 100327, 307},
     {101046, 100745, 100330, 310},  {101047, 100745, 100329, 309},
 #endif
-
     {101050, 100100, 100353, 332},  {101051, 100105, 100353, 332},
     {101052, 100110, 100353, 332},  {101053, 100115, 100353, 332},
     {101054, 100100, 100329, 309},  {101055, 100105, 100328, 308},
@@ -149,7 +146,6 @@ tagRidePetTable ridePetTable[296] = {
     {101054, 100755, 100329, 309},  {101055, 100755, 100328, 308},
     {101056, 100755, 100330, 310},  {101057, 100755, 100327, 307},
 #endif
-
     {101060, 100120, 100354, 333},  {101061, 100125, 100354, 333},
     {101062, 100130, 100354, 333},  {101063, 100135, 100354, 333},
     {101064, 100120, 100327, 307},  {101065, 100125, 100330, 310},
@@ -192,7 +188,6 @@ tagRidePetTable ridePetTable[296] = {
     {101084, 100785, 100330, 310},  {101085, 100785, 100329, 309},
     {101086, 100785, 100327, 307},  {101087, 100785, 100328, 308},
 #endif
-
     {101090, 100180, 100351, 330},  {101091, 100185, 100351, 330},
     {101092, 100190, 100351, 330},  {101093, 100195, 100351, 330},
     {101094, 100180, 100328, 308},  {101095, 100185, 100330, 310},
@@ -207,7 +202,6 @@ tagRidePetTable ridePetTable[296] = {
     {101094, 100795, 100328, 308},  {101095, 100795, 100330, 310},
     {101096, 100795, 100329, 309},  {101097, 100795, 100327, 307},
 #endif
-
     {101100, 100200, 100353, 332},  {101101, 100205, 100353, 332},
     {101102, 100210, 100353, 332},  {101103, 100215, 100353, 332},
     {101104, 100200, 100329, 309},  {101105, 100205, 100328, 308},
@@ -254,82 +248,57 @@ tagFmLeaderRide FmLeaderRide[] = {{1041, {-1, -1, -1}}, {2031, {-1, -1, -1}},
                                   {9031, {-1, -1, -1}}, {10031, {-1, -1, -1}}};
 #endif
 
+#ifdef _RIDE_CF
+#ifdef _ADD_RIDE_CF
+#define RCM_ROW(no, i) {no, -1, -1, RIDE_PET##i}
+#else
+#define RCM_ROW(no, i) {no, -1, RIDE_PET##i}
+#endif
+#else
+#define RCM_ROW(no, i) {no, RIDE_PET##i}
+#endif
+
 #ifdef _NEW_RIDEPETS
+RideCodeMode gRideCodeMode[] = {
+    RCM_ROW(100374, 0),   /*骑宠帖拉所伊朵*/
+    RCM_ROW(100358, 1),   /*骑宠玛恩摩洛斯*/
+    RCM_ROW(100362, 2),   /*骑宠朵拉比斯*/
+    RCM_ROW(100279, 3),   /*骑宠拉奇鲁哥*/
+    RCM_ROW(100288, 4),   /*骑宠扬奇洛斯*/
+    RCM_ROW(100283, 5),   /*骑宠卡达鲁卡斯*/
+    RCM_ROW(100346, 6),   /*骑宠卡卡金宝*/
+    RCM_ROW(100310, 7),   /*骑宠格尔格*/
+    RCM_ROW(100372, 8),   /*骑宠左迪洛斯*/
+    RCM_ROW(100373, 9),   /*骑宠巴朵兰恩*/
+    RCM_ROW(101532, 10),  /*骑宠史卡鲁*/
+    RCM_ROW(101576, 11),  /*骑宠罗多克雷*/
+    RCM_ROW(100370, 12),  /*骑宠奇宝*/
+    RCM_ROW(100369, 13),  /*骑宠霍尔克*/
+    RCM_ROW(100904, 14),  /*骑宠瑞里希尔*/
+    RCM_ROW(100872, 15),  /*骑宠佩露夏 */
+    RCM_ROW(-1, 16),
+    RCM_ROW(-1, 17),
+    RCM_ROW(-1, 18),
+    RCM_ROW(-1, 19),
+    RCM_ROW(-1, 20),
+    RCM_ROW(-1, 21),
+    RCM_ROW(-1, 22),
+    RCM_ROW(-1, 23),
+    RCM_ROW(-1, 24),
+    RCM_ROW(-1, 25),
+    RCM_ROW(-1, 26),
+    RCM_ROW(-1, 27),
+    RCM_ROW(-1, 28),
+    RCM_ROW(-1, 29),
+    RCM_ROW(-1, 30),
+    RCM_ROW(-1, 31),
+  };
+
 #ifdef _RIDE_CF
 #ifdef _ADD_RIDE_CF
-tagRideCodeMode RideCodeMode[] = {
-    {100374, -1, -1, RIDE_PET0},  /*骑宠帖拉所伊朵*/
-    {100358, -1, -1, RIDE_PET1},  /*骑宠玛恩摩洛斯*/
-    {100362, -1, -1, RIDE_PET2},  /*骑宠朵拉比斯*/
-    {100279, -1, -1, RIDE_PET3},  /*骑宠拉奇鲁哥*/
-    {100288, -1, -1, RIDE_PET4},  /*骑宠扬奇洛斯*/
-    {100283, -1, -1, RIDE_PET5},  /*骑宠卡达鲁卡斯*/
-    {100346, -1, -1, RIDE_PET6},  /*骑宠卡卡金宝*/
-    {100310, -1, -1, RIDE_PET7},  /*骑宠格尔格*/
-    {100372, -1, -1, RIDE_PET8},  /*骑宠左迪洛斯*/
-    {100373, -1, -1, RIDE_PET9},  /*骑宠巴朵兰恩*/
-    {101532, -1, -1, RIDE_PET10}, /*镲宠史卡鲁*/
-    {101576, -1, -1, RIDE_PET11}, /*骑宠罗多克雷*/
-    {100370, -1, -1, RIDE_PET12}, /*骑宠奇宝*/
-    {100369, -1, -1, RIDE_PET13}, /*镲宠霍尔克*/
-    {100904, -1, -1, RIDE_PET14}, /*骑宠瑞里西尔*/
-    {-1, -1, -1, RIDE_PET15},     {-1, -1, -1, RIDE_PET16},
-    {-1, -1, -1, RIDE_PET17},     {-1, -1, -1, RIDE_PET18},
-    {-1, -1, -1, RIDE_PET19},     {-1, -1, -1, RIDE_PET20},
-    {-1, -1, -1, RIDE_PET21},     {-1, -1, -1, RIDE_PET22},
-    {-1, -1, -1, RIDE_PET23},     {-1, -1, -1, RIDE_PET24},
-    {-1, -1, -1, RIDE_PET25},     {-1, -1, -1, RIDE_PET26},
-    {-1, -1, -1, RIDE_PET27},     {-1, -1, -1, RIDE_PET28},
-    {-1, -1, -1, RIDE_PET29},     {-1, -1, -1, RIDE_PET30},
-    {-1, -1, -1, RIDE_PET31}};
-#else
-tagRideCodeMode RideCodeMode[] = {
-    {100374, -1, RIDE_PET0},  /*骑宠帖拉所伊朵*/
-    {100358, -1, RIDE_PET1},  /*骑宠玛恩摩洛斯*/
-    {100362, -1, RIDE_PET2},  /*骑宠朵拉比斯*/
-    {100279, -1, RIDE_PET3},  /*骑宠拉奇鲁哥*/
-    {100288, -1, RIDE_PET4},  /*骑宠扬奇洛斯*/
-    {100283, -1, RIDE_PET5},  /*骑宠卡达鲁卡斯*/
-    {100346, -1, RIDE_PET6},  /*骑宠卡卡金宝*/
-    {100310, -1, RIDE_PET7},  /*骑宠格尔格*/
-    {100372, -1, RIDE_PET8},  /*骑宠左迪洛斯*/
-    {100373, -1, RIDE_PET9},  /*骑宠巴朵兰恩*/
-    {101532, -1, RIDE_PET10}, /*镲宠史卡鲁*/
-    {101576, -1, RIDE_PET11}, /*骑宠罗多克雷*/
-    {100370, -1, RIDE_PET12}, /*骑宠奇宝*/
-    {100369, -1, RIDE_PET13}, /*镲宠霍尔克*/
-    {100904, -1, RIDE_PET14}, /*骑宠瑞里西尔*/
-    {-1, -1, RIDE_PET15},     {-1, -1, RIDE_PET16}, {-1, -1, RIDE_PET17},
-    {-1, -1, RIDE_PET18},     {-1, -1, RIDE_PET19}, {-1, -1, RIDE_PET20},
-    {-1, -1, RIDE_PET21},     {-1, -1, RIDE_PET22}, {-1, -1, RIDE_PET23},
-    {-1, -1, RIDE_PET24},     {-1, -1, RIDE_PET25}, {-1, -1, RIDE_PET26},
-    {-1, -1, RIDE_PET27},     {-1, -1, RIDE_PET28}, {-1, -1, RIDE_PET29},
-    {-1, -1, RIDE_PET30},     {-1, -1, RIDE_PET31}};
-#endif
-#else
-tagRideCodeMode RideCodeMode[] = {
-    {100374, RIDE_PET0},  /*骑宠帖拉所伊朵*/
-    {100358, RIDE_PET1},  /*骑宠玛恩摩洛斯*/
-    {100362, RIDE_PET2},  /*骑宠朵拉比斯*/
-    {100279, RIDE_PET3},  /*骑宠拉奇鲁哥*/
-    {100288, RIDE_PET4},  /*骑宠扬奇洛斯*/
-    {100283, RIDE_PET5},  /*骑宠卡达鲁卡斯*/
-    {100346, RIDE_PET6},  /*骑宠卡卡金宝*/
-    {100310, RIDE_PET7},  /*骑宠格尔格*/
-    {100372, RIDE_PET8},  /*骑宠左迪洛斯*/
-    {100373, RIDE_PET9},  /*骑宠巴朵兰恩*/
-    {101532, RIDE_PET10}, /*镲宠史卡鲁*/
-    {101576, RIDE_PET11}, /*骑宠罗多克雷*/
-    {100370, RIDE_PET12}, /*骑宠奇宝*/
-    {100369, RIDE_PET13}, /*镲宠霍尔克*/
-    {100904, RIDE_PET14}, /*骑宠瑞里西尔*/
-};
-#endif
-#ifdef _RIDE_CF
-#ifdef _ADD_RIDE_CF
-tagRideNoList RideNoList[] = {
+CharRideNoList RideNoList[] = {
     {{101305, 101306, 101307, 101308, 101309, 101310, 101311, 101312, 101008,
-      101009, 101978, 101989, 100425, 100420, 100445, -1,     -1,     -1,
+      101009, 101978, 101989, 100425, 100420, 100445, 104025, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -338,10 +307,9 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
-      -1,     -1,     -1,     -1,     -1,     -1},
-     0}, // 小矮子
+      -1,     -1,     -1,     -1,     -1,     -1}, 0}, // 小矮子
     {{101313, 101314, 101315, 101316, 101317, 101318, 101319, 101320, 101018,
-      101019, 101986, 101988, 100425, 100420, 100445, -1,     -1,     -1,
+      101019, 101986, 101988, 100425, 100420, 100445, 104026, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -350,10 +318,9 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
-      -1,     -1,     -1,     -1,     -1,     -1},
-     0}, // 赛亚人
+      -1,     -1,     -1,     -1,     -1,     -1}, 0}, // 赛亚人
     {{101321, 101322, 101323, 101324, 101325, 101326, 101327, 101328, 101028,
-      101029, 101975, 101965, 100425, 100420, 100445, -1,     -1,     -1,
+      101029, 101975, 101965, 100425, 100420, 100445, 104027, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -362,10 +329,9 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
-      -1,     -1,     -1,     -1,     -1,     -1},
-     0}, // 辫子男孩
+      -1,     -1,     -1,     -1,     -1,     -1}, 0}, // 辫子男孩
     {{101329, 101330, 101331, 101332, 101333, 101334, 101335, 101336, 101038,
-      101039, 101976, 101966, 100425, 100420, 100445, -1,     -1,     -1,
+      101039, 101976, 101966, 100425, 100420, 100445, 104028, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -374,10 +340,9 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
-      -1,     -1,     -1,     -1,     -1,     -1},
-     0}, // 酷哥
+      -1,     -1,     -1,     -1,     -1,     -1}, 0}, // 酷哥
     {{101337, 101338, 101339, 101340, 101341, 101342, 101343, 101344, 101048,
-      101049, 101984, 101973, 100425, 100420, 100445, -1,     -1,     -1,
+      101049, 101984, 101973, 100425, 100420, 100445, 104029, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -389,7 +354,7 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1},
      0}, // 熊皮男
     {{101345, 101346, 101347, 101348, 101349, 101350, 101351, 101352, 101058,
-      101059, 101985, 101974, 100425, 100420, 100445, -1,     -1,     -1,
+      101059, 101985, 101974, 100425, 100420, 100445, 104030, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -401,7 +366,7 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1},
      0}, // 大个
     {{101353, 101354, 101355, 101356, 101357, 101358, 101359, 101360, 101068,
-      101069, 101977, 101967, 100425, 100420, 100445, -1,     -1,     -1,
+      101069, 101977, 101967, 100425, 100420, 100445, 104031, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -413,7 +378,7 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1},
      0}, // 小矮妹
     {{101361, 101362, 101363, 101364, 101365, 101366, 101367, 101368, 101078,
-      101079, 101979, 101968, 100425, 100420, 100445, -1,     -1,     -1,
+      101079, 101979, 101968, 100425, 100420, 100445, 104032, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -425,7 +390,7 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1},
      0}, // 熊皮妹
     {{101369, 101370, 101371, 101372, 101373, 101374, 101375, 101376, 101088,
-      101089, 101981, 101970, 100425, 100420, 100445, -1,     -1,     -1,
+      101089, 101981, 101970, 100425, 100420, 100445, 104033, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -437,7 +402,7 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1},
      0}, // 帽子妹
     {{101377, 101378, 101379, 101380, 101381, 101382, 101383, 101384, 101098,
-      101099, 101980, 101969, 100425, 100420, 100445, -1,     -1,     -1,
+      101099, 101980, 101969, 100425, 100420, 100445, 104034, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -449,7 +414,7 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1},
      0}, // 短法发夹妹
     {{101385, 101386, 101387, 101388, 101389, 101390, 101391, 101392, 101108,
-      101109, 101983, 101972, 100425, 100420, 100445, -1,     -1,     -1,
+      101109, 101983, 101972, 100425, 100420, 100445, 104035, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -461,7 +426,7 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1},
      0}, // 手套女
     {{101393, 101394, 101395, 101396, 101397, 101398, 101399, 101400, 101118,
-      101119, 101982, 101971, 100425, 100420, 100445, -1,     -1,     -1,
+      101119, 101982, 101971, 100425, 100420, 100445, 104036, -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -470,11 +435,10 @@ tagRideNoList RideNoList[] = {
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
-      -1,     -1,     -1,     -1,     -1,     -1},
-     0}, // 辣妹
+      -1,     -1,     -1,     -1,     -1,     -1}, 0}, // 辣妹
 };
 #else
-tagRideNoList RideNoList[] = {
+CharRideNoList RideNoList[] = {
     {{101305, 101306, 101307, 101308, 101309, 101310, 101311, 101312,
       101008, 101009, 101978, 101989, 100425, 100420, 100445, -1,
       -1,     -1,     -1,     -1,     -1,     -1,     -1,     -1,
@@ -586,7 +550,7 @@ tagRideNoList RideNoList[] = {
 };
 #endif
 #else
-tagRideNoList RideNoList[] = {
+CharRideNoList RideNoList[] = {
     {{101305, 101306, 101307, 101308, 101309, 101310, 101311, 101312, 101008,
       101009, 101978, 101989, 100425, 100420, 100445},
      0}, // 小矮子
@@ -625,7 +589,7 @@ tagRideNoList RideNoList[] = {
      0}, // 辣妹
 };
 #endif
-tagRidePetList RPlistMode[] = {
+CharNoIdxMap gCharNoIdxMapList[] = {
     {100000, 0, 1},  {100005, 0, 1},  {100010, 0, 1},
     {100015, 0, 1},  {100700, 0, 1},  {100705, 0, 1}, // 豆丁
     {100020, 1, 1},  {100025, 1, 1},  {100030, 1, 1},
@@ -652,87 +616,103 @@ tagRidePetList RPlistMode[] = {
     {100235, 11, 2}, {100810, 11, 2}, {100815, 11, 2}, // 辣妹
 };
 
-int RIDEPET_getNOindex(int baseNo) {
+int RIDEPET_getCharNoIdxByCharNo(const int charNo) {
   int i;
-  for (i = 0; i < sizeof(RPlistMode) / sizeof(tagRidePetList); i++) {
-    if (RPlistMode[i].charNo == baseNo) {
-      return RPlistMode[i].Noindex;
+  for (i = 0; i < sizeof(gCharNoIdxMapList) / sizeof(CharNoIdxMap); i++) {
+    if (gCharNoIdxMapList[i].charNo == charNo) {
+      return gCharNoIdxMapList[i].charNoIdx;
     }
   }
   return -1;
 }
 
+int RIDEPET_getPetIdx(int petNo,
+                      unsigned int learnCode
 #ifdef _RIDE_CF
+                    , unsigned int learnCode1
 #ifdef _ADD_RIDE_CF
-int RIDEPET_getPETindex(int PetNo, unsigned int learnCode,
-                        unsigned int learnCode1, unsigned int learnCode2) {
+                    , unsigned int learnCode2
+#endif // _ADD_RIDE_CF
+#endif // _RIDE_CF
+) {
   int i;
   for (i = 0; i < 32; i++) {
-    if (RideCodeMode[i].petNo == PetNo) {
-      if (RideCodeMode[i].learnCode & learnCode) {
+    if (gRideCodeMode[i].petNo == petNo) {
+      print("%d, %d, %d\n", i, learnCode, gRideCodeMode[i].learnCode);
+      if (gRideCodeMode[i].learnCode & learnCode) {
         return i;
       }
     }
-    if (RideCodeMode[i].petNo1 == PetNo) {
-      if (RideCodeMode[i].learnCode & learnCode1) {
+#ifdef _RIDE_CF
+    if (gRideCodeMode[i].petNo1 == petNo) {
+      print("%d, %d, %d\n", i, learnCode1, gRideCodeMode[i].learnCode);
+      if (gRideCodeMode[i].learnCode & learnCode1) {
         return i + 32;
       }
     }
-    if (RideCodeMode[i].petNo2 == PetNo) {
-      if (RideCodeMode[i].learnCode & learnCode2) {
+#ifdef _ADD_RIDE_CF
+    if (gRideCodeMode[i].petNo2 == petNo) {
+      print("%d, %d, %d\n", i, learnCode2, gRideCodeMode[i].learnCode);
+      if (gRideCodeMode[i].learnCode & learnCode2) {
         return i + 64;
       }
     }
   }
+#endif // _ADD_RIDE_CF
+#endif // _RIDE_CF
   return -1;
 }
-#else
-int RIDEPET_getPETindex(int PetNo, unsigned int learnCode,
-                        unsigned int learnCode1) {
-  int i;
-  int max = sizeof(RideCodeMode) / sizeof(tagRideCodeMode);
-  for (i = 0; i < 32; i++) {
-    if (RideCodeMode[i].petNo == PetNo) {
-      if (RideCodeMode[i].learnCode & learnCode)
-        return i;
-    }
-    if (RideCodeMode[i].petNo1 == PetNo) {
-      if (RideCodeMode[i].learnCode & learnCode1)
-        return i + 32;
-    }
-  }
-  return -1;
-}
-#endif
-#else
-int RIDEPET_getPETindex(int PetNo, unsigned int learnCode) {
-  int i;
-  for (i = 0; i < sizeof(RideCodeMode) / sizeof(tagRideCodeMode); i++) {
-    if (RideCodeMode[i].petNo == PetNo &&
-        (RideCodeMode[i].learnCode & learnCode)) {
-      return i;
-    }
-  }
-  return -1;
-}
-#endif
 
-int RIDEPET_getRIDEno(int index, int ti) {
-  if (index < 0 || index >= sizeof(RideNoList) / sizeof(tagRideNoList))
+int RIDEPET_getRideNo(int char_no_idx, int pet_type) {
+  if (char_no_idx < 0 || char_no_idx >= sizeof(RideNoList) / sizeof(CharRideNoList))
     return -1;
-  if (ti < 0 || ti >= MAXNOINDEX)
+  if (pet_type < 0 || pet_type >= MAX_RIDE_PET_NO_NUM)
     return -1;
+  print("ride_no: %d\n",
+    RideNoList[char_no_idx].rideNo[pet_type]);
+  return RideNoList[char_no_idx].rideNo[pet_type];
+}
 
-  return RideNoList[index].RideNo[ti];
+int RIDEPET_getRideImage(int char_index, int pet_index) {
+
+  if (!CHAR_CHECKINDEX(char_index) || !CHAR_CHECKINDEX(pet_index))
+    return -1;
+  int charNo = CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER);
+  int petNo = CHAR_getInt(pet_index, CHAR_BASEBASEIMAGENUMBER);
+  int i;
+  for (i = 0; i < arraysizeof(ridePetTable); i++) {
+    if (ridePetTable[i].charNo == charNo &&
+        ridePetTable[i].petNo == petNo)
+      return ridePetTable[i].rideNo;
+  }
+  // 在ridePetTable中没有
+  // 确定人物是哪种类型, 一种角色有四种配色
+  int charNoIdx = RIDEPET_getCharNoIdxByCharNo(charNo);
+  print("charNoIdx: %d\n", charNoIdx);
+  if (charNoIdx < 0)
+    return -1;
+  int petType = RIDEPET_getPetIdx(
+      petNo,
+      CHAR_getInt(char_index, CHAR_LOWRIDEPETS)
+#ifdef _RIDE_CF
+    , CHAR_getInt(char_index, CHAR_LOWRIDEPETS1)
+#ifdef _ADD_RIDE_CF
+    , CHAR_getInt(char_index, CHAR_LOWRIDEPETS2)
+#endif
+#endif
+  );
+  print("pet_type: %d\n", petType);
+  // 从RideNoList中找到对应的骑宠
+  return RIDEPET_getRideNo(charNoIdx, petType);
 }
 #endif
 
 #ifdef _EMENY_CHANCEMAN
 int CHAR_getSexInt(int baseNo) {
   int i;
-  for (i = 0; i < sizeof(RPlistMode) / sizeof(tagRidePetList); i++) {
-    if (RPlistMode[i].charNo == baseNo) {
-      return RPlistMode[i].sex;
+  for (i = 0; i < sizeof(gCharNoIdxMapList) / sizeof(CharNoIdxMap); i++) {
+    if (gCharNoIdxMapList[i].charNo == baseNo) {
+      return gCharNoIdxMapList[i].sex;
     }
   }
   return -1;
@@ -930,65 +910,65 @@ PetSetIntData PET_SetIntData[ ]={
 
 char *CHAR_setintdata[CHAR_DATAINTNUM] = {
     /* dci  , PLAYER,  */
-    "pn",  /*  CHAR_DATAPLACENUMBER */
-    "bi",  /*  CHAR_BASEIMAGENUMBER */
-    "bbi", /*  CHAR_BASEBASEIMAGENUMBER */
-    "fb",  /*  CHAR_FACEIMAGENUMBER */
-    "fl",  /*  CHAR_FLOOR  */
-    "x",   /*  CHAR_X */
-    "y",   /*  CHAR_Y  */
-    "dir", /*  CHAR_DIR 12凛毛0卞凛煌璃曰卞 */
-    "lv",  /*  CHAR_LV  */
-    "gld", /*  CHAR_GOLD    */
-    "hp",  /*  CHAR_HP  */
-    "mp",  /*  CHAR_MP  */
-    "mmp", /*  CHAR_MAXMP   */
-    "vi",  /*  CHAR_VITAL   */
-    "str", /*  CHAR_STR */
-    "tou", /*  CHAR_TOUGH */
-    "dx",  /*  CHAR_DEX   */
-    "chr", /*  CHAR_CHARM  */
-    "luc", /*  CHAR_LUCK  */
-    "aea", /*  哗箪岭 */
-    "awa", /*    箪岭 */
-    "afi", /*  绍箪岭 */
-    "awi", /*  氘箪岭 */
-    "slt", /*  CHAR_SLOT */
-    "cr",  /*  CHAR_CRITIAL */
-    "cou", /*  CHAR_COUNTER */
-    "rar", /*  CHAR_RARE */
-    "rst", /*  CHAR_RADARSTRLENGTH */
-    "cvo", /*  CHAR_CHATVOLUME */
-    "ml",  /*  CHAR_MERCHANTLEVEL */
-    "hl",  /*  CHAR_HEALERLEVEL */
-    "di",  /*  CHAR_DETERMINEITEM  */
-    "ieqt",/*  CHAR_INDEXOFEQTITLE  */
-    "poi", /*  CHAR_POISON  */
-    "par", /*  CHAR_PARALYSIS  */
-    "sil", /*  CHAR_SILENCE    */
-    "sto", /*  CHAR_STONE  */
-    "dar", /*  CHAR_DARKNESS   */
-    "con", /*  CHAR_CONFUSION  */
-    "loc", /*  CHAR_LOGINCOUNT */
-    "dc",  /*  CHAR_DEADCOUNT  */
-    "wc",  /*  CHAR_WALKCOUNT  */
-    "tc",  /*  CHAR_TALKCOUNT  */
-    "dmc", /*  CHAR_DAMAGECOUNT */
-    "gpc", /*  CHAR_GETPETCOUNT */
-    "kpc", /*  CHAR_KILLPETCOUNT */
-    "dpc", /*  CHAR_DEADPETCOUNT */
-    "smc", /*  CHAR_SENDMAILCOUNT */
-    "mic", /*  CHAR_MERGEITEMCOUNT */
-    "dbc", /*  CHAR_DUELBATTLECOUNT */
-    "dwc", /*  CHAR_DUELWINCOUNT */
-    "dlc", /*  CHAR_DUELLOSECOUNT */
-    "dswc",/*  CHAR_DUELSTWINCOUNT */
-    "dslc",/*  CHAR_DUELSTLOSECOUNT */
-    "dmswc",  /*  CHAR_DUELMAXSTWINCOUNT */
-    "wht",    /*  CHAR_WHICHTYPE  */
-    "wint",   /*  CHAR_WALKNTERVAL */
-    "lint",   /*  CHAR_LOOPINTERVAL */
-    "lintab", /*  CHAR_LOOPINTERVALAB */
+    "pn",  /* CHAR_DATAPLACENUMBER */
+    "bi",  /* CHAR_BASEIMAGENUMBER */
+    "bbi", /* CHAR_BASEBASEIMAGENUMBER */
+    "fb",  /* CHAR_FACEIMAGENUMBER */
+    "fl",  /* CHAR_FLOOR */
+    "x",   /* CHAR_X */
+    "y",   /* CHAR_Y */
+    "dir", /* CHAR_DIR */
+    "lv",  /* CHAR_LV */
+    "gld", /* CHAR_GOLD */
+    "hp",  /* CHAR_HP */
+    "mp",  /* CHAR_MP */
+    "mmp", /* CHAR_MAXMP */
+    "vi",  /* CHAR_VITAL */
+    "str", /* CHAR_STR */
+    "tou", /* CHAR_TOUGH */
+    "dx",  /* CHAR_DEX   */
+    "chr", /* CHAR_CHARM  */
+    "luc", /* CHAR_LUCK  */
+    "aea", /* CHAR_EARTH */
+    "awa", /* CHAR_EATER */
+    "afi", /* CHAR_FIRE */
+    "awi", /* CHAR_WIND */
+    "slt", /* CHAR_SLOT */
+    "cr",  /* CHAR_CRITIAL */
+    "cou", /* CHAR_COUNTER */
+    "rar", /* CHAR_RARE */
+    "rst", /* CHAR_RADARSTRLENGTH */
+    "cvo", /* CHAR_CHATVOLUME */
+    "ml",  /* CHAR_MERCHANTLEVEL */
+    "hl",  /* CHAR_HEALERLEVEL */
+    "di",  /* CHAR_DETERMINEITEM */
+    "ieqt",/* CHAR_INDEXOFEQTITLE */
+    "poi", /* CHAR_POISON */
+    "par", /* CHAR_PARALYSIS */
+    "sil", /* CHAR_SILENCE */
+    "sto", /* CHAR_STONE */
+    "dar", /* CHAR_DARKNESS */
+    "con", /* CHAR_CONFUSION */
+    "loc", /* CHAR_LOGINCOUNT */
+    "dc",  /* CHAR_DEADCOUNT */
+    "wc",  /* CHAR_WALKCOUNT */
+    "tc",  /* CHAR_TALKCOUNT */
+    "dmc", /* CHAR_DAMAGECOUNT */
+    "gpc", /* CHAR_GETPETCOUNT */
+    "kpc", /* CHAR_KILLPETCOUNT */
+    "dpc", /* CHAR_DEADPETCOUNT */
+    "smc", /* CHAR_SENDMAILCOUNT */
+    "mic", /* CHAR_MERGEITEMCOUNT */
+    "dbc", /* CHAR_DUELBATTLECOUNT */
+    "dwc", /* CHAR_DUELWINCOUNT */
+    "dlc", /* CHAR_DUELLOSECOUNT */
+    "dswc",/* CHAR_DUELSTWINCOUNT */
+    "dslc",/* CHAR_DUELSTLOSECOUNT */
+    "dmswc",  /* CHAR_DUELMAXSTWINCOUNT */
+    "wht",    /* CHAR_WHICHTYPE */
+    "wint",   /* CHAR_WALKNTERVAL */
+    "lint",   /* CHAR_LOOPINTERVAL */
+    "lintab", /* CHAR_LOOPINTERVALAB */
 #ifdef _NEWOPEN_MAXEXP
     "exp",  /*  CHAR_OLDEXP  */
     "nexp", /*  CHAR_EXP  */
@@ -4171,78 +4151,77 @@ int CHAR_Ride_CF_init() {
       continue;
     getStringFromIndexWithDelim(line, ",", 1, buf, sizeof(buf));
     if (!strcmp(buf, "骑    宠")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
         if (i < 32) {
-          RideCodeMode[i].petNo = atoi(buf);
-
+          gRideCodeMode[i].petNo = atoi(buf);
         } else if (i < 64) {
-          RideCodeMode[i - 32].petNo1 = atoi(buf);
+          gRideCodeMode[i - 32].petNo1 = atoi(buf);
 #ifdef _ADD_RIDE_CF
         } else if (i < 96) {
-          RideCodeMode[i - 64].petNo2 = atoi(buf);
+          gRideCodeMode[i - 64].petNo2 = atoi(buf);
 #endif
         }
       }
     } else if (!strcmp(buf, "豆    丁")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[0].RideNo[i] = atoi(buf);
+        RideNoList[0].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "赛 亚 人")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[1].RideNo[i] = atoi(buf);
+        RideNoList[1].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "辫子男孩")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[2].RideNo[i] = atoi(buf);
+        RideNoList[2].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "酷    哥")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[3].RideNo[i] = atoi(buf);
+        RideNoList[3].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "熊 皮 男")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[4].RideNo[i] = atoi(buf);
+        RideNoList[4].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "大    个")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[5].RideNo[i] = atoi(buf);
+        RideNoList[5].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "豆 丁 妹")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[6].RideNo[i] = atoi(buf);
+        RideNoList[6].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "熊 皮 妹")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[7].RideNo[i] = atoi(buf);
+        RideNoList[7].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "帽 子 妹")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[8].RideNo[i] = atoi(buf);
+        RideNoList[8].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "短发夹妹")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[9].RideNo[i] = atoi(buf);
+        RideNoList[9].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "手 套 女")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[10].RideNo[i] = atoi(buf);
+        RideNoList[10].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "辣    妹")) {
-      for (i = 0; i < MAXNOINDEX; i++) {
+      for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
         getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
-        RideNoList[11].RideNo[i] = atoi(buf);
+        RideNoList[11].rideNo[i] = atoi(buf);
       }
     }
   }
@@ -4339,8 +4318,10 @@ int CHAR_FmLeaderRide(int meindex, int pet) {
         }
       }
 
-      if ((ti = RIDEPET_getPETindex(petNo, playerlowsride, playerlowsride1,
-                                    playerlowsride2)) >= 0)
+      if ((ti = RIDEPET_getPetIdx(petNo,
+                                  playerlowsride,
+                                  playerlowsride1,
+                                  playerlowsride2)) >= 0)
 #else
       if (CHAR_getInt(meindex, CHAR_FMLEADERFLAG) == FMMEMBER_LEADER) {
         if (FmLeaderRide[i].ride[0] < 32) {
@@ -4377,12 +4358,12 @@ int CHAR_FmLeaderRide(int meindex, int pet) {
         }
       }
 
-      if ((ti = RIDEPET_getPETindex(petNo, playerlowsride, playerlowsride1)) >=
+      if ((ti = RIDEPET_getPetIdx(petNo, playerlowsride, playerlowsride1)) >=
           0)
 #endif
       {
-        if ((index = RIDEPET_getNOindex(playerNo)) >= 0) {
-          if ((image = RIDEPET_getRIDEno(index, ti)) >= 0) {
+        if ((index = RIDEPET_getCharNoIdxByCharNo(playerNo)) >= 0) {
+          if ((image = RIDEPET_getRideNo(index, ti)) >= 0) {
             CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER, image);
           }
         }
@@ -4500,25 +4481,25 @@ int CHAR_getPlayerItemNum(int char_index, int itemid, BOOL IsContainEquip,
 }
 #endif
 #ifdef _NEW_RIDEPETS
-int CHAR_CheckLearnCode(int charindex, int ridno) {
+int CHAR_CheckLearnCode(int char_index, int ride_no) {
   int i;
-  int max = sizeof(RideCodeMode) / sizeof(tagRideCodeMode);
+  int gRideCodeModeLen = sizeof(gRideCodeMode) / sizeof(RideCodeMode);
   unsigned int learnCode, learnCode1, learnCode2;
-  learnCode = CHAR_getInt(charindex, CHAR_LOWRIDEPETS);
-  learnCode1 = CHAR_getInt(charindex, CHAR_LOWRIDEPETS1);
-  learnCode2 = CHAR_getInt(charindex, CHAR_LOWRIDEPETS2);
-  for (i = 0; i < max; i++) {
-    if (RideCodeMode[i].petNo == ridno) {
+  learnCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
+  learnCode1 = CHAR_getInt(char_index, CHAR_LOWRIDEPETS1);
+  learnCode2 = CHAR_getInt(char_index, CHAR_LOWRIDEPETS2);
+  for (i = 0; i < gRideCodeModeLen; i++) {
+    if (gRideCodeMode[i].petNo == ride_no) {
       if (i < 32) {
-        if (RideCodeMode[i].learnCode & learnCode) {
+        if (gRideCodeMode[i].learnCode & learnCode) {
           return i;
         }
       } else if (i < 64) {
-        if (RideCodeMode[i].learnCode & learnCode1) {
+        if (gRideCodeMode[i].learnCode & learnCode1) {
           return i;
         }
       } else if (i < 96) {
-        if (RideCodeMode[i].learnCode & learnCode2) {
+        if (gRideCodeMode[i].learnCode & learnCode2) {
           return i;
         }
       }

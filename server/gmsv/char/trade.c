@@ -389,11 +389,6 @@ void CHAR_Trade(int fd, int index, char* message)
 	   case 'd':	// 寻找前方玩家
 		TRADE_Search(fd, index, message);
 	   	break;
-#ifdef _COMFIRM_TRADE_REQUEST
-	   case 'c':
-	   	TRADE_Will(fd, index, message);
-	   	break;
-#endif
 	   case 't':	// 显示交易的物品、金钱、宠物
 	   	TRADE_ShowItem(fd, index, message);
 	   	break;
@@ -539,10 +534,6 @@ BOOL TRADE_Search(int fd, int meindex, char* message)
 		snprintf(msgbuf, sizeof(msgbuf), TRADE_WAIT, tocharaname);
    		CHAR_talkToCli(meindex, -1, msgbuf, CHAR_COLORYELLOW);    //主动交易方,发送连络xx中
 
-#ifdef _COMFIRM_TRADE_REQUEST
-   		sprintf(msgbuf, "C|%d|%s|2", tofd, tocharaname);
-   		GmsvServer_TD_send(fd, msgbuf);
-#else
    		sprintf(msgbuf, "C|%d|%s|1", fd, mycharaname);
    		GmsvServer_TD_send( tofd, msgbuf);
    		sprintf(msgbuf, "C|%d|%s|1", tofd, tocharaname);
@@ -556,7 +547,6 @@ BOOL TRADE_Search(int fd, int meindex, char* message)
 
         CHAR_sendTradeEffect(meindex, 1);
         CHAR_sendTradeEffect(toindex, 1);
-#endif
         return TRUE;
    }else if (cnt > 1){	// 前方不只一位玩家
 		CHAR_talkToCli(meindex, -1, TRADE_OVERPLAYER, CHAR_COLORYELLOW);
@@ -568,47 +558,6 @@ BOOL TRADE_Search(int fd, int meindex, char* message)
 	CHAR_setWorkInt(meindex, CHAR_WORKTRADEMODE, CHAR_TRADE_FREE);
 	return FALSE;
 }
-
-#ifdef _COMFIRM_TRADE_REQUEST
-void TRADE_Will(int fd, int meindex, char* message)
-{
-	char msg[128], msgbuf[1024], mycharaname[256], tocharaname[256];
-	int tofd=-1, toindex=-1;
-	if (!CHAR_CHECKINDEX(meindex))	return;
-	if (*message == 0)	return;
-	strcpy(mycharaname, CHAR_getChar(meindex, CHAR_NAME));
-	toindex = TRADE_getMyTarget( meindex);//获取跟自己交易的对像？
-	if( CHAR_CHECKINDEX( toindex) ){
-		strcpy(tocharaname, CHAR_getChar(toindex, CHAR_NAME));
-		if( getStringFromIndexWithDelim( message, "|", 4, msg, sizeof(msg)) == FALSE)	return;
-
-		if(strcmp( msg, "0" )==0)
-		{
-			snprintf(msgbuf, sizeof(msgbuf), TRADE_REFUSE, tocharaname);
-			CHAR_talkToCli(toindex, -1, msgbuf, CHAR_COLORYELLOW);    //拒绝交易
-			int ti = CONNECT_getTradeList(fd);
-			if(ti !=-1)
-			{
-				TRADE_ResetTradeList(ti);
-			}
-		}
-		else if(strcmp( msg, "1" )==0)
-		{
-			sprintf(msgbuf, "C|%d|%s|1", tofd, tocharaname);
-			GmsvServer_TD_send(fd, msgbuf);
-
-			CHAR_setWorkInt(meindex, CHAR_WORKTRADEMODE, CHAR_TRADE_TRADING);
-			CHAR_setWorkInt(toindex, CHAR_WORKTRADEMODE, CHAR_TRADE_TRADING);
-
-			CONNECT_set_confirm(fd, FALSE);
-			CONNECT_set_confirm(tofd, FALSE);
-
-			CHAR_sendTradeEffect(meindex, 1);
-			CHAR_sendTradeEffect(toindex, 1);
-		}
-	}
-}
-#endif
 
 void TRADE_Close(int fd, int meindex, char* message)
 {

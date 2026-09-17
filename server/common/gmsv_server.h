@@ -241,228 +241,228 @@
 #define LSSPROTO_RIDEQUERY_RECV 220
 #endif
 
-void GmsvServer_W_recv(int fd, int x, int y, char *direction);
-void GmsvServer_UpShopData_send(int fd, char *data, char *md5, int id);
-void GmsvServer_ShopOK_send(int fd);
-void GmsvServer_W2_recv(int fd, int x, int y, char *direction);
-void GmsvServer_XYD_send(int fd, int x, int y, int dir);
-void GmsvServer_EV_recv(int fd, int event, int seqno, int x, int y, int dir);
-void GmsvServer_EV_send(int fd, int seqno, int result);
-void GmsvServer_EN_recv(int fd, int x, int y);
-void GmsvServer_DU_recv(int fd, int x, int y);
-void GmsvServer_EN_send(int fd, int result, int field);
-void GmsvServer_EO_recv(int fd, int dummy);
-void GmsvServer_BU_recv(int fd, int dummy);
-void GmsvServer_JB_recv(int fd, int x, int y);
-void GmsvServer_LB_recv(int fd, int x, int y);
-void GmsvServer_RS_send(int fd, char *data);
-void GmsvServer_RD_send(int fd, char *data);
-void GmsvServer_B_recv(int fd, char *command);
-void GmsvServer_B_send(int fd, char *command);
-void GmsvServer_SKD_recv(int fd, int dir, int index);
-void GmsvServer_ID_recv(int fd, int x, int y, int haveitemindex, int toindex);
-void GmsvServer_PI_recv(int fd, int x, int y, int dir);
-void GmsvServer_DI_recv(int fd, int x, int y, int itemindex);
-void GmsvServer_DG_recv(int fd, int x, int y, int amount);
-void GmsvServer_DP_recv(int fd, int x, int y, int petindex);
-void GmsvServer_I_send(int fd, char *data);
-void GmsvServer_MI_recv(int fd, int fromindex, int toindex);
-void GmsvServer_SI_send(int fd, int fromindex, int toindex);
-void GmsvServer_MSG_recv(int fd, int index, char *message, int color);
-void GmsvServer_MSG_send(int fd, int aindex, char *text, int color);
-void GmsvServer_PMSG_recv(int fd, int index, int petindex, int itemindex,
+void GmsvServer_W_recv(int client_fd, int x, int y, char *direction);
+void GmsvServer_UpShopData_send(int client_fd, char *data, char *md5, int id);
+void GmsvServer_ShopOK_send(int client_fd);
+void GmsvServer_W2_recv(int client_fd, int x, int y, char *direction);
+void GmsvServer_XYD_send(int client_fd, int x, int y, int dir);
+void GmsvServer_EV_recv(int client_fd, int event, int seqno, int x, int y, int dir);
+void GmsvServer_EV_send(int client_fd, int seqno, int result);
+void GmsvServer_EN_recv(int client_fd, int x, int y);
+void GmsvServer_DU_recv(int client_fd, int x, int y);
+void GmsvServer_EN_send(int client_fd, int result, int field);
+void GmsvServer_EO_recv(int client_fd, int dummy);
+void GmsvServer_BU_recv(int client_fd, int dummy);
+void GmsvServer_JB_recv(int client_fd, int x, int y);
+void GmsvServer_LB_recv(int client_fd, int x, int y);
+void GmsvServer_RS_send(int client_fd, char *data);
+void GmsvServer_RD_send(int client_fd, char *data);
+void GmsvServer_B_recv(int client_fd, char *command);
+void GmsvServer_B_send(int client_fd, char *command);
+void GmsvServer_SKD_recv(int client_fd, int dir, int index);
+void GmsvServer_ID_recv(int client_fd, int x, int y, int haveitemindex, int toindex);
+void GmsvServer_PI_recv(int client_fd, int x, int y, int dir);
+void GmsvServer_DI_recv(int client_fd, int x, int y, int itemindex);
+void GmsvServer_DG_recv(int client_fd, int x, int y, int amount);
+void GmsvServer_DP_recv(int client_fd, int x, int y, int petindex);
+void GmsvServer_I_send(int client_fd, char *data);
+void GmsvServer_MI_recv(int client_fd, int fromindex, int toindex);
+void GmsvServer_SI_send(int client_fd, int fromindex, int toindex);
+void GmsvServer_MSG_recv(int client_fd, int index, char *message, int color);
+void GmsvServer_MSG_send(int client_fd, int aindex, char *text, int color);
+void GmsvServer_PMSG_recv(int client_fd, int index, int petindex, int itemindex,
                           char *message, int color);
-void GmsvServer_PME_send(int fd, int objindex, int graphicsno, int x, int y,
+void GmsvServer_PME_send(int client_fd, int objindex, int graphicsno, int x, int y,
                          int dir, int flg, int no, char *cdata);
-void GmsvServer_AB_recv(int fd);
-void GmsvServer_AB_send(int fd, char *data);
-void GmsvServer_ABI_send(int fd, int num, char *data);
-void GmsvServer_DAB_recv(int fd, int index);
-void GmsvServer_AAB_recv(int fd, int x, int y);
-void GmsvServer_L_recv(int fd, int dir);
-void GmsvServer_TK_recv(int fd, int x, int y, char *message, int color,
+void GmsvServer_AB_recv(int client_fd);
+void GmsvServer_AB_send(int client_fd, char *data);
+void GmsvServer_ABI_send(int client_fd, int num, char *data);
+void GmsvServer_DAB_recv(int client_fd, int index);
+void GmsvServer_AAB_recv(int client_fd, int x, int y);
+void GmsvServer_L_recv(int client_fd, int dir);
+void GmsvServer_TK_recv(int client_fd, int x, int y, char *message, int color,
                         int area);
-void GmsvServer_TK_send(int fd, int index, char *message, int color);
-void GmsvServer_MC_send(int fd, int fl, int x1, int y1, int x2, int y2,
+void GmsvServer_TK_send(int client_fd, int index, char *message, int color);
+void GmsvServer_MC_send(int client_fd, int fl, int x1, int y1, int x2, int y2,
                         int tilesum, int objsum, int eventsum, char *data);
-void GmsvServer_M_recv(int fd, int fl, int x1, int y1, int x2, int y2);
-void GmsvServer_M_send(int fd, int fl, int x1, int y1, int x2, int y2,
+void GmsvServer_M_recv(int client_fd, int fl, int x1, int y1, int x2, int y2);
+void GmsvServer_M_send(int client_fd, int fl, int x1, int y1, int x2, int y2,
                        char *data);
-void GmsvServer_C_recv(int fd, int index);
-void GmsvServer_C_send(int fd, char *data);
-void GmsvServer_CA_send(const int fd, char *data);
-void GmsvServer_CD_send(const int fd, char *data);
-void GmsvServer_R_send(int fd, char *data);
-void GmsvServer_S_recv(int fd, char *category);
-void GmsvServer_S_send(int fd, char *data);
-void GmsvServer_D_send(int fd, int category, int dx, int dy, char *data);
-void GmsvServer_FS_recv(int fd, int flg);
-void GmsvServer_FS_send(int fd, int flg);
-void GmsvServer_HL_recv(int fd, int flg);
-void GmsvServer_HL_send(int fd, int flg);
-void GmsvServer_PR_recv(int fd, int x, int y, int request);
-void GmsvServer_PR_send(int fd, int request, int result);
-void GmsvServer_KS_recv(int fd, int petarray);
-void GmsvServer_KS_send(int fd, int petarray, int result);
+void GmsvServer_C_recv(int client_fd, int index);
+void GmsvServer_C_send(int client_fd, char *data);
+void GmsvServer_CA_send(const int client_fd, char *data);
+void GmsvServer_CD_send(const int client_fd, char *data);
+void GmsvServer_R_send(int client_fd, char *data);
+void GmsvServer_S_recv(int client_fd, char *category);
+void GmsvServer_S_send(int client_fd, char *data);
+void GmsvServer_D_send(int client_fd, int category, int dx, int dy, char *data);
+void GmsvServer_FS_recv(int client_fd, int flg);
+void GmsvServer_FS_send(int client_fd, int flg);
+void GmsvServer_HL_recv(int client_fd, int flg);
+void GmsvServer_HL_send(int client_fd, int flg);
+void GmsvServer_PR_recv(int client_fd, int x, int y, int request);
+void GmsvServer_PR_send(int client_fd, int request, int result);
+void GmsvServer_KS_recv(int client_fd, int petarray);
+void GmsvServer_KS_send(int client_fd, int petarray, int result);
 
 #ifdef _STANDBYPET
-void GmsvServer_SPET_recv(int fd, int standbypet);
-void GmsvServer_SPET_send(int fd, int standbypet, int result);
+void GmsvServer_SPET_recv(int client_fd, int standbypet);
+void GmsvServer_SPET_send(int client_fd, int standbypet, int result);
 #endif
 
-void GmsvServer_AC_recv(int fd, int x, int y, int actionno);
-void GmsvServer_MU_recv(int fd, int x, int y, int array, int toindex);
-void GmsvServer_PS_recv(int fd, int havepetindex, int havepetskill, int toindex,
+void GmsvServer_AC_recv(int client_fd, int x, int y, int actionno);
+void GmsvServer_MU_recv(int client_fd, int x, int y, int array, int toindex);
+void GmsvServer_PS_recv(int client_fd, int havepetindex, int havepetskill, int toindex,
                         char *data);
-void GmsvServer_SPET_send(int fd, int standbypet, int result);
-void GmsvServer_PS_send(int fd, int result, int havepetindex, int havepetskill,
+void GmsvServer_SPET_send(int client_fd, int standbypet, int result);
+void GmsvServer_PS_send(int client_fd, int result, int havepetindex, int havepetskill,
                         int toindex);
-void GmsvServer_ST_recv(int fd, int titleindex);
-void GmsvServer_DT_recv(int fd, int titleindex);
-void GmsvServer_FT_recv(int fd, char *data);
-void GmsvServer_SKUP_send(int fd, int point);
-void GmsvServer_SKUP_recv(int fd, int skillid);
-void GmsvServer_KN_recv(int fd, int havepetindex, char *data);
-void GmsvServer_WN_send(int fd, int windowtype, int buttontype, int seqno,
+void GmsvServer_ST_recv(int client_fd, int titleindex);
+void GmsvServer_DT_recv(int client_fd, int titleindex);
+void GmsvServer_FT_recv(int client_fd, char *data);
+void GmsvServer_SKUP_send(int client_fd, int point);
+void GmsvServer_SKUP_recv(int client_fd, int skillid);
+void GmsvServer_KN_recv(int client_fd, int havepetindex, char *data);
+void GmsvServer_WN_send(int client_fd, int windowtype, int buttontype, int seqno,
                         int objindex, char *data);
-void GmsvServer_WN_recv(int fd, int x, int y, int seqno, int objindex,
+void GmsvServer_WN_recv(int client_fd, int x, int y, int seqno, int objindex,
                         int select, char *data);
-void GmsvServer_EF_send(int fd, int effect, int level, char *option);
-void GmsvServer_SE_send(int fd, int x, int y, int senumber, int sw);
-void GmsvServer_SP_recv(int fd, int x, int y, int dir);
-void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
+void GmsvServer_EF_send(int client_fd, int effect, int level, char *option);
+void GmsvServer_SE_send(int client_fd, int x, int y, int senumber, int sw);
+void GmsvServer_SP_recv(int client_fd, int x, int y, int dir);
+void GmsvServer_ClientLogin_recv(int client_fd, char *cdkey, char *passwd, char *mac,
                                  int servid, char *Newip);
-void GmsvServer_ClientLogin_send(int fd, char *result);
-void GmsvServer_CreateNewChar_recv(int fd, int dataplacenum, char *charname,
+void GmsvServer_ClientLogin_send(int client_fd, char *result);
+void GmsvServer_CreateNewChar_recv(int client_fd, int dataplacenum, char *charname,
                                    int imgno, int faceimgno, int vital, int str,
                                    int tgh, int dex, int earth, int water,
                                    int fire, int wind, int hometown);
-void GmsvServer_CreateNewChar_send(int fd, char *result, char *data);
-void GmsvServer_CharDelete_recv(int fd, char *charname, char *a);
-void GmsvServer_CharDelete_send(int fd, char *result, char *data);
-void GmsvServer_CharLogin_recv(int fd, char *charname);
-void GmsvServer_CharLogin_send(int fd, char *result, char *data);
+void GmsvServer_CreateNewChar_send(int client_fd, char *result, char *data);
+void GmsvServer_CharDelete_recv(int client_fd, char *charname, char *a);
+void GmsvServer_CharDelete_send(int client_fd, char *result, char *data);
+void GmsvServer_CharLogin_recv(int client_fd, char *charname);
+void GmsvServer_CharLogin_send(int client_fd, char *result, char *data);
 
 #ifdef _PKSEVER_VER
-void GmsvServer_CharList_recv(int fd, int star);
+void GmsvServer_CharList_recv(int client_fd, int star);
 #else
-void GmsvServer_CharList_recv(int fd);
+void GmsvServer_CharList_recv(int client_fd);
 #endif
 
-void GmsvServer_CharList_send(int fd, char *result, char *data);
-void GmsvServer_CharLogout_recv(int fd, int flg);
-void GmsvServer_CharLogout_send(int fd, char *result, char *data);
-void GmsvServer_ProcGet_recv(int fd);
-void GmsvServer_ProcGet_send(int fd, char *data);
-void GmsvServer_PlayerNumGet_recv(int fd);
-void GmsvServer_PlayerNumGet_send(int fd, int logincount, int player);
-void GmsvServer_Echo_recv(int fd, char *test);
-void GmsvServer_Echo_send(int fd, char *test);
-void GmsvServer_Shutdown_recv(int fd, char *passwd, int min);
+void GmsvServer_CharList_send(int client_fd, char *result, char *data);
+void GmsvServer_CharLogout_recv(int client_fd, int flg);
+void GmsvServer_CharLogout_send(int client_fd, char *result, char *data);
+void GmsvServer_ProcGet_recv(int client_fd);
+void GmsvServer_ProcGet_send(int client_fd, char *data);
+void GmsvServer_PlayerNumGet_recv(int client_fd);
+void GmsvServer_PlayerNumGet_send(int client_fd, int logincount, int player);
+void GmsvServer_Echo_recv(int client_fd, char *test);
+void GmsvServer_Echo_send(int client_fd, char *test);
+void GmsvServer_Shutdown_recv(int client_fd, char *passwd, int min);
 
-void GmsvServer_TD_send(int fd, char *message);
-void GmsvServer_TD_recv(int fd, char *message);
+void GmsvServer_TD_send(int client_fd, char *message);
+void GmsvServer_TD_recv(int client_fd, char *message);
 
 #ifdef _CHATROOMPROTOCOL // (不可开) Syu ADD 聊天室频道
-void GmsvServer_CHATROOM_recv(int fd, char *data);
-void GmsvServer_CHATROOM_send(int fd, char *message);
+void GmsvServer_CHATROOM_recv(int client_fd, char *data);
+void GmsvServer_CHATROOM_send(int client_fd, char *message);
 #endif
 
 #ifdef _NEWREQUESTPROTOCOL // (不可开) Syu ADD 新增Protocol要求细项
-void GmsvServer_RESIST_recv(int fd);
-void GmsvServer_RESIST_send(int fd, char *message);
+void GmsvServer_RESIST_recv(int client_fd);
+void GmsvServer_RESIST_send(int client_fd, char *message);
 #endif
 #ifdef _OUTOFBATTLESKILL // (不可开) Syu ADD 非战斗时技能Protocol
-void GmsvServer_BATTLESKILL_recv(int fd, int iNum);
-void GmsvServer_BATTLESKILL_send(int fd, char *message);
+void GmsvServer_BATTLESKILL_recv(int client_fd, int iNum);
+void GmsvServer_BATTLESKILL_send(int client_fd, char *message);
 #endif
 
-void GmsvServer_CHAREFFECT_send(int fd, char *message);
-void GmsvServer_NU_send(int fd, int nu);
+void GmsvServer_CHAREFFECT_send(int client_fd, char *message);
+void GmsvServer_NU_send(int client_fd, int nu);
 
-void GmsvServer_FM_send(int fd, char *message);
-void GmsvServer_FM_recv(int fd, char *message);
+void GmsvServer_FM_send(int client_fd, char *message);
+void GmsvServer_FM_recv(int client_fd, char *message);
 
-void GmsvServer_WO_send(int fd, int effect);
-void GmsvServer_PETST_recv(int fd, int nPet, int sPet);
-void GmsvServer_BM_recv(int fd, int iindex);
+void GmsvServer_WO_send(int client_fd, int effect);
+void GmsvServer_PETST_recv(int client_fd, int nPet, int sPet);
+void GmsvServer_BM_recv(int client_fd, int iindex);
 
 #ifdef _MIND_ICON
-void GmsvServer_MA_recv(int fd, int x, int y, int nMind);
+void GmsvServer_MA_recv(int client_fd, int x, int y, int nMind);
 #endif
 
 #ifdef _ITEM_CRACKER
-void GmsvServer_IC_send(int fd, int x, int y);
+void GmsvServer_IC_send(int client_fd, int x, int y);
 #endif
 
 #ifdef _ITEM_CRACKER
-void GmsvServer_NC_send(int fd, int flg);
+void GmsvServer_NC_send(int client_fd, int flg);
 #endif
 
 #ifdef _TEAM_KICKPARTY
-void GmsvServer_KTEAM_recv(int fd, int si);
+void GmsvServer_KTEAM_recv(int client_fd, int si);
 #endif
 
 #ifdef _PETS_SELECTCON
-void GmsvServer_PETS_send(int fd, int petarray, int result);
+void GmsvServer_PETS_send(int client_fd, int petarray, int result);
 // #define LSSPROTO_PETST_SEND 107
 #endif
 
 #ifdef _STREET_VENDOR
-void GmsvServer_STREET_VENDOR_recv(int fd, char *message);
-void GmsvServer_STREET_VENDOR_send(int fd, char *message);
+void GmsvServer_STREET_VENDOR_recv(int client_fd, char *message);
+void GmsvServer_STREET_VENDOR_send(int client_fd, char *message);
 #endif
 
 #ifdef _RIGHTCLICK
-void GmsvServer_RCLICK_recv(int fd, int type, char *data);
-void GmsvServer_RCLICK_send(int fd, int type, char *data);
+void GmsvServer_RCLICK_recv(int client_fd, int type, char *data);
+void GmsvServer_RCLICK_send(int client_fd, int type, char *data);
 #endif
 
 #ifdef _JOBDAILY
-void GmsvServer_JOBDAILY_recv(int fd, char *data);
-void GmsvServer_JOBDAILY_send(int fd, char *data);
+void GmsvServer_JOBDAILY_recv(int client_fd, char *data);
+void GmsvServer_JOBDAILY_send(int client_fd, char *data);
 #endif
 
 #ifdef _TEACHER_SYSTEM
-void GmsvServer_TEACHER_SYSTEM_recv(int fd, char *data);
-void GmsvServer_TEACHER_SYSTEM_send(int fd, char *data);
+void GmsvServer_TEACHER_SYSTEM_recv(int client_fd, char *data);
+void GmsvServer_TEACHER_SYSTEM_send(int client_fd, char *data);
 #endif
 
 #ifdef _ADD_STATUS_2
-void GmsvServer_S2_recv(int fd, char *data);
-void GmsvServer_S2_send(int fd, char *data);
+void GmsvServer_S2_recv(int client_fd, char *data);
+void GmsvServer_S2_send(int client_fd, char *data);
 #endif
 
 #ifdef _PET_ITEM
-void GmsvServer_PETITEM_recv(int fd, int x, int y, int petindex, int fromindex,
+void GmsvServer_PETITEM_recv(int client_fd, int x, int y, int petindex, int fromindex,
                              int toindex);
 #endif
 
 #ifdef _ASSESS_ABILITY
-void GmsvServer_ASSESS_ABILITY_recv(int fd);
-void GmsvServer_ASSESS_ABILITY_send(int fd, char *data);
+void GmsvServer_ASSESS_ABILITY_recv(int client_fd);
+void GmsvServer_ASSESS_ABILITY_send(int client_fd, char *data);
 #endif
 
 #ifdef _ONLINE_SHOP
-void GmsvServer_VIP_SHOP_recv(int fd, int type, int page);
-void GmsvServer_VIP_SHOP_send(int fd, int num, int BJ, int type, int shoppage,
+void GmsvServer_VIP_SHOP_recv(int client_fd, int type, int page);
+void GmsvServer_VIP_SHOP_send(int client_fd, int num, int BJ, int type, int shoppage,
                               int page, char *data);
-void GmsvServer_VIP_SHOP_buy_recv(int fd, int type, int page, int id, int num);
+void GmsvServer_VIP_SHOP_buy_recv(int client_fd, int type, int page, int id, int num);
 #endif
-void GmsvServer_DENGON_send(int fd, char *data, int color, int num);
+void GmsvServer_DENGON_send(int client_fd, char *data, int color, int num);
 
-void GmsvServer_SaMenu_recv(int fd, int index);
-void GmsvServer_SAMENU_send(int fd, int index, char *data);
+void GmsvServer_SaMenu_recv(int client_fd, int index);
+void GmsvServer_SAMENU_send(int client_fd, int index, char *data);
 
 #ifdef _FAMILYBADGE_
-void GmsvServer_FamilyBadge_recv(int fd);
-void GmsvServer_FamilyBadge_send(int fd, char *data);
+void GmsvServer_FamilyBadge_recv(int client_fd);
+void GmsvServer_FamilyBadge_send(int client_fd, char *data);
 #endif
 #ifdef _NEW_TITLE
-void GmsvServer_CharTitle_send(int fd, char *data); // 发送新数据
+void GmsvServer_CharTitle_send(int client_fd, char *data); // 发送新数据
 #endif
 #endif
 
 #ifdef _VISUAL_BEATITUDE
-void GmsvServer_VisualBeatitude_send(int fd, char *data);
+void GmsvServer_VisualBeatitude_send(int client_fd, char *data);
 #endif

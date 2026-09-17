@@ -547,18 +547,11 @@ BOOL init(int argc, char **argv, char **env) {
     print("成功.\n");
 #endif
 #ifdef _FM_LEADER_RIDE
-  print("Start to init FM Leader Ride......");
+  print("开始2.0组长骑宠设置(2.5以后不再打开)......");
   if (!CHAR_FmLeaderRide_init())
-    print("......failed.\n");
-  print("succeed.\n");
+    print("失败.\n");
+  print("成功.\n");
 #endif
-#ifdef _RE_GM_COMMAND
-  print("......");
-  if (!re_gm_command())
-    print("......failed.\n");
-  print("succeed.\n");
-#endif
-
 #ifdef _FIND_TREASURES
   print("Start to init find treasure......");
   if (!FindTreasures_init())

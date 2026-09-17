@@ -160,25 +160,15 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
     return;
   }
   if (buttonproc[button].use == TRUE) {
-    int fd;
-    int newwin = -1;
 
-    fd = getfdFromCharaIndex(talkerindex);
-
-    if (newwin == -1) {
-      newwin = buttonproc[button].gotowin;
-    }
-
-    // print(" takegold:%d ", w.takegold );
-
+    int fd = getfdFromCharaIndex(talkerindex);
+    int newwin = buttonproc[button].gotowin;
     // Robin
+    char buf2[512];
+
     // 学习 Lv 40
     if (newwin == 6) {
-
-      int charImg;
-      // int i, petindex, bFind = 0;
-
-      charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
+      int charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
       if (CHAR_getInt(talkerindex, CHAR_LEARNRIDE) >= 40) {
         GmsvServer_WN_send(
             fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
@@ -188,8 +178,6 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       }
 
       if (CHAR_getInt(talkerindex, CHAR_GOLD) < w.takegold) {
-        char buf2[512];
-
         sprintf(buf2,
                 "\n很抱歉喔！你的学费不足！\n学习骑乘宠物初级班需要%d石币。",
                 w.takegold);
@@ -203,8 +191,6 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       CHAR_send_P_StatusString(talkerindex, CHAR_P_STRING_GOLD);
       CHAR_send_P_StatusString(talkerindex, CHAR_P_STRING_LEARNRIDE);
 
-      // sprintf( buf, "R|L|1" );
-      // GmsvServer_FM_send( fd, buf );
       GmsvServer_WN_send(
           fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
           makeEscapeString("\n\n恭喜你！你已经完成骑乘初级班了。\n可以骑乘 "
@@ -214,7 +200,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       // 家族收入
       {
         int fmindex, fmindexi, village, i;
-        char fmname[256], token[256], buf2[64];
+        char fmname[256], token[256];
 
         sprintf(buf2, "%d", w.takegold / 5);
         for (i = 0; i < FMPOINTNUM; i++) {
@@ -235,8 +221,6 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
                 acfd, fmname, fmindex, fmindexi, FM_FIX_FMGOLD, buf2, "",
                 CHAR_getWorkInt(meindex, CHAR_WORKFMCHARINDEX),
                 CONNECT_getFdid(fd));
-
-            // print(" rider_fm:%s ", fmname);
           }
         }
       }
@@ -246,11 +230,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
     // 学习 Lv 80
     if (newwin == 7) {
-
-      int charImg;
-      // int i, petindex, bFind = 0;
-
-      charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
+      int charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
       if (CHAR_getInt(talkerindex, CHAR_LEARNRIDE) >= 80) {
         GmsvServer_WN_send(
             fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
@@ -266,8 +246,6 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       }
 
       if (CHAR_getInt(talkerindex, CHAR_GOLD) < w.takegold) {
-        char buf2[512];
-
         sprintf(buf2,
                 "\n很抱歉喔！你的学费不足！\n学习骑乘宠物中级班需要%d石币",
                 w.takegold);
@@ -281,8 +259,6 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       CHAR_send_P_StatusString(talkerindex, CHAR_P_STRING_GOLD);
       CHAR_send_P_StatusString(talkerindex, CHAR_P_STRING_LEARNRIDE);
 
-      // sprintf( buf, "R|L|1" );
-      // GmsvServer_FM_send( fd, buf );
       GmsvServer_WN_send(
           fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
           makeEscapeString("\n\n恭喜你！你已经完成骑乘中级班了。\n可以骑乘 "
@@ -292,7 +268,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       // 家族收入
       {
         int fmindex, fmindexi, village, i;
-        char fmname[256], token[256], buf2[64];
+        char fmname[256], token[256];
 
         sprintf(buf2, "%d", w.takegold / 5);
         for (i = 0; i < FMPOINTNUM; i++) {
@@ -324,11 +300,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
     // 学习 Lv 120
     if (newwin == 8) {
-
-      int charImg;
-      // int i, petindex, bFind = 0;
-
-      charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
+      int charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
       if (CHAR_getInt(talkerindex, CHAR_LEARNRIDE) >= 120) {
         GmsvServer_WN_send(
             fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
@@ -344,8 +316,6 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       }
 
       if (CHAR_getInt(talkerindex, CHAR_GOLD) < w.takegold) {
-        char buf2[512];
-
         sprintf(buf2,
                 "\n很抱歉喔！你的学费不足！\n学习骑乘宠物高级班需要%d石币",
                 w.takegold);
@@ -359,8 +329,6 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       CHAR_send_P_StatusString(talkerindex, CHAR_P_STRING_GOLD);
       CHAR_send_P_StatusString(talkerindex, CHAR_P_STRING_LEARNRIDE);
 
-      // sprintf( buf, "R|L|1" );
-      // GmsvServer_FM_send( fd, buf );
       GmsvServer_WN_send(
           fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
           makeEscapeString("\n\n恭喜你！你已经完成骑乘高级班了。\n可以骑乘 "
@@ -370,7 +338,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       // 家族收入
       {
         int fmindex, fmindexi, village, i;
-        char fmname[256], token[256], buf2[64];
+        char fmname[256], token[256];
 
         sprintf(buf2, "%d", w.takegold / 5);
         for (i = 0; i < FMPOINTNUM; i++) {
@@ -402,11 +370,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
     // 学习  Lv All
     if (newwin == 9) {
-
-      int charImg;
-      // int petindex, i, bFind = 0;
-
-      charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
+      int charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
       if (CHAR_getInt(talkerindex, CHAR_LEARNRIDE) > 200) {
         GmsvServer_WN_send(
             fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
@@ -422,8 +386,6 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       }
 
       if (CHAR_getInt(talkerindex, CHAR_GOLD) < w.takegold) {
-        char buf2[512];
-
         sprintf(buf2,
                 "\n很抱歉喔！你的学费不足！\n学习骑乘宠物特级班需要%d石币",
                 w.takegold);
@@ -437,8 +399,6 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       CHAR_send_P_StatusString(talkerindex, CHAR_P_STRING_GOLD);
       CHAR_send_P_StatusString(talkerindex, CHAR_P_STRING_LEARNRIDE);
 
-      // sprintf( buf, "R|L|1" );
-      // GmsvServer_FM_send( fd, buf );
       GmsvServer_WN_send(
           fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
           makeEscapeString("\n\n恭喜你！你已经完成骑乘特级班了。\n可以骑乘所有"
@@ -448,7 +408,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       // 家族收入
       {
         int fmindex, fmindexi, village, i;
-        char fmname[256], token[256], buf2[64];
+        char fmname[256], token[256];
 
         sprintf(buf2, "%d", w.takegold / 5);
         for (i = 0; i < FMPOINTNUM; i++) {
@@ -478,9 +438,8 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
       return;
     }
 
-    // 说明 , 列表
+    // 说明, 列表
     if (newwin == 5) {
-
       GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_SHOWRIDEPET,
                          WINDOW_BUTTONTYPE_OK, -1, -1, "");
       return;

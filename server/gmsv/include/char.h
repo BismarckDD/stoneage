@@ -576,13 +576,6 @@ typedef enum {
 #endif
 } CHAR_WINDOWTYPE;
 
-#ifdef _GMRELOAD
-typedef struct tagGMInfo {
-  char cdkey[24];
-  int level;
-} GMInfo;
-#endif
-
 #ifdef _ANGEL_SUMMON
 
 #define MAXMISSION 100

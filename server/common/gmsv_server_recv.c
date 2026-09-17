@@ -93,9 +93,9 @@ static BOOL isValidUtf8CharacterName(const char *name) {
   return TRUE;
 }
 
-static int Callfromcli_Util_getTargetCharaindex(int fd, int to_index) {
+static int Callfromcli_Util_getTargetCharaindex(int client_fd, int to_index) {
   int to_char_index = -1;
-  const int char_index = CONNECT_getCharaindex(fd);
+  const int char_index = CONNECT_getCharaindex(client_fd);
   // 如何解释to_index是个什么东东?
   if (to_index == 0) {
     to_char_index = char_index;
@@ -110,16 +110,16 @@ static int Callfromcli_Util_getTargetCharaindex(int fd, int to_index) {
   return to_char_index;
 }
 
-void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
+void GmsvServer_ClientLogin_recv(int client_fd, char *cdkey, char *passwd, char *mac,
                                  int servid, char *Newip) {
   printf("[登录请求] fd=%d cdkey='%s' passwd='%s' mac='%s' servid=%d\n",
-         fd, cdkey ? cdkey : "NULL", passwd ? passwd : "NULL",
+         client_fd, cdkey ? cdkey : "NULL", passwd ? passwd : "NULL",
          mac ? mac : "NULL", servid);
-  if (CONNECT_getState(fd) != NULLCONNECT) {
+  if (CONNECT_getState(client_fd) != NULLCONNECT) {
     printf("[登录失败] 连接状态错误 fd=%d state=%d (期望NULLCONNECT=%d)\n",
-           fd, CONNECT_getState(fd), NULLCONNECT);
-    print("\n unexpected ClientLogin state fd=%d state=%d", fd,
-          CONNECT_getState(fd));
+           client_fd, CONNECT_getState(client_fd), NULLCONNECT);
+    print("\n unexpected ClientLogin state fd=%d state=%d", client_fd,
+          CONNECT_getState(client_fd));
     return;
   }
   // ttom avoid the restore 2001/01/09
@@ -128,29 +128,29 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
       strlen(passwd) >= PASSWDLEN) {
     printf("[登录失败] 参数校验失败 cdkey='%s' passwd='%s'\n",
            cdkey ? cdkey : "NULL", passwd ? passwd : "NULL");
-    GmsvServer_ClientLogin_send(fd, "no");
+    GmsvServer_ClientLogin_send(client_fd, "no");
     return;
   }
   if (checkStringErr(cdkey))
     return;
   if (checkStringErr(passwd))
     return;
-  CONNECT_setCdkey(fd, cdkey);
-  CONNECT_setPasswd(fd, passwd);
-  CONNECT_setCtype(fd, CLI);
+  CONNECT_setCdkey(client_fd, cdkey);
+  CONNECT_setPasswd(client_fd, passwd);
+  CONNECT_setCtype(client_fd, CLI);
 #ifdef _NEWCLISETSERVID
-  CONNECT_setServid(fd, servid);
+  CONNECT_setServid(client_fd, servid);
 #endif
 #ifdef _NEWCLISETMAC
   if (checkStringErr(mac)) {
     strcpy(mac, "");
   }
-  CONNECT_setMAC(fd, mac);
+  CONNECT_setMAC(client_fd, mac);
 #endif
   unsigned long tmpip;
   int a, b, c, d;
   char ip[32];
-  tmpip = CONNECT_get_userip(fd);
+  tmpip = CONNECT_get_userip(client_fd);
   a = (tmpip % 0x100);
   tmpip = tmpip / 0x100;
   b = (tmpip % 0x100);
@@ -165,8 +165,8 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
     if (strlen(cdkey) == 0 || strlen(passwd) == 0 || strlen(ip) == 0) {
       printf("[登录失败] 预检查参数为空 cdkey='%s' passwd='%s' ip='%s'\n",
              cdkey, passwd, ip);
-      GmsvServer_ClientLogin_send(fd, "no");
-      CONNECT_endOne_debug(fd);
+      GmsvServer_ClientLogin_send(client_fd, "no");
+      CONNECT_endOne_debug(client_fd);
       return;
     }
 
@@ -174,7 +174,7 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
     res = sasql_query(cdkey, passwd);
     printf("[登录预检查] sasql_query结果 res=%d (0=失败,1=成功,2=密码错,3=未注册)\n", res);
     if (res == 3) {
-      if (getNoCdkeyPlayer() > 0 && fd - player_online >= getNoCdkeyPlayer() &&
+      if (getNoCdkeyPlayer() > 0 && client_fd - player_online >= getNoCdkeyPlayer() &&
           getNoCdkeyMode() != 0) {
         if (strcmp(ip, getNoAttIp(0)) != 0 && strcmp(ip, getNoAttIp(1)) != 0 &&
             strcmp(ip, getNoAttIp(2)) != 0 && strcmp(ip, getNoAttIp(3)) != 0 &&
@@ -182,19 +182,19 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
           if (getNoCdkeyType() == 0) {
             if (sasql_query_online_ip(ip) == 0) {
               print("online ip is illegal.\n");
-              CONNECT_endOne_debug(fd);
+              CONNECT_endOne_debug(client_fd);
               return;
             }
           } else {
             print("???\n");
-            CONNECT_endOne_debug(fd);
+            CONNECT_endOne_debug(client_fd);
             return;
           }
         }
       }
     } else if (res != 1) {
       printf("[登录失败] 预检查未通过 res=%d cdkey='%s'\n", res, cdkey);
-      if (getNoCdkeyPlayer() > 0 && fd - player_online >= getNoCdkeyPlayer() &&
+      if (getNoCdkeyPlayer() > 0 && client_fd - player_online >= getNoCdkeyPlayer() &&
           getNoCdkeyMode() == 2) {
         if (strcmp(ip, getNoAttIp(0)) != 0 && strcmp(ip, getNoAttIp(1)) != 0 &&
             strcmp(ip, getNoAttIp(2)) != 0 && strcmp(ip, getNoAttIp(3)) != 0 &&
@@ -202,49 +202,49 @@ void GmsvServer_ClientLogin_recv(int fd, char *cdkey, char *passwd, char *mac,
           if (getNoCdkeyType() == 0) {
             if (sasql_query_online_ip(ip) == 0) {
               print("online ip is illegal.\n");
-              CONNECT_endOne_debug(fd);
+              CONNECT_endOne_debug(client_fd);
               return;
             }
           } else {
             print("???\n");
-            CONNECT_endOne_debug(fd);
+            CONNECT_endOne_debug(client_fd);
             return;
           }
         }
       }
-      CONNECT_endOne_debug(fd);
+      CONNECT_endOne_debug(client_fd);
       return;
     }
   }
 #endif
 #ifdef _NEWCLISETMAC
-  CONNECT_setState(fd, WHILEAUTH);
-  printf("[登录转发] 转发给SAAC验证 fd=%d cdkey='%s' ip='%s'\n", fd, cdkey, ip);
-  SaacClient_ACCharLogin_send(acfd, CONNECT_getFdid(fd), cdkey, passwd, ip,
+  CONNECT_setState(client_fd, WHILEAUTH);
+  printf("[登录转发] 转发给SAAC验证 fd=%d cdkey='%s' ip='%s'\n", client_fd, cdkey, ip);
+  SaacClient_ACCharLogin_send(acfd, CONNECT_getFdid(client_fd), cdkey, passwd, ip,
                               mac);
 #else
-  CONNECT_setState(fd, WHILEAUTH);
-  printf("[登录转发] 转发给SAAC验证 fd=%d cdkey='%s' ip='%s'\n", fd, cdkey, ip);
-  SaacClient_ACCharLogin_send(acfd, CONNECT_getFdid(fd), cdkey, passwd, ip);
+  CONNECT_setState(client_fd, WHILEAUTH);
+  printf("[登录转发] 转发给SAAC验证 fd=%d cdkey='%s' ip='%s'\n", client_fd, cdkey, ip);
+  SaacClient_ACCharLogin_send(acfd, CONNECT_getFdid(client_fd), cdkey, passwd, ip);
 #endif
 }
 
-void GmsvServer_CreateNewChar_recv(int fd, int dataplacenum, char *charname,
+void GmsvServer_CreateNewChar_recv(int client_fd, int dataplacenum, char *charname,
                                    int imgno, int faceimgno, int vital, int str,
                                    int tgh, int dex, int earth, int water,
                                    int fire, int wind, int hometown) {
   char cdkey[CDKEYLEN];
-  if (CONNECT_isCLI(fd) == FALSE)
+  if (CONNECT_isCLI(client_fd) == FALSE)
     return;
-  if (CONNECT_isNOTLOGIN(fd) == FALSE) {
-    GmsvServer_CreateNewChar_send(fd, FAILED, "当前用户没有登录.\n");
+  if (CONNECT_isNOTLOGIN(client_fd) == FALSE) {
+    GmsvServer_CreateNewChar_send(client_fd, FAILED, "当前用户没有登录.\n");
     return;
   }
   if (strlen(charname) == 0) {
-    GmsvServer_CreateNewChar_send(fd, FAILED, "用户名称长度不能位0.\n");
+    GmsvServer_CreateNewChar_send(client_fd, FAILED, "用户名称长度不能位0.\n");
     return;
   } else if (strlen(charname) >= 32) {
-    GmsvServer_CreateNewChar_send(fd, FAILED, "用户名称长度大于16个字符.\n");
+    GmsvServer_CreateNewChar_send(client_fd, FAILED, "用户名称长度大于16个字符.\n");
     return;
     // Nuke start 0711: Avoid naming as WAEI
   } else if (strstr(charname, "gM") || strstr(charname, "gm") ||
@@ -268,51 +268,51 @@ void GmsvServer_CreateNewChar_recv(int fd, int dataplacenum, char *charname,
              // WON END
   ) {
 	  // 2026.08.23 创建角色失败找到这里
-    GmsvServer_CreateNewChar_send(fd, FAILED, "不合适的角色名称\n");
+    GmsvServer_CreateNewChar_send(client_fd, FAILED, "不合适的角色名称\n");
     return;
   }
 #ifdef _MO_ILLEGAL_NAME
   int j;
   for (j = 0; j < 32; j++) {
     if (strstr(charname, getIllegalName(j)) && strlen(getIllegalName(j)) > 0) {
-      GmsvServer_CreateNewChar_send(fd, FAILED,
+      GmsvServer_CreateNewChar_send(client_fd, FAILED,
                                     "角色名称命中非法角色名称名单.\n");
       return;
     }
   }
 #endif
   if (!isValidUtf8CharacterName(charname)) {
-    GmsvServer_CreateNewChar_send(fd, FAILED,
+    GmsvServer_CreateNewChar_send(client_fd, FAILED,
                                   "角色名称中存在非法字符.\n");
     return;
   }
 
-  CONNECT_getCdkey(fd, cdkey, sizeof(cdkey));
-  CHAR_createNewChar(fd, dataplacenum, charname, imgno, faceimgno, vital, str,
+  CONNECT_getCdkey(client_fd, cdkey, sizeof(cdkey));
+  CHAR_createNewChar(client_fd, dataplacenum, charname, imgno, faceimgno, vital, str,
                      tgh, dex, earth, water, fire, wind, hometown, cdkey);
 }
 
-void GmsvServer_CharLogin_recv(int fd, char *charname) {
+void GmsvServer_CharLogin_recv(int client_fd, char *charname) {
   char cdkey[CDKEYLEN], passwd[PASSWDLEN];
-  if (CONNECT_isCLI(fd) == FALSE)
+  if (CONNECT_isCLI(client_fd) == FALSE)
     return;
   print("[CLIENT请求]Char[%s]请求登录.\n", charname);
 
   if (charname[0] == '\0') {
-    GmsvServer_CharLogin_send(fd, FAILED, "Can't access char have no name\n");
+    GmsvServer_CharLogin_send(client_fd, FAILED, "Can't access char have no name\n");
     return;
   }
-  if (CONNECT_isNOTLOGIN(fd) == FALSE) {
-    GmsvServer_CharLogin_send(fd, FAILED, "Already Logged in\n");
+  if (CONNECT_isNOTLOGIN(client_fd) == FALSE) {
+    GmsvServer_CharLogin_send(client_fd, FAILED, "Already Logged in\n");
     return;
   }
-  CONNECT_setCharname(fd, charname);
-  CONNECT_getCdkey(fd, cdkey, sizeof(cdkey));
-  CONNECT_getPasswd(fd, passwd, sizeof(passwd));
+  CONNECT_setCharname(client_fd, charname);
+  CONNECT_getCdkey(client_fd, cdkey, sizeof(cdkey));
+  CONNECT_getPasswd(client_fd, passwd, sizeof(passwd));
 
   SaacClient_ACCharLoad_send(acfd, cdkey, passwd, charname, 1, "",
-                             CONNECT_getFdid(fd));
-  CONNECT_setState(fd, WHILELOGIN);
+                             CONNECT_getFdid(client_fd));
+  CONNECT_setState(client_fd, WHILELOGIN);
 }
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
@@ -333,13 +333,13 @@ BOOL CheckDropatLogout(int char_index) {
 }
 #endif
 
-void GmsvServer_CharLogout_recv(int fd, int flg) {
+void GmsvServer_CharLogout_recv(int client_fd, int flg) {
   char cdkey[CDKEYLEN], charname[CHARNAMELEN];
-  int char_index = CONNECT_getCharaindex(fd);
-  if (CONNECT_isCLI(fd) == FALSE)
+  int char_index = CONNECT_getCharaindex(client_fd);
+  if (CONNECT_isCLI(client_fd) == FALSE)
     return;
-  if (CONNECT_isLOGIN(fd) == FALSE) {
-    GmsvServer_CharLogout_send(fd, FAILED, "Not Logged in\n");
+  if (CONNECT_isLOGIN(client_fd) == FALSE) {
+    GmsvServer_CharLogout_send(client_fd, FAILED, "Not Logged in\n");
 
     return;
   }
@@ -462,7 +462,7 @@ void GmsvServer_CharLogout_recv(int fd, int flg) {
         }
         return;
       } else {
-        CONNECT_endOne_debug(fd);
+        CONNECT_endOne_debug(client_fd);
       }
 #else
       if (CHAR_getInt(char_index, CHAR_FLOOR) == 117) {
@@ -478,19 +478,19 @@ void GmsvServer_CharLogout_recv(int fd, int flg) {
   }
 }
 
-void GmsvServer_CharDelete_recv(int fd, char *charname, char *passwd) {
+void GmsvServer_CharDelete_recv(int client_fd, char *charname, char *passwd) {
   char cdkey[CDKEYLEN];
-  if (CONNECT_isCLI(fd) == FALSE)
+  if (CONNECT_isCLI(client_fd) == FALSE)
     return;
-  if (CONNECT_isNOTLOGIN(fd) == FALSE) {
-    GmsvServer_CharDelete_send(fd, FAILED, "Already Logged in\n");
+  if (CONNECT_isNOTLOGIN(client_fd) == FALSE) {
+    GmsvServer_CharDelete_send(client_fd, FAILED, "Already Logged in\n");
     return;
   }
-  CONNECT_getCdkey(fd, cdkey, sizeof(cdkey));
-  int fdid = CONNECT_getFdid(fd);
+  CONNECT_getCdkey(client_fd, cdkey, sizeof(cdkey));
+  int fdid = CONNECT_getFdid(client_fd);
 // 增加了删除角色前的LUA校验
 #ifdef _ALLBLUES_LUA_1_9
-  if (FreeCharDelete(fd, cdkey, passwd) == 0) {
+  if (FreeCharDelete(client_fd, cdkey, passwd) == 0) {
     return;
   }
 #endif
@@ -502,30 +502,30 @@ void GmsvServer_CharDelete_recv(int fd, char *charname, char *passwd) {
   SaacClient_DBDeleteEntryInt_send(acfd, DB_DUELPOINT, buff2, fdid, 0);
   SaacClient_DBDeleteEntryString_send(acfd, DB_ADDRESSBOOK, buff2, fdid, 0);
   SaacClient_Broadcast_send(acfd, cdkey, charname, "chardelete", 0);
-  CONNECT_setState(fd, WHILECHARDELETE);
+  CONNECT_setState(client_fd, WHILECHARDELETE);
 }
 
-void GmsvServer_CharList_recv(int fd) {
+void GmsvServer_CharList_recv(int client_fd) {
   char cdkey[CDKEYLEN], passwd[PASSWDLEN];
   int fdid = -1;
   int charlistflg = 0;
-  if (CONNECT_isCLI(fd) == FALSE)
+  if (CONNECT_isCLI(client_fd) == FALSE)
     return;
-  if (CONNECT_isNOTLOGIN(fd) == FALSE) {
-    GmsvServer_CharList_send(fd, FAILED, "当前用户已经登录.");
+  if (CONNECT_isNOTLOGIN(client_fd) == FALSE) {
+    GmsvServer_CharList_send(client_fd, FAILED, "当前用户已经登录.");
     return;
   }
-  CONNECT_getCdkey(fd, cdkey, sizeof(cdkey));
-  CONNECT_getPasswd(fd, passwd, sizeof(passwd));
+  CONNECT_getCdkey(client_fd, cdkey, sizeof(cdkey));
+  CONNECT_getPasswd(client_fd, passwd, sizeof(passwd));
 #ifdef _MO_LOGIN_NO_KICK
   if (getLoginNoKick() == 1) {
     if (!sasql_CheckPasswd(cdkey, passwd)) {
-      GmsvServer_CharList_send(fd, FAILED, "踢出原登录用户.");
+      GmsvServer_CharList_send(client_fd, FAILED, "踢出原登录用户.");
       return;
     }
   }
 #endif
-  fdid = CONNECT_getFdid(fd);
+  fdid = CONNECT_getFdid(client_fd);
   {
     int i;
     int playernum = CHAR_getPlayerMaxNum();
@@ -538,7 +538,7 @@ void GmsvServer_CharList_recv(int fd) {
           if (!CHAR_logout(i, TRUE)) {
             print("err %s:%d\n", __FILE__, __LINE__);
           }
-          GmsvServer_CharList_send(fd, FAILED, "该账号已在线上，请重新登录游戏！");
+          GmsvServer_CharList_send(client_fd, FAILED, "该账号已在线上，请重新登录游戏！");
           CONNECT_setCloseRequest(getfdFromCharaIndex(i), 1);
           break;
         } else
@@ -555,13 +555,13 @@ void GmsvServer_CharList_recv(int fd) {
   }
   char mac[64] = "";
 #ifdef _NEWCLISETMAC
-  CONNECT_getMAC(fd, mac, sizeof(mac));
+  CONNECT_getMAC(client_fd, mac, sizeof(mac));
 #endif
 
   unsigned long tmpip;
   int a, b, c, d;
   char ip[32];
-  tmpip = CONNECT_get_userip(fd);
+  tmpip = CONNECT_get_userip(client_fd);
   a = (tmpip % 0x100);
   tmpip = tmpip / 0x100;
   b = (tmpip % 0x100);
@@ -573,24 +573,24 @@ void GmsvServer_CharList_recv(int fd) {
 
   SaacClient_ACCharList_send(acfd, cdkey, passwd, ip, mac, fdid, charlistflg);
 
-  CONNECT_setState(fd, WHILEDOWNLOADCHARLIST);
+  CONNECT_setState(client_fd, WHILEDOWNLOADCHARLIST);
 }
 
-void GmsvServer_Echo_recv(int fd, char *arg0) {
-  if (CONNECT_checkfd(fd) == FALSE)
+void GmsvServer_Echo_recv(int client_fd, char *arg0) {
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
-  GmsvServer_Echo_send(fd, arg0);
+  GmsvServer_Echo_send(client_fd, arg0);
 }
 
 #define CHECKFD                                                                \
-  if (CONNECT_isCLI(fd) == FALSE)                                              \
+  if (CONNECT_isCLI(client_fd) == FALSE)                                       \
     return;                                                                    \
-  if (CONNECT_isLOGIN(fd) == FALSE)                                            \
+  if (CONNECT_isLOGIN(client_fd) == FALSE)                                     \
     return;
 #define CHECKFDANDTIME                                                         \
-  if (CONNECT_isCLI(fd) == FALSE)                                              \
+  if (CONNECT_isCLI(client_fd) == FALSE)                                       \
     return;                                                                    \
-  if (CONNECT_isLOGIN(fd) == FALSE)                                            \
+  if (CONNECT_isLOGIN(client_fd) == FALSE)                                     \
     return;
 // 检查当前CHAR不在摆摊，不在战斗
 #define CHECKCHARFREE                                                          \
@@ -599,10 +599,10 @@ void GmsvServer_Echo_recv(int fd, char *arg0) {
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)\
     return;
 
-void GmsvServer_W_recv(int fd, int x, int y, char *direction) {
+void GmsvServer_W_recv(int client_fd, int x, int y, char *direction) {
   // ttom +3
   int char_index, ix, iy;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
 
   ix = CHAR_getInt(char_index, CHAR_X);
   iy = CHAR_getInt(char_index, CHAR_Y);
@@ -612,7 +612,7 @@ void GmsvServer_W_recv(int fd, int x, int y, char *direction) {
     return;
   }
   // nuke 0407
-  if (checkNu(fd) < 0) {
+  if (checkNu(client_fd) < 0) {
     print("NU-Error\n");
     CHAR_talkToCli(char_index, -1, "NU_ERROR", CHAR_COLORYELLOW);
 
@@ -624,7 +624,7 @@ void GmsvServer_W_recv(int fd, int x, int y, char *direction) {
     LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, "讯号错误");
 #endif
 
-    CONNECT_setCloseRequest(fd, 1);
+    CONNECT_setCloseRequest(client_fd, 1);
     return;
   }
   if ((x == 0) && (y == 0)) {
@@ -648,15 +648,15 @@ void GmsvServer_W_recv(int fd, int x, int y, char *direction) {
   } else {
   }
 
-  CHAR_walk_init(fd, x, y, direction, TRUE);
+  CHAR_walk_init(client_fd, x, y, direction, TRUE);
 }
 /*------------------------------------------------------------
  ------------------------------------------------------------*/
-void GmsvServer_W2_recv(int fd, int x, int y, char *direction) {
+void GmsvServer_W2_recv(int client_fd, int x, int y, char *direction) {
   // ttom +3
   int char_index, ix, iy, i_fl;
   // Char *chwk;// CoolFish: Rem 2001/4/18
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(char_index))
     return;
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
@@ -674,10 +674,10 @@ void GmsvServer_W2_recv(int fd, int x, int y, char *direction) {
         } else if (CHAR_getWorkInt(char_index, CHAR_WORK_W) > 30) {
           if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) !=
               CHAR_PARTY_CLIENT) {
-            if (CONNECT_getBDTime(fd) < time(NULL)) {
-              GmsvServer_EN_recv(fd, CHAR_getInt(char_index, CHAR_X),
+            if (CONNECT_getBDTime(client_fd) < time(NULL)) {
+              GmsvServer_EN_recv(client_fd, CHAR_getInt(char_index, CHAR_X),
                                  CHAR_getInt(char_index, CHAR_Y));
-              CONNECT_setBDTime(fd, (int)time(NULL) + 3);
+              CONNECT_setBDTime(client_fd, (int)time(NULL) + 3);
             }
           }
           return;
@@ -699,10 +699,10 @@ void GmsvServer_W2_recv(int fd, int x, int y, char *direction) {
 #ifdef _FIX_STW_SPEED_ENEMY
   if (strstr(direction, "gcgc") != NULL) {
     if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_CLIENT) {
-      if (CONNECT_getBDTime(fd) < time(NULL)) {
-        GmsvServer_EN_recv(fd, CHAR_getInt(char_index, CHAR_X),
+      if (CONNECT_getBDTime(client_fd) < time(NULL)) {
+        GmsvServer_EN_recv(client_fd, CHAR_getInt(char_index, CHAR_X),
                            CHAR_getInt(char_index, CHAR_Y));
-        CONNECT_setBDTime(fd, (int)time(NULL) + 3);
+        CONNECT_setBDTime(client_fd, (int)time(NULL) + 3);
       }
     }
     return;
@@ -767,17 +767,17 @@ void GmsvServer_W2_recv(int fd, int x, int y, char *direction) {
     x = ix;
     y = iy;
   }
-  CHAR_walk_init(fd, x, y, direction, FALSE);
+  CHAR_walk_init(client_fd, x, y, direction, FALSE);
 }
 
-void GmsvServer_SKD_recv(int fd, int dir, int index) { CHECKFDANDTIME; }
+void GmsvServer_SKD_recv(int client_fd, int dir, int index) { CHECKFDANDTIME; }
 
 //
-void GmsvServer_ID_recv(int fd, int x, int y, int haveitemindex, int toindex) {
-  if (CONNECT_checkfd(fd) == FALSE)
+void GmsvServer_ID_recv(int client_fd, int x, int y, int haveitemindex, int toindex) {
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   CHECKFDANDTIME;
-  const int char_index = CONNECT_getCharaindex(fd);
+  const int char_index = CONNECT_getCharaindex(client_fd);
   // 不在战斗、交易、摆摊;
   // CoolFish: Prevent Trade Cheat 2001/4/18
   if (CHAR_getWorkInt(char_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE)
@@ -791,38 +791,38 @@ void GmsvServer_ID_recv(int fd, int x, int y, int haveitemindex, int toindex) {
   x = CHAR_getInt(char_index, CHAR_X);
   y = CHAR_getInt(char_index, CHAR_Y);
   CHAR_setMyPosition(char_index, x, y, TRUE);
-  const int to_char_index = Callfromcli_Util_getTargetCharaindex(fd, toindex);
+  const int to_char_index = Callfromcli_Util_getTargetCharaindex(client_fd, toindex);
   // 2026.09.08 看一下这个ITEM USE是啥
   CHAR_ItemUse(char_index, to_char_index, haveitemindex);
 }
 
 // ST: SELECT TITLE
-void GmsvServer_ST_recv(int fd, int titleindex) {
+void GmsvServer_ST_recv(int client_fd, int titleindex) {
   CHECKFDANDTIME;
-  CHAR_selectTitle(CONNECT_getCharaindex(fd), titleindex);
+  CHAR_selectTitle(CONNECT_getCharaindex(client_fd), titleindex);
 }
 
 // DT: DELETE TITLE
-void GmsvServer_DT_recv(int fd, int titleindex) {
+void GmsvServer_DT_recv(int client_fd, int titleindex) {
   CHECKFDANDTIME;
-  CHAR_deleteTitle(CONNECT_getCharaindex(fd), titleindex);
+  CHAR_deleteTitle(CONNECT_getCharaindex(client_fd), titleindex);
 }
 
 // FT: 
-void GmsvServer_FT_recv(int fd, char *data) {
+void GmsvServer_FT_recv(int client_fd, char *data) {
   CHECKFDANDTIME;
   // Robin 04/23 debug
   if (strlen(data) > 12)
     return;
   if (checkStringErr(data))
     return;
-  CHAR_inputOwnTitle(CONNECT_getCharaindex(fd), data);
+  CHAR_inputOwnTitle(CONNECT_getCharaindex(client_fd), data);
 }
 
 // PI: PICK ITEM
-void GmsvServer_PI_recv(int fd, int x, int y, int dir) {
+void GmsvServer_PI_recv(int client_fd, int x, int y, int dir) {
   CHECKFDANDTIME;
-  const int char_index = CONNECT_getCharaindex(fd);
+  const int char_index = CONNECT_getCharaindex(client_fd);
   // 那还要x，y干啥？
   int ix = CHAR_getInt(char_index, CHAR_X);
   int iy = CHAR_getInt(char_index, CHAR_Y);
@@ -837,9 +837,9 @@ void GmsvServer_PI_recv(int fd, int x, int y, int dir) {
 }
 
 // DI: DROP ITEM
-void GmsvServer_DI_recv(int fd, int x, int y, int itemindex) {
+void GmsvServer_DI_recv(int client_fd, int x, int y, int itemindex) {
   CHECKFDANDTIME;
-  const int charaindex = CONNECT_getCharaindex(fd);
+  const int charaindex = CONNECT_getCharaindex(client_fd);
   if (CHAR_getWorkInt(charaindex, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE)
     return;
 #ifdef _STREET_VENDOR
@@ -850,7 +850,7 @@ void GmsvServer_DI_recv(int fd, int x, int y, int itemindex) {
 #ifdef _ITEM_PET_LOCKED
   if (CHAR_getInt(charaindex, CHAR_LOCKED) == 1) {
     sprintf(message, "当前角色已被锁定，请首先解锁\n");
-    GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
+    GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
                        CHAR_WINDOWTYPE_ITEM_PET_LOCKED, -1,
                        makeEscapeString(message, buf, sizeof(buf)));
@@ -867,16 +867,16 @@ void GmsvServer_DI_recv(int fd, int x, int y, int itemindex) {
   CHAR_DropItem(charaindex, itemindex);
 }
 
-void GmsvServer_DP_recv(int fd, int x, int y, int pet_index) {
+void GmsvServer_DP_recv(int client_fd, int x, int y, int pet_index) {
   CHECKFDANDTIME;
-  int char_index = CONNECT_getCharaindex(fd);
+  int char_index = CONNECT_getCharaindex(client_fd);
 #ifdef _ITEM_PET_LOCKED
   if (CHAR_getInt(char_index, CHAR_LOCKED) == 1) {
     char message[256];
     char buf[256];
     sprintf(message, "为了确保你的物品安全，请输入你的安全密码进行解锁！\n");
 
-    GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
+    GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
                        CHAR_WINDOWTYPE_ITEM_PET_LOCKED, -1,
                        makeEscapeString(message, buf, sizeof(buf)));
@@ -894,9 +894,9 @@ void GmsvServer_DP_recv(int fd, int x, int y, int pet_index) {
   PET_dropPet(char_index, pet_index);
 }
 
-void GmsvServer_DG_recv(int fd, int x, int y, int amount) {
+void GmsvServer_DG_recv(int client_fd, int x, int y, int amount) {
   CHECKFDANDTIME;
-  const int char_index = CONNECT_getCharaindex(fd);
+  const int char_index = CONNECT_getCharaindex(client_fd);
   // ttom avoid the warp at will 12/15
   x = CHAR_getInt(char_index, CHAR_X);
   y = CHAR_getInt(char_index, CHAR_Y);
@@ -912,10 +912,10 @@ void GmsvServer_DG_recv(int fd, int x, int y, int amount) {
   CHAR_DropMoney(char_index, amount);
 }
 
-void GmsvServer_MI_recv(int fd, int fromid, int toid) {
+void GmsvServer_MI_recv(int client_fd, int fromid, int toid) {
   int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   if (CHAR_getWorkInt(char_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE)
     return;
 #ifdef _STREET_VENDOR
@@ -959,7 +959,7 @@ void GmsvServer_MI_recv(int fd, int fromid, int toid) {
                            "3、装备等级越高，升级成功机率则越低\n"
                            "4、机率过低，是否考虑更换高级的升级石呢\n");
 
-          GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE,
+          GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_MESSAGE,
                              WINDOW_BUTTONTYPE_YESNO,
                              CHAR_WINDOWTYPE_ITEM_UPLEVEL, -1,
                              makeEscapeString(message, buf, sizeof(buf)));
@@ -982,18 +982,18 @@ void GmsvServer_MI_recv(int fd, int fromid, int toid) {
 }
 
 #ifdef _PET_ITEM
-void GmsvServer_PETITEM_recv(int fd, int x, int y, int petindex, int fromindex,
+void GmsvServer_PETITEM_recv(int client_fd, int x, int y, int petindex, int fromindex,
                              int toindex) {
   int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
 #ifdef _ITEM_PET_LOCKED
   if (CHAR_getInt(char_index, CHAR_LOCKED) == 1) {
     char message[256];
     char buf[256];
     sprintf(message, "为了确保你的物品安全，请输入你的安全密码进行解锁！\n");
 
-    GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
+    GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
                        CHAR_WINDOWTYPE_ITEM_PET_LOCKED, -1,
                        makeEscapeString(message, buf, sizeof(buf)));
@@ -1011,10 +1011,10 @@ void GmsvServer_PETITEM_recv(int fd, int x, int y, int petindex, int fromindex,
 }
 #endif
 
-void GmsvServer_SKUP_recv(int fd, int skillid) {
+void GmsvServer_SKUP_recv(int client_fd, int skillid) {
   int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
 
   /* 服务器关闭时把宠物资料存回去的处理 */
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
@@ -1025,37 +1025,37 @@ void GmsvServer_SKUP_recv(int fd, int skillid) {
 /*------------------------------------------------------------
  * 宠物的能力值再计算
  ------------------------------------------------------------*/
-void GmsvServer_MSG_recv(int fd, int index, char *message, int color) {
+void GmsvServer_MSG_recv(int client_fd, int index, char *message, int color) {
   int char_index;
   CHECKFD;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   ADDRESSBOOK_sendMessage(char_index, index, message, color);
 }
 
 /*------------------------------------------------------------
  * 从记录缓冲区取出宠物资料
  ------------------------------------------------------------*/
-void GmsvServer_AB_recv(int fd) {
+void GmsvServer_AB_recv(int client_fd) {
   int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   ADDRESSBOOK_sendAddressbookTable(char_index);
 }
 
 /*------------------------------------------------------------
  * 记录缓冲区的构造
  ------------------------------------------------------------*/
-void GmsvServer_DAB_recv(int fd, int index) {
+void GmsvServer_DAB_recv(int client_fd, int index) {
   int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   ADDRESSBOOK_deleteEntry(char_index, index);
 }
 
-void GmsvServer_AAB_recv(int fd, int x, int y) {
+void GmsvServer_AAB_recv(int client_fd, int x, int y) {
   int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   {
     int ix, iy;
     ix = CHAR_getInt(char_index, CHAR_X);
@@ -1069,20 +1069,20 @@ void GmsvServer_AAB_recv(int fd, int x, int y) {
   ADDRESSBOOK_addEntry(char_index);
 }
 
-void GmsvServer_L_recv(int fd, int dir) {
+void GmsvServer_L_recv(int client_fd, int dir) {
   int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   CHAR_Look(char_index, dir);
 }
 
 // TALK.的一些限制
-void GmsvServer_TK_recv(int fd, int x, int y, char *message, int color,
+void GmsvServer_TK_recv(int client_fd, int x, int y, char *message, int color,
                         int area) {
   int char_index; // ttom+2
   int fmindex, channel;
   CHECKFD;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   fmindex = CHAR_getInt(char_index, CHAR_FMINDEX);
   channel = CHAR_getWorkInt(char_index, CHAR_WORKFMCHANNEL);
   { // Robin 0629 silent
@@ -1136,23 +1136,23 @@ void GmsvServer_TK_recv(int fd, int x, int y, char *message, int color,
   if (CHAR_getInt(char_index, CHAR_LV) < 5 &&
       message[strlen(message) - 1] != ']') {
     CHAR_talkToCli(char_index, -1, "你的等级小于5级,目前只能说hi", CHAR_COLORYELLOW);
-    CHAR_Talk(fd, char_index, "P|hi", color, area);
+    CHAR_Talk(client_fd, char_index, "P|hi", color, area);
   } else {
-    CHAR_Talk(fd, char_index, message, color, area);
+    CHAR_Talk(client_fd, char_index, message, color, area);
   }
 
   //}
 }
 
-void GmsvServer_M_recv(int fd, int fl, int x1, int y1, int x2, int y2) {
+void GmsvServer_M_recv(int client_fd, int fl, int x1, int y1, int x2, int y2) {
   char *mapdata;
   RECT seek = {x1, y1, x2 - x1, y2 - y1}, ret;
   int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
 #ifdef _MASK_ENCOUNTER
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_CLIENT) {
-    if (getStayEncount(fd))
+    if (getStayEncount(client_fd))
       return;
   } else {
     int oyaindex = CHAR_getWorkInt(char_index, CHAR_WORKPARTYINDEX1);
@@ -1163,18 +1163,18 @@ void GmsvServer_M_recv(int fd, int fl, int x1, int y1, int x2, int y2) {
 #ifdef _MO_MAP_AUTO_UPDATE
   mapdata = MAP_getdataFromRECT(fl, &seek, &ret);
   if (mapdata != NULL) {
-    GmsvServer_M_send(fd, fl, ret.x, ret.y, ret.x + ret.width,
+    GmsvServer_M_send(client_fd, fl, ret.x, ret.y, ret.x + ret.width,
                       ret.y + ret.height, mapdata);
   }
 #endif
 }
 
-void GmsvServer_C_recv(int fd, int index) {
-  if (CONNECT_checkfd(fd) == FALSE)
+void GmsvServer_C_recv(int client_fd, int index) {
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   int char_index;
 
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(char_index)) {
     return;
   }
@@ -1186,26 +1186,26 @@ void GmsvServer_C_recv(int fd, int index) {
     return;
 #endif
 
-  CHAR_sendCSpecifiedObjindex(fd, index);
+  CHAR_sendCSpecifiedObjindex(client_fd, index);
 }
 #ifdef _FAMILYBADGE_
 extern int getFamilyBadge(int index);
 #endif
-void GmsvServer_S_recv(int fd, char *category) {
+void GmsvServer_S_recv(int client_fd, char *category) {
   char *string;
   int char_index;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   string = CHAR_makeStatusString(char_index, category);
   if (string != NULL)
-    GmsvServer_S_send(fd, string);
+    GmsvServer_S_send(client_fd, string);
 }
 
-void GmsvServer_EV_recv(int fd, int event, int seqno, int x, int y, int dir) {
+void GmsvServer_EV_recv(int client_fd, int event, int seqno, int x, int y, int dir) {
   int rc;
   int fx, fy;
   int char_index;
   CHECKFD;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   {
     int ix, iy;
     ix = CHAR_getInt(char_index, CHAR_X);
@@ -1285,13 +1285,13 @@ OK:
                             CHAR_getInt(char_index, CHAR_Y), 1, &fx, &fy);
   }
   rc = EVENT_main(char_index, event, fx, fy);
-  GmsvServer_EV_send(fd, seqno, rc);
+  GmsvServer_EV_send(client_fd, seqno, rc);
 #ifdef _PLAYER_EFFECT
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER &&
       CHAR_getWorkInt(char_index, CHAR_PLAYER_EFFECT) > 0) {
     char msg[256];
     sprintf(msg, "2|%d", CHAR_getWorkInt(char_index, CHAR_PLAYER_EFFECT));
-    GmsvServer_CHAREFFECT_send(fd, msg);
+    GmsvServer_CHAREFFECT_send(client_fd, msg);
   }
 #endif
 #ifdef FAMILY_MANOR_
@@ -1299,7 +1299,7 @@ OK:
       CHAR_getWorkInt(char_index, CHAR_PLAYER_EFFECT_MANOR) > 0) {
     char msg[256];
     sprintf(msg, "3|%d", CHAR_getWorkInt(char_index, CHAR_PLAYER_EFFECT_MANOR));
-    GmsvServer_CHAREFFECT_send(fd, msg);
+    GmsvServer_CHAREFFECT_send(client_fd, msg);
   }
 #endif
 
@@ -1308,7 +1308,7 @@ OK:
       CHAR_getInt(char_index, CHAR_TITLE_DEFAULT) > 0) {
     char msg[256];
     sprintf(msg, "4|%d", CHAR_getInt(char_index, CHAR_TITLE_DEFAULT));
-    GmsvServer_CHAREFFECT_send(fd, msg);
+    GmsvServer_CHAREFFECT_send(client_fd, msg);
   }
 #endif
 #ifdef _TRUMP_EQUIPMENT
@@ -1316,7 +1316,7 @@ OK:
       CHAR_getInt(char_index, CHAR_TRUMP_EFFECT) > 0) {
     char msg[256];
     sprintf(msg, "5|%d", CHAR_getInt(char_index, CHAR_TRUMP_EFFECT));
-    GmsvServer_CHAREFFECT_send(fd, msg);
+    GmsvServer_CHAREFFECT_send(client_fd, msg);
   }
 #endif
 #ifdef _FAMILYBADGE_
@@ -1324,16 +1324,16 @@ OK:
       getFamilyBadge(char_index)) {
     char msg[256];
     sprintf(msg, "1|%d", getFamilyBadge(char_index));
-    GmsvServer_CHAREFFECT_send(fd, msg);
+    GmsvServer_CHAREFFECT_send(client_fd, msg);
   }
 #endif
 }
 
-void GmsvServer_EN_recv(int fd, int x, int y) {
+void GmsvServer_EN_recv(int client_fd, int x, int y) {
   int ret = FALSE, err = 0;
   int char_index;
   CHECKFD;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
 
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_CLIENT) {
     CHAR_setMyPosition(char_index, x, y, TRUE);
@@ -1349,7 +1349,7 @@ void GmsvServer_EN_recv(int fd, int x, int y) {
 /*------------------------------------------------------------
  * 玩家同士的决斗（淘汰赛发生）
  ------------------------------------------------------------*/
-void GmsvServer_DU_recv(int fd, int x, int y) {
+void GmsvServer_DU_recv(int client_fd, int x, int y) {
   OBJECT object;
   int char_index;
   int ret = FALSE, charaindex = -1, enemyindex;
@@ -1357,7 +1357,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
   int cnt = 0;
   BOOL found = FALSE;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   x = CHAR_getInt(char_index, CHAR_X);
   y = CHAR_getInt(char_index, CHAR_Y);
   if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_CLIENT) {
@@ -1366,7 +1366,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
     CHAR_setMyPosition(charaindex, x, y, TRUE);
     CHAR_setWorkChar(charaindex, CHAR_WORKWALKARRAY, "");
     for (i = 0; i < CONNECT_WINDOWBUFSIZE; i++) {
-      CONNECT_setDuelcharaindex(fd, i, -1);
+      CONNECT_setDuelcharaindex(client_fd, i, -1);
     }
     CHAR_getCoordinationDir(
         CHAR_getInt(charaindex, CHAR_DIR), CHAR_getInt(charaindex, CHAR_X),
@@ -1392,7 +1392,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
 #ifdef _ALLBLUES_LUA_1_5
       int flg = FreeVsPlayer(charaindex, toindex);
       if (flg == 1) {
-        GmsvServer_EN_send(fd, FALSE, 0);
+        GmsvServer_EN_send(client_fd, FALSE, 0);
         return;
       } else if (flg == 2) {
         return;
@@ -1584,12 +1584,12 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
         for (i = 0; i < FAMILY_FMPKFLOOR; i++) {
           if (fmpkflnum[i].fl == CHAR_getInt(charaindex, CHAR_FLOOR)) {
             if (CHAR_getWorkInt(charaindex, CHAR_WORKBATTLEFLAG) == -1) {
-              GmsvServer_EN_send(fd, FALSE, 0);
+              GmsvServer_EN_send(client_fd, FALSE, 0);
               return;
             }
             if (CHAR_getInt(charaindex, CHAR_FMINDEX) ==
                 CHAR_getInt(toindex, CHAR_FMINDEX)) {
-              GmsvServer_EN_send(fd, FALSE, 0);
+              GmsvServer_EN_send(client_fd, FALSE, 0);
               return;
             }
           }
@@ -1608,7 +1608,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
         }
       }
 
-      CONNECT_setDuelcharaindex(fd, cnt, toindex);
+      CONNECT_setDuelcharaindex(client_fd, cnt, toindex);
       cnt++;
       if (cnt == CONNECT_WINDOWBUFSIZE)
         break;
@@ -1616,7 +1616,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
     if (cnt == 0) {
       goto GmsvServer_DU_recv_Err;
     } else if (cnt == 1) {
-      enemyindex = CONNECT_getDuelcharaindex(fd, 0);
+      enemyindex = CONNECT_getDuelcharaindex(client_fd, 0);
       if (CHAR_getWorkInt(enemyindex, CHAR_WORKPARTYMODE) ==
           CHAR_PARTY_CLIENT) {
         enemyindex = CHAR_getWorkInt(enemyindex, CHAR_WORKPARTYINDEX1);
@@ -1667,7 +1667,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
                     "我方战斗人数%d，对方战斗人数%d，双方人数不相等，无法对战！",
                     menum, tonum);
             CHAR_talkToCli(charaindex, -1, token, CHAR_COLORYELLOW);
-            GmsvServer_EN_send(fd, FALSE, 0);
+            GmsvServer_EN_send(client_fd, FALSE, 0);
             return;
           }
         }
@@ -1758,12 +1758,12 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
       strcpy(msgbuf, "1\n要跟谁战斗？\n");
       strlength = strlen(msgbuf);
       for (i = 0;
-           CONNECT_getDuelcharaindex(fd, i) != -1 && i < CONNECT_WINDOWBUFSIZE;
+           CONNECT_getDuelcharaindex(client_fd, i) != -1 && i < CONNECT_WINDOWBUFSIZE;
            i++) {
-        char *a = CHAR_getChar(CONNECT_getDuelcharaindex(fd, i), CHAR_NAME);
+        char *a = CHAR_getChar(CONNECT_getDuelcharaindex(client_fd, i), CHAR_NAME);
         char buf[256];
         snprintf(buf, sizeof(buf), "%s [%s]\n", a,
-                 CHAR_getWorkInt(CONNECT_getDuelcharaindex(fd, i),
+                 CHAR_getWorkInt(CONNECT_getDuelcharaindex(client_fd, i),
                                  CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE
                      ? "队伍"
                      : "个人");
@@ -1776,7 +1776,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
       }
 
       GmsvServer_WN_send(
-          fd, WINDOW_MESSAGETYPE_SELECT, WINDOW_BUTTONTYPE_CANCEL,
+          client_fd, WINDOW_MESSAGETYPE_SELECT, WINDOW_BUTTONTYPE_CANCEL,
           CHAR_WINDOWTYPE_SELECTDUEL, -1,
           makeEscapeString(msgbuf, escapebuf, sizeof(escapebuf)));
       ret = TRUE;
@@ -1786,7 +1786,7 @@ void GmsvServer_DU_recv(int fd, int x, int y) {
 GmsvServer_DU_recv_Err:;
   if (ret == FALSE) {
     /* 瑛绊霜耨 */
-    GmsvServer_EN_send(fd, FALSE, 0);
+    GmsvServer_EN_send(client_fd, FALSE, 0);
     if (cnt > 0)
       return;
     else if (found)
@@ -1797,10 +1797,10 @@ GmsvServer_DU_recv_Err:;
 }
 /*------------------------------------------------------------
  ------------------------------------------------------------*/
-void GmsvServer_EO_recv(int fd, int dummy) {
+void GmsvServer_EO_recv(int client_fd, int dummy) {
   int char_index;
   CHECKFD;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   BattleEncountOut(char_index);
 #ifdef _PLAYER_EFFECT
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER &&
@@ -1841,27 +1841,27 @@ void GmsvServer_EO_recv(int fd, int dummy) {
       getFamilyBadge(char_index)) {
     char msg[256];
     sprintf(msg, "1|%d", getFamilyBadge(char_index));
-    GmsvServer_CHAREFFECT_send(fd, msg);
+    GmsvServer_CHAREFFECT_send(client_fd, msg);
   }
 #endif
 }
 
 /*------------------------------------------------------------
  ------------------------------------------------------------*/
-void GmsvServer_BU_recv(int fd, int dummy) {
+void GmsvServer_BU_recv(int client_fd, int dummy) {
   int char_index;
   CHECKFD;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   // shan 2001/12/25
   // BATTLE_WatchStop( char_index );
 }
 
-void GmsvServer_B_recv(int fd, char *command) {
+void GmsvServer_B_recv(int client_fd, char *command) {
   int char_index;
   int battle_index; // ttom++
   CHECKFD;
-  char_index = CONNECT_getCharaindex(fd);
-  BattleCommandDispach(fd, command);
+  char_index = CONNECT_getCharaindex(client_fd);
+  BattleCommandDispach(client_fd, command);
   // Nuke +1 0827: Battle acceleration
   battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
   if (BATTLE_CHECKINDEX(battle_index) == FALSE) {
@@ -1869,9 +1869,9 @@ void GmsvServer_B_recv(int fd, char *command) {
   }
 }
 
-void GmsvServer_FS_recv(int fd, int flg) {
+void GmsvServer_FS_recv(int client_fd, int flg) {
   CHECKFDANDTIME;
-  int char_index = CONNECT_getCharaindex(fd);
+  int char_index = CONNECT_getCharaindex(client_fd);
   CHAR_setFlg(char_index, CHAR_ISPARTY, (flg & CHAR_FS_PARTY) ? TRUE : FALSE);
 #ifdef _BATTLE_PK_TYPE
   if ((CHAR_getFlg(char_index, CHAR_ISDUEL) == FALSE) && (flg & CHAR_FS_DUEL)) {
@@ -1890,7 +1890,7 @@ void GmsvServer_FS_recv(int fd, int flg) {
 #endif
     );
 
-    GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_SELECT,
+    GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_SELECT,
                        WINDOW_BUTTONTYPE_OKCANCEL, CHAR_WINDOWTYPE_BATTLEPKTYPE,
                        -1, makeEscapeString(message, buf, sizeof(buf)));
   }
@@ -1916,14 +1916,14 @@ void GmsvServer_FS_recv(int fd, int flg) {
 #endif
 
   CHAR_setFlg(char_index, CHAR_ISTRADE, (flg & CHAR_FS_TRADE) ? TRUE : FALSE);
-  GmsvServer_FS_send(fd, flg);
+  GmsvServer_FS_send(client_fd, flg);
 }
 
-void GmsvServer_PR_recv(int fd, int x, int y, int request) {
+void GmsvServer_PR_recv(int client_fd, int x, int y, int request) {
   int result = FALSE;
   int char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(char_index))
     return;
   CHECKCHARFREE;
@@ -1957,24 +1957,24 @@ void GmsvServer_PR_recv(int fd, int x, int y, int request) {
   }
 }
 
-void GmsvServer_KS_recv(int fd, int petarray) {
+void GmsvServer_KS_recv(int client_fd, int petarray) {
   CHECKFDANDTIME;
-  int char_index = CONNECT_getCharaindex(fd);
+  int char_index = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(char_index))
     return;
   if (petarray != -1 && CHAR_getInt(char_index, CHAR_RIDEPET) == petarray) {
-    GmsvServer_KS_send(fd, petarray, FALSE);
+    GmsvServer_KS_send(client_fd, petarray, FALSE);
     return;
   }
   int ret = PET_SelectBattleEntryPet(char_index, petarray);
-  GmsvServer_KS_send(fd, petarray, ret);
+  GmsvServer_KS_send(client_fd, petarray, ret);
 }
 
-void GmsvServer_SPET_recv(int fd, int standbypet) {
+void GmsvServer_SPET_recv(int client_fd, int standbypet) {
   int char_index;
   int i, s_pet = 0, cnt = 0;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(char_index))
     return;
   for (i = 0; i < CHAR_MAXPETHAVE; i++) {
@@ -1986,14 +1986,14 @@ void GmsvServer_SPET_recv(int fd, int standbypet) {
     }
   }
   CHAR_setWorkInt(char_index, CHAR_WORKSTANDBYPET, s_pet);
-  GmsvServer_SPET_send(fd, s_pet, TRUE);
+  GmsvServer_SPET_send(client_fd, s_pet, TRUE);
 }
 
-void GmsvServer_AC_recv(int fd, int x, int y, int actionno) {
-  if (CONNECT_checkfd(fd) == FALSE)
+void GmsvServer_AC_recv(int client_fd, int x, int y, int actionno) {
+  if (CONNECT_checkfd(client_fd) == FALSE)
     return;
   CHECKFDANDTIME;
-  int char_index = CONNECT_getCharaindex(fd);
+  int char_index = CONNECT_getCharaindex(client_fd);
 
   { // ttom avoid the warp at will
     Char *ch;
@@ -2013,9 +2013,9 @@ void GmsvServer_AC_recv(int fd, int x, int y, int actionno) {
   return;
 }
 
-void GmsvServer_LOOK_recv(int fd, int x, int y) {
+void GmsvServer_LOOK_recv(int client_fd, int x, int y) {
   CHECKFDANDTIME;
-  int char_index = CONNECT_getCharaindex(fd);
+  int char_index = CONNECT_getCharaindex(client_fd);
   x = CHAR_getInt(char_index, CHAR_X);
   y = CHAR_getInt(char_index, CHAR_Y);
   CHAR_setMyPosition(char_index, x, y, TRUE);
@@ -2024,20 +2024,20 @@ void GmsvServer_LOOK_recv(int fd, int x, int y) {
   BATTLE_WatchTry(char_index);
 }
 
-void GmsvServer_MU_recv(int fd, int x, int y, int array, int toindex) {
+void GmsvServer_MU_recv(int client_fd, int x, int y, int array, int toindex) {
   int to_char_index = -1, char_index;
   CHECKFDANDTIME;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   x = CHAR_getInt(char_index, CHAR_X);
   y = CHAR_getInt(char_index, CHAR_Y);
   CHAR_setMyPosition(char_index, x, y, TRUE);
-  to_char_index = Callfromcli_Util_getTargetCharaindex(fd, toindex);
+  to_char_index = Callfromcli_Util_getTargetCharaindex(client_fd, toindex);
   MAGIC_Use(char_index, array, to_char_index);
 }
 
-void GmsvServer_JB_recv(int fd, int x, int y) {
+void GmsvServer_JB_recv(int client_fd, int x, int y) {
   CHECKFDANDTIME;
-  int charaindex = CONNECT_getCharaindex(fd);
+  int charaindex = CONNECT_getCharaindex(client_fd);
   x = CHAR_getInt(charaindex, CHAR_X);
   y = CHAR_getInt(charaindex, CHAR_Y);
   CHAR_setMyPosition(charaindex, x, y, TRUE);
@@ -2067,10 +2067,10 @@ void GmsvServer_JB_recv(int fd, int x, int y) {
 #endif
 }
 
-void GmsvServer_KN_recv(int fd, int havepetindex, char *data) {
+void GmsvServer_KN_recv(int client_fd, int havepetindex, char *data) {
   int char_index;
   CHECKFD;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   if (data == NULL)
     return;
   // PET_NAME_LEN is a character limit, not a byte limit.  Count UTF-8 code
@@ -2116,12 +2116,12 @@ void GmsvServer_KN_recv(int fd, int havepetindex, char *data) {
   CHAR_inputUserPetName(char_index, havepetindex, data);
 }
 
-void GmsvServer_WN_recv(int fd, int x, int y, int seqno, int objindex,
+void GmsvServer_WN_recv(int client_fd, int x, int y, int seqno, int objindex,
                         int select, char *data) {
   CHECKFDANDTIME;
   if (checkStringErr(data))
     return;
-  const int char_index = CONNECT_getCharaindex(fd);
+  const int char_index = CONNECT_getCharaindex(client_fd);
   // CoolFish: Prevent Trade Cheat 2001/4/18
   if (CHAR_getWorkInt(char_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE) {
     return;
@@ -2137,7 +2137,7 @@ void GmsvServer_WN_recv(int fd, int x, int y, int seqno, int objindex,
 
     if (select == WINDOW_BUTTONTYPE_YES) {
       if (AngelCreate(char_index) == FALSE) {
-        sendAngelCleanToCli(fd);
+        sendAngelCleanToCli(client_fd);
       }
     } else if (select == WINDOW_BUTTONTYPE_NO) {
       int mindex;
@@ -2146,10 +2146,10 @@ void GmsvServer_WN_recv(int fd, int x, int y, int seqno, int objindex,
       print("====Check Angel Summon Mission Info====");
       getMissionNameInfo(char_index, name_info);
       SaacClient_ACMissionTable_send(acfd, mindex, 3, name_info, "");
-      GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
+      GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
                          -1, -1,
                          "取消讯号后将会中断精灵的帮忙，\n魔界之门将陷入危险，请三思而后行！");
-      sendAngelCleanToCli(fd);
+      sendAngelCleanToCli(client_fd);
     }
   }
 #endif
@@ -2214,7 +2214,7 @@ void GmsvServer_WN_recv(int fd, int x, int y, int seqno, int objindex,
       if (enemy == 0) {
       FIRST:
 
-        GmsvServer_EN_send(fd, FALSE, 0);
+        GmsvServer_EN_send(client_fd, FALSE, 0);
         CHAR_talkToCli(char_index, -1, "事件设置", CHAR_COLORYELLOW);
         goto END_WN;
       }
@@ -2226,7 +2226,7 @@ START_WN:
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
       BATTLE_CHARMODE_NONE) {
     if (seqno == CHAR_WINDOWTYPE_WINDOWWARPMAN_MAIN) {
-      if (!CONNECT_get_first_warp(fd)) {
+      if (!CONNECT_get_first_warp(client_fd)) {
         select = 1;
       }
     }
@@ -2239,11 +2239,11 @@ END_WN:
 }
 
 /* 收到战斗中发起的HELP请求 */
-void GmsvServer_HL_recv(int fd, int flg) {
+void GmsvServer_HL_recv(int client_fd, int flg) {
   char msgbuf[128];
   int i, char_index;
   CHECKFD;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
       BATTLE_CHARMODE_NONE) {
     return;
@@ -2303,9 +2303,9 @@ void GmsvServer_HL_recv(int fd, int flg) {
   }
 }
 
-void GmsvServer_ProcGet_recv(int fd) { outputNetProcLog(fd, 1); }
+void GmsvServer_ProcGet_recv(int client_fd) { outputNetProcLog(client_fd, 1); }
 
-void GmsvServer_PlayerNumGet_recv(int fd) {
+void GmsvServer_PlayerNumGet_recv(int client_fd) {
   /*
     int    i;
     int    clicnt  =0;
@@ -2322,16 +2322,16 @@ void GmsvServer_PlayerNumGet_recv(int fd) {
   */
 }
 
-void GmsvServer_LB_recv(int fd, int x, int y) {
+void GmsvServer_LB_recv(int client_fd, int x, int y) {
   CHECKFDANDTIME;
-  const int from_id = CONNECT_getCharaindex(fd);
+  const int from_id = CONNECT_getCharaindex(client_fd);
   x = CHAR_getInt(from_id, CHAR_X);
   y = CHAR_getInt(from_id, CHAR_Y);
   CHAR_setMyPosition(from_id, x, y, TRUE);
   BATTLE_WatchTry(from_id);
 }
 
-void GmsvServer_Shutdown_recv(int fd, char *passwd, int min) {
+void GmsvServer_Shutdown_recv(int client_fd, char *passwd, int min) {
   char buff[32];
   // ??? why need this password in mingwen?
   if (strcmp(passwd, "hogehoge") == 0) {
@@ -2348,12 +2348,12 @@ void GmsvServer_Shutdown_recv(int fd, char *passwd, int min) {
     SERVSTATE_setDsptime(0);
   }
 }
-void GmsvServer_PMSG_recv(int fd, int index, int petindex, int itemindex,
+void GmsvServer_PMSG_recv(int client_fd, int index, int petindex, int itemindex,
                           char *message, int color) {
 
   // CoolFish: Prevent Trade Cheat 2001/4/18
   int char_index;
-  char_index = CONNECT_getCharaindex(fd);
+  char_index = CONNECT_getCharaindex(client_fd);
 
   if (CHAR_getWorkInt(char_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE)
     return;
@@ -2366,7 +2366,7 @@ void GmsvServer_PMSG_recv(int fd, int index, int petindex, int itemindex,
     char message[256];
     char buf[256];
     sprintf(message, "为了确保你的物品安全，请输入你的安全密码进行解锁！\n");
-    GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
+    GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
                        CHAR_WINDOWTYPE_ITEM_PET_LOCKED, -1,
                        makeEscapeString(message, buf, sizeof(buf)));
@@ -2377,58 +2377,58 @@ void GmsvServer_PMSG_recv(int fd, int index, int petindex, int itemindex,
 
   if (CHAR_getWorkInt(char_index, CHAR_WORKTRADEMODE) != CHAR_TRADE_FREE)
     return;
-  PETMAIL_sendPetMail(CONNECT_getCharaindex(fd), index, petindex, itemindex,
+  PETMAIL_sendPetMail(CONNECT_getCharaindex(client_fd), index, petindex, itemindex,
                       message, color);
 }
 
-void GmsvServer_PS_recv(int fd, int havepetindex, int havepetskill, int toindex,
+void GmsvServer_PS_recv(int client_fd, int havepetindex, int havepetskill, int toindex,
                         char *data) {
-  int charaindex = CONNECT_getCharaindex(fd);
+  int charaindex = CONNECT_getCharaindex(client_fd);
   if (CHAR_getWorkInt(charaindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return;
-  int to_char_index = Callfromcli_Util_getTargetCharaindex(fd, toindex);
+  int to_char_index = Callfromcli_Util_getTargetCharaindex(client_fd, toindex);
   int petindex;
   BOOL ret;
   petindex = CHAR_getCharPet(charaindex, havepetindex);
   if (!CHAR_CHECKINDEX(petindex))
     return;
   ret = PETSKILL_Use(petindex, havepetskill, to_char_index, data);
-  GmsvServer_PS_send(fd, ret, havepetindex, havepetskill, toindex);
+  GmsvServer_PS_send(client_fd, ret, havepetindex, havepetskill, toindex);
 }
 
-void GmsvServer_SP_recv(int fd, int x, int y, int dir) {
-  const int char_index = CONNECT_getCharaindex(fd);
+void GmsvServer_SP_recv(int client_fd, int x, int y, int dir) {
+  const int char_index = CONNECT_getCharaindex(client_fd);
   x = CHAR_getInt(char_index, CHAR_X);
   y = CHAR_getInt(char_index, CHAR_Y);
   CHAR_setMyPosition_main(char_index, x, y, dir, TRUE);
 }
 
-void GmsvServer_TD_recv(int fd, char *message) {
+void GmsvServer_TD_recv(int client_fd, char *message) {
   CHECKFDANDTIME;
-  const int char_index = CONNECT_getCharaindex(fd);
+  const int char_index = CONNECT_getCharaindex(client_fd);
 #ifdef _STREET_VENDOR
   if (CHAR_getWorkInt(char_index, CHAR_WORKSTREETVENDOR) != -1) {
     CHAR_talkToCli(char_index, -1, "不在摆摊状态.", CHAR_COLORYELLOW);
     return;
   }
 #endif
-  CHAR_Trade(fd, char_index, message);
+  CHAR_Trade(client_fd, char_index, message);
 }
 
 // 2026.09.08 客户端发起家族请求
-void GmsvServer_FM_recv(int fd, char *message) {
-  const int char_index = CONNECT_getCharaindex(fd);
+void GmsvServer_FM_recv(int client_fd, char *message) {
+  const int char_index = CONNECT_getCharaindex(client_fd);
   if (checkStringErr(message))
     return;
-  CHAR_Family(fd, char_index, message);
+  CHAR_Family(client_fd, char_index, message);
 }
 
 // shan 2002/01/10
-void GmsvServer_PETST_recv(int fd, int nPet, int sPet) {
+void GmsvServer_PETST_recv(int client_fd, int nPet, int sPet) {
   int charaindex;
   int i, nums = 0;
   CHECKFDANDTIME;
-  charaindex = CONNECT_getCharaindex(fd);
+  charaindex = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(charaindex))
     return;
   if (CHAR_getWorkInt(charaindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
@@ -2447,16 +2447,16 @@ void GmsvServer_PETST_recv(int fd, int nPet, int sPet) {
   }
 
   if (nPet != CHAR_getInt(charaindex, CHAR_DEFAULTPET)) {
-    GmsvServer_PETS_send(fd, nPet, sPet);
+    GmsvServer_PETS_send(client_fd, nPet, sPet);
   }
 }
 
 #ifdef _MIND_ICON
-void GmsvServer_MA_recv(int fd, int x, int y, int nMind) {
+void GmsvServer_MA_recv(int client_fd, int x, int y, int nMind) {
   int charaindex;
   CHECKFDANDTIME;
 
-  charaindex = CONNECT_getCharaindex(fd);
+  charaindex = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(charaindex))
     return;
   if (CHAR_getWorkInt(charaindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
@@ -2504,12 +2504,12 @@ BOOL checkStringErr(char *checkstring) {
 }
 
 #ifdef _TEAM_KICKPARTY
-void GmsvServer_KTEAM_recv(int fd, int si) {
+void GmsvServer_KTEAM_recv(int client_fd, int si) {
   // 移出队伍中的第几个成员.
   if (si < 0 || si > 5)
     return;
   // from 是从 fd 得到, 因此应该是队长操作.
-  const int from_id = CONNECT_getCharaindex(fd);
+  const int from_id = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(from_id))
     return;
   // from_id 必须是队长.
@@ -2534,17 +2534,17 @@ void GmsvServer_KTEAM_recv(int fd, int si) {
 #endif
 
 #ifdef _CHATROOMPROTOCOL
-void GmsvServer_CHATROOM_recv(int fd, char *data) {
-  ChatRoom_recvall(fd, data);
+void GmsvServer_CHATROOM_recv(int client_fd, char *data) {
+  ChatRoom_recvall(client_fd, data);
 }
 #endif
 
 #ifdef _NEWREQUESTPROTOCOL // (不可开) Syu ADD 新增Protocol要求细项
-void GmsvServer_RESIST_recv(int fd) {
+void GmsvServer_RESIST_recv(int client_fd) {
   int charindex = -1;
 
   char token[256];
-  charindex = CONNECT_getCharaindex(fd);
+  charindex = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(charindex))
     return;
   sprintf(token, "%d|%d|%d|%d|%d|%d|%d|%d",
@@ -2556,14 +2556,14 @@ void GmsvServer_RESIST_recv(int fd) {
           CHAR_getInt(charindex, CHAR_WATER_EXP),
           CHAR_getInt(charindex, CHAR_FIRE_EXP),
           CHAR_getInt(charindex, CHAR_WIND_EXP));
-  GmsvServer_RESIST_send(fd, token);
+  GmsvServer_RESIST_send(client_fd, token);
 }
 #endif
 
 #ifdef _OUTOFBATTLESKILL // Syu ADD
-void GmsvServer_BATTLESKILL_recv(int fd, int iNum) {
+void GmsvServer_BATTLESKILL_recv(int client_fd, int iNum) {
 #ifdef _CHAR_PROFESSION // WON ADD
-  int charaindex = CONNECT_getCharaindex(fd);
+  int charaindex = CONNECT_getCharaindex(client_fd);
 #ifndef _PROSKILL_OPTIMUM
   int skillindex = -1, char_pskill = -1, profession_skill = -1;
 #endif
@@ -2588,7 +2588,7 @@ void GmsvServer_BATTLESKILL_recv(int fd, int iNum) {
     if (PROFESSION_SKILL_Use(charaindex, iNum, 0, NULL) != 1) {
       if (CHAR_getWorkInt(charaindex, CHAR_ENCOUNT_NUM) - (int)time(NULL) > 0) {
 #ifdef _PROSKILL_ERR_KICK
-        CONNECT_setCloseRequest(fd, 1);
+        CONNECT_setCloseRequest(client_fd, 1);
 #endif
       }
     }
@@ -2599,15 +2599,15 @@ void GmsvServer_BATTLESKILL_recv(int fd, int iNum) {
 #endif
 
 #ifdef _STREET_VENDOR
-void GmsvServer_STREET_VENDOR_recv(int fd, char *message) {
-  int charaindex = CONNECT_getCharaindex(fd);
+void GmsvServer_STREET_VENDOR_recv(int client_fd, char *message) {
+  int charaindex = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(charaindex))
     return;
 
 #ifdef _ITEM_PET_LOCKED
   if (CHAR_getInt(charaindex, CHAR_LOCKED) == 1) {
     sprintf(message, "当前角色已被锁定, 请首先解锁\n");
-    GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
+    GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
                        CHAR_WINDOWTYPE_ITEM_PET_LOCKED, -1,
                        makeEscapeString(message, buf, sizeof(buf)));
@@ -2627,14 +2627,14 @@ void GmsvServer_STREET_VENDOR_recv(int fd, char *message) {
 #endif
 
 #ifdef _RIGHTCLICK
-void GmsvServer_RCLICK_recv(int fd, int type, char *data) {
+void GmsvServer_RCLICK_recv(int client_fd, int type, char *data) {
   print("\n RCLICK_recv( type=%d data=%s) ", type, data);
 }
 #endif
 
 #ifdef _JOBDAILY
-void GmsvServer_JOBDAILY_recv(int fd, char *data) {
-  int charaindex = CONNECT_getCharaindex(fd);
+void GmsvServer_JOBDAILY_recv(int client_fd, char *data) {
+  int charaindex = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(charaindex))
     return;
 
@@ -2643,8 +2643,8 @@ void GmsvServer_JOBDAILY_recv(int fd, char *data) {
 #endif
 
 #ifdef _TEACHER_SYSTEM
-void GmsvServer_TEACHER_SYSTEM_recv(int fd, char *data) {
-  int charaindex = CONNECT_getCharaindex(fd);
+void GmsvServer_TEACHER_SYSTEM_recv(int client_fd, char *data) {
+  int charaindex = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(charaindex))
     return;
   CHAR_Teacher_system(charaindex, data);
@@ -2652,8 +2652,8 @@ void GmsvServer_TEACHER_SYSTEM_recv(int fd, char *data) {
 #endif
 
 #ifdef _ASSESS_ABILITY
-void GmsvServer_ASSESS_ABILITY_recv(int fd) {
-  const int chara_index = CONNECT_getCharaindex(fd);
+void GmsvServer_ASSESS_ABILITY_recv(int client_fd) {
+  const int chara_index = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(chara_index))
     return;
   char data[512];
@@ -2665,24 +2665,24 @@ void GmsvServer_ASSESS_ABILITY_recv(int fd) {
     strcat(data, tmp);
   }
 
-  GmsvServer_ASSESS_ABILITY_send(fd, data);
+  GmsvServer_ASSESS_ABILITY_send(client_fd, data);
 }
 #endif
 
 // 2026.09.04: 处理SA_MENU(ESC)相关的指令: 开启/取消原地遇敌，开启/取消不遇敌
-void GmsvServer_SaMenu_recv(int fd, int index) {
+void GmsvServer_SaMenu_recv(int client_fd, int index) {
   CHECKFDANDTIME; // check fd.
-  const int chara_index = CONNECT_getCharaindex(fd);
+  const int chara_index = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(chara_index))
     return;
   FreeSaMenu(chara_index, index);
 }
 
 #ifdef _FAMILYBADGE_
-void GmsvServer_FamilyBadge_recv(int fd) {
-  const int charaindex = CONNECT_getCharaindex(fd);
+void GmsvServer_FamilyBadge_recv(int client_fd) {
+  const int charaindex = CONNECT_getCharaindex(client_fd);
   if (!CHAR_CHECKINDEX(charaindex))
     return;
-  LoadFamilyBadge(fd);
+  LoadFamilyBadge(client_fd);
 }
 #endif

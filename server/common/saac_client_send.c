@@ -9,8 +9,8 @@ extern WorkSpace gSaacWorkSpace;
 WorkSpace *ws = &gSaacWorkSpace;
 
 int SaacClient_InitClient(int (*write_func)(int, const char *, int),
-                          int work_buffer_size, int fd) {
-  (void)fd;
+                          int work_buffer_size, int saac_fd) {
+  (void)saac_fd;
   if (ws->work != NULL) {
     ws->write_func = write_func;
     return 0;
@@ -20,10 +20,10 @@ int SaacClient_InitClient(int (*write_func)(int, const char *, int),
 }
 
 // AccountServeFD 定义在其他地方, 使用acfd的地方会有很多bug，这里要注意
-extern int acfd;
+extern int saac_fd;
 
 #ifdef _ALLDOMAN // (不可开) Syu ADD 排行榜NPC
-void SaacClient_UpdataStele_send(int fd, char *cdkey, char *name, char *title,
+void SaacClient_UpdataStele_send(int saac_fd, char *cdkey, char *name, char *title,
                                  int level, int trans, int time, int floor) {
   CreateHeader(ws->work, "UpdataStele");
   strncatsafe(ws->work, mkstr_string(cdkey), ws->work_buf_size);
@@ -33,15 +33,15 @@ void SaacClient_UpdataStele_send(int fd, char *cdkey, char *name, char *title,
   strncatsafe(ws->work, mkstr_int(trans), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(time), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(floor), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #if _ATTESTAION_ID == 1
-void SaacClient_ACServerLogin_send(int fd, int id, char *servername,
+void SaacClient_ACServerLogin_send(int saac_fd, int id, char *servername,
                                    char *serverpass)
 #else
-void SaacClient_ACServerLogin_send(int fd, char *servername, char *serverpass)
+void SaacClient_ACServerLogin_send(int saac_fd, char *servername, char *serverpass)
 #endif
 {
   CreateHeader(ws->work, "ACServerLogin");
@@ -50,20 +50,20 @@ void SaacClient_ACServerLogin_send(int fd, char *servername, char *serverpass)
 #endif
   strncatsafe(ws->work, mkstr_string(servername), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(serverpass), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACServerLogout_send(int fd) {
+void SaacClient_ACServerLogout_send(int saac_fd) {
   CreateHeader(ws->work, "ACServerLogout");
   strncatsafe(ws->work, "", ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
 #ifdef _PKSEVER_VER
-void SaacClient_ACCharList_send(int fd, char *id, char *pas, int mesgid,
+void SaacClient_ACCharList_send(int saac_fd, char *id, char *pas, int mesgid,
                                 int star)
 #else
-void SaacClient_ACCharList_send(int fd, char *id, char *pas, char *ip,
+void SaacClient_ACCharList_send(int saac_fd, char *id, char *pas, char *ip,
                                 char *mac, int msg_id, int char_list_flag)
 #endif
 {
@@ -77,10 +77,10 @@ void SaacClient_ACCharList_send(int fd, char *id, char *pas, char *ip,
 #ifdef _PKSEVER_VER
   strncatsafe(ws->work, mkstr_int(star), ws->work_buf_size);
 #endif
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACCharLoad_send(int fd, char *id, char *pas, char *char_name,
+void SaacClient_ACCharLoad_send(int saac_fd, char *id, char *pas, char *char_name,
                                 int lock, char *opt, int msg_id) {
   CreateHeader(ws->work, "ACCharLoad");
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
@@ -89,15 +89,15 @@ void SaacClient_ACCharLoad_send(int fd, char *id, char *pas, char *char_name,
   strncatsafe(ws->work, mkstr_int(lock), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(opt), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msg_id), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
 #ifdef _NEWSAVE // USE
-void SaacClient_ACCharSave_send(int fd, char *id, char *charname, char *opt,
+void SaacClient_ACCharSave_send(int saac_fd, char *id, char *charname, char *opt,
                                 char *charinfo, int unlock, int msg_id,
                                 int saveindex)
 #else
-void SaacClient_ACCharSave_send(int fd, char *id, char *charname, char *opt,
+void SaacClient_ACCharSave_send(int saac_fd, char *id, char *charname, char *opt,
                                 char *charinfo, int unlock, int msg_id)
 #endif
 {
@@ -111,10 +111,10 @@ void SaacClient_ACCharSave_send(int fd, char *id, char *charname, char *opt,
 #ifdef _NEWSAVE
   strncatsafe(ws->work, mkstr_int(saveindex), ws->work_buf_size);
 #endif
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACCharDelete_send(int fd, char *id, char *passwd,
+void SaacClient_ACCharDelete_send(int saac_fd, char *id, char *passwd,
                                   char *charname, char *option, int mesgid) {
   CreateHeader(ws->work, "ACCharDelete");
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
@@ -122,25 +122,25 @@ void SaacClient_ACCharDelete_send(int fd, char *id, char *passwd,
   strncatsafe(ws->work, mkstr_string(charname), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(option), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(mesgid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACLock_send(int fd, char *id, int lock, int mesgid) {
+void SaacClient_ACLock_send(int saac_fd, char *id, int lock, int mesgid) {
   CreateHeader(ws->work, "ACLock");
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(lock), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(mesgid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACUCheck_send(int fd, char *mem_id, int status) {
+void SaacClient_ACUCheck_send(int saac_fd, char *mem_id, int status) {
   CreateHeader(ws->work, "ACUCheck");
   strncatsafe(ws->work, mkstr_string(mem_id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(status), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_DBUpdateEntryString_send(int fd, char *table, char *key,
+void SaacClient_DBUpdateEntryString_send(int saac_fd, char *table, char *key,
                                          char *value, int msgid, int msgid2) {
   CreateHeader(ws->work, "DBUpdateEntryString");
   strncatsafe(ws->work, mkstr_string(table), ws->work_buf_size);
@@ -148,30 +148,30 @@ void SaacClient_DBUpdateEntryString_send(int fd, char *table, char *key,
   strncatsafe(ws->work, mkstr_string(value), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid2), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_DBDeleteEntryString_send(int fd, char *table, char *key,
+void SaacClient_DBDeleteEntryString_send(int saac_fd, char *table, char *key,
                                          int msgid, int msgid2) {
   CreateHeader(ws->work, "DBDeleteEntryString");
   strncatsafe(ws->work, mkstr_string(table), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(key), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid2), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_DBGetEntryString_send(int fd, char *table, char *key, int msg_id,
+void SaacClient_DBGetEntryString_send(int saac_fd, char *table, char *key, int msg_id,
                                       int msg_id2) {
   CreateHeader(ws->work, "DBGetEntryString");
   strncatsafe(ws->work, mkstr_string(table), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(key), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msg_id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msg_id2), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_DBUpdateEntryInt_send(int fd, char *table, char *key, int value,
+void SaacClient_DBUpdateEntryInt_send(int saac_fd, char *table, char *key, int value,
                                       char *info, int msgid, int msgid2) {
   CreateHeader(ws->work, "DBUpdateEntryInt");
   strncatsafe(ws->work, mkstr_string(table), ws->work_buf_size);
@@ -180,40 +180,40 @@ void SaacClient_DBUpdateEntryInt_send(int fd, char *table, char *key, int value,
   strncatsafe(ws->work, mkstr_string(info), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid2), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_DBGetEntryRank_send(int fd, char *table, char *key, int msgid,
+void SaacClient_DBGetEntryRank_send(int saac_fd, char *table, char *key, int msgid,
                                     int msgid2) {
   CreateHeader(ws->work, "DBGetEntryRank");
   strncatsafe(ws->work, mkstr_string(table), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(key), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid2), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_DBDeleteEntryInt_send(int fd, char *table, char *key, int msgid,
+void SaacClient_DBDeleteEntryInt_send(int saac_fd, char *table, char *key, int msgid,
                                       int msgid2) {
   CreateHeader(ws->work, "DBDeleteEntryInt");
   strncatsafe(ws->work, mkstr_string(table), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(key), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid2), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_DBGetEntryInt_send(int fd, char *table, char *key, int msgid,
+void SaacClient_DBGetEntryInt_send(int saac_fd, char *table, char *key, int msgid,
                                    int msgid2) {
   CreateHeader(ws->work, "DBGetEntryInt");
   strncatsafe(ws->work, mkstr_string(table), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(key), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid2), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_DBGetEntryByRank_send(int fd, char *table, int rank_start,
+void SaacClient_DBGetEntryByRank_send(int saac_fd, char *table, int rank_start,
                                       int rank_end, int msgid, int msgid2) {
   CreateHeader(ws->work, "DBGetEntryByRank");
   strncatsafe(ws->work, mkstr_string(table), ws->work_buf_size);
@@ -221,10 +221,10 @@ void SaacClient_DBGetEntryByRank_send(int fd, char *table, int rank_start,
   strncatsafe(ws->work, mkstr_int(rank_end), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid2), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_DBGetEntryByCount_send(int fd, char *table, int count_start,
+void SaacClient_DBGetEntryByCount_send(int saac_fd, char *table, int count_start,
                                        int num, int msgid, int msgid2) {
   CreateHeader(ws->work, "DBGetEntryByCount");
   strncatsafe(ws->work, mkstr_string(table), ws->work_buf_size);
@@ -232,14 +232,14 @@ void SaacClient_DBGetEntryByCount_send(int fd, char *table, int count_start,
   strncatsafe(ws->work, mkstr_int(num), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msgid2), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_Broadcast_send(const int fd, const char *id,
+void SaacClient_Broadcast_send(const int saac_fd, const char *id,
                                const char *charname, const char *message,
                                const int flag) {}
 
-void SaacClient_Message_send(int fd, char *id_from, char *char_name_from,
+void SaacClient_Message_send(int saac_fd, char *id_from, char *char_name_from,
                              char *id_to, char *char_name_to, char *message,
                              int option) {
   CreateHeader(ws->work, "Message");
@@ -249,28 +249,28 @@ void SaacClient_Message_send(int fd, char *id_from, char *char_name_from,
   strncatsafe(ws->work, mkstr_string(char_name_to), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(message), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(option), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_MessageAck_send(int fd, char *id, char *charname, char *result,
+void SaacClient_MessageAck_send(int saac_fd, char *id, char *charname, char *result,
                                 int mesgid) {
   CreateHeader(ws->work, "MessageAck");
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(charname), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(result), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(mesgid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_MessageFlush_send(int fd, char *id, char *charname) {
+void SaacClient_MessageFlush_send(int saac_fd, char *id, char *charname) {
   CreateHeader(ws->work, "MessageFlush");
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(charname), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
 #ifdef _PERSONAL_FAME
-void SaacClient_ACAddFM_send(int fd, char *fmname, char *fmleadername,
+void SaacClient_ACAddFM_send(int saac_fd, char *fmname, char *fmleadername,
                              char *fmleaderid, int fmleaderlv, char *petname,
                              char *petattr, char *fmrule, int fmsprite,
                              int fmleadergrano, int fame,
@@ -279,7 +279,7 @@ void SaacClient_ACAddFM_send(int fd, char *fmname, char *fmleadername,
 #endif
                              int charfdid)
 #else
-void SaacClient_ACAddFM_send(int fd, char *fmname, char *fmleadername,
+void SaacClient_ACAddFM_send(int saac_fd, char *fmname, char *fmleadername,
                              char *fmleaderid, int fmleaderlv, char *petname,
                              char *petattr, char *fmrule, int fmsprite,
                              int fmleadergrano, int charfdid)
@@ -302,14 +302,14 @@ void SaacClient_ACAddFM_send(int fd, char *fmname, char *fmleadername,
 #ifdef _FAMILYBADGE_
   strncatsafe(ws->work, mkstr_int(fmbadge), ws->work_buf_size);
 #endif
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #ifdef _PERSONAL_FAME // Arminius: 家族个人声望
-void SaacClient_ACJoinFM_send(int fd, char *fmname, int fmindex, char *charname,
+void SaacClient_ACJoinFM_send(int saac_fd, char *fmname, int fmindex, char *charname,
                               char *charid, int charlv, int index, int fame,
                               int charfdid)
 #else
-void SaacClient_ACJoinFM_send(int fd, char *fmname, int fmindex, char *charname,
+void SaacClient_ACJoinFM_send(int saac_fd, char *fmname, int fmindex, char *charname,
                               char *charid, int charlv, int index, int charfdid)
 #endif
 {
@@ -324,9 +324,9 @@ void SaacClient_ACJoinFM_send(int fd, char *fmname, int fmindex, char *charname,
   strncatsafe(ws->work, mkstr_int(fame), ws->work_buf_size);
   // #endif
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACLeaveFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACLeaveFM_send(int saac_fd, char *fmname, int fmindex,
                                char *charname, char *charid, int index,
                                int charfdid) {
   CreateHeader(ws->work, "ACLeaveFM");
@@ -336,9 +336,9 @@ void SaacClient_ACLeaveFM_send(int fd, char *fmname, int fmindex,
   strncatsafe(ws->work, mkstr_string(charid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(index), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACDelFM_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACDelFM_send(int saac_fd, char *fmname, int fmindex, int index,
                              char *charname, char *charid, int charfdid) {
   CreateHeader(ws->work, "ACDelFM");
   strncatsafe(ws->work, mkstr_string(fmname), ws->work_buf_size);
@@ -347,35 +347,35 @@ void SaacClient_ACDelFM_send(int fd, char *fmname, int fmindex, int index,
   strncatsafe(ws->work, mkstr_string(charname), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(charid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACShowFMList_send(int fd) {
+void SaacClient_ACShowFMList_send(int saac_fd) {
   CreateHeader(ws->work, "ACShowFMList");
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACShowMemberList_send(int fd, int index) {
+void SaacClient_ACShowMemberList_send(int saac_fd, int index) {
   CreateHeader(ws->work, "ACShowMemberList");
   strncatsafe(ws->work, mkstr_string("MemberList"), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(index), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACFMDetail_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACFMDetail_send(int saac_fd, char *fmname, int fmindex, int index,
                                 int charfdid) {
   CreateHeader(ws->work, "ACFMDetail");
   strncatsafe(ws->work, mkstr_string(fmname), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(fmindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(index), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #ifdef _FMVER21
-void SaacClient_ACMemberJoinFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACMemberJoinFM_send(int saac_fd, char *fmname, int fmindex,
                                     char *charname, int charindex, int index,
                                     int result, int meindex, int charfdid)
 #else
-void SaacClient_ACMemberJoinFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACMemberJoinFM_send(int saac_fd, char *fmname, int fmindex,
                                     char *charname, int charindex, int index,
                                     int result, int charfdid)
 #endif
@@ -391,14 +391,14 @@ void SaacClient_ACMemberJoinFM_send(int fd, char *fmname, int fmindex,
   strncatsafe(ws->work, mkstr_int(meindex), ws->work_buf_size);
 #endif
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #ifdef _FMVER21
-void SaacClient_ACMemberLeaveFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACMemberLeaveFM_send(int saac_fd, char *fmname, int fmindex,
                                      char *charname, int charindex, int index,
                                      int meindex, int charfdid)
 #else
-void SaacClient_ACMemberLeaveFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACMemberLeaveFM_send(int saac_fd, char *fmname, int fmindex,
                                      char *charname, int charindex, int index,
                                      int charfdid)
 #endif
@@ -413,19 +413,19 @@ void SaacClient_ACMemberLeaveFM_send(int fd, char *fmname, int fmindex,
   strncatsafe(ws->work, mkstr_int(meindex), ws->work_buf_size);
 #endif
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #ifdef _FM_MODIFY
-void SaacClient_ACFMCharLogin_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMCharLogin_send(int saac_fd, char *fmname, int fmindex,
                                    char *charname, char *charid, int charlv,
                                    int eventflag, int charfdid, int gsnum)
 #else
 #ifdef _FMVER21
-void SaacClient_ACFMCharLogin_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMCharLogin_send(int saac_fd, char *fmname, int fmindex,
                                    char *charname, char *charid, int charlv,
                                    int eventflag, int charfdid)
 #else
-void SaacClient_ACFMCharLogin_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMCharLogin_send(int saac_fd, char *fmname, int fmindex,
                                    char *charname, char *charid, int charlv,
                                    int charfdid)
 #endif
@@ -444,10 +444,10 @@ void SaacClient_ACFMCharLogin_send(int fd, char *fmname, int fmindex,
 #ifdef _FM_MODIFY
   strncatsafe(ws->work, mkstr_int(gsnum), ws->work_buf_size);
 #endif
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACFMCharLogout_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMCharLogout_send(int saac_fd, char *fmname, int fmindex,
                                     char *charname, char *charid, int charlv,
                                     int index, int charfdid) {
   CreateHeader(ws->work, "ACFMCharLogout");
@@ -458,29 +458,29 @@ void SaacClient_ACFMCharLogout_send(int fd, char *fmname, int fmindex,
   strncatsafe(ws->work, mkstr_int(charlv), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(index), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACFMReadMemo_send(int fd, int index) {
+void SaacClient_ACFMReadMemo_send(int saac_fd, int index) {
   CreateHeader(ws->work, "ACFMReadMemo");
   strncatsafe(ws->work, mkstr_string("ReadMemo"), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(index), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACFMWriteMemo_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMWriteMemo_send(int saac_fd, char *fmname, int fmindex,
                                    char *data, int index) {
   CreateHeader(ws->work, "ACFMWriteMemo");
   strncatsafe(ws->work, mkstr_string(fmname), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(fmindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(data), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(index), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACFMPointList_send(int fd) {
+void SaacClient_ACFMPointList_send(int saac_fd) {
   CreateHeader(ws->work, "ACFMPointList");
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACSetFMPoint_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACSetFMPoint_send(int saac_fd, char *fmname, int fmindex, int index,
                                   int fmpointindex, int fl, int x, int y,
                                   int charfdid) {
   CreateHeader(ws->work, "ACSetFMPoint");
@@ -492,9 +492,9 @@ void SaacClient_ACSetFMPoint_send(int fd, char *fmname, int fmindex, int index,
   strncatsafe(ws->work, mkstr_int(x), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(y), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACFixFMPoint_send(int fd, char *winfmname, int winfmindex,
+void SaacClient_ACFixFMPoint_send(int saac_fd, char *winfmname, int winfmindex,
                                   int winindex, char *losefmname,
                                   int losefmindex, int loseindex, int village) {
   CreateHeader(ws->work, "ACFixFMPoint");
@@ -505,9 +505,9 @@ void SaacClient_ACFixFMPoint_send(int fd, char *winfmname, int winfmindex,
   strncatsafe(ws->work, mkstr_int(losefmindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(loseindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(village), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACFMAnnounce_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACFMAnnounce_send(int saac_fd, char *fmname, int fmindex, int index,
                                   char *data, int color) {
   CreateHeader(ws->work, "ACFMAnnounce");
   strncatsafe(ws->work, mkstr_string(fmname), ws->work_buf_size);
@@ -515,16 +515,16 @@ void SaacClient_ACFMAnnounce_send(int fd, char *fmname, int fmindex, int index,
   strncatsafe(ws->work, mkstr_int(index), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(data), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(color), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACShowTopFMList_send(int fd, int kindflag) {
+void SaacClient_ACShowTopFMList_send(int saac_fd, int kindflag) {
   CreateHeader(ws->work, "ACShowTopFMList");
   strncatsafe(ws->work, mkstr_string("ShowTopFMList"), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(kindflag), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACFixFMData_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACFixFMData_send(int saac_fd, char *fmname, int fmindex, int index,
                                  int kindflag, char *data1, char *data2,
                                  int charindex, int charfdid) {
   CreateHeader(ws->work, "ACFixFMData");
@@ -536,9 +536,9 @@ void SaacClient_ACFixFMData_send(int fd, char *fmname, int fmindex, int index,
   strncatsafe(ws->work, mkstr_string(data2), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACFixFMPK_send(int fd, char *winfmname, int winfmindex,
+void SaacClient_ACFixFMPK_send(int saac_fd, char *winfmname, int winfmindex,
                                int winindex, char *losefmname, int losefmindex,
                                int loseindex) {
   CreateHeader(ws->work, "ACFixFMPK");
@@ -548,9 +548,9 @@ void SaacClient_ACFixFMPK_send(int fd, char *winfmname, int winfmindex,
   strncatsafe(ws->work, mkstr_string(losefmname), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(losefmindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(loseindex), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACGMFixFMData_send(int fd, int index, char *charid, char *cmd,
+void SaacClient_ACGMFixFMData_send(int saac_fd, int index, char *charid, char *cmd,
                                    char *data, int charfdid) {
   CreateHeader(ws->work, "ACGMFixFMData");
   strncatsafe(ws->work, mkstr_string("ACGMFixFMData"), ws->work_buf_size);
@@ -559,9 +559,9 @@ void SaacClient_ACGMFixFMData_send(int fd, int index, char *charid, char *cmd,
   strncatsafe(ws->work, mkstr_string(cmd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(data), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ACGetFMData_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACGetFMData_send(int saac_fd, char *fmname, int fmindex, int index,
                                  int kindflag, int charfdid) {
   CreateHeader(ws->work, "ACGetFMData");
   strncatsafe(ws->work, mkstr_string(fmname), ws->work_buf_size);
@@ -569,50 +569,50 @@ void SaacClient_ACGetFMData_send(int fd, char *fmname, int fmindex, int index,
   strncatsafe(ws->work, mkstr_int(index), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(kindflag), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charfdid), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
 // Arminius 7.26 manor pk acknowledge
-void SaacClient_ACManorPKAck_send(int fd, char *data) {
+void SaacClient_ACManorPKAck_send(int saac_fd, char *data) {
   CreateHeader(ws->work, "ACManorPKAck");
   strncatsafe(ws->work, mkstr_string(data), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACreLoadFmData_send(int fd, int type, int data) {
+void SaacClient_ACreLoadFmData_send(int saac_fd, int type, int data) {
   CreateHeader(ws->work, "ACreLoadFmData");
   strncatsafe(ws->work, mkstr_int(type), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(data), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
 #ifdef _ACFMPK_LIST
-void SaacClient_ACLoadFmPk_send(int fd, int fmpks_pos) {
+void SaacClient_ACLoadFmPk_send(int saac_fd, int fmpks_pos) {
   CreateHeader(ws->work, "ACLoadFmPk");
   strncatsafe(ws->work, mkstr_int(fmpks_pos), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACSendFmPk_send(int fd, int toindex, int PkFlg, int fmpks_pos,
+void SaacClient_ACSendFmPk_send(int saac_fd, int toindex, int PkFlg, int fmpks_pos,
                                 char *msg) {
   CreateHeader(ws->work, "ACSendFmPk");
   strncatsafe(ws->work, mkstr_int(fmpks_pos), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(toindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(PkFlg), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(msg), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
-void SaacClient_ACAuctionSold_send(int fd, char *data) {
+void SaacClient_ACAuctionSold_send(int saac_fd, char *data) {
   CreateHeader(ws->work, "ACAuctionSold");
   strncatsafe(ws->work, mkstr_string(data), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
 extern char saacrecvfunc[255];
 
-int SaacClient_ClientDispatchMessage(int fd, char *line) {
+int SaacClient_ClientDispatchMessage(int saac_fd, char *line) {
   int msgid;
   char funcname[255];
   strncpysafe(ws->work, ws->work_buf_size, line);
@@ -621,12 +621,12 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     return -1;
   }
   GetMessageInfo(&msgid, funcname, sizeof(funcname), ws->token_list);
-  SAAC_LOG_RECV(funcname, "msgid=%u fd=%d", msgid, fd);
+  SAAC_LOG_RECV(funcname, "msgid=%u fd=%d", msgid, saac_fd);
   strcpy(saacrecvfunc, funcname);
   if (strcmp(funcname, "ACGmsvDownRequest") == 0) {
     int min;
     min = demkstr_int(ws->token_list[2]);
-    SaacClient_ACGmsvDownRequest_recv(fd, min);
+    SaacClient_ACGmsvDownRequest_recv(saac_fd, min);
     return 0;
   }
 
@@ -637,7 +637,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                           demkstr_string(ws->token_list[2]));
     data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                         demkstr_string(ws->token_list[3]));
-    SaacClient_ACServerLogin_recv(fd, result, data);
+    SaacClient_ACServerLogin_recv(saac_fd, result, data);
     return 0;
   }
 
@@ -647,7 +647,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     char *output = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                                 demkstr_string(ws->token_list[3]));
     const int id = demkstr_int(ws->token_list[4]);
-    SaacClient_ACCharList_recv(fd, result, output, id);
+    SaacClient_ACCharList_recv(saac_fd, result, output, id);
     return 0;
   }
 
@@ -666,9 +666,9 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
       return 0;
 #ifdef _NEWSAVE
     saveindex = demkstr_int(ws->token_list[5]);
-    SaacClient_ACCharLoad_recv(fd, result, data, client_fdid, saveindex);
+    SaacClient_ACCharLoad_recv(saac_fd, result, data, client_fdid, saveindex);
 #else
-    SaacClient_ACCharLoad_recv(fd, result, data, id, -1);
+    SaacClient_ACCharLoad_recv(saac_fd, result, data, id, -1);
 #endif
     return 0;
   }
@@ -679,7 +679,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                               demkstr_string(ws->token_list[3]));
     const int id = demkstr_int(ws->token_list[4]);
-    SaacClient_ACCharSave_recv(fd, result, data, id);
+    SaacClient_ACCharSave_recv(saac_fd, result, data, id);
     return 0;
   }
 
@@ -689,7 +689,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                               demkstr_string(ws->token_list[3]));
     const int id = demkstr_int(ws->token_list[4]);
-    SaacClient_ACCharDelete_recv(fd, result, data, id);
+    SaacClient_ACCharDelete_recv(saac_fd, result, data, id);
     return 0;
   }
 
@@ -699,7 +699,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                               demkstr_string(ws->token_list[3]));
     const int id = demkstr_int(ws->token_list[4]);
-    SaacClient_ACLock_recv(fd, result, data, id);
+    SaacClient_ACLock_recv(saac_fd, result, data, id);
     return 0;
   }
 
@@ -712,7 +712,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                         demkstr_string(ws->token_list[3]));
     id = demkstr_int(ws->token_list[4]);
-    SaacClient_ACKick_recv(fd, act, data, id);
+    SaacClient_ACKick_recv(saac_fd, act, data, id);
     return 0;
   }
 #endif
@@ -728,7 +728,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                         demkstr_string(ws->token_list[3]));
     id = demkstr_int(ws->token_list[4]);
-    SaacClient_ACCharSavePoolItem_recv(fd, result, data, id);
+    SaacClient_ACCharSavePoolItem_recv(saac_fd, result, data, id);
     return 0;
   }
 
@@ -743,7 +743,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                         demkstr_string(ws->token_list[3]));
     id = demkstr_int(ws->token_list[4]);
     npcid = demkstr_int(ws->token_list[5]);
-    SaacClient_ACCharGetPoolItem_recv(fd, result, data, id, npcid);
+    SaacClient_ACCharGetPoolItem_recv(saac_fd, result, data, id, npcid);
     return 0;
   }
 #endif
@@ -760,7 +760,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                         demkstr_string(ws->token_list[3]));
     id = demkstr_int(ws->token_list[4]);
-    SaacClient_ACCharSavePoolPet_recv(fd, result, data, id);
+    SaacClient_ACCharSavePoolPet_recv(saac_fd, result, data, id);
     return 0;
   }
 
@@ -775,7 +775,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                         demkstr_string(ws->token_list[3]));
     id = demkstr_int(ws->token_list[4]);
     npcid = demkstr_int(ws->token_list[5]);
-    SaacClient_ACCharGetPoolPet_recv(fd, result, data, id, npcid);
+    SaacClient_ACCharGetPoolPet_recv(saac_fd, result, data, id, npcid);
     return 0;
   }
 #endif
@@ -783,7 +783,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
   if (strcmp(funcname, "ACUCheck") == 0) {
     char *mem_id = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                                 demkstr_string(ws->token_list[2]));
-    SaacClient_ACUCheck_recv(fd, mem_id);
+    SaacClient_ACUCheck_recv(saac_fd, mem_id);
     return 0;
   }
   if (strcmp(funcname, "DBUpdateEntryString") == 0) {
@@ -800,7 +800,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                        demkstr_string(ws->token_list[4]));
     msgid = demkstr_int(ws->token_list[5]);
     msgid2 = demkstr_int(ws->token_list[6]);
-    SaacClient_DBUpdateEntryString_recv(fd, result, table, key, msgid, msgid2);
+    SaacClient_DBUpdateEntryString_recv(saac_fd, result, table, key, msgid, msgid2);
     return 0;
   }
 
@@ -818,7 +818,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                        demkstr_string(ws->token_list[4]));
     msgid = demkstr_int(ws->token_list[5]);
     msgid2 = demkstr_int(ws->token_list[6]);
-    SaacClient_DBDeleteEntryString_recv(fd, result, table, key, msgid, msgid2);
+    SaacClient_DBDeleteEntryString_recv(saac_fd, result, table, key, msgid, msgid2);
     return 0;
   }
 
@@ -839,7 +839,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                        demkstr_string(ws->token_list[5]));
     msgid = demkstr_int(ws->token_list[6]);
     msgid2 = demkstr_int(ws->token_list[7]);
-    SaacClient_DBGetEntryString_recv(fd, result, value, table, key, msgid,
+    SaacClient_DBGetEntryString_recv(saac_fd, result, value, table, key, msgid,
                                      msgid2);
     return 0;
   }
@@ -858,7 +858,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                        demkstr_string(ws->token_list[4]));
     msgid = demkstr_int(ws->token_list[5]);
     msgid2 = demkstr_int(ws->token_list[6]);
-    SaacClient_DBUpdateEntryInt_recv(fd, result, table, key, msgid, msgid2);
+    SaacClient_DBUpdateEntryInt_recv(saac_fd, result, table, key, msgid, msgid2);
     return 0;
   }
 
@@ -880,7 +880,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                        demkstr_string(ws->token_list[6]));
     msgid = demkstr_int(ws->token_list[7]);
     msgid2 = demkstr_int(ws->token_list[8]);
-    SaacClient_DBGetEntryRank_recv(fd, result, rank, count, table, key, msgid,
+    SaacClient_DBGetEntryRank_recv(saac_fd, result, rank, count, table, key, msgid,
                                    msgid2);
     return 0;
   }
@@ -894,7 +894,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                              demkstr_string(ws->token_list[4]));
     const int msg_id = demkstr_int(ws->token_list[5]);
     const int msg_id2 = demkstr_int(ws->token_list[6]);
-    SaacClient_DBDeleteEntryInt_recv(fd, result, table, key, msg_id, msg_id2);
+    SaacClient_DBDeleteEntryInt_recv(saac_fd, result, table, key, msg_id, msg_id2);
     return 0;
   }
   if (strcmp(funcname, "DBGetEntryInt") == 0) {
@@ -913,7 +913,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                        demkstr_string(ws->token_list[5]));
     msgid = demkstr_int(ws->token_list[6]);
     msgid2 = demkstr_int(ws->token_list[7]);
-    SaacClient_DBGetEntryInt_recv(fd, result, value, table, key, msgid, msgid2);
+    SaacClient_DBGetEntryInt_recv(saac_fd, result, value, table, key, msgid, msgid2);
     return 0;
   }
 
@@ -926,7 +926,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                                demkstr_string(ws->token_list[4]));
     const int msg_id = demkstr_int(ws->token_list[5]);
     const int msg_id2 = demkstr_int(ws->token_list[6]);
-    SaacClient_DBGetEntryByRank_recv(fd, result, list, table, msg_id, msg_id2);
+    SaacClient_DBGetEntryByRank_recv(saac_fd, result, list, table, msg_id, msg_id2);
     return 0;
   }
 
@@ -940,7 +940,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     const int count_start = demkstr_int(ws->token_list[5]);
     const int msg_id = demkstr_int(ws->token_list[6]);
     const int msg_id2 = demkstr_int(ws->token_list[7]);
-    SaacClient_DBGetEntryByCount_recv(fd, result, list, table, count_start,
+    SaacClient_DBGetEntryByCount_recv(saac_fd, result, list, table, count_start,
                                       msg_id, msg_id2);
     return 0;
   }
@@ -948,7 +948,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
   if (strcmp(funcname, "UpdataStele") == 0) {
     char *token = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                                demkstr_string(ws->token_list[2]));
-    SaacClient_UpdataStele_recv(fd, token);
+    SaacClient_UpdataStele_recv(saac_fd, token);
     return 0;
   }
   if (strcmp(funcname, "S_UpdataStele") == 0) {
@@ -965,7 +965,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     const int level = demkstr_int(ws->token_list[7]);
     const int trns = demkstr_int(ws->token_list[8]);
     const int floor = demkstr_int(ws->token_list[9]);
-    SaacClient_S_UpdataStele_recv(fd, ocdkey, oname, ncdkey, nname, title,
+    SaacClient_S_UpdataStele_recv(saac_fd, ocdkey, oname, ncdkey, nname, title,
                                   level, trns, floor);
     return 0;
   }
@@ -978,7 +978,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                                   demkstr_string(ws->token_list[3]));
     char *message = strncpysafe(ws->string_buffer[3], ws->work_buf_size,
                                  demkstr_string(ws->token_list[4]));
-    SaacClient_Broadcast_recv(fd, id, charname, message);
+    SaacClient_Broadcast_recv(saac_fd, id, charname, message);
     return 0;
   }
 
@@ -995,7 +995,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                                  demkstr_string(ws->token_list[6]));
     const int option = demkstr_int(ws->token_list[7]);
     const int mesgid = demkstr_int(ws->token_list[8]);
-    SaacClient_Message_recv(fd, id_from, charname_from, id_to, charname_to,
+    SaacClient_Message_recv(saac_fd, id_from, charname_from, id_to, charname_to,
                             message, option, mesgid);
     return 0;
   }
@@ -1009,7 +1009,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     fmindex = demkstr_int(ws->token_list[3]);
     index = demkstr_int(ws->token_list[4]);
     charfdid = demkstr_int(ws->token_list[5]);
-    SaacClient_ACAddFM_recv(fd, result, fmindex, charfdid, index);
+    SaacClient_ACAddFM_recv(saac_fd, result, fmindex, charfdid, index);
     return 0;
   }
   if (strcmp(funcname, "ACJoinFM") == 0) {
@@ -1019,7 +1019,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                           demkstr_string(ws->token_list[2]));
     recv = demkstr_int(ws->token_list[3]);
     charfdid = demkstr_int(ws->token_list[4]);
-    SaacClient_ACJoinFM_recv(fd, result, recv, charfdid);
+    SaacClient_ACJoinFM_recv(saac_fd, result, recv, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACLeaveFM") == 0) {
@@ -1029,7 +1029,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                           demkstr_string(ws->token_list[2]));
     resultflag = demkstr_int(ws->token_list[3]);
     charfdid = demkstr_int(ws->token_list[4]);
-    SaacClient_ACLeaveFM_recv(fd, result, resultflag, charfdid);
+    SaacClient_ACLeaveFM_recv(saac_fd, result, resultflag, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACDelFM") == 0) {
@@ -1038,7 +1038,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     result = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                           demkstr_string(ws->token_list[2]));
     charfdid = demkstr_int(ws->token_list[3]);
-    SaacClient_ACDelFM_recv(fd, result, charfdid);
+    SaacClient_ACDelFM_recv(saac_fd, result, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACShowFMList") == 0) {
@@ -1049,7 +1049,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     fmnum = demkstr_int(ws->token_list[3]);
     data = strncpysafe(ws->string_buffer[3], ws->work_buf_size,
                         demkstr_string(ws->token_list[4]));
-    SaacClient_ACShowFMList_recv(fd, result, fmnum, data);
+    SaacClient_ACShowFMList_recv(saac_fd, result, fmnum, data);
     return 0;
   }
 
@@ -1068,7 +1068,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
 #ifdef _FAMILYBADGE_
     int badge = demkstr_int(ws->token_list[8]);
 #endif
-    SaacClient_ACShowMemberList_recv(fd, result, index, fmmemnum, fmacceptflag,
+    SaacClient_ACShowMemberList_recv(saac_fd, result, index, fmmemnum, fmacceptflag,
                                      fmjoinnum, data
 #ifdef _FAMILYBADGE_
                                      ,
@@ -1085,7 +1085,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                         demkstr_string(ws->token_list[3]));
     charfdid = demkstr_int(ws->token_list[4]);
-    SaacClient_ACFMDetail_recv(fd, result, data, charfdid);
+    SaacClient_ACFMDetail_recv(saac_fd, result, data, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACMemberJoinFM") == 0) {
@@ -1096,7 +1096,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                         demkstr_string(ws->token_list[3]));
     charfdid = demkstr_int(ws->token_list[4]);
-    SaacClient_ACMemberJoinFM_recv(fd, result, data, charfdid);
+    SaacClient_ACMemberJoinFM_recv(saac_fd, result, data, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACMemberLeaveFM") == 0) {
@@ -1107,7 +1107,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                         demkstr_string(ws->token_list[3]));
     charfdid = demkstr_int(ws->token_list[4]);
-    SaacClient_ACMemberLeaveFM_recv(fd, result, data, charfdid);
+    SaacClient_ACMemberLeaveFM_recv(saac_fd, result, data, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACFMCharLogin") == 0) {
@@ -1134,7 +1134,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
 #ifdef _NEW_MANOR_LAW
     momentum = demkstr_int(ws->token_list[12]);
 #endif
-    SaacClient_ACFMCharLogin_recv(fd, result, index, floor, fmdp, joinflag,
+    SaacClient_ACFMCharLogin_recv(saac_fd, result, index, floor, fmdp, joinflag,
                                   fmsetupflag, flag, charindex, charfame,
                                   charfdid
 #ifdef _NEW_MANOR_LAW
@@ -1144,7 +1144,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     );
 #else
     charfdid = demkstr_int(ws->token_list[10]);
-    SaacClient_ACFMCharLogin_recv(fd, result, index, floor, fmdp, joinflag,
+    SaacClient_ACFMCharLogin_recv(saac_fd, result, index, floor, fmdp, joinflag,
                                   fmsetupflag, flag, charindex, charfdid);
 #endif
     return 0;
@@ -1155,7 +1155,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     result = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                           demkstr_string(ws->token_list[2]));
     charfdid = demkstr_int(ws->token_list[3]);
-    SaacClient_ACFMCharLogout_recv(fd, result, charfdid);
+    SaacClient_ACFMCharLogout_recv(saac_fd, result, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACFMReadMemo") == 0) {
@@ -1168,7 +1168,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     dataindex = demkstr_int(ws->token_list[5]);
     data = strncpysafe(ws->string_buffer[5], ws->work_buf_size,
                         demkstr_string(ws->token_list[6]));
-    SaacClient_ACFMReadMemo_recv(fd, result, index, num, dataindex, data);
+    SaacClient_ACFMReadMemo_recv(saac_fd, result, index, num, dataindex, data);
     return 0;
   }
   if (strcmp(funcname, "ACFMWriteMemo") == 0) {
@@ -1177,7 +1177,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     result = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                           demkstr_string(ws->token_list[2]));
     index = demkstr_int(ws->token_list[3]);
-    SaacClient_ACFMWriteMemo_recv(fd, result, index);
+    SaacClient_ACFMWriteMemo_recv(saac_fd, result, index);
     return 0;
   }
   if (strcmp(funcname, "ACFMPointList") == 0) {
@@ -1186,7 +1186,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                           demkstr_string(ws->token_list[2]));
     data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                         demkstr_string(ws->token_list[3]));
-    SaacClient_ACFMPointList_recv(fd, result, data);
+    SaacClient_ACFMPointList_recv(saac_fd, result, data);
     return 0;
   }
 
@@ -1197,7 +1197,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                           demkstr_string(ws->token_list[2]));
     r = demkstr_int(ws->token_list[3]);
     charfdid = demkstr_int(ws->token_list[4]);
-    SaacClient_ACSetFMPoint_recv(fd, result, r, charfdid);
+    SaacClient_ACSetFMPoint_recv(saac_fd, result, r, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACFixFMPoint") == 0) {
@@ -1206,7 +1206,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     result = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                           demkstr_string(ws->token_list[2]));
     r = demkstr_int(ws->token_list[3]);
-    SaacClient_ACFixFMPoint_recv(fd, result, r);
+    SaacClient_ACFixFMPoint_recv(saac_fd, result, r);
     return 0;
   }
   if (strcmp(funcname, "ACFMAnnounce") == 0) {
@@ -1222,7 +1222,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     data = strncpysafe(ws->string_buffer[6], ws->work_buf_size,
                         demkstr_string(ws->token_list[7]));
     color = demkstr_int(ws->token_list[8]);
-    SaacClient_ACFMAnnounce_recv(fd, result, fmname, fmindex, index, kindflag,
+    SaacClient_ACFMAnnounce_recv(saac_fd, result, fmname, fmindex, index, kindflag,
                                  data, color);
     return 0;
   }
@@ -1235,7 +1235,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     num = demkstr_int(ws->token_list[4]);
     data = strncpysafe(ws->string_buffer[4], ws->work_buf_size,
                         demkstr_string(ws->token_list[5]));
-    SaacClient_ACShowTopFMList_recv(fd, result, kindflag, num, data);
+    SaacClient_ACShowTopFMList_recv(saac_fd, result, kindflag, num, data);
     return 0;
   }
   if (strcmp(funcname, "ACFixFMData") == 0) {
@@ -1250,7 +1250,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                         demkstr_string(ws->token_list[5]));
     charfdid = demkstr_int(ws->token_list[6]);
     // 这里的fd是saac_fd
-    SaacClient_ACFixFMData_recv(fd, result, kindflag, data1, data2, charfdid);
+    SaacClient_ACFixFMData_recv(saac_fd, result, kindflag, data1, data2, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACFixFMPK") == 0) {
@@ -1261,7 +1261,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     data = demkstr_int(ws->token_list[3]);
     winindex = demkstr_int(ws->token_list[4]);
     loseindex = demkstr_int(ws->token_list[5]);
-    SaacClient_ACFixFMPK_recv(fd, result, data, winindex, loseindex);
+    SaacClient_ACFixFMPK_recv(saac_fd, result, data, winindex, loseindex);
     return 0;
   }
   if (strcmp(funcname, "ACGMFixFMData") == 0) {
@@ -1272,7 +1272,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     fmname = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                           demkstr_string(ws->token_list[3]));
     charfdid = demkstr_int(ws->token_list[4]);
-    SaacClient_ACGMFixFMData_recv(fd, result, fmname, charfdid);
+    SaacClient_ACGMFixFMData_recv(saac_fd, result, fmname, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACGetFMData") == 0) {
@@ -1283,7 +1283,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     kindflag = demkstr_int(ws->token_list[3]);
     data = demkstr_int(ws->token_list[4]);
     charfdid = demkstr_int(ws->token_list[5]);
-    SaacClient_ACGetFMData_recv(fd, result, kindflag, data, charfdid);
+    SaacClient_ACGetFMData_recv(saac_fd, result, kindflag, data, charfdid);
     return 0;
   }
   if (strcmp(funcname, "ACFMClearPK") == 0) {
@@ -1295,7 +1295,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                           demkstr_string(ws->token_list[3]));
     fmindex = demkstr_int(ws->token_list[4]);
     index = demkstr_int(ws->token_list[5]);
-    SaacClient_ACFMClearPK_recv(fd, result, fmname, fmindex, index);
+    SaacClient_ACFMClearPK_recv(saac_fd, result, fmname, fmindex, index);
     return 0;
   }
   // Arminius 7.26 manor pk acknowledge
@@ -1303,7 +1303,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     char *data;
     data = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                         demkstr_string(ws->token_list[2]));
-    SaacClient_ACManorPKAck_recv(fd, data);
+    SaacClient_ACManorPKAck_recv(saac_fd, data);
     return 0;
   }
 
@@ -1312,14 +1312,14 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     char *data;
     data = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                         demkstr_string(ws->token_list[2]));
-    SaacClient_ACLoadFmPk_recv(fd, data);
+    SaacClient_ACLoadFmPk_recv(saac_fd, data);
     return 0;
   }
   if (strcmp(funcname, "ACSendFmPk") == 0) {
     int toindex, flg;
     toindex = demkstr_int(ws->token_list[2]);
     flg = demkstr_int(ws->token_list[3]);
-    SaacClient_ACSendFmPk_recv(fd, toindex, flg);
+    SaacClient_ACSendFmPk_recv(saac_fd, toindex, flg);
     return 0;
   }
 #endif
@@ -1328,85 +1328,85 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     char *effect = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                                 demkstr_string(ws->token_list[2]));
     print("\n AC send to GS weather effect !!");
-    CHAR_CHAT_DEBUG_sendeffect(fd, effect);
+    CHAR_CHAT_DEBUG_sendeffect(saac_fd, effect);
     return 0;
   }
 #endif
 
 #ifdef _NEW_VIP_SHOP
   if (strcmp(funcname, "QueryPoint") == 0) {
-    int fd = demkstr_int(ws->token_list[2]);
+    int client_fd = demkstr_int(ws->token_list[2]);
     int point = demkstr_int(ws->token_list[3]);
-    SaacClient_QueryPoint_recv(fd, point);
+    SaacClient_QueryPoint_recv(client_fd, point);
     return 0;
   }
 
   if (strcmp(funcname, "NewVipShop") == 0) {
-    int fd = demkstr_int(ws->token_list[2]);
+    int client_fd = demkstr_int(ws->token_list[2]);
     int point = demkstr_int(ws->token_list[3]);
     char *data = strncpysafe(ws->string_buffer[3], ws->work_buf_size,
                               demkstr_string(ws->token_list[4]));
     int flag = demkstr_int(ws->token_list[5]);
-    SaacClient_NewVipShop_recv(fd, point, data, flag);
+    SaacClient_NewVipShop_recv(client_fd, point, data, flag);
     return 0;
   }
 #endif
 
 #ifdef _ITEM_PET_LOCKED
   if (strcmp(funcname, "ItemPetLocked") == 0) {
-    int fd = demkstr_int(ws->token_list[2]);
+    int client_fd = demkstr_int(ws->token_list[2]);
     int flag = demkstr_int(ws->token_list[3]);
     char *data = strncpysafe(ws->string_buffer[3], ws->work_buf_size,
-                              demkstr_string(ws->token_list[4]));
-    SaacClient_ItemPetLocked_recv(fd, flag, data);
+                             demkstr_string(ws->token_list[4]));
+    SaacClient_ItemPetLocked_recv(client_fd, flag, data);
     return 0;
   }
 
   if (strcmp(funcname, "ItemPetLockedPasswd") == 0) {
-    int fd = demkstr_int(ws->token_list[2]);
+    int client_fd = demkstr_int(ws->token_list[2]);
     char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                               demkstr_string(ws->token_list[3]));
-    SaacClient_ItemPetLockedPasswd_recv(fd, data);
+    SaacClient_ItemPetLockedPasswd_recv(client_fd, data);
     return 0;
   }
 #endif
 
 #ifdef _ONLINE_COST
   if (strcmp(funcname, "OnlineCost") == 0) {
-    int fd = demkstr_int(ws->token_list[2]);
+    int client_fd = demkstr_int(ws->token_list[2]);
     char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                               demkstr_string(ws->token_list[3]));
-    SaacClient_OnlineCost_recv(fd, data);
+    SaacClient_OnlineCost_recv(client_fd, data);
     return 0;
   }
 #endif
 
 #ifdef _SQL_BUY_FUNC
   if (strcmp(funcname, "OnlineBuy") == 0) {
-    int fd = demkstr_int(ws->token_list[2]);
+    int client_fd = demkstr_int(ws->token_list[2]);
     char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                               demkstr_string(ws->token_list[3]));
-    SaacClient_OnlineBuy_recv(fd, data);
+    SaacClient_OnlineBuy_recv(client_fd, data);
     return 0;
   }
 #endif
 
 #ifdef _VIPPOINT_OLD_TO_NEW
   if (strcmp(funcname, "OldToNew") == 0) {
-    int fd = demkstr_int(ws->token_list[2]);
+    int client_fd = demkstr_int(ws->token_list[2]);
     char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                               demkstr_string(ws->token_list[3]));
-    SaacClient_OldToNew_recv(fd, data);
+    SaacClient_OldToNew_recv(client_fd, data);
     return 0;
   }
 #endif
 
 #ifdef _FORMULATE_AUTO_PK
   if (strcmp(funcname, "FormulateAutoPk") == 0) {
-    int fd = demkstr_int(ws->token_list[2]);
+    int client_fd = demkstr_int(ws->token_list[2]);
     char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
                               demkstr_string(ws->token_list[3]));
-    SaacClient_FormulateAutoPk_recv(fd, data);
+    SaacClient_FormulateAutoPk_recv(client_fd, data);
     return 0;
   }
 #endif
@@ -1437,7 +1437,7 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
                         demkstr_string(ws->token_list[4]));
     char *angelinfo = strncpysafe(ws->string_buffer[4], ws->work_buf_size,
                              demkstr_string(ws->token_list[5]));
-    SaacClient_ACMissionTable_recv(fd, num, type, data, angelinfo);
+    SaacClient_ACMissionTable_recv(saac_fd, num, type, data, angelinfo);
     return 0;
   }
 #endif
@@ -1449,14 +1449,14 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
     char *data = strncpysafe(ws->string_buffer[3], ws->work_buf_size,
                         demkstr_string(ws->token_list[4]));
     const int flag = demkstr_int(ws->token_list[5]);
-    SaacClient_ACCheckCharacterOnLine_recv(fd, char_index, online, data, flag);
+    SaacClient_ACCheckCharacterOnLine_recv(saac_fd, char_index, online, data, flag);
     return 0;
   }
 #endif
   if (strcmp(funcname, "ACCharLogin") == 0) {
-    const int clifd = demkstr_int(ws->token_list[2]);
+    const int client_fdid = demkstr_int(ws->token_list[2]);
     const int flag = demkstr_int(ws->token_list[3]);
-    SaacClient_ACCharLogin_recv(fd, clifd, flag);
+    SaacClient_ACCharLogin_recv(saac_fd, client_fdid, flag);
     return 0;
   }
   printf("不支持的SaacFunctionName: %s.\n", funcname);
@@ -1464,37 +1464,37 @@ int SaacClient_ClientDispatchMessage(int fd, char *line) {
 }
 
 #ifdef _WAEI_KICK
-void SaacClient_ACKick_send(int fd, char *kickid, int kickfd, int flg) {
+void SaacClient_ACKick_send(int saac_fd, char *kickid, int kickfd, int flg) {
   CreateHeader(ws->work, "ACKick");
   strncatsafe(ws->work, mkstr_string(kickid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(kickfd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(flg), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #ifdef _CHAR_POOLITEM
-void SaacClient_ACCharSavePoolItem_send(int acfd, int charaindex, int clifdid,
+void SaacClient_ACCharSavePoolItem_send(int saac_fd, int charaindex, int clifdid,
                                         char *CdKey, char *Pooldataarg) {
   CreateHeader(ws->work, "ACSavePoolItem");
   strncatsafe(ws->work, mkstr_string(CdKey), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(Pooldataarg), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charaindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(clifdid), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACCharGetPoolItem_send(int acfd, int meindex, int charaindex,
+void SaacClient_ACCharGetPoolItem_send(int saac_fd, int meindex, int charaindex,
                                        int clifdid, char *CdKey) {
   CreateHeader(ws->work, "ACGetPoolItem");
   strncatsafe(ws->work, mkstr_string(CdKey), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charaindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(clifdid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(meindex), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACCharInsertPoolItem_send(int acfd, int charaindex, int clifdid,
+void SaacClient_ACCharInsertPoolItem_send(int saac_fd, int charaindex, int clifdid,
                                           char *CdKey, char *Pooldataarg,
                                           int TYPE) {
   CreateHeader(ws->work, "ACInsertPoolItem");
@@ -1503,32 +1503,32 @@ void SaacClient_ACCharInsertPoolItem_send(int acfd, int charaindex, int clifdid,
   strncatsafe(ws->work, mkstr_int(charaindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(clifdid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(TYPE), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #ifdef _CHAR_POOLPET
-void SaacClient_ACCharSavePoolPet_send(int acfd, int charaindex, int clifdid,
+void SaacClient_ACCharSavePoolPet_send(int saac_fd, int charaindex, int clifdid,
                                        char *CdKey, char *Pooldataarg) {
   CreateHeader(ws->work, "ACSavePoolPet");
   strncatsafe(ws->work, mkstr_string(CdKey), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(Pooldataarg), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charaindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(clifdid), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACCharGetPoolPet_send(int acfd, int meindex, int charaindex,
+void SaacClient_ACCharGetPoolPet_send(int saac_fd, int meindex, int charaindex,
                                       int clifdid, char *CdKey) {
   CreateHeader(ws->work, "ACGetPoolPet");
   strncatsafe(ws->work, mkstr_string(CdKey), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(charaindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(clifdid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(meindex), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_ACCharInsertPoolPet_send(int acfd, int charaindex, int clifdid,
+void SaacClient_ACCharInsertPoolPet_send(int saac_fd, int charaindex, int clifdid,
                                          char *CdKey, char *Pooldataarg,
                                          int TYPE) {
   CreateHeader(ws->work, "ACInsertPoolPet");
@@ -1537,35 +1537,35 @@ void SaacClient_ACCharInsertPoolPet_send(int acfd, int charaindex, int clifdid,
   strncatsafe(ws->work, mkstr_int(charaindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(clifdid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(TYPE), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #ifdef _ANGEL_SUMMON
-void SaacClient_ACMissionTable_send(int acfd, int num, int type, char *data,
+void SaacClient_ACMissionTable_send(int saac_fd, int num, int type, char *data,
                                     char *angel_info) {
   CreateHeader(ws->work, "ACMissionTable");
   strncatsafe(ws->work, mkstr_int(num), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(type), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(data), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(angel_info), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #ifdef _TEACHER_SYSTEM
-void SaacClient_ACCheckCharacterOnLine_send(int acfd, int charaindex, char *id,
+void SaacClient_ACCheckCharacterOnLine_send(int saac_fd, int charaindex, char *id,
                                             char *name, int flag) {
   CreateHeader(ws->work, "ACCheckCharacterOnLine");
   strncatsafe(ws->work, mkstr_int(charaindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(name), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(flag), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
-void SaacClient_ACCharLogin_send(int fd, int clifd, char *id, char *pas,
+void SaacClient_ACCharLogin_send(int saac_fd, int client_fdid, char *id, char *pas,
                                  char *ip
 #ifdef _NEWCLISETMAC
                                  ,
@@ -1573,144 +1573,145 @@ void SaacClient_ACCharLogin_send(int fd, int clifd, char *id, char *pas,
 #endif
 ) {
   CreateHeader(ws->work, "ACCharLogin");
-  strncatsafe(ws->work, mkstr_int(clifd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(client_fdid), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(pas), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(ip), ws->work_buf_size);
 #ifdef _NEWCLISETMAC
   strncatsafe(ws->work, mkstr_string(mac), ws->work_buf_size);
 #endif
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_LockLogin_send(int fd, char *id, char *ip, int flag) {
+void SaacClient_LockLogin_send(int saac_fd, char *id, char *ip, int flag) {
   CreateHeader(ws->work, "LockLogin");
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(ip), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(flag), ws->work_buf_size);
-  Send(ws, fd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
 #ifdef _NEW_VIP_SHOP
-void SaacClient_QueryPoint_send(int acfd, int fd, char *id) {
-  if (acfd == -1)
+void SaacClient_QueryPoint_send(int saac_fd, int client_fd, char *id) {
+  if (saac_fd == -1)
     return;
   CreateHeader(ws->work, "QueryPoint");
-  strncatsafe(ws->work, mkstr_int(fd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(client_fd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
-void SaacClient_NewVipShop_send(int acfd, int fd, char *id, int point,
+void SaacClient_NewVipShop_send(int saac_fd, int client_fd, char *id, int point,
                                 char *buf, int flag) {
-  if (acfd == -1)
+  if (saac_fd == -1)
     return;
   CreateHeader(ws->work, "NewVipShop");
-  strncatsafe(ws->work, mkstr_int(fd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(client_fd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(point), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(buf), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(flag), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 
 #ifdef _COST_ITEM
-void SaacClient_CostItem_send(int acfd, int fd, char *id, int point) {
-  if (acfd == -1)
+void SaacClient_CostItem_send(int saac_fd, int client_fd, char *id, int point) {
+  if (saac_fd == -1)
     return;
   CreateHeader(ws->work, "CostItem");
-  strncatsafe(ws->work, mkstr_int(fd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(client_fd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(point), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 #endif
 
 #ifdef _ITEM_PET_LOCKED
-void SaacClient_ItemPetLocked_send(int fd, char *id, char *safepasswd) {
+void SaacClient_ItemPetLocked_send(int saac_fd, char *id, char *safepasswd) {
   CreateHeader(ws->work, "ItemPetLocked");
-  strncatsafe(ws->work, mkstr_int(fd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(saac_fd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(safepasswd), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
-void SaacClient_ItemPetLockedPasswd_send(int fd, char *id, char *safepasswd) {
+void SaacClient_ItemPetLockedPasswd_send(int saac_fd, char *id, char *safepasswd) {
   CreateHeader(ws->work, "ItemPetLockedPasswd");
-  strncatsafe(ws->work, mkstr_int(fd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(saac_fd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(safepasswd), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #ifdef _ONLINE_COST
-void SaacClient_OnlineCost_send(int acfd, int fd, char *id, char *costpasswd,
-                                int fmindex, char *fmname) {
-  if (acfd == -1)
+void SaacClient_OnlineCost_send(int saac_fd, int client_fd, char *id,
+                                char *costpasswd, int fmindex, char *fmname) {
+  if (saac_fd == -1)
     return;
   CreateHeader(ws->work, "OnlineCost");
-  strncatsafe(ws->work, mkstr_int(fd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(client_fd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(costpasswd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(fmindex), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(fmname), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #ifdef _SQL_BUY_FUNC
-void SaacClient_OnlineBuy_send(int acfd, int fd, char *id, char *costpasswd) {
-  if (acfd == -1)
+void SaacClient_OnlineBuy_send(int saac_fd, int client_fd, char *id,
+                               char *costpasswd) {
+  if (saac_fd == -1)
     return;
   CreateHeader(ws->work, "OnlineBuy");
-  strncatsafe(ws->work, mkstr_int(fd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(client_fd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(costpasswd), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #ifdef _VIPPOINT_OLD_TO_NEW
-void SaacClient_OldToNew_send(int acfd, int fd, char *id, int point) {
-  if (acfd == -1)
+void SaacClient_OldToNew_send(int saac_fd, int client_fd, char *id, int point) {
+  if (saac_fd == -1)
     return;
   CreateHeader(ws->work, "OldToNew");
-  strncatsafe(ws->work, mkstr_int(fd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(client_fd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(point), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #ifdef _FORMULATE_AUTO_PK
-void SaacClient_FormulateAutoPk_send(int fd, char *id, int point) {
+void SaacClient_FormulateAutoPk_send(int saac_fd, char *id, int point) {
   CreateHeader(ws->work, "FormulateAutoPk");
-  strncatsafe(ws->work, mkstr_int(fd), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(saac_fd), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(id), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(point), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 
 #ifdef _OTHER_SAAC_LINK
-void SaacClient_OtherSaacLink_send(int acfd, char *filename, char *data) {
+void SaacClient_OtherSaacLink_send(int saac_fd, char *filename, char *data) {
   CreateHeader(ws->work, "OtherSaacLink");
   strncatsafe(ws->work, mkstr_string(filename), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_string(data), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 #ifdef _LOTTERY_SYSTEM
 void SaacClient_LotterySystem_send() {
   CreateHeader(ws->work, "LotterySystem");
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif
 #ifdef _ALL_SERV_SEND
 void SaacClient_AllServSend_send(char *data) {
   CreateHeader(ws->work, "AllServSend");
   strncatsafe(ws->work, mkstr_string(data), ws->work_buf_size);
-  Send(ws, acfd, ws->work);
+  Send(ws, saac_fd, ws->work);
 }
 #endif

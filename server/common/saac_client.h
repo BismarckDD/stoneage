@@ -7,7 +7,7 @@
 #include "server_util.h"
 
 int SaacClient_InitClient(int (*write_func)(int, const char *, int),
-                          int work_buffer_size, int fd);
+                          int work_buffer_size, int saac_fd);
 
 /* Compatibility with older generated call sites. */
 #define SaacClient__ACAddFM_send SaacClient_ACAddFM_send
@@ -25,111 +25,111 @@ int SaacClient_InitClient(int (*write_func)(int, const char *, int),
 #define SaacClient__QueryPoint_send SaacClient_QueryPoint_send
 
 #ifdef _ALLDOMAN // (不可开) Syu ADD 排行榜NPC
-void SaacClient_UpdataStele_send(int fd, char *cdkey, char *name, char *title,
+void SaacClient_UpdataStele_send(int saac_fd, char *cdkey, char *name, char *title,
                                  int level, int trns, int time, int floor);
-void SaacClient_UpdataStele_recv(int fd, char *token);
-void SaacClient_S_UpdataStele_recv(int i, char *ocdkey, char *oname,
+void SaacClient_UpdataStele_recv(int saac_fd, char *token);
+void SaacClient_S_UpdataStele_recv(int saac_fd, char *ocdkey, char *oname,
                                    char *ncdkey, char *nname, char *title,
                                    int level, int trns, int floor);
 #endif
 
-void SaacClient_ACGmsvDownRequest_recv(int fd, int min);
+void SaacClient_ACGmsvDownRequest_recv(int saac_fd, int min);
 #if _ATTESTAION_ID == 1
-void SaacClient_ACServerLogin_send(int fd, int id, char *servername,
+void SaacClient_ACServerLogin_send(int saac_fd, int id, char *servername,
                                    char *serverpas);
 #else
-void SaacClient_ACServerLogin_send(int fd, char *servername, char *serverpas);
+void SaacClient_ACServerLogin_send(int saac_fd, char *servername, char *serverpas);
 #endif
-void SaacClient_ACServerLogin_recv(int fd, char *result, char *data);
-void SaacClient_ACServerLogout_send(int fd);
+void SaacClient_ACServerLogin_recv(int saac_fd, char *result, char *data);
+void SaacClient_ACServerLogout_send(int saac_fd);
 
 #ifdef _PKSEVER_VER
-void SaacClient_ACCharList_send(int fd, char *id, char *pas, int mesgid,
+void SaacClient_ACCharList_send(int saac_fd, char *id, char *pas, int mesgid,
                                 int star);
 #else
-void SaacClient_ACCharList_send(int fd, char *id, char *pas, char *ip,
+void SaacClient_ACCharList_send(int saac_fd, char *id, char *pas, char *ip,
                                 char *mac, int mesgid, int charlistflg);
 #endif
 
-void SaacClient_ACCharList_recv(int fd, char *result, char *output, int id);
-void SaacClient_ACCharLoad_send(int fd, char *id, char *pas, char *char_name,
+void SaacClient_ACCharList_recv(int saac_fd, char *result, char *output, int id);
+void SaacClient_ACCharLoad_send(int saac_fd, char *id, char *pas, char *char_name,
                                 int lock, char *opt, const int msg_id);
-void SaacClient_ACCharLoad_recv(int fd, char *result, char *data, const int id,
+void SaacClient_ACCharLoad_recv(int saac_fd, char *result, char *data, const int id,
                                 const int save_index);
 #ifdef _NEWSAVE
-void SaacClient_ACCharSave_send(int fd, char *id, char *charname, char *opt,
+void SaacClient_ACCharSave_send(int saac_fd, char *id, char *charname, char *opt,
                                 char *charinfo, int unlock, int mesgid,
                                 int saveindex);
 #else
-void SaacClient_ACCharSave_send(int fd, char *id, char *charname, char *opt,
+void SaacClient_ACCharSave_send(int saac_fd, char *id, char *charname, char *opt,
                                 char *charinfo, int unlock, int mesgid);
 #endif
-void SaacClient_ACCharSave_recv(int fd, char *result, char *data, int id);
-void SaacClient_ACCharDelete_send(int fd, char *id, char *passwd,
+void SaacClient_ACCharSave_recv(int saac_fd, char *result, char *data, int id);
+void SaacClient_ACCharDelete_send(int saac_fd, char *id, char *passwd,
                                   char *charname, char *option, int mesgid);
-void SaacClient_ACCharDelete_recv(int fd, char *result, char *data, int id);
-void SaacClient_ACLock_send(int fd, char *id, int lock, int mesgid);
-void SaacClient_ACLock_recv(int fd, char *result, char *data, int id);
-void SaacClient_ACUCheck_send(int fd, char *mem_id, int status);
-void SaacClient_ACUCheck_recv(int fd, char *mem_id);
-void SaacClient_DBUpdateEntryString_send(int fd, char *table, char *key,
+void SaacClient_ACCharDelete_recv(int saac_fd, char *result, char *data, int id);
+void SaacClient_ACLock_send(int saac_fd, char *id, int lock, int mesgid);
+void SaacClient_ACLock_recv(int saac_fd, char *result, char *data, int id);
+void SaacClient_ACUCheck_send(int saac_fd, char *mem_id, int status);
+void SaacClient_ACUCheck_recv(int saac_fd, char *mem_id);
+void SaacClient_DBUpdateEntryString_send(int saac_fd, char *table, char *key,
                                          char *value, int msgid, int msgid2);
-void SaacClient_DBUpdateEntryString_recv(int fd, char *result, char *table,
+void SaacClient_DBUpdateEntryString_recv(int saac_fd, char *result, char *table,
                                          char *key, int msgid, int msgid2);
-void SaacClient_DBDeleteEntryString_send(int fd, char *table, char *key,
+void SaacClient_DBDeleteEntryString_send(int saac_fd, char *table, char *key,
                                          int msgid, int msgid2);
-void SaacClient_DBDeleteEntryString_recv(int fd, char *result, char *table,
+void SaacClient_DBDeleteEntryString_recv(int saac_fd, char *result, char *table,
                                          char *key, int msgid, int msgid2);
-void SaacClient_DBGetEntryString_send(int fd, char *table, char *key, int msgid,
+void SaacClient_DBGetEntryString_send(int saac_fd, char *table, char *key, int msgid,
                                       int msgid2);
-void SaacClient_DBGetEntryString_recv(int fd, char *result, char *value,
+void SaacClient_DBGetEntryString_recv(int saac_fd, char *result, char *value,
                                       char *table, char *key, int msgid,
                                       int msgid2);
-void SaacClient_DBUpdateEntryInt_send(int fd, char *table, char *key, int value,
+void SaacClient_DBUpdateEntryInt_send(int saac_fd, char *table, char *key, int value,
                                       char *info, int msgid, int msgid2);
-void SaacClient_DBUpdateEntryInt_recv(int fd, char *result, char *table,
+void SaacClient_DBUpdateEntryInt_recv(int saac_fd, char *result, char *table,
                                       char *key, int msgid, int msgid2);
-void SaacClient_DBGetEntryRank_send(int fd, char *table, char *key, int msgid,
+void SaacClient_DBGetEntryRank_send(int saac_fd, char *table, char *key, int msgid,
                                     int msgid2);
-void SaacClient_DBGetEntryRank_recv(int fd, char *result, int rank, int count,
+void SaacClient_DBGetEntryRank_recv(int saac_fd, char *result, int rank, int count,
                                     char *table, char *key, int msgid,
                                     int msgid2);
-void SaacClient_DBDeleteEntryInt_send(int fd, char *table, char *key, int msgid,
+void SaacClient_DBDeleteEntryInt_send(int saac_fd, char *table, char *key, int msgid,
                                       int msgid2);
-void SaacClient_DBDeleteEntryInt_recv(int fd, char *result, char *table,
+void SaacClient_DBDeleteEntryInt_recv(int saac_fd, char *result, char *table,
                                       char *key, int msgid, int msgid2);
-void SaacClient_DBGetEntryInt_send(int fd, char *table, char *key, int msgid,
+void SaacClient_DBGetEntryInt_send(int saac_fd, char *table, char *key, int msgid,
                                    int msgid2);
-void SaacClient_DBGetEntryInt_recv(int fd, char *result, int value, char *table,
+void SaacClient_DBGetEntryInt_recv(int saac_fd, char *result, int value, char *table,
                                    char *key, int msgid, int msgid2);
-void SaacClient_DBGetEntryByRank_send(int fd, char *table, int rank_start,
+void SaacClient_DBGetEntryByRank_send(int saac_fd, char *table, int rank_start,
                                       int rank_end, int msgid, int msgid2);
-void SaacClient_DBGetEntryByRank_recv(int fd, char *result, char *list,
+void SaacClient_DBGetEntryByRank_recv(int saac_fd, char *result, char *list,
                                       char *table, int msgid, int msgid2);
-void SaacClient_DBGetEntryByCount_send(int fd, char *table, int count_start,
+void SaacClient_DBGetEntryByCount_send(int saac_fd, char *table, int count_start,
                                        int num, int msgid, int msgid2);
-void SaacClient_DBGetEntryByCount_recv(int fd, char *result, char *list,
+void SaacClient_DBGetEntryByCount_recv(int saac_fd, char *result, char *list,
                                        char *table, int count_start, int msgid,
                                        int msgid2);
-void SaacClient_Broadcast_send(int fd, const char *id, const char *char_name,
+void SaacClient_Broadcast_send(int saac_fd, const char *id, const char *char_name,
                                const char *message, int flag);
-void SaacClient_Broadcast_recv(int fd, const char *id, const char *char_name,
+void SaacClient_Broadcast_recv(int saac_fd, const char *id, const char *char_name,
                                const char *message);
-void SaacClient_Message_send(int fd, char *id_from, char *charname_from,
+void SaacClient_Message_send(int saac_fd, char *id_from, char *charname_from,
                              char *id_to, char *charname_to, char *message,
                              int option);
-void SaacClient_Message_recv(const int fd, const char *id_from,
+void SaacClient_Message_recv(const int saac_fd, const char *id_from,
                              const char *char_name_from, const char *id_to,
                              const char *char_name_to, const char *message,
                              const int option, const int mesgid);
-void SaacClient_MessageAck_send(int fd, char *id, char *charname, char *result,
+void SaacClient_MessageAck_send(int saac_fd, char *id, char *charname, char *result,
                                 int mesgid);
-void SaacClient_MessageFlush_send(int fd, char *id, char *charname);
-int SaacClient_ClientDispatchMessage(int fd, char *line);
+void SaacClient_MessageFlush_send(int saac_fd, char *id, char *charname);
+int SaacClient_ClientDispatchMessage(int saac_fd, char *line);
 
 // 成立家族
 #ifdef _PERSONAL_FAME
-void SaacClient_ACAddFM_send(int fd, char *fmname, char *fmleadername,
+void SaacClient_ACAddFM_send(int saac_fd, char *fmname, char *fmleadername,
                              char *fmleaderid, int fmleaderlv, char *petname,
                              char *petarrt, char *fmrule, int fmsprite,
                              int fmleadergrano, int fame,
@@ -138,16 +138,16 @@ void SaacClient_ACAddFM_send(int fd, char *fmname, char *fmleadername,
 #endif
                              int charfdid);
 #else
-void SaacClient_ACAddFM_send(int fd, char *fmname, char *fmleadername,
+void SaacClient_ACAddFM_send(int saac_fd, char *fmname, char *fmleadername,
                              char *fmleaderid, int fmleaderlv, char *petname,
                              char *petarrt, char *fmrule, int fmsprite,
                              int fmleadergrano, int charfdid);
 #endif
-void SaacClient_ACAddFM_recv(int fd, char *result, int fmindex, int index,
+void SaacClient_ACAddFM_recv(int saac_fd, char *result, int fmindex, int index,
                              int charfdid);
 // 加入家族
 // #ifdef _PERSONAL_FAME	// Arminius: 家族个人声望
-void SaacClient_ACJoinFM_send(int fd, char *fmname, int fmindex, char *charname,
+void SaacClient_ACJoinFM_send(int saac_fd, char *fmname, int fmindex, char *charname,
                               char *charid, int charlv, int index, int fame,
                               int charfdid);
 // #else
@@ -155,24 +155,24 @@ void SaacClient_ACJoinFM_send(int fd, char *fmname, int fmindex, char *charname,
 // *charname,
 //        char *charid, int charlv, int index, int charfdid);
 // #endif
-void SaacClient_ACJoinFM_recv(int fd, char *result, int recv, int charfdid);
+void SaacClient_ACJoinFM_recv(int saac_fd, char *result, int recv, int charfdid);
 // 退出家族
-void SaacClient_ACLeaveFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACLeaveFM_send(int saac_fd, char *fmname, int fmindex,
                                char *charname, char *charid, int index,
                                int charfdid);
-void SaacClient_ACLeaveFM_recv(int fd, char *result, int resultflag,
+void SaacClient_ACLeaveFM_recv(int saac_fd, char *result, int resultflag,
                                int charfdid);
 // 解散家族
-void SaacClient_ACDelFM_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACDelFM_send(int saac_fd, char *fmname, int fmindex, int index,
                              char *charname, char *charid, int charfdid);
 
-void SaacClient_ACDelFM_recv(int fd, char *result, int charfdid);
+void SaacClient_ACDelFM_recv(int saac_fd, char *result, int charfdid);
 // 列出家族列表
-void SaacClient_ACShowFMList_send(int fd);
-void SaacClient_ACShowFMList_recv(int fd, char *result, int num, char *data);
+void SaacClient_ACShowFMList_send(int saac_fd);
+void SaacClient_ACShowFMList_recv(int saac_fd, char *result, int num, char *data);
 // 列出成员列表
-void SaacClient_ACShowMemberList_send(int fd, int index);
-void SaacClient_ACShowMemberList_recv(int fd, char *result, int index, int num,
+void SaacClient_ACShowMemberList_send(int saac_fd, int index);
+void SaacClient_ACShowMemberList_recv(int saac_fd, char *result, int index, int num,
                                       int fmacceptflag, int fmjoinnum,
                                       char *data
 #ifdef _FAMILYBADGE_
@@ -181,51 +181,51 @@ void SaacClient_ACShowMemberList_recv(int fd, char *result, int index, int num,
 #endif
 );
 // 列出家族详细资料
-void SaacClient_ACFMDetail_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACFMDetail_send(int saac_fd, char *fmname, int fmindex, int index,
                                 int charfdid);
-void SaacClient_ACFMDetail_recv(int fd, char *result, char *data, int charfdid);
+void SaacClient_ACFMDetail_recv(int saac_fd, char *result, char *data, int charfdid);
 // 族长审核成员加入家族、修改家族成员职位
 #ifdef _FMVER21
-void SaacClient_ACMemberJoinFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACMemberJoinFM_send(int saac_fd, char *fmname, int fmindex,
                                     char *charname, int charindex, int index,
                                     int result, int meindex, int charfdid);
 #else
-void SaacClient_ACMemberJoinFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACMemberJoinFM_send(int saac_fd, char *fmname, int fmindex,
                                     char *charname, int charindex, int index,
                                     int result, int charfdid);
 #endif
-void SaacClient_ACMemberJoinFM_recv(int fd, char *result, char *data,
+void SaacClient_ACMemberJoinFM_recv(int saac_fd, char *result, char *data,
                                     int charfdid);
 // 族长审核成员离开家族
 #ifdef _FMVER21
-void SaacClient_ACMemberLeaveFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACMemberLeaveFM_send(int saac_fd, char *fmname, int fmindex,
                                      char *charname, int charindex, int index,
                                      int meindex, int charfdid);
 #else
-void SaacClient_ACMemberLeaveFM_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACMemberLeaveFM_send(int saac_fd, char *fmname, int fmindex,
                                      char *charname, int charindex, int index,
                                      int charfdid);
 #endif
-void SaacClient_ACMemberLeaveFM_recv(int fd, char *result, char *data,
+void SaacClient_ACMemberLeaveFM_recv(int saac_fd, char *result, char *data,
                                      int charfdid);
 // 玩家 Login
 #ifdef _FM_MODIFY
-void SaacClient_ACFMCharLogin_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMCharLogin_send(int saac_fd, char *fmname, int fmindex,
                                    char *charname, char *charid, int charlv,
                                    int eventflag, int charfdid, int gsnum);
 #else
 #ifdef _FMVER21
-void SaacClient_ACFMCharLogin_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMCharLogin_send(int saac_fd, char *fmname, int fmindex,
                                    char *charname, char *charid, int result,
                                    int eventflag, int charfdid);
 #else
-void SaacClient_ACFMCharLogin_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMCharLogin_send(int saac_fd, char *fmname, int fmindex,
                                    char *charname, char *charid, int result,
                                    int charfdid);
 #endif
 #endif
 #ifdef _PERSONAL_FAME // Arminius: 家族个人声望
-void SaacClient_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
+void SaacClient_ACFMCharLogin_recv(int saac_fd, char *result, int index, int floor,
                                    int fmdp, int joinflag, int fmsetupflag,
                                    int flag, int charindex, int charfame,
                                    int charfdid
@@ -235,191 +235,192 @@ void SaacClient_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
 #endif
 );
 #else
-void SaacClient_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
+void SaacClient_ACFMCharLogin_recv(int saac_fd, char *result, int index, int floor,
                                    int fmdp, int joinflag, int fmsetupflag,
                                    int flag, int charindex, int charfdid);
 #endif
 // 玩家 Logout
-void SaacClient_ACFMCharLogout_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMCharLogout_send(int saac_fd, char *fmname, int fmindex,
                                     char *charname, char *charid, int result,
                                     int index, int charfdid);
-void SaacClient_ACFMCharLogout_recv(int fd, char *result, int charfdid);
+void SaacClient_ACFMCharLogout_recv(int saac_fd, char *result, int charfdid);
 // 列出家族留言板
-void SaacClient_ACFMReadMemo_send(int fd, int index);
-void SaacClient_ACFMReadMemo_recv(int fd, char *result, int index, int num,
+void SaacClient_ACFMReadMemo_send(int saac_fd, int index);
+void SaacClient_ACFMReadMemo_recv(int saac_fd, char *result, int index, int num,
                                   int dataindex, char *data);
 // 写入家族留言板
-void SaacClient_ACFMWriteMemo_send(int fd, char *fmname, int fmindex,
+void SaacClient_ACFMWriteMemo_send(int saac_fd, char *fmname, int fmindex,
                                    char *data, int index);
-void SaacClient_ACFMWriteMemo_recv(int fd, char *result, int index);
+void SaacClient_ACFMWriteMemo_recv(int saac_fd, char *result, int index);
 // 列出家族据点
-void SaacClient_ACFMPointList_send(int fd);
-void SaacClient_ACFMPointList_recv(int fd, char *result, char *data);
+void SaacClient_ACFMPointList_send(int saac_fd);
+void SaacClient_ACFMPointList_recv(int saac_fd, char *result, char *data);
 
 // 申请家族据点
-void SaacClient_ACSetFMPoint_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACSetFMPoint_send(int saac_fd, char *fmname, int fmindex, int index,
                                   int fmpointindex, int fl, int x, int y,
                                   int charfdid);
-void SaacClient_ACSetFMPoint_recv(int fd, char *result, int r, int charfdid);
+void SaacClient_ACSetFMPoint_recv(int saac_fd, char *result, int r, int charfdid);
 // 设定家族据点
-void SaacClient_ACFixFMPoint_send(int fd, char *winfmname, int winfmindex,
+void SaacClient_ACFixFMPoint_send(int saac_fd, char *winfmname, int winfmindex,
                                   int winindex, char *losefmname,
                                   int losefmindex, int loseindex, int village);
-void SaacClient_ACFixFMPoint_recv(int fd, char *result, int r);
+void SaacClient_ACFixFMPoint_recv(int saac_fd, char *result, int r);
 // 族长对星系家族成员广播
 // kindflag 1:族长广播 2:家族被系统删除 3:系统通知讯息
-void SaacClient_ACFMAnnounce_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACFMAnnounce_send(int saac_fd, char *fmname, int fmindex, int index,
                                   char *data, int color);
-void SaacClient_ACFMAnnounce_recv(int fd, char *result, char *fmname,
+void SaacClient_ACFMAnnounce_recv(int saac_fd, char *result, char *fmname,
                                   int fmindex, int index, int kindflag,
                                   char *data, int color);
 // 列出 TOP 50 家族列表
-void SaacClient_ACShowTopFMList_send(int fd, int kindflag);
-void SaacClient_ACShowTopFMList_recv(int fd, char *result, int kindflag,
+void SaacClient_ACShowTopFMList_send(int saac_fd, int kindflag);
+void SaacClient_ACShowTopFMList_recv(int saac_fd, char *result, int kindflag,
                                      int num, char *data);
 // 修正家族资料(是否招收成员)
 // flag 1:acceptjoinflag 2:dpchanged 3:change fmpet 4:change fminfo 5:predel FM
 // Time
-void SaacClient_ACFixFMData_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACFixFMData_send(int saac_fd, char *fmname, int fmindex, int index,
                                  int kindflag, char *data1, char *data2,
                                  int charindex, int charfdid);
 
-void SaacClient_ACFixFMData_recv(int fd, char *result, int kindflag,
+void SaacClient_ACFixFMData_recv(int saac_fd, char *result, int kindflag,
                                  char *data1, char *data2, int charfdid);
 
 // ＰＫ後更新家族声望
-void SaacClient_ACFixFMPK_send(int fd, char *winfmname, int winfmindex,
+void SaacClient_ACFixFMPK_send(int saac_fd, char *winfmname, int winfmindex,
                                int winindex, char *losefmname, int losefmindex,
                                int loseindex);
-void SaacClient_ACFixFMPK_recv(int fd, char *result, int data, int winindex,
+void SaacClient_ACFixFMPK_recv(int saac_fd, char *result, int data, int winindex,
                                int loseindex);
 // 取得家族资料
 // kindflag 1:家族银行
-void SaacClient_ACGetFMData_send(int fd, char *fmname, int fmindex, int index,
+void SaacClient_ACGetFMData_send(int saac_fd, char *fmname, int fmindex, int index,
                                  int kindflag, int charfdid);
-void SaacClient_ACGetFMData_recv(int fd, char *result, int kindflag, int data,
+void SaacClient_ACGetFMData_recv(int saac_fd, char *result, int kindflag, int data,
                                  int charfdid);
 // ＧＭ修正家族资料
-void SaacClient_ACGMFixFMData_send(int fd, int index, char *charid, char *cmd,
+void SaacClient_ACGMFixFMData_send(int saac_fd, int index, char *charid, char *cmd,
                                    char *data, int charfdid);
-void SaacClient_ACGMFixFMData_recv(int fd, char *result, char *fmindex,
+void SaacClient_ACGMFixFMData_recv(int saac_fd, char *result, char *fmindex,
                                    int charfdid);
 // 删除家族後清除对战排程
-void SaacClient_ACFMClearPK_recv(int fd, char *result, char *fmname,
+void SaacClient_ACFMClearPK_recv(int saac_fd, char *result, char *fmname,
                                  int fmindex, int index);
 
 // Arminius 7.26 manor pk acknowledge
-void SaacClient_ACManorPKAck_send(int fd, char *data);
-void SaacClient_ACManorPKAck_recv(int fd, char *data);
+void SaacClient_ACManorPKAck_send(int saac_fd, char *data);
+void SaacClient_ACManorPKAck_recv(int saac_fd, char *data);
 
-void SaacClient_ACreLoadFmData_send(int fd, int type, int data);
+void SaacClient_ACreLoadFmData_send(int saac_fd, int type, int data);
 
 #ifdef _ACFMPK_LIST
-void SaacClient_ACLoadFmPk_recv(int fd, char *data);
-void SaacClient_ACLoadFmPk_send(int fd, int fmpks_pos);
-void SaacClient_ACSendFmPk_recv(int fd, int toindex, int flg);
-void SaacClient_ACSendFmPk_send(int fd, int toindex, int PkFlg, int fmpks_pos,
+void SaacClient_ACLoadFmPk_recv(int saac_fd, char *data);
+void SaacClient_ACLoadFmPk_send(int saac_fd, int fmpks_pos);
+void SaacClient_ACSendFmPk_recv(int saac_fd, int toindex, int flg);
+void SaacClient_ACSendFmPk_send(int saac_fd, int toindex, int PkFlg, int fmpks_pos,
                                 char *msg);
 #endif
 
-void SaacClient_ACAuctionSold_send(int fd, char *data);
-void SaacClient_ACAuctionSold_recv(int fd, char *data);
+void SaacClient_ACAuctionSold_send(int saac_fd, char *data);
+void SaacClient_ACAuctionSold_recv(int saac_fd, char *data);
 
 #ifdef _WAEI_KICK // 跨星球踢人
-void SaacClient_ACKick_send(int fd, char *kickid, int kickfd, int flg);
-void SaacClient_ACKick_recv(int fd, int act, char *data, int retfd);
+void SaacClient_ACKick_send(int saac_fd, char *kickid, int kickfd, int flg);
+void SaacClient_ACKick_recv(int saac_fd, int act, char *data, int retfd);
 #endif
 
 #ifdef _CHAR_POOLITEM
-void SaacClient_ACCharInsertPoolItem_send(int acfd, int charaindex, int clifdid,
+void SaacClient_ACCharInsertPoolItem_send(int saac_fd, int charaindex, int clifdid,
                                           char *CdKey, char *Pooldataarg,
                                           int TYPE);
 
-void SaacClient_ACCharSavePoolItem_recv(int fd, char *result, char *data,
+void SaacClient_ACCharSavePoolItem_recv(int saac_fd, char *result, char *data,
                                         int retfd);
-void SaacClient_ACCharSavePoolItem_send(int acfd, int charaindex, int clifdid,
+void SaacClient_ACCharSavePoolItem_send(int saac_fd, int charaindex, int clifdid,
                                         char *CdKey, char *Pooldataarg);
 
-void SaacClient_ACCharGetPoolItem_recv(int fd, char *result, char *data,
+void SaacClient_ACCharGetPoolItem_recv(int saac_fd, char *result, char *data,
                                        int retfd, int meindex);
-void SaacClient_ACCharGetPoolItem_send(int acfd, int meindex, int charaindex,
+void SaacClient_ACCharGetPoolItem_send(int saac_fd, int meindex, int charaindex,
                                        int clifdid, char *CdKey);
 #endif
 
 #ifdef _CHAR_POOLPET
-void SaacClient_ACCharInsertPoolPet_send(int acfd, int charaindex, int clifdid,
+void SaacClient_ACCharInsertPoolPet_send(int saac_fd, int charaindex, int clifdid,
                                          char *CdKey, char *Pooldataarg,
                                          int TYPE);
 
-void SaacClient_ACCharSavePoolPet_recv(int fd, char *result, char *data,
+void SaacClient_ACCharSavePoolPet_recv(int saac_fd, char *result, char *data,
                                        int retfd);
-void SaacClient_ACCharSavePoolPet_send(int acfd, int charaindex, int clifdid,
+void SaacClient_ACCharSavePoolPet_send(int saac_fd, int charaindex, int clifdid,
                                        char *CdKey, char *Pooldataarg);
 
-void SaacClient_ACCharGetPoolPet_recv(int fd, char *result, char *data,
+void SaacClient_ACCharGetPoolPet_recv(int saac_fd, char *result, char *data,
                                       int retfd, int meindex);
-void SaacClient_ACCharGetPoolPet_send(int acfd, int meindex, int charaindex,
+void SaacClient_ACCharGetPoolPet_send(int saac_fd, int meindex, int charaindex,
                                       int clifdid, char *CdKey);
 #endif
 
 #ifdef _ANGEL_SUMMON
-void SaacClient_ACMissionTable_recv(int fd, int num, int type, char *data,
+void SaacClient_ACMissionTable_recv(int saac_fd, int num, int type, char *data,
                                     char *angelinfo);
-void SaacClient_ACMissionTable_send(int fd, int num, int type, char *data,
+void SaacClient_ACMissionTable_send(int saac_fd, int num, int type, char *data,
                                     char *angelinfo);
 #endif
 
 #ifdef _TEACHER_SYSTEM
 // RETURN_FUNCTION -> R_F_XXXXXXX
 enum { R_F_TEACHER_SYSTEM, R_F_END };
-void SaacClient_ACCheckCharacterOnLine_recv(int acfd, int charaindex,
+void SaacClient_ACCheckCharacterOnLine_recv(int saac_fd, int charaindex,
                                             int iOnline, char *data, int flag);
-void SaacClient_ACCheckCharacterOnLine_send(int acfd, int charaindex, char *id,
+void SaacClient_ACCheckCharacterOnLine_send(int saac_fd, int charaindex, char *id,
                                             char *name, int flag);
 #endif
 
-void SaacClient_ACCharLogin_send(int fd, int clifd, char *id, char *pas,
+void SaacClient_ACCharLogin_send(int saac_fd, int client_fdid, char *id, char *pas,
                                  char *ip
 #ifdef _NEWCLISETMAC
                                  ,
                                  char *mac
 #endif
 );
-void SaacClient_ACCharLogin_recv(int fd, int clifd, int flag);
+void SaacClient_ACCharLogin_recv(int saac_fd, int client_fdid, int flag);
 
-void SaacClient_LockLogin_send(int fd, char *id, char *ip, int flag);
+void SaacClient_LockLogin_send(int saac_fd, char *id, char *ip, int flag);
 
 #ifdef _NEW_VIP_SHOP
-void SaacClient_QueryPoint_send(int acfd, int fd, char *id);
-void SaacClient_QueryPoint_recv(int fd, int point);
+void SaacClient_QueryPoint_send(int saac_fd, int client_fd, char *id);
+void SaacClient_QueryPoint_recv(int client_fd, int point);
 #ifdef _COST_ITEM
-void SaacClient_CostItem_send(int acfd, int fd, char *id, int point);
+void SaacClient_CostItem_send(int saac_fd, int client_fd, char *id, int point);
 #endif
 
-void SaacClient_NewVipShop_send(int acfd, int fd, char *id, int point,
+void SaacClient_NewVipShop_send(int saac_fd, int client_fd, char *id, int point,
                                 char *buf, int flag);
-void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag);
+void SaacClient_NewVipShop_recv(int client_fd, int point, char *buf, int flag);
 #endif
 
 #ifdef _ITEM_PET_LOCKED
-void SaacClient_ItemPetLocked_send(int fd, char *id, char *safepasswd);
-void SaacClient_ItemPetLocked_recv(int fd, int flag, char *data);
-void SaacClient_ItemPetLockedPasswd_send(int fd, char *id, char *safepasswd);
-void SaacClient_ItemPetLockedPasswd_recv(int fd, char *data);
+void SaacClient_ItemPetLocked_send(int saac_fd, char *id, char *safepasswd);
+void SaacClient_ItemPetLocked_recv(int client_fd, int flag, char *data);
+void SaacClient_ItemPetLockedPasswd_send(int saac_fd, char *id, char *safepasswd);
+void SaacClient_ItemPetLockedPasswd_recv(int client_fd, char *data);
 #endif
 
 #ifdef _ONLINE_COST
-void SaacClient_OnlineCost_send(int acfd, int fd, char *id, char *costpasswd,
-                                int fmindex, char *fmname);
-void SaacClient_OnlineCost_recv(int fd, char *data);
+void SaacClient_OnlineCost_send(int saac_fd, int client_fd, char *id,
+                                char *costpasswd, int fmindex, char *fmname);
+void SaacClient_OnlineCost_recv(int client_fd, char *data);
 #endif
 #ifdef _SQL_BUY_FUNC
-void SaacClient_OnlineBuy_send(int acfd, int fd, char *id, char *costpasswd);
-void SaacClient_OnlineBuy_recv(int fd, char *data);
+void SaacClient_OnlineBuy_send(int saac_fd, int client_fd, char *id,
+                               char *costpasswd);
+void SaacClient_OnlineBuy_recv(int client_fd, char *data);
 #endif
 #ifdef _VIPPOINT_OLD_TO_NEW
-void SaacClient_OldToNew_send(int acfd, int fd, char *id, int point);
-void SaacClient_OldToNew_recv(int fd, char *data);
+void SaacClient_OldToNew_send(int saac_fd, int client_fd, char *id, int point);
+void SaacClient_OldToNew_recv(int client_fd, char *data);
 #endif
 #ifdef _LOTTERY_SYSTEM
 void SaacClient_LotterySystem_send();
@@ -430,9 +431,9 @@ void SaacClient_AllServSend_recv(char *data);
 void SaacClient_AllServSend_send(char *data);
 #endif
 #ifdef _OTHER_SAAC_LINK
-void SaacClient_OtherSaacLink_send(int acfd, char *filename, char *data);
+void SaacClient_OtherSaacLink_send(int saac_fd, char *filename, char *data);
 #endif
 
-void SaacClient_ACServerKey_recv(int acfd, int key);
+void SaacClient_ACServerKey_recv(int saac_fd, int key);
 
 #endif // __SAAC_CLIENT_H__

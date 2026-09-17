@@ -3060,7 +3060,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
     if (sa_tcp_take_readable(&ready[fdremember])) {
       sweep_did_work = 1;
       errno = 0;
-      char buf[1024 * 128];
+      char buf[1024 * 128] = "\0";
+      // 2026.09.15 这个还不能简单注释，必须初始化，否则可能会有问题.
       // memset(buf, 0, sizeof(buf));
       NETWATCH_set("tcp_read", fdremember, NULL);
       ret = sa_tcp_read(fdremember, buf, sizeof(buf));

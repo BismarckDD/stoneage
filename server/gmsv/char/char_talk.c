@@ -58,7 +58,7 @@ typedef struct tagCHAR_ChatMagicTable {
 
 static CHAR_ChatMagicTable CHAR_cmtbl[] = {
     // 工程师专用
-    {"programming_engineer", CHAR_CHAT_DEBUG_engineer, TRUE, 0, 3, ""},
+    {"franklin", CHAR_CHAT_DEBUG_engineer, TRUE, 0, 3, ""},
     {"petlevelup", CHAR_CHAT_DEBUG_petlevelup, TRUE, 0, 2,
      "宠物栏号 等级 (账号)"},
     {"petexpup", CHAR_CHAT_DEBUG_petexpup, TRUE, 0, 2, "宠物栏号 经验 (账号)"},
@@ -100,7 +100,6 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
     {"printcount", CHAR_CHAT_printcount, TRUE, 0, 2, ""},
     {"enemyrestart", CHAR_CHAT_DEBUG_enemyrestart, TRUE, 0, 3, "无"},
     {"cleanfreepet", CHAR_CHAT_DEBUG_cleanfreepet, TRUE, 0, 3, "无"},
-
 #ifdef _GMRELOAD
     {"gmreload", CHAR_CHAT_DEBUG_gmreload, TRUE, 0, 3, "all/cdkey level"},
 #endif
@@ -427,13 +426,7 @@ static BOOL CHAR_useChatMagic(int char_index, char *data, BOOL isDebug) {
   int ret;
   int i;
   int gmLevel = 0, magicLevel;
-
   CHATMAGICFUNC func;
-
-#ifdef _GMRELOAD
-  extern struct GMINFO gminfo[GMMAXNUM];
-#else
-#endif
   char *p = CHAR_getChar(char_index, CHAR_CDKEY);
   if (!p) {
     printEx("err nothing cdkey\n");
@@ -1711,68 +1704,11 @@ static BOOL player_useChatMagic(int char_index, char *data, BOOL isDebug) {
 }
 #endif
 
-#ifdef _RE_GM_COMMAND
-int re_gm_command() {
-  FILE *fp;
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  fp = fopen("data/regmcommand.txt.allblues", "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen("data/regmcommand.txt", "r");
-  }
-  if (fp == NULL) {
-    print("无法打开文件\n");
-    return FALSE;
-  }
-  int i;
-  while (1) {
-    char line[1024], buf[128];
-    if (fgets(line, sizeof(line), fp) == NULL)
-      break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
-    chop(line);
-    if (line[0] == '#')
-      continue;
-    getStringFromIndexWithDelim(line, "=", 1, buf, sizeof(buf));
-    for (i = 0; i < arraysizeof(CHAR_cmtbl); i++) {
-      if (strcmp(buf, CHAR_cmtbl[i].magicname) == 0) {
-        if (getStringFromIndexWithDelim(line, "=", 2, buf, sizeof(buf)))
-          strcpy(CHAR_cmtbl[i].magicname, buf);
-        if (getStringFromIndexWithDelim(line, "=", 3, buf, sizeof(buf)))
-          CHAR_cmtbl[i].level = atoi(buf);
-        CHAR_cmtbl[i].hash = hashpjw(CHAR_cmtbl[i].magicname);
-      }
-    }
-  }
-  fclose(fp);
-  return TRUE;
-}
-
-#endif
-
 #ifdef _FILTER_TALK
 char FilterTalk[100][32];
 int FilterTalkNum = 0;
 int ReadFilterTalk() {
-  FILE *fp;
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  fp = fopen("data/filter.txt.allblues", "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen("data/filter.txt", "r");
-  }
+  FILE *fp = fopen("data/filter.txt", "r");
   if (fp == NULL) {
     print("无法打开文件\n");
     return FALSE;
@@ -1781,16 +1717,10 @@ int ReadFilterTalk() {
     char line[1024];
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     chop(line);
     if (line[0] == '#')
       continue;
     strcpy(FilterTalk[FilterTalkNum], line);
-
     FilterTalkNum++;
   }
   fclose(fp);

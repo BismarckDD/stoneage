@@ -54,32 +54,26 @@ BOOL MergeCallBack(int char_index, int petindex, char *data, int flg) {
 #endif
 
 #ifdef _RIDE_CF
-BOOL FamilyRideCheck(int meindex, int petindex, int petid) {
+BOOL FamilyRideCheck(int char_index, int pet_index, int pet_id) {
   static lua_State *lua;
-
   if (lua == NULL) {
     lua = FindLua("data/ablua/familyridefunction.lua");
     if (lua == NULL)
       return FALSE;
   }
-
   lua_getglobal(lua, "FamilyRideCheck");
-
   if (!lua_isfunction(lua, -1)) {
     lua_pop(lua, 1);
     return FALSE;
   }
-
-  lua_pushnumber(lua, meindex);
-  lua_pushnumber(lua, petindex);
-  lua_pushnumber(lua, petid);
-
+  lua_pushnumber(lua, char_index);
+  lua_pushnumber(lua, pet_index);
+  lua_pushnumber(lua, pet_id);
   if (lua_pcall(lua, 3, 1, 0) != 0)
     luaL_error(lua, "error running function `f': %s", lua_tostring(lua, -1));
 
   if (!lua_isnumber(lua, -1))
     luaL_error(lua, "function `f' must return a number");
-
   int ret = lua_tonumber(lua, -1);
   lua_pop(lua, 1);
   return ret;

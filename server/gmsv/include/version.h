@@ -35,7 +35,6 @@
 //#define _EPOLL_POOL_COUNT 5    // 线程池数量
 
 /*Server 版本控制*/
-#define _SERVER_NUMS
 #define _CHAR_NEWLOGOUT  // 新登出协议：0 原地登出，1 回记录点
 #define _NEW_ITEM_       // 与客户端一致：支持 15/30/45 格新物品栏
 #define _ITEM_EQUITSPACE // 与客户端一致：人物扩展装备栏
@@ -77,9 +76,6 @@
 // -------------------------------------------------------------------
 //专案：石器活动自动化    人员：晓威、家麟
 
-//#define _COMFIRM_TRADE_REQUEST  // 接收交易请求确认
-
-#define _EVERYONE_RIDE           // (可开放) Robin 0924 骑宠平民化
 // -------------------------------------------------------------------
 //专案：攻击性咒术的制作  人员：笃志
 #define _ATTACK_MAGIC            // (可开放)  提供战场中的攻击性咒术
@@ -89,10 +85,9 @@
 //专案：宠物、道具编码    人员：小瑜
 #define _UNIQUE_P_I              // (可开放) CoolFish 2001/10/11
 
-
 #define _RIDE_CF
 #define _ADD_RIDE_CF
-#define _NEW_RIDEPETS
+#define _NEW_RIDEPETS // 开放巴朵兰恩、左迪洛斯、帖拉所伊朵这些骑宠
 
 // -------------------------------------------------------------------
 //专案：新版人物储存pn 及 当机不回朔 1018  人员：彦勋

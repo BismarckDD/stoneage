@@ -3476,8 +3476,6 @@ void CHAR_CHAT_DEBUG_engineer(int char_index, char *message) {
   int MaxGold;
   if (!CHAR_CHECKINDEX(char_index))
     return;
-  if (strstr(message, "waei") == NULL)
-    return;
 #ifdef _TRANS_6
   if (CHAR_getInt(char_index, CHAR_TRANSMIGRATION) >= 6)
 #else
@@ -3490,6 +3488,9 @@ void CHAR_CHAT_DEBUG_engineer(int char_index, char *message) {
   CHAR_setInt(char_index, CHAR_SKILLUPPOINT, 600);
   CHAR_setInt(char_index, CHAR_LEARNRIDE, 200);
   CHAR_setInt(char_index, CHAR_GOLD, MaxGold);
+  CHAR_setInt(char_index, CHAR_LOWRIDEPETS, -1);
+  CHAR_setInt(char_index, CHAR_LOWRIDEPETS2, -1);
+  CHAR_setInt(char_index, CHAR_LOWRIDEPETS3, -1);
 
   CHAR_talkToCli(char_index, -1, message, CHAR_COLORYELLOW);
   {

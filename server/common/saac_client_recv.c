@@ -34,7 +34,7 @@ extern struct MissionInfo missionlist[MAXMISSION];
 extern struct MissionTable missiontable[MAXMISSIONTABLE];
 #endif
 
-void SaacClient_ACGmsvDownRequest_recv(int fd, int min) {
+void SaacClient_ACGmsvDownRequest_recv(int saac_fd, int min) {
   char buff[32];
   int i;
   int player_max_num = CHAR_getPlayerMaxNum();
@@ -50,18 +50,18 @@ void SaacClient_ACGmsvDownRequest_recv(int fd, int min) {
   SERVSTATE_setDsptime(0);
 }
 
-void SaacClient_ACServerLogin_recv(int fd, char *result, char *data) {
+void SaacClient_ACServerLogin_recv(int saac_fd, char *result, char *data) {
 #ifdef _OTHER_SAAC_LINK
-  if (CONNECT_getCtype(fd) == SQL) {
+  if (CONNECT_getCtype(saac_fd) == SQL) {
     if (strcmp(result, SUCCESSFUL) != 0) {
       print("Connect to SQL is not successful!!!. result: %s, data: %s\n",
             result, data);
-      CONNECT_endOne_debug(fd);
+      CONNECT_endOne_debug(saac_fd);
       osfd = -1;
       return;
     }
     print("Connect to SQL is successful. result: %s, data: %s\n", result, data);
-  } else if (CONNECT_getCtype(fd) == AC)
+  } else if (CONNECT_getCtype(saac_fd) == AC)
 #endif
   {
     if (strcmp(result, SUCCESSFUL) != 0) {
@@ -72,24 +72,21 @@ void SaacClient_ACServerLogin_recv(int fd, char *result, char *data) {
     print("Connect SAAC SUCCEED. result: %s, data: %s\n", result, data);
     time(&initTime);
 
-#ifdef _SERVER_NUMS
-    print("Enable Server Nums!\n");
-#endif
     print("StoneAge version: Origin.\n");
     print("Visit Us: http://github.com\n");
     print("@Copyright Michael Franklin.\n");
-    print("Start to init family......");
+    print("初始化家族数据......");
     FAMILY_Init();
-    print("succeed.\n");
+    print("成功.\n");
 #ifdef _ANGEL_SUMMON
     print("Start to init AC mission table...");
-    SaacClient_ACMissionTable_send(acfd, -1, 1, "", "");
+    SaacClient_ACMissionTable_send(saac_fd, -1, 1, "", "");
     print("succeed.\n");
 #endif
   }
 }
 
-void SaacClient_ACCharList_recv(int fd, char *result, char *data, int retfd) {
+void SaacClient_ACCharList_recv(int saac_fd, char *result, char *data, int retfd) {
   int client_fd = getfdFromFdid(retfd);
   if (CONNECT_checkfd(client_fd) == FALSE)
     return;
@@ -104,7 +101,7 @@ void SaacClient_ACCharList_recv(int fd, char *result, char *data, int retfd) {
   CONNECT_setState(client_fd, NOTLOGIN);
 }
 
-void SaacClient_ACCharLoad_recv(int fd, char *result, char *data,
+void SaacClient_ACCharLoad_recv(int saac_fd, char *result, char *data,
                                 int client_fdid,
                                 int save_index) {
   const int client_fd = getfdFromFdid(client_fdid);
@@ -115,7 +112,7 @@ void SaacClient_ACCharLoad_recv(int fd, char *result, char *data,
     //   client_fd, data, save_index);
     NETWATCH_set("ACCharLoad.CHAR_login", client_fd, "ACCharLoad");
     CHAR_login(client_fd, data, save_index);
-    NETWATCH_set("SAAC_dispatch", fd, "ACCharLoad.complete");
+    NETWATCH_set("SAAC_dispatch", saac_fd, "ACCharLoad.complete");
   } else {
     char cdkey[64];
 #ifndef _FIX_MESSAGE
@@ -128,7 +125,7 @@ void SaacClient_ACCharLoad_recv(int fd, char *result, char *data,
   }
 }
 
-void SaacClient_ACCharSave_recv(int fd, char *result, char *data, int client_fdid) {
+void SaacClient_ACCharSave_recv(int saac_fd, char *result, char *data, int client_fdid) {
   const int client_fd = getfdFromFdid(client_fdid);
   char cdkey[CDKEYLEN], passwd[PASSWDLEN], charname[CHARNAMELEN];
   if (CONNECT_checkfd(client_fd) == FALSE)
@@ -155,7 +152,7 @@ void SaacClient_ACCharSave_recv(int fd, char *result, char *data, int client_fdi
     break;
 
   case WHILELOSTCHARSAVE:
-    SaacClient_ACCharDelete_send(acfd, cdkey, passwd, charname, "", fdid);
+    SaacClient_ACCharDelete_send(saac_fd, cdkey, passwd, charname, "", fdid);
     CONNECT_setState(client_fd, WHILELOSTCHARDELETE);
     CONNECT_setCharaindex(client_fd, -1);
     // CONNECT_setCloseRequest( client_fd , 1 );
@@ -181,7 +178,7 @@ void SaacClient_ACCharSave_recv(int fd, char *result, char *data, int client_fdi
   }
 }
 
-void SaacClient_ACCharDelete_recv(int fd, char *result, char *data, int retfd) {
+void SaacClient_ACCharDelete_recv(int saac_fd, char *result, char *data, int retfd) {
   int client_fd = getfdFromFdid(retfd);
   if (CONNECT_checkfd(client_fd) == FALSE)
     return;
@@ -204,7 +201,7 @@ void SaacClient_ACCharDelete_recv(int fd, char *result, char *data, int retfd) {
   }
 }
 
-void SaacClient_ACLock_recv(int fd, char *result, char *data, int retfd) {
+void SaacClient_ACLock_recv(int saac_fd, char *result, char *data, int retfd) {
   int client_fd = getfdFromFdid(retfd);
   char cdkey[CDKEYLEN];
   int cindex = getCharindexFromFdid(retfd);
@@ -242,7 +239,7 @@ void SaacClient_ACLock_recv(int fd, char *result, char *data, int retfd) {
       if (strcmp(data, mesg) == 0) {
         CONNECT_setState(client_fd, NOTLOGIN);
       } else {
-        SaacClient_ACLock_send(fd, cdkey, UNLOCK, CONNECT_getFdid(client_fd));
+        SaacClient_ACLock_send(saac_fd, cdkey, UNLOCK, CONNECT_getFdid(client_fd));
       }
     }
     break;
@@ -251,15 +248,15 @@ void SaacClient_ACLock_recv(int fd, char *result, char *data, int retfd) {
   }
 }
 
-void SaacClient_ACUCheck_recv(int fd, char *cd) {
+void SaacClient_ACUCheck_recv(int saac_fd, char *cd) {
   int conind;
   int flag = 0;
   conind = getfdFromCdkeyWithLogin(cd);
   flag = (conind >= 0) ? 1 : 0;
-  SaacClient_ACUCheck_send(fd, cd, flag);
+  SaacClient_ACUCheck_send(saac_fd, cd, flag);
 }
 
-void SaacClient_DBUpdateEntryInt_recv(int fd, char *result, char *table,
+void SaacClient_DBUpdateEntryInt_recv(int saac_fd, char *result, char *table,
                                       char *key, int msgid, int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
     print("failed: DBUpdateEntryInt\n");
@@ -267,7 +264,7 @@ void SaacClient_DBUpdateEntryInt_recv(int fd, char *result, char *table,
   }
 }
 
-void SaacClient_DBUpdateEntryString_recv(int fd, char *result, char *table,
+void SaacClient_DBUpdateEntryString_recv(int saac_fd, char *result, char *table,
                                          char *key, int msgid, int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
     print("failed: DBUpdateEntryString\n");
@@ -275,7 +272,7 @@ void SaacClient_DBUpdateEntryString_recv(int fd, char *result, char *table,
   }
 }
 
-void SaacClient_DBGetEntryRank_recv(int fd, char *result, int rank, int count,
+void SaacClient_DBGetEntryRank_recv(int saac_fd, char *result, int rank, int count,
                                     char *table, char *key, int msgid,
                                     int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
@@ -292,7 +289,7 @@ void SaacClient_DBGetEntryRank_recv(int fd, char *result, int rank, int count,
   }
 }
 
-void SaacClient_DBDeleteEntryInt_recv(int fd, char *result, char *table,
+void SaacClient_DBDeleteEntryInt_recv(int saac_fd, char *result, char *table,
                                       char *key, int msgid, int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
     print("failed: DBDeleteEntryInt\n");
@@ -300,7 +297,7 @@ void SaacClient_DBDeleteEntryInt_recv(int fd, char *result, char *table,
   }
 }
 
-void SaacClient_DBDeleteEntryString_recv(int fd, char *result, char *table,
+void SaacClient_DBDeleteEntryString_recv(int saac_fd, char *result, char *table,
                                          char *key, int msgid, int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
     print("failed: DBDeleteEntryString\n");
@@ -308,7 +305,7 @@ void SaacClient_DBDeleteEntryString_recv(int fd, char *result, char *table,
   }
 }
 
-void SaacClient_DBGetEntryInt_recv(int fd, char *result, int value, char *table,
+void SaacClient_DBGetEntryInt_recv(int saac_fd, char *result, int value, char *table,
                                    char *key, int msgid, int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
     print("failed: DBGetEntryInt\n");
@@ -316,7 +313,7 @@ void SaacClient_DBGetEntryInt_recv(int fd, char *result, int value, char *table,
   }
 }
 
-void SaacClient_DBGetEntryString_recv(int fd, char *result, char *value,
+void SaacClient_DBGetEntryString_recv(int saac_fd, char *result, char *value,
                                       char *table, char *key, int msgid,
                                       int msgid2) {
   char cdkey[32];
@@ -344,7 +341,7 @@ void SaacClient_DBGetEntryString_recv(int fd, char *result, char *value,
   }
 }
 
-void SaacClient_DBGetEntryByRank_recv(int fd, char *result, char *list,
+void SaacClient_DBGetEntryByRank_recv(int saac_fd, char *result, char *list,
                                       char *table, int msgid, int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
     print("failed: DBGetEntryByRank\n");
@@ -352,7 +349,7 @@ void SaacClient_DBGetEntryByRank_recv(int fd, char *result, char *list,
   }
 }
 
-void SaacClient_DBGetEntryByCount_recv(int fd, char *result, char *list,
+void SaacClient_DBGetEntryByCount_recv(int saac_fd, char *result, char *list,
                                        char *table, int count_start, int msgid,
                                        int msgid2) {
   if (strcmp(result, NET_STRING_FAILED) == 0) {
@@ -364,10 +361,10 @@ void SaacClient_DBGetEntryByCount_recv(int fd, char *result, char *list,
   }
 }
 #ifdef _ALLDOMAN
-void SaacClient_UpdataStele_recv(int fd, char *token) {
+void SaacClient_UpdataStele_recv(int saac_fd, char *token) {
   NPC_AlldomanWriteStele(token);
 }
-void SaacClient_S_UpdataStele_recv(int i, char *ocdkey, char *oname,
+void SaacClient_S_UpdataStele_recv(int saac_fd, char *ocdkey, char *oname,
                                    char *ncdkey, char *nname, char *title,
                                    int level, int trns, int floor) {
   print("\nSyu log Single=> %s , %s , %s , %s ", ocdkey, oname, ncdkey, nname);
@@ -376,7 +373,7 @@ void SaacClient_S_UpdataStele_recv(int i, char *ocdkey, char *oname,
 }
 #endif
 
-void SaacClient_Broadcast_recv(const int fd, const char *char_id,
+void SaacClient_Broadcast_recv(const int saac_fd, const char *char_id,
                                const char *char_name, const char *message) {
 
   if (strstr(message, "online") == 0 || strstr(message, "offline") == 0 ||
@@ -385,23 +382,23 @@ void SaacClient_Broadcast_recv(const int fd, const char *char_id,
     char escape_info[1024];
     snprintf(info, sizeof(info), "%s_%s", char_id, char_name);
     makeEscapeString(info, escape_info, sizeof(escape_info));
-    SaacClient_DBGetEntryString_send(acfd, DB_ADDRESSBOOK, escape_info, 0, 0);
+    SaacClient_DBGetEntryString_send(saac_fd, DB_ADDRESSBOOK, escape_info, 0, 0);
   }
 }
 
-void SaacClient_Message_recv(const int fd, const char *id_from,
+void SaacClient_Message_recv(const int saac_fd, const char *id_from,
                              const char *char_name_from, const char *id_to,
                              const char *char_name_to, const char *message,
                              const int option, const int mesgid) {
   int ret = ADDRESSBOOK_sendMessage_FromOther(id_from, char_name_from, id_to,
                                               char_name_to, message, option);
   if (ret == 1) {
-    SaacClient_MessageAck_send(acfd, id_to, char_name_to, SUCCESSFUL, mesgid);
+    SaacClient_MessageAck_send(saac_fd, id_to, char_name_to, SUCCESSFUL, mesgid);
   }
 }
 
 /* 收到从客户端发送创建family的请求 */
-void SaacClient_ACAddFM_recv(int fd, char *result, int family_index,
+void SaacClient_ACAddFM_recv(int saac_fd, char *result, int family_index,
                              int char_fdid, int index) {
   int ret;
   const int client_fd = getfdFromFdid(char_fdid);
@@ -415,7 +412,7 @@ void SaacClient_ACAddFM_recv(int fd, char *result, int family_index,
 }
 
 /* 收到从客户端发送加入family的请求 */
-void SaacClient_ACJoinFM_recv(int fd, char *result, int recv, int charfdid) {
+void SaacClient_ACJoinFM_recv(int saac_fd, char *result, int recv, int charfdid) {
   int ret;
   int client_fd = getfdFromFdid(charfdid);
   if (CONNECT_checkfd(client_fd) == FALSE)
@@ -428,7 +425,7 @@ void SaacClient_ACJoinFM_recv(int fd, char *result, int recv, int charfdid) {
 }
 
 /* 收到从客户端发送离开family的请求 */
-void SaacClient_ACLeaveFM_recv(int fd, char *result, int resultflag,
+void SaacClient_ACLeaveFM_recv(int saac_fd, char *result, int resultflag,
                                int charfdid) {
   int ret;
   int client_fd = getfdFromFdid(charfdid);
@@ -442,10 +439,10 @@ void SaacClient_ACLeaveFM_recv(int fd, char *result, int resultflag,
   print("ACLeaveFM_%d", ret);
 }
 
-void SaacClient_ACChangeFM_recv(int fd, char *result, int charfdid) {}
+void SaacClient_ACChangeFM_recv(int saac_fd, char *result, int charfdid) {}
 
 /* Saac客户端收到服务端的发送删除family的请求 */
-void SaacClient_ACDelFM_recv(int fd, char *result, int charfdid) {
+void SaacClient_ACDelFM_recv(int saac_fd, char *result, int charfdid) {
   int ret;
   int client_fd = getfdFromFdid(charfdid);
   if (CONNECT_checkfd(client_fd) == FALSE)
@@ -458,7 +455,7 @@ void SaacClient_ACDelFM_recv(int fd, char *result, int charfdid) {
   print("ACDelFM_%d", ret);
 }
 
-void SaacClient_ACShowFMList_recv(int fd, char *result, int fmnum, char *data) {
+void SaacClient_ACShowFMList_recv(int saac_fd, char *result, int fmnum, char *data) {
   int ret;
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
@@ -467,7 +464,7 @@ void SaacClient_ACShowFMList_recv(int fd, char *result, int fmnum, char *data) {
   ACShowFMList(ret, fmnum, data);
 }
 
-void SaacClient_ACShowMemberList_recv(int fd, char *result, int index,
+void SaacClient_ACShowMemberList_recv(int saac_fd, char *result, int index,
                                       int fmmemnum, int fmacceptflag,
                                       int fmjoinnum, char *data
 #ifdef _FAMILYBADGE_
@@ -488,7 +485,7 @@ void SaacClient_ACShowMemberList_recv(int fd, char *result, int index,
   );
 }
 
-void SaacClient_ACFMDetail_recv(int fd, char *result, char *data,
+void SaacClient_ACFMDetail_recv(int saac_fd, char *result, char *data,
                                 int charfdid) {
   int ret;
   int client_fd = getfdFromFdid(charfdid);
@@ -500,12 +497,12 @@ void SaacClient_ACFMDetail_recv(int fd, char *result, char *data,
     ret = 0;
   ACFMDetail(ret, data, client_fd);
 }
-void SaacClient_ACMemberJoinFM_recv(int fd, char *result, char *data,
+void SaacClient_ACMemberJoinFM_recv(int saac_fd, char *result, char *data,
                                     int charfdid) {}
-void SaacClient_ACMemberLeaveFM_recv(int fd, char *result, char *data,
+void SaacClient_ACMemberLeaveFM_recv(int saac_fd, char *result, char *data,
                                      int charfdid) {}
 #ifdef _PERSONAL_FAME
-void SaacClient_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
+void SaacClient_ACFMCharLogin_recv(int saac_fd, char *result, int index, int floor,
                                    int fmdp, int joinflag, int fmsetupflag,
                                    int flag, int charindex, int charfame,
                                    int charfdid
@@ -515,7 +512,7 @@ void SaacClient_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
 #endif
 )
 #else
-void SaacClient_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
+void SaacClient_ACFMCharLogin_recv(int saac_fd, char *result, int index, int floor,
                                    int fmdp, int joinflag, int fmsetupflag,
                                    int flag, int charindex, int charfdid)
 #endif
@@ -541,8 +538,8 @@ void SaacClient_ACFMCharLogin_recv(int fd, char *result, int index, int floor,
                 charindex);
 #endif
 }
-void SaacClient_ACFMCharLogout_recv(int fd, char *result, int charfdid) {}
-void SaacClient_ACFMReadMemo_recv(int fd, char *result, int index, int num,
+void SaacClient_ACFMCharLogout_recv(int saac_fd, char *result, int charfdid) {}
+void SaacClient_ACFMReadMemo_recv(int saac_fd, char *result, int index, int num,
                                   int dataindex, char *data) {
   int ret;
   if (strcmp(result, SUCCESSFUL) == 0)
@@ -551,8 +548,8 @@ void SaacClient_ACFMReadMemo_recv(int fd, char *result, int index, int num,
     ret = 0;
   ACShowFMMemo(ret, index, num, dataindex, data);
 }
-void SaacClient_ACFMWriteMemo_recv(int fd, char *result, int index) {}
-void SaacClient_ACFMPointList_recv(int fd, char *result, char *data) {
+void SaacClient_ACFMWriteMemo_recv(int saac_fd, char *result, int index) {}
+void SaacClient_ACFMPointList_recv(int saac_fd, char *result, char *data) {
   int ret;
   if (strcmp(result, SUCCESSFUL) == 0)
     ret = 1;
@@ -561,7 +558,7 @@ void SaacClient_ACFMPointList_recv(int fd, char *result, char *data) {
   ACShowPointList(ret, data);
 }
 
-void SaacClient_ACSetFMPoint_recv(int fd, char *result, int r, int charfdid) {
+void SaacClient_ACSetFMPoint_recv(int saac_fd, char *result, int r, int charfdid) {
   int ret;
   int client_fd = getfdFromFdid(charfdid);
   if (CONNECT_checkfd(client_fd) == FALSE)
@@ -573,15 +570,15 @@ void SaacClient_ACSetFMPoint_recv(int fd, char *result, int r, int charfdid) {
   }
   ACSetFMPoint(ret, r, client_fd);
 }
-void SaacClient_ACFixFMPoint_recv(int fd, char *result, int r) {}
-void SaacClient_ACFMAnnounce_recv(int fd, char *result, char *fmname,
+void SaacClient_ACFixFMPoint_recv(int saac_fd, char *result, int r) {}
+void SaacClient_ACFMAnnounce_recv(int saac_fd, char *result, char *fmname,
                                   int fmindex, int index, int kindflag,
                                   char *data, int color) {
   int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   ACFMAnnounce(ret, fmname, fmindex, index, kindflag, data, color);
 }
 
-void SaacClient_ACShowTopFMList_recv(int fd, char *result, int kindflag,
+void SaacClient_ACShowTopFMList_recv(int saac_fd, char *result, int kindflag,
                                      int num, char *data) {
   int ret = (strcmp(result, SUCCESSFUL) == 0) ? 1 : 0;
   ACShowDpTop(ret, num, data, kindflag);
@@ -590,7 +587,7 @@ void SaacClient_ACShowTopFMList_recv(int fd, char *result, int kindflag,
 extern struct FMS_DPTOP fmdptop;
 #endif
 
-void SaacClient_ACFixFMData_recv(int fd, char *result, int kindflag,
+void SaacClient_ACFixFMData_recv(int saac_fd, char *result, int kindflag,
                                  char *data1, char *data2, int charfdid) {
   int intdata;
   int client_fd = getfdFromFdid(charfdid);
@@ -661,7 +658,7 @@ void SaacClient_ACFixFMData_recv(int fd, char *result, int kindflag,
 #endif
   }
 }
-void SaacClient_ACFixFMPK_recv(int fd, char *result, int data, int winindex,
+void SaacClient_ACFixFMPK_recv(int saac_fd, char *result, int data, int winindex,
                                int loseindex) {
   int ret;
   if (strcmp(result, SUCCESSFUL) == 0)
@@ -680,7 +677,7 @@ void SaacClient_ACFixFMPK_recv(int fd, char *result, int data, int winindex,
     LogFMPOP(tmpbuf);
   }
 }
-void SaacClient_ACGMFixFMData_recv(int fd, char *result, char *fmname,
+void SaacClient_ACGMFixFMData_recv(int saac_fd, char *result, char *fmname,
                                    int charfdid) {
   int client_fd = getfdFromFdid(charfdid);
   char buf[256];
@@ -698,7 +695,7 @@ void SaacClient_ACGMFixFMData_recv(int fd, char *result, char *fmname,
 }
 
 extern int familyTax[];
-void SaacClient_ACGetFMData_recv(int fd, char *result, int kindflag, int data,
+void SaacClient_ACGetFMData_recv(int saac_fd, char *result, int kindflag, int data,
                                  int charfdid) {
   char buf[256];
   int client_fd = getfdFromFdid(charfdid);
@@ -719,7 +716,7 @@ void SaacClient_ACGetFMData_recv(int fd, char *result, int kindflag, int data,
     GmsvServer_FM_send(client_fd, buf);
   }
 }
-void SaacClient_ACFMClearPK_recv(int fd, char *result, char *fmname,
+void SaacClient_ACFMClearPK_recv(int saac_fd, char *result, char *fmname,
                                  int fmindex, int index) {
   int i = 0;
 
@@ -741,7 +738,7 @@ void SaacClient_ACFMClearPK_recv(int fd, char *result, char *fmname,
 }
 
 #ifdef _ACFMPK_LIST
-void SaacClient_ACSendFmPk_recv(int fd, int to_index, int flg) {
+void SaacClient_ACSendFmPk_recv(int saac_fd, int to_index, int flg) {
   char buf[256];
   if (flg == 0) {
     sprintf(buf, "家族PK.");
@@ -760,7 +757,7 @@ void SaacClient_ACSendFmPk_recv(int fd, int to_index, int flg) {
   }
 }
 
-void SaacClient_ACLoadFmPk_recv(int fd, char *data) {
+void SaacClient_ACLoadFmPk_recv(int saac_fd, char *data) {
   char buf[10], fm_pk_data[128];
   char token[256], skip[256];
   int fm_pk_num, fmpks_pos = -1;
@@ -824,7 +821,7 @@ void SaacClient_ACLoadFmPk_recv(int fd, char *data) {
 }
 #endif
 
-void SaacClient_ACManorPKAck_recv(int fd, char *data) {
+void SaacClient_ACManorPKAck_recv(int saac_fd, char *data) {
   // 精灵管理 server 与 庄园 pk scheduleman
   int i;
   char token[256], skip[256];
@@ -906,7 +903,7 @@ void SaacClient_ACManorPKAck_recv(int fd, char *data) {
 }
 
 #ifdef _WAEI_KICK
-void SaacClient_ACKick_recv(int fd, int act, char *data, int retfd) {
+void SaacClient_ACKick_recv(int saac_fd, int act, char *data, int retfd) {
   int client_fd = getfdFromFdid(retfd);
   // if( CONNECT_checkfd(client_fd) == FALSE )return;
   // char cdkey[CDKEYLEN];
@@ -977,7 +974,7 @@ void SaacClient_ACKick_recv(int fd, int act, char *data, int retfd) {
 #endif
 
 #ifdef _CHAR_POOLITEM
-void SaacClient_ACCharSavePoolItem_recv(int fd, char *result, char *data,
+void SaacClient_ACCharSavePoolItem_recv(int saac_fd, char *result, char *data,
                                         int retfd) {
   int charaindex = getCharindexFromFdid(retfd);
   // print("\n ACCharSavePoolItem_recv:%s ", data);
@@ -989,7 +986,7 @@ void SaacClient_ACCharSavePoolItem_recv(int fd, char *result, char *data,
   }
 }
 
-void SaacClient_ACCharGetPoolItem_recv(int fd, char *result, char *data,
+void SaacClient_ACCharGetPoolItem_recv(int saac_fd, char *result, char *data,
                                        int retfd, int meindex) {
 #ifdef _NPC_DEPOTITEM
   Char *ch = NULL;
@@ -1041,7 +1038,7 @@ void SaacClient_ACCharGetPoolItem_recv(int fd, char *result, char *data,
 #endif //
 
 #ifdef _CHAR_POOLPET
-void SaacClient_ACCharSavePoolPet_recv(int fd, char *result, char *data,
+void SaacClient_ACCharSavePoolPet_recv(int saac_fd, char *result, char *data,
                                        int retfd) {
   int charaindex = getCharindexFromFdid(retfd);
   if (!CHAR_CHECKINDEX(charaindex))
@@ -1052,7 +1049,7 @@ void SaacClient_ACCharSavePoolPet_recv(int fd, char *result, char *data,
   }
 }
 
-void SaacClient_ACCharGetPoolPet_recv(int fd, char *result, char *data,
+void SaacClient_ACCharGetPoolPet_recv(int saac_fd, char *result, char *data,
                                       int retfd, int meindex) {
 #ifdef _NPC_DEPOTPET
   Char *ch = NULL;
@@ -1108,7 +1105,7 @@ void SaacClient_ACCharGetPoolPet_recv(int fd, char *result, char *data,
 #ifdef _ANGEL_SUMMON
 // void SaacClient_ACMissionTable_recv( int fd, int num, int type, char *data,
 // int charaindex)
-void SaacClient_ACMissionTable_recv(int fd, int num, int type, char *data,
+void SaacClient_ACMissionTable_recv(int saac_fd, int num, int type, char *data,
                                     char *angelinfo) {
   char msg[1024];
 
@@ -1208,7 +1205,7 @@ void SaacClient_ACMissionTable_recv(int fd, int num, int type, char *data,
 #endif
 
 #ifdef _TEACHER_SYSTEM
-void SaacClient_ACCheckCharacterOnLine_recv(int acfd, int charaindex,
+void SaacClient_ACCheckCharacterOnLine_recv(int saac_fd, int charaindex,
                                             int iOnline, char *data, int flag) {
   switch (flag) {
   case R_F_TEACHER_SYSTEM:
@@ -1250,15 +1247,15 @@ void SaacClient_ACCharLogin_recv(int saac_fd, int client_fdid, int flag) {
 
 #ifdef _NEW_VIP_SHOP
 // What's query point?
-void SaacClient_QueryPoint_recv(int fd, int point) {
-  const int char_index = CONNECT_getCharaindex(fd);
+void SaacClient_QueryPoint_recv(int client_fd, int point) {
+  const int char_index = CONNECT_getCharaindex(client_fd);
   char token[64];
   sprintf(token, "你目前的个人重回币数为：%d", point);
   CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
 }
 
-void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
-  int charaindex = CONNECT_getCharaindex(fd);
+void SaacClient_NewVipShop_recv(int client_fd, int point, char *buf, int flag) {
+  int charaindex = CONNECT_getCharaindex(client_fd);
   if (point == -1) {
     CHAR_talkToCli(charaindex, -1, "你的重回币不足！", CHAR_COLORYELLOW);
     return;
@@ -1468,14 +1465,14 @@ void SaacClient_NewVipShop_recv(int fd, int point, char *buf, int flag) {
 #endif
 
 #ifdef _ITEM_PET_LOCKED
-void SaacClient_ItemPetLocked_recv(int fd, int flag, char *data) {
-  int charaindex = CONNECT_getCharaindex(fd);
+void SaacClient_ItemPetLocked_recv(int client_fd, int flag, char *data) {
+  int charaindex = CONNECT_getCharaindex(client_fd);
   if (flag == 1) {
     CHAR_setInt(charaindex, CHAR_LOCKED, 0);
     CHAR_talkToCli(charaindex, -1, data, CHAR_COLORYELLOW);
   } else if (flag == 0) {
     char buf[256];
-    GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
+    GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_MESSAGEANDLINEINPUT,
                        WINDOW_BUTTONTYPE_OKCANCEL,
                        CHAR_WINDOWTYPE_ITEM_PET_LOCKED_PASSWD, -1,
                        makeEscapeString(data, buf, sizeof(buf)));
@@ -1484,16 +1481,16 @@ void SaacClient_ItemPetLocked_recv(int fd, int flag, char *data) {
   }
 }
 
-void SaacClient_ItemPetLockedPasswd_recv(int fd, char *data) {
+void SaacClient_ItemPetLockedPasswd_recv(int client_fd, char *data) {
   char buf[256];
-  GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1,
+  GmsvServer_WN_send(client_fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1,
                      -1, makeEscapeString(data, buf, sizeof(buf)));
 }
 #endif
 
 #ifdef _ONLINE_COST
-void SaacClient_OnlineCost_recv(int fd, char *data) {
-  int charaindex = CONNECT_getCharaindex(fd);
+void SaacClient_OnlineCost_recv(int client_fd, char *data) {
+  int charaindex = CONNECT_getCharaindex(client_fd);
 
 #ifdef _SQL_VIPPOINT_LOG
   LogSqlVipPoint(
@@ -1507,9 +1504,9 @@ void SaacClient_OnlineCost_recv(int fd, char *data) {
 #endif
 
 #ifdef _SQL_BUY_FUNC
-void SaacClient_OnlineBuy_recv(int fd, char *data) {
+void SaacClient_OnlineBuy_recv(int client_fd, char *data) {
   char buf[64];
-  int charaindex = CONNECT_getCharaindex(fd);
+  int charaindex = CONNECT_getCharaindex(client_fd);
   char token[256];
   if (data[0] == '0') {
     int ret;
@@ -1619,8 +1616,8 @@ void SaacClient_OnlineBuy_recv(int fd, char *data) {
 #endif
 
 #ifdef _VIPPOINT_OLD_TO_NEW
-void SaacClient_OldToNew_recv(int fd, char *data) {
-  int charaindex = CONNECT_getCharaindex(fd);
+void SaacClient_OldToNew_recv(int client_fd, char *data) {
+  int charaindex = CONNECT_getCharaindex(client_fd);
 #ifdef _AMPOINT_LOG
   LogAmPoint(CHAR_getChar(charaindex, CHAR_NAME),
              CHAR_getChar(charaindex, CHAR_CDKEY),
@@ -1635,8 +1632,8 @@ void SaacClient_OldToNew_recv(int fd, char *data) {
 #endif
 
 #ifdef _FORMULATE_AUTO_PK
-void SaacClient_FormulateAutoPk_recv(int fd, char *data) {
-  int charaindex = CONNECT_getCharaindex(fd);
+void SaacClient_FormulateAutoPk_recv(int client_fd, char *data) {
+  int charaindex = CONNECT_getCharaindex(client_fd);
   CHAR_setWorkInt(charaindex, CHAR_WORK_AUTOPK, 0);
   CHAR_talkToCli(charaindex, -1, data, CHAR_COLORGREEN);
 }

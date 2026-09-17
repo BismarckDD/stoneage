@@ -15,11 +15,9 @@
 #include "npc_eventaction.h"
 #include "npc_healer.h"
 #include "config_file.h"
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 extern int CheckCharMaxItem(int charindex);
-#endif
-#ifdef _GMRELOAD
-	extern struct GMINFO gminfo[GMMAXNUM];
 #endif
 
 #ifdef _AUTO_PK

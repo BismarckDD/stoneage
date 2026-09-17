@@ -3578,7 +3578,7 @@ void ITEM_useLearnRideCode(int char_index, int toindex,
     ridetrans = atoi(buf1);
   if (getStringFromIndexWithDelim(itemarg, "|", 1, buf1, sizeof(buf1)) == FALSE)
     return;
-  for (i = 0; i < MAXNOINDEX; i++) {
+  for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
     if (!strcmp(NewRides[i].arg, buf1)) {
       int LRCode;
       if (CHAR_getInt(char_index, CHAR_TRANSMIGRATION) < ridetrans) {
