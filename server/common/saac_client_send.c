@@ -1694,14 +1694,6 @@ void SaacClient_FormulateAutoPk_send(int saac_fd, char *id, int point) {
 }
 #endif
 
-#ifdef _OTHER_SAAC_LINK
-void SaacClient_OtherSaacLink_send(int saac_fd, char *filename, char *data) {
-  CreateHeader(ws->work, "OtherSaacLink");
-  strncatsafe(ws->work, mkstr_string(filename), ws->work_buf_size);
-  strncatsafe(ws->work, mkstr_string(data), ws->work_buf_size);
-  Send(ws, saac_fd, ws->work);
-}
-#endif
 #ifdef _LOTTERY_SYSTEM
 void SaacClient_LotterySystem_send() {
   CreateHeader(ws->work, "LotterySystem");

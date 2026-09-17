@@ -51,18 +51,6 @@ void SaacClient_ACGmsvDownRequest_recv(int saac_fd, int min) {
 }
 
 void SaacClient_ACServerLogin_recv(int saac_fd, char *result, char *data) {
-#ifdef _OTHER_SAAC_LINK
-  if (CONNECT_getCtype(saac_fd) == SQL) {
-    if (strcmp(result, SUCCESSFUL) != 0) {
-      print("Connect to SQL is not successful!!!. result: %s, data: %s\n",
-            result, data);
-      CONNECT_endOne_debug(saac_fd);
-      osfd = -1;
-      return;
-    }
-    print("Connect to SQL is successful. result: %s, data: %s\n", result, data);
-  } else if (CONNECT_getCtype(saac_fd) == AC)
-#endif
   {
     if (strcmp(result, SUCCESSFUL) != 0) {
       print("Connect SAAC FAILED. result: %s, data: %s\n", result, data);

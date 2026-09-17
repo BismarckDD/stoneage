@@ -572,3 +572,39 @@ void 自动登陆窗口回调()
 }
 
 #endif
+
+
+
+//andy_add 2002/06/24
+int RIDEPET_getCharNoIndex(const int baseCharNo)
+{
+    for (int i = 0; i < sizeof(gCharNoIdxMap) / sizeof(CharNoIdxMap); i++)    {
+        if (gCharNoIdxMap[i].charNo == baseCharNo)
+            return gCharNoIdxMap[i].charNoIndex;
+    }
+    return -1;
+}
+//andy_add 2002/06/24
+int RIDEPET_getPETindex(int PetNo, int learnCode)
+{
+    int i;
+    for (i = 0; i < sizeof(gRideCodeMode) / sizeof(RideCodeMode); i++){
+        if (gRideCodeMode[i].petNo == PetNo
+#ifndef FREE_RIDE_PET
+            && (gRideCodeMode[i].learnCode & learnCode)
+#endif
+        )
+            return i;
+    }
+    return -1;
+}
+
+//andy_add 2002/06/24
+int RIDEPET_getRideNo(int index, int petType)
+{
+    if (index < 0 || index >= sizeof(gRideNoList) / sizeof(RideNoList))
+        return -1;
+    if (petType < 0 || petType >= MAXNOINDEX)
+        return -1;
+    return gRideNoList[index].RideNo[petType];
+}

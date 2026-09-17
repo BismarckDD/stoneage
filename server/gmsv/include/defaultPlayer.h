@@ -156,16 +156,13 @@ static Char player = {
 #endif
         0, /* CHAR_TRANSMIGRATION */
         0, /* CHAR_TRANSEQUATION */
-
-        0, /*  CHAR_INITDATA    */
-
+        0, /* CHAR_INITDATA    */
         // #ifdef _PETSKILL_BECOMEPIG
         //         -1,
         // #endif
-
         0, // CHAR_SILENT,        /* char shutup time */
-        0, //    CHAR_FMINDEX,        // 家族索引
-        0, //    CHAR_FMLEADERFLAG,
+        0, // CHAR_FMINDEX,        // 家族索引
+        0, // CHAR_FMLEADERFLAG,
            /* 家族成员身份：
             * FMMEMBER_NONE       : 未加入家族
             * FMMEMBER_APPLY      : 申请加入中
@@ -291,34 +288,22 @@ static Char player = {
 #ifdef _PET_BEATITUDE
         0,
 #endif
-#ifdef _RIDE_CF
-        0,
-#ifdef _ADD_RIDE_CF
-        0,
-#endif
-#endif
-
 #ifdef _ITEM_PET_LOCKED
         0,
 #endif
-
 #ifdef _BOUND_TIME
         0,
 #endif
-
 #ifdef _SUPER
         0,
 #endif
-
 #ifdef _ONLINE_SHOP
         0,
 #endif
-
 #ifdef _LOTTERY_SYSTEM
         0,
         0,
 #endif
-
 #ifdef _COMPOUND_EXP
         0,
         0,

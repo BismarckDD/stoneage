@@ -103,20 +103,16 @@
     #define _ITEM_PET_LOCKED         // 物品宠物锁
   #endif
   
-  #if _ATTESTAION_ID != 3
     #define _ONLINE_COST             // 在线充值
     #define _SQL_BUY_FUNC            // SQL购买功能
     #define _VIPPOINT_OLD_TO_NEW     // 会员点旧转新
-  #endif
   
   #if _ATTESTAION_ID == 5
     #define _FORMULATE_AUTO_PK       // 制定自动化PK系统
   #else
     #define _OLDPS_TO_MD5PS         // 把旧的密码转成MD5密码
     #ifdef _NEW_VIP_SHOP
-      #if _ATTESTAION_ID != 3
         #define _COST_ITEM             // 充值道具
-      #endif
     #endif
     #if _ATTESTAION_ID != 21
       #define _AUTO_BACKUP           // 自动备份

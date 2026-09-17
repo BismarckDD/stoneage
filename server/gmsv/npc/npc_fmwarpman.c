@@ -452,9 +452,6 @@ void NPC_FMWarpManLoop(int meindex)
 							fmpks[fmpks_pos].host_name,
 							fmpks[fmpks_pos].host_index,
 							num1, token, "", "", 2);
-#ifdef _RIDEMODE_20
-					if(getRideMode()==2 )
-#endif
 					{
 						int iFmIndex1 = fmpks[fmpks_pos].host_index;
 						int i;

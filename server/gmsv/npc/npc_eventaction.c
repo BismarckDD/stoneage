@@ -23,8 +23,6 @@ extern struct MissionInfo missionlist[MAXMISSION];
 extern struct MissionTable missiontable[MAXMISSIONTABLE];
 #endif
 
-extern char* CHAR_setintdata[CHAR_DATAINTNUM];
-extern char* CHAR_setchardata[CHAR_DATACHARNUM];
 #ifdef _PROFESSION_SKILL			// WON ADD 人物职业技能
 #include "profession_skill.h"
 #include "chatmagic.h"
@@ -60,7 +58,8 @@ static NPC_TimeMan	TimeTble[] = {
 };
 
 extern void BATTLE_changeRideImage( int index );
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 extern int CheckCharMaxItem(int charindex);
 #endif
 
@@ -2718,16 +2717,7 @@ BOOL NPC_ActionNewVipItem( int talker, char *buf)
 									         	CHAR_getInt( talker,CHAR_X ),
 									         	CHAR_getInt( talker,CHAR_Y ));
 #endif
-#ifdef _OTHER_SAAC_LINK
-	if(osfd == -1){
-		OtherSaacConnect();
-		CHAR_talkToCli( talker, -1, "点卷服务器未正常连接!", CHAR_COLORRED );
-		return FALSE;
-	}
-	SaacClient_NewVipShop_send(osfd, fd, id, - Points, buf, 0);
-#else
 	SaacClient_NewVipShop_send(acfd, fd, id, - Points, buf, 0);
-#endif
 	return TRUE;
 
 }
@@ -2764,16 +2754,7 @@ BOOL NPC_ActionNewVipPet( int talker, char *buf)
 									         	CHAR_getInt( talker,CHAR_X ),
 									         	CHAR_getInt( talker,CHAR_Y ));
 #endif
-#ifdef _OTHER_SAAC_LINK
-	if(osfd == -1){
-		OtherSaacConnect();
-		CHAR_talkToCli( talker, -1, "点卷服务器未正常连接!", CHAR_COLORRED );
-		return FALSE;
-	}
-	SaacClient_NewVipShop_send(osfd, fd, id, - Points, buf, 1);
-#else
 	SaacClient_NewVipShop_send(acfd, fd, id, - Points, buf, 1);
-#endif
 	return TRUE;
 }
 #endif

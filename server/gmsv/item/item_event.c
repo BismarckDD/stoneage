@@ -3490,26 +3490,17 @@ void ITEM_Constitution(int char_index, int toindex, int haveitem_index) {
 #endif
 
 #ifdef _NEW_RIDEPETS
+typedef struct tagNewRideCode {
+  char arg[31];
+  int Code;
+} tagNewRideCode;
 void ITEM_useLearnRideCode(int char_index, int toindex,
                            int haveitem_index) { // CHAR_LOWRIDEPETS
-#ifdef _RIDEMODE_20
-  if (getRideMode() == 2 || getRideMode() == 4) {
-    CHAR_talkToCli(
-        char_index, -1,
-        "骑宠模式为 2.0 验证模式时，人物无法使用该物品。",
-        CHAR_COLORYELLOW);
-    return;
-  }
-#endif
   int item_index, i;
   char buf1[256];
   char *itemarg = NULL;
   int ridetrans;
-  typedef struct {
-    char arg[32];
-    int Code;
-  } tagNewRideCode;
-  tagNewRideCode NewRides[] = {
+  static tagNewRideCode NewRides[] = {
       {"RIDE_PET0", RIDE_PET0},   {"RIDE_PET1", RIDE_PET1},
       {"RIDE_PET2", RIDE_PET2},   {"RIDE_PET3", RIDE_PET3},
       {"RIDE_PET4", RIDE_PET4},   {"RIDE_PET5", RIDE_PET5},
@@ -3518,7 +3509,7 @@ void ITEM_useLearnRideCode(int char_index, int toindex,
       {"RIDE_PET10", RIDE_PET10}, {"RIDE_PET11", RIDE_PET11},
       {"RIDE_PET12", RIDE_PET12}, {"RIDE_PET13", RIDE_PET13},
       {"RIDE_PET14", RIDE_PET14},
-#ifdef _RIDE_CF
+#ifdef _EXTRA_RIDEPETS
       {"RIDE_PET15", RIDE_PET15}, {"RIDE_PET16", RIDE_PET16},
       {"RIDE_PET17", RIDE_PET17}, {"RIDE_PET18", RIDE_PET18},
       {"RIDE_PET19", RIDE_PET19}, {"RIDE_PET20", RIDE_PET20},
@@ -3544,24 +3535,6 @@ void ITEM_useLearnRideCode(int char_index, int toindex,
       {"RIDE_PET59", RIDE_PET27}, {"RIDE_PET60", RIDE_PET28},
       {"RIDE_PET61", RIDE_PET29}, {"RIDE_PET62", RIDE_PET30},
       {"RIDE_PET63", RIDE_PET31},
-#ifdef _ADD_RIDE_CF
-      {"RIDE_PET64", RIDE_PET0},  {"RIDE_PET65", RIDE_PET1},
-      {"RIDE_PET66", RIDE_PET2},  {"RIDE_PET67", RIDE_PET3},
-      {"RIDE_PET68", RIDE_PET4},  {"RIDE_PET69", RIDE_PET5},
-      {"RIDE_PET70", RIDE_PET6},  {"RIDE_PET71", RIDE_PET7},
-      {"RIDE_PET72", RIDE_PET8},  {"RIDE_PET73", RIDE_PET9},
-      {"RIDE_PET74", RIDE_PET10}, {"RIDE_PET75", RIDE_PET11},
-      {"RIDE_PET76", RIDE_PET12}, {"RIDE_PET77", RIDE_PET13},
-      {"RIDE_PET78", RIDE_PET14}, {"RIDE_PET79", RIDE_PET15},
-      {"RIDE_PET80", RIDE_PET16}, {"RIDE_PET81", RIDE_PET17},
-      {"RIDE_PET82", RIDE_PET18}, {"RIDE_PET83", RIDE_PET19},
-      {"RIDE_PET84", RIDE_PET20}, {"RIDE_PET85", RIDE_PET21},
-      {"RIDE_PET86", RIDE_PET22}, {"RIDE_PET87", RIDE_PET23},
-      {"RIDE_PET88", RIDE_PET24}, {"RIDE_PET89", RIDE_PET25},
-      {"RIDE_PET90", RIDE_PET26}, {"RIDE_PET91", RIDE_PET27},
-      {"RIDE_PET92", RIDE_PET28}, {"RIDE_PET93", RIDE_PET29},
-      {"RIDE_PET94", RIDE_PET30}, {"RIDE_PET95", RIDE_PET31},
-#endif
 #endif
   };
 
@@ -3590,41 +3563,12 @@ void ITEM_useLearnRideCode(int char_index, int toindex,
           return;
         }
       }
-#ifdef _RIDE_CF
-#ifdef _ADD_RIDE_CF
-      if (i < 32) {
-        LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
-        LRCode = LRCode | NewRides[i].Code;
-        CHAR_setInt(char_index, CHAR_LOWRIDEPETS, LRCode);
-      } else if (i < 64) {
-        LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS1);
-        LRCode = LRCode | NewRides[i].Code;
-        CHAR_setInt(char_index, CHAR_LOWRIDEPETS1, LRCode);
-      } else if (i < 96) {
-        LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS2);
-        LRCode = LRCode | NewRides[i].Code;
-        CHAR_setInt(char_index, CHAR_LOWRIDEPETS2, LRCode);
-      }
-#else
-      if (i < 32) {
-        LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
-        LRCode = LRCode | NewRides[i].Code;
-        CHAR_setInt(char_index, CHAR_LOWRIDEPETS, LRCode);
-      } else if (i < 64) {
-        LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS1);
-        LRCode = LRCode | NewRides[i].Code;
-        CHAR_setInt(char_index, CHAR_LOWRIDEPETS1, LRCode);
-      }
-#endif
-#else
       LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
       LRCode = LRCode | NewRides[i].Code;
       CHAR_setInt(char_index, CHAR_LOWRIDEPETS, LRCode);
-#endif
       if (getStringFromIndexWithDelim(itemarg, "|", 2, buf1, sizeof(buf1)) !=
           FALSE) {
         char token[256];
-
         sprintf(token, "学习了新的骑宠 (%s)。", buf1);
         CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
         CHAR_DelItem(char_index, haveitem_index);
@@ -3634,7 +3578,6 @@ void ITEM_useLearnRideCode(int char_index, int toindex,
     }
   }
 }
-
 #endif
 
 #ifdef _ITEM_EDITBASES
@@ -5560,21 +5503,9 @@ void ITEM_OnlineCost(int char_index, int toindex, int haveitem_index) {
 void ITEM_OldToNew(int char_index, int toindex, int haveitem_index) {
   if (CHAR_getInt(char_index, CHAR_AMPOINT) > 0) {
 
-#ifdef _OTHER_SAAC_LINK
-    if (osfd == -1) {
-      OtherSaacConnect();
-      CHAR_talkToCli(char_index, -1, "点卷服务器未正常连接!", CHAR_COLORRED);
-      return;
-    } else {
-      SaacClient_OldToNew_send(osfd, getfdFromCharaIndex(char_index),
-                               CHAR_getChar(char_index, CHAR_CDKEY),
-                               CHAR_getInt(char_index, CHAR_AMPOINT));
-    }
-#else
     SaacClient_OldToNew_send(acfd, getfdFromCharaIndex(char_index),
                              CHAR_getChar(char_index, CHAR_CDKEY),
                              CHAR_getInt(char_index, CHAR_AMPOINT));
-#endif
     CHAR_talkToCli(char_index, -1, "正在转换，请稍后", CHAR_COLORYELLOW);
 #ifdef _SQL_VIPPOINT_LOG
     LogSqlVipPoint(CHAR_getChar(char_index, CHAR_NAME),
@@ -5729,20 +5660,8 @@ void ITEM_CostItem(int char_index, int toindex, int haveitem_index) {
       "(换兑道具)", atoi(itemarg), CHAR_getInt(char_index, CHAR_FLOOR),
       CHAR_getInt(char_index, CHAR_X), CHAR_getInt(char_index, CHAR_Y));
 #endif
-#ifdef _OTHER_SAAC_LINK
-  if (osfd == -1) {
-    OtherSaacConnect();
-    CHAR_talkToCli(char_index, -1, "点卷服务器未正常连接!", CHAR_COLORRED);
-    return;
-  } else {
-    SaacClient_CostItem_send(osfd, getfdFromCharaIndex(char_index),
-                             CHAR_getChar(char_index, CHAR_CDKEY),
-                             atoi(itemarg));
-  }
-#else
   SaacClient_CostItem_send(acfd, getfdFromCharaIndex(char_index),
                            CHAR_getChar(char_index, CHAR_CDKEY), atoi(itemarg));
-#endif
   sprintf(token, "获得重回币数%d，正读取您当前重回币数据...", atoi(itemarg));
   CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
 

@@ -12,7 +12,6 @@
 
 #ifdef _ALLBLUES_LUA_1_8 
 #include "mylua/mylua.h"
-extern MY_Lua MYLua;
 static CharBase PetSkillBaseInt[] = {
 	{{"序号"},							PETSKILL_ID}
 	,{{"字段"},							PETSKILL_FIELD}

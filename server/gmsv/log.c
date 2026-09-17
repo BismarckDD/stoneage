@@ -76,18 +76,6 @@ memcpy(&s_tm, localtime((time_t *)&NowTime.tv_sec), sizeof(s_tm));\
 sprintf(local_time, " (%d-%d-%d %d:%d:%d) ", s_tm.tm_year + 1900, s_tm.tm_mon + 1,\
         s_tm.tm_mday, s_tm.tm_hour, s_tm.tm_min, s_tm.tm_sec);
 
-void LogSaacHelper(LOG_TYPE log_type, const char *format, ...) {
-#ifdef _OTHER_SAAC_LINK
-  if (osfd == -1) {
-    OtherSaacConnect();
-  } else {
-    char token[1024];
-    sprintf(token, format, __VA_ARGS_);
-    SaacClient_OtherSaacLink_send(osfd, LogConf[log_type].filename, token);
-  }
-#endif
-}
-
 void LogHelper(LOG_TYPE log_type, char *format, ...) {
   va_list arg;
   if (log_type < 0 || log_type >= LOG_TYPE_NUM)
@@ -265,8 +253,6 @@ void LogItem(const char *char_name,
   GET_LOCAL_TIME();
   LogHelper(LOG_ITEM, "%s\t%s\t%d(%s)=%s,(%d,%d,%d)%s,%s", char_name, char_id,
             item_id, item_name, cdkey, floor, x, y, local_time, uniquecode);
-  LogSaacHelper(LOG_ITEM, "%s\t%s\t%d(%s)=%s,(%d,%d,%d)%s,%s", char_name, char_id,
-                item_id, item_name, cdkey, floor, x, y, local_time, uniquecode);
 }
 
 void LogPkContend(const char *team_name1,
@@ -311,8 +297,6 @@ void LogPet(const char *char_name,
   GET_LOCAL_TIME();
   LogHelper(LOG_PET, "%s\t%s\t%s:%d=%s,(%d,%d,%d)%s,%s", char_name, char_id, pet_name,
             pet_lv, cdkey, floor, x, y, local_time, uniquecode);
-  LogSaacHelper(LOG_PET, "%s\t%s\t%s:%d=%s,(%d,%d,%d)%s,%s", char_name, char_id,
-                pet_name, pet_lv, cdkey, floor, x, y, local_time, uniquecode);
 }
 
 #ifdef _STREET_VENDOR
@@ -327,11 +311,6 @@ void LogStreetVendor(char *SellName, char *SellID, char *BuyName, char *BuyID,
             "d,%d,%d)%s,%s",
             SellName, SellID, BuyName, BuyID, Itempet_name, PetLv, iPrice, cdkey,
             Sfloor, Sx, Sy, Bfloor, Bx, By, local_time, uniquecode);
-  LogSaacHelper(LOG_STREET_VENDOR,
-                "Sell:%s\t%s\tBuy:%s\t%s\tName=%s:Lv=%d|Price:%d,%s,SXY(%d,%d,%d)"
-                "BXY(%d,%d,%d)%s,%s",
-                SellName, SellID, BuyName, BuyID, Itempet_name, PetLv, iPrice, cdkey,
-                Sfloor, Sx, Sy, Bfloor, Bx, By, local_time, uniquecode);
 }
 #endif
 
@@ -472,7 +451,6 @@ void LogKill(char *char_name, char *char_id, char *CharPet_Item) {
 void LogTrade(const char *message) {
   GET_LOCAL_TIME();
   LogHelper(LOG_TRADE, "%s %s", message, local_time);
-  LogSaacHelper(LOG_TRADE, "%s %s", message, local_time);
 }
 
 // CoolFish: Family Popular 2001/9/12
@@ -533,8 +511,6 @@ void LogGM(const char *char_name, // 角色名称
            const int x, const int y) {
   GET_LOCAL_TIME();
   LogHelper(LOG_GM, "%s\t%s\t%s\t(%d,%d,%d)\t%s", char_name, char_id, instruction, floor,
-         x, y, local_time);
-  LogSaacHelper(LOG_GM, "%s\t%s\t%s\t(%d,%d,%d)\t%s", char_name, char_id, instruction, floor,
          x, y, local_time);
 }
 
@@ -682,8 +658,6 @@ void LogAmPoint(const char *char_name,
   GET_LOCAL_TIME();
   LogHelper(LOG_AMPOINT, "%s:%s\t%d=%s CHAR_AMPOINT(%d),(%d,%d,%d)%s", char_id,
          char_name, am_point, cdkey, my_am_point, floor, x, y, local_time);
-  LogSaacHelper(LOG_AMPOINT, "%s:%s\t%d=%s CHAR_AMPOINT(%d),(%d,%d,%d)%s", char_id,
-           char_name, am_point, cdkey, my_am_point, floor, x, y, local_time);
 }
 #endif
 
@@ -697,8 +671,6 @@ void LogSqlVipPoint(const char *char_name,
   GET_LOCAL_TIME();
   LogHelper(LOG_SQLVIPOINT, "%s:%s\t%s:%d,(%d,%d,%d)%s", char_id, char_name, cdkey,
          vip_point, floor, x, y, local_time);
-  LogSaacHelper(LOG_SQLVIPOINT, "%s:%s\t%s:%d,(%d,%d,%d)%s", char_id, char_name, cdkey,
-           vip_point, floor, x, y, local_time);
 }
 #endif
 #ifdef _NETLOG_

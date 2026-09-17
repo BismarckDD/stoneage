@@ -136,85 +136,85 @@
 #define CG_BATTLE_FORGOT         26517
 #define CG_BATTLE_CAPTURE_UP     26516
 
-#define SPR_bloodbug            101623    //噬血蛊 ( Wiz )
-#define SPR_bthunder            101624    //电流术 ( Wiz )
-#define SPR_bugnet                101625    //驯服宠物 ( Hunter )
-#define SPR_lightning            101626  //暴击击中 ( War )
-#define SPR_redsmoke            101627    //红烟雾 ( 不详 )
-#define SPR_sthunder            101628    //召雷术 ( Wiz )
+#define SPR_bloodbug            101623     //噬血蛊 ( Wiz )
+#define SPR_bthunder            101624     //电流术 ( Wiz )
+#define SPR_bugnet                101625   //驯服宠物 ( Hunter )
+#define SPR_lightning            101626    //暴击击中 ( War )
+#define SPR_redsmoke            101627     //红烟雾 ( 不详 )
+#define SPR_sthunder            101628     //召雷术 ( Wiz )
 #define SPR_track                101629    //追寻敌踪 ( Hunter )
-#define SPR_trap                101630  //陷阱 ( Hunter )
-#define SPR_shieldattack        101631    //盾击 ( War ) 攻击左方
+#define SPR_trap                101630     //陷阱 ( Hunter )
+#define SPR_shieldattack        101631     //盾击 ( War ) 攻击左方
 #define SPR_shieldattack2        101632    //盾击 ( War ) 攻击右方
-#define SPR_bloodsucker            101633    //一针见血 ( Wiz )
-#define SPR_bstorm                101634  //暴风雨 大 ( Wiz ) 攻击右边
-#define SPR_bstorm2                101635    //暴风雨 大 ( Wiz ) 攻击左边
-#define SPR_concentrate            101636    //专注战斗 ( War )
-#define SPR_deadattach            101637    //濒死攻击 ( War )
+#define SPR_bloodsucker            101633  //一针见血 ( Wiz )
+#define SPR_bstorm                101634   //暴风雨 大 ( Wiz ) 攻击右边
+#define SPR_bstorm2                101635  //暴风雨 大 ( Wiz ) 攻击左边
+#define SPR_concentrate            101636  //专注战斗 ( War )
+#define SPR_deadattach            101637   //濒死攻击 ( War )
 #define SPR_dodge                101638    //回避 ( War )
-#define SPR_doom                101639  //世界末日 ( Wiz ) 攻击右方
-#define SPR_doom2                101640  //世界末日 ( Wiz ) 攻击左方
-#define SPR_dragonbreath        101641    //火龙枪 ( Wiz ) 攻击左方
+#define SPR_doom                 101639    //世界末日 ( Wiz ) 攻击右方
+#define SPR_doom2                101640    //世界末日 ( Wiz ) 攻击左方
+#define SPR_dragonbreath         101641    //火龙枪 ( Wiz ) 攻击左方
 #define SPR_dragonbreath2        101642    //火龙枪 ( Wiz ) 攻击右方
-#define SPR_encloseghost        101643    //附身术 ( Wiz ) 攻击右方
+#define SPR_encloseghost         101643    //附身术 ( Wiz ) 攻击右方
 #define SPR_encloseghost2        101644    //附身术 ( Wiz ) 攻击左方
 #define SPR_energycollect        101645    //能量聚集 ( War )
-#define SPR_fireresist1            101646    //火焰抗性 ( Hunter ) 放出
-#define SPR_fireresist2            101647    //火焰抗性 ( Hunter ) 收
-#define SPR_icearrow            101648    //冰箭术 ( Wiz ) 攻击左方
+#define SPR_fireresist1          101646    //火焰抗性 ( Hunter ) 放出
+#define SPR_fireresist2          101647    //火焰抗性 ( Hunter ) 收
+#define SPR_icearrow             101648    //冰箭术 ( Wiz ) 攻击左方
 #define SPR_icearrow2            101649    //冰箭术 ( Wiz ) 攻击右方
-#define SPR_iceexplode            101650  //冰爆术 ( Wiz ) 攻击右方
-#define SPR_iceexplode2            101651  //冰爆术 ( Wiz ) 攻击左方
+#define SPR_iceexplode           101650    //冰爆术 ( Wiz ) 攻击右方
+#define SPR_iceexplode2          101651    //冰爆术 ( Wiz ) 攻击左方
 #define SPR_icemirror            101652    //冰镜术 ( Wiz )
-#define SPR_iceresist1            101653    //冰冻抗性 ( Hunter ) 放出
-#define SPR_iceresist2            101654    //冰冻抗性 ( Hunter ) 收
+#define SPR_iceresist1           101653    //冰冻抗性 ( Hunter ) 放出
+#define SPR_iceresist2           101654    //冰冻抗性 ( Hunter ) 收
 #define SPR_lgyration            101655    //回旋攻击 ( War ) 放
-#define SPR_lgyration1            101656    //回旋攻击 ( War ) 后排
-#define SPR_lgyration2            101657    //回旋攻击 ( War ) 前排
-#define SPR_lightresist1        101658    //闪电抗性 ( Hunter ) 放出
-#define SPR_lightresist2        101659    //闪电抗性 ( Hunter ) 中
-#define SPR_lpentrate1            101660    //贯穿攻击 ( War ) 攻击右方的放
-#define SPR_lpentrate2            101661    //贯穿攻击 ( War )
-#define SPR_lpentrate3            101662    //贯穿攻击 ( War )
-#define SPR_lpentrate4            101663    //贯穿攻击 ( War )
-#define SPR_lpentrate5            101664    //贯穿攻击 ( War )
-#define SPR_lpentrate6            101665    //贯穿攻击 ( War )
+#define SPR_lgyration1           101656    //回旋攻击 ( War ) 后排
+#define SPR_lgyration2           101657    //回旋攻击 ( War ) 前排
+#define SPR_lightresist1         101658    //闪电抗性 ( Hunter ) 放出
+#define SPR_lightresist2         101659    //闪电抗性 ( Hunter ) 中
+#define SPR_lpentrate1           101660    //贯穿攻击 ( War ) 攻击右方的放
+#define SPR_lpentrate2           101661    //贯穿攻击 ( War )
+#define SPR_lpentrate3           101662    //贯穿攻击 ( War )
+#define SPR_lpentrate4           101663    //贯穿攻击 ( War )
+#define SPR_lpentrate5           101664    //贯穿攻击 ( War )
+#define SPR_lpentrate6           101665    //贯穿攻击 ( War )
 #define SPR_poisonresist1        101666    //剧毒抗性 ( Hunter ) 放出
 #define SPR_poisonresist2        101667    //剧毒抗性 ( Hunter ) 收
 #define SPR_rgyration            101668    //回旋攻击 ( War )
-#define SPR_rgyration1            101669  //回旋攻击 ( War )
-#define SPR_rgyration2            101670  //回旋攻击 ( War )
-#define SPR_rpentrate1            101671    //贯穿攻击 ( War ) 攻击左方的放
-#define SPR_rpentrate2            101672    //贯穿攻击 ( War )
-#define SPR_rpentrate3            101673    //贯穿攻击 ( War )
-#define SPR_rpentrate4            101674    //贯穿攻击 ( War )
-#define SPR_rpentrate5            101675    //贯穿攻击 ( War )
-#define SPR_rpentrate6            101676    //贯穿攻击 ( War )
+#define SPR_rgyration1           101669    //回旋攻击 ( War )
+#define SPR_rgyration2           101670    //回旋攻击 ( War )
+#define SPR_rpentrate1           101671    //贯穿攻击 ( War ) 攻击左方的放
+#define SPR_rpentrate2           101672    //贯穿攻击 ( War )
+#define SPR_rpentrate3           101673    //贯穿攻击 ( War )
+#define SPR_rpentrate4           101674    //贯穿攻击 ( War )
+#define SPR_rpentrate5           101675    //贯穿攻击 ( War )
+#define SPR_rpentrate6           101676    //贯穿攻击 ( War )
 #define SPR_storm                101677    //暴风雪 ( Wiz ) 攻击右方
-#define SPR_storm2                101678    //暴风雪 ( Wiz ) 攻击左方
-#define SPR_violent                101679    //激化攻击 ( War )
+#define SPR_storm2               101678    //暴风雪 ( Wiz ) 攻击左方
+#define SPR_violent              101679    //激化攻击 ( War )
 #define SPR_waterdrop            101680    //水滴状态
-#define SPR_weakness            101681    //弱点攻击 ( Hunter )
-#define SPR_root                101682    //树根缠绕    ( Hunter )
-#define SPR_net                    101683    //天罗地网    ( Hunter )
-#define SPR_boomattack            101684  //暴击        ( War )
-#define SPR_superthunder        101685    //召雷术 Lv10 ( Wiz )
-#define SPR_volspring1            101686    //火山泉 大     ( Wiz )
-#define SPR_volspring2            101687    //火山泉 大     ( Wiz )
-#define SPR_volspring3            101688    //火山泉 大     ( Wiz )
+#define SPR_weakness             101681    //弱点攻击 ( Hunter )
+#define SPR_root                 101682    //树根缠绕    ( Hunter )
+#define SPR_net                  101683    //天罗地网    ( Hunter )
+#define SPR_boomattack           101684    //暴击        ( War )
+#define SPR_superthunder         101685    //召雷术 Lv10 ( Wiz )
+#define SPR_volspring1           101686    //火山泉 大     ( Wiz )
+#define SPR_volspring2           101687    //火山泉 大     ( Wiz )
+#define SPR_volspring3           101688    //火山泉 大     ( Wiz )
 #define SPR_bloodthirsty1        101689    //嗜血成性 Lv10 ( Wiz )
 #define SPR_bloodthirsty2        101690    //嗜血成性 Lv7    ( Wiz )
 #define SPR_bloodthirsty3        101691    //嗜血成性 Lv4    ( Wiz )
 #define SPR_bloodthirsty4        101692    //嗜血成性 Lv1    ( Wiz )
-#define SPR_lfireplanet            101693    //火星球    ( Wiz ) 攻击左方
-#define SPR_rfireplanet            101694    //火星球    ( Wiz ) 攻击右方
-#define SPR_tree                101695    //移形换位    ( Wiz )
-#define SPR_trap1                101696  //陷阱
-#define SPR_wizuse                101697    //法师使用
+#define SPR_lfireplanet          101693    //火星球    ( Wiz ) 攻击左方
+#define SPR_rfireplanet          101694    //火星球    ( Wiz ) 攻击右方
+#define SPR_tree                 101695    //移形换位    ( Wiz )
+#define SPR_trap1                101696    //陷阱
+#define SPR_wizuse               101697    //法师使用
 #define SPR_hunteruse            101698    //猎人使用
-#define SPR_fireattack            101699    //火附体攻击
+#define SPR_fireattack           101699    //火附体攻击
 #define SPR_iceattack            101700    //冰附体攻击
-#define SPR_lightattack            101701    //雷附体攻击
+#define SPR_lightattack          101701    //雷附体攻击
 101705  水火海豚
 101706  风海豚
 101707  水火海参
@@ -235,11 +235,11 @@
 101722  风地三头蛇
 101723  火风伞蜥蜴 ( 未更新 )
 101724  地水伞蜥蜴 ( 未更新 )
-101725    狮子地水
+101725  狮子地水
 101726  狮子水火
-101727    狮子火风
-101728    狮子风地
-101729    蜥蜴
+101727  狮子火风
+101728  狮子风地
+101729  蜥蜴
 */
 /* 7.0新增图号......END. */
 
@@ -1672,8 +1672,8 @@
 #define CG_ITEM_WND_0 26060                  // 物品
 #define CG_ITEM_WND_GOLD_DROP_BTN_UP 26062   // 物品栏：石币上
 #define CG_ITEM_WND_GOLD_DROP_BTN_DOWN 26063 // 物品栏：石币下
-#define CG_ITEM_WND_GOLD_INC_BTN_UP 26064    // ????????
-#define CG_ITEM_WND_GOLD_INC_BTN_DOWN 26065  // ?????????
+#define CG_ITEM_WND_GOLD_INC_BTN_UP 26064    // 物品栏：
+#define CG_ITEM_WND_GOLD_INC_BTN_DOWN 26065  // 物品栏：
 #define CG_ITEM_WND_GOLD_DEC_BTN_UP 26066    // ????????
 #define CG_ITEM_WND_GOLD_DEC_BTN_DOWN 26067  // ?????????
 #define CG_ITEM_WND_JUJUTU_BTN 26069         //
@@ -2137,78 +2137,43 @@ static tagRidePetTable ridePetTable[] = {
 #define RIDE_PET7 (1 << 7)
 #define RIDE_PET8 (1 << 8)
 #define RIDE_PET9 (1 << 9)
-#ifdef _8_RIDEPETS
 #define RIDE_PET10 (1 << 10)
 #define RIDE_PET11 (1 << 11)
 #define RIDE_PET12 (1 << 12)
 #define RIDE_PET13 (1 << 13)
-#define MAXNOINDEX 14
-#else
-#define MAXNOINDEX 10
-#endif
+#define RIDE_PET14 (1 << 14)
+#define MAXNOINDEX 15
 
 // andy_add 2002/6/24
 typedef struct {
   int petNo;
   int learnCode;
-} tagRideCodeMode;
+} RideCodeMode;
 
-static tagRideCodeMode RideCodeMode[] = {{100374, RIDE_PET0},
-                                         {100358, RIDE_PET1},
-                                         {100362, RIDE_PET2},
-                                         {100279, RIDE_PET3},
-                                         {100288, RIDE_PET4},
-                                         {100283, RIDE_PET5},
-                                         {100346, RIDE_PET6},
-                                         {100310, RIDE_PET7},
-                                         {100372, RIDE_PET8},
-                                         {100373, RIDE_PET9}
-#ifdef _8_RIDEPETS
-                                         ,
-                                         {101576, RIDE_PET10},
-                                         {101532, RIDE_PET11}
-
-                                         ,
-                                         {100873, RIDE_PET12},
-                                         {100907, RIDE_PET13}
-#endif
+static RideCodeMode gRideCodeMode[]
+    = {{100374, RIDE_PET0},
+       {100358, RIDE_PET1},
+       {100362, RIDE_PET2},
+       {100279, RIDE_PET3},
+       {100288, RIDE_PET4},
+       {100283, RIDE_PET5},
+       {100346, RIDE_PET6},
+       {100310, RIDE_PET7},
+       {100372, RIDE_PET8},
+       {100373, RIDE_PET9},
+       {101576, RIDE_PET10},
+       {101532, RIDE_PET11},
+       {100873, RIDE_PET12},
+       {100907, RIDE_PET13},
+       {100907, RIDE_PET14},
 };
 
 // andy_add 2002/6/24
-typedef struct {
+struct RideNoList {
   int RideNo[MAXNOINDEX];
-} tagRideNoList;
+};
 
-static tagRideNoList RideNoList[] = {
-#ifdef _8_RIDEPETS
-    //{ 机暴, 长毛象, 飞龙, 围巾蜥蜴, 人龙, 穿山甲, 兽蛙, 猩猩, 蓝暴, 红暴,
-    //飞雷龙, 工鱼, 蓝豹, 金暴 }
-    {101305, 101306, 101307, 101308, 101309, 101310, 101311, 101312, 101008,
-     101009, 101989, 101978, SPR_ride278, SPR_ride266}, // 玉米头
-    {101313, 101314, 101315, 101316, 101317, 101318, 101319, 101320, 101018,
-     101019, 101988, 101986, SPR_ride274, SPR_ride262}, // 刺猬头
-    {101321, 101322, 101323, 101324, 101325, 101326, 101327, 101328, 101028,
-     101029, 101965, 101975, SPR_ride275, SPR_ride263}, // 小马尾
-    {101329, 101330, 101331, 101332, 101333, 101334, 101335, 101336, 101038,
-     101039, 101966, 101976, SPR_ride276, SPR_ride264}, // 酷哥
-    {101337, 101338, 101339, 101340, 101341, 101342, 101343, 101344, 101048,
-     101049, 101973, 101984, SPR_ride284, SPR_ride272}, // 兽皮兄贵
-    {101345, 101346, 101347, 101348, 101349, 101350, 101351, 101352, 101058,
-     101059, 101974, 101985, SPR_ride285, SPR_ride273}, // 酋长
-
-    {101353, 101354, 101355, 101356, 101357, 101358, 101359, 101360, 101068,
-     101069, 101967, 101977, SPR_ride277, SPR_ride265}, // 小女孩
-    {101361, 101362, 101363, 101364, 101365, 101366, 101367, 101368, 101078,
-     101079, 101968, 101979, SPR_ride279, SPR_ride267}, // 玛蕾菲雅
-    {101369, 101370, 101371, 101372, 101373, 101374, 101375, 101376, 101088,
-     101089, 101970, 101981, SPR_ride281, SPR_ride269}, // 小帽子
-    {101377, 101378, 101379, 101380, 101381, 101382, 101383, 101384, 101098,
-     101099, 101969, 101980, SPR_ride280, SPR_ride268}, // 发箍
-    {101385, 101386, 101387, 101388, 101389, 101390, 101391, 101392, 101108,
-     101109, 101972, 101983, SPR_ride283, SPR_ride271}, // 不良女
-    {101393, 101394, 101395, 101396, 101397, 101398, 101399, 101400, 101118,
-     101119, 101971, 101982, SPR_ride282, SPR_ride270}, // 熟女
-#else
+static RideNoList gRideNoList[] = {
     {101305, 101306, 101307, 101308, 101309, 101310, 101311, 101312, 101008,
      101009},
     {101313, 101314, 101315, 101316, 101317, 101318, 101319, 101320, 101018,
@@ -2233,22 +2198,20 @@ static tagRideNoList RideNoList[] = {
      101109},
     {101393, 101394, 101395, 101396, 101397, 101398, 101399, 101400, 101118,
      101119},
-#endif
 };
 
-typedef struct {
+struct CharNoIdxMap {
   int charNo;
-  int Noindex;
-} tagRidePetList;
+  int charNoIndex;
+};
 
-static tagRidePetList RPlistMode[] = {
+static CharNoIdxMap gCharNoIdxMap[] = {
     {100000, 0},  {100005, 0},  {100010, 0},  {100015, 0}, // 小矮子
     {100020, 1},  {100025, 1},  {100030, 1},  {100035, 1}, // 赛亚人
     {100040, 2},  {100045, 2},  {100050, 2},  {100055, 2}, // 辫子男孩
     {100060, 3},  {100065, 3},  {100070, 3},  {100075, 3}, // 酷哥
     {100080, 4},  {100085, 4},  {100090, 4},  {100095, 4}, // 熊皮男
     {100100, 5},  {100105, 5},  {100110, 5},  {100115, 5}, // 大个
-
     {100120, 6},  {100125, 6},  {100130, 6},  {100135, 6},  // 小矮妹
     {100140, 7},  {100145, 7},  {100150, 7},  {100155, 7},  // 熊皮妹
     {100160, 8},  {100165, 8},  {100170, 8},  {100175, 8},  // 帽子妹
@@ -2256,7 +2219,6 @@ static tagRidePetList RPlistMode[] = {
     {100200, 10}, {100205, 10}, {100210, 10}, {100215, 10}, // 手套女
     {100220, 11}, {100225, 11}, {100230, 11}, {100235, 11}, // 辣妹
 };
-
 #endif
 
 #ifdef _MO_IMAGE_EXTENSION
@@ -2327,22 +2289,22 @@ static tagRidePetList RPlistMode[] = {
 #define SPRNEW_011sp 102056 // 矛            ?
 #define SPRNEW_011bw 102057 // 弓
 
-#define SPRNEW_012em 102058 // 地    
-#define SPRNEW_012ax 102059 // 斧头             ?
-#define SPRNEW_012cl 102060 // 木棍            ??
-#define SPRNEW_012sp 102061 // 矛            ?
+#define SPRNEW_012em 102058 // 地
+#define SPRNEW_012ax 102059 // 斧头
+#define SPRNEW_012cl 102060 // 木棍
+#define SPRNEW_012sp 102061 // 矛
 #define SPRNEW_012bw 102062 // 弓
 
-#define SPRNEW_013em 102063 // 火    
-#define SPRNEW_013ax 102064 // 斧头             ?
-#define SPRNEW_013cl 102065 // 木棍            ??
-#define SPRNEW_013sp 102066 // 矛            ?
-#define SPRNEW_013bw 102067 // 弓            ?
+#define SPRNEW_013em 102063 // 火
+#define SPRNEW_013ax 102064 // 斧头
+#define SPRNEW_013cl 102065 // 木棍
+#define SPRNEW_013sp 102066 // 矛
+#define SPRNEW_013bw 102067 // 弓
 
-#define SPRNEW_014em 102068 // 水    
-#define SPRNEW_014ax 102069 // 斧头             ?
-#define SPRNEW_014cl 102070 // 木棍            ??
-#define SPRNEW_014sp 102071 // 矛            ?
+#define SPRNEW_014em 102068 // 水
+#define SPRNEW_014ax 102069 // 斧头
+#define SPRNEW_014cl 102070 // 木棍
+#define SPRNEW_014sp 102071 // 矛
 #define SPRNEW_014bw 102072 // 弓
 
 #define SPRNEW_015em 102073 // 风    

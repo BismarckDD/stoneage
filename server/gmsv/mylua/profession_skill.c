@@ -1,20 +1,20 @@
-#include <string.h>
-#include "common.h"
 #include "version.h"
+//
+#include "common.h"
 #include "profession_skill.h"
 #include "mylua/base.h"
 #include "char.h"
 #include "item.h"
+//
 #include "lua.h"
 #include "lauxlib.h"
 #include "lualib.h"
+//
 #include "gmsv_server.h"
 
 #ifdef _PROFESSION_SKILL			// WON ADD 人物职业技能
 #ifdef _ALLBLUES_LUA_1_8 
 #include "mylua/mylua.h"
-extern MY_Lua MYLua;
-
 static CharBase ProfessionSkillBaseInt[] = {
 	{{"编号"},							PROFESSION_SKILL_ID}
 	,{{"职业"},							PROFESSION_SKILL_PROFESSION_CLASS}

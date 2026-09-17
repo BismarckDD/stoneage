@@ -238,15 +238,12 @@ void CHAR_Family(int fd, int index, char *message) {
       // 修改家族主旨
       FAMILY_FixRule(fd, index, message);
       break;
-      // 2026.09.15 开启骑宠逻辑, 是RIDE_CF, 这里要梳理一下
-#ifdef _RIDE_CF
+      // 2026.09.17 NEW_RIDEPETS 常规开启骑宠.
     case 'r':
       {
         char ridePetSlot[32];
-        /*
-         * R|P|-1 是明确的骑宠指令, 只有接受到这条指令才取消骑宠.
-         * 不能因为改变其他宠物的状态, 而取消骑宠.
-         */
+         /* R|P|-1 是明确的骑宠指令, 只有接受到这条指令才取消骑宠.
+         * 不能因为改变其他宠物的状态, 而取消骑宠. */
         if (getStringFromIndexWithDelim(message, "|", 3, ridePetSlot,
                                         sizeof(ridePetSlot)) &&
             atoi(ridePetSlot) == -1) {
@@ -265,7 +262,6 @@ void CHAR_Family(int fd, int index, char *message) {
         }
       }
       break;
-#endif
     case 'l':
       // 族长功能
       FAMILY_LeaderFunc(fd, index, message);
@@ -2742,11 +2738,8 @@ void FAMILY_LeaderFunc(int fd, int meindex, char *message) {
       }
     }
     SaacClient__ACShowMemberList_send(acfd, fmindex_wk);
-
-    sprintf(sendbuf,
-            "               『族 长 需 "
-            "知』\n请小心处理族员的资料，一经修改後就无法回复原态，敬请小心。");
-
+    sprintf(sendbuf, "『族长需知』"
+      "\n请小心处理族员的资料，一经修改後就无法回复原态，敬请小心。");
     GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK,
                        CHAR_WINDOWTYPE_FM_MESSAGE2, -1,
                        makeEscapeString(sendbuf, buf, sizeof(buf)));
@@ -2822,11 +2815,6 @@ void FAMILY_LeaderFunc(int fd, int meindex, char *message) {
 #endif
           }
         } else if (kind == 2) {
-          if (getRideMode() == 2 || getRideMode() == 4) {
-            CHAR_talkToCli(meindex, -1, "算了吧，还是别点吧，点来也没用!",
-                           CHAR_COLORYELLOW);
-            return;
-          }
           switch (atoi(subtoken)) {
           case 1:
             letterNo = 19005;

@@ -148,10 +148,8 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
     // 制成
     {"delitem", CHAR_CHAT_DEBUG_delitem, TRUE, 0, 2, "all/位置"},
     {"delpet", CHAR_CHAT_DEBUG_deletepet, TRUE, 0, 2, "all/位置"},
-#if _ATTESTAION_ID != 3
     {"additem", CHAR_CHAT_DEBUG_additem, TRUE, 0, 3, "道具ID ((数量) (账号))"},
     {"petmake", CHAR_CHAT_DEBUG_petmake, TRUE, 0, 3, "宠物ID ((等级) (账号))"},
-#endif
     {"gold", CHAR_CHAT_DEBUG_gold, TRUE, 0, 2, "数量 (账号)"},
     {"visaudit", CHAR_CHAT_DEBUG_visaudit, TRUE, 0, 2, "all"},
 
@@ -177,11 +175,9 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
     {"insidedepotpet", CHAR_CHAT_DEBUG_InSideMyDepotPets, TRUE, 0, 3, ""},
 #endif
 
-#if _ATTESTAION_ID != 3
 #ifdef _TEST_DROPITEMS
     {"dropmypet", CHAR_CHAT_DEBUG_dropmypet, TRUE, 0, 3, "宠物编号"},
     {"dropmyitem", CHAR_CHAT_DEBUG_dropmyitem, TRUE, 0, 2, "道具编号/(0/1)"},
-#endif
 #endif
 #ifdef _CHAR_PROFESSION // WON ADD 人物职业
     {"addsk", CHAR_CHAT_DEBUG_addsk, TRUE, 0, 2, ""},
@@ -338,9 +334,6 @@ void CHAR_initDebugChatCdkey(void) {
   }
 }
 /*------------------------------------------------------------
- * 民乓永玄  芊及甩永扑亘袄毛综月［
- * 娄醒｝忒曰袄
- *  卅仄
  ------------------------------------------------------------*/
 void CHAR_initChatMagic(void) {
   int i;
@@ -353,7 +346,6 @@ void CHAR_initChatMagic(void) {
 }
 
 int CHAR_setChatMagicCDKey(int mode, char *cdkey) {
-
   int i;
   BOOL found = FALSE;
   if (strlen(cdkey) > 8) {
@@ -385,7 +377,6 @@ int CHAR_setChatMagicCDKey(int mode, char *cdkey) {
 CHATMAGICFUNC CHAR_getChatMagicFuncPointer(char *name, BOOL isDebug) {
   int i;
   int hash = hashpjw(name);
-
   for (i = 0; i < arraysizeof(CHAR_cmtbl); i++) {
     if (CHAR_cmtbl[i].hash == hash && CHAR_cmtbl[i].isdebug == isDebug &&
         strcmp(CHAR_cmtbl[i].magicname, name) == 0) {
@@ -437,11 +428,10 @@ static BOOL CHAR_useChatMagic(int char_index, char *data, BOOL isDebug) {
     if (CHAR_getWorkInt(char_index, CHAR_WORKFLG) & WORKFLG_DEBUGMODE) {
       gmLevel = CHAR_getWorkInt(char_index, CHAR_WORKGMLEVEL);
     } else {
-
 #ifdef _GMRELOAD
       for (i = 0; i < GMMAXNUM; i++) {
-        if (strcmp(p, gminfo[i].cdkey) == 0) {
-          gmLevel = gminfo[i].level;
+        if (strcmp(p, gGmInfo[i].cdkey) == 0) {
+          gmLevel = gGmInfo[i].level;
           CHAR_setWorkInt(char_index, CHAR_WORKGMLEVEL, gmLevel);
           break;
         }
@@ -542,18 +532,14 @@ void CHAR_getMessageBody(char *message, char *kind, int kindlen, char **body) {
   firstchar = message[0];
   if (firstchar == 'P' || firstchar == 'S' ||
       firstchar == 'D'
-
       // CoolFish: Trade 2001/4/18
       || firstchar == 'C' || firstchar == 'T' ||
       firstchar == 'W'
-
       // CoolFish: Family 2001/5/28
       || firstchar == 'A' || firstchar == 'J' || firstchar == 'E' ||
       firstchar == 'M'
-
       || firstchar == 'B' || firstchar == 'X' || firstchar == 'R' ||
       firstchar == 'L'
-
   ) {
     if (kindlen >= 2) {
       kind[0] = firstchar;
@@ -1029,7 +1015,7 @@ void CHAR_Talk(int fd, int index, char *message, int color, int area) {
     for (i = 0; i < GMMAXNUM; i++) {
       for (j = 0; j < playernum; j++) {
         if (CHAR_getCharUse(j) != FALSE) {
-          if (strcmp(CHAR_getChar(j, CHAR_CDKEY), gminfo[i].cdkey) == 0) {
+          if (strcmp(CHAR_getChar(j, CHAR_CDKEY), gGmInfo[i].cdkey) == 0) {
             CHAR_talkToCli(j, -1, token, CHAR_COLORPURPLE);
             num++;
           }

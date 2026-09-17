@@ -698,32 +698,15 @@ typedef enum {
 #ifdef _PET_BEATITUDE
   CHAR_BEATITUDE,
 #endif
-
-#ifdef _RIDE_CF
-  CHAR_LOWRIDEPETS1,
-#ifdef _ADD_RIDE_CF
-  CHAR_LOWRIDEPETS2,
-  CHAR_LOWRIDEPETS3,
-  CHAR_LOWRIDEPETS4,
-  CHAR_LOWRIDEPETS5,
-  CHAR_LOWRIDEPETS6,
-  CHAR_LOWRIDEPETS7,
-  CHAR_LOWRIDEPETS8,
-#endif
-#endif
-
 #ifdef _ITEM_PET_LOCKED
   CHAR_LOCKED,
 #endif
-
 #ifdef _BOUND_TIME
   CHAR_BOUNDTIME,
 #endif
-
 #ifdef _SUPER
   CHAR_SUPER,
 #endif
-
 #ifdef _ONLINE_SHOP
   CHAR_BJ,
 #endif
@@ -2004,7 +1987,6 @@ int IsMale(int charindex);
 // Arminius 12.15 判断是否是女士
 int IsFemale(int charindex);
 
-#ifdef _NEW_RIDEPETS
 #define RIDE_PET0 1
 #define RIDE_PET1 (1 << 1)
 #define RIDE_PET2 (1 << 2)
@@ -2020,8 +2002,9 @@ int IsFemale(int charindex);
 #define RIDE_PET12 (1 << 12)
 #define RIDE_PET13 (1 << 13)
 #define RIDE_PET14 (1 << 14)
-#ifdef _RIDE_CF
 #define RIDE_PET15 (1 << 15)
+#ifdef _NEW_RIDEPETS
+// 允许32种新骑宠
 #define RIDE_PET16 (1 << 16)
 #define RIDE_PET17 (1 << 17)
 #define RIDE_PET19 (1 << 19)
@@ -2038,18 +2021,9 @@ int IsFemale(int charindex);
 #define RIDE_PET29 (1 << 29)
 #define RIDE_PET30 (1 << 30)
 #define RIDE_PET31 (1 << 31)
-#endif
-#define RIDE_TPYE1 1
-#define RIDE_TPYE2 (1 << 1)
 
 #define RIDE_PET_ALL (0xFFFFFFFF)
-#define RIDE_TPYE_ALL (0xFFFFFFFF)
-
-#ifdef _ADD_RIDE_CF
-#define MAX_RIDE_PET_NO_NUM 32 * 3
-#else
-#define MAX_RIDE_PET_NO_NUM 32 * 2
-#endif
+#define MAX_RIDE_PET_NO_NUM 32
 #else
 #define RIDE_PET_ALL                                                           \
   (RIDE_PET0 | RIDE_PET1 | RIDE_PET2 | RIDE_PET3 | RIDE_PET4 | RIDE_PET5 |     \
@@ -2074,12 +2048,6 @@ int CHAR_FmLeaderRide(int meindex, int pet);
 
 typedef struct {
   int petNo;
-#ifdef _RIDE_CF
-  int petNo1;
-#ifdef _ADD_RIDE_CF
-  int petNo2;
-#endif
-#endif
   unsigned int learnCode; // 骑乘这只宠物需要哪本教程
 } RideCodeMode;
 
@@ -2097,12 +2065,6 @@ typedef struct {
 int RIDEPET_getCharNoIdxByCharNo(const int charNo);
 int RIDEPET_getPetIdx(int petNo,
                       unsigned int learnCode
-#ifdef _RIDE_CF
-                    , unsigned int learnCode1
-#ifdef _ADD_RIDE_CF
-                    , unsigned int learnCode2
-#endif
-#endif
 );
 int RIDEPET_getRideNo(int index, int ti);
 int RIDEPET_getRideImage(int charindex, int petindex);
@@ -2227,8 +2189,8 @@ int CHAR_getfindEmptyDepotPet(int char_index);
 BOOL CHAR_CheckDepotPet(int char_index);
 #endif
 
-#if defined(_RIDE_CF) && defined(_NEW_RIDEPETS)
-int CHAR_Ride_CF_init();
+#ifdef _NEW_RIDEPETS
+int CHAR_RideInit();
 #endif
 
 void LodBadPetString(char *data, char *err, int ti);
@@ -2279,5 +2241,7 @@ void CHAR_CancelNewTitle(int char_index);
 // Forward declaration (defined later in this file)
 extern int CheckCharMaxItem(int charindex);
 extern int CheckCharMaxItemChar(Char *ch);
+extern char *CHAR_setintdata[CHAR_DATAINTNUM];
+extern char *CHAR_setchardata[CHAR_DATACHARNUM];
 
 #endif //

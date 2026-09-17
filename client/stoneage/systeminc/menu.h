@@ -944,3 +944,9 @@ void ShowItemup(int value, int x, int y);
 #ifdef _NPC_ITEMUP
 void ShowCounttime(int value, int x, int y);
 #endif
+
+
+//andy_add 2002/06/24
+int RIDEPET_getCharNoIndex(const int baseCharNo);
+int RIDEPET_getPETindex(int PetNo, int learnCode);
+int RIDEPET_getRideNo(int index, int ti);

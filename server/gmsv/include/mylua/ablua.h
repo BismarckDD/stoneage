@@ -1,8 +1,7 @@
 #ifndef __MYLUA_ABLUA_H__
 #define __MYLUA_ABLUA_H__
 
-void LoadAllbluesLUA(char *path);
-void ReLoadAllbluesLUA(char *filename);
-void NewLoadAllbluesLUA(char *filename);
+void LoadAllbluesLUA(const char *filename);
+void ReLoadAllbluesLUA(const char *filename);
 
 #endif

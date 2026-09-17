@@ -11,6 +11,7 @@
 // Arminius 7.12 login announce
 #include "char.h"
 #include "char_data.h"
+#include "chatmagic.h"
 // CoolFish: add
 #include "autil.h"
 
@@ -60,8 +61,8 @@ typedef struct tagServerConfig {
   char itemfile[64];        /* data/itemfile.txt */
   char invfile[64];         /* */
   char appearfile[64];      /* 请蜇匏  涩烂白央奶伙  */
-  char titlenamefile[64];   /* 惫寞白央奶伙   */
-  char titleconfigfile[64]; /* 惫寞涩烂白央奶伙   */
+  char titlenamefile[64];   /* */
+  char titleconfigfile[64]; /* */
   char encountfile[64];
   char enemybasefile[64]; /* pet base config file */
   char enemyfile[64];     /* pet base info file */
@@ -209,9 +210,6 @@ typedef struct tagServerConfig {
 #ifdef _ANGEL_TIME
   int angelplayertime;
   int angelplayermun;
-#endif
-#ifdef _RIDEMODE_20
-  int ridemode;
 #endif
 #ifdef _FM_POINT_PK
   int fmpointpk;
@@ -777,9 +775,6 @@ ReadConf gReadConf[] = {
     {"ANGELPLAYERTIME", NULL, 0, (void *)&gServerConfig.angelplayertime, INT},
     {"ANGELPLAYERMUN", NULL, 0, (void *)&gServerConfig.angelplayermun, INT},
 #endif
-#ifdef _RIDEMODE_20
-    {"RIDEMODE", NULL, 0, (void *)&gServerConfig.ridemode, INT},
-#endif
 #ifdef _FM_POINT_PK
     {"FMPOINTPK", NULL, 0, (void *)&gServerConfig.fmpointpk, INT},
 #endif
@@ -1285,8 +1280,8 @@ BOOL LoadGMSet(char *filename) {
     return FALSE;
   }
   for (i = 0; i < GMMAXNUM; i++) {
-    strcpy(gminfo[i].cdkey, "");
-    gminfo[i].level = 0;
+    strcpy(gGmInfo[i].cdkey, "");
+    gGmInfo[i].level = 0;
   }
   while (TRUE) {
     char line[64], cdkey[64], level[64];
@@ -1307,11 +1302,11 @@ BOOL LoadGMSet(char *filename) {
     easyGetTokenFromString(line, 1, cdkey, sizeof(cdkey));
     if (strcmp(cdkey, "") == 0)
       break;
-    strncpysafe(gminfo[gm_num].cdkey, sizeof(gminfo[gm_num].cdkey), cdkey);
+    strncpysafe(gGmInfo[gm_num].cdkey, sizeof(gGmInfo[gm_num].cdkey), cdkey);
     easyGetTokenFromString(line, 2, level, sizeof(level));
     if (strcmp(level, "") == 0)
       break;
-    gminfo[gm_num].level = atoi(level);
+    gGmInfo[gm_num].level = atoi(level);
   }
   fclose(fp);
   return TRUE;
@@ -2283,15 +2278,6 @@ int getAngelPlayerMun(void) {
 }
 #endif
 
-#ifdef _RIDEMODE_20
-int getRideMode(void) {
-  if (gServerConfig.ridemode < 0)
-    gServerConfig.ridemode = 0;
-  return gServerConfig.ridemode;
-}
-#else
-int getRideMode(void) { return 0; }
-#endif
 #ifdef _FM_POINT_PK
 char *getFmPointPK(void) { return (gServerConfig.fmpointpk > 0) ? "是" : "否"; }
 #endif

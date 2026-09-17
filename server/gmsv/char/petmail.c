@@ -15,17 +15,17 @@
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
-#define		PETMAIL_BATTLETIMEOUT		660
-#define		PETMAIL_IDLETIMEOUT		10
-#define		PETMAIL_IDLETIME		1
+#define	PETMAIL_BATTLETIMEOUT 660
+#define	PETMAIL_IDLETIMEOUT	10
+#define	PETMAIL_IDLETIME 1
 
-#define		PETMAIL_IDLE_RETURNOWNER	(60*30)
+#define	PETMAIL_IDLE_RETURNOWNER (60*30)
 //andy_edit
-//#define	PETMAIL_IDLEDISCARD	(60*60)  //Syu 修正宠邮等待时间为一小时
+//#define PETMAIL_IDLEDISCARD	(60*60)  //Syu 修正宠邮等待时间为一小时
 #define	PETMAIL_IDLEDISCARD	(60*3)
 
 /* petmail 跨星系的等待时间  shan add */
-#define         PETMAIL_JS_TIMEOUT              (2*60)
+#define PETMAIL_JS_TIMEOUT (2*60)
 
 static int PETMAIL_getIdleTime( int index);
 static void PETMAIL_sendPetmail( int index, int tochar_index);
@@ -38,7 +38,7 @@ static void PETMAIL_IdleProc5( int index);
 static void PETMAIL_ReturnWait( int index);
 static void PETMAIL_returnMail( int index, int tochar_index);
 static int PETMAIL_offmsg_max;        
-#define		PETMAILOFFMSGFILE			"petmail.txt"
+#define	PETMAILOFFMSGFILE "petmail.txt"
 
 #define PETMAIL_DEFTOTALNUM 1000
 static int PetMailTotalnums = 0;
@@ -208,7 +208,7 @@ if (getPetMailFlg()==1){
 			return FALSE;
 		}
 #endif
-		int		offmsgindex;
+		int	offmsgindex;
 		offmsgindex = PETMAIL_addOffmsg( cindex, ae->cdkey, ae->charname, text, color);
 		if( offmsgindex == -1 ) {
 			print( "offmsg buffer over\n");

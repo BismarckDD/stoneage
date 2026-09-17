@@ -1,82 +1,80 @@
-#include <string.h>
 #include "common.h"
+//
 #include "char_base.h"
 #include "mylua/base.h"
 #include "char.h"
 #include "item.h"
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
 #include "gmsv_server.h"
-#ifdef _NEW_ITEM_
+#ifdef _NEW_ITEM_
+
 extern int CheckCharMaxItem(int charindex);
 #endif
 #ifdef _ALLBLUES_LUA_1_2   
 #include "mylua/mylua.h"
-extern MY_Lua MYLua;
+
 static CharBase ItemBaseInt[] = {
-	{{"序号"},							ITEM_ID}
-	,{{"图号"},							ITEM_BASEIMAGENUMBER}
-	,{{"价值"},							ITEM_COST}
-	,{{"类型"},							ITEM_TYPE}
-	,{{"使用"},							ITEM_ABLEUSEFIELD}
-	,{{"目标"},							ITEM_TARGET}
-	,{{"等级"},							ITEM_LEVEL}
-	,{{"次数"},							ITEM_DAMAGEBREAK}
-	,{{"堆叠"},							ITEM_USEPILENUMS}
-	,{{"重叠"},							ITEM_CANBEPILE}
-	,{{"需攻"},							ITEM_NEEDSTR}
-	,{{"需敏"},							ITEM_NEEDDEX}
-	,{{"需转"},							ITEM_NEEDTRANS}
-	,{{"需职业"},						ITEM_NEEDPROFESSION}
+	{{"序号"},						ITEM_ID}
+	,{{"图号"},						ITEM_BASEIMAGENUMBER}
+	,{{"价值"},						ITEM_COST}
+	,{{"类型"},						ITEM_TYPE}
+	,{{"使用"},						ITEM_ABLEUSEFIELD}
+	,{{"目标"},						ITEM_TARGET}
+	,{{"等级"},						ITEM_LEVEL}
+	,{{"次数"},						ITEM_DAMAGEBREAK}
+	,{{"堆叠"},						ITEM_USEPILENUMS}
+	,{{"重叠"},						ITEM_CANBEPILE}
+	,{{"需攻"},						ITEM_NEEDSTR}
+	,{{"需敏"},						ITEM_NEEDDEX}
+	,{{"需转"},						ITEM_NEEDTRANS}
+	,{{"需职业"},					ITEM_NEEDPROFESSION}
 #ifdef _TAKE_ITEMDAMAGE
-	,{{"最小度"},						ITEM_DAMAGECRUSHE}
-	,{{"最大度"},						ITEM_MAXDAMAGECRUSHE}
+	,{{"最小度"},					ITEM_DAMAGECRUSHE}
+	,{{"最大度"},					ITEM_MAXDAMAGECRUSHE}
 #endif
-	,{{"伤"},								ITEM_OTHERDAMAGE}
-	,{{"吸"},								ITEM_OTHERDEFC}
-	,{{"套装"},							ITEM_SUITCODE}
+	,{{"伤"},						ITEM_OTHERDAMAGE}
+	,{{"吸"},						ITEM_OTHERDEFC}
+	,{{"套装"},						ITEM_SUITCODE}
 	,{{"最小攻击"},					ITEM_ATTACKNUM_MIN}
 	,{{"最大攻击"},					ITEM_ATTACKNUM_MAX}
-	,{{"攻"},								ITEM_MODIFYATTACK}
-	,{{"防"},								ITEM_MODIFYDEFENCE}
-	,{{"敏"},								ITEM_MODIFYQUICK}
-	,{{"HP"},								ITEM_MODIFYHP}
-	,{{"MP"},								ITEM_MODIFYMP}
-	,{{"运气"},							ITEM_MODIFYLUCK}
-	,{{"魅力"},							ITEM_MODIFYCHARM}
-	,{{"回避"},							ITEM_MODIFYAVOID}
-	,{{"属性"},							ITEM_MODIFYATTRIB}
+	,{{"攻"},						ITEM_MODIFYATTACK}
+	,{{"防"},						ITEM_MODIFYDEFENCE}
+	,{{"敏"},						ITEM_MODIFYQUICK}
+	,{{"HP"},						ITEM_MODIFYHP}
+	,{{"MP"},						ITEM_MODIFYMP}
+	,{{"运气"},						ITEM_MODIFYLUCK}
+	,{{"魅力"},						ITEM_MODIFYCHARM}
+	,{{"回避"},						ITEM_MODIFYAVOID}
+	,{{"属性"},						ITEM_MODIFYATTRIB}
 	,{{"属性比例"},					ITEM_MODIFYATTRIBVALUE}
-	,{{"精灵"},							ITEM_MAGICID}
-	,{{"中精率"},						ITEM_MAGICPROB}
-	,{{"精耗MP"},						ITEM_MAGICUSEMP}
-	,{{"格档"},							ITEM_MODIFYARRANGE}
-	,{{"次序"},							ITEM_MODIFYSEQUENCE}
-	,{{"负重"},							ITEM_ATTACHPILE}
-	,{{"命中"},							ITEM_HITRIGHT}
-	,{{"忽防"},							ITEM_NEGLECTGUARD}
-	,{{"毒耐"},							ITEM_POISON}
-	,{{"麻耐"},							ITEM_PARALYSIS}
-	,{{"睡耐"},							ITEM_SLEEP}
-	,{{"石耐"},							ITEM_STONE}
-	,{{"酒耐"},							ITEM_DRUNK}
-	,{{"混耐"},							ITEM_CONFUSION}
-	,{{"会心"},							ITEM_CRITICAL}
-	,{{"动作"},							ITEM_USEACTION}
+	,{{"精灵"},						ITEM_MAGICID}
+	,{{"中精率"},					ITEM_MAGICPROB}
+	,{{"精耗MP"},					ITEM_MAGICUSEMP}
+	,{{"格档"},						ITEM_MODIFYARRANGE}
+	,{{"次序"},						ITEM_MODIFYSEQUENCE}
+	,{{"负重"},						ITEM_ATTACHPILE}
+	,{{"命中"},						ITEM_HITRIGHT}
+	,{{"忽防"},						ITEM_NEGLECTGUARD}
+	,{{"毒耐"},						ITEM_POISON}
+	,{{"麻耐"},						ITEM_PARALYSIS}
+	,{{"睡耐"},						ITEM_SLEEP}
+	,{{"石耐"},						ITEM_STONE}
+	,{{"酒耐"},						ITEM_DRUNK}
+	,{{"混耐"},						ITEM_CONFUSION}
+	,{{"会心"},						ITEM_CRITICAL}
+	,{{"动作"},						ITEM_USEACTION}
 	,{{"登出消失"},					ITEM_DROPATLOGOUT}
 	,{{"丢弃消失"},					ITEM_VANISHATDROP}
-	,{{""},									ITEM_ISOVERED}
-	,{{"邮寄"},							ITEM_CANPETMAIL}
-	,{{"合成从"},						ITEM_CANMERGEFROM}
-	,{{"合成至"},						ITEM_CANMERGETO}
-	,{{"份量0"},						ITEM_INGVALUE0}
-	,{{"份量1"},						ITEM_INGVALUE1}
-	,{{"份量2"},						ITEM_INGVALUE2}
-	,{{"份量3"},						ITEM_INGVALUE3}
-	,{{"份量4"},						ITEM_INGVALUE4}
+	,{{""},							ITEM_ISOVERED}
+	,{{"邮寄"},						ITEM_CANPETMAIL}
+	,{{"合成从"},					ITEM_CANMERGEFROM}
+	,{{"合成至"},					ITEM_CANMERGETO}
+	,{{"份量0"},					ITEM_INGVALUE0}
+	,{{"份量1"},					ITEM_INGVALUE1}
+	,{{"份量2"},					ITEM_INGVALUE2}
+	,{{"份量3"},					ITEM_INGVALUE3}
+	,{{"份量4"},					ITEM_INGVALUE4}
 	#ifdef _ITEM_COLOER
-	,{{"颜色"},							ITEM_COLOER}
+	,{{"颜色"},						ITEM_COLOER}
 	#endif
 	,{{"物品等级"},					ITEM_LEAKLEVEL}
 #ifdef _ITEM_USE_TIME
@@ -85,38 +83,38 @@ static CharBase ItemBaseInt[] = {
 }; 
 
 static CharBase ItemBaseChar[] = {
-	{{"名称"},					ITEM_NAME}
-	,{{"显示名"},				ITEM_SECRETNAME}
-	,{{"说明"},					ITEM_EFFECTSTRING}
-	,{{"字段"},					ITEM_ARGUMENT}
+	{{"名称"},				ITEM_NAME}
+	,{{"显示名"},			ITEM_SECRETNAME}
+	,{{"说明"},				ITEM_EFFECTSTRING}
+	,{{"字段"},				ITEM_ARGUMENT}
 	,{{"成份名0"},			ITEM_INGNAME0}
 	,{{"成份名1"},			ITEM_INGNAME1}
 	,{{"成份名2"},			ITEM_INGNAME2}
 	,{{"成份名3"},			ITEM_INGNAME3}
 	,{{"成份名4"},			ITEM_INGNAME4}
 #ifdef _ANGEL_SUMMON
-	,{{"精召"},					ITEM_ANGELMISSION}
-	,{{"天使"},					ITEM_ANGELINFO}
-	,{{"英雄"},					ITEM_HEROINFO}
+	,{{"精召"},				ITEM_ANGELMISSION}
+	,{{"天使"},				ITEM_ANGELINFO}
+	,{{"英雄"},				ITEM_HEROINFO}
 #endif
 	,{{"Unicode"},	ITEM_UNIQUECODE}
 	,{{"编码"},	ITEM_UNIQUECODE}
 }; 
 
 static CharBase ItemBaseValue[] = {
-	{{"爪"},							ITEM_FIST}
-	,{{"斧"},							ITEM_AXE}
-	,{{"棍"},							ITEM_CLUB}
-	,{{"枪"},							ITEM_SPEAR}
-	,{{"弓"},							ITEM_BOW}
-	,{{"盾"},							ITEM_SHIELD}
-	,{{"盔"},							ITEM_HELM}
-	,{{"铠"},							ITEM_ARMOUR}
-	,{{"环"},							ITEM_BRACELET}
-	,{{"乐"},							ITEM_MUSIC}
-	,{{"项"},							ITEM_NECKLACE}
-	,{{"环"},							ITEM_RING}
-	,{{"带"},							ITEM_BELT}
+	{{"爪"},						ITEM_FIST}
+	,{{"斧"},						ITEM_AXE}
+	,{{"棍"},						ITEM_CLUB}
+	,{{"枪"},						ITEM_SPEAR}
+	,{{"弓"},						ITEM_BOW}
+	,{{"盾"},						ITEM_SHIELD}
+	,{{"盔"},						ITEM_HELM}
+	,{{"铠"},						ITEM_ARMOUR}
+	,{{"环"},						ITEM_BRACELET}
+	,{{"乐"},						ITEM_MUSIC}
+	,{{"项"},						ITEM_NECKLACE}
+	,{{"环"},						ITEM_RING}
+	,{{"带"},						ITEM_BELT}
 	,{{"耳环"},						ITEM_EARRING}
 	,{{"鼻环"},						ITEM_NOSERING}
 	,{{"护身符"},					ITEM_AMULET}
@@ -124,7 +122,7 @@ static CharBase ItemBaseValue[] = {
 	,{{"回旋镖"},					ITEM_BOOMERANG}
 	,{{"投掷斧"},					ITEM_BOUNDTHROW}
 	,{{"投掷石"},					ITEM_BREAKTHROW}
-	,{{"碟"},							ITEM_DISH}
+	,{{"碟"},						ITEM_DISH}
 #ifdef _ITEM_INSLAY
 	,{{"金属"},						ITEM_METAL}
 	,{{"宝石"},						ITEM_JEWEL}
@@ -172,54 +170,41 @@ static CharBase ItemBaseEvent[] = {
 
 static int getInt(lua_State *L) 
 {
-	const int index = luaL_checkint(L, 1);
-	const int element = getCharBaseValue(L, 2, ItemBaseInt, arraysizeof(ItemBaseInt));
-
-	lua_pushinteger(L, ITEM_getInt(index, element));
-	return 1;
+  const int index = luaL_checkint(L, 1);
+  const int element = getCharBaseValue(L, 2, ItemBaseInt, arraysizeof(ItemBaseInt));
+  lua_pushinteger(L, ITEM_getInt(index, element));
+  return 1;
 }
 
 static int setInt(lua_State *L) 
 {
-	const int index = luaL_checkint(L, 1);
-	const int element = getCharBaseValue(L, 2, ItemBaseInt, arraysizeof(ItemBaseInt));
-	const int data = luaL_checkint(L, 3);
-	
-  if(ITEM_setInt(index, element, data) == -1){
-  	return 0;
-  }else{
-  	return 1;
-  }
+  const int index = luaL_checkint(L, 1);
+  const int element = getCharBaseValue(L, 2, ItemBaseInt, arraysizeof(ItemBaseInt));
+  const int data = luaL_checkint(L, 3);
+  return (ITEM_setInt(index, element, data) == -1) ? 0 : 1;
 }
 
 static int getChar(lua_State *L) 
 {
-	const int index = luaL_checkint(L, 1);
-	const int element = getCharBaseValue(L, 2, ItemBaseChar, arraysizeof(ItemBaseChar));
-
-	lua_pushstring(L, ITEM_getChar(index, element));
-	return 1;
+  const int index = luaL_checkint(L, 1);
+  const int element = getCharBaseValue(L, 2, ItemBaseChar, arraysizeof(ItemBaseChar));
+  lua_pushstring(L, ITEM_getChar(index, element));
+  return 1;
 }
 
 static int setChar(lua_State *L) 
 {
-	size_t l;
-	const int index = luaL_checkint(L, 1);
-	const int element = getCharBaseValue(L, 2, ItemBaseChar, arraysizeof(ItemBaseChar));
-	char *data = luaL_checklstring(L, 3, &l);
-	
-  if(ITEM_setChar(index, element, data) == -1){
-  	return 0;
-  }else{
-  	return 1;
-  }
+  size_t l;
+  const int index = luaL_checkint(L, 1);
+  const int element = getCharBaseValue(L, 2, ItemBaseChar, arraysizeof(ItemBaseChar));
+  char *data = luaL_checklstring(L, 3, &l);
+  return (ITEM_setChar(index, element, data) == -1) ? 0 : 1;
 }
 
 static int getWorkInt(lua_State *L) 
 {
 	const int index = luaL_checkint(L, 1);
 	const int element = getCharBaseValue(L, 2, ItemBaseWorkInt, arraysizeof(ItemBaseWorkInt));
-
 	lua_pushinteger(L, ITEM_getWorkInt(index, element));
 	return 1;
 }
@@ -309,7 +294,7 @@ static int addLUAListFunction(lua_State *L)
 	char *luafunctablepath=luaL_checklstring(L, 3, &l);
 
 	if(strlen(luafunctablepath) > 0){
-		MY_Lua *mylua = &MYLua;
+		MY_Lua *mylua = &gMyLua;
 	  while(mylua->next != NULL){
 	  	if(strcmp(mylua->luapath, luafunctablepath) == 0){
 	  		return ITEM_addLUAListFunction( mylua->lua, luafuncname, luafunctable);
@@ -342,33 +327,31 @@ static int UpdataHaveItemOne(lua_State *L)
 {
 	const int char_index = luaL_checkint(L, 1);
 	const int haveitem_index = luaL_checkint(L, 2);
-
 	CHAR_sendItemDataOne( char_index, haveitem_index);
-
 	return 1;
 }
 
 static const luaL_Reg itemlib[] = {
-	{"getInt", 									getInt},
-	{"setInt", 									setInt},
-	{"getChar", 								getChar},
-	{"setChar", 								setChar},
-	{"getWorkInt", 							getWorkInt},
-	{"setWorkInt", 							setWorkInt},
-	{"setFunctionPointer", 			setFunctionPointer},
-	{"addLUAListFunction", 			addLUAListFunction},
-	{"getNameFromNumber", 			getNameFromNumber},
-	{"getArgumentString", 			getArgumentString},
-	{"getcostFromITEMtabl", 		getcostFromITEMtabl},
-	{"getlevelFromITEMtabl", 		getlevelFromITEMtabl},
-	{"getgraNoFromITEMtabl", 		getgraNoFromITEMtabl},
-	{"getItemInfoFromNumber", 	getItemInfoFromNumber},
-	{"UpdataItemOne", 					UpdataItemOne},
-	{"UpdataHaveItemOne", 			UpdataHaveItemOne},
-  {NULL, 						NULL}
+	{"getInt", 					getInt},
+	{"setInt", 					setInt},
+	{"getChar", 				getChar},
+	{"setChar", 				setChar},
+	{"getWorkInt", 				getWorkInt},
+	{"setWorkInt", 				setWorkInt},
+	{"setFunctionPointer", 		setFunctionPointer},
+	{"addLUAListFunction", 		addLUAListFunction},
+	{"getNameFromNumber", 		getNameFromNumber},
+	{"getArgumentString", 		getArgumentString},
+	{"getcostFromITEMtabl", 	getcostFromITEMtabl},
+	{"getlevelFromITEMtabl", 	getlevelFromITEMtabl},
+	{"getgraNoFromITEMtabl", 	getgraNoFromITEMtabl},
+	{"getItemInfoFromNumber",   getItemInfoFromNumber},
+	{"UpdataItemOne", 			UpdataItemOne},
+	{"UpdataHaveItemOne",		UpdataHaveItemOne},
+	{NULL, 						NULL}
 };
 
-LUALIB_API int luaopen_Item (lua_State *L) {
+LUALIB_API int luaopen_Item(lua_State *L) {
   luaL_register(L, "item", itemlib);
   return 1;
 }

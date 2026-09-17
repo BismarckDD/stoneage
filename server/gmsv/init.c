@@ -343,9 +343,6 @@ BOOL init(int argc, char **argv, char **env) {
     print("Angel Player Time: (%d)\n", getAngelPlayerTime());
     print("Angel Player Mun: %d.\n", getAngelPlayerMun());
 #endif
-#ifdef _RIDEMODE_20
-    print("2.0 RIDE MODE: %d\n", getRideMode());
-#endif
 #ifdef _FM_POINT_PK
     print("Family Point PK: %s\n", getFmPointPK());
 #endif
@@ -539,9 +536,9 @@ BOOL init(int argc, char **argv, char **env) {
   else
     print("succeed.\n");
 #endif
-#if defined(_RIDE_CF) && defined(_NEW_RIDEPETS)
+#ifdef _NEW_RIDEPETS
   print("开始初始化骑宠设置......");
-  if (!CHAR_Ride_CF_init())
+  if (!CHAR_RideInit())
     print("失败.\n");
   else
     print("成功.\n");
@@ -583,7 +580,7 @@ BOOL init(int argc, char **argv, char **env) {
   else
     print("succeed.\n");
 #endif
-  print("Start to connect host...... ");
+  print("开始连接SAAC服务器...... ");
   acfd = connectHost(getAccountservername(), getAccountserverport());
   if (acfd == -1) {
     print("连接 SAAC 失败：%s:%u。请确认 SAAC 已启动且端口配置正确。\n",
@@ -598,7 +595,7 @@ BOOL init(int argc, char **argv, char **env) {
   if (epoll_add_acfd(acfd) == -1)
     goto CLOSEBIND;
 #endif
-  print("succeed.\n");
+  print("成功.\n");
   initConnectOne(acfd, NULL, 0);
   if (!CONNECT_acfdInitRB(acfd))
     goto CLOSEAC;
@@ -630,9 +627,6 @@ BOOL init(int argc, char **argv, char **env) {
                  acfd, login_wbuse, (int)strlen(getGameservername()),
                  getGameservername());
   }
-#ifdef _OTHER_SAAC_LINK
-  OtherSaacConnect();
-#endif
   if (IsFileExist(getLsgenlogfilename())) {
     extern WorkSpace gSaacWorkSpace;
     SetLogFiles(&gSaacWorkSpace, getLsgenlogfilename(),

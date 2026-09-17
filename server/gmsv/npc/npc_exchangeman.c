@@ -22,8 +22,6 @@ extern struct MissionInfo missionlist[MAXMISSION];
 extern struct MissionTable missiontable[MAXMISSIONTABLE];
 #endif
 
-extern char *CHAR_setintdata[CHAR_DATAINTNUM];
-extern char *CHAR_setchardata[CHAR_DATACHARNUM];
 enum {
   CHAR_WORK_EVENTWARP = CHAR_NPCWORKINT4,
 

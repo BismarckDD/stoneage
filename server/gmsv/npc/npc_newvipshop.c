@@ -142,16 +142,7 @@ static void NPC_NewVipShop_selectWindow( int meindex, int toindex, int num,int s
 			print("NewVipShop Get START_MSG ERROR !");
 			return;
 		}
-#ifdef _OTHER_SAAC_LINK
-		if(osfd == -1){
-			OtherSaacConnect();
-			CHAR_talkToCli( toindex, -1, "点卷服务器未正常连接!", CHAR_COLORRED );
-		}else{
-			SaacClient_QueryPoint_send( osfd, getfdFromCharaIndex( toindex ), CHAR_getChar(toindex, CHAR_CDKEY));
-		}
-#else
 		SaacClient_QueryPoint_send( acfd, getfdFromCharaIndex( toindex ), CHAR_getChar(toindex, CHAR_CDKEY));
-#endif
 		CHAR_talkToCli(toindex, -1, "获取重回币中，请稍候...", CHAR_COLORRED);
 		CHAR_setWorkInt( toindex, CHAR_WORKSHOPRELEVANT, WINDOW_START);
 		buttontype = WINDOW_BUTTONTYPE_YESNO;

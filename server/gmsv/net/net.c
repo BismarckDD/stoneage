@@ -610,11 +610,7 @@ ANY_THREAD void SERVSTATE_setDsptime(int a) {
 
 static int appendWB(int fd, const char *buf, int size) {
   int capacity;
-#ifdef _OTHER_SAAC_LINK
-  if (CONNECT_getCtype(fd) != AC) {
-#else
   if (fd != acfd) {
-#endif
     if (Connect[fd].wbuse + size >= WBSIZE) {
       print("appendWB:err buffer over[%d]:%s \n", Connect[fd].wbuse + size,
             Connect[fd].cdkey);
@@ -626,21 +622,13 @@ static int appendWB(int fd, const char *buf, int size) {
     }
   }
   capacity =
-#ifdef _OTHER_SAAC_LINK
-      CONNECT_getCtype(fd) == AC ? AC_WBSIZE : WBSIZE;
-#else
       fd == acfd ? AC_WBSIZE : WBSIZE;
-#endif
   return sa_tcp_buffer_append(Connect[fd].wb, &Connect[fd].wbuse, capacity,
                               buf, size);
 }
 
 static int appendRB(int fd, char *buf, int size) {
-#ifdef _OTHER_SAAC_LINK
-  if (CONNECT_getCtype(fd) != AC) {
-#else
   if (fd != acfd) {
-#endif
     if (Connect[fd].rbuse + size > RBSIZE) {
       return -1;
     }
@@ -657,11 +645,7 @@ static int appendRB(int fd, char *buf, int size) {
   }
   return sa_tcp_buffer_append(
       Connect[fd].rb, &Connect[fd].rbuse,
-#ifdef _OTHER_SAAC_LINK
-      CONNECT_getCtype(fd) == AC ? AC_RBSIZE : RBSIZE,
-#else
       fd == acfd ? AC_RBSIZE : RBSIZE,
-#endif
       buf, size);
 }
 
@@ -712,11 +696,7 @@ SINGLETHREAD int lsrpcClientWriteFunc(int fd, const char *buf, int size) {
   r = appendWB(fd, buf, size);
 
   // Nuke *1 0907: Ignore acfd from WB error
-#ifdef _OTHER_SAAC_LINK
-  if ((r < 0) && (CONNECT_getCtype(fd) != AC && CONNECT_getCtype(fd) != SQL)) {
-#else
   if ((r < 0) && (fd != acfd)) {
-#endif
     Connect[fd].appendwb_overflow_flag = 1;
 #ifdef _NETLOG_
     char cdkey[16];
@@ -772,12 +752,7 @@ SINGLETHREAD BOOL GetOneLine_fix(int fd, char *buf, int max) {
     logRBuseErr = 0;
   }
 
-#ifdef _OTHER_SAAC_LINK
-  if (CONNECT_getCtype(fd) == AC &&
-      strstr(Connect[fd].rb, "ACCharLoad") != NULL &&
-#else
   if (fd == acfd && strstr(Connect[fd].rb, "ACCharLoad") != NULL &&
-#endif
       logRBuseErr >= 50) { // Connect[fd].rb
     const size_t log_size = (size_t)Connect[fd].rbuse + 1;
     char *log_buf = allocateMemory(log_size);
@@ -1074,18 +1049,6 @@ SINGLETHREAD BOOL initConnect(int size) {
   return TRUE;
 }
 BOOL CONNECT_acfdInitRB(int fd) {
-#ifdef _OTHER_SAAC_LINK
-
-  Connect[fd].rb = realloc(Connect[fd].rb, AC_RBSIZE);
-
-  if (Connect[fd].rb == NULL) {
-    printEx("realloc err\n");
-    return FALSE;
-  }
-
-  memset(Connect[fd].rb, 0, AC_RBSIZE);
-  return TRUE;
-#else
   if (fd != acfd)
     return FALSE;
 
@@ -1098,34 +1061,18 @@ BOOL CONNECT_acfdInitRB(int fd) {
 
   memset(Connect[acfd].rb, 0, AC_RBSIZE);
   return TRUE;
-#endif
 }
+
 BOOL CONNECT_acfdInitWB(int fd) {
-#ifdef _OTHER_SAAC_LINK
-
-  Connect[fd].wb = realloc(Connect[fd].wb, AC_WBSIZE);
-
-  if (Connect[fd].wb == NULL) {
-    printEx("realloc err\n");
-    return FALSE;
-  }
-
-  memset(Connect[fd].wb, 0, AC_WBSIZE);
-  return TRUE;
-#else
   if (fd != acfd)
     return FALSE;
-
   Connect[fd].wb = realloc(Connect[acfd].wb, AC_WBSIZE);
-
   if (Connect[acfd].wb == NULL) {
     printEx("realloc err\n");
     return FALSE;
   }
-
   memset(Connect[acfd].wb, 0, AC_WBSIZE);
   return TRUE;
-#endif
 }
 
 ANY_THREAD void endConnect(void) {
@@ -2263,11 +2210,7 @@ void CONNECT_SysEvent_Loop(void) {
     }
 
     for (i = 0; i < ConnectLen; i++) {
-#ifdef _OTHER_SAAC_LINK
-      if ((Connect[i].use) && (CONNECT_getCtype(i) != AC))
-#else
       if ((Connect[i].use) && (i != acfd))
-#endif
         if (!CONNECT_getUse(i))
           continue;
       if (!CHAR_CHECKINDEX(Connect[i].char_index))
@@ -3068,42 +3011,21 @@ SINGLETHREAD BOOL netloop_faster(void) {
       NETWATCH_set("netloop", -1, NULL);
 
       if (ret > 0 && sizeof(buf) <= ret) {
-#ifdef _OTHER_SAAC_LINK
-        print("读取(%s)缓冲长度:%d - %d !!\n",
-              (CONNECT_getCtype(fdremember) == AC) ? "SAAC" : "其它", ret,
-              sizeof(buf));
-#else
         print("读取(%s)缓冲长度:%d - %ld!!\n",
               (fdremember == acfd) ? "SAAC" : "其它", ret, sizeof(buf));
-#endif
       }
 
       if (ret < 0 && (sa_tcp_error_is_interrupted() ||
                       sa_tcp_error_is_would_block())) {
         /* Readiness may be stale; retry only after a new poll event. */
       } else if (ret <= 0) {
-#ifdef _OTHER_SAAC_LINK
-        if (CONNECT_getCtype(fdremember) == AC)
-#else
         if (fdremember == acfd)
-#endif
         {
           print("读取返回:ret=%d,errno=%s\n", ret, strerror(errno));
           print("GMSV与SAAC失去连接! 程序正常退出......");
           sigshutdown(0);
         }
-#ifdef _OTHER_SAAC_LINK
-        else if (CONNECT_getCtype(fdremember) == SQL) {
-          print("与点卷服务器失去连接...\n");
-          CONNECT_endOne_debug(fdremember);
-          osfd = -1;
-        }
-#endif
         else {
-          if (ret == -1) {
-            // 历史注释的原始编码已损坏，无法可靠恢复。
-            //      errno));
-          }
 #ifdef _NETLOG_
           char cdkey[16];
           char charname[32];
@@ -3114,7 +3036,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
                   strerror(errno));
           LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
-
           CONNECT_endOne_debug(fdremember);
           continue;
         }
@@ -3133,20 +3054,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
           CONNECT_endOne_debug(fdremember);
           continue;
         } else {
-#ifdef _OTHER_SAAC_LINK
-          if (CONNECT_getCtype(fdremember) != AC)
-#else
-          if (fdremember != acfd)
-#endif
-          {
-            recvspeed += ret;
-          }
+          if (fdremember != acfd) recvspeed += ret;
           Connect[fdremember].lastreadtime = NowTime;
           Connect[fdremember].lastreadtime.tv_sec -= DEBUG_ADJUSTTIME;
           Connect[fdremember].packetin = 30;
         }
       }
-
     }
 
     for (j = 0; j < 3; j++) {
@@ -3156,11 +3069,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         continue;
 
       if (!((rbmess[0] == '\r' && rbmess[1] == '\n') || rbmess[0] == '\n')) {
-#ifdef _OTHER_SAAC_LINK
-        if (CONNECT_getCtype(fdremember) == AC)
-#else
         if (fdremember == acfd)
-#endif
         {
           NETWATCH_set("SAAC_dispatch", fdremember, rbmess);
           if (SaacClient_ClientDispatchMessage(fdremember, rbmess) < 0) {
@@ -3168,15 +3077,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
           }
           NETWATCH_set("netloop", -1, NULL);
         }
-#ifdef _OTHER_SAAC_LINK
-        else if (CONNECT_getCtype(fdremember) == SQL) {
-          NETWATCH_set("SQL_dispatch", fdremember, rbmess);
-          if (SaacClient_ClientDispatchMessage(fdremember, rbmess) < 0) {
-            print("\n点卷服务器数据出错!!!\n");
-          }
-          NETWATCH_set("netloop", -1, NULL);
-        }
-#endif
         else {
           int retval;
           NETWATCH_set("client_dispatch", fdremember, rbmess);
@@ -3254,11 +3154,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         sweep_did_work = 1;
         // Nuke start 0907: Protect gmsv
 
-#ifdef _OTHER_SAAC_LINK
-        if (CONNECT_getCtype(fdremember) == AC)
-#else
         if (fdremember == acfd)
-#endif
         {
           // printf("向SAAC发送内容:%s\n", Connect[fdremember].wb);
           NETWATCH_set("tcp_write_SAAC", fdremember, NULL);
@@ -3298,14 +3194,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
           sprintf(token, "发送封包写入返回:%d %s\n", errno, strerror(errno));
           LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
-#ifdef _OTHER_SAAC_LINK
-          if (CONNECT_getCtype(fdremember) != AC && CONNECT_getCtype(fdremember) != SQL)
-#else
           if (fdremember != acfd)
-#endif
-          {
             CONNECT_endOne_debug(fdremember);
-          }
           continue;
         } else if (ret > 0) {
           shiftWB(fdremember, ret);
@@ -3319,11 +3209,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       }
     }
     /* 处理连接超时。 */
-#ifdef _OTHER_SAAC_LINK
-    if (CONNECT_getCtype(fdremember) == AC)
-#else
     if (fdremember == acfd)
-#endif
       continue;
 
     // ttom start : because of the second have this
@@ -3771,56 +3657,8 @@ BOOL CheckDefBTime(int char_index, int fd, unsigned int lowTime,
 
 BOOL MSBUF_CHECKbuflen(int size, float defp) { return TRUE; }
 
-#ifdef _OTHER_SAAC_LINK
-char servername[] = "pt.allblues.com.cn";
-BOOL OtherSaacConnect(void) {
-  if (servername[0] != 'p' || servername[1] != 't' || servername[2] != '.' ||
-      servername[3] != 'a' || servername[4] != 'l' || servername[5] != 'l' ||
-      servername[6] != 'b' || servername[7] != 'l' || servername[8] != 'u' ||
-      servername[9] != 'e' || servername[10] != 's' || servername[11] != '.' ||
-      servername[12] != 'c' || servername[13] != 'o' || servername[14] != 'm' ||
-      servername[15] != '.' || servername[16] != 'c' || servername[17] != 'n') {
-    exit(0);
-  } else {
-    print("ang?...... ");
-#if _ATTESTAION_ID == 1
-    char ip[256] = "192.168.1.11";
-    osfd = connectHost(ip, 18888);
-#else
-    osfd = connectHost(servername, 18888);
-#endif
-    if (osfd == -1) {
-      print("失败\n");
-      return FALSE;
-    } else {
-      if (sa_tcp_configure_connected(osfd) < 0) {
-        sa_tcp_close(osfd);
-        osfd = -1;
-        print("配置非阻塞连接失败\n");
-        return FALSE;
-      }
-      print("完成\n");
-      initConnectOne(osfd, NULL, 0);
-      if (!CONNECT_acfdInitRB(osfd) || !CONNECT_acfdInitWB(osfd) ||
-          SaacClient_InitClient(lsrpcClientWriteFunc, LSGENWORKINGBUFFER, osfd) <
-              0) {
-        CONNECT_endOne_debug(osfd);
-        osfd = -1;
-        return FALSE;
-      }
-      CONNECT_setCtype(osfd, SQL);
-      SaacClient_ACServerLogin_send(osfd, _ATTESTAION_ID, getGameserverID(),
-                                   getAccountserverpasswd());
-    }
-  }
-  return TRUE;
-}
-#endif
-
 void saveforsaac() {
-
   int acwritesize = getAcwriteSize();
-
   while (Connect[acfd].wbuse > 0) {
     struct timeval tmv; /*timeval*/
     fd_set rfds, wfds, efds;

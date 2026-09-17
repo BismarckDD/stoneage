@@ -3,18 +3,11 @@
 #include "util.h"
 #include <dirent.h>
 #include <signal.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#define lua_c
-#include "lauxlib.h"
-#include "lua.h"
-#include "lualib.h"
+#define __MYLUA_MYLUA_C__
 #include "mylua/mylua.h"
 
 #ifdef _ALLBLUES_LUA
-MY_Lua MYLua;
-static const char *progname = "lua";
+
 int getArrayInt(lua_State *L, int idx) {
   int result = 0;
   lua_pushnumber(L, idx + 1);
@@ -24,19 +17,14 @@ int getArrayInt(lua_State *L, int idx) {
   return result;
 }
 
-static void l_message(const char *pname, const char *msg) {
-  if (pname)
-    fprintf(stderr, "%s: ", pname);
-  fprintf(stderr, "%s\n", msg);
-  fflush(stderr);
-}
-
 static int report(lua_State *L, int status) {
   if (status && !lua_isnil(L, -1)) {
     const char *msg = lua_tostring(L, -1);
     if (msg == NULL)
       msg = "(error object is not a string)";
-    l_message(progname, msg);
+    fprintf(stderr, "%s: ", "lua");
+    fprintf(stderr, "%s\n", msg);
+    fflush(stderr);
     lua_pop(L, 1);
   }
   return status;
@@ -61,7 +49,7 @@ static int traceback(lua_State *L) {
   return 1;
 }
 
-int _docall(lua_State *L, int narg, int clear, char *file) {
+int _docall(lua_State *L, int narg, int clear, const char *file) {
   int status;
   int base = lua_gettop(L) - narg; /* function index */
   lua_pushcfunction(L, traceback); /* push traceback function */
@@ -95,70 +83,7 @@ void DecryptLua(char *buff, int len, int id) {
   }
 }
 
-#ifdef _CRYPTO_LUA
-void CryptoLua(char *buff, int len, int id) {
-
-  int i;
-  int cryptolen = strlen(crypto);
-  for (i = 0; i < len; i++) {
-    buff[i] -= id;
-    buff[i] ^= crypto[(i) % cryptolen];
-  }
-}
-
-void CryptoAllbluesLUA(char *path, int flg, int id) {
-  struct dirent *ent = NULL;
-  char filename[256];
-  DIR *pDir;
-  pDir = opendir(path);
-  FILE *f;
-  while (NULL != (ent = readdir(pDir))) {
-    if (ent->d_name[0] == '.')
-      continue;
-    if (ent->d_type == 8) {
-
-      if ((strcmptail(ent->d_name, ".lua") == 0 && flg == 1) ||
-          (strcmptail(ent->d_name, ".allblues") == 0 && flg == 0)) {
-        char filename[256];
-        char token[256];
-        sprintf(filename, "%s/%s", path, ent->d_name);
-
-        char *luabuff = NULL;
-        int luamaxlen = 0;
-
-        if ((f = fopen(filename, "r")) != NULL) {
-          fseek(f, 0, SEEK_END);
-          luamaxlen = ftell(f);
-          luabuff = (char *)malloc(luamaxlen + 1);
-          memset(luabuff, 0, luamaxlen);
-          fseek(f, 0, SEEK_SET);
-          fread(luabuff, luamaxlen, 1, f);
-          fclose(f);
-        }
-
-        if (flg == 1) {
-          CryptoLua(luabuff, luamaxlen, id);
-          sprintf(token, "%s.allblues", filename);
-        } else if (flg == 0) {
-          DecryptLua(luabuff, luamaxlen, id);
-          sprintf(token, "%s", filename);
-
-          token[strlen(token) - 9] = '\0';
-        }
-        if ((f = fopen(token, "w+")) != NULL) {
-          fwrite(luabuff, 1, luamaxlen, f);
-          fclose(f);
-        }
-        free(luabuff);
-      }
-    } else {
-      sprintf(filename, "%s/%s", path, ent->d_name);
-      CryptoAllbluesLUA(filename, flg, id);
-    }
-  }
-}
-#endif
-void Cryptodofile(lua_State *L, char *filename) {
+void doCryptoFile(lua_State *L, char *filename) {
   FILE *f;
 
   char *luabuff;
@@ -219,8 +144,8 @@ void Cryptodofile(lua_State *L, char *filename) {
   free(luabuff);
 }
 
-int myluaload(char *filename) {
-  MY_Lua *mylua = &MYLua;
+int loadMyLua(const char *filename) {
+  MY_Lua *mylua = &gMyLua;
   int status = 0;
 
   print("[Lua] loading: %s\n", filename);
@@ -252,7 +177,7 @@ int myluaload(char *filename) {
   lua_gc(mylua->lua, LUA_GCRESTART, 0);
 
   if (strcmptail(filename, ".allblues") == 0) {
-    Cryptodofile(mylua->lua, filename);
+    doCryptoFile(mylua->lua, filename);
   } else {
     status = dofile(mylua->lua, filename);
     if (status != 0) {
@@ -284,8 +209,8 @@ int myluaload(char *filename) {
   return TRUE;
 }
 
-int remyluaload(char *filename) {
-  MY_Lua *mylua = &MYLua;
+int reLoadMyLua(const char *filename) {
+  MY_Lua *mylua = &gMyLua;
 
   while (mylua->next != NULL) {
     if (strlen(mylua->luapath) > 0) {
@@ -306,7 +231,7 @@ int remyluaload(char *filename) {
           mylua = mylua->next;
           continue;
         }
-        Cryptodofile(mylua->lua, mylua->luapath);
+        doCryptoFile(mylua->lua, mylua->luapath);
       } else {
         dofile(mylua->lua, mylua->luapath);
       }
@@ -322,8 +247,8 @@ int remyluaload(char *filename) {
   return EXIT_SUCCESS;
 }
 
-int closemyluaload() {
-  MY_Lua *mylua = &MYLua;
+int closeMyLua() {
+  MY_Lua *mylua = &gMyLua;
   while (mylua->next != NULL) {
     lua_pop(mylua->lua, 1);
     lua_close(mylua->lua);

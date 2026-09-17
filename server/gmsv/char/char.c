@@ -1,3 +1,4 @@
+#define __CHAR_C__
 #include "version.h"
 //
 #include "addressbook.h"
@@ -1968,23 +1969,17 @@ MAKECHARDATAERROR : {
   GmsvServer_CharLogin_send(clifd, FAILED,
                           "Download data ok,but cannot make chara");
 }
-extern char *CHAR_setintdata[CHAR_DATAINTNUM];
-extern char *CHAR_setchardata[CHAR_DATACHARNUM];
+
 BOOL CHAR_charSaveFromConnectAndChar(int fd, Char *ch, BOOL unlock) {
-  char *chardata;
-
-  chardata = CHAR_makeStringFromCharData(ch);
-
+  char *chardata = CHAR_makeStringFromCharData(ch);
   if (chardata == "\0")
     return FALSE;
-
 #ifdef _DBSAVE_CHAR
   else {
     if (ch->data[CHAR_SAVEINDEXNUMBER] != -1)
       CharaData(fd, ch);
   }
 #endif
-
 #ifdef _NEWSAVE
   // print("saveindex_save:%d\n",ch->data[CHAR_SAVEINDEXNUMBER]);
   SaacClient_ACCharSave_send(
@@ -2812,16 +2807,7 @@ char *CHAR_makeStatusString(int index, char *category) {
         attr[i] = 0;
     }
 #ifdef _NEW_RIDEPETS
-#ifdef _RIDEMODE_20
-    int playerlowsride;
-    if (getRideMode() == 2) {
-      playerlowsride = RIDE_PET8 | RIDE_PET9;
-    } else {
-      playerlowsride = CHAR_getInt(index, CHAR_LOWRIDEPETS);
-    }
-#else
     int playerlowsride = CHAR_getInt(index, CHAR_LOWRIDEPETS);
-#endif
 #endif
     snprintf(
         CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer),
@@ -2851,11 +2837,7 @@ char *CHAR_makeStatusString(int index, char *category) {
         CHAR_getInt(index, CHAR_RIDEPET), CHAR_getInt(index, CHAR_LEARNRIDE),
         CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER)
 #ifdef _NEW_RIDEPETS
-#ifdef _RIDEMODE_20
-        , playerlowsride
-#else
         , CHAR_getInt(index, CHAR_LOWRIDEPETS)
-#endif
 #endif
 
     );
@@ -2919,16 +2901,7 @@ char *CHAR_makeStatusString(int index, char *category) {
   }
 #ifdef _NEW_RIDEPETS
   case 'x': {
-#ifdef _RIDEMODE_20
-    int playerlowsride;
-    if (getRideMode() == 2) {
-      playerlowsride = RIDE_PET8 | RIDE_PET9;
-    } else {
-      playerlowsride = CHAR_getInt(index, CHAR_LOWRIDEPETS);
-    }
-#else
     int playerlowsride = CHAR_getInt(index, CHAR_LOWRIDEPETS);
-#endif
     snprintf(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), "X0|%d",
              playerlowsride);
     return CHAR_statusSendBuffer;
@@ -3259,7 +3232,7 @@ char *CHAR_makeStatusString(int index, char *category) {
              CHAR_getInt(pindex, CHAR_YDEF), CHAR_getInt(pindex, CHAR_YQUICK),
              CHAR_getInt(pindex, CHAR_YLV));
 #endif
-#ifdef _RIDE_CF
+#ifdef _NEW_RIDEPETS
     strlength = strlen(CHAR_statusSendBuffer);
     snprintf(CHAR_statusSendBuffer + strlength,
              sizeof(CHAR_statusSendBuffer) - strlength - 1, "%d|",
@@ -5857,7 +5830,7 @@ static BOOL CHAR_callLoop(int char_index) {
   return iRet;
 }
 
-int EnemyMoveNum = 20;
+// 2026.09.17 这是一个全局的节流阀, 限定非玩家NPC的动作
 void CHAR_Loop(void) {
   int charnum = CHAR_getCharNum();
   int playernum = CHAR_getPlayerMaxNum();
@@ -6686,23 +6659,10 @@ void CHAR_processWindow(int char_index, int seqno, int select, int objindex,
 #ifdef _ONLINE_COST
     else if (seqno == CHAR_WINDOWTYPE_ONLINE_COST) {
       if (select == 1) {
-#ifdef _OTHER_SAAC_LINK
-        if (osfd == -1) {
-          OtherSaacConnect();
-          CHAR_talkToCli(char_index, -1, "点卷服务器未正常连接,请重试一遍!",
-                         CHAR_COLORRED);
-          return;
-        }
-        SaacClient_OnlineCost_send(osfd, getfdFromCharaIndex(char_index),
-                                  CHAR_getChar(char_index, CHAR_CDKEY), data,
-                                  CHAR_getInt(char_index, CHAR_FMINDEX),
-                                  CHAR_getChar(char_index, CHAR_FMNAME));
-#else
         SaacClient_OnlineCost_send(acfd, getfdFromCharaIndex(char_index),
                                   CHAR_getChar(char_index, CHAR_CDKEY), data,
                                   CHAR_getInt(char_index, CHAR_FMINDEX),
                                   CHAR_getChar(char_index, CHAR_FMNAME));
-#endif
 #ifdef _SQL_VIPPOINT_LOG
         LogSqlVipPoint(CHAR_getChar(char_index, CHAR_NAME),
                        CHAR_getChar(char_index, CHAR_CDKEY), data, 0,
@@ -6738,19 +6698,8 @@ void CHAR_processWindow(int char_index, int seqno, int select, int objindex,
       } else if (data[0] == 2) {
         ;
       }
-#ifdef _OTHER_SAAC_LINK
-      if (osfd == -1) {
-        OtherSaacConnect();
-        CHAR_talkToCli(char_index, -1, "点卷服务器未正常连接,请重试一遍!",
-                       CHAR_COLORRED);
-        return;
-      }
-      SaacClient_OnlineBuy_send(osfd, getfdFromCharaIndex(char_index),
-                               CHAR_getChar(char_index, CHAR_CDKEY), data);
-#else
       SaacClient_OnlineBuy_send(acfd, getfdFromCharaIndex(char_index),
                                CHAR_getChar(char_index, CHAR_CDKEY), data);
-#endif
       CHAR_talkToCli(char_index, -1, "提货卡号检验中，请稍候...",
                      CHAR_COLORYELLOW);
     }

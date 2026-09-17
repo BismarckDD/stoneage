@@ -29,21 +29,16 @@ typedef enum {
 #ifdef _STREET_VENDOR
   LOG_STREET_VENDOR,
 #endif
-
 #ifdef _ANGEL_SUMMON
   LOG_ANGEL,
 #endif
-
 #ifdef _NEW_MANOR_LAW
   LOG_FMPK_GETMONEY,
 #endif
-
   LOG_FM_FAME_SHOP,
-
 #ifdef _AMPOINT_LOG
   LOG_AMPOINT,
 #endif
-
 #ifdef _SQL_VIPPOINT_LOG
   LOG_SQLVIPOINT,
 #endif

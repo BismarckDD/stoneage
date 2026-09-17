@@ -1820,13 +1820,7 @@ int NPC_PetTransManGetAns(int total1, int total2, int LV, int rank)
   int ans = 0, TransLV = 100;
   float total = 0.00;
   int Fx = 1;
-#if _ATTESTAION_ID == 1
-  if (LV > 130)
-    LV = 130;
-#else
-  if (LV > 140)
-    LV = 140;
-#endif
+  if (LV > 140) LV = 140;
   total = ((float)total1 / 100); // 玛蕾最高 total1=200
   total = total * total * total * total * total;
   if (total < 1)

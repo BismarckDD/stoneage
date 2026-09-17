@@ -1,4 +1,5 @@
 #include "version.h"
+//
 #include "char.h"
 #include "char_event.h"
 #include "object.h"
@@ -14,12 +15,12 @@
 /* ---------------------------------------------------------------------
 sysinfo By Kawata
 --------------------------------------------------------------------- */
-#define		NPC_SYSINFO_MSGMAX				21
-#define		NPC_SYSINFO_PASSWD_DEFAULT		"anthropic"
-#define		NPC_SYSINFO_TIMELIMIT_DEFAULT		120
-#define		NPC_SYSINFO_SHUTDOWNLIMIT_DEFAULT	5
-#define		NPC_SYSINFO_SHUTDOWN_MSG		"再过 %d 分钟後，即开始进行server系统维护。"
-#define		NPC_SYSINFO_SHUTDOWN_MSG_COMP	"server已关闭。"
+#define	NPC_SYSINFO_MSGMAX 21
+#define	NPC_SYSINFO_PASSWD_DEFAULT "anthropic"
+#define	NPC_SYSINFO_TIMELIMIT_DEFAULT 120
+#define	NPC_SYSINFO_SHUTDOWNLIMIT_DEFAULT 5
+#define	NPC_SYSINFO_SHUTDOWN_MSG "再过 %d 分钟後，即开始进行server系统维护。"
+#define	NPC_SYSINFO_SHUTDOWN_MSG_COMP "server已关闭。"
 enum {
 	CHAR_WORK_MODE        		= CHAR_NPCWORKINT1,
 	CHAR_WORK_TIME	    		= CHAR_NPCWORKINT2,
@@ -640,7 +641,7 @@ static void NPC_Sysinfo_Move_Num( int meindex, int tindex, char *msg ){
 	{
 		work = atoi( buff );
 		if( work <= 0 ) {
-			work = 1000; /* 赝癫 */
+			work = 1000;
 		}
 		EnemyMoveNum = work;
 		snprintf( buff, sizeof( buff), "让敌人同时%d动作。",
@@ -655,13 +656,10 @@ static void NPC_Sysinfo_Move_Num( int meindex, int tindex, char *msg ){
 	}
 }
 
-
-
 static void NPC_Sysinfo_Born_Num( int meindex, int tindex, char *msg ){
 	char	buff[256];
 	int		work;
 	buff[0] = buff[1] = 0;
-
 	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE )
 	{
 		work = atoi( buff );

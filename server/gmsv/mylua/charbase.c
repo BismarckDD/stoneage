@@ -18,7 +18,7 @@
 #include "shop.h"
 #ifdef _ALLBLUES_LUA   
 #include "mylua/mylua.h"
-extern MY_Lua MYLua;
+
 static CharBase CharBaseWorkInt[] = {
   {{"对象"},            CHAR_WORKOBJINDEX}
 #ifdef _FONT_SIZE
@@ -193,13 +193,13 @@ static CharBase CharBaseWorkValue[] = {
 };
 
 static CharBase CharBaseInt[] = {
-  {{"图像号"},       CHAR_BASEIMAGENUMBER}
+  {{"图像号"},      CHAR_BASEIMAGENUMBER}
   ,{{"原图像号"},   CHAR_BASEBASEIMAGENUMBER}
-  ,{{"头像号"},      CHAR_FACEIMAGENUMBER}
-  ,{{"存档"},        CHAR_SAVEINDEXNUMBER}
-  ,{{"地图号"},      CHAR_FLOOR}
-  ,{{"坐标X"},       CHAR_X}
-  ,{{"坐标Y"},       CHAR_Y}
+  ,{{"头像号"},     CHAR_FACEIMAGENUMBER}
+  ,{{"存档"},       CHAR_SAVEINDEXNUMBER}
+  ,{{"地图号"},     CHAR_FLOOR}
+  ,{{"坐标X"},      CHAR_X}
+  ,{{"坐标Y"},      CHAR_Y}
   ,{{"方向"},       CHAR_DIR}
   ,{{"等级"},       CHAR_LV}
   ,{{"石币"},       CHAR_GOLD}
@@ -208,10 +208,10 @@ static CharBase CharBaseInt[] = {
   ,{{"最大MP"},     CHAR_MAXMP}
   ,{{"体力"},       CHAR_VITAL}
   ,{{"腕力"},       CHAR_STR}
-  ,{{"耐力"},        CHAR_TOUGH}
-  ,{{"速度"},        CHAR_DEX}
-  ,{{"地"},          CHAR_EARTHAT}
-  ,{{"水"},          CHAR_WATERAT}
+  ,{{"耐力"},       CHAR_TOUGH}
+  ,{{"速度"},       CHAR_DEX}
+  ,{{"地"},         CHAR_EARTHAT}
+  ,{{"水"},         CHAR_WATERAT}
   ,{{"火"},         CHAR_FIREAT}
   ,{{"风"},         CHAR_WINDAT}
   ,{{"战宠"},       CHAR_DEFAULTPET}
@@ -250,12 +250,6 @@ static CharBase CharBaseInt[] = {
   ,{{"家族类型"},   CHAR_FMSPRITE}
 #ifdef _NEW_RIDEPETS
   ,{{"证书骑宠"},   CHAR_LOWRIDEPETS}
-#endif
-#ifdef _RIDE_CF
-  ,{{"证书骑宠1"},   CHAR_LOWRIDEPETS1}
-#ifdef _ADD_RIDE_CF    
-  ,{{"证书骑宠2"},   CHAR_LOWRIDEPETS2}
-#endif
 #endif
   ,{{"个人银行"},   CHAR_BANKGOLD}
   ,{{"骑宠"},       CHAR_RIDEPET}
@@ -767,7 +761,7 @@ static int setFunctionPointer(lua_State *L)
   char *luafunctable=luaL_checklstring(L, 3, &l);
   char *luafunctablepath=luaL_checklstring(L, 4, &l);
   if(strlen(luafunctablepath) > 0){
-    MY_Lua *mylua = &MYLua;
+    MY_Lua *mylua = &gMyLua;
     while(mylua->next != NULL){
       if(strcmp(mylua->luapath, luafunctablepath) == 0){
         return CHAR_setLUAFunction(index, functype, mylua->lua, luafunctable);

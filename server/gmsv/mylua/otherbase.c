@@ -1,6 +1,3 @@
-#include <string.h>
-#include <time.h>
-#include <math.h>
 #include <sys/time.h>
 #include "char.h"
 #include "char_base.h"
@@ -14,7 +11,6 @@
 #include "mylua/mylua.h"
 
 #ifdef _ALLBLUES_LUA   
-extern MY_Lua MYLua;
 
 static int nowtime(lua_State *L) 
 {
@@ -55,7 +51,7 @@ static int CallFunction(lua_State *L)
   luaL_checktype(L, 3, LUA_TTABLE);
   int n = luaL_getn(L, 3);
   lua_State *lua = NULL;
-  MY_Lua *mylua = &MYLua;
+  MY_Lua *mylua = &gMyLua;
   while(mylua->next != NULL){
   	sprintf(newfilename, "%s", filename);
   	if(strcmp(newfilename, mylua->luapath) == 0){

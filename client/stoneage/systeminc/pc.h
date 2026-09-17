@@ -463,12 +463,12 @@ struct PET {
 #ifdef _ANGEL_SUMMON
   unsigned status;
 #else
-  unsigned short status; // ?????(??????)
+  unsigned short status;
 #endif
   char name[PET_NAME_BUFFER_SIZE];
   char freeName[PET_NAME_BUFFER_SIZE];
-  short useFlag;                   // ??????????????
-  short changeNameFlag;            // ?????????
+  short useFlag;
+  short changeNameFlag;
 #ifdef _PET_ITEM
   ITEM item[MAX_PET_ITEM]; // 宠物道具
 #endif

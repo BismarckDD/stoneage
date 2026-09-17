@@ -524,14 +524,6 @@ void checkRidePet(int);
 #ifdef _RIDEPET_
 static void writeRideDebugLog(int pindex, const char *stage);
 #endif
-//andy_add 2002/06/24
-int RIDEPET_getNOindex(int baseNo);
-int RIDEPET_getPETindex(int PetNo, int learnCode);
-int RIDEPET_getRIDEno(int index, int ti);
-
-#ifdef RIDE_PET_LIMIT
-int RIDEPET_getPETindex_New(int PetNo, int learnCode);
-#endif
 
 static char *monoStereoStr[] = { "       单声道       ", "       立体声       " };
 static char *mouseCursor[] = { "     正  常     ", "     平  滑     " };
@@ -11037,14 +11029,6 @@ void MenuProc(void)
                     if (pc.selectPetNo[i] == TRUE) BattlePetStMenCnt++;
 
                 if (mouse.onceState & MOUSE_LEFT_CRICK){
-#ifdef _RIDEPET_
-                    for (i = 0; i < MAX_PET; i++) {
-                        if (pet[i].useFlag == TRUE)
-                            writeRideDebugLog(i, "pet-window-click");
-                    }
-                    // StockChatBufferLine("骑宠调试：已记录宠物面板点击。",
-                    //                    FONT_PAL_YELLOW);
-#endif
                     for (i = 0; i < 5; i++){
                         if (pet[i].useFlag == TRUE && BattlePetReceivePetNo != i){
                             if (HitDispNo == petWndFontNo[i]){
@@ -11224,7 +11208,7 @@ void MenuProc(void)
                         }
                     }
                 }
-#ifdef _DROPPETWND                    // (可开放) Syu ADD 丢弃宠物确认
+#ifdef _DROPPETWND  // (可开放) Syu ADD 丢弃宠物确认
                 if (DropPetWndflag == true) {
                     StockFontBuffer(245, 220, FONT_PRIO_AFRONT, 3, "确定要丢出你的宠物吗？", 0); y += 40;
                     StockDispBuffer(320, 240, DISP_PRIO_YES_NO_WND, CG_DROPWND, 0);
@@ -19918,25 +19902,9 @@ void checkRidePet(int pindex)
         {//andy_add 新骑宠
             int ti = -1, index;
             unsigned int LRCode = 1<<30;
-            if ((ti = RIDEPET_getPETindex(pet[pindex].graNo, pc.lowsride)) < 0)
-            {
-#ifdef RIDE_PET_LIMIT
-                if (pc.lowsride >= LRCode)
-                {
-                    if ((ti = RIDEPET_getPETindex_New(pet[pindex].graNo, LRCode)) < 0)
-                    {
-                        return;
-                    }
-                }
-                else
-                {
-                    return;
-                }
-#endif
-            }
-            if ((index = RIDEPET_getNOindex(pc.baseGraNo)) >= 0){
+            if ((index = RIDEPET_getCharNoIndex(pc.baseGraNo)) >= 0){
                 char buf[64];    
-                if (RIDEPET_getRIDEno(index, ti) >= 0){
+                if (RIDEPET_getRideNo(index, ti) >= 0){
 #ifdef _PET_ITEM
                     if (bHavePetItem){    // 有装备不可骑
                         StockChatBufferLine("宠物身上有装备不可骑乘！", FONT_PAL_YELLOW);
@@ -19955,49 +19923,6 @@ void checkRidePet(int pindex)
 }
 #endif
 
-//andy_add 2002/06/24
-int RIDEPET_getNOindex(int baseNo)
-{
-    for (int i = 0; i < sizeof(RPlistMode) / sizeof(tagRidePetList); i++)    {
-        if (RPlistMode[i].charNo == baseNo)
-            return RPlistMode[i].Noindex;
-    }
-    return -1;
-}
-//andy_add 2002/06/24
-int RIDEPET_getPETindex(int PetNo, int learnCode)
-{
-    int i;
-    for (i = 0; i < sizeof(RideCodeMode) / sizeof(tagRideCodeMode); i++){
-        if (RideCodeMode[i].petNo == PetNo &&
-            (RideCodeMode[i].learnCode & learnCode))
-            return i;
-    }
-    return -1;
-}
-#ifdef RIDE_PET_LIMIT
-int RIDEPET_getPETindex_New(int PetNo, int learnCode)
-{
-    int i;
-    for (i = 0; i < sizeof(RideCodeMode) / sizeof(tagRideCodeMode); i++)    {
-        if (RideCodeMode[i].petNo == PetNo/* &&
-            (RideCodeMode[i].learnCode & learnCode)*/)    {
-            return i;
-        }
-    }
-    return -1;
-}
-#endif
-
-//andy_add 2002/06/24
-int RIDEPET_getRIDEno(int index, int ti)
-{
-    if (index < 0 || index >= sizeof(RideNoList) / sizeof(tagRideNoList))
-        return -1;
-    if (ti < 0 || ti >= MAXNOINDEX)
-        return -1;
-    return RideNoList[index].RideNo[ti];
-}
 
 #ifdef _TELLCHANNEL                //ROG ADD 密语频道
 void InitSelectChar(char *msg, BOOL endFlag)
@@ -20032,12 +19957,10 @@ void InitSelectChar(char *msg, BOOL endFlag)
 #endif
         MultiTells = TRUE;
     }
-    //test//////////////
 #ifdef _TIMEBAR_FUNCTION
     StartTime = TimeGetTime();
-    timBarIdent = SetTimeBar("aaaaaa", 50);
+    timBarIdent = SetTimeBar("ang?", 50);
 #endif
-    //////////////////
 }
 
 void SelectChar(void)
@@ -20065,7 +19988,6 @@ void SelectChar(void)
         }
     }
 
-    //test//////////////
 #ifdef _TIMEBAR_FUNCTION
     int Now = TimeGetTime();
     Now -= StartTime;
@@ -20078,7 +20000,6 @@ void SelectChar(void)
     }
 
 #endif
-    ////////////////////
 }
 
 void DeathTellChannel(void)

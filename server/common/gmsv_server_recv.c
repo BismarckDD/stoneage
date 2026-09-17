@@ -314,9 +314,6 @@ void GmsvServer_CharLogin_recv(int client_fd, char *charname) {
                              CONNECT_getFdid(client_fd));
   CONNECT_setState(client_fd, WHILELOGIN);
 }
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 #ifdef _ITEM_CHECKDROPATLOGOUT
 BOOL CheckDropatLogout(int char_index) {
   int i;

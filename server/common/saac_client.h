@@ -430,9 +430,6 @@ void SaacClient_LotterySystem_recv(char *data);
 void SaacClient_AllServSend_recv(char *data);
 void SaacClient_AllServSend_send(char *data);
 #endif
-#ifdef _OTHER_SAAC_LINK
-void SaacClient_OtherSaacLink_send(int saac_fd, char *filename, char *data);
-#endif
 
 void SaacClient_ACServerKey_recv(int saac_fd, int key);
 

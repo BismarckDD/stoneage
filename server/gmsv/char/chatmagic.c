@@ -1,3 +1,4 @@
+#define __CHAT_MAGIC_C__
 #include "version.h"
 //
 #include "chatmagic.h"
@@ -67,8 +68,6 @@ extern tagRidePetTable ridePetTable[296];
 extern int *pWorkAttackPower;
 extern time_t initTime;
 int *pWorkAttackPower = NULL;
-
-struct GMINFO gminfo[GMMAXNUM];
 
 static char cdkey[CDKEYLEN];
 static char token[1024];
@@ -3198,8 +3197,8 @@ void CHAR_CHAT_DEBUG_gmreload(int char_index, char *message) {
   }
   snprintf(charcdkey, sizeof(charcdkey), CHAR_getChar(char_index, CHAR_CDKEY));
   for (i = 0; i < GMMAXNUM; i++) {
-    if (strcmp(charcdkey, gminfo[i].cdkey) == 0) {
-      charlevel = gminfo[i].level;
+    if (strcmp(charcdkey, gGmInfo[i].cdkey) == 0) {
+      charlevel = gGmInfo[i].level;
       break;
     }
   }
@@ -3221,23 +3220,23 @@ void CHAR_CHAT_DEBUG_gmreload(int char_index, char *message) {
     char tmpbuf[256];
     easyGetTokenFromString(message, 2, clevel, sizeof(clevel));
     level = atoi(clevel);
-    if (level > 4 || level < 1 || level > gminfo[i].level) {
+    if (level > 4 || level < 1 || level > gGmInfo[i].level) {
       CHAR_talkToCli(char_index, -1,
                      "修改失败，无法将此帐号等级修改的比自己等级高！level(1~3)",
                      CHAR_COLORWHITE);
       return;
     }
     for (i = 0; i < GMMAXNUM; i++) {
-      if (strcmp(id, gminfo[i].cdkey) == 0) {
-        if (gminfo[i].level > charlevel) {
+      if (strcmp(id, gGmInfo[i].cdkey) == 0) {
+        if (gGmInfo[i].level > charlevel) {
           snprintf(tmpbuf, sizeof(tmpbuf),
                    "修改失败，无法修改等级比自己高的帐号！");
           CHAR_talkToCli(char_index, -1, tmpbuf, CHAR_COLORWHITE);
           return;
         }
-        gminfo[i].level = level;
+        gGmInfo[i].level = level;
         snprintf(tmpbuf, sizeof(tmpbuf), "修改%s等级为%dＯＫ！",
-                 gminfo[i].cdkey, gminfo[i].level);
+                 gGmInfo[i].cdkey, gGmInfo[i].level);
         CHAR_talkToCli(char_index, -1, tmpbuf, CHAR_COLORWHITE);
         changeflag = 1;
         break;
@@ -3489,8 +3488,6 @@ void CHAR_CHAT_DEBUG_engineer(int char_index, char *message) {
   CHAR_setInt(char_index, CHAR_LEARNRIDE, 200);
   CHAR_setInt(char_index, CHAR_GOLD, MaxGold);
   CHAR_setInt(char_index, CHAR_LOWRIDEPETS, -1);
-  CHAR_setInt(char_index, CHAR_LOWRIDEPETS2, -1);
-  CHAR_setInt(char_index, CHAR_LOWRIDEPETS3, -1);
 
   CHAR_talkToCli(char_index, -1, message, CHAR_COLORYELLOW);
   {
@@ -5853,16 +5850,6 @@ void CHAR_CHAT_DEBUG_GmSaveAllChar(int char_index, char *message) {
   CHAR_talkToCli(char_index, -1, "已保存完毕~", CHAR_COLORRED);
 }
 #endif
-
-void CHAR_CHAT_DEBUG_ReLoadLua(int char_index, char *message) {
-  // ReLoadAllbluesLUA(message);
-  CHAR_talkToCli(char_index, -1, "更新LUA完毕~", CHAR_COLORRED);
-}
-
-void CHAR_CHAT_DEBUG_NewLoadLua(int char_index, char *message) {
-  // NewLoadAllbluesLUA(message);
-  CHAR_talkToCli(char_index, -1, "添加LUA完毕~", CHAR_COLORRED);
-}
 
 #ifdef _KEEP_UP_NO_LOGIN
 extern char keepupnologin[256];

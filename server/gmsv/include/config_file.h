@@ -58,15 +58,6 @@ extern PETSKILL_CODES Code_skill[PETSKILL_CODE];
 void Load_PetSkillCodes(void);
 #endif
 
-#ifdef _GMRELOAD
-#define GMMAXNUM 100
-struct GMINFO {
-  char cdkey[24];
-  int level;
-};
-extern struct GMINFO gminfo[GMMAXNUM];
-#endif
-
 BOOL luareadgServerConfigfile(char *data);
 BOOL readgServerConfigfile(char *filename);
 
@@ -155,10 +146,9 @@ char *getEnemyfile(void);
 char *getGroupfile(void);
 char *getEnemyBasefile(void);
 char *getMagicfile(void);
+
 #ifdef _ATTACK_MAGIC
-
 char *getAttMagicfileName(void);
-
 #endif
 
 char *getPetskillfile(void);
@@ -346,8 +336,6 @@ int getBattleGold(void);
 int getAngelPlayerTime(void);
 int getAngelPlayerMun(void);
 #endif
-
-int getRideMode(void);
 
 #ifdef _FM_POINT_PK
 char *getFmPointPK(void);

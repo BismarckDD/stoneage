@@ -10,7 +10,6 @@
 #include "gmsv_server.h"
 #ifdef _ALLBLUES_LUA_1_2
 #include "mylua/mylua.h"
-extern MY_Lua MYLua;
 
 static CharBase MagicBaseInt[] = {
 	{{"ID"}, 					MAGIC_ID}
@@ -42,7 +41,7 @@ static int addLUAListFunction(lua_State *L)
 	
 	
 	if(strlen(luafunctablepath) > 0){
-		MY_Lua *mylua = &MYLua;
+		MY_Lua *mylua = &gMyLua;
 	  while(mylua->next != NULL){
 	  	if(strcmp(mylua->luapath, luafunctablepath) == 0){
 				#ifdef _MAGIC_LUA

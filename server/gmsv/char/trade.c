@@ -550,7 +550,6 @@ BOOL TRADE_Search(int fd, int meindex, char* message)
         return TRUE;
    }else if (cnt > 1){	// 前方不只一位玩家
 		CHAR_talkToCli(meindex, -1, TRADE_OVERPLAYER, CHAR_COLORYELLOW);
-//		sprintf(msgbuf, "C|%d|%s|0", tofd, tocharaname);
 			CHAR_setWorkInt(meindex, CHAR_WORKTRADEMODE, CHAR_TRADE_FREE);
    		return FALSE;
     }

@@ -35,9 +35,6 @@ typedef enum {
   NOTDETECTED,
   AC,
   CLI,
-#ifdef _OTHER_SAAC_LINK
-  SQL,
-#endif
   ADM
 } ConnectType;
 
@@ -65,9 +62,6 @@ EXTERN int nfds;
 EXTERN int bindedfd;
 EXTERN int acfd;
 EXTERN int svfd;
-#ifdef _OTHER_SAAC_LINK
-EXTERN int osfd;
-#endif
 EXTERN int ConnectLen;
 #define CONNECT_WINDOWBUFSIZE 7
 
@@ -284,10 +278,6 @@ int CONNECT_getTradeList(int fd);
 BOOL MSBUF_CHECKbuflen(int size, float defp);
 
 void SetTcpBuf(int fd, fd_set *fds);
-
-#ifdef _OTHER_SAAC_LINK
-BOOL OtherSaacConnect(void);
-#endif
 
 #ifdef _EPOLL_ET_MODE
 int doSocketAccept();

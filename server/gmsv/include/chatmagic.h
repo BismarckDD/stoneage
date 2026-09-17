@@ -82,8 +82,24 @@ void CHAR_CHAT_Fukuwa(int char_index, char *message);
 #endif
 
 #ifdef _GMRELOAD
-void CHAR_CHAT_DEBUG_gmreload(int char_index, char *message);
+
+#ifdef __CHAT_MAGIC_C__
+#define EXTERN
+#else
+#define EXTERN extern
 #endif
+#define GMMAXNUM 100
+typedef struct tagGmInfo {
+  char cdkey[24];
+  int level;
+} GmInfo;
+EXTERN GmInfo gGmInfo[GMMAXNUM];
+void CHAR_CHAT_DEBUG_gmreload(int char_index, char *message);
+
+#undef EXTERN
+
+#endif
+
 #ifdef _CHAR_PROFESSION // WON ADD 人物职业
 void CHAR_CHAT_DEBUG_addsk(int char_index, char *message);
 void CHAR_CHAT_DEBUG_delsk(int char_index, char *message);
@@ -252,10 +268,6 @@ void CHAR_CHAT_DEBUG_PlayerQuestion(int char_index, char *message);
 #endif
 #ifdef _GM_SAVE_ALL_CHAR
 void CHAR_CHAT_DEBUG_GmSaveAllChar(int char_index, char *message);
-#endif
-#ifdef _ALLBLUES_LUA
-void CHAR_CHAT_DEBUG_ReLoadLua(int char_index, char *message);
-void CHAR_CHAT_DEBUG_NewLoadLua(int char_index, char *message);
 #endif
 #ifdef _KEEP_UP_NO_LOGIN
 void CHAR_CHAT_DEBUG_KeepUpNoLogin(int char_index, char *message);

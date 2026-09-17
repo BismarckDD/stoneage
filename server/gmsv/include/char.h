@@ -664,7 +664,12 @@ void CHAR_PetAddVariableAi(int petindex, int iValue);
 void CHAR_PartyUpdate(int char_index, int senddata);
 char *CHAR_getUseName(int char_index);
 char *CHAR_getUseID(int char_index);
-EXTERN int EnemyMoveNum; /*   凛卞  嫖  仃月衬及醒 */
+
+#ifdef __CHAR_C__
+int EnemyMoveNum = 20;
+#else
+extern int EnemyMoveNum;
+#endif
 
 #define DB_DUELPOINT "db_duel"          // 犯亘巨伙禾奶件玄犯□正矛□旦
 #define DB_ADDRESSBOOK "db_addressbook" // 失玉伊旦皮永弁犯□正矛□旦
