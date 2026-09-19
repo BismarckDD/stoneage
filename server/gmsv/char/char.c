@@ -7902,29 +7902,29 @@ BOOL CHAR_send_K_StatusString(int char_index, int num,
 }
 
 //------------------------------------------------------------
-// 皿伊奶乩□及    毛笛遥
+// 给人物增加魅力
 //------------------------------------------------------------
-void CHAR_AddCharm(int char_index, int iValue) {
+void CHAR_AddCharm(int char_index, int charm) {
   int iWork;
-  iWork = CHAR_getInt(char_index, CHAR_CHARM) + iValue;
-  iWork = max(0, iWork);   //   凝ㄟ
-  iWork = min(100, iWork); //     ㄠㄟㄟ
+  iWork = CHAR_getInt(char_index, CHAR_CHARM) + charm;
+  iWork = max(0, iWork);
+  iWork = min(100, iWork);
   CHAR_setInt(char_index, CHAR_CHARM, iWork);
 }
 
 //------------------------------------------------------------
-// 矢永玄及镝擦蘸  祭袄毛笛遥允月［
+// 为宠物增加忠诚度
 //------------------------------------------------------------
-void CHAR_PetAddVariableAi(int petindex, int iValue) {
+void CHAR_PetAddVariableAi(int pet_index, int loyalty) {
   int iWork;
-  iWork = CHAR_getInt(petindex, CHAR_VARIABLEAI) + iValue;
+  iWork = CHAR_getInt(pet_index, CHAR_VARIABLEAI) + loyalty;
   iWork = min(CHAR_MAXVARIABLEAI, iWork);
   iWork = max(CHAR_MINVARIABLEAI, iWork);
-  CHAR_setInt(petindex, CHAR_VARIABLEAI, iWork);
+  CHAR_setInt(pet_index, CHAR_VARIABLEAI, iWork);
 }
 
 //------------------------------------------------------------
-// 犯□正矛□旦卞瓒  允月平□    蟆  毛综岳允月［
+// 
 //------------------------------------------------------------
 int CHAR_makeDBKey(int char_index, char *pszBuffer, int size) {
 
@@ -7949,10 +7949,7 @@ int CHAR_makeDBKey(int char_index, char *pszBuffer, int size) {
 }
 
 //------------------------------------------------------------
-//
-//  犯□正矛□旦及嫩  毛凳蕙
-//
-// DuelPoint 及 DBUpdateEntry毛霜月
+//  修改人物的DP: DUEL POINT(DP)
 //------------------------------------------------------------
 BOOL CHAR_send_DpDBUpdate(int char_index) {
   int fd, dp;
@@ -8328,22 +8325,8 @@ BOOL CHAR_initEffectSetting(char *filename) {
     }
   }
   fclose(f);
-
   CHAR_effectnum = effectreadlen;
-
   print("char effect num: %d...", CHAR_effectnum);
-#ifdef DEBUG
-
-  {
-    int i;
-    for (i = 0; i < CHAR_effectnum; i++)
-      print("effect fl[%d] effect[%d] level[%d] month[%d] day[%d] hour[%d] "
-            "min[%d] expire[%d]\n",
-            CHAR_effect[i].floor, CHAR_effect[i].x, CHAR_effect[i].y,
-            CHAR_effect[i].month, CHAR_effect[i].day, CHAR_effect[i].hour,
-            CHAR_effect[i].min, CHAR_effect[i].expire);
-  }
-#endif
   return TRUE;
 }
 

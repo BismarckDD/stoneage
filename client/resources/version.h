@@ -455,7 +455,6 @@ unsigned int TimeGetTime(void);
 #define _THEATER                // Terry 剧场功能
 #define _MOVE_SCREEN            // Terry 移动荧幕到指定的座标
 // #define _80_LOGIN               // Terry 8.0 登入画面
-#define _8_RIDEPETS             // (可开) Change 8.0骑宠
 #define _8BATTLEMAP             // Change 8.0 战斗地表
 #define _PETKILL_COST_FAME      // Terry 宠物技能店学技能要花费声望
 #define _DRAGON_FUSION          // Robin 人龙进化

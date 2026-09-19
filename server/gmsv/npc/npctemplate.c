@@ -57,7 +57,7 @@ static FunctionNameSet functionSet[] = {
     {"SavePoint", "SavePointInit", "", "", "", "", "", "", "",
      "SavePointTalked", "", "", "", "", "", "", "SavePointWindowTalked"},
 
-    /* 甲□仿□ */
+    /* ヒーラー  (治疗师) */
     {"Healer", "HealerInit", "", "", "", "", "", "", "", "HealerTalked", "", "",
      "", "", "", "", ""},
 
@@ -89,7 +89,7 @@ static FunctionNameSet functionSet[] = {
     {"NPCEnemy", "NPCEnemyInit", "", "", "", "", "NPCEnemyWatch", "", "",
      "NPCEnemyTalked", "", "", "", "", "", "", "NPCEnemyWindowTalked"},
 
-    /* 失弁扑亦件楝 */
+    /* アクション君  (行动君) */
     {"Action", "ActionInit", "", "", "", "", "ActionWatch", "", "",
      "ActionTalked", "", "", "", "", "", "", ""},
 
@@ -135,15 +135,15 @@ static FunctionNameSet functionSet[] = {
     {"TimeMan", "TimeManInit", "", "", "", "", "TimeManWatch", "", "",
      "TimeManTalked", "", "", "", "", "", "", ""},
 
-    /* 示犯奴仿件必□斥 */
+    /* ボディランゲージ  (肢体语言) */
     {"BodyLan", "BodyLanInit", "", "", "", "", "BodyLanWatch", "", "",
      "BodyLanTalked", "", "", "", "", "", "", "BodyLanWindowTalked"},
 
-    /* 示犯奴仿件必□斥 */
+    /* ボディランゲージ  (肢体语言) */
     {"Mic", "MicInit", "", "", "", "", "", "", "", "MicTalked", "", "", "", "",
      "", "", ""},
 
-    /* 仿永平□穴件 */
+    /* ラッキーマン  (幸运者) */
     {"LuckyMan", "LuckyManInit", "", "", "", "", "", "", "", "LuckyManTalked",
      "", "", "", "", "", "", "LuckyManWindowTalked"},
 
@@ -158,18 +158,18 @@ static FunctionNameSet functionSet[] = {
     {"Charm", "CharmInit", "", "", "", "", "", "", "", "CharmTalked", "", "",
      "", "", "", "", "CharmWindowTalked"},
 
-    /* 弁奶术楝 */
+    /* クイズ君  (问答君) */
     {"Quiz", "QuizInit", "", "", "", "", "", "", "", "QuizTalked", "", "", "",
      "", "", "", "QuizWindowTalked"},
 
     {"PoolItemShop", "PoolItemShopInit", "", "", "", "", "", "", "",
      "PoolItemShopTalked", "", "", "", "", "", "", "PoolItemShopWindowTalked"},
 
-    /* 奶矛件玄民尼永弁穴件 */
+    /* イベントチェックマン  (事件检查员) */
     {"CheckMan", "CheckManInit", "", "", "", "", "", "", "", "CheckManTalked",
      "", "", "", "", "", "", "CheckManWindowTalked"},
 
-    /* 元扎氏仃氏楝 */
+    /* じゃんけん君  (猜拳君) */
     {"Janken", "JankenInit", "", "", "", "", "", "", "", "JankenTalked", "", "",
      "", "", "", "", "JankenWindowTalked"},
 
@@ -416,10 +416,10 @@ typedef enum {
 } NPC_TYPECATEGORYATREADFILE;
 
 /*------------------------------------------------------------
- * Template index 午仄化恳仄中井升丹井check允月
- * 娄醒
+ * Template index として正しいかどうかcheckする  (检查index是否正确)
+ * 引数  (参数)
  *  index       int             index
- * 忒曰袄
+ * 戻り値  (返回值)
  *  valid       TRUE
  *  invalid     FALSE
  ------------------------------------------------------------*/
@@ -427,10 +427,10 @@ INLINE int NPC_CHECKTEMPLATEINDEX(int index) {
   return (NPC_templatenum <= index || index < 0) ? FALSE : TRUE;
 }
 /*------------------------------------------------------------
- * Template intdata index 午仄化恳仄中井升丹井check允月
- * 娄醒
+ * Template intdata index として正しいかどうかcheckする  (检查intdata index是否正确)
+ * 引数  (参数)
  *  index     int             index
- * 忒曰袄
+ * 戻り値  (返回值)
  *  valid       TRUE
  *  invalid     FALSE
  ------------------------------------------------------------*/
@@ -438,10 +438,10 @@ static INLINE int NPC_CHECKTEMPLATEINTINDEX(int index) {
   return (NPC_TEMPLATEINTNUM <= index || index < 0) ? FALSE : TRUE;
 }
 /*------------------------------------------------------------
- * Template chardata index 午仄化恳仄中井升丹井check允月
- * 娄醒
+ * Template chardata index として正しいかどうかcheckする  (检查chardata index是否正确)
+ * 引数  (参数)
  *  index     int             index
- * 忒曰袄
+ * 戻り値  (返回值)
  *  valid       TRUE
  *  invalid     FALSE
  ------------------------------------------------------------*/
@@ -452,9 +452,9 @@ static INLINE int NPC_CHECKTEMPLATECHARINDEX(int index) {
 }
 
 /*------------------------------------------------------------
- * 娄醒
- *  filenum    int      白央奶伙醒
- * 忒曰袄
+ * 引数  (参数)
+ *  filenum    int      ファイル数  (文件数量)
+ * 戻り値  (返回值)
  ------------------------------------------------------------*/
 BOOL NPC_initTemplateArray(int templatenum) {
   NPC_templatenum = templatenum;
@@ -467,9 +467,9 @@ BOOL NPC_initTemplateArray(int templatenum) {
 }
 
 /*------------------------------------------------------------
- * 娄醒
- * 忒曰袄
- *  卅仄
+ * 引数  (参数)
+ * 戻り値  (返回值)
+ *  なし  (无)
  ------------------------------------------------------------*/
 void NPC_setDefaultNPCTemplate(NPC_Template *temp) {
   int i;
@@ -538,16 +538,16 @@ void NPC_templateallocitemdata(NPC_Template *one) {
 }
 
 /*------------------------------------------------------------
- * NPC_getRandomValue 午及娄醒及询晶岭及凶户及楮醒
- * 娄醒
- * 忒曰袄
+ * NPC_getRandomValue との値数の換算のための関数  (与NPC_getRandomValue的数值换算用函数)
+ * 引数  (参数)
+ * 戻り値  (返回值)
  ------------------------------------------------------------*/
 static int NPC_seekGraphicNumberFromString(char *string, int *unuse) {
   return CHAR_seekGraphicNumberFromString(string);
 }
 /*------------------------------------------------------------
- * 娄醒
- * 忒曰袄
+ * 引数  (参数)
+ * 戻り値  (返回值)
  ------------------------------------------------------------*/
 static int NPC_getRandomValue(char *string, int *randomwidth) {
   int minvalue;
@@ -557,11 +557,11 @@ static int NPC_getRandomValue(char *string, int *randomwidth) {
   minvalue = atoi(string);
   startmax = index(string, ',');
   if (startmax != NULL) {
-    /*  仿件母丞涩烂互今木化中月    */
-    /*  +1 反 ","及凶户  */
+    /*  ランダム設定がされている  (已设置随机)    */
+    /*  +1 は ","のため  (是为了",")  */
     maxvalue = atoi(startmax + 1);
 
-    /*  切扎氏午仄凶涩烂分  */
+    /*  ちゃんとした設定だ  (是正规的设置)  */
     *randomwidth = ABS(maxvalue - minvalue);
     return min(minvalue, maxvalue);
   }
@@ -570,11 +570,10 @@ static int NPC_getRandomValue(char *string, int *randomwidth) {
 }
 
 /*------------------------------------------------------------
- * 娄醒
- * 忒曰袄
+ * 引数  (参数)
+ * 戻り値  (返回值)
  ------------------------------------------------------------*/
 BOOL NPC_readTemplateFile(char *filename) {
-  FILE *f;
   char line[512];
   int linenum = 0;
   int start = OFF;
@@ -594,7 +593,7 @@ BOOL NPC_readTemplateFile(char *filename) {
     randomdata[i] = 0;
 
   NPC_setDefaultNPCTemplate(&temp);
-  f = fopen(filename, "r");
+  FILE *f = fopen(filename, "r");
   if (f == NULL)
     return FALSE;
   ret = fgets(line, sizeof(line), f);
@@ -606,11 +605,6 @@ BOOL NPC_readTemplateFile(char *filename) {
   }
   linenum = 1;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */

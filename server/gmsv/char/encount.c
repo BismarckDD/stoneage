@@ -50,22 +50,10 @@ static INLINE BOOL ENCOUNT_CHECKENCOUNTTABLEARRAY(int array) {
  *  撩      FALSE(0)
  *------------------------------------------------------------*/
 BOOL ENCOUNT_initEncount(char *filename) {
-  FILE *f;
   char line[256];
   int linenum = 0;
   int encount_readlen = 0;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    f = fopen(filename, "r");
-  }
+  FILE *f = fopen(filename, "r");
   if (f == NULL) {
     errorprint;
     return FALSE;
@@ -75,11 +63,6 @@ BOOL ENCOUNT_initEncount(char *filename) {
 
   /*  引内  躲卅垫互窒垫丐月井升丹井譬屯月    */
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */
@@ -133,11 +116,6 @@ BOOL ENCOUNT_initEncount(char *filename) {
   /*  引凶  心  允    */
   linenum = 0;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */

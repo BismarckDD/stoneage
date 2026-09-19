@@ -125,7 +125,6 @@ RETURNFALSE:
 }
 
 int NPC_readCreateFile(char *filename) {
-  FILE *f;
   char line[512];
   int linenum = 0;
   int start = OFF;
@@ -161,18 +160,13 @@ int NPC_readCreateFile(char *filename) {
   }
 
   NPC_setDefaultNPCCreate(&cr);
-  f = fopen(filename, "r");
+  FILE *f = fopen(filename, "r");
   if (f == NULL)
     return FALSE;
 
   ret = fgets(line, sizeof(line), f);
   if (ret == NULL)
     goto FCLOSERETURNFALSE;
-#ifdef _CRYPTO_DATA
-  if (crypto == TRUE) {
-    DecryptKey(line);
-  }
-#endif
   if (strcmp(NPC_CREATEFILEMAGIC, line) != 0) {
     print("这不是一个create文件.\n");
     goto FCLOSERETURNFALSE;
@@ -180,13 +174,7 @@ int NPC_readCreateFile(char *filename) {
   linenum = 1;
 
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
-
     if (line[0] == '#')
       continue; /* comment */
     if (line[0] == '\n')

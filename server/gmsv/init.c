@@ -537,9 +537,9 @@ BOOL init(int argc, char **argv, char **env) {
     print("succeed.\n");
 #endif
 #ifdef _NEW_RIDEPETS
-  print("开始初始化骑宠设置......");
+  print("从文件初始化骑宠设置......");
   if (!CHAR_RideInit())
-    print("失败.\n");
+    print("跳过.\n");
   else
     print("成功.\n");
 #endif

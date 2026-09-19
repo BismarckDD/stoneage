@@ -617,40 +617,22 @@ CHAR_invincibleArea *CHAR_invarea;
 int CHAR_invareanum;
 
 BOOL CHAR_initInvinciblePlace(char *filename) {
-  FILE *f;
   char line[256];
   int linenum = 0;
   int invreadlen = 0;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    f = fopen(filename, "r");
-  }
+  FILE *f = fopen(filename, "r");
   if (f == NULL) {
     errorprint;
     return FALSE;
   }
   CHAR_invareanum = 0;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */
     if (line[0] == '\n')
-      continue; /* none    */
+      continue; /* none */
     chomp(line);
-
     CHAR_invareanum++;
   }
 
@@ -684,11 +666,6 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
   }
   linenum = 0;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */
@@ -704,7 +681,6 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
       int ret;
       int lx, ly, rx, ry;
       CHAR_AREAKIND kind = -1;
-
       ret = getStringFromIndexWithDelim(line, " ", 1, token, sizeof(token));
       if (ret == FALSE) {
         printEx("Syntax Error file:%s line:%d\n", filename, linenum);
@@ -854,11 +830,6 @@ BOOL CHAR_initAppearPosition(char *filename) {
   }
   linenum = 0;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */

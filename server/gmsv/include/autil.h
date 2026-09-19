@@ -51,10 +51,4 @@ int util_mkint(char *buffer, int value);
 int util_destring(int sliceno, char *value);
 int util_mkstring(char *buffer, char *value);
 
-#ifdef _CRYPTO_DATA
-void CryptoKey(char *usrkey);
-void DecryptKey(char *usrkey);
-void List(char *path);
-#endif
-
 #endif // __AUTIL_H__

@@ -841,25 +841,25 @@ typedef enum {
 } CHAR_DATAINT;
 
 typedef enum {
-  CHAR_MODAI = CHAR_CHARM, /*  矢永玄  及及镝擦艘膜恳袄    */
+  CHAR_MODAI = CHAR_CHARM, /*  ペットの復活の保存用  (宠物复活保存用)    */
   CHAR_VARIABLEAI =
-      CHAR_LUCK, /*  矢永玄及镝擦艘  祭袄  ㄠㄟㄟ  仄凶袄匹  匀化云仁   */
-  CHAR_SLOT = CHAR_DEFAULTPET, /* 檗  毛本永玄请  月旦夫永玄醒  矢永玄互银迕  */
-  CHAR_PETGETLV = CHAR_CHATVOLUME,    /* 必永玄今木凶伊矛伙  矢永玄及心银迕   */
-  CHAR_PUTPETTIME = CHAR_LOGINCOUNT,  /*  矢永玄互哗  卞  井木凶凛棉 */
-  CHAR_MAILMODE = CHAR_RADARSTRENGTH, /*   矢永玄及心银迕  丢□伙霜耨橇谪 */
+      CHAR_LUCK, /*  ペットの復活変化をしない場合に使用する  (宠物复活无变化时使用)   */
+  CHAR_SLOT = CHAR_DEFAULTPET, /* 石をセットするスロット数  ペットが使用  (设置石头的栏位数，宠物使用)  */
+  CHAR_PETGETLV = CHAR_CHATVOLUME,    /* ゲットされたレベル  ペットのみ使用  (获得的等级，仅宠物可用)   */
+  CHAR_PUTPETTIME = CHAR_LOGINCOUNT,  /*  ペットが箱に置かれた時間  (宠物放入箱子时间) */
+  CHAR_MAILMODE = CHAR_RADARSTRENGTH, /*   ペットのみ使用  メール送信機能  (仅宠物可用的邮件发送功能) */
   CHAR_ALLOCPOINT = CHAR_LEVELUPPOINT, /* [total] point get when level up. */
-  CHAR_PETMAILBUFINDEX = CHAR_GETPETCOUNT,   /* 矢永玄丢□伙(offmsg)尺及index */
-  CHAR_PETMAILIDLETIME = CHAR_SENDMAILCOUNT, /* 矢永玄丢□伙及啃及凛棉卅升 */
-  CHAR_PETMAILFROMFLOOR = CHAR_DUELBATTLECOUNT, /* 丢□伙毛霜匀凶凛及白夫失 */
-  CHAR_PETMAILFROMX = CHAR_DUELWINCOUNT,        /* 丢□伙毛霜匀凶凛及  甄   */
-  CHAR_PETMAILFROMY = CHAR_DUELLOSECOUNT,       /* 丢□伙毛霜匀凶凛及  甄   */
+  CHAR_PETMAILBUFINDEX = CHAR_GETPETCOUNT,   /* ペットメール(offmsg)用のindex  (宠物邮件(offmsg)的索引) */
+  CHAR_PETMAILIDLETIME = CHAR_SENDMAILCOUNT, /* ペットメールの為の時間など  (宠物邮件的时间等) */
+  CHAR_PETMAILFROMFLOOR = CHAR_DUELBATTLECOUNT, /* メールを送った時のフロア  (发送邮件时的楼层) */
+  CHAR_PETMAILFROMX = CHAR_DUELWINCOUNT,        /* メールを送った時の座標  (发送邮件时的坐标)   */
+  CHAR_PETMAILFROMY = CHAR_DUELLOSECOUNT,       /* メールを送った時の座標  (发送邮件时的坐标)   */
   CHAR_PETMAILEFFECT =
-      CHAR_DUELSTWINCOUNT, /* 矢永玄丢□伙及请蜇及巨白尼弁玄  寞 */
-  CHAR_PETSENDMAILCOUNT = CHAR_TALKCOUNT, /* 矢永玄互丢□伙毛扪氏分荚醒 */
+      CHAR_DUELSTWINCOUNT, /* ペットメールの表示のエフェクト番号  (宠物邮件显示的特效编号) */
+  CHAR_PETSENDMAILCOUNT = CHAR_TALKCOUNT, /* ペットがメールを送った回数  (宠物发送邮件的次数) */
   CHAR_PETRANK =
-      CHAR_LASTTIMESETLUCK, /* 矢永玄及仿件弁(矢永玄迕  ㄠ  ㄥ［ㄟ反巨仿□迕 */
-  CHAR_PETID = CHAR_DUELMAXSTWINCOUNT, /* 矢永玄及  件皿伊□玄及     */
+      CHAR_LASTTIMESETLUCK, /* ペットのランク(ペット用のインデックス用  (宠物的等级(宠物用索引)) */
+  CHAR_PETID = CHAR_DUELMAXSTWINCOUNT, /* ペットのテンプレートの     (宠物的模板) */
   CHAR_PETFAMILY = CHAR_FMLEADERFLAG,  // CoolFish: Family 判断是否为家族守护兽
   CHAR_PETENEMYID = CHAR_GAMBLENUM,
 #ifdef _PET_VALIDITY
@@ -1441,8 +1441,8 @@ typedef enum {
   CHAR_WORKTICKETTIME,
   CHAR_WORKTICKETTIMESTART,
 #endif
-  CHAR_WORK_TEMP_FLOOR, // 屡ヒ□ダ肱□弦
-  CHAR_WORK_TEMP_X_Y,   // 屡ヒ□XY□斜 (葵□じ箇 X □斜, □□じ箇 Y □斜)
+  CHAR_WORK_TEMP_FLOOR, // 临时记录地图楼层号(magiccard用来确认玩家是否中途离开)
+  CHAR_WORK_TEMP_X_Y,   // 临时记录XY坐标 (高16位存 X 坐标, 低16位存 Y 坐标)
 
   CHAR_WORKDEBUGMODE, // 除错模式中
 

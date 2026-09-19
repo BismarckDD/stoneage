@@ -328,7 +328,6 @@ static BOOL NPC_Familyman_readData( int meindex, int windowno, BOOL chkflg)
 	int		messagepos;
 	BOOL	errflg = FALSE;
 	BOOL	readflg = TRUE;
-	FILE	*fp;
 	char	argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
 	char	filename[64];
 	char	opfile[128];
@@ -344,18 +343,7 @@ static BOOL NPC_Familyman_readData( int meindex, int windowno, BOOL chkflg)
 
 	sprintf( opfile, "%s/", getNpcdir( ) );
 	strcat( opfile, filename);
-#ifdef _CRYPTO_DATA		
-	char realopfile[256];
-	BOOL crypto = FALSE;
-	sprintf(realopfile, "%s.allblues", opfile);
-	fp = fopen( realopfile, "r");
-	if( fp != NULL ){
-		crypto = TRUE;
-	}else
-#endif
-{
-	fp = fopen( opfile, "r");
-}
+	FILE *fp = fopen( opfile, "r");
 	if( fp == NULL ) {
 		print( "familyman:file open error [%s]\n", opfile);
 		return FALSE;
@@ -396,13 +384,7 @@ static BOOL NPC_Familyman_readData( int meindex, int windowno, BOOL chkflg)
 				readflg = FALSE;
 				break;
 			}
-#ifdef _CRYPTO_DATA		
-			if(crypto==TRUE){
-				DecryptKey(line);
-			}
-#endif
 			linenum ++;
-			
 			/* 戊丢件玄反  骰 */
 			if( line[0] == '#' || line[0] == '\n') continue;
 			/* 荼垫潸月 */

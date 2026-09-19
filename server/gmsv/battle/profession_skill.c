@@ -102,25 +102,12 @@ static int profession_skill_num; // 职业技能总数
 // 将 profession.txt 载入
 BOOL PROFESSION_initSkill(char *filename) {
 
-  FILE *f;
   char line[256];
   int linenum = -1;
   int skill_readlen = 0;
   int i, j;
-
   int max_skillid = 0;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    f = fopen(filename, "r");
-  }
+  FILE *f = fopen(filename, "r");
   if (f == NULL) {
     print("file open error\n");
     return FALSE;
@@ -129,11 +116,6 @@ BOOL PROFESSION_initSkill(char *filename) {
   profession_skill_num = 0;
 
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     char token[256];
     linenum++;
     if (line[0] == '#')
@@ -183,11 +165,6 @@ BOOL PROFESSION_initSkill(char *filename) {
 
   linenum = -1;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue;

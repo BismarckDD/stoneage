@@ -318,41 +318,21 @@ int PETSKILL_getPetskillNum(void) { return PETSKILL_petskillnum; }
 #endif
 
 /*----------------------------------------------------------------------
- * 矢永玄  及涩烂白央奶伙毛  戈//初始宠技
+ * 初始化宠物技能
  *---------------------------------------------------------------------*/
 BOOL PETSKILL_initPetskill(char *filename) {
-  FILE *f;
   char line[256];
   int linenum = 0;
   int petskill_readlen = 0;
   int i, j;
   int max_skillid = 0;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    f = fopen(filename, "r");
-  }
+  FILE *f = fopen(filename, "r");
   if (f == NULL) {
     print("file open error\n");
     return FALSE;
   }
-
   PETSKILL_petskillnum = 0;
-
-  /*  引内  躲卅垫互窒垫丐月井升丹井譬屯月    */ // 读曲宠技总数
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     char token[256];
     linenum++;
     if (line[0] == '#')
@@ -399,27 +379,16 @@ BOOL PETSKILL_initPetskill(char *filename) {
       PETSKILL_setChar(i, j, "");
     }
   }
-
-  /*  引凶  心  允    */
   linenum = 0;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */
     if (line[0] == '\n')
       continue; /* none    */
-
     chomp(line);
-
-    /*  垫毛帮溥允月    */
     /*  引内 tab 毛 " " 卞  五晶尹月    */
     replaceString(line, '\t', ' ');
-    /* 燮  及旦矢□旦毛潸月［*/
     {
       char buf[256];
       for (i = 0; i < strlen(line); i++) {

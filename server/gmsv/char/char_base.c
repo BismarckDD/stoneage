@@ -264,10 +264,10 @@ RideCodeMode gRideCodeMode[] = {
     RCM_ROW(100373, 9),   /*骑宠巴朵兰恩*/
     RCM_ROW(101532, 10),  /*骑宠史卡鲁*/
     RCM_ROW(101576, 11),  /*骑宠罗多克雷*/
-    RCM_ROW(100370, 12),  /*骑宠奇宝*/
-    RCM_ROW(100369, 13),  /*骑宠霍尔克*/
-    RCM_ROW(100904, 14),  /*骑宠瑞里希尔*/
-    RCM_ROW(100872, 15),  /*骑宠佩露夏 */
+    RCM_ROW(100370, 12),  /*骑宠奇宝: 红鸡*/
+    RCM_ROW(100369, 13),  /*骑宠霍尔克：棕鸡*/
+    RCM_ROW(100904, 14),  /*骑宠瑞里希尔: 黑鸡*/
+    RCM_ROW(-1, 15),      /*佩露夏暂时不可骑*/
     RCM_ROW(-1, 16),
     RCM_ROW(-1, 17),
     RCM_ROW(-1, 18),
@@ -3034,11 +3034,11 @@ INLINE int CHAR_setMaxExpFromLevel(int char_index, int level) {
   CHAR_setInt(char_index, CHAR_EXP, 0);
   return 0;
 #else
-  int LVexp;
-  if ((LVexp = CHAR_GetLevelExp(char_index, level + 1)) < 0)
+  int next_level_exp;
+  if ((next_level_exp = CHAR_GetLevelExp(char_index, level + 1)) < 0)
     return -1;
-  CHAR_setInt(char_index, CHAR_EXP, LVexp);
-  return LVexp;
+  CHAR_setInt(char_index, CHAR_EXP, next_level_exp);
+  return next_level_exp;
 #endif
 }
 
@@ -3854,14 +3854,13 @@ int CHAR_getCharDepotPetElement(int char_index) {
 
 #ifdef _NEW_RIDEPETS
 int CHAR_RideInit() {
+  char line[1024], buf[16];
   int i = 0;
   FILE *fp = fopen("data/ride.txt", "r");
   if (fp == NULL) {
-    print("无法打开文件\n");
     return FALSE;
   }
   while (1) {
-    char line[1024], buf[16];
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
     chop(line);

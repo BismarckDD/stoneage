@@ -19,9 +19,9 @@ struct Adrn {
     uint32_t bitmapNo, offset, size;
     int32_t x, y;
     uint32_t width, height;
-    uint8_t attr[44];
+    uint8_t attr[52];
 };
-static_assert(sizeof(Adrn) == 72);
+static_assert(sizeof(Adrn) == 80);
 struct SpriteAddress { uint32_t id, offset; uint16_t count; };
 #pragma pack(push, 1)
 struct RdHeader { char id[2]; uint8_t flag; uint8_t pad; uint32_t width, height, size; };
@@ -38,7 +38,9 @@ static std::ifstream gSpr; static std::map<uint32_t,SpriteAddress> gSprAdrn;
 static uint32_t gPalette[256]; static Image gImage; static std::vector<SpriteAnim> gAnims;
 static std::vector<uint32_t> gIds;
 static int gCategory=0;
-static int gAnim=0,gFrame=0; static bool gPlaying=false; static UINT_PTR gTimer=0;
+static int gAnim=0,gFrame=0; static bool gPlaying=false,gPlayAll=false; static UINT_PTR gTimer=0;
+static int gFrameX=0,gFrameY=0,gMinX=0,gMinY=0,gMaxX=0,gMaxY=0;
+static bool gIgnoreSelection=false;
 
 static std::wstring W(const fs::path& p){return p.wstring();}
 static void Text(HWND h,const std::wstring&s){SetWindowTextW(h,s.c_str());}
@@ -78,7 +80,7 @@ static bool Decode(const std::vector<uint8_t>&src,int&w,int&h,std::vector<uint8_
     if(r->flag==0){size_t n=std::min(dst.size(),(size_t)(end-p));memcpy(dst.data(),p,n);return n==dst.size();}
     while(p<end&&o<dst.size()){
         uint8_t idx=*p++;size_t cnt;
-        if(idx&0x80){uint8_t val=(idx&0x40)?0:(p<end?*p++:0);if(idx&0x20){if(p+2>end)break;cnt=((idx&15)<<16)|(p[0]<<8)|p[1];p+=2;}else if(idx&0x10){if(p>=end)break;cnt=((idx&15)<<8)|*p++;}else cnt=idx&15;cnt=std::min(cnt,dst.size()-o);memset(dst.data()+o,val,cnt);o+=cnt;
+        if(idx&0x80){uint8_t val=0;if(!(idx&0x40)){if(p>=end)break;val=*p++;}if(idx&0x20){if(p+2>end)break;cnt=((idx&15)<<16)|(p[0]<<8)|p[1];p+=2;}else if(idx&0x10){if(p>=end)break;cnt=((idx&15)<<8)|*p++;}else cnt=idx&15;cnt=std::min(cnt,dst.size()-o);memset(dst.data()+o,val,cnt);o+=cnt;
         }else{if(idx&0x10){if(p>=end)break;cnt=((idx&15)<<8)|*p++;}else cnt=idx&15;cnt=std::min({cnt,dst.size()-o,(size_t)(end-p)});memcpy(dst.data()+o,p,cnt);p+=cnt;o+=cnt;}
     } return o==dst.size();
 }
@@ -87,10 +89,60 @@ static Image LoadAssetImage(uint32_t id){
     std::vector<uint8_t> packed(a.size),idx;gReal.clear();gReal.seekg(a.offset);if(!ReadExact(gReal,packed.data(),packed.size()))return out;
     if(!Decode(packed,out.w,out.h,idx))return {};out.px.resize(idx.size());for(size_t i=0;i<idx.size();i++){auto c=gPalette[idx[i]];out.px[i]=0xff000000|GetRValue(c)<<16|GetGValue(c)<<8|GetBValue(c);}return out;
 }
-static uint32_t LogicalToImage(uint32_t logical){for(auto&[id,a]:gAdrn){uint32_t n;memcpy(&n,a.attr+40,4);if(n==logical)return id;}return logical;}
+static uint32_t LogicalToImage(uint32_t logical){for(auto&[id,a]:gAdrn){uint32_t n;memcpy(&n,a.attr+48,4);if(n==logical)return id;}return logical;}
 static bool LoadSprite(uint32_t id){
     gAnims.clear();auto it=gSprAdrn.find(id);if(it==gSprAdrn.end()&&id<100000)it=gSprAdrn.find(id+100000);if(it==gSprAdrn.end())return false;
     gSpr.clear();gSpr.seekg(it->second.offset);for(unsigned i=0;i<it->second.count;i++){AnimHeader h;if(!ReadExact(gSpr,&h,sizeof(h))||h.count>10000)return false;SpriteAnim a;a.dir=h.dir;a.action=h.action;a.duration=h.duration;a.frames.resize(h.count);if(!ReadExact(gSpr,a.frames.data(),h.count*sizeof(Frame)))return false;gAnims.push_back(std::move(a));}return !gAnims.empty();
+}
+static bool ShowSpriteFrame(){
+    if(gAnims.empty()||gAnim<0||(size_t)gAnim>=gAnims.size()||gAnims[gAnim].frames.empty())return false;
+    auto&frame=gAnims[gAnim].frames[gFrame];
+    auto address=gAdrn.find(frame.image);
+    if(address==gAdrn.end())return false;
+    gFrameX=frame.x+address->second.x;
+    gFrameY=frame.y+address->second.y;
+    gImage=LoadAssetImage(frame.image);
+    return gImage.ok();
+}
+static void MeasureSpriteBounds(){
+    bool first=true;
+    for(auto&frame:gAnims[gAnim].frames){
+        auto address=gAdrn.find(frame.image);
+        if(address==gAdrn.end())continue;
+        int x=frame.x+address->second.x,y=frame.y+address->second.y;
+        int right=x+(int)address->second.width,bottom=y+(int)address->second.height;
+        if(first){gMinX=x;gMinY=y;gMaxX=right;gMaxY=bottom;first=false;}
+        else{gMinX=std::min(gMinX,x);gMinY=std::min(gMinY,y);gMaxX=std::max(gMaxX,right);gMaxY=std::max(gMaxY,bottom);}
+    }
+    if(first){gMinX=gMinY=0;gMaxX=gMaxY=1;}
+}
+static void SetSpriteTimer(){
+    if(gAnims.empty()||gAnims[gAnim].frames.empty())return;
+    auto&a=gAnims[gAnim];
+    UINT interval=(UINT)std::clamp<uint32_t>(a.duration/(uint32_t)a.frames.size(),30,1000);
+    SetTimer(gMain,1,interval,nullptr);
+}
+static const wchar_t* DirectionName(uint16_t dir){
+    static const wchar_t* names[]={L"下",L"左下",L"左",L"左上",L"上",L"右上",L"右",L"右下"};
+    return dir<8?names[dir]:L"未知";
+}
+static void UpdateSpriteInfo(uint32_t id){
+    wchar_t s[256];auto&a=gAnims[gAnim];
+    swprintf_s(s,L"造型 ID %u   动作 %d/%zu（类型 %u）  方向 %u（%s）",id,gAnim+1,gAnims.size(),a.action,a.dir,DirectionName(a.dir));
+    Text(gInfo,s);
+}
+static void ChangeDirection(int turn){
+    if(gAnims.empty())return;
+    gPlayAll=false;gPlaying=true;Text(gPlay,L"播放全部");
+    uint16_t current=gAnims[gAnim].dir,action=gAnims[gAnim].action;
+    for(int distance=1;distance<=8;distance++){
+        uint16_t desired=(uint16_t)((current+turn*distance+64)%8);
+        for(size_t i=0;i<gAnims.size();i++)if(gAnims[i].dir==desired&&gAnims[i].action==action&&!gAnims[i].frames.empty()){
+            gAnim=(int)i;gFrame=0;MeasureSpriteBounds();
+            if(ShowSpriteFrame()){SetSpriteTimer();UpdateSpriteInfo((uint32_t)_wtoi(GetText(gId).c_str()));InvalidateRect(gCanvas,nullptr,FALSE);}
+            return;
+        }
+    }
 }
 static bool OpenClient(const fs::path&root){
     auto data=root/L"data";auto imagePair=BestPair(data,L"adrn",L"real");auto spritePair=BestPair(data,L"spradrn",L"spr");auto adrn=imagePair.first;auto real=imagePair.second;auto spradrn=spritePair.first;auto spr=spritePair.second;
@@ -117,18 +169,74 @@ static void PopulateList(){
 static void Refresh(){
     uint32_t id=(uint32_t)_wtoi(GetText(gId).c_str());int type=(int)SendMessage(gType,CB_GETCURSEL,0,0);gAnims.clear();gFrame=0;gAnim=0;
     if(type==0){gImage=LoadAssetImage(id);auto it=gAdrn.find(id);wchar_t s[256];if(it!=gAdrn.end())swprintf_s(s,L"图片 ID %u   %u×%u   偏移 (%d, %d)",id,it->second.width,it->second.height,it->second.x,it->second.y);else swprintf_s(s,L"没有找到图片 ID %u",id);Text(gInfo,s);
-    }else if(type==1){gPlaying=false;Text(gPlay,L"播放");if(LoadSprite(id)){gImage=LoadAssetImage(gAnims[0].frames[0].image);wchar_t s[256];swprintf_s(s,L"造型 ID %u   %zu 个动作   当前动作 %u / 方向 %u",id,gAnims.size(),gAnims[0].action,gAnims[0].dir);Text(gInfo,s);}else{gImage={};Text(gInfo,L"没有找到该 Sprite ID");}
+    }else if(type==1){gPlaying=false;gPlayAll=false;Text(gPlay,L"播放全部");if(LoadSprite(id)){for(size_t i=0;i<gAnims.size();i++)if(gAnims[i].action==3&&gAnims[i].dir==1&&!gAnims[i].frames.empty()){gAnim=(int)i;break;}MeasureSpriteBounds();if(!ShowSpriteFrame()){gImage={};Text(gInfo,L"造型存在，但当前帧图片缺失或无法解码");}else{gPlaying=true;SetSpriteTimer();UpdateSpriteInfo(id);}}else{gImage={};Text(gInfo,L"没有找到该 Sprite ID");}
     }else{gImage=LoadMap(id);wchar_t s[256];swprintf_s(s,L"地图 ID %u   总览 %d×%d",id,gImage.w,gImage.h);Text(gInfo,s);}InvalidateRect(gCanvas,nullptr,TRUE);
 }
-static void Step(int d){if(gAnims.empty()||gAnims[gAnim].frames.empty())return;int count=(int)gAnims[gAnim].frames.size();for(int tries=0;tries<count;tries++){gFrame=(gFrame+d+count)%count;Image next=LoadAssetImage(gAnims[gAnim].frames[gFrame].image);if(next.ok()){gImage=std::move(next);InvalidateRect(gCanvas,nullptr,FALSE);return;}}}
-static LRESULT CALLBACK CanvasProc(HWND h,UINT m,WPARAM w,LPARAM l){if(m==WM_PAINT){PAINTSTRUCT ps;HDC dc=BeginPaint(h,&ps);RECT r;GetClientRect(h,&r);FillRect(dc,&r,(HBRUSH)GetStockObject(BLACK_BRUSH));if(gImage.ok()){int type=(int)SendMessage(gType,CB_GETCURSEL,0,0);BITMAPINFO bi{};bi.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);bi.bmiHeader.biWidth=gImage.w;bi.bmiHeader.biHeight=type==2?-gImage.h:gImage.h;bi.bmiHeader.biPlanes=1;bi.bmiHeader.biBitCount=32;bi.bmiHeader.biCompression=BI_RGB;double fit=std::min((double)(r.right-24)/gImage.w,(double)(r.bottom-24)/gImage.h);double preferred=(type==2||std::max(gImage.w,gImage.h)>160)?1.0:2.0;double s=std::max(0.01,std::min(fit,preferred));int dw=std::max(1,(int)(gImage.w*s)),dh=std::max(1,(int)(gImage.h*s));SetStretchBltMode(dc,COLORONCOLOR);StretchDIBits(dc,(r.right-dw)/2,(r.bottom-dh)/2,dw,dh,0,0,gImage.w,gImage.h,gImage.px.data(),&bi,DIB_RGB_COLORS,SRCCOPY);}EndPaint(h,&ps);return 0;}return DefWindowProc(h,m,w,l);}
-static void Layout(int w,int h){int top=58,bottom=50,left=250,tabh=34;MoveWindow(gRoot,12,12,std::max(160,w-500),28,TRUE);MoveWindow(gPick,w-480,12,92,28,TRUE);MoveWindow(gId,w-380,12,110,28,TRUE);MoveWindow(gLoad,w-262,12,74,28,TRUE);MoveWindow(gPrev,w-180,12,46,28,TRUE);MoveWindow(gNext,w-128,12,46,28,TRUE);MoveWindow(gPlay,w-76,12,64,28,TRUE);MoveWindow(gTabs,12,top,left-20,tabh,TRUE);MoveWindow(gList,12,top+tabh,left-20,h-top-bottom-tabh,TRUE);MoveWindow(gCanvas,left,top,w-left-12,h-top-bottom,TRUE);MoveWindow(gInfo,12,h-bottom+5,w-24,20,TRUE);MoveWindow(gStatus,12,h-22,w-24,18,TRUE);}
+static void StartAllPlayback(){
+    if(gAnims.empty())return;
+    gPlayAll=true;gPlaying=true;
+    for(size_t i=0;i<gAnims.size();i++)if(!gAnims[i].frames.empty()){
+        gAnim=(int)i;gFrame=0;MeasureSpriteBounds();
+        if(ShowSpriteFrame()){SetSpriteTimer();UpdateSpriteInfo((uint32_t)_wtoi(GetText(gId).c_str()));InvalidateRect(gCanvas,nullptr,FALSE);break;}
+    }
+    Text(gPlay,L"暂停");
+}
+static void Step(){
+    if(gAnims.empty())return;
+    size_t attempts=0,total=0;
+    for(auto&a:gAnims)total+=a.frames.size();
+    while(attempts++<total){
+        gFrame++;
+        if(gFrame>=(int)gAnims[gAnim].frames.size()){
+            gFrame=0;
+            if(gPlayAll){gAnim=(gAnim+1)%(int)gAnims.size();MeasureSpriteBounds();SetSpriteTimer();UpdateSpriteInfo((uint32_t)_wtoi(GetText(gId).c_str()));}
+        }
+        if(!gAnims[gAnim].frames.empty()&&ShowSpriteFrame()){InvalidateRect(gCanvas,nullptr,FALSE);return;}
+    }
+}
+static LRESULT CALLBACK CanvasProc(HWND h,UINT m,WPARAM w,LPARAM l){
+    if(m!=WM_PAINT)return DefWindowProc(h,m,w,l);
+    PAINTSTRUCT ps;HDC dc=BeginPaint(h,&ps);RECT r;GetClientRect(h,&r);
+    FillRect(dc,&r,(HBRUSH)GetStockObject(BLACK_BRUSH));
+    if(gImage.ok()){
+        int type=(int)SendMessage(gType,CB_GETCURSEL,0,0);
+        BITMAPINFO bi{};bi.bmiHeader.biSize=sizeof(BITMAPINFOHEADER);
+        bi.bmiHeader.biWidth=gImage.w;bi.bmiHeader.biHeight=type==2?-gImage.h:gImage.h;
+        bi.bmiHeader.biPlanes=1;bi.bmiHeader.biBitCount=32;bi.bmiHeader.biCompression=BI_RGB;
+        int boundsW=type==1?std::max(1,gMaxX-gMinX):gImage.w;
+        int boundsH=type==1?std::max(1,gMaxY-gMinY):gImage.h;
+        double fit=std::min((double)std::max(1,(int)r.right-24)/boundsW,(double)std::max(1,(int)r.bottom-24)/boundsH);
+        double preferred=(type==2||std::max(boundsW,boundsH)>160)?1.0:2.0;
+        double s=std::max(0.01,std::min(fit,preferred));
+        int dw=std::max(1,(int)(gImage.w*s)),dh=std::max(1,(int)(gImage.h*s));
+        int x=(r.right-(int)((gMinX+gMaxX)*s))/2+(int)(gFrameX*s);
+        int y=(r.bottom-(int)((gMinY+gMaxY)*s))/2+(int)(gFrameY*s);
+        if(type!=1){x=(r.right-dw)/2;y=(r.bottom-dh)/2;}
+        SetStretchBltMode(dc,COLORONCOLOR);
+        StretchDIBits(dc,x,y,dw,dh,0,0,gImage.w,gImage.h,gImage.px.data(),&bi,DIB_RGB_COLORS,SRCCOPY);
+    }
+    EndPaint(h,&ps);return 0;
+}
+static void Layout(int w,int h){int top=58,bottom=50,left=250,tabh=34;MoveWindow(gRoot,12,12,std::max(160,w-524),28,TRUE);MoveWindow(gPick,w-504,12,92,28,TRUE);MoveWindow(gId,w-404,12,110,28,TRUE);MoveWindow(gLoad,w-286,12,74,28,TRUE);MoveWindow(gPrev,w-204,12,46,28,TRUE);MoveWindow(gNext,w-152,12,46,28,TRUE);MoveWindow(gPlay,w-98,12,86,28,TRUE);MoveWindow(gTabs,12,top,left-20,tabh,TRUE);MoveWindow(gList,12,top+tabh,left-20,h-top-bottom-tabh,TRUE);MoveWindow(gCanvas,left,top,w-left-12,h-top-bottom,TRUE);MoveWindow(gInfo,12,h-bottom+5,w-24,20,TRUE);MoveWindow(gStatus,12,h-22,w-24,18,TRUE);}
 static void PickFolder(){BROWSEINFOW b{};b.hwndOwner=gMain;b.lpszTitle=L"选择石器时代客户端根目录";b.ulFlags=BIF_RETURNONLYFSDIRS|BIF_NEWDIALOGSTYLE;auto pid=SHBrowseForFolderW(&b);if(pid){wchar_t p[MAX_PATH];if(SHGetPathFromIDListW(pid,p)){Text(gRoot,p);if(OpenClient(p)){PopulateList();if(!gIds.empty()){Text(gId,std::to_wstring(gIds[0]));ListView_SetItemState(gList,0,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);ListView_EnsureVisible(gList,0,FALSE);}}}CoTaskMemFree(pid);}}
-static LRESULT CALLBACK MainProc(HWND h,UINT m,WPARAM w,LPARAM l){switch(m){case WM_SIZE:Layout(LOWORD(l),HIWORD(l));return 0;case WM_COMMAND:{int id=LOWORD(w);if(id==10)PickFolder();else if(id==11){uint32_t wanted=(uint32_t)_wtoi(GetText(gId).c_str());auto it=std::lower_bound(gIds.begin(),gIds.end(),wanted);if(it!=gIds.end()&&*it==wanted){int row=(int)(it-gIds.begin());ListView_SetItemState(gList,-1,0,LVIS_SELECTED|LVIS_FOCUSED);ListView_SetItemState(gList,row,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);ListView_EnsureVisible(gList,row,FALSE);}else Refresh();}else if(id==12)Step(-1);else if(id==13)Step(1);else if(id==14){gPlaying=!gPlaying;Text(gPlay,gPlaying?L"暂停":L"播放");}return 0;}case WM_NOTIFY:{auto*n=(NMHDR*)l;if(n->hwndFrom==gTabs&&n->code==TCN_SELCHANGE){gCategory=TabCtrl_GetCurSel(gTabs);gPlaying=false;Text(gPlay,L"播放");PopulateList();ListView_SetItemState(gList,-1,0,LVIS_SELECTED|LVIS_FOCUSED);if(!gIds.empty()){Text(gId,std::to_wstring(gIds[0]));ListView_SetItemState(gList,0,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);ListView_EnsureVisible(gList,0,FALSE);Refresh();}else{gImage={};Text(gInfo,L"该分类没有可用素材");InvalidateRect(gCanvas,nullptr,TRUE);}return 0;}if(n->hwndFrom==gList&&n->code==LVN_GETDISPINFO){auto*d=(NMLVDISPINFOW*)l;if((d->item.mask&LVIF_TEXT)&&d->item.iItem>=0&&(size_t)d->item.iItem<gIds.size())swprintf_s(d->item.pszText,d->item.cchTextMax,L"%u",gIds[d->item.iItem]);return 0;}if(n->hwndFrom==gList&&n->code==LVN_ITEMCHANGED){auto*c=(NMLISTVIEW*)l;if((c->uNewState&LVIS_SELECTED)&&!(c->uOldState&LVIS_SELECTED)&&c->iItem>=0&&(size_t)c->iItem<gIds.size()){Text(gId,std::to_wstring(gIds[c->iItem]));Refresh();}return 0;}break;}case WM_TIMER:if(gPlaying&&!gAnims.empty())Step(1);return 0;case WM_DESTROY:PostQuitMessage(0);return 0;}return DefWindowProc(h,m,w,l);}
+static void JumpToId(){
+    uint32_t wanted=(uint32_t)_wtoi(GetText(gId).c_str());
+    auto it=std::lower_bound(gIds.begin(),gIds.end(),wanted);
+    gIgnoreSelection=true;
+    ListView_SetItemState(gList,-1,0,LVIS_SELECTED|LVIS_FOCUSED);
+    if(it!=gIds.end()&&*it==wanted){
+        int row=(int)(it-gIds.begin());
+        ListView_SetItemState(gList,row,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);
+        ListView_EnsureVisible(gList,row,FALSE);
+    }
+    gIgnoreSelection=false;
+    Refresh();
+}
+static LRESULT CALLBACK MainProc(HWND h,UINT m,WPARAM w,LPARAM l){switch(m){case WM_SIZE:Layout(LOWORD(l),HIWORD(l));return 0;case WM_COMMAND:{int id=LOWORD(w);if(id==10)PickFolder();else if(id==11)JumpToId();else if(id==12)ChangeDirection(1);else if(id==13)ChangeDirection(-1);else if(id==14){if(!gPlayAll)StartAllPlayback();else{gPlaying=!gPlaying;Text(gPlay,gPlaying?L"暂停":L"继续");}}return 0;}case WM_NOTIFY:{auto*n=(NMHDR*)l;if(n->hwndFrom==gTabs&&n->code==TCN_SELCHANGE){gCategory=TabCtrl_GetCurSel(gTabs);gPlaying=false;gPlayAll=false;Text(gPlay,L"播放全部");PopulateList();ListView_SetItemState(gList,-1,0,LVIS_SELECTED|LVIS_FOCUSED);if(!gIds.empty()){Text(gId,std::to_wstring(gIds[0]));ListView_SetItemState(gList,0,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);ListView_EnsureVisible(gList,0,FALSE);Refresh();}else{gImage={};Text(gInfo,L"该分类没有可用素材");InvalidateRect(gCanvas,nullptr,TRUE);}return 0;}if(n->hwndFrom==gList&&n->code==LVN_GETDISPINFO){auto*d=(NMLVDISPINFOW*)l;if((d->item.mask&LVIF_TEXT)&&d->item.iItem>=0&&(size_t)d->item.iItem<gIds.size())swprintf_s(d->item.pszText,d->item.cchTextMax,L"%u",gIds[d->item.iItem]);return 0;}if(n->hwndFrom==gList&&n->code==LVN_ITEMCHANGED){auto*c=(NMLISTVIEW*)l;if(!gIgnoreSelection&&(c->uNewState&LVIS_SELECTED)&&!(c->uOldState&LVIS_SELECTED)&&c->iItem>=0&&(size_t)c->iItem<gIds.size()){Text(gId,std::to_wstring(gIds[c->iItem]));Refresh();}return 0;}break;}case WM_TIMER:if(gPlaying&&!gAnims.empty())Step();return 0;case WM_DESTROY:PostQuitMessage(0);return 0;}return DefWindowProc(h,m,w,l);}
 static HWND C(const wchar_t*cls,const wchar_t*txt,DWORD style,int id=0){return CreateWindowExW(0,cls,txt,WS_CHILD|WS_VISIBLE|style,0,0,0,0,gMain,(HMENU)(INT_PTR)id,GetModuleHandleW(nullptr),nullptr);}
 int WINAPI wWinMain(HINSTANCE hi,HINSTANCE,LPWSTR,int show){
     INITCOMMONCONTROLSEX ic{sizeof(ic),ICC_STANDARD_CLASSES};InitCommonControlsEx(&ic);WNDCLASSW wc{};wc.hInstance=hi;wc.hCursor=LoadCursor(nullptr,IDC_ARROW);wc.hbrBackground=(HBRUSH)(COLOR_WINDOW+1);wc.lpfnWndProc=MainProc;wc.lpszClassName=L"SAAssetViewer";wc.hIcon=LoadIcon(nullptr,IDI_APPLICATION);RegisterClassW(&wc);wc.lpfnWndProc=CanvasProc;wc.lpszClassName=L"SAAssetCanvas";wc.hbrBackground=(HBRUSH)GetStockObject(BLACK_BRUSH);RegisterClassW(&wc);
     gMain=CreateWindowExW(0,L"SAAssetViewer",L"石器时代素材浏览器",WS_OVERLAPPEDWINDOW,100,80,1100,760,nullptr,nullptr,hi,nullptr);HFONT font=CreateFontW(-16,0,0,0,FW_NORMAL,0,0,0,DEFAULT_CHARSET,0,0,CLEARTYPE_QUALITY,0,L"Microsoft YaHei UI");
-    gRoot=C(L"EDIT",L"请选择客户端目录…",WS_BORDER|ES_AUTOHSCROLL);gPick=C(L"BUTTON",L"选择目录",BS_PUSHBUTTON,10);gType=C(L"COMBOBOX",L"",CBS_DROPDOWNLIST,15);SendMessage(gType,CB_ADDSTRING,0,(LPARAM)L"图片");SendMessage(gType,CB_ADDSTRING,0,(LPARAM)L"造型");SendMessage(gType,CB_ADDSTRING,0,(LPARAM)L"地图");ShowWindow(gType,SW_HIDE);gTabs=C(WC_TABCONTROLW,L"",TCS_FIXEDWIDTH);const wchar_t*tabNames[]={L"地图",L"宠物",L"人物",L"其他",L"图片"};for(int i=0;i<5;i++){TCITEMW ti{TCIF_TEXT,0,0,(LPWSTR)tabNames[i]};TabCtrl_InsertItem(gTabs,i,&ti);}TabCtrl_SetItemSize(gTabs,42,24);TabCtrl_SetCurSel(gTabs,0);gId=C(L"EDIT",L"0",WS_BORDER|ES_NUMBER);gLoad=C(L"BUTTON",L"跳转",BS_PUSHBUTTON,11);gPrev=C(L"BUTTON",L"◀",BS_PUSHBUTTON,12);gNext=C(L"BUTTON",L"▶",BS_PUSHBUTTON,13);gPlay=C(L"BUTTON",L"播放",BS_PUSHBUTTON,14);gList=C(WC_LISTVIEWW,L"",LVS_REPORT|LVS_OWNERDATA|LVS_SHOWSELALWAYS|LVS_SINGLESEL|WS_BORDER);ListView_SetExtendedListViewStyle(gList,LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);LVCOLUMNW col{LVCF_TEXT|LVCF_WIDTH,0,180,(LPWSTR)L"素材 ID"};ListView_InsertColumn(gList,0,&col);gCanvas=C(L"SAAssetCanvas",L"",0);gInfo=C(L"STATIC",L"左侧按分类选择素材 ID，右侧查看预览",0);gStatus=C(L"STATIC",L"选择实际客户端目录以加载素材",0);
+    gRoot=C(L"EDIT",L"请选择客户端目录…",WS_BORDER|ES_AUTOHSCROLL);gPick=C(L"BUTTON",L"选择目录",BS_PUSHBUTTON,10);gType=C(L"COMBOBOX",L"",CBS_DROPDOWNLIST,15);SendMessage(gType,CB_ADDSTRING,0,(LPARAM)L"图片");SendMessage(gType,CB_ADDSTRING,0,(LPARAM)L"造型");SendMessage(gType,CB_ADDSTRING,0,(LPARAM)L"地图");ShowWindow(gType,SW_HIDE);gTabs=C(WC_TABCONTROLW,L"",TCS_FIXEDWIDTH);const wchar_t*tabNames[]={L"地图",L"宠物",L"人物",L"其他",L"图片"};for(int i=0;i<5;i++){TCITEMW ti{TCIF_TEXT,0,0,(LPWSTR)tabNames[i]};TabCtrl_InsertItem(gTabs,i,&ti);}TabCtrl_SetItemSize(gTabs,42,24);TabCtrl_SetCurSel(gTabs,0);gId=C(L"EDIT",L"0",WS_BORDER|ES_NUMBER);gLoad=C(L"BUTTON",L"跳转",BS_PUSHBUTTON,11);gPrev=C(L"BUTTON",L"◀",BS_PUSHBUTTON,12);gNext=C(L"BUTTON",L"▶",BS_PUSHBUTTON,13);gPlay=C(L"BUTTON",L"播放全部",BS_PUSHBUTTON,14);gList=C(WC_LISTVIEWW,L"",LVS_REPORT|LVS_OWNERDATA|LVS_SHOWSELALWAYS|LVS_SINGLESEL|WS_BORDER);ListView_SetExtendedListViewStyle(gList,LVS_EX_FULLROWSELECT|LVS_EX_DOUBLEBUFFER);LVCOLUMNW col{LVCF_TEXT|LVCF_WIDTH,0,180,(LPWSTR)L"素材 ID"};ListView_InsertColumn(gList,0,&col);gCanvas=C(L"SAAssetCanvas",L"",0);gInfo=C(L"STATIC",L"左侧按分类选择素材 ID，右侧查看预览",0);gStatus=C(L"STATIC",L"选择实际客户端目录以加载素材",0);
     for(HWND x:{gRoot,gPick,gTabs,gId,gLoad,gPrev,gNext,gPlay,gList,gInfo,gStatus})SendMessage(x,WM_SETFONT,(WPARAM)font,TRUE);ShowWindow(gMain,show);UpdateWindow(gMain);gTimer=SetTimer(gMain,1,120,nullptr);auto last=LoadLastClient();if(!last.empty()&&OpenClient(last)){Text(gRoot,last.wstring());PopulateList();if(!gIds.empty()){Text(gId,std::to_wstring(gIds[0]));ListView_SetItemState(gList,0,LVIS_SELECTED|LVIS_FOCUSED,LVIS_SELECTED|LVIS_FOCUSED);ListView_EnsureVisible(gList,0,FALSE);}}else PickFolder();MSG msg;while(GetMessage(&msg,nullptr,0,0)){TranslateMessage(&msg);DispatchMessage(&msg);}return 0;
 }

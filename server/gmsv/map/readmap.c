@@ -79,24 +79,12 @@ static unsigned int MAP_imagedatanum;
 static int MAP_imgfilt[65535];
 
 BOOL MAP_readMapConfFile(char *filename) {
-  FILE *file;
   char line[512];
   int maximagenumber = 0;
   int i;
   int linenum = 0;
   int imgdataindex = 0;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  file = fopen(realopfile, "r");
-  if (file != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    file = fopen(filename, "r");
-  }
+  FILE *file = fopen(filename, "r");
   if (file == NULL) {
     printEx("无法打开文件 %s\n", filename);
     return FALSE;
@@ -201,24 +189,11 @@ BOOL MAP_readMapConfFile(char *filename) {
 
 #if 1
 BOOL MAP_readBattleMapConfFile(char *filename) {
-  FILE *file;
   char line[512];
-
   int i, j;
   int linenum = 0;
   int BattleMapNo[3], iRet, iWork, iPre[3], iFirst, iLast;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  file = fopen(realopfile, "r");
-  if (file != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    file = fopen(filename, "r");
-  }
+  FILE *file = fopen(filename, "r");
   if (file == NULL) {
     printEx("无法打开 %s\n", filename);
     return FALSE;
@@ -228,21 +203,13 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
   BattleMapNo[1] = 0;
   BattleMapNo[2] = 0;
   while (fgets(line, sizeof(line), file)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     char *p;
     linenum++;
-
     pohcd(line, " \t");
     dchop(line, " \t");
-
     if (line[0] == '#' || line[0] == '\0')
       continue;
     chomp(line);
-
     if (line[0] == '$') {
       iRet = sscanf(line + 1, "%d %d %d", &iPre[0], &iPre[1], &iPre[2]);
       BattleMapNo[0] = BattleMapNo[1] = BattleMapNo[2] = iPre[0];
@@ -255,7 +222,6 @@ BOOL MAP_readBattleMapConfFile(char *filename) {
           print("!!!!!错误 战斗地图号码为负值 (%s)( line %d )\n", filename, linenum);
         }
       }
-
       continue;
     }
     if (sscanf(line, "%d", &iWork) != 1) {
@@ -541,28 +507,13 @@ BOOL MAP_readMapOne(char *filename) {
 
 #ifdef _MAP_NOEXIT
   {
-    FILE *fp;
     char mpexit[128];
     int floorID = 0, exfloor = 0, ex_X = 0, ex_Y = 0;
     int map_type = 0;
     MAP_map[mapindex].startpoint = 0;
-#ifdef _CRYPTO_DATA
-    BOOL crypto = FALSE;
-    fp = fopen("./data/map/map_noexit.txt.allblues", "r");
-    if (fp != NULL) {
-      crypto = TRUE;
-    } else
-#endif
-    {
-      fp = fopen("./data/map/map_noexit.txt", "r");
-    }
+    FILE *fp = fopen("./data/map/map_noexit.txt", "r");
     if (fp != NULL) {
       while (fgets(mpexit, 128, fp) != NULL) {
-#ifdef _CRYPTO_DATA
-        if (crypto == TRUE) {
-          DecryptKey(mpexit);
-        }
-#endif
         sscanf(mpexit, "%d %d %d %d %d", &floorID, &exfloor, &ex_X, &ex_Y,
                &map_type);
         if (strstr(mpexit, "#") != NULL)
@@ -1059,18 +1010,6 @@ BOOL MAP_makeWalkableMap(char *data, int floor, int startx, int starty,
   for (i = 0; i < ysiz; i++)
     for (j = 0; j < xsiz; j++)
       data[j + i * ysiz] = data[j + i * ysiz] & obj[j + i * ysiz];
-
-#ifdef DEBUG
-  for (i = 0; i < ysiz; i++) {
-    for (j = 0; j < xsiz; j++)
-      if (data[j + i * ysiz]) {
-        print(" ");
-      } else
-        print("O");
-    print("\n");
-  }
-#endif /*DEBUG*/
-
   return TRUE;
 }
 

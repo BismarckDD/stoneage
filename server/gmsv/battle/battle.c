@@ -134,8 +134,7 @@ void BATTLE_BadStatusAllClr(int char_index) {
   CHAR_setFlg(char_index, CHAR_ISDIE, 0);
 #ifdef _BATTLE_PROPERTY
   {
-    Char *ch;
-    ch = CHAR_getCharPointer(char_index);
+    Char *ch = CHAR_getCharPointer(char_index);
     if (ch == NULL)
       return;
     strncpysafe(ch->charfunctable[CHAR_BATTLEPROPERTY].string,
@@ -221,14 +220,10 @@ static int CharTableIdx[20][2] = {
 typedef int (*FUNCSORTLOC)(const void *, const void *);
 
 static int SortLoc(const int *pEle1, const int *pEle2) {
-  int ele1basex, ele1basey;
-  int ele2basex, ele2basey;
-
-  ele1basex = CharTableIdx[*pEle1][1];
-  ele1basey = CharTableIdx[*pEle1][0];
-  ele2basex = CharTableIdx[*pEle2][1];
-  ele2basey = CharTableIdx[*pEle2][0];
-
+  int ele1basex = CharTableIdx[*pEle1][1];
+  int ele1basey = CharTableIdx[*pEle1][0];
+  int ele2basex = CharTableIdx[*pEle2][1];
+  int ele2basey = CharTableIdx[*pEle2][0];
   if (*pEle1 >= 10) {
     if (ele1basey != ele2basey)
       return (ele1basey - ele2basey);
@@ -264,7 +259,6 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
           nLifeArea[nLife++] = i;
       }
     }
-
     // 全死(虽然不太可能,但..)
     if (nLife == 0) {
       print("\nAll die!!");
@@ -273,8 +267,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
       // 被攻击的对象已经死亡或不在战场上
       if (BATTLE_TargetCheck(battleindex, toNo) == FALSE)
         // 随机找一只来打
-        while ((toNo = nLifeArea[rand() % 10]) == -1)
-          ;
+        while ((toNo = nLifeArea[rand() % 10]) == -1);
     }
     ToList[0] = toNo;
     ToList[1] = -1;
@@ -569,7 +562,6 @@ BOOL BATTLE_IsThrowWepon(int item_index) {
 
 int BATTLE_ClearGetExp(int char_index) {
   int i, pindex;
-
   if (CHAR_CHECKINDEX(char_index) == FALSE) {
     return BATTLE_ERR_CHARAINDEX;
   }
@@ -580,7 +572,6 @@ int BATTLE_ClearGetExp(int char_index) {
       continue;
     CHAR_setWorkInt(pindex, CHAR_WORKGETEXP, 0);
   }
-
   return 0;
 }
 
@@ -651,12 +642,9 @@ void BATTLE_AllCharaWatchWaitSet(int battleindex) {
   }
 }
 
-void BATTLE_SurpriseSet(int battleindex, int side) {
-  BATTLE_ENTRY *pEntry;
+void BATTLE_SurpriseSet(int battle_index, int side) {
   int i, char_index;
-
-  pEntry = BattleArray[battleindex].Side[side].Entry;
-
+  BATTLE_ENTRY *pEntry = BattleArray[battle_index].Side[side].Entry;
   for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
     char_index = pEntry[i].char_index;
     if (CHAR_CHECKINDEX(char_index) == FALSE)
@@ -1315,10 +1303,10 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
         }
         CHAR_send_P_StatusString(
             char_index, CHAR_P_STRING_HP | CHAR_P_STRING_EXP |
-                            CHAR_P_STRING_MP | CHAR_P_STRING_DUELPOINT |
-                            CHAR_P_STRING_CHARM | CHAR_P_STRING_EARTH |
-                            CHAR_P_STRING_WATER | CHAR_P_STRING_FIRE |
-                            CHAR_P_STRING_WIND | CHAR_P_STRING_RIDEPET);
+                        CHAR_P_STRING_MP | CHAR_P_STRING_DUELPOINT |
+                        CHAR_P_STRING_CHARM | CHAR_P_STRING_EARTH |
+                        CHAR_P_STRING_WATER | CHAR_P_STRING_FIRE |
+                        CHAR_P_STRING_WIND | CHAR_P_STRING_RIDEPET);
         // Robin 0730
         if (CHAR_getInt(char_index, CHAR_RIDEPET) == -2) {
           CHAR_setInt(char_index, CHAR_RIDEPET, -1);
@@ -3724,7 +3712,6 @@ int BATTLE_GetExp(int char_index)
 #endif
 {
   int addexp, nowexp;
-
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return 0;
   nowexp = CHAR_getInt(char_index, CHAR_EXP);
@@ -4170,7 +4157,6 @@ int BATTLE_GetExpGold(int battleindex,
       CHAR_complianceParameter(petindex);
       sprintf(szBuffer, "K%d", i);
       CHAR_sendStatusString(char_index, szBuffer);
-
       continue;
     }
 #ifdef _ITEM_ADDEQUIPEXP
@@ -5212,9 +5198,7 @@ static int BATTLE_DexCalc(int char_index)
 }
 
 //*************************************************************
-//
 //  戊件申生□扑亦件互丐月井升丹井民尼永弁
-//
 static void ComboCheck(BATTLE_CHARLIST *pEntryList, int entrynum)
 //
 //*************************************************************
@@ -5227,7 +5211,6 @@ static void ComboCheck(BATTLE_CHARLIST *pEntryList, int entrynum)
       ComboId = 1, // 戊件示
       start = -1;
   for (i = 0; i < entrynum; i++) {
-
     char_index = pEntryList[i].char_index;
     com = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
     enemy = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
@@ -5245,9 +5228,6 @@ static void ComboCheck(BATTLE_CHARLIST *pEntryList, int entrynum)
     } else {
       move = 1;
     }
-
-    //   猾础及  湛毛潸  ［髑仆烟卅日母丢
-    // 髑仆烟卅日母丢
     if (BATTLE_IsThrowWepon(CHAR_getItemIndex(char_index, CHAR_ARM)) == TRUE) {
       armtype = 1;
     }
@@ -5872,8 +5852,8 @@ int BATTLE_ItemDelCheck(int item_index) {
 
 #ifdef _COMBO_EXP
 int BATTLE_AddComboExp(int battleindex, int *pBidList) {
-  int enemy_index, i, side, num, proflg = 1, j, exp, k, enemylevel,
-                                char_index[BATTLE_ENTRY_MAX + 1];
+  int enemy_index, i, side, num, proflg = 1, j, k;
+  int char_index[BATTLE_ENTRY_MAX + 1];
   BATTLE_ENTRY
   *pEntryEnemy;
   int item = 0, item_index, itemloop, allnum = 0;
@@ -5921,52 +5901,23 @@ int BATTLE_AddComboExp(int battleindex, int *pBidList) {
         continue;
       }
       if (proflg == 1 && side != j) {
-
-        exp = CHAR_getInt(enemy_index, CHAR_EXP);
-        enemylevel = CHAR_getInt(enemy_index, CHAR_LV);
+        int fix_exp;
+        int exp = CHAR_getInt(enemy_index, CHAR_EXP);
+        int enemy_level = CHAR_getInt(enemy_index, CHAR_LV);
         for (k = 0; char_index[k] != -1; k++) {
-          int nowexp, b_level;
-          int ridepet;
-          b_level = CHAR_getInt(char_index[k], CHAR_LV) - enemylevel;
-          if (b_level <= EXPGET_MAXLEVEL) { // 如 人物大怪物5以下 或怪物大於人物
-            nowexp = exp;
-          } else { // 如果人物大於怪物5以上
-            b_level = EXPGET_MAXLEVEL + EXPGET_DIV - b_level;
-            if (b_level > EXPGET_DIV)
-              b_level = EXPGET_DIV;
-            if (b_level <= 0) {
-              nowexp = 1;
-            } else {
-              nowexp = exp * b_level / EXPGET_DIV;
-            }
-            if (nowexp < 1)
-              nowexp = 1;
-          }
+          int char_level = CHAR_getInt(char_index[k], CHAR_LV);
+          fix_exp = BATTLE_calcExp(char_level, enemy_level, exp);
           CHAR_setWorkInt(char_index[k], CHAR_WORKGETEXP,
                           CHAR_getWorkInt(char_index[k], CHAR_WORKGETEXP) +
-                              nowexp);
-          ridepet = BATTLE_getRidePet(char_index[k]);
+                              fix_exp);
+          int ridepet = BATTLE_getRidePet(char_index[k]);
           // andy_edit
           if (CHAR_CHECKINDEX(ridepet)) {
-            int nowexp, b_level;
-            b_level = CHAR_getInt(ridepet, CHAR_LV) - enemylevel;
-            if (b_level <= EXPGET_MAXLEVEL) {
-              nowexp = exp;
-            } else {
-              b_level = EXPGET_MAXLEVEL + EXPGET_DIV - b_level;
-              if (b_level > EXPGET_DIV)
-                b_level = EXPGET_DIV;
-              if (b_level <= 0) {
-                nowexp = 1;
-              } else {
-                nowexp = exp * b_level / EXPGET_DIV;
-              }
-              if (nowexp < 1)
-                nowexp = 1;
-            }
-            nowexp *= 0.6;
+            int ridepet_level = CHAR_getInt(ridepet, CHAR_LV);
+            fix_exp = BATTLE_calcExp(ridepet_level, enemy_level, exp);
+            fix_exp *= 0.6;
             CHAR_setWorkInt(ridepet, CHAR_WORKGETEXP,
-                            CHAR_getWorkInt(ridepet, CHAR_WORKGETEXP) + nowexp);
+                            CHAR_getWorkInt(ridepet, CHAR_WORKGETEXP) + fix_exp);
           }
         }
       }
@@ -6036,54 +5987,25 @@ int BATTLE_AddExp(int battleindex, int *pBidList) {
       }
       if (proflg == 1 && side != j) {
 
-        exp = CHAR_getInt(enemy_index, CHAR_EXP);
-        enemylevel = CHAR_getInt(enemy_index, CHAR_LV);
+        int base_exp = CHAR_getInt(enemy_index, CHAR_EXP);
+        int enemy_level = CHAR_getInt(enemy_index, CHAR_LV);
         for (k = 0; char_index[k] != -1; k++) {
-          int nowexp, b_level;
-          int ridepet;
-          b_level = CHAR_getInt(char_index[k], CHAR_LV) - enemylevel;
-          if (b_level <= EXPGET_MAXLEVEL) { // 如 人物大怪物5以下 或怪物大於人物
-            nowexp = exp;
-          } else { // 如果人物大於怪物5以上
-            b_level = EXPGET_MAXLEVEL + EXPGET_DIV - b_level;
-            if (b_level > EXPGET_DIV)
-              b_level = EXPGET_DIV;
-            if (b_level <= 0) {
-              nowexp = 1;
-            } else {
-              nowexp = exp * b_level / EXPGET_DIV;
-            }
-            if (nowexp < 1)
-              nowexp = 1;
-          }
+          int fix_exp;
+          int char_level = CHAR_getInt(char_index[k], CHAR_LV);
+          fix_exp = BATTLE_calcExp(char_level, enemy_level, base_exp);
           CHAR_setWorkInt(char_index[k], CHAR_WORKGETEXP,
                           CHAR_getWorkInt(char_index[k], CHAR_WORKGETEXP) +
-                              nowexp);
+                              fix_exp);
           CHAR_setInt(char_index[k], CHAR_KILLPETCOUNT,
                       CHAR_getInt(char_index[k], CHAR_KILLPETCOUNT) + 1);
-          ridepet = BATTLE_getRidePet(char_index[k]);
+          int ridepet = BATTLE_getRidePet(char_index[k]);
           // andy_edit
           if (CHAR_CHECKINDEX(ridepet)) {
-            int nowexp, b_level;
-            b_level = CHAR_getInt(ridepet, CHAR_LV) - enemylevel;
-            if (b_level <= EXPGET_MAXLEVEL) {
-              nowexp = exp;
-            } else {
-              b_level = EXPGET_MAXLEVEL + EXPGET_DIV - b_level;
-              if (b_level > EXPGET_DIV)
-                b_level = EXPGET_DIV;
-              if (b_level <= 0) {
-                nowexp = 1;
-              } else {
-                nowexp = exp * b_level / EXPGET_DIV;
-              }
-              if (nowexp < 1)
-                nowexp = 1;
-            }
-            nowexp *= 0.6;
-
+            int ridepet_level = CHAR_getInt(ridepet, CHAR_LV);
+            fix_exp = BATTLE_calcExp(char_level, enemy_level, base_exp);
+            fix_exp *= 0.6;
             CHAR_setWorkInt(ridepet, CHAR_WORKGETEXP,
-                            CHAR_getWorkInt(ridepet, CHAR_WORKGETEXP) + nowexp);
+                            CHAR_getWorkInt(ridepet, CHAR_WORKGETEXP) + fix_exp);
             CHAR_setInt(ridepet, CHAR_KILLPETCOUNT,
                         CHAR_getInt(ridepet, CHAR_KILLPETCOUNT) + 1);
           }
@@ -6217,12 +6139,36 @@ int BATTLE_AddItem(int battleindex, int *pBidList) {
 
 #endif
 
-int BATTLE_AddExpItem(int battleindex, int *pBidList) {
-  int enemy_index, i, side, num, proflg = 1, j, exp, k, enemylevel,
-                                char_index[BATTLE_ENTRY_MAX + 1];
-  BATTLE_ENTRY
-  *pEntryEnemy, *pEntryChara[BATTLE_ENTRY_MAX + 1],
-      *pEntryPlayer[BATTLE_ENTRY_MAX + 1];
+
+#define EXPGET_MAXLEVEL 5 // 相差5级以内, 
+#define EXPGET_DIV 15     // 相差15级以上，直接为1
+// 2026.09.18 经验值计算
+inline int BATTLE_calcExp(int me_level,    // 我方LEVEL
+                          int enemy_level, // 敌方LEVEL
+                          int base_exp     // 敌人基础经验
+) {
+  int fix_exp;
+  int level_diff = me_level - enemy_level;
+  if (level_diff <= EXPGET_MAXLEVEL) {
+    fix_exp = base_exp;
+  } else {
+    level_diff = EXPGET_MAXLEVEL + EXPGET_DIV - level_diff;
+    // level_diff = level_diff > EXPGET_DIV ? EXPGET_DIV : level_diff;
+    if (level_diff <= 0) {
+      fix_exp = 1;
+    } else {
+      fix_exp = base_exp * level_diff / EXPGET_DIV;
+    }
+  }
+  fix_exp = fix_exp < 1 ? 1 : fix_exp;
+  return fix_exp;
+}
+int BATTLE_AddExpItem(int battle_index, int *pBidList) {
+  int enemy_index, i, side, num, proflg = 1, j, k;
+  int char_index[BATTLE_ENTRY_MAX + 1];
+  BATTLE_ENTRY *pEntryEnemy;
+  BATTLE_ENTRY *pEntryChara[BATTLE_ENTRY_MAX + 1];
+  BATTLE_ENTRY *pEntryPlayer[BATTLE_ENTRY_MAX + 1];
   int item = 0, item_index, itemloop, allnum = 0;
   int bid = pBidList[0];
   if (pBidList[0] < 0)
@@ -6243,19 +6189,19 @@ int BATTLE_AddExpItem(int battleindex, int *pBidList) {
     pEntryPlayer[i] = NULL;
   }
 
-  if (BattleArray[battleindex].Side[side].type != BATTLE_S_TYPE_PLAYER ||
-      BattleArray[battleindex].Side[1 - side].type == BATTLE_S_TYPE_PLAYER) {
+  if (BattleArray[battle_index].Side[side].type != BATTLE_S_TYPE_PLAYER ||
+      BattleArray[battle_index].Side[1 - side].type == BATTLE_S_TYPE_PLAYER) {
     proflg = 0;
   }
   for (i = 0; i < BATTLE_ENTRY_MAX && pBidList[i] != -1; i++) {
     int subnum;
-    char_index[i] = BATTLE_No2Index(battleindex, pBidList[i]);
+    char_index[i] = BATTLE_No2Index(battle_index, pBidList[i]);
     if (char_index[i] < 0)
       return BATTLE_ERR_PARAM;
     subnum = pBidList[i] - side * SIDE_OFFSET;
-    pEntryChara[i] = &BattleArray[battleindex].Side[side].Entry[subnum];
+    pEntryChara[i] = &BattleArray[battle_index].Side[side].Entry[subnum];
     if (CHAR_getInt(char_index[i], CHAR_WHICHTYPE) == CHAR_TYPEPET) {
-      pEntryPlayer[i] = &BattleArray[battleindex].Side[side].Entry[subnum - 5];
+      pEntryPlayer[i] = &BattleArray[battle_index].Side[side].Entry[subnum - 5];
     } else {
       pEntryPlayer[i] = pEntryChara[i];
     }
@@ -6264,7 +6210,7 @@ int BATTLE_AddExpItem(int battleindex, int *pBidList) {
   char_index[i] = -1;
   allnum = i;
   for (j = 0; j < 2; j++) {
-    pEntryEnemy = BattleArray[battleindex].Side[j].Entry;
+    pEntryEnemy = BattleArray[battle_index].Side[j].Entry;
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       enemy_index = pEntryEnemy[i].char_index;
       if (CHAR_CHECKINDEX(enemy_index) == FALSE)
@@ -6312,60 +6258,32 @@ int BATTLE_AddExpItem(int battleindex, int *pBidList) {
           }
         }
 
-#define EXPGET_MAXLEVEL 5
-#define EXPGET_DIV 15
-        exp = CHAR_getInt(enemy_index, CHAR_EXP);
-        enemylevel = CHAR_getInt(enemy_index, CHAR_LV);
+        // 2026.09.18 计算经验
+        int fix_exp;
+        int base_exp = CHAR_getInt(enemy_index, CHAR_EXP);
+        int enemy_level = CHAR_getInt(enemy_index, CHAR_LV);
         for (k = 0; char_index[k] != -1; k++) {
-          int nowexp, b_level;
-          int ridepet;
-          b_level = CHAR_getInt(char_index[k], CHAR_LV) - enemylevel;
-          if (b_level <= EXPGET_MAXLEVEL) { // 如 人物大怪物5以下 或怪物大於人物
-            nowexp = exp;
-          } else { // 如果人物大於怪物5以上
-            b_level = EXPGET_MAXLEVEL + EXPGET_DIV - b_level;
-            if (b_level > EXPGET_DIV)
-              b_level = EXPGET_DIV;
-            if (b_level <= 0) {
-              nowexp = 1;
-            } else {
-              nowexp = exp * b_level / EXPGET_DIV;
-            }
-            if (nowexp < 1)
-              nowexp = 1;
-          }
+          // 计算第K个人的经验
+          int char_level = CHAR_getInt(char_index[k], CHAR_LV);
+          fix_exp = BATTLE_calcExp(char_level, enemy_level, base_exp);
           CHAR_setWorkInt(char_index[k], CHAR_WORKGETEXP,
                           CHAR_getWorkInt(char_index[k], CHAR_WORKGETEXP) +
-                              nowexp);
+                          fix_exp);
           CHAR_setInt(char_index[k], CHAR_KILLPETCOUNT,
                       CHAR_getInt(char_index[k], CHAR_KILLPETCOUNT) + 1);
-          ridepet = BATTLE_getRidePet(char_index[k]);
+          // 计算第K个人的骑宠
+          int ridepet = BATTLE_getRidePet(char_index[k]);
           // andy_edit
           if (CHAR_CHECKINDEX(ridepet)) {
-            int nowexp, b_level;
-            b_level = CHAR_getInt(ridepet, CHAR_LV) - enemylevel;
-            if (b_level <= EXPGET_MAXLEVEL) {
-              nowexp = exp;
-            } else {
-              b_level = EXPGET_MAXLEVEL + EXPGET_DIV - b_level;
-              if (b_level > EXPGET_DIV)
-                b_level = EXPGET_DIV;
-              if (b_level <= 0) {
-                nowexp = 1;
-              } else {
-                nowexp = exp * b_level / EXPGET_DIV;
-              }
-              if (nowexp < 1)
-                nowexp = 1;
-            }
-            nowexp *= 0.6;
-
+            int ridepet_level = CHAR_getInt(ridepet, CHAR_LV);
+            fix_exp = BATTLE_calcExp(ridepet_level, enemy_level, base_exp);
+            fix_exp *= 0.6;
             CHAR_setWorkInt(ridepet, CHAR_WORKGETEXP,
-                            CHAR_getWorkInt(ridepet, CHAR_WORKGETEXP) + nowexp);
+                            CHAR_getWorkInt(ridepet, CHAR_WORKGETEXP) + fix_exp);
             CHAR_setInt(ridepet, CHAR_KILLPETCOUNT,
                         CHAR_getInt(ridepet, CHAR_KILLPETCOUNT) + 1);
           }
-          if (BattleArray[battleindex].norisk == 0 &&
+          if (BattleArray[battle_index].norisk == 0 &&
               CHAR_getInt(char_index[k], CHAR_WHICHTYPE) == CHAR_TYPEPET) {
             if (CHAR_getInt(enemy_index, CHAR_LV) >
                 CHAR_getInt(char_index[k], CHAR_LV)) {
@@ -6384,9 +6302,9 @@ int BATTLE_AddExpItem(int battleindex, int *pBidList) {
       CHAR_setInt(enemy_index, CHAR_DEADCOUNT,
                   CHAR_getInt(enemy_index, CHAR_DEADCOUNT) + 1);
       if (pEntryEnemy[i].flg & BENT_FLG_ULTIMATE) {
-        BATTLE_UltimateExtra(battleindex, char_index[0], enemy_index);
+        BATTLE_UltimateExtra(battle_index, char_index[0], enemy_index);
       } else {
-        BATTLE_NormalDeadExtra(battleindex, char_index[0], enemy_index);
+        BATTLE_NormalDeadExtra(battle_index, char_index[0], enemy_index);
       }
     }
   }
@@ -6400,42 +6318,23 @@ void Pet_Check_Die(int petindex) {
   int vital, str, tgh, dex;
   float modai;
 
-#define RAND(x, y)                                                             \
-  ((x - 1) + 1 + (int)((double)(y - (x - 1)) * rand() / (RAND_MAX + 1.0)))
-  // 玛宠死亡  扣基本属性及忠诚
+  // 宠物玛蕾菲雅死亡扣基本属性及忠诚
   if (CHAR_getInt(petindex, CHAR_PETID) == 718) {
     LevelUpPoint = CHAR_getInt(petindex, CHAR_ALLOCPOINT);
     vital = ((LevelUpPoint >> 24) & 0xff);
     str = ((LevelUpPoint >> 16) & 0xff);
     tgh = ((LevelUpPoint >> 8) & 0xff);
     dex = ((LevelUpPoint >> 0) & 0xff);
-    //			enemy_index = pEntryEnemy[i].char_index;
-
     print("\n lvup <<%d %d %d %d>>", vital, str, tgh, dex);
-
     vital = vital - RAND(1, 8);
     str = str - RAND(1, 4);
     tgh = tgh - RAND(1, 4);
     dex = dex - RAND(1, 4);
     print("\n lvup <<%d %d %d %d>>", vital, str, tgh, dex);
-
-    if (vital < 0)
-      vital = 0;
-    if (str < 0)
-      str = 0;
-    if (tgh < 0)
-      tgh = 0;
-    if (dex < 0)
-      dex = 0;
-
-    if (vital > 50)
-      vital = 50;
-    if (str > 50)
-      str = 50;
-    if (tgh > 50)
-      tgh = 50;
-    if (dex > 50)
-      dex = 50;
+    vital = vital < 0 ? 0 : vital > 50 ? 50 : vital;
+    str = str < 0 ? 0 : str > 50 ? 50 : str;
+    tgh = tgh < 0 ? 0 : tgh > 50 ? 50 : tgh;
+    dex = dex < 0 ? 0 : dex > 50 ? 50 : dex;
     LevelUpPoint = (vital << 24) + (str << 16) + (tgh << 8) + (dex << 0);
     CHAR_setInt(petindex, CHAR_ALLOCPOINT, LevelUpPoint);
     print("\n lvup <<%d %d %d %d>>", vital, str, tgh, dex);
@@ -6532,16 +6431,11 @@ int BATTLE_TargetCheckDead(int battleindex, int defNo) {
 }
 
 int BATTLE_TargetAdjust(int battleindex, int char_index, int myside) {
-  int defNo;
-
-  defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-
+  int defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
   if (BATTLE_TargetCheck(battleindex, defNo) == FALSE) {
     defNo = BATTLE_DefaultAttacker(battleindex, 1 - myside);
   }
-
   CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM2, defNo);
-
   return defNo;
 }
 
@@ -6580,7 +6474,6 @@ void Compute_Down(int char_index, int rideindex, int *down1, int *down2,
       downs = pethp - 1;
     if (downs >= 0) {
       pethp = ((pethp - downs) < 1) ? 1 : (pethp - downs);
-
       CHAR_setInt(rideindex, CHAR_HP, pethp);
       *down2 = downs;
     }
@@ -6592,20 +6485,9 @@ void Compute_Down_SARS(int char_index, int rideindex, int *down1, int *down2,
                        int flg) {
   int hp = 0, pethp = 0;
   int downs = 0;
-
   *down1 = 0;
   *down2 = 0;
   // 人物
-  /*
-          downs =
-                  CHAR_getInt( char_index, CHAR_VITAL )
-                  + CHAR_getInt( char_index, CHAR_STR )
-                  + CHAR_getInt( char_index, CHAR_DEX )
-                  + CHAR_getInt( char_index, CHAR_TOUGH );
-          if( (downs = (((downs/100)-20)/4)) < 1  )
-                  downs = 1;
-  */
-
   hp = CHAR_getInt(char_index, CHAR_HP);
   downs = hp * 10 / 100;
 

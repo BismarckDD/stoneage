@@ -134,7 +134,6 @@
 #ifdef _NPC_MAGICCARD
 #include "npc_magiccard.h"
 #endif
-// #define DEBUG
 #ifdef _JZ_NEWSCRIPT_LUA
 #include "npc_lua_interface.h"
 #endif
@@ -867,9 +866,5 @@ void *getFunctionPointerFromName(char *funcname) {
                  funcname) == 0) {
         return correspondStringAndFunctionTable[i].functionPointer;
       }
-
-#ifdef DEBUG
-  print("No such Function: %s\n", funcname);
-#endif
   return NULL;
 }

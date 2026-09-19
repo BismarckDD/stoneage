@@ -6013,18 +6013,8 @@ void ITEM_FindTreasures(int char_index, int toindex, int haveitem_index) {
 }
 
 BOOL FindTreasures_init() {
-  FILE *fp;
   int i;
-#ifdef _CRYPTO_DATA
-  BOOL crypto = FALSE;
-  fp = fopen("data/findtreasures.txt.allblues", "r");
-  if (fp != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    fp = fopen("data/findtreasures.txt", "r");
-  }
+  FILE *fp = fopen("data/findtreasures.txt", "r");
   if (fp == NULL) {
     print("无法打开文件\n");
     return FALSE;
@@ -6032,11 +6022,6 @@ BOOL FindTreasures_init() {
   for (i = 0; i < FINDTREASURESMAX; i++) {
     char line[64];
     if (fgets(line, sizeof(line), fp) == NULL) {
-#ifdef _CRYPTO_DATA
-      if (crypto == TRUE) {
-        DecryptKey(line);
-      }
-#endif
       findtreasures[i] = -1;
       continue;
     }

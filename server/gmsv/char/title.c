@@ -243,37 +243,16 @@ BOOL TITLE_deltitle(int char_index, int titleindex) {
  *  撩      FALSE(0)
  *------------------------------------------------------------*/
 BOOL TITLE_initTitleName(char *filename) {
-  FILE *f;
   char line[256];
   int linenum = 0;
   int title_readlen = 0;
-
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    f = fopen(filename, "r");
-  }
+  FILE *f = fopen(filename, "r");
   if (f == NULL) {
     errorprint;
     return FALSE;
   }
-
   TITLE_titlenum = 0;
-
-  /*  引内  躲卅垫互窒垫丐月井升丹井譬屯月    */
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */
@@ -310,11 +289,6 @@ BOOL TITLE_initTitleName(char *filename) {
   /*  引凶  心  允    */
   linenum = 0;
   while (fgets(line, sizeof(line), f)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(line);
-    }
-#endif
     linenum++;
     if (line[0] == '#')
       continue; /* comment */
@@ -342,8 +316,7 @@ BOOL TITLE_initTitleName(char *filename) {
     {
       char token[256];
       int ret;
-
-      /*  夫午勾户及玄□弁件毛苇月    */
+      /*  夫午勾户及玄□弁件毛苇月 */
       ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
@@ -367,29 +340,17 @@ BOOL TITLE_initTitleName(char *filename) {
     }
   }
   fclose(f);
-
   TITLE_titlenum = title_readlen;
-
   print("有效头衔名称数是 %d...", TITLE_titlenum);
-
-#ifdef DEBUG
-
-  {
-    int i;
-    for (i = 0; i < TITLE_titlenum; i++)
-      print("头衔索引[%d] 名称[%s] \n", TITLE_table[i].index,
-            TITLE_table[i].name);
-  }
-#endif
   return TRUE;
 }
 /*------------------------------------------------------------
- * 惫寞及疯赓渝祭毛允月［
+ * 
  * 娄醒
- *  filename        char*       涩烂白央奶伙
- * 忒曰袄
- *  岳      TRUE(1)
- *  撩      FALSE(0)
+ *  filename char*
+ * 返回值
+ *  成功：TRUE(1)
+ *  失败：FALSE(0)
  *------------------------------------------------------------*/
 BOOL TITLE_reinitTitleName(void) {
   freeMemory(TITLE_table);
@@ -424,11 +385,6 @@ static int TITLE_getConfigOneLine(FILE *fp, char *line, int linelen)
   line[0] = '\0';
 
   while (fgets(buf, sizeof(buf), fp)) {
-#ifdef _CRYPTO_DATA
-    if (crypto == TRUE) {
-      DecryptKey(buf);
-    }
-#endif
     linenum++;
     /* 配置语法不依赖空白。统一删除空格、制表符和 Windows CRLF，
      * 再判断注释/空行，避免把只含 '\r' 的行解析成未知字段。 */
@@ -441,7 +397,6 @@ static int TITLE_getConfigOneLine(FILE *fp, char *line, int linelen)
     if (buf[0] == '{') {
       if (startflg == TRUE) {
         print("titleconfig:明明没有关闭「{」却出现了: %d \n", linenum);
-        /* } */
         return -1;
       }
       startflg = TRUE;
@@ -496,22 +451,10 @@ static int TITLE_getParamData(int readarray, int array, char *src) {
  *  撩      FALSE(0)
  *------------------------------------------------------------*/
 BOOL TITLE_initTitleConfig(char *filename) {
-  FILE *f;
   char line[1024];
   int linenum = 0;
   int titlecfg_readlen = 0;
-#ifdef _CRYPTO_DATA
-  char realopfile[256];
-  BOOL crypto = FALSE;
-  sprintf(realopfile, "%s.allblues", filename);
-  f = fopen(realopfile, "r");
-  if (f != NULL) {
-    crypto = TRUE;
-  } else
-#endif
-  {
-    f = fopen(filename, "r");
-  }
+  FILE *f = fopen(filename, "r");
   if (f == NULL) {
     errorprint;
     return FALSE;
@@ -519,15 +462,9 @@ BOOL TITLE_initTitleConfig(char *filename) {
 
   TITLE_titlecfgnum = 0;
 
-  /*  引内  躲卅垫互窒垫丐月井升丹井譬屯月    */
-  /*while( fgets( line, sizeof( line ), f ) ){}*/
   while (1) {
     int rc;
-#ifdef _CRYPTO_DATA
-    rc = TITLE_getConfigOneLine(f, line, sizeof(line), crypto);
-#else
     rc = TITLE_getConfigOneLine(f, line, sizeof(line));
-#endif
     if (rc == 0)
       break;
     if (rc == -1)
@@ -550,7 +487,6 @@ BOOL TITLE_initTitleConfig(char *filename) {
     fclose(f);
     return FALSE;
   }
-  /* 赓渝祭 */
   {
     int i;
     for (i = 0; i < TITLE_titlecfgnum; i++) {
@@ -565,21 +501,14 @@ BOOL TITLE_initTitleConfig(char *filename) {
     return FALSE;
   }
 
-  /*  引凶  心  允    */
   linenum = 0;
-  /*while( fgets( line, sizeof( line ), f ) ){}*/
   while (1) {
     int rc;
-#ifdef _CRYPTO_DATA
-    rc = TITLE_getConfigOneLine(f, line, sizeof(line), crypto);
-#else
     rc = TITLE_getConfigOneLine(f, line, sizeof(line));
-#endif
     if (rc == 0)
       break;
     if (rc == -1)
       continue;
-
     linenum++;
 
     {
@@ -718,12 +647,9 @@ static BOOL TITLE_TitleCheck_Main(int char_index, BOOL mode, int *addcnt,
   int i, j, k, ret;
 
   /* 赓渝祭 */
-  {
-    int i;
-    for (i = 0; i < TITLE_titlecfgnum && TITLE_configbuf[i].title != -1; i++) {
-      TITLE_configbuf[i].title = -1;
-      TITLE_configbuf[i].flg = 0;
-    }
+  for (i = 0; i < TITLE_titlecfgnum && TITLE_configbuf[i].title != -1; i++) {
+    TITLE_configbuf[i].title = -1;
+    TITLE_configbuf[i].flg = 0;
   }
   *addcnt = 0;
   *delcnt = 0;
