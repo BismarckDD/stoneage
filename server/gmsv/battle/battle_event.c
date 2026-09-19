@@ -74,7 +74,7 @@ int gBattleBadStatusTbl[BATTLE_ENTRY_MAX * 2];
 
 #ifdef _OTHER_MAGICSTAUTS
 #ifdef _MAGICSTAUTS_RESIST
-char MagicStatus[MAXSTATUSTYPE][36] = {"NULL",     "法术防御", "法术暴击",
+char MagicStatus[MAXSTATUSTYPE][36] = {"NULL", "法术防御", "法术暴击",
                                        "抵抗火焰", "抵抗雷电", "抵抗冰冷"};
 int MagicTbl[] = {-1,
                   CHAR_DEFMAGICSTATUS,
@@ -88,17 +88,8 @@ int MagicTbl[] = {-1, CHAR_DEFMAGICSTATUS, CHAR_MAGICSUPERWALL};
 #endif //_MAGICSTAUTS_RESIST
 #endif
 
-char *aszStatus[] = {"NULL",
-                     "中毒",
-                     "麻痹",
-                     "睡眠",
-                     "石化",
-                     "醉酒",
-                     "混乱",
-                     "虚弱",
-                     "剧毒",
-                     "障碍",
-                     "沉默"
+char *aszStatus[] = {"NULL", "中毒", "麻痹", "睡眠", "石化", "醉酒", "混乱", "虚弱",
+                     "剧毒", "障碍", "沉默"
 #ifdef _PET_SKILL_SARS // WON ADD
                      ,
                      "瘟疫"
@@ -5142,34 +5133,22 @@ int PROFESSION_BATTLE_StatusAttackCheck(int char_index, int toindex, int status,
       return 0;
   }
 
-  if (rand_num < Success) {
-    return 1;
-  } else {
-    return 0;
-  }
+  return (rand_num < Success) ? 1 : 0;
 }
 
-int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
+int BATTLE_Combo(int battle_index, int *pAttackList, int defNo) {
   char szBuffer[512] = "";
   char szCommand[1024];
-  int damage = 0, petdamage = 0, attackindex, toindex, defindex, ultimate = 0,
+  int damage = 0, petdamage = 0, attackindex, toindex, ultimate = 0,
       AllDamage = 0, AllPetDamage = 0, react = 0, attackNo;
   int flg = 0, iWork, par, i, DefSide = 0, Guardian = -2;
   BOOL iRet = FALSE;
-
-  defindex = toindex = BATTLE_No2Index(battleindex, defNo);
-
-  // BATTLE_BroadCast( battleindex, "发动必杀技！！",
-  //	(pAttackList[0] >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
-
+  int defindex = toindex = BATTLE_No2Index(battle_index, defNo);
   for (i = 0; pAttackList[i] != -1 && i < BATTLE_ENTRY_MAX; i++) {
     attackNo = pAttackList[i];
-
     defindex = toindex;
-
     flg = 0;
-
-    attackindex = BATTLE_No2Index(battleindex, attackNo);
+    attackindex = BATTLE_No2Index(battle_index, attackNo);
 
     if (CHAR_getInt(toindex, CHAR_HP) <= 0) {
       return FALSE;
@@ -5230,7 +5209,7 @@ int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
 #endif
     if (damage > 0 && (react != BATTLE_MD_ABSROB) &&
         (react != BATTLE_MD_VANISH)) {
-      BATTLE_DamageWakeUp(battleindex, defindex);
+      BATTLE_DamageWakeUp(battle_index, defindex);
     }
 
     szBuffer[0] = 0;
@@ -5342,12 +5321,7 @@ int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
 
 #endif
     BATTLESTR_ADD(szCommand);
-
-    // BATTLE_BroadCast( battleindex, szBuffer,
-    //	(attackNo >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
-
-    defNo = BATTLE_Index2No(battleindex, defindex);
-
+    defNo = BATTLE_Index2No(battle_index, defindex);
     if (defNo >= SIDE_OFFSET) {
       iWork = defNo - SIDE_OFFSET;
       DefSide = 1;
@@ -5357,7 +5331,7 @@ int BATTLE_Combo(int battleindex, int *pAttackList, int defNo) {
 
     iWork = defNo - DefSide * SIDE_OFFSET;
     if (ultimate > 0) {
-      BattleArray[battleindex].Side[DefSide].Entry[iWork].flg |=
+      BattleArray[battle_index].Side[DefSide].Entry[iWork].flg |=
           BENT_FLG_ULTIMATE;
     }
   }

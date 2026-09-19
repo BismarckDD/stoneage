@@ -1,3 +1,4 @@
+#define __BATTLE_C__
 #include "version.h"
 //
 #include "common.h"
@@ -41,51 +42,40 @@
 #include "skill.h"
 #endif
 
-// #define DANTAI
-static int Total_BattleNum = 0;
-BATTLE *BattleArray;
-int BATTLE_battlenum;
-static int BATTLE_searchCnt = 0;
+static int Total_BattleNum = -1;
+static int BATTLE_searchCnt = -1;
 
 #ifdef _PET_LIMITLEVEL // ANDY_ADD
 void Pet_Check_Die(int petindex);
 #endif
 static int BATTLE_SearchTask(void);
-static int BATTLE_Battling(int battleindex);
+static int BATTLE_Battling(int battle_index);
 
 #ifdef _Item_ReLifeAct
-BOOL CHECK_ITEM_RELIFE(int battleindex, int toindex);
+BOOL CHECK_ITEM_RELIFE(int battle_index, int toindex);
 #endif
 #ifdef _LOSE_FINCH_
-BOOL CHECK_PET_RELIFE(int battleindex, int petindex);
+BOOL CHECK_PET_RELIFE(int battle_index, int petindex);
 #endif
-char szAllBattleString[BATTLE_STRING_MAX];
 #ifdef _OTHER_MAGICSTAUTS
 void BATTLE_MagicStatusSeq(int char_index);
 #endif
 
 // Terry 2001/11/28
-char szBattleString[1024];
-char *pszBattleTop, *pszBattleLast;
-
-char szBadStatusString[1024];
-
-int gWeponType;
-float gDamageDiv;
-int gItemCrushRate = 400000;
+static char szBattleString[1024];
+// 使用回旋镖时的攻击顺序
 int BoomerangVsTbl[4][5] = {
     {4 + 5 * 0, 2 + 5 * 0, 0 + 5 * 0, 1 + 5 * 0, 3 + 5 * 0},
     {4 + 5 * 1, 2 + 5 * 1, 0 + 5 * 1, 1 + 5 * 1, 3 + 5 * 1},
     {4 + 5 * 2, 2 + 5 * 2, 0 + 5 * 2, 1 + 5 * 2, 3 + 5 * 2},
     {4 + 5 * 3, 2 + 5 * 3, 0 + 5 * 3, 1 + 5 * 3, 3 + 5 * 3},
-
 };
 
-BOOL BATTLE_CHECKINDEX(int battleindex) {
-  if (battleindex >= BATTLE_battlenum || battleindex < 0)
+BOOL BATTLE_CHECKINDEX(int battle_index) {
+  if (battle_index >= BATTLE_battlenum || battle_index < 0)
     return FALSE;
 
-  return BattleArray[battleindex].use;
+  return BattleArray[battle_index].use;
 }
 
 void BATTLE_BadStatusAllClr(int char_index) {
@@ -147,7 +137,7 @@ void BATTLE_BadStatusAllClr(int char_index) {
   CHAR_setWorkInt(char_index, CHAR_MYSKILLHIT, 0);
   CHAR_setWorkInt(char_index, CHAR_WORK_P_DUCK, 0);
   CHAR_setWorkInt(char_index, CHAR_WORKMOD_P_DUCK, 0);
-  CHAR_setWorkInt(char_index, CHAR_WORK_WEAPON, 0); // 历史注释的原始编码已损坏，无法可靠恢复。
+  CHAR_setWorkInt(char_index, CHAR_WORK_WEAPON, 0); // 武器专精
 
   // 火冰电抗性
   for (i = 0; i < 3; i++)
@@ -168,26 +158,8 @@ void BATTLE_BadStatusAllClr(int char_index) {
 #endif
 }
 
-int BATTLE_getTopBattle(int battleindex) {
-
-  BATTLE *pBattleTop;
-
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
-    return -1;
-
-  pBattleTop = &BattleArray[battleindex];
-
-  while (pBattleTop != NULL) {
-    pBattleTop = BattleArray[battleindex].pBefore;
-  }
-
-  if (BATTLE_CHECKINDEX(pBattleTop->battleindex) == FALSE) {
-    return -1;
-  } else {
-    return pBattleTop->battleindex;
-  }
-}
-
+// 2026.09.19 删除逻辑存在缺陷且无引用的代码：BATTLE_getTopBattle()
+//
 static int BATTLE_getBattleFieldNo(int floor, int x, int y) {
   int tile[2], map[3], iRet;
   if (!MAP_getTileAndObjData(floor, x, y, &tile[0], &tile[1]))
@@ -214,17 +186,16 @@ static int CharTableIdx[20][2] = {
     {3, 2}, {3, 1}, {3, 3}, {3, 0}, {3, 4}, {2, 2}, {2, 1},
     {2, 3}, {2, 0}, {2, 4}, {0, 2}, {0, 1}, {0, 3}, {0, 0},
     {0, 4}, {1, 2}, {1, 1}, {1, 3}, {1, 0}, {1, 4}
-
 };
 
-typedef int (*FUNCSORTLOC)(const void *, const void *);
-
-static int SortLoc(const int *pEle1, const int *pEle2) {
-  int ele1basex = CharTableIdx[*pEle1][1];
-  int ele1basey = CharTableIdx[*pEle1][0];
-  int ele2basex = CharTableIdx[*pEle2][1];
-  int ele2basey = CharTableIdx[*pEle2][0];
-  if (*pEle1 >= 10) {
+static int SortLoc(const void *pEle1, const void *pEle2) {
+  int ele1 = *(int*)pEle1;
+  int ele2 = *(int*)pEle2;
+  int ele1basex = CharTableIdx[ele1][1];
+  int ele1basey = CharTableIdx[ele1][0];
+  int ele2basex = CharTableIdx[ele2][1];
+  int ele2basey = CharTableIdx[ele2][0];
+  if (ele1 >= 10) {
     if (ele1basey != ele2basey)
       return (ele1basey - ele2basey);
     return (ele1basex - ele2basex);
@@ -237,7 +208,7 @@ static int SortLoc(const int *pEle1, const int *pEle2) {
 }
 #endif
 
-int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
+int BATTLE_MultiList(int battle_index, int toNo, int ToList[]) {
   int j, i, cnt = 0, nLife = 0, nLifeArea[10];
 #ifdef _ATTACK_MAGIC
   // 单人攻击
@@ -247,7 +218,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     if (toNo >= 0 && toNo <= 9) {
       for (i = 0; i < 10; i++) {
         // 确定活着的人数,并记录活着的人的号码
-        if (BATTLE_TargetCheck(battleindex, i) == TRUE)
+        if (BATTLE_TargetCheck(battle_index, i) == TRUE)
           nLifeArea[nLife++] = i;
       }
     }
@@ -255,7 +226,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     if (toNo >= 10 && toNo <= 19) {
       for (i = 10; i < 20; i++) {
         // 确定活着的人数,并记录活着的人的号码
-        if (BATTLE_TargetCheck(battleindex, i) == TRUE)
+        if (BATTLE_TargetCheck(battle_index, i) == TRUE)
           nLifeArea[nLife++] = i;
       }
     }
@@ -265,7 +236,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
       return -1;
     } else {
       // 被攻击的对象已经死亡或不在战场上
-      if (BATTLE_TargetCheck(battleindex, toNo) == FALSE)
+      if (BATTLE_TargetCheck(battle_index, toNo) == FALSE)
         // 随机找一只来打
         while ((toNo = nLifeArea[rand() % 10]) == -1);
     }
@@ -276,7 +247,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
   // 右下後一列攻击
   else if (TARGET_SIDE_0_B_ROW == toNo) {
     for (j = 0, i = 0; i < SIDE_OFFSET / 2; i++) {
-      if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+      if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
         ToList[j] = i;
         j++;
       }
@@ -287,7 +258,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     if (j == 0) {
       // 换前一排
       for (j = 0, i = SIDE_OFFSET / 2; i < SIDE_OFFSET; i++) {
-        if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+        if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
           ToList[j] = i;
           j++;
         }
@@ -303,7 +274,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
   // 右下前一列攻击
   else if (TARGET_SIDE_0_F_ROW == toNo) {
     for (j = 0, i = SIDE_OFFSET / 2; i < SIDE_OFFSET; i++) {
-      if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+      if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
         ToList[j] = i;
         j++;
       }
@@ -314,7 +285,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     if (j == 0) {
       // 换後一排
       for (j = 0, i = 0; i < SIDE_OFFSET / 2; i++) {
-        if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+        if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
           ToList[j] = i;
           j++;
         }
@@ -330,7 +301,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
   // 换後一排
   else if (TARGET_SIDE_1_B_ROW == toNo) {
     for (j = 0, i = SIDE_OFFSET; i < SIDE_OFFSET + SIDE_OFFSET / 2; i++) {
-      if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+      if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
         ToList[j] = i;
         j++;
       }
@@ -341,7 +312,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     if (j == 0) {
       // 左下後一列攻击
       for (j = 0, i = SIDE_OFFSET + SIDE_OFFSET / 2; i < SIDE_OFFSET * 2; i++) {
-        if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+        if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
           ToList[j] = i;
           j++;
         }
@@ -357,7 +328,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
   // 换前一排
   else if (TARGET_SIDE_1_F_ROW == toNo) {
     for (j = 0, i = SIDE_OFFSET + SIDE_OFFSET / 2; i < SIDE_OFFSET * 2; i++) {
-      if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+      if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
         ToList[j] = i;
         j++;
       }
@@ -366,7 +337,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     cnt = j;
     if (j == 0) {
       for (j = 0, i = SIDE_OFFSET; i < SIDE_OFFSET + SIDE_OFFSET / 2; i++) {
-        if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+        if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
           ToList[j] = i;
           j++;
         }
@@ -379,7 +350,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     }
   } else if (TARGET_SIDE_0 == toNo) {
     for (j = 0, i = 0; i < SIDE_OFFSET; i++) {
-      if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+      if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
         ToList[j] = i;
         j++;
       }
@@ -391,7 +362,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
   // 左上方所有攻击
   else if (toNo == TARGET_SIDE_1) {
     for (j = 0, i = SIDE_OFFSET; i < SIDE_OFFSET * 2; i++) {
-      if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+      if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
         ToList[j] = i;
         j++;
       }
@@ -407,7 +378,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
 #else
     for (j = 0, i = 0; i < SIDE_OFFSET * 2; i++, j++) {
 #endif
-      if (TRUE == BATTLE_TargetCheck(battleindex, i)) {
+      if (TRUE == BATTLE_TargetCheck(battle_index, i)) {
         ToList[j] = i;
         j++;
       }
@@ -418,7 +389,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
   } else if (toNo == TARGER_THROUGH) {
     int toNo2 = -1, count = 0;
 
-    if (BATTLE_TargetCheck(battleindex, toNo) != FALSE) {
+    if (BATTLE_TargetCheck(battle_index, toNo) != FALSE) {
       ToList[count] = toNo;
       count++;
       cnt = count;
@@ -433,7 +404,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     else if (toNo < (SIDE_OFFSET * 2))
       toNo2 = toNo - (SIDE_OFFSET / 2);
 
-    if (BATTLE_TargetCheck(battleindex, toNo2) != FALSE) {
+    if (BATTLE_TargetCheck(battle_index, toNo2) != FALSE) {
       ToList[count] = toNo2;
       count++;
       cnt = count;
@@ -445,12 +416,12 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
   }
 
   if (cnt > 1)
-    qsort(ToList, cnt, sizeof(ToList[0]), (FUNCSORTLOC)SortLoc);
+    qsort(ToList, cnt, sizeof(ToList[0]), SortLoc);
   return toNo;
 
 #else
   if (0 <= toNo && toNo <= 19) {
-    if (BATTLE_TargetCheck(battleindex, toNo) == TRUE) {
+    if (BATTLE_TargetCheck(battle_index, toNo) == TRUE) {
       ToList[0] = toNo;
       ToList[1] = -1;
       cnt = 1;
@@ -461,7 +432,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     }
   } else if (toNo == TARGET_SIDE_0) {
     for (j = 0, i = 0; i < SIDE_OFFSET; i++) {
-      if (BATTLE_TargetCheck(battleindex, i) == TRUE) {
+      if (BATTLE_TargetCheck(battle_index, i) == TRUE) {
         ToList[j] = i;
         j++;
       }
@@ -470,7 +441,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     cnt = j;
   } else if (toNo == TARGET_SIDE_1) {
     for (j = 0, i = SIDE_OFFSET; i < SIDE_OFFSET * 2; i++) {
-      if (BATTLE_TargetCheck(battleindex, i) == TRUE) {
+      if (BATTLE_TargetCheck(battle_index, i) == TRUE) {
         ToList[j] = i;
         j++;
       }
@@ -479,7 +450,7 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
     cnt = j;
   } else if (toNo == TARGET_ALL) {
     for (j = 0, i = 0; i < SIDE_OFFSET * 2; i++, j++) {
-      if (BATTLE_TargetCheck(battleindex, i) == TRUE) {
+      if (BATTLE_TargetCheck(battle_index, i) == TRUE) {
         ToList[j] = i;
         j++;
       }
@@ -496,10 +467,10 @@ int BATTLE_MultiList(int battleindex, int toNo, int ToList[]) {
 #endif
 }
 
-void BATTLE_MultiListDead(int battleindex, int toNo, int ToList[]) {
+void BATTLE_MultiListDead(int battle_index, int toNo, int ToList[]) {
   int j, i;
   if (0 <= toNo && toNo <= 19) {
-    if (BATTLE_TargetCheckDead(battleindex, toNo) == TRUE) {
+    if (BATTLE_TargetCheckDead(battle_index, toNo) == TRUE) {
       ToList[0] = toNo;
       ToList[1] = -1;
     } else {
@@ -508,7 +479,7 @@ void BATTLE_MultiListDead(int battleindex, int toNo, int ToList[]) {
     }
   } else if (toNo == TARGET_SIDE_0) {
     for (j = 0, i = 0; i < SIDE_OFFSET; i++) {
-      if (BATTLE_TargetCheckDead(battleindex, i) == TRUE) {
+      if (BATTLE_TargetCheckDead(battle_index, i) == TRUE) {
         ToList[j] = i;
         j++;
       }
@@ -516,7 +487,7 @@ void BATTLE_MultiListDead(int battleindex, int toNo, int ToList[]) {
     ToList[j] = -1;
   } else if (toNo == TARGET_SIDE_1) {
     for (j = 0, i = SIDE_OFFSET; i < SIDE_OFFSET * 2; i++) {
-      if (BATTLE_TargetCheckDead(battleindex, i) == TRUE) {
+      if (BATTLE_TargetCheckDead(battle_index, i) == TRUE) {
         ToList[j] = i;
         j++;
       }
@@ -529,7 +500,7 @@ void BATTLE_MultiListDead(int battleindex, int toNo, int ToList[]) {
 #else
       for (j = 0, i = 0; i < SIDE_OFFSET * 2; i++, j++) {
 #endif
-        if (BATTLE_TargetCheckDead(battleindex, i) == TRUE) {
+        if (BATTLE_TargetCheckDead(battle_index, i) == TRUE) {
           ToList[j] = i;
           j++;
         }
@@ -575,24 +546,24 @@ int BATTLE_ClearGetExp(int char_index) {
   return 0;
 }
 
-INLINE void _BATTLE_ExitAll(char *file, int line, int battleindex) {
+INLINE void _BATTLE_ExitAll(char *file, int line, int battle_index) {
   int j, i, char_index;
   for (j = 0; j < 2; j++) {
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
-      char_index = BattleArray[battleindex].Side[j].Entry[i].char_index;
+      char_index = BattleArray[battle_index].Side[j].Entry[i].char_index;
       if (CHAR_CHECKINDEX(char_index) == FALSE)
         continue;
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_NONE);
-      BATTLE_Exit(char_index, battleindex);
+      BATTLE_Exit(char_index, battle_index);
     }
   }
 }
 
-void BATTLE_AllCharaFinishSet(int battleindex) {
+void BATTLE_AllCharaFinishSet(int battle_index) {
   int j, i, char_index;
   for (j = 0; j < 2; j++) {
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
-      char_index = BattleArray[battleindex].Side[j].Entry[i].char_index;
+      char_index = BattleArray[battle_index].Side[j].Entry[i].char_index;
       if (CHAR_CHECKINDEX(char_index) == FALSE)
         continue;
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_FINAL);
@@ -614,11 +585,11 @@ BOOL BATTLE_IsCharge(int char_index) {
     return FALSE;
 }
 
-void BATTLE_AllCharaCWaitSet(int battleindex) {
+void BATTLE_AllCharaCWaitSet(int battle_index) {
   int j, i, char_index;
   for (j = 0; j < 2; j++) {
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
-      char_index = BattleArray[battleindex].Side[j].Entry[i].char_index;
+      char_index = BattleArray[battle_index].Side[j].Entry[i].char_index;
       if (CHAR_CHECKINDEX(char_index) == FALSE)
         continue;
       if (BATTLE_IsCharge(char_index) == FALSE) {
@@ -629,10 +600,10 @@ void BATTLE_AllCharaCWaitSet(int battleindex) {
   }
 }
 
-void BATTLE_AllCharaWatchWaitSet(int battleindex) {
+void BATTLE_AllCharaWatchWaitSet(int battle_index) {
   int i, char_index;
   for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
-    char_index = BattleArray[battleindex].Side[0].Entry[i].char_index;
+    char_index = BattleArray[battle_index].Side[0].Entry[i].char_index;
     if (CHAR_CHECKINDEX(char_index) == FALSE)
       continue;
     if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) !=
@@ -682,15 +653,13 @@ static void EntryInit(BATTLE_ENTRY *pEntry) {
 }
 
 int BATTLE_CreateBattle(void) {
-  int battleindex, i, j;
-  BATTLE *pBattle;
-  battleindex = BATTLE_SearchTask();
+  int i, j;
+  int battle_index = BATTLE_SearchTask();
   // NUKE 0701
-  if (battleindex < 0)
+  if (battle_index < 0)
     return -1;
-  memset(&BattleArray[battleindex], 0, sizeof(BATTLE));
-  pBattle = &BattleArray[battleindex];
-
+  memset(&BattleArray[battle_index], 0, sizeof(BATTLE));
+  BATTLE *pBattle = &BattleArray[battle_index];
   // NUKE 0701
   if (pBattle == NULL)
     return -1;
@@ -714,7 +683,7 @@ int BATTLE_CreateBattle(void) {
   pBattle->WinFunc = NULL;
   pBattle->pNext = NULL;
   pBattle->pBefore = NULL;
-  pBattle->battleindex = battleindex;
+  pBattle->battle_index = battle_index;
   Total_BattleNum++;
 #ifdef _BATTLECOMMAND_TIME
   pBattle->PartTime = 0;
@@ -736,12 +705,11 @@ int BATTLE_CreateBattle(void) {
   pBattle->tv_sec = NowTime.tv_sec;
   pBattle->tv_usec = NowTime.tv_usec;
 #endif
-  return battleindex;
+  return battle_index;
 }
 
 static int BATTLE_SearchTask(void) {
-  int i, j;
-  i = BATTLE_searchCnt;
+  int j, i = BATTLE_searchCnt;
   for (j = 0; j < BATTLE_battlenum; j++) {
     if (i >= BATTLE_battlenum)
       i = 0;
@@ -754,18 +722,14 @@ static int BATTLE_SearchTask(void) {
   return -1;
 }
 
-void BATTLE_DeleteItem(int battleindex) {
+void BATTLE_DeleteItem(int battle_index) {
   int i, j, k;
   BATTLE_ENTRY *pEntry;
-
   for (j = 0; j < 2; j++) {
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
-      pEntry = &BattleArray[battleindex].Side[j].Entry[i];
+      pEntry = &BattleArray[battle_index].Side[j].Entry[i];
       for (k = 0; k < GETITEM_MAX; k++) {
         if (pEntry->getitem[k] >= 0) {
-          //					print( "//
-          // 历史注释的原始编码已损坏，无法可靠恢复。
-          // ITEM_getAppropriateName(pEntry->getitem[k]) );
           ITEM_endExistItemsOne(pEntry->getitem[k]);
         }
       }
@@ -773,21 +737,20 @@ void BATTLE_DeleteItem(int battleindex) {
   }
 }
 
-int BATTLE_DeleteBattle(int battleindex) {
+int BATTLE_DeleteBattle(int battle_index) {
   int i, j;
   BATTLE *pBattle;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE) {
     printEx("err:battle index error\n");
     return BATTLE_ERR_BATTLEINDEX;
   }
-  if (BATTLE_WatchUnLink(battleindex) == FALSE) {
+  if (BATTLE_WatchUnLink(battle_index) == FALSE) {
     printEx("err:battle link 不脱离\n");
   }
-
-  pBattle = &BattleArray[battleindex];
+  pBattle = &BattleArray[battle_index];
   pBattle->use = FALSE;
   pBattle->mode = BATTLE_MODE_NONE;
-  BATTLE_DeleteItem(battleindex);
+  BATTLE_DeleteItem(battle_index);
   for (j = 0; j < 2; j++) {
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       EntryInit(&pBattle->Side[j].Entry[i]);
@@ -797,39 +760,38 @@ int BATTLE_DeleteBattle(int battleindex) {
   return 0;
 }
 
-int BATTLE_No2Index(int battleindex, int bid) {
+int BATTLE_No2Index(int battle_index, int bid) {
   BATTLE_ENTRY *pEntry;
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return -1;
   if (BATTLE_CHECKNO(bid) == FALSE)
     return -1;
 
   if (bid >= 10) {
-    pEntry = BattleArray[battleindex].Side[1].Entry;
+    pEntry = BattleArray[battle_index].Side[1].Entry;
     bid -= SIDE_OFFSET;
   } else {
-    pEntry = BattleArray[battleindex].Side[0].Entry;
+    pEntry = BattleArray[battle_index].Side[0].Entry;
   }
   if (CHAR_CHECKINDEX(pEntry[bid].char_index) == FALSE)
     return -1;
-
   return pEntry[bid].char_index;
 }
 #ifdef _Item_ReLifeAct
-int BATTLE_getBattleDieIndex(int battleindex, int bid) {
+int BATTLE_getBattleDieIndex(int battle_index, int bid) {
   BATTLE_ENTRY *pEntry;
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return -1;
   if (BATTLE_CHECKNO(bid) == FALSE)
     return -1;
 
   if (bid >= 10) {
-    pEntry = BattleArray[battleindex].Side[1].Entry;
+    pEntry = BattleArray[battle_index].Side[1].Entry;
     bid -= SIDE_OFFSET;
   } else {
-    pEntry = BattleArray[battleindex].Side[0].Entry;
+    pEntry = BattleArray[battle_index].Side[0].Entry;
   }
   if (CHAR_CHECKINDEX(pEntry[bid].char_index) == FALSE)
     return -1;
@@ -841,19 +803,19 @@ int BATTLE_getBattleDieIndex(int battleindex, int bid) {
 #endif
 
 #ifdef _PROFESSION_ADDSKILL
-BOOL BATTLE_BattleUltimate(int battleindex,
-                           int bid) // 历史注释的原始编码已损坏，无法可靠恢复。
+BOOL BATTLE_BattleUltimate(int battle_index,
+                           int bid) // 检查此位置上是否被打飞
 {
   BATTLE_ENTRY *pEntry;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return FALSE;
   if (BATTLE_CHECKNO(bid) == FALSE)
     return FALSE;
   if (bid >= 10) {
-    pEntry = BattleArray[battleindex].Side[1].Entry;
+    pEntry = BattleArray[battle_index].Side[1].Entry;
     bid -= SIDE_OFFSET;
   } else {
-    pEntry = BattleArray[battleindex].Side[0].Entry;
+    pEntry = BattleArray[battle_index].Side[0].Entry;
   }
   if (pEntry[bid].flg & BENT_FLG_ULTIMATE)
     return FALSE;
@@ -862,17 +824,17 @@ BOOL BATTLE_BattleUltimate(int battleindex,
 }
 #endif
 
-int BATTLE_Index2No(int battleindex, int char_index) {
+int BATTLE_Index2No(int battle_index, int char_index) {
   BATTLE_ENTRY *pEntry;
   int i, j;
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return -1;
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return -1;
 
   for (j = 0; j < 2; j++) {
-    pEntry = BattleArray[battleindex].Side[j].Entry;
+    pEntry = BattleArray[battle_index].Side[j].Entry;
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       if (pEntry[i].char_index == char_index) {
         return i + j * SIDE_OFFSET;
@@ -898,15 +860,15 @@ char *BATTLE_CharTitle(int char_index) {
   return pName;
 }
 
-int BATTLE_CharaBackUp(int battleindex) {
+int BATTLE_CharaBackUp(int battle_index) {
   int i, j, k, char_index;
   BATTLE *pBattle;
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE) {
     return BATTLE_ERR_BATTLEINDEX;
   }
 
-  pBattle = &BattleArray[battleindex];
+  pBattle = &BattleArray[battle_index];
   k = 0;
 
   for (j = 0; j < 2; j++) {
@@ -928,19 +890,19 @@ int BATTLE_CharaBackUp(int battleindex) {
   return 0;
 }
 
-int BATTLE_NewEntry(int char_index, int battleindex, int side) {
+int BATTLE_NewEntry(int char_index, int battle_index, int side) {
   BATTLE_ENTRY *pEntry;
   BATTLE *pBattle;
   int i, iEntryMax, iEntryFirst;
 
   if (BATTLE_CHECKSIDE(side) == FALSE)
     return BATTLE_ERR_PARAM;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return BATTLE_ERR_CHARAINDEX;
 
-  pBattle = &BattleArray[battleindex];
+  pBattle = &BattleArray[battle_index];
 
   if (pBattle->use == FALSE)
     return BATTLE_ERR_NOUSE;
@@ -974,7 +936,7 @@ int BATTLE_NewEntry(int char_index, int battleindex, int side) {
     work = CHAR_getWorkInt(char_index, CHAR_WORKPLAYERINDEX);
     pEntry = pBattle->Side[side].Entry;
 
-    work = BATTLE_Index2No(battleindex, work);
+    work = BATTLE_Index2No(battle_index, work);
     work -= side * SIDE_OFFSET;
     work += 5;
     iEntryFirst = work;
@@ -990,7 +952,7 @@ int BATTLE_NewEntry(int char_index, int battleindex, int side) {
     work = CHAR_getWorkInt(char_index, CHAR_WORKPLAYERINDEX);
     pEntry = pBattle->Side[side].Entry;
 
-    work = BATTLE_Index2No(battleindex, work);
+    work = BATTLE_Index2No(battle_index, work);
     work -= side * SIDE_OFFSET;
     work += 5;
     iEntryFirst = work;
@@ -1020,7 +982,7 @@ int BATTLE_NewEntry(int char_index, int battleindex, int side) {
 
   pEntry[i].bid = i + side * SIDE_OFFSET;
 
-  CHAR_setWorkInt(char_index, CHAR_WORKBATTLEINDEX, battleindex);
+  CHAR_setWorkInt(char_index, CHAR_WORKBATTLEINDEX, battle_index);
 
   CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_INIT);
 
@@ -1052,7 +1014,7 @@ int BATTLE_NewEntry(int char_index, int battleindex, int side) {
 
 #ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
   CHAR_setWorkInt(char_index, CHAR_WORKTRAP, 0); //陷阱
-  BATTLE_ProfessionStatus_init(battleindex, char_index);
+  BATTLE_ProfessionStatus_init(battle_index, char_index);
 #endif
 
 #ifdef _PETSKILL_ACUPUNCTURE
@@ -1082,14 +1044,14 @@ int BATTLE_NewEntry(int char_index, int battleindex, int side) {
   return 0;
 }
 
-INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
+INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battle_index) {
   BATTLE_ENTRY *pEntry;
   int i, j, k;
   BATTLE *pBattle;
   char szPet[32];
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return BATTLE_ERR_CHARAINDEX;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE) {
     return BATTLE_ERR_BATTLEINDEX;
   }
 
@@ -1102,16 +1064,16 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
     }
 #endif
   }
-  if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_E) {
+  if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_E) {
     BATTLE_ENTRY *pWinEntry;
     char token[256];
-    pWinEntry = BattleArray[battleindex].Side[0].Entry;
+    pWinEntry = BattleArray[battle_index].Side[0].Entry;
 
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       int winindex = pWinEntry[i].char_index;
       // if (CHAR_CHECKINDEX(winindex) == TRUE) {
       //   if (CHAR_getInt(winindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-      //     BattleFinishPvEFunction(battleindex, char_index);
+      //     BattleFinishPvEFunction(battle_index, char_index);
       //   }
       // }
     }
@@ -1134,7 +1096,7 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
     CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
                 CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER));
     CHAR_setWorkInt(char_index, CHAR_WORKFOXROUND, -1);
-    // 历史注释的原始编码已损坏，无法可靠恢复。
+    // print("\n变回去:%d",CHAR_getInt( char_index, CHAR_BASEIMAGENUMBER));
   }
 #endif
 
@@ -1157,7 +1119,7 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
     CHAR_setWorkInt(char_index, CHAR_WORKNOCAST, 0);
   }
 #endif
-  pBattle = &BattleArray[battleindex];
+  pBattle = &BattleArray[battle_index];
   if (pBattle->use == FALSE)
     return BATTLE_ERR_NOUSE;
 
@@ -1249,9 +1211,9 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
               unsigned int battletime;
               int fd = getfdFromchar_index(char_index);
               if (CONNECT_checkfd(fd) == TRUE) {
-                Dtimes = BattleArray[battleindex].CreateTime;
+                Dtimes = BattleArray[battle_index].CreateTime;
                 battletime =
-                    (unsigned int)(BattleArray[battleindex].flgTime / 100);
+                    (unsigned int)(BattleArray[battle_index].flgTime / 100);
                 CheckDefBTime(char_index, fd, Dtimes, battletime,
                               10); //lowTime延迟时间
               }
@@ -1275,9 +1237,9 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
 
             int fd = getfdFromchar_index(char_index);
             if (CONNECT_checkfd(fd) == TRUE) {
-              Dtimes = BattleArray[battleindex].CreateTime;
+              Dtimes = BattleArray[battle_index].CreateTime;
               battletime =
-                  (unsigned int)(BattleArray[battleindex].flgTime / 100);
+                  (unsigned int)(BattleArray[battle_index].flgTime / 100);
               // if( CHAR_getWorkInt( char_index, CHAR_WORKFLG) &
               // WORKFLG_DEBUGMODE )	{ }else
               {
@@ -1357,7 +1319,7 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
                   CHAR_K_STRING_WATER | CHAR_K_STRING_FIRE |
                   CHAR_K_STRING_WIND);
         }
-        if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
+        if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_P) {
           int flg = 0;
           CHAR_setFlg(char_index, CHAR_ISDUEL, 0);
           if (CHAR_getFlg(char_index, CHAR_ISPARTY))
@@ -1439,7 +1401,7 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
 #endif
   if (CHAR_CHECKINDEX(char_index) == TRUE) {
     if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-      if (BattleArray[battleindex].type != BATTLE_TYPE_WATCH) {
+      if (BattleArray[battle_index].type != BATTLE_TYPE_WATCH) {
 #ifdef _MAP_HEALERALLHEAL
         int floor = CHAR_getInt(char_index, CHAR_FLOOR);
         int i;
@@ -1489,11 +1451,11 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
             if (petindex == -1)
               continue;
 
-            /*  平乓仿及    民尼永弁    */
+            /* キャラのチェック (角色的检查) */
             if (!CHAR_CHECKINDEX(char_index))
               continue;
 
-            /* 矢永玄及index民尼永弁毛允月 */
+            /* ペットのindexチェックをする (检查宠物的index) */
             if (CHAR_CHECKINDEX(petindex) == FALSE)
               continue;
 
@@ -1502,7 +1464,7 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
             CHAR_setInt(petindex, CHAR_MP,
                         CHAR_getWorkInt(petindex, CHAR_WORKMAXMP));
 
-            /*--由仿丢□正譬帮--*/
+            /*--パラメータ調整--*/
             CHAR_complianceParameter(char_index);
             sprintf(petsend, "K%d", i);
             CHAR_sendStatusString(char_index, petsend);
@@ -1516,7 +1478,7 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex) {
   return BATTLE_ERR_NONE;
 }
 
-int BATTLE_PetDefaultExit(int char_index, int battleindex) {
+int BATTLE_PetDefaultExit(int char_index, int battle_index) {
   int pno, pindex, iRet;
 
   if (CHAR_CHECKINDEX(char_index) == FALSE)
@@ -1528,7 +1490,7 @@ int BATTLE_PetDefaultExit(int char_index, int battleindex) {
     return 0;
   pindex = CHAR_getCharPet(char_index, pno);
 
-  iRet = BATTLE_Exit(pindex, battleindex);
+  iRet = BATTLE_Exit(pindex, battle_index);
 
   if (iRet) {
     iRet *= -1;
@@ -1539,7 +1501,7 @@ int BATTLE_PetDefaultExit(int char_index, int battleindex) {
   return iRet;
 }
 
-int BATTLE_PetDefaultEntry(int char_index, int battleindex, int side) {
+int BATTLE_PetDefaultEntry(int char_index, int battle_index, int side) {
   int pindex;
 
 #if 1
@@ -1553,7 +1515,7 @@ int BATTLE_PetDefaultEntry(int char_index, int battleindex, int side) {
   pindex = CHAR_getCharPet(char_index, pno);
   if (CHAR_CHECKINDEX(pindex) && !CHAR_getFlg(pindex, CHAR_ISDIE) &&
       CHAR_getInt(pindex, CHAR_HP) > 0) {
-    if (BATTLE_NewEntry(pindex, battleindex, side)) {
+    if (BATTLE_NewEntry(pindex, battle_index, side)) {
     } else {
       ret = 0;
     }
@@ -1578,7 +1540,7 @@ int BATTLE_PetDefaultEntry(int char_index, int battleindex, int side) {
     if (CHAR_getInt(pindex, CHAR_HP) <= 0)
       continue;
 
-    if (BATTLE_NewEntry(pindex, battleindex, side)) {
+    if (BATTLE_NewEntry(pindex, battle_index, side)) {
     } else {
       CHAR_setInt(char_index, CHAR_DEFAULTPET, i);
       break;
@@ -1593,7 +1555,7 @@ int BATTLE_PetDefaultEntry(int char_index, int battleindex, int side) {
 }
 
 int BATTLE_RescueEntry(int char_index, int toindex) {
-  int iRet = 0, battleindex, fd, pindex;
+  int iRet = 0, battle_index, fd, pindex;
   char szBuffer[256] = "";
 
 #ifdef _BATTLE_TIMESPEED
@@ -1605,8 +1567,8 @@ int BATTLE_RescueEntry(int char_index, int toindex) {
   }
 #endif
 
-  battleindex = CHAR_getWorkInt(toindex, CHAR_WORKBATTLEINDEX);
-  if (!BATTLE_CHECKINDEX(battleindex))
+  battle_index = CHAR_getWorkInt(toindex, CHAR_WORKBATTLEINDEX);
+  if (!BATTLE_CHECKINDEX(battle_index))
     return 1;
   if ((fd = getfdFromchar_index(char_index)) < 0)
     return 1;
@@ -1616,19 +1578,19 @@ int BATTLE_RescueEntry(int char_index, int toindex) {
     iRet = 1;
   }
 #ifndef _FIX_P_VS_P_PARENT
-  if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
+  if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_P) {
     iRet = 1;
   } else
 #endif
   {
-    iRet = BATTLE_NewEntry(char_index, battleindex,
+    iRet = BATTLE_NewEntry(char_index, battle_index,
                            CHAR_getWorkInt(toindex, CHAR_WORKBATTLESIDE));
   }
 
   if (iRet == 0) {
     CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_RESCUE);
     iRet = BATTLE_PetDefaultEntry(
-        char_index, battleindex, CHAR_getWorkInt(toindex, CHAR_WORKBATTLESIDE));
+        char_index, battle_index, CHAR_getWorkInt(toindex, CHAR_WORKBATTLESIDE));
   }
 
   if (iRet == 0) {
@@ -1640,26 +1602,26 @@ int BATTLE_RescueEntry(int char_index, int toindex) {
     }
     // snprintf( szBuffer, sizeof( szBuffer ), "(%s)加入作战。",
     //	CHAR_getUseName( char_index ) );
-    // BATTLE_BroadCast( battleindex, szBuffer, CHAR_COLORYELLOW );
+    // BATTLE_BroadCast( battle_index, szBuffer, CHAR_COLORYELLOW );
     if ((fd = getfdFromchar_index(char_index)) != -1) {
-      GmsvServer_EN_send(fd, BattleArray[battleindex].type,
-                         BattleArray[battleindex].field_no);
+      GmsvServer_EN_send(fd, BattleArray[battle_index].type,
+                         BattleArray[battle_index].field_no);
     }
-    flg = (BattleArray[battleindex]
+    flg = (BattleArray[battle_index]
                .Side[CHAR_getWorkInt(toindex, CHAR_WORKBATTLESIDE)]
                .flg &
            BSIDE_FLG_HELP_OK)
               ? TRUE
               : FALSE;
     GmsvServer_HL_send(fd, flg);
-    sprintf(szBuffer, "BP|%X|%X|%X", BATTLE_Index2No(battleindex, char_index),
+    sprintf(szBuffer, "BP|%X|%X|%X", BATTLE_Index2No(battle_index, char_index),
             BP_FLG_JOIN, CHAR_getInt(char_index, CHAR_MP));
     BATTLE_CommandSend(char_index, szBuffer);
   } else {
     snprintf(szBuffer, sizeof(szBuffer), "无法参战。");
     CHAR_talkToCli(char_index, -1, szBuffer, CHAR_COLORYELLOW);
     if ((fd = getfdFromchar_index(char_index)) != -1) {
-      GmsvServer_EN_send(fd, FALSE, BattleArray[battleindex].field_no);
+      GmsvServer_EN_send(fd, FALSE, BattleArray[battle_index].field_no);
     }
   }
   BATTLE_ClearGetExp(char_index);
@@ -1797,23 +1759,23 @@ BOOL BATTLE_RescueParentTry(int char_index, int pindex) {
   return result;
 }
 
-int BATTLE_PartyNewEntry(int char_index, int battleindex, int side) {
+int BATTLE_PartyNewEntry(int char_index, int battle_index, int side) {
   int iRet = 0, i, work;
 #if 1
 
-  iRet = BATTLE_NewEntry(char_index, battleindex, side);
+  iRet = BATTLE_NewEntry(char_index, battle_index, side);
   if (iRet)
     return iRet;
   CAflush(char_index);
   CDflush(char_index);
-  iRet = BATTLE_PetDefaultEntry(char_index, battleindex, side);
+  iRet = BATTLE_PetDefaultEntry(char_index, battle_index, side);
   if (iRet)
     return iRet;
   BATTLE_ClearGetExp(char_index);
 #endif
 
 #ifdef _BATTLE_GETITEM_RATE
-  if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
+  if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_P) {
     if (CHAR_getInt(char_index, CHAR_FLOOR) == getBattleGetItemRateMap()) {
       CHAR_setWorkInt(char_index, CHAR_WORK_BATTLEPK, TRUE);
     }
@@ -1830,20 +1792,20 @@ int BATTLE_PartyNewEntry(int char_index, int battleindex, int side) {
     }
 
 #ifdef _BATTLE_GETITEM_RATE
-    if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
+    if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_P) {
       if (CHAR_getInt(work, CHAR_FLOOR) == getBattleGetItemRateMap()) {
         CHAR_setWorkInt(work, CHAR_WORK_BATTLEPK, TRUE);
       }
     }
 #endif
 
-    iRet = BATTLE_NewEntry(work, battleindex, side);
+    iRet = BATTLE_NewEntry(work, battle_index, side);
 
     if (iRet)
       break;
     CAflush(work);
     CDflush(work);
-    iRet = BATTLE_PetDefaultEntry(work, battleindex, side);
+    iRet = BATTLE_PetDefaultEntry(work, battle_index, side);
 
     if (iRet)
       return iRet;
@@ -1855,19 +1817,19 @@ int BATTLE_PartyNewEntry(int char_index, int battleindex, int side) {
 
 #if 1
 
-int BATTLE_WatchNewEntry(int char_index, int battleindex, int side) {
+int BATTLE_WatchNewEntry(int char_index, int battle_index, int side) {
   BATTLE_ENTRY *pEntry;
   BATTLE *pBattle;
   int iEntryFirst = 0, iEntryMax = BATTLE_ENTRY_MAX, i;
 
   if (BATTLE_CHECKSIDE(side) == FALSE)
     return BATTLE_ERR_PARAM;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return BATTLE_ERR_CHARAINDEX;
 
-  pBattle = &BattleArray[battleindex];
+  pBattle = &BattleArray[battle_index];
 
   if (pBattle->use == FALSE)
     return BATTLE_ERR_NOUSE;
@@ -1908,7 +1870,7 @@ int BATTLE_WatchNewEntry(int char_index, int battleindex, int side) {
 
   pEntry[i].bid = i + side * SIDE_OFFSET;
 
-  CHAR_setWorkInt(char_index, CHAR_WORKBATTLEINDEX, battleindex);
+  CHAR_setWorkInt(char_index, CHAR_WORKBATTLEINDEX, battle_index);
 
   CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_WATCHINIT);
 
@@ -1925,11 +1887,11 @@ int BATTLE_WatchNewEntry(int char_index, int battleindex, int side) {
   return 0;
 }
 
-int BATTLE_WatchPartyNewEntry(int char_index, int battleindex, int side) {
+int BATTLE_WatchPartyNewEntry(int char_index, int battle_index, int side) {
   int iRet = 0, i, work;
 #if 1
 
-  iRet = BATTLE_WatchNewEntry(char_index, battleindex, side);
+  iRet = BATTLE_WatchNewEntry(char_index, battle_index, side);
   if (iRet)
     return iRet;
 
@@ -1949,7 +1911,7 @@ int BATTLE_WatchPartyNewEntry(int char_index, int battleindex, int side) {
       continue;
     }
 
-    iRet = BATTLE_WatchNewEntry(work, battleindex, side);
+    iRet = BATTLE_WatchNewEntry(work, battle_index, side);
 
     if (iRet)
       break;
@@ -1963,10 +1925,10 @@ int BATTLE_WatchPartyNewEntry(int char_index, int battleindex, int side) {
 int BATTLE_CreateForWatcher(int char_index, int topbattleindex);
 
 int BATTLE_WatchEntry(int char_index, int toindex) {
-  int iRet = 0, battleindex, fd;
+  int iRet = 0, battle_index, fd;
   char szBuffer[256] = "";
 
-  battleindex = CHAR_getWorkInt(toindex, CHAR_WORKBATTLEINDEX);
+  battle_index = CHAR_getWorkInt(toindex, CHAR_WORKBATTLEINDEX);
 
   if (CHAR_getWorkInt(toindex, CHAR_WORKBATTLEMODE) == BATTLE_CHARMODE_FINAL ||
       CHAR_getWorkInt(toindex, CHAR_WORKBATTLEMODE) == BATTLE_CHARMODE_NONE ||
@@ -1975,16 +1937,16 @@ int BATTLE_WatchEntry(int char_index, int toindex) {
   }
 
   if (iRet == 0) {
-    iRet = BATTLE_CreateForWatcher(char_index, battleindex);
+    iRet = BATTLE_CreateForWatcher(char_index, battle_index);
   }
   if (iRet == 0) {
     // snprintf( szBuffer, sizeof( szBuffer ), "(%s)开始观战。",
     //	CHAR_getUseName( char_index ) );
 
-    // BATTLE_BroadCast( battleindex, szBuffer, CHAR_COLORYELLOW );
+    // BATTLE_BroadCast( battle_index, szBuffer, CHAR_COLORYELLOW );
     if ((fd = getfdFromchar_index(char_index)) != -1) {
-      GmsvServer_EN_send(fd, BattleArray[battleindex].type,
-                         BattleArray[battleindex].field_no);
+      GmsvServer_EN_send(fd, BattleArray[battle_index].type,
+                         BattleArray[battle_index].field_no);
     }
 
     sprintf(szBuffer, "BP|%X|%X|%X", 20, BP_FLG_JOIN,
@@ -2024,16 +1986,16 @@ BOOL BATTLE_WatchTry(int char_index) {
                           CHAR_getInt(char_index, CHAR_Y), 1, &x, &y);
 
   cnt = 0;
-  /*愤坌及  及蟆及平乓仿毛潸  允月 */
+  /*戦闘の 前のキャラクターを取り 出す (取出战斗前方的角色) */
   for (object = MAP_getTopObj(CHAR_getInt(char_index, CHAR_FLOOR), x, y);
        object; object = NEXT_OBJECT(object)) {
     int toindex;
     int objindex = GET_OBJINDEX(object);
-    /* 平乓仿弁正□元扎卅中 */
+    /* キャラクタじゃない (不是角色) */
     if (OBJECT_getType(objindex) != OBJTYPE_CHARA)
       continue;
     toindex = OBJECT_getIndex(objindex);
-    /* 皿伊奶乩□元扎卅中 */
+    /* プレイヤーじゃない (不是玩家) */
     if (CHAR_getInt(toindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER
 #ifdef _PLAYER_NPC
         && CHAR_getInt(toindex, CHAR_WHICHTYPE) != CHAR_TYPEPLAYERNPC
@@ -2041,7 +2003,7 @@ BOOL BATTLE_WatchTry(int char_index) {
     )
       continue;
     pfound = TRUE;
-    /* 爵    匹卅中卅日戚尺 */
+    /* 戦闘中でないなら次へ (未在战斗则跳过) */
     if (CHAR_getWorkInt(toindex, CHAR_WORKBATTLEMODE) == BATTLE_CHARMODE_NONE) {
       continue;
     }
@@ -2055,10 +2017,10 @@ BOOL BATTLE_WatchTry(int char_index) {
     if (pfound == FALSE) {
       CHAR_talkToCli(char_index, -1, "那里没有任何人。", CHAR_COLORYELLOW);
     }
-    // 分木手中卅仁化棋爵撩
+    // 誰もいなくて観戦 終了 (没有人，结束观战)
     GmsvServer_EN_send(fd, FALSE, 0);
   }
-  /* ㄠ谛仄井中卅中桦宁反巨件玄伉□今六月 */
+  /* 一人しかいない場合はエントリさせる (只有一人时直接观战) */
   else if (cnt == 1) {
     if (BATTLE_WatchEntry(char_index, CONNECT_getBattlechar_index(fd, 0))) {
       result = FALSE;
@@ -2066,15 +2028,15 @@ BOOL BATTLE_WatchTry(int char_index) {
       result = TRUE;
     }
   }
-  /*   醒谛中凶日它奴件玉它毛请仄化  中宁歹六月 */
+  /*   複数いたらウィンドウを 出して 選択させる (多人时弹出窗口选择) */
   else if (cnt > 1) {
     int strlength;
     char msgbuf[1024];
     char escapebuf[2048];
     strcpy(msgbuf, "1\n观看谁的战斗呢？\n");
     strlength = strlen(msgbuf);
-    /* 它奴件玉它及丢永本□斥综岳［
-     * 爵    及平乓仿及域
+    /* ウィンドウのメッセージを 生成 (生成窗口消息)
+     * 戦闘のキャラの一覧 (战斗角色列表)
      */
     for (i = 0;
          CONNECT_getBattlechar_index(fd, i) != -1 && i < CONNECT_WINDOWBUFSIZE;
@@ -2100,9 +2062,9 @@ BOOL BATTLE_WatchTry(int char_index) {
 #endif
 
 #define MAX_DOUJYOUENEMY 64
-static int DoujyouEnemyTbl[10]; // ㄠㄟ手中日氏仃升
+static int DoujyouEnemyTbl[10]; // とりあえず もいらんけど (暂时用不到但保留)
 /***************************************************************
- *   桦乒□玉迕卞衬平乓仿潸
+ *   モード用にキャラクターを取り 出す (模式用，取出角色)
  ***************************************************************/
 int *Doujyou_GetEnemy(int meindex, int char_index) {
   int i;
@@ -2114,7 +2076,7 @@ int *Doujyou_GetEnemy(int meindex, int char_index) {
 
   NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr));
 
-  /* 赓渝祭 */
+  /* 初期化 (初始化) */
   for (i = 0; i < arraysizeof(WorkEnemyTbl); i++) {
     WorkEnemyTbl[i] = -1;
   }
@@ -2125,7 +2087,7 @@ int *Doujyou_GetEnemy(int meindex, int char_index) {
   }
 
   insert = 0;
-  /* 娄醒卞踏中化丐月衬毛巨件玄伉□今六月 */
+  /* 引数に書いてある敵をエントリさせる (将参数中的敌人加入列表) */
   for (i = 0; i < MAX_DOUJYOUENEMY; i++) {
     int curEnemy;
     char data[128];
@@ -2141,20 +2103,20 @@ int *Doujyou_GetEnemy(int meindex, int char_index) {
     WorkEnemyTbl[insert] = curEnemy;
     insert++;
   }
-  // 分木手中卅井匀凶日巨仿□
+  // 誰もいなかったらエラー (一个都没有则报错)
   if (insert <= 0)
     return NULL;
 
-  // ㄠ    仿件母丞涩烂
+  // ランダムに保存 (随机保存)
   DoujyouEnemyTbl[0] = WorkEnemyTbl[RAND(0, insert - 1)];
 
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "enemypetno", buf, sizeof(buf)) ==
       NULL) {
-    // 中卅井匀凶日窒手踏井卅中
+    // いなかったら何も書かない (不存在则不写入)
     DoujyouEnemyTbl[1] = -1;
   } else {
     insert = 0;
-    /* 娄醒卞踏中化丐月衬毛巨件玄伉□今六月 */
+    /* 引数に書いてある敵をエントリさせる (将参数中的敌人加入列表) */
     for (i = 0; i < MAX_DOUJYOUENEMY; i++) {
       int curEnemy;
       char data[128];
@@ -2170,11 +2132,11 @@ int *Doujyou_GetEnemy(int meindex, int char_index) {
       WorkEnemyTbl[insert] = curEnemy;
       insert++;
     }
-    // ㄡ    仿件母丞涩烂
+    // ランダムに保存 (随机保存)
     DoujyouEnemyTbl[1] = WorkEnemyTbl[RAND(0, insert - 1)];
   }
 
-  // ㄢ      仄
+  // しない (不设置)
   DoujyouEnemyTbl[2] = -1;
 
   return DoujyouEnemyTbl;
@@ -2286,7 +2248,7 @@ void BATTLE_EnemyRandowSetSkill(int enemy_index, int skillType) {
 }
 
 int BATTLE_CreateVsEnemyNew(int char_index, int npcindex, int *table) {
-  int battleindex, iRet = 0, enemy_index, i, pindex;
+  int battle_index, iRet = 0, enemy_index, i, pindex;
   int fd, field_no, baselevel = 0;
   int skillType = 0;
   int EnemyList[20];
@@ -2316,8 +2278,8 @@ int BATTLE_CreateVsEnemyNew(int char_index, int npcindex, int *table) {
     CHAR_talkToCli(char_index, -1, "二重遭遇。", CHAR_COLORYELLOW);
     return BATTLE_ERR_ALREADYBATTLE;
   }
-  battleindex = BATTLE_CreateBattle();
-  if (battleindex < 0)
+  battle_index = BATTLE_CreateBattle();
+  if (battle_index < 0)
     return BATTLE_ERR_NOTASK;
 
   if (CHAR_CHECKINDEX(npcindex)) {
@@ -2331,27 +2293,27 @@ int BATTLE_CreateVsEnemyNew(int char_index, int npcindex, int *table) {
     field_no = RAND(0, BATTLE_MAP_MAX);
   }
 
-  BattleArray[battleindex].Side[0].type = BATTLE_S_TYPE_PLAYER;
-  BattleArray[battleindex].Side[1].type = BATTLE_S_TYPE_ENEMY;
-  BattleArray[battleindex].leaderindex = char_index;
-  BattleArray[battleindex].type = BATTLE_TYPE_P_vs_E;
-  BattleArray[battleindex].createindex = npcindex;
-  BattleArray[battleindex].field_no = field_no;
-  BattleArray[battleindex].BattleFloor = CHAR_getInt(char_index, CHAR_FLOOR);
+  BattleArray[battle_index].Side[0].type = BATTLE_S_TYPE_PLAYER;
+  BattleArray[battle_index].Side[1].type = BATTLE_S_TYPE_ENEMY;
+  BattleArray[battle_index].leaderindex = char_index;
+  BattleArray[battle_index].type = BATTLE_TYPE_P_vs_E;
+  BattleArray[battle_index].createindex = npcindex;
+  BattleArray[battle_index].field_no = field_no;
+  BattleArray[battle_index].BattleFloor = CHAR_getInt(char_index, CHAR_FLOOR);
 
-  BattleArray[battleindex].Side[0].flg &= ~BSIDE_FLG_HELP_OK;
+  BattleArray[battle_index].Side[0].flg &= ~BSIDE_FLG_HELP_OK;
 
   if (CHAR_CHECKINDEX(npcindex)) {
     if (CHAR_getInt(npcindex, CHAR_LV) > 1) {
       baselevel = CHAR_getInt(npcindex, CHAR_LV);
     }
-    CHAR_setWorkInt(npcindex, CHAR_WORKBATTLEINDEX, battleindex);
+    CHAR_setWorkInt(npcindex, CHAR_WORKBATTLEINDEX, battle_index);
   } else if (npcindex == -1) {
     enemytable = ENEMY_getEnemy(char_index, CHAR_getInt(char_index, CHAR_X),
                                 CHAR_getInt(char_index, CHAR_Y));
   }
 
-  BattleArray[battleindex].norisk = 0;
+  BattleArray[battle_index].norisk = 0;
   if (enemytable == NULL) {
     iRet = BATTLE_ERR_NOENEMY;
     goto BATTLE_CreateVsEnemy_End;
@@ -2364,8 +2326,8 @@ int BATTLE_CreateVsEnemyNew(int char_index, int npcindex, int *table) {
 
 #ifdef _BATTLE_TIMESPEED
   fd = getfdFromchar_index(char_index);
-  BattleArray[battleindex].CreateTime = time(NULL);
-  BattleArray[battleindex].flgTime = 200; // 1/100 sec
+  BattleArray[battle_index].CreateTime = time(NULL);
+  BattleArray[battle_index].flgTime = 200; // 1/100 sec
 #endif
   for (i = 0; EnemyList[i] != -1; i++) {
     int work;
@@ -2381,27 +2343,27 @@ int BATTLE_CreateVsEnemyNew(int char_index, int npcindex, int *table) {
       BATTLE_EnemyRandowSetSkill(enemy_index, skillType);
     }
 
-    if ((iRet = BATTLE_NewEntry(enemy_index, battleindex, 1))) {
+    if ((iRet = BATTLE_NewEntry(enemy_index, battle_index, 1))) {
       goto BATTLE_CreateVsEnemy_End;
     }
     if (CHAR_getInt(enemy_index, CHAR_DUELPOINT) > 0) {
-      BattleArray[battleindex].dpbattle = 1;
+      BattleArray[battle_index].dpbattle = 1;
     }
     work = CHAR_getInt(enemy_index, CHAR_BASEBASEIMAGENUMBER);
     if (100466 <= work && work <= 100471) {
       CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLEFLG,
                       CHAR_getWorkInt(enemy_index, CHAR_WORKBATTLEFLG) |
                           CHAR_BATTLEFLG_ABIO);
-      // 历史注释的原始编码已损坏，无法可靠恢复。
+      // print("(%s)无生物\n", CHAR_getUseName(enemy_index));
     }
   }
 
-  if ((iRet = BATTLE_PartyNewEntry(char_index, battleindex, 0))) {
+  if ((iRet = BATTLE_PartyNewEntry(char_index, battle_index, 0))) {
     goto BATTLE_CreateVsEnemy_End;
   }
   {
     BATTLE_ENTRY *pEntry, EntryWork;
-    pEntry = BattleArray[battleindex].Side[1].Entry;
+    pEntry = BattleArray[battle_index].Side[1].Entry;
     for (i = 0; i < 5; i++) {
       EntryWork = pEntry[i];
       pEntry[i] = pEntry[i + 5];
@@ -2414,14 +2376,14 @@ int BATTLE_CreateVsEnemyNew(int char_index, int npcindex, int *table) {
 BATTLE_CreateVsEnemy_End:;
   fd = getfdFromchar_index(char_index);
   if (iRet) {
-    BATTLE_ExitAll(battleindex);
-    BATTLE_DeleteBattle(battleindex);
+    BATTLE_ExitAll(battle_index);
+    BATTLE_DeleteBattle(battle_index);
     if (fd != -1)
       GmsvServer_EN_send(fd, FALSE, field_no);
   } else {
     //		if(npcindex > -1){
     if (fd != -1) {
-      if (BattleArray[battleindex].dpbattle) {
+      if (BattleArray[battle_index].dpbattle) {
         GmsvServer_EN_send(fd, BATTLE_TYPE_DP_BATTLE, field_no);
       } else {
         GmsvServer_EN_send(fd, BATTLE_TYPE_BOSS_BATTLE, field_no);
@@ -2431,8 +2393,8 @@ BATTLE_CreateVsEnemy_End:;
       if (CHAR_getWorkInt(char_index, CHAR_WORK_OFFLINE) == 0)
 #endif
       {
-        BATTLE_ExitAll(battleindex);
-        BATTLE_DeleteBattle(battleindex);
+        BATTLE_ExitAll(battle_index);
+        BATTLE_DeleteBattle(battle_index);
         return iRet;
       }
     }
@@ -2475,7 +2437,7 @@ BATTLE_CreateVsEnemy_End:;
 
 int BATTLE_CreateVsEnemyLvNew(int char_index, int npcindex, int *table,
                               int *lvtable) {
-  int battleindex, iRet = 0, enemy_index, i, pindex;
+  int battle_index, iRet = 0, enemy_index, i, pindex;
   int fd, field_no, baselevel = 0;
   int skillType = 0;
   int EnemyList[20];
@@ -2505,8 +2467,8 @@ int BATTLE_CreateVsEnemyLvNew(int char_index, int npcindex, int *table,
     CHAR_talkToCli(char_index, -1, "二重遭遇。", CHAR_COLORYELLOW);
     return BATTLE_ERR_ALREADYBATTLE;
   }
-  battleindex = BATTLE_CreateBattle();
-  if (battleindex < 0)
+  battle_index = BATTLE_CreateBattle();
+  if (battle_index < 0)
     return BATTLE_ERR_NOTASK;
 #ifdef _WAN_FIX
   CHAR_setWorkInt(char_index, CHAR_WORKBATTLEPROTYPE, 1);
@@ -2522,27 +2484,27 @@ int BATTLE_CreateVsEnemyLvNew(int char_index, int npcindex, int *table,
     field_no = RAND(0, BATTLE_MAP_MAX);
   }
 
-  BattleArray[battleindex].Side[0].type = BATTLE_S_TYPE_PLAYER;
-  BattleArray[battleindex].Side[1].type = BATTLE_S_TYPE_ENEMY;
-  BattleArray[battleindex].leaderindex = char_index;
-  BattleArray[battleindex].type = BATTLE_TYPE_P_vs_E;
-  BattleArray[battleindex].createindex = npcindex;
-  BattleArray[battleindex].field_no = field_no;
-  BattleArray[battleindex].BattleFloor = CHAR_getInt(char_index, CHAR_FLOOR);
+  BattleArray[battle_index].Side[0].type = BATTLE_S_TYPE_PLAYER;
+  BattleArray[battle_index].Side[1].type = BATTLE_S_TYPE_ENEMY;
+  BattleArray[battle_index].leaderindex = char_index;
+  BattleArray[battle_index].type = BATTLE_TYPE_P_vs_E;
+  BattleArray[battle_index].createindex = npcindex;
+  BattleArray[battle_index].field_no = field_no;
+  BattleArray[battle_index].BattleFloor = CHAR_getInt(char_index, CHAR_FLOOR);
 
-  BattleArray[battleindex].Side[0].flg &= ~BSIDE_FLG_HELP_OK;
+  BattleArray[battle_index].Side[0].flg &= ~BSIDE_FLG_HELP_OK;
 
   if (CHAR_CHECKINDEX(npcindex)) {
     if (CHAR_getInt(npcindex, CHAR_LV) > 1) {
       baselevel = CHAR_getInt(npcindex, CHAR_LV);
     }
-    CHAR_setWorkInt(npcindex, CHAR_WORKBATTLEINDEX, battleindex);
+    CHAR_setWorkInt(npcindex, CHAR_WORKBATTLEINDEX, battle_index);
   } else if (npcindex == -1) {
     enemytable = ENEMY_getEnemy(char_index, CHAR_getInt(char_index, CHAR_X),
                                 CHAR_getInt(char_index, CHAR_Y));
   }
 
-  BattleArray[battleindex].norisk = 0;
+  BattleArray[battle_index].norisk = 0;
   if (enemytable == NULL) {
     iRet = BATTLE_ERR_NOENEMY;
     goto BATTLE_CreateVsEnemy_End;
@@ -2555,8 +2517,8 @@ int BATTLE_CreateVsEnemyLvNew(int char_index, int npcindex, int *table,
 
 #ifdef _BATTLE_TIMESPEED
   fd = getfdFromchar_index(char_index);
-  BattleArray[battleindex].CreateTime = time(NULL);
-  BattleArray[battleindex].flgTime = 200; // 1/100 sec
+  BattleArray[battle_index].CreateTime = time(NULL);
+  BattleArray[battle_index].flgTime = 200; // 1/100 sec
 #endif
   for (i = 0; EnemyList[i] != -1; i++) {
     int work;
@@ -2572,27 +2534,27 @@ int BATTLE_CreateVsEnemyLvNew(int char_index, int npcindex, int *table,
       BATTLE_EnemyRandowSetSkill(enemy_index, skillType);
     }
 
-    if ((iRet = BATTLE_NewEntry(enemy_index, battleindex, 1))) {
+    if ((iRet = BATTLE_NewEntry(enemy_index, battle_index, 1))) {
       goto BATTLE_CreateVsEnemy_End;
     }
     if (CHAR_getInt(enemy_index, CHAR_DUELPOINT) > 0) {
-      BattleArray[battleindex].dpbattle = 1;
+      BattleArray[battle_index].dpbattle = 1;
     }
     work = CHAR_getInt(enemy_index, CHAR_BASEBASEIMAGENUMBER);
     if (100466 <= work && work <= 100471) {
       CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLEFLG,
                       CHAR_getWorkInt(enemy_index, CHAR_WORKBATTLEFLG) |
                           CHAR_BATTLEFLG_ABIO);
-      // 历史注释的原始编码已损坏，无法可靠恢复。
+      // print("(%s)无生物\n", CHAR_getUseName(enemy_index));
     }
   }
 
-  if ((iRet = BATTLE_PartyNewEntry(char_index, battleindex, 0))) {
+  if ((iRet = BATTLE_PartyNewEntry(char_index, battle_index, 0))) {
     goto BATTLE_CreateVsEnemy_End;
   }
   {
     BATTLE_ENTRY *pEntry, EntryWork;
-    pEntry = BattleArray[battleindex].Side[1].Entry;
+    pEntry = BattleArray[battle_index].Side[1].Entry;
     for (i = 0; i < 5; i++) {
       EntryWork = pEntry[i];
       pEntry[i] = pEntry[i + 5];
@@ -2605,14 +2567,14 @@ int BATTLE_CreateVsEnemyLvNew(int char_index, int npcindex, int *table,
 BATTLE_CreateVsEnemy_End:;
   fd = getfdFromchar_index(char_index);
   if (iRet) {
-    BATTLE_ExitAll(battleindex);
-    BATTLE_DeleteBattle(battleindex);
+    BATTLE_ExitAll(battle_index);
+    BATTLE_DeleteBattle(battle_index);
     if (fd != -1)
       GmsvServer_EN_send(fd, FALSE, field_no);
   } else {
     //		if(npcindex > -1){
     if (fd != -1) {
-      if (BattleArray[battleindex].dpbattle) {
+      if (BattleArray[battle_index].dpbattle) {
         GmsvServer_EN_send(fd, BATTLE_TYPE_DP_BATTLE, field_no);
       } else {
         GmsvServer_EN_send(fd, BATTLE_TYPE_BOSS_BATTLE, field_no);
@@ -2622,8 +2584,8 @@ BATTLE_CreateVsEnemy_End:;
       if (CHAR_getWorkInt(char_index, CHAR_WORK_OFFLINE) == 0)
 #endif
       {
-        BATTLE_ExitAll(battleindex);
-        BATTLE_DeleteBattle(battleindex);
+        BATTLE_ExitAll(battle_index);
+        BATTLE_DeleteBattle(battle_index);
         return iRet;
       }
     }
@@ -2665,7 +2627,7 @@ BATTLE_CreateVsEnemy_End:;
 }
 
 int BATTLE_CreateVsEnemy(int char_index, int mode, int npcindex) {
-  int battleindex, iRet = 0, enemy_index, i, pindex;
+  int battle_index, iRet = 0, enemy_index, i, pindex;
   int *enemytable = NULL, fd, field_no, baselevel = 0;
   int skillType = 0;
   int EnemyList[20];
@@ -2692,13 +2654,13 @@ int BATTLE_CreateVsEnemy(int char_index, int mode, int npcindex) {
     CHAR_talkToCli(char_index, -1, "二重遭遇。", CHAR_COLORYELLOW);
     return BATTLE_ERR_ALREADYBATTLE;
   }
-  battleindex = BATTLE_CreateBattle();
-  if (battleindex < 0)
+  battle_index = BATTLE_CreateBattle();
+  if (battle_index < 0)
     return BATTLE_ERR_NOTASK;
 
   if (CHAR_CHECKINDEX(npcindex)) {
     skillType = CHAR_getWorkInt(npcindex, CHAR_NPCWORKINT11);
-    CHAR_setWorkInt(npcindex, CHAR_WORKBATTLEINDEX, battleindex);
+    CHAR_setWorkInt(npcindex, CHAR_WORKBATTLEINDEX, battle_index);
   }
 
   field_no = BATTLE_getBattleFieldNo(CHAR_getInt(char_index, CHAR_FLOOR),
@@ -2708,20 +2670,20 @@ int BATTLE_CreateVsEnemy(int char_index, int mode, int npcindex) {
     field_no = RAND(0, BATTLE_MAP_MAX);
   }
 
-  BattleArray[battleindex].Side[0].type = BATTLE_S_TYPE_PLAYER;
-  BattleArray[battleindex].Side[1].type = BATTLE_S_TYPE_ENEMY;
-  BattleArray[battleindex].leaderindex = char_index;
-  BattleArray[battleindex].type = BATTLE_TYPE_P_vs_E;
-  BattleArray[battleindex].createindex = npcindex;
-  BattleArray[battleindex].field_no = field_no;
-  BattleArray[battleindex].BattleFloor = CHAR_getInt(char_index, CHAR_FLOOR);
+  BattleArray[battle_index].Side[0].type = BATTLE_S_TYPE_PLAYER;
+  BattleArray[battle_index].Side[1].type = BATTLE_S_TYPE_ENEMY;
+  BattleArray[battle_index].leaderindex = char_index;
+  BattleArray[battle_index].type = BATTLE_TYPE_P_vs_E;
+  BattleArray[battle_index].createindex = npcindex;
+  BattleArray[battle_index].field_no = field_no;
+  BattleArray[battle_index].BattleFloor = CHAR_getInt(char_index, CHAR_FLOOR);
   // andy_edit 2002/10/23
   /*
-  if( (iRet = BATTLE_PartyNewEntry( char_index, battleindex, 0 ) ) ){
+  if( (iRet = BATTLE_PartyNewEntry( char_index, battle_index, 0 ) ) ){
           goto BATTLE_CreateVsEnemy_End;
   }
   */
-  BattleArray[battleindex].Side[0].flg &= ~BSIDE_FLG_HELP_OK;
+  BattleArray[battle_index].Side[0].flg &= ~BSIDE_FLG_HELP_OK;
   if (mode == 0) {
     enemytable = ENEMY_getEnemy(char_index, CHAR_getInt(char_index, CHAR_X),
                                 CHAR_getInt(char_index, CHAR_Y));
@@ -2730,7 +2692,7 @@ int BATTLE_CreateVsEnemy(int char_index, int mode, int npcindex) {
   } else if (mode == 2) {
     enemytable = Doujyou_GetEnemy(npcindex, char_index);
     baselevel = CHAR_getInt(npcindex, CHAR_LV);
-    BattleArray[battleindex].norisk = 1;
+    BattleArray[battle_index].norisk = 1;
   }
   if (enemytable == NULL) {
     iRet = BATTLE_ERR_NOENEMY;
@@ -2743,8 +2705,8 @@ int BATTLE_CreateVsEnemy(int char_index, int mode, int npcindex) {
   EnemyList[i] = -1;
 
 #ifdef _BATTLE_TIMESPEED
-  BattleArray[battleindex].CreateTime = time(NULL);
-  BattleArray[battleindex].flgTime = 200; // 1/100 sec
+  BattleArray[battle_index].CreateTime = time(NULL);
+  BattleArray[battle_index].flgTime = 200; // 1/100 sec
 #endif
   for (i = 0; EnemyList[i] != -1; i++) {
     int work;
@@ -2770,27 +2732,27 @@ int BATTLE_CreateVsEnemy(int char_index, int mode, int npcindex) {
         CHAR_complianceParameter(enemy_index);
       }
     }
-    if ((iRet = BATTLE_NewEntry(enemy_index, battleindex, 1))) {
+    if ((iRet = BATTLE_NewEntry(enemy_index, battle_index, 1))) {
       goto BATTLE_CreateVsEnemy_End;
     }
     if (CHAR_getInt(enemy_index, CHAR_DUELPOINT) > 0) {
-      BattleArray[battleindex].dpbattle = 1;
+      BattleArray[battle_index].dpbattle = 1;
     }
     work = CHAR_getInt(enemy_index, CHAR_BASEBASEIMAGENUMBER);
     if (100466 <= work && work <= 100471) {
       CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLEFLG,
                       CHAR_getWorkInt(enemy_index, CHAR_WORKBATTLEFLG) |
                           CHAR_BATTLEFLG_ABIO);
-      // 历史注释的原始编码已损坏，无法可靠恢复。
+      // print("(%s)无生物\n", CHAR_getUseName(enemy_index));
     }
   }
   // andy_edit 2002/10/23
-  if ((iRet = BATTLE_PartyNewEntry(char_index, battleindex, 0))) {
+  if ((iRet = BATTLE_PartyNewEntry(char_index, battle_index, 0))) {
     goto BATTLE_CreateVsEnemy_End;
   }
   {
     BATTLE_ENTRY *pEntry, EntryWork;
-    pEntry = BattleArray[battleindex].Side[1].Entry;
+    pEntry = BattleArray[battle_index].Side[1].Entry;
     for (i = 0; i < 5; i++) {
       EntryWork = pEntry[i];
       pEntry[i] = pEntry[i + 5];
@@ -2808,20 +2770,20 @@ BATTLE_CreateVsEnemy_End:;
     if (CHAR_getWorkInt(char_index, CHAR_WORK_OFFLINE) == 0)
 #endif
     {
-      BATTLE_ExitAll(battleindex);
-      BATTLE_DeleteBattle(battleindex);
+      BATTLE_ExitAll(battle_index);
+      BATTLE_DeleteBattle(battle_index);
       if (fd != -1)
         GmsvServer_EN_send(fd, FALSE, field_no);
     }
   } else {
     if (fd != -1) {
-      if (BattleArray[battleindex].dpbattle) {
+      if (BattleArray[battle_index].dpbattle) {
         GmsvServer_EN_send(fd, BATTLE_TYPE_DP_BATTLE, field_no);
       } else {
         if (mode == 1) {
           GmsvServer_EN_send(fd, BATTLE_TYPE_BOSS_BATTLE, field_no);
         } else {
-          GmsvServer_EN_send(fd, BattleArray[battleindex].type, field_no);
+          GmsvServer_EN_send(fd, BattleArray[battle_index].type, field_no);
         }
       }
     } else {
@@ -2829,8 +2791,8 @@ BATTLE_CreateVsEnemy_End:;
       if (CHAR_getWorkInt(char_index, CHAR_WORK_OFFLINE) == 0)
 #endif
       {
-        BATTLE_ExitAll(battleindex);
-        BATTLE_DeleteBattle(battleindex);
+        BATTLE_ExitAll(battle_index);
+        BATTLE_DeleteBattle(battle_index);
         return iRet;
       }
     }
@@ -2846,7 +2808,7 @@ BATTLE_CreateVsEnemy_End:;
         if (mode == 1) {
           GmsvServer_EN_send(fd, BATTLE_TYPE_BOSS_BATTLE, field_no);
         } else {
-          GmsvServer_EN_send(fd, BattleArray[battleindex].type, field_no);
+          GmsvServer_EN_send(fd, BattleArray[battle_index].type, field_no);
         }
       }
     }
@@ -2872,7 +2834,7 @@ BATTLE_CreateVsEnemy_End:;
 }
 
 int BATTLE_CreateVsPlayer(int char_index0, int char_index1) {
-  int battleindex, pindex, field_no, i, j, char_index[2], parent[2], fd,
+  int battle_index, pindex, field_no, i, j, char_index[2], parent[2], fd,
       iRet = 0;
 
   if (CHAR_CHECKINDEX(char_index0) == FALSE)
@@ -2941,43 +2903,43 @@ int BATTLE_CreateVsPlayer(int char_index0, int char_index1) {
   if (parent[0] != -1 && parent[0] == parent[1]) {
     return BATTLE_ERR_SAMEPARTY;
   }
-  battleindex = BATTLE_CreateBattle();
-  if (battleindex < 0)
+  battle_index = BATTLE_CreateBattle();
+  if (battle_index < 0)
     return BATTLE_ERR_NOTASK;
 
-  BattleArray[battleindex].Side[0].type = BATTLE_S_TYPE_PLAYER;
-  BattleArray[battleindex].Side[1].type = BATTLE_S_TYPE_PLAYER;
-  BattleArray[battleindex].leaderindex = char_index0;
+  BattleArray[battle_index].Side[0].type = BATTLE_S_TYPE_PLAYER;
+  BattleArray[battle_index].Side[1].type = BATTLE_S_TYPE_PLAYER;
+  BattleArray[battle_index].leaderindex = char_index0;
 
 #ifdef _AUTO_PK
-  strcpy(BattleArray[battleindex].leadercdkey,
+  strcpy(BattleArray[battle_index].leadercdkey,
          CHAR_getChar(char_index0, CHAR_CDKEY));
-  strcpy(BattleArray[battleindex].leadername,
+  strcpy(BattleArray[battle_index].leadername,
          CHAR_getChar(char_index0, CHAR_NAME));
-  BattleArray[battleindex].rivalindex = char_index1;
-  strcpy(BattleArray[battleindex].rivalcdkey,
+  BattleArray[battle_index].rivalindex = char_index1;
+  strcpy(BattleArray[battle_index].rivalcdkey,
          CHAR_getChar(char_index1, CHAR_CDKEY));
-  strcpy(BattleArray[battleindex].rivalname,
+  strcpy(BattleArray[battle_index].rivalname,
          CHAR_getChar(char_index1, CHAR_NAME));
 #endif
-  BattleArray[battleindex].type = BATTLE_TYPE_P_vs_P;
-  BattleArray[battleindex].dpbattle = 1;
-  BattleArray[battleindex].field_no = field_no;
-  BattleArray[battleindex].BattleFloor = CHAR_getInt(char_index0, CHAR_FLOOR);
+  BattleArray[battle_index].type = BATTLE_TYPE_P_vs_P;
+  BattleArray[battle_index].dpbattle = 1;
+  BattleArray[battle_index].field_no = field_no;
+  BattleArray[battle_index].BattleFloor = CHAR_getInt(char_index0, CHAR_FLOOR);
 #ifdef _BATTLE_TIMESPEED
-  BattleArray[battleindex].CreateTime = time(NULL);
+  BattleArray[battle_index].CreateTime = time(NULL);
 #endif
   for (j = 0; j < 2; j++) {
-    iRet = BATTLE_PartyNewEntry(char_index[j], battleindex, j);
+    iRet = BATTLE_PartyNewEntry(char_index[j], battle_index, j);
     if (iRet) {
       goto BATTLE_CreateVsPlayer_End;
     }
-    BattleArray[battleindex].Side[j].flg &= ~BSIDE_FLG_HELP_OK;
+    BattleArray[battle_index].Side[j].flg &= ~BSIDE_FLG_HELP_OK;
   }
 BATTLE_CreateVsPlayer_End:;
   if (iRet) {
-    BATTLE_ExitAll(battleindex);
-    BATTLE_DeleteBattle(battleindex);
+    BATTLE_ExitAll(battle_index);
+    BATTLE_DeleteBattle(battle_index);
     fd = getfdFromchar_index(char_index[0]);
     if (fd != -1)
       GmsvServer_EN_send(fd, FALSE, field_no);
@@ -2985,7 +2947,7 @@ BATTLE_CreateVsPlayer_End:;
     for (j = 0; j < 2; j++) {
       fd = getfdFromchar_index(char_index[j]);
       if (fd != -1)
-        GmsvServer_EN_send(fd, BattleArray[battleindex].type, field_no);
+        GmsvServer_EN_send(fd, BattleArray[battle_index].type, field_no);
       if (CHAR_getWorkInt(char_index[j], CHAR_WORKACTION) != -1) {
         CHAR_sendWatchEvent(CHAR_getWorkInt(char_index[j], CHAR_WORKOBJINDEX),
                             CHAR_ACTSTAND, NULL, 0, FALSE);
@@ -3002,7 +2964,7 @@ BATTLE_CreateVsPlayer_End:;
 
         fd = getfdFromchar_index(pindex);
         if (fd != -1)
-          GmsvServer_EN_send(fd, BattleArray[battleindex].type, field_no);
+          GmsvServer_EN_send(fd, BattleArray[battle_index].type, field_no);
         if (CHAR_getWorkInt(pindex, CHAR_WORKACTION) != -1) {
           CHAR_sendWatchEvent(CHAR_getWorkInt(pindex, CHAR_WORKOBJINDEX),
                               CHAR_ACTSTAND, NULL, 0, FALSE);
@@ -3018,7 +2980,7 @@ BATTLE_CreateVsPlayer_End:;
 #ifdef _TRADE_PK
 int BATTLE_CreateVsPlayerForTrade(STradeList TradeList1,
                                   STradeList TradeList2) {
-  int battleindex, pindex, field_no, i, j, char_index[2], parent[2], fd,
+  int battle_index, pindex, field_no, i, j, char_index[2], parent[2], fd,
       iRet = 0;
   char_index[0] = TradeList1.char_index;
   char_index[1] = TradeList2.char_index;
@@ -3061,40 +3023,40 @@ int BATTLE_CreateVsPlayerForTrade(STradeList TradeList1,
   if (parent[0] != -1 && parent[0] == parent[1]) {
     return BATTLE_ERR_SAMEPARTY;
   }
-  battleindex = BATTLE_CreateBattle();
-  if (battleindex < 0)
+  battle_index = BATTLE_CreateBattle();
+  if (battle_index < 0)
     return BATTLE_ERR_NOTASK;
 
-  BattleArray[battleindex].Side[0].type = BATTLE_S_TYPE_PLAYER;
-  BattleArray[battleindex].Side[1].type = BATTLE_S_TYPE_PLAYER;
-  BattleArray[battleindex].leaderindex = char_index[0];
-  BattleArray[battleindex].rivalindex = char_index[1];
+  BattleArray[battle_index].Side[0].type = BATTLE_S_TYPE_PLAYER;
+  BattleArray[battle_index].Side[1].type = BATTLE_S_TYPE_PLAYER;
+  BattleArray[battle_index].leaderindex = char_index[0];
+  BattleArray[battle_index].rivalindex = char_index[1];
 
 #ifdef _TRADE_PK
-  memcpy(&BattleArray[battleindex].TradeList[0], &TradeList1,
+  memcpy(&BattleArray[battle_index].TradeList[0], &TradeList1,
          sizeof(STradeList));
-  memcpy(&BattleArray[battleindex].TradeList[1], &TradeList2,
+  memcpy(&BattleArray[battle_index].TradeList[1], &TradeList2,
          sizeof(STradeList));
 #endif
 
-  BattleArray[battleindex].type = BATTLE_TYPE_P_vs_P;
-  BattleArray[battleindex].dpbattle = 1;
-  BattleArray[battleindex].field_no = field_no;
-  BattleArray[battleindex].BattleFloor = CHAR_getInt(char_index[0], CHAR_FLOOR);
+  BattleArray[battle_index].type = BATTLE_TYPE_P_vs_P;
+  BattleArray[battle_index].dpbattle = 1;
+  BattleArray[battle_index].field_no = field_no;
+  BattleArray[battle_index].BattleFloor = CHAR_getInt(char_index[0], CHAR_FLOOR);
 #ifdef _BATTLE_TIMESPEED
-  BattleArray[battleindex].CreateTime = time(NULL);
+  BattleArray[battle_index].CreateTime = time(NULL);
 #endif
   for (j = 0; j < 2; j++) {
-    iRet = BATTLE_PartyNewEntry(char_index[j], battleindex, j);
+    iRet = BATTLE_PartyNewEntry(char_index[j], battle_index, j);
     if (iRet) {
       goto BATTLE_CreateVsPlayer_End;
     }
-    BattleArray[battleindex].Side[j].flg &= ~BSIDE_FLG_HELP_OK;
+    BattleArray[battle_index].Side[j].flg &= ~BSIDE_FLG_HELP_OK;
   }
 BATTLE_CreateVsPlayer_End:;
   if (iRet) {
-    BATTLE_ExitAll(battleindex);
-    BATTLE_DeleteBattle(battleindex);
+    BATTLE_ExitAll(battle_index);
+    BATTLE_DeleteBattle(battle_index);
     fd = getfdFromchar_index(char_index[0]);
     if (fd != -1)
       GmsvServer_EN_send(fd, FALSE, field_no);
@@ -3102,7 +3064,7 @@ BATTLE_CreateVsPlayer_End:;
     for (j = 0; j < 2; j++) {
       fd = getfdFromchar_index(char_index[j]);
       if (fd != -1)
-        GmsvServer_EN_send(fd, BattleArray[battleindex].type, field_no);
+        GmsvServer_EN_send(fd, BattleArray[battle_index].type, field_no);
       if (CHAR_getWorkInt(char_index[j], CHAR_WORKACTION) != -1) {
         CHAR_sendWatchEvent(CHAR_getWorkInt(char_index[j], CHAR_WORKOBJINDEX),
                             CHAR_ACTSTAND, NULL, 0, FALSE);
@@ -3119,7 +3081,7 @@ BATTLE_CreateVsPlayer_End:;
 
         fd = getfdFromchar_index(pindex);
         if (fd != -1)
-          GmsvServer_EN_send(fd, BattleArray[battleindex].type, field_no);
+          GmsvServer_EN_send(fd, BattleArray[battle_index].type, field_no);
         if (CHAR_getWorkInt(pindex, CHAR_WORKACTION) != -1) {
           CHAR_sendWatchEvent(CHAR_getWorkInt(pindex, CHAR_WORKOBJINDEX),
                               CHAR_ACTSTAND, NULL, 0, FALSE);
@@ -3136,17 +3098,17 @@ BATTLE_CreateVsPlayer_End:;
 
 //*********************************************************
 //
-// 棋爵迕田玄伙正旦弁毛馨笛［玄永皿及戚卞涩烂允月
+// 観戦用バトルタスクを追加、トップの後ろに保存する (追加观战战斗，存到top之后)
 //
-int BATTLE_WatchLink(int topbattleindex, int battleindex)
+int BATTLE_WatchLink(int topbattleindex, int battle_index)
 //
 //
 //*********************************************************
 {
   BATTLE *pWork, *pTop;
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
-    printEx("err:battle index 奇怪(%d)\n", battleindex);
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE) {
+    printEx("err:battle index 奇怪(%d)\n", battle_index);
     return FALSE;
   }
   if (BATTLE_CHECKINDEX(topbattleindex) == FALSE) {
@@ -3161,7 +3123,7 @@ int BATTLE_WatchLink(int topbattleindex, int battleindex)
     return FALSE;
   }
 
-  pWork = pTop->pNext; // 田永弁失永皿
+  pWork = pTop->pNext; // バックアップ (备份)
 
   if (pWork) {
     if (BATTLE_CHECKADDRESS(pWork) == FALSE) {
@@ -3170,63 +3132,63 @@ int BATTLE_WatchLink(int topbattleindex, int battleindex)
     }
   }
 
-  // 愤坌毛蟆及戚卞允月
-  pTop->pNext = &BattleArray[battleindex];
-  // 愤坌及蟆田玄伙毛涩烂
-  BattleArray[battleindex].pBefore = pTop;
-  // 愤坌及戚田玄伙毛涩烂
-  BattleArray[battleindex].pNext = pWork;
-  // 戚及蟆反愤坌
+  // 戦闘を前の後ろにする (把战斗放到前一个之后)
+  pTop->pNext = &BattleArray[battle_index];
+  // 戦闘の前バトルを保存 (保存战斗的前一个)
+  BattleArray[battle_index].pBefore = pTop;
+  // 戦闘の後バトルを保存 (保存战斗的后一个)
+  BattleArray[battle_index].pNext = pWork;
+  // 後の前は戦闘 (后一个的前一个是此战斗)
   if (pWork) {
-    pWork->pBefore = &BattleArray[battleindex];
+    pWork->pBefore = &BattleArray[battle_index];
   }
   return TRUE;
 }
 
 //*********************************************************
 //
-// 棋爵迕田玄伙正旦弁毛夫午勾  仁
+// 観戦用バトルタスクを取り 外す (解除观战战斗链接)
 //
-int BATTLE_WatchUnLink(int battleindex)
+int BATTLE_WatchUnLink(int battle_index)
 //
 //
 //*********************************************************
 {
   BATTLE *pTop;
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
-    printEx("err:battle index 奇怪(%d)\n", battleindex);
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE) {
+    printEx("err:battle index 奇怪(%d)\n", battle_index);
     return FALSE;
   }
 
-  // 愤坌毛蟆及田玄伙
-  pTop = BattleArray[battleindex].pBefore;
+  // 戦闘の前のバトル (战斗的前一个)
+  pTop = BattleArray[battle_index].pBefore;
 
   if (pTop) {
     if (BATTLE_CHECKADDRESS(pTop) == FALSE) {
       printEx("err:battle address 奇怪(%p)\n", pTop);
     } else {
-      // 勾卅亢卅云仄
-      pTop->pNext = BattleArray[battleindex].pNext;
+      // 繋ぎ直し (重新连接)
+      pTop->pNext = BattleArray[battle_index].pNext;
     }
   }
-  if (BattleArray[battleindex].pNext) {
-    if (BATTLE_CHECKADDRESS(BattleArray[battleindex].pNext) == FALSE) {
-      printEx("err:battle address 奇怪(%p)\n", BattleArray[battleindex].pNext);
+  if (BattleArray[battle_index].pNext) {
+    if (BATTLE_CHECKADDRESS(BattleArray[battle_index].pNext) == FALSE) {
+      printEx("err:battle address 奇怪(%p)\n", BattleArray[battle_index].pNext);
     } else {
-      BattleArray[battleindex].pNext->pBefore = pTop;
+      BattleArray[battle_index].pNext->pBefore = pTop;
     }
   }
-  // 愤坌及蟆田玄伙毛涩烂
-  BattleArray[battleindex].pBefore = NULL;
-  // 愤坌及戚田玄伙反  仄
-  BattleArray[battleindex].pNext = NULL;
+  // 戦闘の前バトルを保存 (保存战斗的前一个)
+  BattleArray[battle_index].pBefore = NULL;
+  // 戦闘の後バトルは 無し (战斗的后一个设为无)
+  BattleArray[battle_index].pNext = NULL;
 
   return TRUE;
 }
 
 int BATTLE_CreateForWatcher(int char_index, int topbattleindex) {
-  int battleindex, field_no, pindex, i, fd, iRet = 0;
+  int battle_index, field_no, pindex, i, fd, iRet = 0;
 
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return BATTLE_ERR_CHARAINDEX;
@@ -3240,73 +3202,73 @@ int BATTLE_CreateForWatcher(int char_index, int topbattleindex) {
     return BATTLE_ERR_ALREADYBATTLE;
   }
 
-  battleindex = BATTLE_CreateBattle();
-  if (battleindex < 0)
+  battle_index = BATTLE_CreateBattle();
+  if (battle_index < 0)
     return BATTLE_ERR_NOTASK;
-  BattleArray[battleindex].Side[0].type = BATTLE_S_TYPE_PLAYER;
-  BattleArray[battleindex].Side[1].type = BATTLE_S_TYPE_PLAYER;
-  BattleArray[battleindex].leaderindex = char_index;
-  BattleArray[battleindex].type = BATTLE_TYPE_WATCH;
-  BattleArray[battleindex].mode = BATTLE_MODE_WATCHBC;
-  field_no = BattleArray[battleindex].field_no =
+  BattleArray[battle_index].Side[0].type = BATTLE_S_TYPE_PLAYER;
+  BattleArray[battle_index].Side[1].type = BATTLE_S_TYPE_PLAYER;
+  BattleArray[battle_index].leaderindex = char_index;
+  BattleArray[battle_index].type = BATTLE_TYPE_WATCH;
+  BattleArray[battle_index].mode = BATTLE_MODE_WATCHBC;
+  field_no = BattleArray[battle_index].field_no =
       BattleArray[topbattleindex].field_no;
-  BattleArray[battleindex].turn = BattleArray[topbattleindex].turn;
+  BattleArray[battle_index].turn = BattleArray[topbattleindex].turn;
 
-  if (BATTLE_WatchLink(topbattleindex, battleindex) == FALSE) {
-    printEx("err:battle link error(%d),(%d)\n", topbattleindex, battleindex);
+  if (BATTLE_WatchLink(topbattleindex, battle_index) == FALSE) {
+    printEx("err:battle link error(%d),(%d)\n", topbattleindex, battle_index);
     goto BATTLE_CreateForWatcher_End;
   }
 
-  iRet = BATTLE_WatchPartyNewEntry(char_index, battleindex, 0);
+  iRet = BATTLE_WatchPartyNewEntry(char_index, battle_index, 0);
   if (iRet) {
     goto BATTLE_CreateForWatcher_End;
   }
 
 BATTLE_CreateForWatcher_End:;
 
-  if (iRet) { // 巨仿□互丐匀凶日正旦弁  滋
-    // 蝈够  仃月
-    BATTLE_ExitAll(battleindex);
-    // ｛爵  正旦弁绰轮
-    BATTLE_DeleteBattle(battleindex);
+  if (iRet) { // エラーがあったらタスクを 放棄 (出错则放弃任务)
+    // 破棄する (销毁)
+    BATTLE_ExitAll(battle_index);
+    // 戦闘タスク削除 (删除战斗任务)
+    BATTLE_DeleteBattle(battle_index);
     fd = getfdFromchar_index(char_index);
     if (fd != -1)
       GmsvServer_EN_send(fd, FALSE, field_no);
   } else {
     fd = getfdFromchar_index(char_index);
-    /* 巨件市它件玄岳  毛项尹月 */
+    /* エンカウントを 送る (发送遭遇) */
     if (fd != -1)
-      GmsvServer_EN_send(fd, BattleArray[battleindex].type, field_no);
-    /*   切禾□术霜月 */
+      GmsvServer_EN_send(fd, BattleArray[battle_index].type, field_no);
+    /*   送る (发送) */
     if (CHAR_getWorkInt(char_index, CHAR_WORKACTION) != -1) {
       CHAR_sendWatchEvent(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX),
                           CHAR_ACTSTAND, NULL, 0, FALSE);
       CHAR_setWorkInt(char_index, CHAR_WORKACTION, -1);
     }
-    /* 爵  失奶戊件  憎CA霜耨 */
+    /* 戦闘アイコン表示送信 (发送战斗图标显示) */
     CHAR_sendBattleWatch(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX), ON);
 
-    // 醮棉卞手项尹月
+    // 仲間にも送る (也发给队友)
     for (i = 1; i < getPartyNum(char_index); i++) {
       pindex = CHAR_getWorkInt(char_index, i + CHAR_WORKPARTYINDEX1);
       if (CHAR_CHECKINDEX(pindex) == FALSE)
         continue;
-      // 切扎氏午巨件市它件玄匹五化卅中卅日霜日卅中
-      // FINAL 分匀凶日蟆及爵  苇化中月
+      // ちゃんとエンカウントできていないなら送らない (未正常进入战斗则不发送)
+      // FINAL だったら前の戦闘を している (若为FINAL状态则跳过)
       if (CHAR_getWorkInt(pindex, CHAR_WORKBATTLEMODE) == BATTLE_CHARMODE_FINAL)
         continue;
 
       fd = getfdFromchar_index(pindex);
-      /* 巨件市它件玄岳   */
+      /* エンカウントを 送る (发送遭遇)   */
       if (fd != -1)
-        GmsvServer_EN_send(fd, BattleArray[battleindex].type, field_no);
-      /*   切禾□术霜月 */
+        GmsvServer_EN_send(fd, BattleArray[battle_index].type, field_no);
+      /*   送る (发送) */
       if (CHAR_getWorkInt(pindex, CHAR_WORKACTION) != -1) {
         CHAR_sendWatchEvent(CHAR_getWorkInt(pindex, CHAR_WORKOBJINDEX),
                             CHAR_ACTSTAND, NULL, 0, FALSE);
         CHAR_setWorkInt(pindex, CHAR_WORKACTION, -1);
       }
-      /* 爵  失奶戊件  憎CA霜耨 */
+      /* 戦闘アイコン表示送信 (发送战斗图标显示) */
       CHAR_sendBattleWatch(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX), ON);
     }
     /*
@@ -3319,18 +3281,18 @@ BATTLE_CreateForWatcher_End:;
 }
 
 /*------------------------------------------------------------
- * 爵  毛  蝇允月
+ * 戦闘を 止める (停止战斗)
  ------------------------------------------------------------*/
 void BATTLE_WatchStop(int char_index) {
-  int battleindex;
+  int battle_index;
 
-  battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
+  battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return;
-  // 平乓仿弁正互中凶日  仃今六月
-  BATTLE_Exit(char_index, battleindex);
-  // 由□  奴  仃月
+  // キャラクタがいなかったら 除外させる (角色不在则退出)
+  BATTLE_Exit(char_index, battle_index);
+  // パーティから 除外する (从队伍中移除)
   CHAR_DischargePartyNoMsg(char_index);
 
   CHAR_talkToCli(char_index, -1, "战斗中止。", CHAR_COLORYELLOW);
@@ -3340,7 +3302,7 @@ void BATTLE_WatchStop(int char_index) {
 
 //*************************************************************
 //
-//    正□件备潘热诸匹  蛹仄凶由仿丢□正毛俅孺仄化中仁
+//    ターン毎にパラメータを 補正していく (每回合修正参数)
 //
 void BATTLE_TurnParam(int char_index, int fixkind, int mod, int last)
 //
@@ -3350,7 +3312,7 @@ void BATTLE_TurnParam(int char_index, int fixkind, int mod, int last)
   int modparam, fixparam, lastparam;
 
   if (fixkind == -1) {
-    fixparam = 0; // 葭互  中桦宁反ㄟ
+    fixparam = 0; // 元が い場合は0 (原值为-1则取0)
   } else {
     fixparam = CHAR_getWorkInt(char_index, fixkind);
   }
@@ -3360,14 +3322,14 @@ void BATTLE_TurnParam(int char_index, int fixkind, int mod, int last)
     lastparam = CHAR_getWorkInt(char_index, last);
   }
   modparam = CHAR_getWorkInt(char_index, mod);
-  // 仇仇匹      ≈        午      及    毛苇化｝
-  //       及袄毛俅孺仄化中仁
+  // ここで 元の 値を 抑制して (此处对原值做衰减)
+  //       の値を抑制していく (对该值进行衰减)
 
-  // 漆反 MODPARAM 毛ㄡㄟ⊙蛹仄化中仁
+  // 今は MODPARAM を減少していく (此处将MODPARAM衰减)
   modparam *= 0.8;
   CHAR_setWorkInt(char_index, mod, modparam);
 
-  //         卞笛尹月
+  //         に加える (累加)
   if (last != -1) {
     CHAR_setWorkInt(char_index, last, lastparam + modparam * 0.01);
   }
@@ -3378,9 +3340,9 @@ void BATTLE_AttReverse(int char_index) {
   // ttom start  because the second had this
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEFLG) &
       CHAR_BATTLEFLG_REVERSE) {
-    //   鳖仄化月卅日戚尺
+    //   してるなら次へ (若已反转则继续)
   } else {
-    //   鳖仄化卅中及匹伉正□件
+    //   してないのではリターン (未反转则返回)
     return;
   }
   // ttom end
@@ -3395,17 +3357,17 @@ void BATTLE_AttReverse(int char_index) {
   CHAR_setWorkInt(char_index, CHAR_WORKFIXWINDAT, water);
 }
 
-void BATTLE_PreCommandSeq(int battleindex) {
+void BATTLE_PreCommandSeq(int battle_index) {
   BATTLE_ENTRY *pEntry;
   BATTLE *pBattle;
   int i, j, char_index;
-  BATTLE_CharSendAll(battleindex);
-  BATTLE_CharaBackUp(battleindex);
-  BattleArray[battleindex].timer = NowTime.tv_sec;
-  BATTLE_AllCharaCWaitSet(battleindex);
-  BATTLE_ActSettingSend(battleindex);
-  BattleArray[battleindex].flg |= BATTLE_FLG_FREEDP;
-  pBattle = &BattleArray[battleindex];
+  BATTLE_CharSendAll(battle_index);
+  BATTLE_CharaBackUp(battle_index);
+  BattleArray[battle_index].timer = NowTime.tv_sec;
+  BATTLE_AllCharaCWaitSet(battle_index);
+  BATTLE_ActSettingSend(battle_index);
+  BattleArray[battle_index].flg |= BATTLE_FLG_FREEDP;
+  pBattle = &BattleArray[battle_index];
   for (j = 0; j < 2; j++) {
     int flg;
     pEntry = pBattle->Side[j].Entry;
@@ -3430,7 +3392,7 @@ void BATTLE_PreCommandSeq(int battleindex) {
                        CHAR_WORKFIXTOUGH, // 潮
                        CHAR_WORKMODDEFENCE, CHAR_WORKDEFENCEPOWER);
       BATTLE_TurnParam(char_index,
-                       CHAR_WORKFIXDEX, // 豳镀今
+                       CHAR_WORKFIXDEX, // 素早さ (敏捷)
                        CHAR_WORKMODQUICK, CHAR_WORKQUICK);
       if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
         BATTLE_TurnParam(char_index, -1,
@@ -3450,77 +3412,77 @@ void BATTLE_PreCommandSeq(int battleindex) {
 
 //**************************************************
 //
-// 棋爵及桦宁及戊穴件玉谨切尺  月凛及域  及  木
+// 観戦の場合のコマンド処理、 時の一連の 流れ (观战时指令处理流程)
 //
-void BATTLE_PreWatchWaitSeq(int battleindex)
+void BATTLE_PreWatchWaitSeq(int battle_index)
 //
 //
 //**************************************************
 {
-  // 仇及凛鳔匹凛对忡绣
-  BattleArray[battleindex].timer = NowTime.tv_sec;
-  // 蝈够及乒□玉毛戊穴件玉    蟆卞允月
-  BATTLE_AllCharaWatchWaitSet(battleindex);
+  // この時の時間で 保存 (保存当前时间)
+  BattleArray[battle_index].timer = NowTime.tv_sec;
+  // 全員を待機モードにする (全员进入待机模式)
+  BATTLE_AllCharaWatchWaitSet(battle_index);
 }
-static int BATTLE_Init(int battleindex) {
+static int BATTLE_Init(int battle_index) {
   BATTLE *pBattle;
   int iRet = 0;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
-  pBattle = &BattleArray[battleindex];
+  pBattle = &BattleArray[battle_index];
   pBattle->mode = BATTLE_MODE_BATTLE;
-  iRet = BATTLE_SurpriseCheck(battleindex);
+  iRet = BATTLE_SurpriseCheck(battle_index);
   if (iRet == 0) {
   } else if (iRet == 1) {
-    BattleArray[battleindex].Side[1].flg |= BSIDE_FLG_SURPRISE;
+    BattleArray[battle_index].Side[1].flg |= BSIDE_FLG_SURPRISE;
   } else if (iRet == 2) {
-    BattleArray[battleindex].Side[0].flg |= BSIDE_FLG_SURPRISE;
+    BattleArray[battle_index].Side[0].flg |= BSIDE_FLG_SURPRISE;
   }
-  BATTLE_PreCommandSeq(battleindex);
+  BATTLE_PreCommandSeq(battle_index);
 #ifdef _MO_LUA_BATTLE_START
-  BattleStartFunction(battleindex);
+  BattleStartFunction(battle_index);
 #endif
   return 0;
 }
-int BATTLE_CountEntry(int battleindex, int side) {
+int BATTLE_CountEntry(int battle_index, int side) {
   int i;
   BATTLE_ENTRY *pEntry;
   int cnt = 0;
 
-  // 由仿丢□正民尼永弁
+  // パラメータチェック (参数检查)
   if (BATTLE_CHECKSIDE(side) == FALSE)
     return -BATTLE_ERR_PARAM;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return -BATTLE_ERR_BATTLEINDEX;
 
-  // 巨件玄伉□
-  pEntry = BattleArray[battleindex].Side[side].Entry;
+  // エントリ (入场)
+  pEntry = BattleArray[battle_index].Side[side].Entry;
 
   for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
-    if (pEntry[i].char_index != -1) { // 平乓仿互中凶日醒尹月
+    if (pEntry[i].char_index != -1) { // キャラがいたら数える (有角色则计数)
       cnt++;
     }
   }
   return cnt;
 }
 
-static BOOL BATTLE_CommandWait(int battleindex, int side) {
+static BOOL BATTLE_CommandWait(int battle_index, int side) {
   int i, char_index, BeOk = 0;
   BATTLE_ENTRY *pEntry;
   BOOL iRet = TRUE;
   BOOL TimeOut = FALSE;
   if (BATTLE_CHECKSIDE(side) == FALSE)
     return TRUE; //检查值是否在合法  围
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return TRUE;
-  if (BattleArray[battleindex].Side[side].type == BATTLE_S_TYPE_ENEMY)
+  if (BattleArray[battle_index].Side[side].type == BATTLE_S_TYPE_ENEMY)
     return TRUE;
-  pEntry = BattleArray[battleindex].Side[side].Entry;
+  pEntry = BattleArray[battle_index].Side[side].Entry;
   int playerindex;
 #ifdef _BATTLECOMMAND_TIME
-  // print("\nPartTime=%d",BattleArray[battleindex].PartTime);
-  if (BattleArray[battleindex].PartTime > 1 &&
-      BattleArray[battleindex].PartTime < time(NULL)) {
+  // print("\nPartTime=%d",BattleArray[battle_index].PartTime);
+  if (BattleArray[battle_index].PartTime > 1 &&
+      BattleArray[battle_index].PartTime < time(NULL)) {
     TimeOut = TRUE;
   }
 #endif
@@ -3536,7 +3498,7 @@ static BOOL BATTLE_CommandWait(int battleindex, int side) {
 
 #ifdef _OFFLINE_SYSTEM
     if (CHAR_getWorkInt(char_index, CHAR_WORK_OFFLINE) == 1) {
-      OffLineCommand(battleindex, char_index, side);
+      OffLineCommand(battle_index, char_index, side);
       if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER
 #ifdef _PLAYER_NPC
           || CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYERNPC
@@ -3545,7 +3507,7 @@ static BOOL BATTLE_CommandWait(int battleindex, int side) {
         int petnum = CHAR_getInt(char_index, CHAR_DEFAULTPET);
         int petindex = CHAR_getCharPet(char_index, petnum);
         if (CHAR_CHECKINDEX(petindex)) {
-          OffLineCommand(battleindex, petindex, side);
+          OffLineCommand(battle_index, petindex, side);
         }
       }
     }
@@ -3573,7 +3535,7 @@ static BOOL BATTLE_CommandWait(int battleindex, int side) {
     case BATTLE_CHARMODE_C_WAIT: {
 #ifdef _BATTLECOMMAND_TIME
       if (TimeOut == TRUE) {
-/* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+// andy_log
 #ifdef _OFFLINE_SYSTEM
 #endif
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_GUARD);
@@ -3585,21 +3547,21 @@ static BOOL BATTLE_CommandWait(int battleindex, int side) {
       iRet = FALSE;
     } break;
     default:
-      BATTLE_Exit(char_index, battleindex);
+      BATTLE_Exit(char_index, battle_index);
       break;
     }
   }
 
   if (BeOk > 0) {
 #ifdef _BATTLECOMMAND_TIME
-    if (BattleArray[battleindex].PartTime <= 0) {
+    if (BattleArray[battle_index].PartTime <= 0) {
       // 如果战役中有任一人执行指令, 则延迟时间设为120秒
-      BattleArray[battleindex].PartTime = (int)time(NULL) + 120;
+      BattleArray[battle_index].PartTime = (int)time(NULL) + 120;
     }
 #endif
   } else {
-    if (BattleArray[battleindex].PartTime <= 0) {
-      BattleArray[battleindex].PartTime = (int)time(NULL) + 99;
+    if (BattleArray[battle_index].PartTime <= 0) {
+      BattleArray[battle_index].PartTime = (int)time(NULL) + 99;
     }
   }
   return iRet;
@@ -3722,54 +3684,54 @@ int BATTLE_GetExp(int char_index)
 }
 #endif
 
-int BATTLE_DpCalc(int battleindex) {
+int BATTLE_DpCalc(int battle_index) {
   BATTLE_ENTRY *pLooseEntry, *pWinEntry;
   int winside, looseside, i, char_index, dpadd, dpall, num = 0;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
 
-  winside = BattleArray[battleindex].winside;
+  winside = BattleArray[battle_index].winside;
   looseside = 1 - winside;
   if (winside != -1 && winside != 1)
     return BATTLE_ERR_PARAM;
 
   dpall = 0;
 
-  pLooseEntry = BattleArray[battleindex].Side[looseside].Entry;
+  pLooseEntry = BattleArray[battle_index].Side[looseside].Entry;
   for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
     char_index = pLooseEntry[i].char_index;
-    // 皿伊奶乩□动陆反饬    仄
+    // プレイヤーでなければ除外 (非玩家则跳过)
     if (CHAR_CHECKINDEX(char_index) == FALSE)
       continue;
     if (CHAR_getInt(char_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
       continue;
-    // ㄠㄟ坌及ㄠ手日尹月
+    // その分の もらえる (取其相应数值)
     dpadd = CHAR_getInt(char_index, CHAR_DUELPOINT) * DUELPOINT_RATE;
-    //   仃凶  卞反    毛穴奶瓜旦涩烂
+    //   敗けた には をマイナス保存 (败方扣减经验)
     CHAR_setWorkInt(char_index, CHAR_WORKGETEXP,
                     CHAR_getWorkInt(char_index, CHAR_WORKGETEXP) - dpadd);
-    // 宁煌袄卞笛遥
+    // 決闘計に加算 (决斗点累加)
     dpall += dpadd;
   }
-  // 今日卞  仆凶曰仄凶谛迕及    毛笛遥
-  dpall += BattleArray[battleindex].Side[winside].common_dp;
+  // さらに 勝利用の を加算 (再加上胜方公共决斗点)
+  dpall += BattleArray[battle_index].Side[winside].common_dp;
 
-  pWinEntry = BattleArray[battleindex].Side[winside].Entry;
+  pWinEntry = BattleArray[battle_index].Side[winside].Entry;
   for (num = 0, i = 0; i < BATTLE_ENTRY_MAX; i++) {
     char_index = pWinEntry[i].char_index;
-    // 皿伊奶乩□动陆反饬    仄
+    // プレイヤーでなければ除外 (非玩家则跳过)
     if (CHAR_CHECKINDEX(char_index) == FALSE)
       continue;
     if (CHAR_getInt(char_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
       continue;
     num++;
   }
-  // 卅兮井  匀凶幻丹卞簿手中卅中
+  // 勝った方に 誰もいない (胜方无人则出错)
   if (num <= 0)
     return BATTLE_ERR_BATTLEINDEX;
   dpadd = dpall / num;
   if (dpadd <= 0)
-    dpadd = 1; //   斓匹手ㄠ反芨尹月
+    dpadd = 1; //   0でも 与える (0也给)
 
   for (num = 0, i = 0; i < BATTLE_ENTRY_MAX; i++) {
     char_index = pWinEntry[i].char_index;
@@ -3783,7 +3745,7 @@ int BATTLE_DpCalc(int battleindex) {
   return 0;
 }
 
-// #define RS_LIST_MAX	4	//   凛卞窒谛爵  瑛绊霜月井
+// #define RS_LIST_MAX	4	//   時に何 戦闘結果を送るか (何时发送战斗结果)
 #define RS_LIST_MAX 5
 typedef struct {
   int num;
@@ -3791,27 +3753,27 @@ typedef struct {
   int levelup;
 } RS_LIST;
 
-int BATTLE_GetDuelPoint(int battleindex, // 爵  奶件犯永弁旦
-                        int side,        // 扔奶玉  ㄟ  ㄠ
-                        int num // 愤坌反    及窒    及平乓仿井
+int BATTLE_GetDuelPoint(int battle_index, // 戦闘インデックス (战斗索引)
+                        int side,        // サイド 0 1 (阵营 0 1)
+                        int num // 戦闘の 何番 のキャラか (战斗中的第几个角色)
 ) {
   char szBuffer[1024] = "";
   int char_index;
   int dpnow, dpadd;
   int fd;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
   if (BATTLE_CHECKSIDE(side) == FALSE)
     return BATTLE_ERR_PARAM;
   if (num < 0 || num >= BATTLE_ENTRY_MAX)
     return BATTLE_ERR_PARAM;
-  char_index = BattleArray[battleindex].Side[side].Entry[num].char_index;
+  char_index = BattleArray[battle_index].Side[side].Entry[num].char_index;
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return BATTLE_ERR_PARAM;
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
     return 0;
   }
-  if (BattleArray[battleindex].Side[side].type != BATTLE_S_TYPE_PLAYER) {
+  if (BattleArray[battle_index].Side[side].type != BATTLE_S_TYPE_PLAYER) {
     return 0;
   }
   dpadd = CHAR_getWorkInt(char_index, CHAR_WORKGETEXP);
@@ -3852,7 +3814,7 @@ int BATTLE_GetDuelPoint(int battleindex, // 爵  奶件犯永弁旦
 
       int i;
       int num = 0;
-      BATTLE_ENTRY *pWinEntry = BattleArray[battleindex].Side[1 - side].Entry;
+      BATTLE_ENTRY *pWinEntry = BattleArray[battle_index].Side[1 - side].Entry;
       for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
         int char_index = pWinEntry[i].char_index;
 
@@ -4012,7 +3974,7 @@ int BATTLE_GetDuelPoint(int battleindex, // 爵  奶件犯永弁旦
 #ifdef _NEW_ITEM_
 extern int CheckCharMaxItem(int charindex);
 #endif
-int BATTLE_GetExpGold(int battleindex,
+int BATTLE_GetExpGold(int battle_index,
                       int side,
                       int num
 ) {
@@ -4024,13 +3986,13 @@ int BATTLE_GetExpGold(int battleindex,
   int itemgroup[CHAR_MAXITEMHAVE - CHAR_STARTITEMARRAY];
   int itemnum = 0;
   memset(aRsList, 0, sizeof(aRsList));
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
   if (BATTLE_CHECKSIDE(side) == FALSE)
     return BATTLE_ERR_PARAM;
   if (num < 0 || num >= BATTLE_ENTRY_MAX)
     return BATTLE_ERR_PARAM;
-  char_index = BattleArray[battleindex].Side[side].Entry[num].char_index;
+  char_index = BattleArray[battle_index].Side[side].Entry[num].char_index;
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return BATTLE_ERR_PARAM;
   if (CHAR_getFlg(char_index, CHAR_ISDIE) == TRUE) {
@@ -4093,7 +4055,7 @@ int BATTLE_GetExpGold(int battleindex,
 #endif
     return 0;
   }
-  pEntryChara = &BattleArray[battleindex].Side[side].Entry[num];
+  pEntryChara = &BattleArray[battle_index].Side[side].Entry[num];
   if (CHAR_getFlg(char_index, CHAR_ISDIE) == FALSE) {
     // 2026.09.07 将获得的写入 CHAR_WORKGETEXP
 #ifdef _ITEM_ADDEQUIPEXP
@@ -4271,7 +4233,7 @@ int BATTLE_GetExpGold(int battleindex,
 #ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
                 item_index,
 #else
-                ITEM_getInt(item_index, ITEM_ID), /* 失奶  丞  寞 */
+                ITEM_getInt(item_index, ITEM_ID), /* アイテム番号 (物品编号) */
 #endif
                 "BattleGet(战斗後所得的道具)", CHAR_getInt(char_index, CHAR_FLOOR),
                 CHAR_getInt(char_index, CHAR_X),
@@ -4330,46 +4292,46 @@ int BATTLE_GetProfit(int battle_index, int side, int num) {
   }
 }
 
-int BATTLE_FinishSet(int battleindex) {
+int BATTLE_FinishSet(int battle_index) {
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
-  BattleArray[battleindex].mode = BATTLE_MODE_FINISH;
+  BattleArray[battle_index].mode = BATTLE_MODE_FINISH;
   return 0;
 }
 
 
 // 2026.09.07 Battle Finish 各种结算
-static int BATTLE_Finish(int battleindex) {
+static int BATTLE_Finish(int battle_index) {
   BATTLE *pBattle;
   BATTLE_ENTRY *pEntry;
   int i, char_index, j;
   char watch_detail[32];
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
 
-  if (BattleArray[battleindex].winside == -1 &&
-      BattleArray[battleindex].type == BATTLE_TYPE_P_vs_E &&
-      BattleArray[battleindex].WinFunc != NULL) {
-    NETWATCH_set("BATTLE_Finish.WinFunc", battleindex, NULL);
-    BattleArray[battleindex].WinFunc(battleindex,
-                                     BattleArray[battleindex].createindex);
+  if (BattleArray[battle_index].winside == -1 &&
+      BattleArray[battle_index].type == BATTLE_TYPE_P_vs_E &&
+      BattleArray[battle_index].WinFunc != NULL) {
+    NETWATCH_set("BATTLE_Finish.WinFunc", battle_index, NULL);
+    BattleArray[battle_index].WinFunc(battle_index,
+                                     BattleArray[battle_index].createindex);
   }
 #ifdef _BATTLE_PK
-  if (CHAR_CHECKINDEX(BattleArray[battleindex].rivalindex) &&
-      CHAR_CHECKINDEX(BattleArray[battleindex].leaderindex)) {
-    if (CHAR_getWorkInt(BattleArray[battleindex].rivalindex,
+  if (CHAR_CHECKINDEX(BattleArray[battle_index].rivalindex) &&
+      CHAR_CHECKINDEX(BattleArray[battle_index].leaderindex)) {
+    if (CHAR_getWorkInt(BattleArray[battle_index].rivalindex,
                         CHAR_WORK_BATTLEPK) == TRUE ||
-        CHAR_getWorkInt(BattleArray[battleindex].leaderindex,
+        CHAR_getWorkInt(BattleArray[battle_index].leaderindex,
                         CHAR_WORK_BATTLEPK) == TRUE) {
       int winindex, lostindex;
-      if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
-        if (BattleArray[battleindex].winside == -1) {
-          winindex = BattleArray[battleindex].leaderindex;
-          lostindex = BattleArray[battleindex].rivalindex;
+      if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_P) {
+        if (BattleArray[battle_index].winside == -1) {
+          winindex = BattleArray[battle_index].leaderindex;
+          lostindex = BattleArray[battle_index].rivalindex;
         } else {
-          winindex = BattleArray[battleindex].rivalindex;
-          lostindex = BattleArray[battleindex].leaderindex;
+          winindex = BattleArray[battle_index].rivalindex;
+          lostindex = BattleArray[battle_index].leaderindex;
         }
 
         int fl = 0, x = 0, y = 0;
@@ -4387,39 +4349,36 @@ static int BATTLE_Finish(int battleindex) {
 #endif
 
 #ifdef _TRADE_PK
-  if (CHAR_CHECKINDEX(BattleArray[battleindex].TradeList[0].char_index) &&
-      CHAR_CHECKINDEX(BattleArray[battleindex].TradeList[1].char_index)) {
-    if (CHAR_getInt(BattleArray[battleindex].TradeList[0].char_index,
+  if (CHAR_CHECKINDEX(BattleArray[battle_index].TradeList[0].char_index) &&
+      CHAR_CHECKINDEX(BattleArray[battle_index].TradeList[1].char_index)) {
+    if (CHAR_getInt(BattleArray[battle_index].TradeList[0].char_index,
                     CHAR_FLOOR) == 50000 &&
-        CHAR_getInt(BattleArray[battleindex].TradeList[1].char_index,
+        CHAR_getInt(BattleArray[battle_index].TradeList[1].char_index,
                     CHAR_FLOOR) == 50000) {
-      if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
-        if (BattleArray[battleindex].winside == -1) {
-          NETWATCH_set("BATTLE_Finish.TradePK", battleindex, NULL);
-          TRADE_HandleTradeForPK(&BattleArray[battleindex].TradeList[0],
-                                 &BattleArray[battleindex].TradeList[1]);
-        } else if (BattleArray[battleindex].winside == 1) {
-          NETWATCH_set("BATTLE_Finish.TradePK", battleindex, NULL);
-          TRADE_HandleTradeForPK(&BattleArray[battleindex].TradeList[1],
-                                 &BattleArray[battleindex].TradeList[0]);
+      if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_P) {
+        if (BattleArray[battle_index].winside == -1) {
+          NETWATCH_set("BATTLE_Finish.TradePK", battle_index, NULL);
+          TRADE_HandleTradeForPK(&BattleArray[battle_index].TradeList[0],
+                                 &BattleArray[battle_index].TradeList[1]);
+        } else if (BattleArray[battle_index].winside == 1) {
+          NETWATCH_set("BATTLE_Finish.TradePK", battle_index, NULL);
+          TRADE_HandleTradeForPK(&BattleArray[battle_index].TradeList[1],
+                                 &BattleArray[battle_index].TradeList[0]);
         }
       }
     }
   }
 #endif
 
-  if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
-#ifdef DANTAI
-    BATTLE_DpCalc(battleindex);
-#endif
+  if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_P) {
     BATTLE_ENTRY *pWinEntry, *pLostEntry;
     char token[256];
-    if (BattleArray[battleindex].winside == -1) {
-      pWinEntry = BattleArray[battleindex].Side[0].Entry;
-      pLostEntry = BattleArray[battleindex].Side[1].Entry;
+    if (BattleArray[battle_index].winside == -1) {
+      pWinEntry = BattleArray[battle_index].Side[0].Entry;
+      pLostEntry = BattleArray[battle_index].Side[1].Entry;
     } else {
-      pWinEntry = BattleArray[battleindex].Side[1].Entry;
-      pLostEntry = BattleArray[battleindex].Side[0].Entry;
+      pWinEntry = BattleArray[battle_index].Side[1].Entry;
+      pLostEntry = BattleArray[battle_index].Side[0].Entry;
     }
 
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
@@ -4457,7 +4416,7 @@ static int BATTLE_Finish(int battleindex) {
     }
   }
   for (j = 0; j < 2; j++) {
-    pEntry = BattleArray[battleindex].Side[j].Entry;
+    pEntry = BattleArray[battle_index].Side[j].Entry;
 #ifdef _PET_TALK
     for (i = 0; i < BATTLE_ENTRY_MAX; i++)
 #else
@@ -4470,18 +4429,18 @@ static int BATTLE_Finish(int battleindex) {
         continue;
 
       snprintf(watch_detail, sizeof(watch_detail), "battle=%d,side=%d,slot=%d",
-               battleindex, j, i);
+               battle_index, j, i);
       NETWATCH_set("BATTLE_Finish.GetProfit", char_index, watch_detail);
-      BATTLE_GetProfit(battleindex, j, i); // 包括取得经验值、金钱、物品
+      BATTLE_GetProfit(battle_index, j, i); // 包括取得经验值、金钱、物品
       NETWATCH_set("BATTLE_Finish.Exit", char_index, watch_detail);
-      BATTLE_Exit(char_index, battleindex);
+      BATTLE_Exit(char_index, battle_index);
     }
   }
-  if (BattleArray[battleindex].type == BATTLE_TYPE_WATCH) {
+  if (BattleArray[battle_index].type == BATTLE_TYPE_WATCH) {
   } else {
-    pBattle = BattleArray[battleindex].pNext;
+    pBattle = BattleArray[battle_index].pNext;
     for (; pBattle; pBattle = pBattle->pNext) {
-      NETWATCH_set("BATTLE_Finish.WatchExit", pBattle->battleindex, NULL);
+      NETWATCH_set("BATTLE_Finish.WatchExit", pBattle->battle_index, NULL);
       if (BATTLE_CHECKADDRESS(pBattle) == FALSE) {
         printEx("err:battle address 奇怪(%p)\n", pBattle);
         break;
@@ -4491,65 +4450,65 @@ static int BATTLE_Finish(int battleindex) {
         if (CHAR_CHECKINDEX(char_index) == FALSE)
           continue;
         snprintf(watch_detail, sizeof(watch_detail),
-                 "battle=%d,watch=%d,slot=%d", battleindex,
-                 pBattle->battleindex, i);
+                 "battle=%d,watch=%d,slot=%d", battle_index,
+                 pBattle->battle_index, i);
         NETWATCH_set("BATTLE_Finish.WatcherExit", char_index, watch_detail);
-        BATTLE_Exit(char_index, pBattle->battleindex);
+        BATTLE_Exit(char_index, pBattle->battle_index);
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLEMODE, BATTLE_CHARMODE_FINAL);
       }
     }
-    pBattle = BattleArray[battleindex].pNext;
+    pBattle = BattleArray[battle_index].pNext;
     for (; pBattle; pBattle = pBattle->pNext) {
-      NETWATCH_set("BATTLE_Finish.DeleteWatch", pBattle->battleindex, NULL);
+      NETWATCH_set("BATTLE_Finish.DeleteWatch", pBattle->battle_index, NULL);
       if (BATTLE_CHECKADDRESS(pBattle) == FALSE) {
         printEx("err:battle address 奇怪(%p)\n", pBattle);
         break;
       }
-      BATTLE_DeleteBattle(pBattle->battleindex);
+      BATTLE_DeleteBattle(pBattle->battle_index);
     }
   }
-  NETWATCH_set("BATTLE_Finish.DeleteMain", battleindex, NULL);
-  BATTLE_DeleteBattle(battleindex);
+  NETWATCH_set("BATTLE_Finish.DeleteMain", battle_index, NULL);
+  BATTLE_DeleteBattle(battle_index);
   return 0;
 }
 
-int BATTLE_StopSet(int battleindex) {
+int BATTLE_StopSet(int battle_index) {
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
-  BattleArray[battleindex].mode = BATTLE_MODE_STOP;
+  BattleArray[battle_index].mode = BATTLE_MODE_STOP;
 
   return 0;
 }
 
-static int BATTLE_Stop(int battleindex) {
+static int BATTLE_Stop(int battle_index) {
   BATTLE_ENTRY *pEntry;
   int i, char_index, j;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
 
   for (j = 0; j < 2; j++) {
-    pEntry = BattleArray[battleindex].Side[j].Entry;
+    pEntry = BattleArray[battle_index].Side[j].Entry;
     for (i = BATTLE_ENTRY_MAX - 1; i >= 0; i--) {
       char_index = pEntry[i].char_index;
       if (CHAR_CHECKINDEX(char_index) == FALSE)
         continue;
-      BATTLE_GetProfit(battleindex, j, i);
-      BATTLE_Exit(char_index, battleindex);
+      BATTLE_GetProfit(battle_index, j, i);
+      BATTLE_Exit(char_index, battle_index);
     }
   }
 
-  BATTLE_DeleteBattle(battleindex);
+  BATTLE_DeleteBattle(battle_index);
   return 0;
 }
 
-int BATTLE_DefaultAttacker(int battleindex, int side) {
+int BATTLE_DefaultAttacker(int battle_index, int side) {
   int i, rnd, cnt;
   int CharaTbl[BATTLE_ENTRY_MAX];
 
   BATTLE_ENTRY *pEntry;
 
-  pEntry = BattleArray[battleindex].Side[side].Entry;
+  pEntry = BattleArray[battle_index].Side[side].Entry;
   cnt = 0;
 
   for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
@@ -4563,7 +4522,7 @@ int BATTLE_DefaultAttacker(int battleindex, int side) {
       continue;
     }
 
-    if (BATTLE_TargetCheck(battleindex, i + side * SIDE_OFFSET) == FALSE)
+    if (BATTLE_TargetCheck(battle_index, i + side * SIDE_OFFSET) == FALSE)
       continue;
 
     CharaTbl[cnt] = i + side * SIDE_OFFSET;
@@ -4580,14 +4539,14 @@ int BATTLE_DefaultAttacker(int battleindex, int side) {
 
 //*********************************************************
 //
-// 爵    丐月扔奶玉及戏五酸曰皿伊奶乩□卞    毛笛遥
+// 敵キャラに戦闘コマンドを 与える (给敌方角色战斗指令)
 //
-int BATTLE_AddDpAlive(int battleindex, // 田玄伙奶件犯永弁旦
-                      int side, // 扔奶玉( 0 or 1 )
+int BATTLE_AddDpAlive(int battle_index, // バトルインデックス (战斗索引)
+                      int side, // サイド( 0 or 1 ) (阵营 0 或 1)
                       int dp)
 //
-//   曰袄“｛戏五酸匀化中月皿伊奶乩□及醒
-// ｛｛｛｛｛ 爵  互垫歹木化中卅仃木壬   及袄
+//   戻り値 生存 しているプレイヤーの数 (返回值：存活玩家数)
+// 戦闘 が 終わっていない 場合の値 (未结束时返回的值)
 //
 //*********************************************************
 {
@@ -4595,23 +4554,23 @@ int BATTLE_AddDpAlive(int battleindex, // 田玄伙奶件犯永弁旦
   BATTLE_ENTRY *pEntry;
   int cnt = 0;
 
-  // 由仿丢□正民尼永弁
+  // パラメータチェック (参数检查)
   if (BATTLE_CHECKSIDE(side) == FALSE)
     return -BATTLE_ERR_PARAM;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return -BATTLE_ERR_BATTLEINDEX;
 
-  // 巨件玄伉□
-  pEntry = BattleArray[battleindex].Side[side].Entry;
+  // エントリ (入场)
+  pEntry = BattleArray[battle_index].Side[side].Entry;
 
   for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
     char_index = pEntry[i].char_index;
     if (CHAR_CHECKINDEX(char_index) == FALSE)
       continue;
-    // 矢永玄反仇及端楮溢卅中
+    // ペットはこの 対象外 (宠物不计入)
     if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET)
       continue;
-    // 戏五化中引允［笛遥
+    // 生きている 分 加算 (存活者累加)
     if (CHAR_getFlg(char_index, CHAR_ISDIE) == FALSE) {
       CHAR_setWorkInt(char_index, CHAR_WORKGETEXP,
                       CHAR_getWorkInt(char_index, CHAR_WORKGETEXP) + dp);
@@ -4624,14 +4583,14 @@ int BATTLE_AddDpAlive(int battleindex, // 田玄伙奶件犯永弁旦
 #if 1
 //*********************************************************
 //
-// 爵    ｝皿伊奶乩□互戏五酸匀化中月井譬屯月
+// 生存プレイヤーがいるか 調べる (统计存活玩家)
 //
-int BATTLE_CountAlive(int battleindex, // 田玄伙奶件犯永弁旦
-                      int side         // 扔奶玉( 0 or 1 )
+int BATTLE_CountAlive(int battle_index, // バトルインデックス (战斗索引)
+                      int side         // サイド( 0 or 1 ) (阵营 0 或 1)
                       )
 //
-//   曰袄“｛戏五酸匀化中月皿伊奶乩□及醒
-// ｛｛｛｛｛ 爵  互垫歹木化中卅仃木壬   及袄
+//   戻り値 生存 しているプレイヤーの数 (返回值：存活玩家数)
+// 戦闘 が 終わっていない 場合の値 (未结束时返回的值)
 //
 //*********************************************************
 {
@@ -4639,23 +4598,23 @@ int BATTLE_CountAlive(int battleindex, // 田玄伙奶件犯永弁旦
   BATTLE_ENTRY *pEntry;
   int cnt = 0;
 
-  // 由仿丢□正民尼永弁
+  // パラメータチェック (参数检查)
   if (BATTLE_CHECKSIDE(side) == FALSE)
     return -BATTLE_ERR_PARAM;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return -BATTLE_ERR_BATTLEINDEX;
 
-  // 巨件玄伉□
-  pEntry = BattleArray[battleindex].Side[side].Entry;
+  // エントリ (入场)
+  pEntry = BattleArray[battle_index].Side[side].Entry;
 
   for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
     char_index = pEntry[i].char_index;
     if (CHAR_CHECKINDEX(char_index) == FALSE)
       continue;
-    // 矢永玄反仇及端楮溢卅中
+    // ペットはこの 対象外 (宠物不计入)
     if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET)
       continue;
-    // 戏五化中引允［
+    // 生きている (存活)
     if (CHAR_getFlg(char_index, CHAR_ISDIE) == FALSE) {
       cnt++;
     }
@@ -4666,46 +4625,39 @@ int BATTLE_CountAlive(int battleindex, // 田玄伙奶件犯永弁旦
 #endif
 
 //*********************************************************
-//
-// 历史注释的原始编码已损坏，无法可靠恢复。
-// 历史注释的原始编码已损坏，无法可靠恢复。
-//
-int BATTLE_OnlyRescue(int battleindex, // 田玄伙奶件犯永弁旦
-                      int side, // 扔奶玉( 0 or 1 )
-                      int *pOnlyFlg)
-//
-//   曰袄“｛戏五酸匀化中月皿伊奶乩□及醒
-// ｛｛｛｛｛ 爵  互垫歹木化中卅仃木壬   及袄
-//
+// 生存プレイヤーが救援のみか をチェック (检查是否只剩救援状态)
+// 戻り値 生存 しているプレイヤーの数 (返回值：存活玩家数)
+// 戦闘 が 終わっていない 場合の値 (未结束时返回的值)
 //*********************************************************
+int BATTLE_OnlyRescue(int battle_index, // バトルインデックス (战斗索引)
+                      int side, // サイド( 0 or 1 ) (阵营 0 或 1)
+                      int *pOnlyFlg)
 {
   int i, char_index;
   BATTLE_ENTRY *pEntry;
   int cnt = 0, OnlyRescue = 1;
-
   (*pOnlyFlg) = 0;
-
-  // 由仿丢□正民尼永弁
+  // パラメータチェック (参数检查)
   if (BATTLE_CHECKSIDE(side) == FALSE)
     return -BATTLE_ERR_PARAM;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return -BATTLE_ERR_BATTLEINDEX;
 
-  // 巨件玄伉□
-  pEntry = BattleArray[battleindex].Side[side].Entry;
+  // エントリ (入场)
+  pEntry = BattleArray[battle_index].Side[side].Entry;
 
   for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
     char_index = pEntry[i].char_index;
     if (CHAR_CHECKINDEX(char_index) == FALSE) {
       continue;
     }
-    // 矢永玄反仇及端楮溢卅中
+    // ペットはこの 対象外 (宠物不计入)
     if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET)
       continue;
-    // 戏五化中引允［
+    // 生きている (存活)
     if (CHAR_getFlg(char_index, CHAR_ISDIE) == FALSE) {
       cnt++;
-      // 戏五化中月支勾反辅爵    井＂
+      // 生きている 者は救援か (存活者是否处于救援状态)
       if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
           BATTLE_CHARMODE_RESCUE) {
       } else {
@@ -4718,29 +4670,29 @@ int BATTLE_OnlyRescue(int battleindex, // 田玄伙奶件犯永弁旦
 #endif
   }
 
-  // 戏五化中月支勾互中化公中勾反辅爵    分匀凶日
+  // 生きている 者が 全員救援 だったら (存活者全部在救援状态时)
   if (cnt > 0 && OnlyRescue) {
-    // 白仿弘毛  化月
+    // フラグを 立てる (置标志)
     (*pOnlyFlg) = 1;
   } else {
-    // 切互匀凶日ㄟ卞允月
+    // 違ったら0にする (否则置0)
     (*pOnlyFlg) = 0;
   }
 
   return cnt;
 }
 
-static BOOL BATTLE_TimeOutCheck(int battleindex) {
+static BOOL BATTLE_TimeOutCheck(int battle_index) {
   int i, j, char_index;
   BATTLE *pBattle;
   BATTLE_ENTRY *pEntry;
-  pBattle = &BattleArray[battleindex];
+  pBattle = &BattleArray[battle_index];
 
   if (NowTime.tv_sec > pBattle->timer + BATTLE_TIME_LIMIT) {
   } else {
     return FALSE;
   }
-  // BATTLE_BroadCast( battleindex, "server时间已到。", CHAR_COLORYELLOW );
+  // BATTLE_BroadCast( battle_index, "server时间已到。", CHAR_COLORYELLOW );
   for (j = 0; j < 2; j++) {
     pEntry = pBattle->Side[j].Entry;
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
@@ -4752,7 +4704,7 @@ static BOOL BATTLE_TimeOutCheck(int battleindex) {
       }
       if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
           BATTLE_CHARMODE_C_WAIT) {
-        BATTLE_Exit(char_index, battleindex);
+        BATTLE_Exit(char_index, battle_index);
         CHAR_DischargePartyNoMsg(char_index);
         CHAR_talkToCli(char_index, -1, "时间到，结束战斗。", CHAR_COLORYELLOW);
         BATTLE_CommandSend(char_index, "BU");
@@ -4763,14 +4715,14 @@ static BOOL BATTLE_TimeOutCheck(int battleindex) {
   return TRUE;
 }
 
-int BATTLE_WatchWait(int battleindex) {
+int BATTLE_WatchWait(int battle_index) {
   BATTLE *pBattle;
   BOOL commandflg = TRUE;
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
-  pBattle = &BattleArray[battleindex];
-  if (BATTLE_TimeOutCheck(battleindex) == TRUE) {
+  pBattle = &BattleArray[battle_index];
+  if (BATTLE_TimeOutCheck(battle_index) == TRUE) {
     commandflg = TRUE;
   }
   if (commandflg == FALSE) {
@@ -4781,34 +4733,33 @@ int BATTLE_WatchWait(int battleindex) {
   return 0;
 }
 
-int BATTLE_WatchMovie(int battleindex) { return 0; }
+int BATTLE_WatchMovie(int battle_index) { return 0; }
 
-int BATTLE_WatchAfter(int battleindex) {
-  BattleArray[battleindex].mode = BATTLE_MODE_WATCHPRE;
-
+int BATTLE_WatchAfter(int battle_index) {
+  BattleArray[battle_index].mode = BATTLE_MODE_WATCHPRE;
   return 0;
 }
 
-int BATTLE_WatchBC(int battleindex) { return 0; }
+int BATTLE_WatchBC(int battle_index) { return 0; }
 
-int BATTLE_WatchPre(int battleindex) {
-  // 戊穴件玉谨切尺  月凛及域  及  木
-  BATTLE_PreWatchWaitSeq(battleindex);
-  BattleArray[battleindex].mode = BATTLE_MODE_WATCHWAIT;
+int BATTLE_WatchPre(int battle_index) {
+  // コマンド処理の時の一連の 流れ (指令处理流程)
+  BATTLE_PreWatchWaitSeq(battle_index);
+  BattleArray[battle_index].mode = BATTLE_MODE_WATCHWAIT;
   return 0;
 }
 
-static int BATTLE_Command(int battleindex) {
+static int BATTLE_Command(int battle_index) {
   BATTLE *pBattle, *pWatchBattle;
   BOOL commandflg = TRUE, iFinish = FALSE;
   int OnlyRescue[2], i, j, char_index;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
-  pBattle = &BattleArray[battleindex];
-  if (BATTLE_CommandWait(battleindex, 0) == FALSE) {
+  pBattle = &BattleArray[battle_index];
+  if (BATTLE_CommandWait(battle_index, 0) == FALSE) {
     commandflg = FALSE;
   }
-  if (BATTLE_CommandWait(battleindex, 1) == FALSE) {
+  if (BATTLE_CommandWait(battle_index, 1) == FALSE) {
     commandflg = FALSE;
   }
 
@@ -4820,7 +4771,7 @@ static int BATTLE_Command(int battleindex) {
     }
 
     if (pWatchBattle->mode == BATTLE_MODE_WATCHBC) {
-      BATTLE_MakeCharaString(battleindex, szAllBattleString,
+      BATTLE_MakeCharaString(battle_index, szAllBattleString,
                              sizeof(szAllBattleString));
       BATTLE_BpSendToWatch(pWatchBattle, szAllBattleString);
       pWatchBattle->mode = BATTLE_MODE_WATCHPRE;
@@ -4829,7 +4780,7 @@ static int BATTLE_Command(int battleindex) {
       commandflg = FALSE;
     }
   }
-  if (BATTLE_TimeOutCheck(battleindex) == TRUE) {
+  if (BATTLE_TimeOutCheck(battle_index) == TRUE) {
     commandflg = TRUE;
   }
   if (commandflg == FALSE) {
@@ -4868,18 +4819,18 @@ static int BATTLE_Command(int battleindex) {
   }
 
 #ifdef _BATTLECOMMAND_TIME
-  BattleArray[battleindex].PartTime = 0;
+  BattleArray[battle_index].PartTime = 0;
 #endif
   pBattle->turn++; // 自己回合数增加
-  BATTLE_ai_all(battleindex, 0, 0);
-  BATTLE_ai_all(battleindex, 1, 0);
-  BATTLE_Battling(battleindex); // 处理战斗
+  BATTLE_ai_all(battle_index, 0, 0);
+  BATTLE_ai_all(battle_index, 1, 0);
+  BATTLE_Battling(battle_index); // 处理战斗
   pBattle->Side[0].flg &= ~BSIDE_FLG_SURPRISE;
   pBattle->Side[1].flg &= ~BSIDE_FLG_SURPRISE;
-  if (BATTLE_OnlyRescue(battleindex, 0, &OnlyRescue[0]) == 0) {
+  if (BATTLE_OnlyRescue(battle_index, 0, &OnlyRescue[0]) == 0) {
     pBattle->winside = 1;
     iFinish = TRUE;
-  } else if (BATTLE_OnlyRescue(battleindex, 1, &OnlyRescue[1]) == 0) {
+  } else if (BATTLE_OnlyRescue(battle_index, 1, &OnlyRescue[1]) == 0) {
     pBattle->winside = -1;
     iFinish = TRUE;
   }
@@ -4892,13 +4843,13 @@ static int BATTLE_Command(int battleindex) {
         continue;
 
       if (CHAR_getInt(char_index, CHAR_HP) <= 0) {
-        BATTLE_Exit(char_index, battleindex);
+        BATTLE_Exit(char_index, battle_index);
       }
     }
   }
-  BATTLE_PreCommandSeq(battleindex);
+  BATTLE_PreCommandSeq(battle_index);
   if (iFinish == TRUE) {
-    BATTLE_FinishSet(battleindex);
+    BATTLE_FinishSet(battle_index);
   }
   return 0;
 }
@@ -4977,82 +4928,30 @@ int BATTLE_Loop(void) {
 }
 
 typedef struct {
-  int char_index; // 平乓仿弁正奶件犯永弁旦
-  int side;       // 扔奶玉
-  int dex;        // 豳镀今
-  int num;        // 巨件玄伉□  寞
-  int combo;      // 宁    猾允月谛棉井＂
+  int char_index; // キャラクタインデックス (角色索引)
+  int side;       // サイド (阵营)
+  int dex;        // 素早さ (敏捷, 每轮行动的敏捷并不相同)
+  int num;        // エントリ番号 (战场编号, 即战场上的位置)
+  int combo;      // どの技をするか (合击编号：如果参与合击，则参与哪个合击)
 #ifdef _EQUIT_SEQUENCE
-  int sequence;
+  int sequence;   // 装备和人物属性上提供的顺序加成
 #endif
-} BATTLE_CHARLIST;
-
-typedef int (*FUNC)(const void *, const void *);
+} RoundActionListEntry;
 
 //************************************************************
-//
-//  爵  及豳镀今  胜楮醒
-//
-// 历史注释的原始编码已损坏，无法可靠恢复。
-// 历史注释的原始编码已损坏，无法可靠恢复。
-//
-static int EsCmp(const BATTLE_CHARLIST *pC1, const BATTLE_CHARLIST *pC2) {
+// 戦闘の素早さで 比較 (按敏捷比较)
+// 素早さは値が大きい順である (按敏捷从高到低)
+// ***********************************************************
+static int EsCmp(const void *pc1, const void *pc2) {
 #ifdef _EQUIT_SEQUENCE
-  return ((pC2->dex + pC2->sequence) > (pC1->dex + pC1->sequence));
-
+  RoundActionListEntry *pC1 = pc1, *pC2 = pc2;
+  return ((pC2->dex + pC2->sequence) - (pC1->dex + pC1->sequence));
 #else
   return (pC2->dex - pC1->dex);
 #endif
 }
-
-#ifdef _EQUIT_SEQUENCE
-void Replacement_Entry(BATTLE_CHARLIST *temp1, BATTLE_CHARLIST *temp2) {
-  temp1->char_index = temp2->char_index;
-  temp1->combo = temp2->combo;
-  temp1->dex = temp2->dex;
-  temp1->num = temp2->num;
-  temp1->sequence = temp2->sequence;
-  temp1->side = temp2->side;
-}
-#endif
-static void EntrySort(BATTLE_CHARLIST *EntryList, int listsize) {
-#ifdef _EQUIT_SEQUENCE
-  //	int i, j;
-  qsort(EntryList, listsize, sizeof(BATTLE_CHARLIST), (FUNC)EsCmp);
-/*
-        for( i=0; i<listsize; i++){
-                if( EntryList[i].sequence > 0 ){
-                        int maxcheck, now;
-                        BATTLE_CHARLIST temp;
-
-                        maxcheck = EntryList[i].sequence/8;
-                        maxcheck = RAND( 1, maxcheck);
-                        maxcheck = ( maxcheck>=i )?(i/3):maxcheck;
-                        maxcheck = ( maxcheck<0)?0:maxcheck;
-                        now = i;
-                        for( j=0; j<maxcheck&&now>0; j++){
-                                if( EntryList[now].sequence >
-(EntryList[now-1].sequence *0.9) ){
-
-                                        Replacement_Entry( &temp,
-&EntryList[now]); Replacement_Entry( &EntryList[now], &EntryList[now-1]);
-                                        Replacement_Entry( &EntryList[now-1],
-&temp); now = now-1;
-
-
-//					temp = &EntryList[now];
-//					EntryList[now] = EntryList[now-1];
-//					EntryList[now-1] = *temp;
-//					temp = NULL;
-
-                                }
-                        }
-                }
-        }
-*/
-#else
-  qsort(EntryList, listsize, sizeof(BATTLE_CHARLIST), (FUNC)EsCmp);
-#endif
+static void RoundActionSort(RoundActionListEntry *sRoundActionList, int listSize) {
+  qsort(sRoundActionList, listSize, sizeof(RoundActionListEntry), EsCmp);
 }
 
 #ifdef _PETSKILL_NEW_PASSIVE
@@ -5074,18 +4973,13 @@ void BATTLE_PassiveSkill(int char_index) {
 }
 #endif
 //************************************************************
-//
-// 豳镀今毛煌遥允月［
-//
-static int BATTLE_DexCalc(int char_index)
-//
-//    曰袄  豳镀今
-//
+// 素早さを計算する (战斗中的敏捷值不但和角色基础敏捷有关，还会增加浮动)
+// 戻り値 素早さ (返回值：战斗中的敏捷值)
 //************************************************************
+static int BATTLE_DexCalc(int char_index)
 {
-  int dex = 0;
-  int work, COM;
-  int petindex = BATTLE_getRidePet(char_index);
+  int work, dex = 0;
+  int pet_index = BATTLE_getRidePet(char_index);
 #ifdef _PETSKILL_NEW_PASSIVE
   // 清除上轮被动加成
   CHAR_setWorkInt(char_index, CHAR_WORKPASSIVE_DUCK, 0);
@@ -5098,9 +4992,8 @@ static int BATTLE_DexCalc(int char_index)
     BATTLE_PassiveSkill(char_index);
   }
 #endif
-
-  // 戊穴件玉潸
-  COM = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
+  // コマンド取得 (获取指令)
+  int command = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
 
 #ifdef _PETSKILL_BECOMEFOX // 攻击顺序中的敏捷降下20%
   if (CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) != -1) {
@@ -5114,8 +5007,8 @@ static int BATTLE_DexCalc(int char_index)
     dex = work * 0.8; // 敏降20%
   }
 #endif
-  // 骚橘  猾及桦宁
-  switch (COM) {
+  // 指令の 場合 (按战斗指令，敏捷值加成会有不同)
+  switch (command) {
 #ifdef _PROFESSION_SKILL         // WON ADD 人物职业技能
   case BATTLE_COM_S_BLOOD:       // 嗜血成性
   case BATTLE_COM_S_BLOOD_WORMS: // 嗜血蛊
@@ -5176,174 +5069,152 @@ static int BATTLE_DexCalc(int char_index)
     dex = work + work * 0.2; // 敏加20%
     break;
 #endif
-
-  case BATTLE_COM_ITEM: // 失奶  丞毛银丹桦宁
+  case BATTLE_COM_ITEM: // アイテムを使う場合 (使用道具时)
     work = CHAR_getWorkInt(char_index, CHAR_WORKQUICK) + 20;
     dex = work - RAND(0, work * 0.1) + work * 0.15;
     break;
-  default: // 骚橘  爵丹卅升)
+  default: // その他 戦闘など) (其他战斗指令)
     // Robin 0727 ride pet
-    if (petindex == -1)
+    if (pet_index == -1)
       work = CHAR_getWorkInt(char_index, CHAR_WORKQUICK) + 20;
     else
-      work = BATTLE_adjustRidePet3A(char_index, petindex, CHAR_WORKQUICK,
+      work = BATTLE_adjustRidePet3A(char_index, pet_index, CHAR_WORKQUICK,
                                     ATTACKSIDE) +
              20;
     dex = work - RAND(0, work * 0.1);
     break;
   }
-
   // if( dex <= 1 )dex = 1;
   return dex;
 }
-
+  
+inline BOOL combo_condition(int command,
+                            int arm_type,
+                            int can_move) {
+  return (command == BATTLE_COM_ATTACK
+           && arm_type != 1 // 投掷武器
+           && can_move == 1) ? 1 : 0;
+}
 //*************************************************************
-//  戊件申生□扑亦件互丐月井升丹井民尼永弁
-static void ComboCheck(BATTLE_CHARLIST *pEntryList, int entrynum)
-//
+// コンビネーションがあるかどうかチェック (预设值本轮行动可能的合击)
 //*************************************************************
+static void ComboSet(RoundActionListEntry *pRoundActionList, int actionNum)
 {
 
-  int i, char_index, com, enemy, side,
-      oldside = -3,  // 赝癫卞丐曰尹卅中袄
-      oldenemy = -3, // 赝癫卞丐曰尹卅中袄
-      armtype, move, per,
-      ComboId = 1, // 戊件示
-      start = -1;
-  for (i = 0; i < entrynum; i++) {
-    char_index = pEntryList[i].char_index;
-    com = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
-    enemy = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
+  int i, char_index;
+  int prev_side = -3;  // デフにありえない値 (不可能的初始值)
+  int prev_target = -3; // デフにありえない値 (不可能的初始值)
+  int start = -1;
+  int combo_id = 1; // コンボID (合击编号)
+  int combo_rate; // 野怪和玩家角色的合击率不一致
+  int arm_type; // 武器的类型，弓/石头/回旋镖 不能参与合击
+  int can_move; // 角色是否可以行动（如位于混乱、石化、睡眠状态）
+  int command, target, side;
+  for (i = 0; i < actionNum; i++) {
+    char_index = pRoundActionList[i].char_index;
+    command = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
+    target = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
     side = CHAR_getWorkInt(char_index, CHAR_WORKBATTLESIDE);
-    armtype = 0;
     if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEENEMY) {
-      per = 20; // 衬反ㄡㄟ⊙
+      combo_rate = 20; // 敵は20 (野怪20%)
     } else {
-      per = 50; // 愤坌反ㄤㄟ⊙
-    }
-    //     互ㄟ井  仃卅井匀凶日
-    if (CHAR_getInt(char_index, CHAR_HP) <= 0 ||
-        BATTLE_CanMoveCheck(char_index) == FALSE) {
-      move = 0;
-    } else {
-      move = 1;
-    }
-    if (BATTLE_IsThrowWepon(CHAR_getItemIndex(char_index, CHAR_ARM)) == TRUE) {
-      armtype = 1;
-    }
+      combo_rate = 80; // 戦闘は50 (玩家或者玩家宠物50%)
+    } // 2026.09.09 合击概率由 50% -> 80%
+    // HPが0か 動けなかったら (HP为0或不能移动)
+    can_move = (CHAR_getInt(char_index, CHAR_HP) <= 0 ||
+        BATTLE_CanMoveCheck(char_index) == FALSE) ? 0 : 1;
+    arm_type = BATTLE_IsThrowWepon(CHAR_getItemIndex(char_index, CHAR_ARM));
 
-    pEntryList[i].combo = 0; // 赓渝祭
+    pRoundActionList[i].combo = 0; // 初期化 (初始化)
 
-    if (start != -1) {             // 宁    猾
-      if (com != BATTLE_COM_ATTACK //   猾戊穴件玉匹卅中
-          || enemy != oldenemy     // 谎匀化月衬互  元匹卅中
-          || side != oldside       // 扔奶玉互啜丹
-          || armtype == 1          // 髑仆烟匹丐月
-          || move == 0             //   仃卅中
-      ) {
-        start = -1;     // 蔽
-        oldside = side; // 扔奶玉创尹月
+    if (start != -1) { // 連続技の 途中 (合击组合中已有一名角色)
+      if (!combo_condition(command, arm_type, can_move)
+        || target != prev_target || side != prev_side) {
+        start = -1;     // リセット (合击组合统计中断)
+        prev_side = side; // サイド記える (记录阵营)
       } else {
-        // 戊件示涩烂
-        CHAR_setWorkInt(pEntryList[i].char_index, CHAR_WORKBATTLECOM1,
+        // コンボID保存 (设置当前角色的状态合击)
+        CHAR_setWorkInt(pRoundActionList[i].char_index, CHAR_WORKBATTLECOM1,
                         BATTLE_COM_COMBO);
-        pEntryList[i].combo = ComboId;
-        //   赓及谛手域杀涩烂
-        CHAR_setWorkInt(pEntryList[start].char_index, CHAR_WORKBATTLECOM1,
+        pRoundActionList[i].combo = combo_id;
+        // 前の 値も 保存 (再设置一次合击发起人的状态)
+        CHAR_setWorkInt(pRoundActionList[start].char_index, CHAR_WORKBATTLECOM1,
                         BATTLE_COM_COMBO);
-        pEntryList[start].combo = ComboId;
+        pRoundActionList[start].combo = combo_id;
       }
-    }
-    if (start == -1) { // 宁    猾    仄化中卅中桦宁
-      if (com == BATTLE_COM_ATTACK && armtype != 1 // 髑仆烟匹卅中
-          && move == 1                             //   仃月
-          && RAND(1, 100) <= per) { // 骚橘  猾  匹丐月
-        start = i;
-        oldenemy = enemy; // 谎匀化月衬毛创尹月
-        oldside = side;   // 扔奶玉创尹月
-        ComboId++;
+    } else { // 連続技を していない場合 (合击组合尚无一名角色)
+      if (combo_condition(command, arm_type, can_move)
+          && RAND(1, 100) <= combo_rate) { // 連続技 である (合击概率判定)
+        // 只有合击发起人会判断这个
+        start = i; // 当前角色满足合击判断
+        prev_target = target; // 攻撃してる敵を記える (记录攻击目标)
+        prev_side = side;   // サイド記える (记录阵营)
+        ++combo_id;
       }
     }
   }
 }
 
 //*************************************************************
-//
-//  戊件申生□扑亦件互  癫卞匹五月井民尼永弁
-// ｛戚及谛互戊件示匹五月橇谪元扎卅井匀凶日 FALSE
-//
-static BOOL ComboCheck2(
-    BATTLE_CHARLIST *pEntryList, // 巨件玄伉□伉旦玄
-    int nownum,                  // 蜇箕及赐
-    int entrynum                 // 巨件玄伉□    醒
+// コンボが 成立できるかチェック (检查合击在发生时是否还有效(合击不能反击、不能躲避))
+// 後の 値がコンボID で ない なら FALSE
+// コンボIDで きるなら TRUE (合击判定成立则TRUE)
+// できない  FALSE (否则FALSE)
+// ************************************************************
+static BOOL ComboCheck(
+    RoundActionListEntry *pRoundActionList, // エントリスト (入场列表)
+    int currAction,                  // 現在の位置 (当前Action的序号)
+    int actionNum                    // エントリ 数 (本轮Action的总数)
     )
-//
-// 戊件示匹五月    TRUE
-//       匹五卅中  FALSE
-//
-//*************************************************************
 {
 
-  int i, iRet = FALSE, ComboId, char_index;
-
-  // 戊件示    忡绣
-  ComboId = pEntryList[nownum].combo;
-
-  char_index = pEntryList[nownum].char_index;
-  if (!CHAR_CHECKINDEX(char_index)) {
-    // 愤坌互镝擦蘸撩  仄化中凶日撩
+  int i;
+  // コンボID 保存 (保存连击ID)
+  int combo_id = pRoundActionList[currAction].combo;
+  int char_index = pRoundActionList[currAction].char_index;
+  // 2026.09.19 AI发现的逻辑错误, 这里多了一个取反的操作
+  if (CHAR_CHECKINDEX(char_index)) {
+    // 忠誠が 低いなら 失敗 (忠诚不足则失败)
     if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEFLG) &
         CHAR_BATTLEFLG_AIBAD) {
-      // 历史注释的原始编码已损坏，无法可靠恢复。
-      //)\n",CHAR_getUseName( char_index ) );
       return FALSE;
     }
   }
-  // 戚及谛互戊件示卞辅笛匹五月井割
-  for (i = nownum + 1; i < entrynum; i++) {
-    char_index = pEntryList[i].char_index;
+  // 後の 値がコンボIDに 一致するか (后续是否同连击)
+  for (i = currAction + 1; i < actionNum; i++) {
+    char_index = pRoundActionList[i].char_index;
     if (!CHAR_CHECKINDEX(char_index))
       continue;
-    // 戊件示    啜丹午镀仁手撩
-    if (ComboId != pEntryList[i].combo)
+    // コンボID が 違うと 終了 (合击ID不同, 即不参与本轮合击)
+    if (combo_id != pRoundActionList[i].combo)
       break;
-
-    // 爵  卞辅笛仄化中卅井匀凶日戚尺
-    if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) == 0)
-      break;
-    if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
-        BATTLE_CHARMODE_FINAL)
-      break;
-
-    if (CHAR_getInt(char_index, CHAR_HP) <= 0 ||
-        BATTLE_CanMoveCheck(char_index) == FALSE) {
+    // 戦闘に 参加していないなら次へ
+    int battle_mode = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE);
+    if (battle_mode == 0 // 未参与战斗(Bug?)
+        || battle_mode == BATTLE_CHARMODE_FINAL // 战斗已结束(击飞或逃跑)
+        || CHAR_getInt(char_index, CHAR_HP) <= 0 // 战斗中死亡
+        || BATTLE_CanMoveCheck(char_index) == FALSE) { // 石化、睡眠、混乱
+      continue;
     } else {
-      iRet = TRUE;
-      break;
+      return TRUE;
     }
   }
-  /*
-          if( iRet == FALSE ){
-                  print( "必杀技失败( %s )\n",
-                          CHAR_getUseName( pEntryList[nownum].char_index ) );
-          }
-  */
-  return iRet;
+  return FALSE;
 }
 
-void BATTLE_UltimateExtra(int battleindex, int char_index, int enemy_index) {
+// 击飞的判断
+void BATTLE_UltimateExtra(int battle_index, int char_index, int enemy_index) {
   char szBuffer[256] = "";
   int pindex, pno;
   int floor = 0, x = 0, y = 0;
   szBuffer[0] = 0;
-
   if (CHAR_getInt(enemy_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER
 #ifdef _PLAYER_NPC
       || CHAR_getInt(enemy_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYERNPC
 #endif
   ) {
-    BATTLE_PetDefaultExit(enemy_index, battleindex);
-    if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
+    BATTLE_PetDefaultExit(enemy_index, battle_index);
+    if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_P) {
       if (CHAR_getInt(enemy_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
         CHAR_setInt(enemy_index, CHAR_DUELBATTLECOUNT,
                     CHAR_getInt(enemy_index, CHAR_DUELBATTLECOUNT) + 1);
@@ -5351,7 +5222,7 @@ void BATTLE_UltimateExtra(int battleindex, int char_index, int enemy_index) {
                     CHAR_getInt(enemy_index, CHAR_DUELLOSECOUNT) + 1);
         CHAR_setInt(enemy_index, CHAR_DUELSTWINCOUNT, 0);
       }
-    } else if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_E) {
+    } else if (BattleArray[battle_index].type == BATTLE_TYPE_P_vs_E) {
       int levelflg = 1;
 #ifdef _ULTIMATE_ANNOUNCE
       if ((CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER ||
@@ -5371,7 +5242,7 @@ void BATTLE_UltimateExtra(int battleindex, int char_index, int enemy_index) {
             //			CHAR_warpToSpecificPoint( badindex, 117, 289,
             // 168
             //); 			CHAR_DischargePartyNoMsg( badindex );
-            //BATTLE_Exit( badindex, battleindex );
+            //BATTLE_Exit( badindex, battle_index );
             /*
             if (CHAR_getInt(badindex,CHAR_FAME) <10000){
                     CHAR_setInt(badindex,CHAR_FAME,0);
@@ -5402,7 +5273,7 @@ void BATTLE_UltimateExtra(int battleindex, int char_index, int enemy_index) {
         levelflg = 2;
       }
 
-      if (BattleArray[battleindex].norisk == 0) {
+      if (BattleArray[battle_index].norisk == 0) {
         CHAR_AddCharm(enemy_index, CH_FIX_PLAYEULTIMATE / levelflg);
         pno = CHAR_getInt(enemy_index, CHAR_DEFAULTPET);
         if (0 <= pno && pno < CHAR_MAXPETHAVE) {
@@ -5418,87 +5289,63 @@ void BATTLE_UltimateExtra(int battleindex, int char_index, int enemy_index) {
         CHAR_warpToSpecificPoint(enemy_index, floor, x, y);
       }
     }
-    BATTLE_Exit(enemy_index, battleindex);
+    BATTLE_Exit(enemy_index, battle_index);
     CHAR_DischargePartyNoMsg(enemy_index);
     if (getBattleDebugMsg() != 0) {
       BATTLE_talkToCli(enemy_index, szBuffer, CHAR_COLORYELLOW);
     }
 
-  } else
-    // 矢永玄卅日
-    if (CHAR_getInt(enemy_index, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
-      int levelflg = 1;
-      int playerindex = CHAR_getWorkInt(enemy_index, CHAR_WORKPLAYERINDEX);
-
-      // 伊矛伙互斓中桦宁反    蛹月  坌
-      if (CHAR_getInt(playerindex, CHAR_LV) <= 10) {
-        levelflg = 2;
-      }
-      // snprintf( szBuffer, sizeof(szBuffer),
-      //	"(%s)被击飞。",
-      //	CHAR_getUseName( enemy_index ) );
-
-      // 潜谛及犯白巧伙玄井日反内允
-      CHAR_setInt(playerindex, CHAR_DEFAULTPET, -1);
-
-      // 犯亘巨伙动陆反镝擦艘毛票仆月
-      if (BattleArray[battleindex].type != BATTLE_TYPE_P_vs_P) {
-        // 伉旦弁及  中田玄伙井＂丐月卅日镝擦    毛票仆月
-        if (BattleArray[battleindex].norisk == 0) {
-          CHAR_PetAddVariableAi(enemy_index, AI_FIX_PETULTIMATE / levelflg);
-        }
-        // 潜谛及矢永玄韶氏分荚醒毛市它件玄允月
-        CHAR_setInt(playerindex, CHAR_DEADPETCOUNT,
-                    CHAR_getInt(playerindex, CHAR_DEADPETCOUNT) + 1);
-      }
-      /*
-                      // 矢永玄互中凶日爵  井日厄仃今六月［
-                      BATTLE_PetDefaultExit( enemy_index, battleindex );
-      */
-
-      // 愤坌手  仃月
-      BATTLE_Exit(enemy_index, battleindex);
-
-    } else {
-      int flg;
-      // 公木动陆匹失伙  奴丢永玄韶
-      // snprintf( szBuffer, sizeof(szBuffer),
-      //	"(%s)被击飞。",
-      //	CHAR_getUseName( enemy_index ) );
-      // 衬平乓仿反扔□田□卞酸仄化云仁
-      //		BATTLE_Exit( enemy_index, battleindex );
-      flg = CHAR_getWorkInt(enemy_index, CHAR_WORKBATTLEFLG);
-      flg |= CHAR_BATTLEFLG_ULTIMATE; // 失伙  奴丢永玄熬仃凶
-      CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLEFLG, flg);
-      BATTLE_Exit(enemy_index, battleindex);
+  } else if (CHAR_getInt(enemy_index, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
+    // ペットなら (若是宠物)
+    int levelflg = 1;
+    int playerindex = CHAR_getWorkInt(enemy_index, CHAR_WORKPLAYERINDEX);
+    // レベルが低い場合は 減る (等级低则减半)
+    if (CHAR_getInt(playerindex, CHAR_LV) <= 10) {
+      levelflg = 2;
     }
-
-  //   须  煤
-  // BATTLE_BroadCast( battleindex, szBuffer, CHAR_COLORYELLOW );
+    // 主人のデフォルトペットから 外す (解除主人默认宠物)
+    CHAR_setInt(playerindex, CHAR_DEFAULTPET, -1);
+    // PvPでなければ 懲罰を 与える (非PvP则给予惩罚)
+    if (BattleArray[battle_index].type != BATTLE_TYPE_P_vs_P) {
+      // リスクのある バトルなら 懲罰を 与える (有风险战斗则给予惩罚)
+      if (BattleArray[battle_index].norisk == 0) {
+        CHAR_PetAddVariableAi(enemy_index, AI_FIX_PETULTIMATE / levelflg);
+      }
+      // 主人のペット 死亡数をカウントする (统计主人宠物死亡数)
+      CHAR_setInt(playerindex, CHAR_DEADPETCOUNT,
+                  CHAR_getInt(playerindex, CHAR_DEADPETCOUNT) + 1);
+    }
+    // 戦闘から 除外する (从战斗中移除)
+    BATTLE_Exit(enemy_index, battle_index);
+  } else {
+    int flg;
+    // これでなければ アルティメット (否则为终极技)
+    // 敵キャラはサイドに しておく (敌方角色保留在阵营中)
+    flg = CHAR_getWorkInt(enemy_index, CHAR_WORKBATTLEFLG);
+    flg |= CHAR_BATTLEFLG_ULTIMATE; // アルティメットを かけた (附加终极技状态)
+    CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLEFLG, flg);
+    BATTLE_Exit(enemy_index, battle_index);
+  }
 }
 
 //*************************************************************
-//
-//  骚橘卞竣濮今六凶桦宁及  溃质
-//
-void BATTLE_NormalDeadExtra(int battleindex, // 爵  奶件犯永弁旦
-                            int char_index, // 历史注释的原始编码已损坏，无法可靠恢复。
-                            int enemy_index // 历史注释的原始编码已损坏，无法可靠恢复。
-                            )
-//
-//
+//  死亡 した場合の 追加処理 (死亡时的附加处理)
 //*************************************************************
+void BATTLE_NormalDeadExtra(int battle_index, // 戦闘インデックス (战斗索引)
+                            int char_index, // 倒したキャラのインデックス (被击倒角色的索引)
+                            int enemy_index // 倒されたキャラのインデックス (被击倒角色的索引)
+                            )
 {
   int pindex, pno;
   char szBuffer[256] = "";
 
   szBuffer[0] = 0;
-  // 皿伊奶乩□匹
-  // 衬午及爵  分匀凶日
-  // 伉旦弁及  中田玄伙卅日
+  // プレイヤーで (是玩家)
+  // 敵との戦闘だったら (若是与敌对战)
+  // リスクのあるバトルなら (若为有风险战斗)
   if (CHAR_getInt(enemy_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER &&
-      BattleArray[battleindex].type == BATTLE_TYPE_P_vs_E &&
-      BattleArray[battleindex].norisk == 0) {
+      BattleArray[battle_index].type == BATTLE_TYPE_P_vs_E &&
+      BattleArray[battle_index].norisk == 0) {
 #ifdef _ULTIMATE_ANNOUNCE
     if ((CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER ||
          CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPET) &&
@@ -5517,7 +5364,7 @@ void BATTLE_NormalDeadExtra(int battleindex, // 爵  奶件犯永弁旦
           //			CHAR_warpToSpecificPoint( badindex, 117, 289,
           // 168
           //); 			CHAR_DischargePartyNoMsg( badindex );
-          // BATTLE_Exit( badindex, battleindex );
+          // BATTLE_Exit( badindex, battle_index );
           /*
           if (CHAR_getInt(badindex,CHAR_FAME) <10000){
                   CHAR_setInt(badindex,CHAR_FAME,0);
@@ -5542,291 +5389,183 @@ void BATTLE_NormalDeadExtra(int battleindex, // 爵  奶件犯永弁旦
 #endif
 
     int levelflg = 1;
-    // 愤坌及    毛票仆月
-    // 伊矛伙ㄠㄟ动票及谛反      坌分仃票互月
+    // 戦闘の 魅力を 与える (给予战斗魅力)
+    // レベルが 低い場合は 減らす (等级低则减半)
     if (CHAR_getInt(enemy_index, CHAR_LV) <= 10) {
       levelflg = 2;
     }
     CHAR_AddCharm(enemy_index, CH_FIX_PLAYERDEAD / levelflg);
-    // 爵  卞辅笛仄化中凶矢永玄及    毛票仆月
+    // 戦闘に 参加していたペットの を 与える (给参战宠物魅力)
     pno = CHAR_getInt(enemy_index, CHAR_DEFAULTPET);
     if (0 <= pno && pno < CHAR_MAXPETHAVE) {
-      // 矢永玄及奶件犯永弁旦
+      // ペットのインデックス (宠物索引)
       pindex = CHAR_getCharPet(enemy_index, pno);
       if (CHAR_CHECKINDEX(pindex) == TRUE) {
         CHAR_PetAddVariableAi(pindex, AI_FIX_PLAYERDEAD / levelflg);
       }
     }
-    // 韶氏分平乓仿及戊穴件玉反侉木月
+    // 倒れたキャラのコマンドは 無効にする (死亡角色指令置无效)
     CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
-  } else
-    // 矢永玄卅日
-    if (CHAR_getInt(enemy_index, CHAR_WHICHTYPE) == CHAR_TYPEPET &&
-        BattleArray[battleindex].type == BATTLE_TYPE_P_vs_E &&
-        BattleArray[battleindex].norisk == 0) {
+  } else if (CHAR_getInt(enemy_index, CHAR_WHICHTYPE) == CHAR_TYPEPET &&
+    // ペットなら (若是宠物)
+        BattleArray[battle_index].type == BATTLE_TYPE_P_vs_E &&
+        BattleArray[battle_index].norisk == 0) {
       int levelflg = 1;
       int playerindex = CHAR_getWorkInt(enemy_index, CHAR_WORKPLAYERINDEX);
 
-      // 潜谛及伊矛伙ㄠㄟ动票及谛反      坌分仃票互月
+      // 主人のレベルが 低い場合は 減らす (主人等级低则减半)
       if (CHAR_getInt(playerindex, CHAR_LV) <= 10) {
         levelflg = 2;
       }
-      // 愤坌及镝擦艘毛票仆月
+      // 戦闘の懲罰を 与える (给予战斗惩罚)
       CHAR_PetAddVariableAi(enemy_index, AI_FIX_PETDEAD / levelflg);
-      // 潜谛及矢永玄韶氏分荚醒毛市它件玄允月
+      // 主人のペット 死亡数をカウントする (统计主人宠物死亡数)
       CHAR_setInt(playerindex, CHAR_DEADPETCOUNT,
                   CHAR_getInt(playerindex, CHAR_DEADPETCOUNT) + 1);
 
-      // 韶氏分平乓仿及戊穴件玉反侉木月
+      // 倒れたキャラのコマンドは 無効にする (死亡角色指令置无效)
       CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
-    } else {
-      // 公木动陆
-    }
-
-  // snprintf( szBuffer, sizeof(szBuffer),
-  //	"(%s)失去意识。",
-  //	CHAR_getUseName( enemy_index ) );
-
-  // BATTLE_BroadCast( battleindex, szBuffer, CHAR_COLORYELLOW );
+  }
 }
 
+void BATTLE_EscapeDpSend(int battle_index, int char_index) {
+  int enemyside, dpadd;
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
+    return;
+  if (BattleArray[battle_index].type != BATTLE_TYPE_P_vs_P)
+    return;
 #ifndef DANTAI
-void BATTLE_EscapeDpSend(int battleindex, int char_index) {
-
-  int enemyside, cnt, dpadd;
-  BATTLE_ENTRY *pEntry;
-
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
-    return;
-  }
-
-  if (BattleArray[battleindex].type != BATTLE_TYPE_P_vs_P) {
-    return;
-  }
-  if (BattleArray[battleindex].flg & BATTLE_FLG_FREEDP) {
+  if (BattleArray[battle_index].flg & BATTLE_FLG_FREEDP) {
     CHAR_setWorkInt(char_index, CHAR_WORKGETEXP, 0);
     return;
   }
-  BattleArray[battleindex].flg |= BATTLE_FLG_CHARALOST;
+  BattleArray[battle_index].flg |= BATTLE_FLG_CHARALOST;
+#endif
   enemyside = 1 - CHAR_getWorkInt(char_index, CHAR_WORKBATTLESIDE);
-  pEntry = BattleArray[battleindex].Side[enemyside].Entry;
-  cnt = BATTLE_CountAlive(battleindex, enemyside);
-  if (cnt == 0)
-    return;
-
   dpadd = CHAR_getInt(char_index, CHAR_DUELPOINT) * DUELPOINT_RATE;
-
   if (dpadd < 1)
     dpadd = 1;
   CHAR_setWorkInt(char_index, CHAR_WORKGETEXP, -dpadd * 2);
+
+#ifndef DANTAI
+  int cnt = BATTLE_CountAlive(battle_index, enemyside);
+  if (cnt == 0)
+    return;
   dpadd /= cnt;
   if (dpadd < 1)
     dpadd = 1;
-  BATTLE_AddDpAlive(battleindex, enemyside, dpadd);
-
-  if (BattleArray[battleindex].type == BATTLE_TYPE_P_vs_P) {
-    if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-      CHAR_setInt(char_index, CHAR_DUELBATTLECOUNT,
-                  CHAR_getInt(char_index, CHAR_DUELBATTLECOUNT) + 1);
-      CHAR_setInt(char_index, CHAR_DUELLOSECOUNT,
-                  CHAR_getInt(char_index, CHAR_DUELLOSECOUNT) + 1);
-      CHAR_setInt(char_index, CHAR_DUELSTWINCOUNT, 0);
-    }
-  }
-}
+  BATTLE_AddDpAlive(battle_index, enemyside, dpadd);
 #else
-void BATTLE_EscapeDpSend(int battleindex, int char_index) {
-
-  int enemyside, dpadd;
-  BATTLE_ENTRY *pEntry;
-
-  // Nuke 0725: Avoid too large number
-  if ((battleindex < 0) || (battleindex > getBattlenum()))
-    return;
-  //         动陆反  仃月
-  if (BattleArray[battleindex].type != BATTLE_TYPE_P_vs_P) {
-    return;
-  }
-
-  // 锹澎扔奶玉
-  enemyside = 1 - CHAR_getWorkInt(char_index, CHAR_WORKBATTLESIDE);
-
-  pEntry = BattleArray[battleindex].Side[enemyside].Entry;
-
-  // 锹澎础卞中月谛醒毛醒尹月
-  dpadd = CHAR_getInt(char_index, CHAR_DUELPOINT) * DUELPOINT_RATE;
-  if (dpadd < 1)
-    dpadd = 1; // 历史注释的原始编码已损坏，无法可靠恢复。
-
-  //   谛井日娄中化云仁
-  CHAR_setWorkInt(char_index, CHAR_WORKGETEXP, -dpadd * 2);
-
-  // 锹澎础卞反箫允
-  BattleArray[battleindex].Side[enemyside].common_dp += dpadd;
-}
+  BattleArray[battle_index].Side[enemyside].common_dp += dpadd;
 #endif
 
 #ifndef DANTAI
-int BATTLE_AddDuelPoint(int battleindex, int *pBidList) {
-  int enemy_index, i, side, num, j, k, char_index[BATTLE_ENTRY_MAX + 1];
-  BATTLE_ENTRY
-  *pEntryEnemy;
-  int allnum = 0;
-  int bid = pBidList[0];
-
-  if (pBidList < 0)
-    return BATTLE_ERR_PARAM;
-  if (bid >= SIDE_OFFSET) {
-    num = bid - SIDE_OFFSET;
-    side = 1;
-  } else {
-    num = bid;
-    side = 0;
+  if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
+    CHAR_setInt(char_index, CHAR_DUELBATTLECOUNT,
+                CHAR_getInt(char_index, CHAR_DUELBATTLECOUNT) + 1);
+    CHAR_setInt(char_index, CHAR_DUELLOSECOUNT,
+                CHAR_getInt(char_index, CHAR_DUELLOSECOUNT) + 1);
+    CHAR_setInt(char_index, CHAR_DUELSTWINCOUNT, 0);
   }
+#endif
+}
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+int BATTLE_AddDuelPoint(int battle_index, int *pBidList) {
+  int i, j, k, side, num, allnum = 0;
+  int char_index[BATTLE_ENTRY_MAX + 1];
+
+  if (pBidList == NULL)
+    return BATTLE_ERR_PARAM;
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
-  if (BATTLE_CHECKSIDE(side) == FALSE)
-    return BATTLE_ERR_PARAM;
-  if (num < 0 || num >= BATTLE_ENTRY_MAX)
+
+  int bid = pBidList[0];
+  side = bid >= SIDE_OFFSET ? 1 : 0;
+  num = bid - side * SIDE_OFFSET;
+  if (BATTLE_CHECKSIDE(side) == FALSE || num < 0 || num >= BATTLE_ENTRY_MAX)
     return BATTLE_ERR_PARAM;
 
-  for (i = 0; i < BATTLE_ENTRY_MAX + 1; i++) {
+  for (i = 0; i < BATTLE_ENTRY_MAX + 1; i++)
     char_index[i] = -1;
-  }
 
+  // 将攻击宠物换算为主人，并去除重复的参与者。
   for (i = 0; i < BATTLE_ENTRY_MAX && pBidList[i] != -1; i++) {
-    int work;
-    work = BATTLE_No2Index(battleindex, pBidList[i]);
+    int work = BATTLE_No2Index(battle_index, pBidList[i]);
     if (work < 0)
       return BATTLE_ERR_PARAM;
-    if (CHAR_getInt(work, CHAR_WHICHTYPE) == CHAR_TYPEENEMY) {
+    if (CHAR_getInt(work, CHAR_WHICHTYPE) == CHAR_TYPEENEMY)
       continue;
-    }
-    if (CHAR_getInt(work, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
+    if (CHAR_getInt(work, CHAR_WHICHTYPE) == CHAR_TYPEPET)
       work = CHAR_getWorkInt(work, CHAR_WORKPLAYERINDEX);
-    }
-    if (work < 0)
+    if (!CHAR_CHECKINDEX(work))
       return BATTLE_ERR_PARAM;
-    for (k = 0; k < allnum; k++) {
-      if (char_index[i] == work)
-        break;
-    }
-    if (i < allnum)
+    for (k = 0; k < allnum && char_index[k] != work; k++)
+      ;
+    if (k < allnum)
       continue;
-    char_index[i] = work;
-    allnum++;
+    char_index[allnum++] = work;
   }
-  char_index[i] = -1;
+  char_index[allnum] = -1;
 
   for (j = 0; j < 2; j++) {
-    pEntryEnemy = BattleArray[battleindex].Side[j].Entry;
+    BATTLE_ENTRY *pEntryEnemy = BattleArray[battle_index].Side[j].Entry;
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
-      int enemytype = 0;
-      enemy_index = pEntryEnemy[i].char_index;
-      if (CHAR_CHECKINDEX(enemy_index) == FALSE)
+      int enemy_index = pEntryEnemy[i].char_index;
+      if (!CHAR_CHECKINDEX(enemy_index) ||
+          CHAR_getInt(enemy_index, CHAR_HP) > 0 ||
+          CHAR_getFlg(enemy_index, CHAR_ISDIE) == TRUE)
         continue;
-      if (CHAR_getInt(enemy_index, CHAR_HP) <= 0 &&
-          CHAR_getFlg(enemy_index, CHAR_ISDIE) == FALSE) {
-      } else {
-        continue;
-      }
-      enemytype = CHAR_getInt(enemy_index, CHAR_WHICHTYPE);
-      if (enemytype == CHAR_TYPEPLAYER) {
-        BattleArray[battleindex].flg |= BATTLE_FLG_CHARALOST;
-      }
-      if (enemytype == CHAR_TYPEPLAYER || enemytype == CHAR_TYPEENEMY) {
-        int dpadd, dpnow;
-        dpnow = CHAR_getInt(enemy_index, CHAR_DUELPOINT);
-        dpadd = dpnow * DUELPOINT_RATE;
 
-        dpnow -= dpadd;
+      int enemy_type = CHAR_getInt(enemy_index, CHAR_WHICHTYPE);
+      BOOL ultimate = (pEntryEnemy[i].flg & BENT_FLG_ULTIMATE) != 0;
+#ifndef DANTAI
+      if (enemy_type == CHAR_TYPEPLAYER)
+        BattleArray[battle_index].flg |= BATTLE_FLG_CHARALOST;
+#endif
+
+#ifdef DANTAI
+      if (ultimate && enemy_type == CHAR_TYPEPLAYER) {
+        int dpadd = CHAR_getInt(enemy_index, CHAR_DUELPOINT) * DUELPOINT_RATE;
         CHAR_setWorkInt(enemy_index, CHAR_WORKGETEXP,
                         CHAR_getWorkInt(enemy_index, CHAR_WORKGETEXP) - dpadd);
-
+        BattleArray[battle_index].Side[1 - j].common_dp += dpadd;
+        BATTLE_GetProfit(battle_index, j, i);
+      }
+#else
+      if (enemy_type == CHAR_TYPEPLAYER || enemy_type == CHAR_TYPEENEMY) {
+        int dpadd = CHAR_getInt(enemy_index, CHAR_DUELPOINT) * DUELPOINT_RATE;
+        CHAR_setWorkInt(enemy_index, CHAR_WORKGETEXP,
+                        CHAR_getWorkInt(enemy_index, CHAR_WORKGETEXP) - dpadd);
         if (side != j) {
-          for (k = 0; char_index[k] != -1; k++)
-            ;
-          if (k <= 0)
-            k = 1;
-          dpadd /= k;
+          int divisor = allnum > 0 ? allnum : 1;
+          dpadd /= divisor;
           if (dpadd <= 0)
             dpadd = 1;
-          for (k = 0; char_index[k] != -1; k++) {
+          for (k = 0; k < allnum; k++)
             CHAR_setWorkInt(char_index[k], CHAR_WORKGETEXP,
-                            CHAR_getWorkInt(char_index[k], CHAR_WORKGETEXP) +
-                                dpadd);
-          }
+                            CHAR_getWorkInt(char_index[k], CHAR_WORKGETEXP) + dpadd);
         } else {
-          int dpdiv = dpadd, alive;
-          alive = BATTLE_CountAlive(battleindex, 1 - j);
-          if (alive <= 0)
-            alive = 1;
-          dpdiv /= alive;
-          if (dpdiv <= 0)
-            dpdiv = 1;
-          BATTLE_AddDpAlive(battleindex, 1 - j, dpdiv);
+          int alive = BATTLE_CountAlive(battle_index, 1 - j);
+          int dpdiv = dpadd / (alive > 0 ? alive : 1);
+          BATTLE_AddDpAlive(battle_index, 1 - j, dpdiv > 0 ? dpdiv : 1);
         }
       }
-      CHAR_setFlg(enemy_index, CHAR_ISDIE, 1);
-      CHAR_setInt(enemy_index, CHAR_DEADCOUNT,
-                  CHAR_getInt(enemy_index, CHAR_DEADCOUNT) + 1);
-      if (pEntryEnemy[i].flg & BENT_FLG_ULTIMATE) {
-        BATTLE_GetProfit(battleindex, j, i);
-        BATTLE_UltimateExtra(battleindex, char_index[0], enemy_index);
-      } else {
-        BATTLE_NormalDeadExtra(battleindex, char_index[0], enemy_index);
-      }
-    }
-  }
-  return 0;
-}
-#else
-
-int BATTLE_AddDuelPoint(int battleindex, int *pBidList) {
-  int enemy_index, i, otherside, j, char_index[BATTLE_ENTRY_MAX + 1];
-  BATTLE_ENTRY
-  *pEntryEnemy;
-  if (pBidList < 0)
-    return BATTLE_ERR_PARAM;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
-    return BATTLE_ERR_BATTLEINDEX;
-  for (j = 0; j < 2; j++) {
-    pEntryEnemy = BattleArray[battleindex].Side[j].Entry;
-    otherside = 1 - j;
-    for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
-      enemy_index = pEntryEnemy[i].char_index;
-      if (CHAR_CHECKINDEX(enemy_index) == FALSE)
-        continue;
-      if (CHAR_getInt(enemy_index, CHAR_HP) <= 0 &&
-          CHAR_getFlg(enemy_index, CHAR_ISDIE) == FALSE) {
-      } else {
-        continue;
-      }
-
-      CHAR_setFlg(enemy_index, CHAR_ISDIE, 1);
-      CHAR_setInt(enemy_index, CHAR_DEADCOUNT,
-                  CHAR_getInt(enemy_index, CHAR_DEADCOUNT) + 1);
-      if (pEntryEnemy[i].flg & BENT_FLG_ULTIMATE) {
-        if (CHAR_getInt(enemy_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-          int dpadd, dpnow;
-          dpnow = CHAR_getInt(enemy_index, CHAR_DUELPOINT);
-          dpadd = dpnow * DUELPOINT_RATE; // ㄠㄟ坌及ㄠ手日尹月
-          dpnow -= dpadd;
-          CHAR_setWorkInt(enemy_index, CHAR_WORKGETEXP,
-                          CHAR_getWorkInt(enemy_index, CHAR_WORKGETEXP) - dpadd);
-          BattleArray[battleindex].Side[otherside].common_dp += dpadd;
-          BATTLE_GetProfit(battleindex, j, i);
-        }
-        BATTLE_UltimateExtra(battleindex, char_index[0], enemy_index);
-      } else {
-        BATTLE_NormalDeadExtra(battleindex, char_index[0], enemy_index);
-      }
-    }
-  }
-  return 0;
-}
+      if (ultimate)
+        BATTLE_GetProfit(battle_index, j, i);
 #endif
+
+      CHAR_setFlg(enemy_index, CHAR_ISDIE, 1);
+      CHAR_setInt(enemy_index, CHAR_DEADCOUNT,
+                  CHAR_getInt(enemy_index, CHAR_DEADCOUNT) + 1);
+      if (ultimate) {
+        BATTLE_UltimateExtra(battle_index, char_index[0], enemy_index);
+      } else {
+        BATTLE_NormalDeadExtra(battle_index, char_index[0], enemy_index);
+      }
+    }
+  }
+  return 0;
+}
 
 int BATTLE_ItemDelCheck(int item_index) {
   int icnt, jcnt, playernum;
@@ -5851,7 +5590,7 @@ int BATTLE_ItemDelCheck(int item_index) {
 }
 
 #ifdef _COMBO_EXP
-int BATTLE_AddComboExp(int battleindex, int *pBidList) {
+int BATTLE_AddComboExp(int battle_index, int *pBidList) {
   int enemy_index, i, side, num, proflg = 1, j, k;
   int char_index[BATTLE_ENTRY_MAX + 1];
   BATTLE_ENTRY
@@ -5875,13 +5614,13 @@ int BATTLE_AddComboExp(int battleindex, int *pBidList) {
     char_index[i] = -1;
   }
 
-  if (BattleArray[battleindex].Side[side].type != BATTLE_S_TYPE_PLAYER ||
-      BattleArray[battleindex].Side[1 - side].type == BATTLE_S_TYPE_PLAYER) {
+  if (BattleArray[battle_index].Side[side].type != BATTLE_S_TYPE_PLAYER ||
+      BattleArray[battle_index].Side[1 - side].type == BATTLE_S_TYPE_PLAYER) {
     proflg = 0;
   }
   for (i = 0; i < BATTLE_ENTRY_MAX && pBidList[i] != -1; i++) {
     int subnum;
-    char_index[i] = BATTLE_No2Index(battleindex, pBidList[i]);
+    char_index[i] = BATTLE_No2Index(battle_index, pBidList[i]);
     if (char_index[i] < 0)
       return BATTLE_ERR_PARAM;
   }
@@ -5889,7 +5628,7 @@ int BATTLE_AddComboExp(int battleindex, int *pBidList) {
   char_index[i] = -1;
   allnum = i;
   for (j = 0; j < 2; j++) {
-    pEntryEnemy = BattleArray[battleindex].Side[j].Entry;
+    pEntryEnemy = BattleArray[battle_index].Side[j].Entry;
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       enemy_index = pEntryEnemy[i].char_index;
       if (CHAR_CHECKINDEX(enemy_index) == FALSE)
@@ -5927,7 +5666,7 @@ int BATTLE_AddComboExp(int battleindex, int *pBidList) {
 }
 #endif
 #ifdef _SHARE_EXP
-int BATTLE_AddExp(int battleindex, int *pBidList) {
+int BATTLE_AddExp(int battle_index, int *pBidList) {
   int enemy_index, i, side, num, proflg = 1, j, exp, k, enemylevel,
                                 char_index[BATTLE_ENTRY_MAX + 1];
   BATTLE_ENTRY
@@ -5953,19 +5692,19 @@ int BATTLE_AddExp(int battleindex, int *pBidList) {
     pEntryPlayer[i] = NULL;
   }
 
-  if (BattleArray[battleindex].Side[side].type != BATTLE_S_TYPE_PLAYER ||
-      BattleArray[battleindex].Side[1 - side].type == BATTLE_S_TYPE_PLAYER) {
+  if (BattleArray[battle_index].Side[side].type != BATTLE_S_TYPE_PLAYER ||
+      BattleArray[battle_index].Side[1 - side].type == BATTLE_S_TYPE_PLAYER) {
     proflg = 0;
   }
   for (i = 0; i < BATTLE_ENTRY_MAX && pBidList[i] != -1; i++) {
     int subnum;
-    char_index[i] = BATTLE_No2Index(battleindex, pBidList[i]);
+    char_index[i] = BATTLE_No2Index(battle_index, pBidList[i]);
     if (char_index[i] < 0)
       return BATTLE_ERR_PARAM;
     subnum = pBidList[i] - side * SIDE_OFFSET;
-    pEntryChara[i] = &BattleArray[battleindex].Side[side].Entry[subnum];
+    pEntryChara[i] = &BattleArray[battle_index].Side[side].Entry[subnum];
     if (CHAR_getInt(char_index[i], CHAR_WHICHTYPE) == CHAR_TYPEPET) {
-      pEntryPlayer[i] = &BattleArray[battleindex].Side[side].Entry[subnum - 5];
+      pEntryPlayer[i] = &BattleArray[battle_index].Side[side].Entry[subnum - 5];
     } else {
       pEntryPlayer[i] = pEntryChara[i];
     }
@@ -5974,7 +5713,7 @@ int BATTLE_AddExp(int battleindex, int *pBidList) {
   char_index[i] = -1;
   allnum = i;
   for (j = 0; j < 2; j++) {
-    pEntryEnemy = BattleArray[battleindex].Side[j].Entry;
+    pEntryEnemy = BattleArray[battle_index].Side[j].Entry;
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       enemy_index = pEntryEnemy[i].char_index;
       if (CHAR_CHECKINDEX(enemy_index) == FALSE)
@@ -6009,7 +5748,7 @@ int BATTLE_AddExp(int battleindex, int *pBidList) {
             CHAR_setInt(ridepet, CHAR_KILLPETCOUNT,
                         CHAR_getInt(ridepet, CHAR_KILLPETCOUNT) + 1);
           }
-          if (BattleArray[battleindex].norisk == 0 &&
+          if (BattleArray[battle_index].norisk == 0 &&
               CHAR_getInt(char_index[k], CHAR_WHICHTYPE) == CHAR_TYPEPET) {
             if (CHAR_getInt(enemy_index, CHAR_LV) >
                 CHAR_getInt(char_index[k], CHAR_LV)) {
@@ -6028,16 +5767,16 @@ int BATTLE_AddExp(int battleindex, int *pBidList) {
       CHAR_setInt(enemy_index, CHAR_DEADCOUNT,
                   CHAR_getInt(enemy_index, CHAR_DEADCOUNT) + 1);
       if (pEntryEnemy[i].flg & BENT_FLG_ULTIMATE) {
-        BATTLE_UltimateExtra(battleindex, char_index[0], enemy_index);
+        BATTLE_UltimateExtra(battle_index, char_index[0], enemy_index);
       } else {
-        BATTLE_NormalDeadExtra(battleindex, char_index[0], enemy_index);
+        BATTLE_NormalDeadExtra(battle_index, char_index[0], enemy_index);
       }
     }
   }
   return 0;
 }
 
-int BATTLE_AddItem(int battleindex, int *pBidList) {
+int BATTLE_AddItem(int battle_index, int *pBidList) {
   int enemy_index, i, side, num, proflg = 1, j, exp, k, enemylevel,
                                 char_index[BATTLE_ENTRY_MAX + 1];
   BATTLE_ENTRY
@@ -6063,19 +5802,19 @@ int BATTLE_AddItem(int battleindex, int *pBidList) {
     pEntryPlayer[i] = NULL;
   }
 
-  if (BattleArray[battleindex].Side[side].type != BATTLE_S_TYPE_PLAYER ||
-      BattleArray[battleindex].Side[1 - side].type == BATTLE_S_TYPE_PLAYER) {
+  if (BattleArray[battle_index].Side[side].type != BATTLE_S_TYPE_PLAYER ||
+      BattleArray[battle_index].Side[1 - side].type == BATTLE_S_TYPE_PLAYER) {
     proflg = 0;
   }
   for (i = 0; i < BATTLE_ENTRY_MAX && pBidList[i] != -1; i++) {
     int subnum;
-    char_index[i] = BATTLE_No2Index(battleindex, pBidList[i]);
+    char_index[i] = BATTLE_No2Index(battle_index, pBidList[i]);
     if (char_index[i] < 0)
       return BATTLE_ERR_PARAM;
     subnum = pBidList[i] - side * SIDE_OFFSET;
-    pEntryChara[i] = &BattleArray[battleindex].Side[side].Entry[subnum];
+    pEntryChara[i] = &BattleArray[battle_index].Side[side].Entry[subnum];
     if (CHAR_getInt(char_index[i], CHAR_WHICHTYPE) == CHAR_TYPEPET) {
-      pEntryPlayer[i] = &BattleArray[battleindex].Side[side].Entry[subnum - 5];
+      pEntryPlayer[i] = &BattleArray[battle_index].Side[side].Entry[subnum - 5];
     } else {
       pEntryPlayer[i] = pEntryChara[i];
     }
@@ -6084,7 +5823,7 @@ int BATTLE_AddItem(int battleindex, int *pBidList) {
   char_index[i] = -1;
   allnum = i;
   for (j = 0; j < 2; j++) {
-    pEntryEnemy = BattleArray[battleindex].Side[j].Entry;
+    pEntryEnemy = BattleArray[battle_index].Side[j].Entry;
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       enemy_index = pEntryEnemy[i].char_index;
       if (CHAR_CHECKINDEX(enemy_index) == FALSE)
@@ -6352,58 +6091,55 @@ void Pet_Check_Die(int petindex) {
 }
 #endif
 
-int BATTLE_AddProfit(int battleindex, int *pBidList) {
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+int BATTLE_AddProfit(int battle_index, int *pBidList) {
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
 
-  if (BattleArray[battleindex].dpbattle == 1) {
-    return BATTLE_AddDuelPoint(battleindex, pBidList);
+  if (BattleArray[battle_index].dpbattle == 1) {
+    return BATTLE_AddDuelPoint(battle_index, pBidList);
   } else {
 #ifdef _SHARE_EXP
     if (getExpShare() == 1 &&
-        BattleArray[battleindex].type == BATTLE_TYPE_P_vs_E) {
+        BattleArray[battle_index].type == BATTLE_TYPE_P_vs_E) {
 
       if (pBidList[0] >= SIDE_OFFSET || pBidList[0] < 0)
-        return BATTLE_AddExpItem(battleindex, pBidList);
+        return BATTLE_AddExpItem(battle_index, pBidList);
 
 #ifdef _COMBO_EXP
       if (pBidList[0] > -1 && pBidList[1] > -1) {
-        BATTLE_AddComboExp(battleindex, pBidList);
+        BATTLE_AddComboExp(battle_index, pBidList);
       }
 #endif
-      BATTLE_AddItem(battleindex, pBidList);
-      int aAttackList[BATTLE_ENTRY_MAX + 1];
+      BATTLE_AddItem(battle_index, pBidList);
       int i = 0;
       int k = 0;
+      int aAttackList[BATTLE_ENTRY_MAX + 1];
       for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
         if (CHAR_CHECKINDEX(
-                BattleArray[battleindex].Side[0].Entry[i].char_index) == FALSE)
+                BattleArray[battle_index].Side[0].Entry[i].char_index) == FALSE)
           continue;
         if (BATTLE_CanMoveCheck(
-                BattleArray[battleindex].Side[0].Entry[i].char_index) ==
+                BattleArray[battle_index].Side[0].Entry[i].char_index) ==
             FALSE) {
           continue;
         }
-        if (CHAR_getInt(BattleArray[battleindex].Side[0].Entry[i].char_index,
+        if (CHAR_getInt(BattleArray[battle_index].Side[0].Entry[i].char_index,
                         CHAR_HP) <= 0) {
           continue;
         }
-        aAttackList[k++] = BattleArray[battleindex].Side[0].Entry[i].bid;
+        aAttackList[k++] = BattleArray[battle_index].Side[0].Entry[i].bid;
       }
       aAttackList[k] = -1;
-      return BATTLE_AddExp(battleindex, aAttackList);
-    } else {
-      return BATTLE_AddExpItem(battleindex, pBidList);
-    }
+      return BATTLE_AddExp(battle_index, aAttackList);
+    } else
 #else
-    int aAttackList[BATTLE_ENTRY_MAX + 1];
-    return BATTLE_AddExpItem(battleindex, pBidList);
+    return BATTLE_AddExpItem(battle_index, pBidList);
 #endif
   }
 }
 
-int BATTLE_TargetCheck(int battleindex, int defNo) {
-  int defindex = BATTLE_No2Index(battleindex, defNo);
+int BATTLE_TargetCheck(int battle_index, int defNo) {
+  int defindex = BATTLE_No2Index(battle_index, defNo);
 
   if (CHAR_CHECKINDEX(defindex) == FALSE ||
       CHAR_getWorkInt(defindex, CHAR_WORKBATTLEMODE) == 0 ||
@@ -6417,8 +6153,8 @@ int BATTLE_TargetCheck(int battleindex, int defNo) {
   return TRUE;
 }
 
-int BATTLE_TargetCheckDead(int battleindex, int defNo) {
-  int defindex = BATTLE_No2Index(battleindex, defNo);
+int BATTLE_TargetCheckDead(int battle_index, int defNo) {
+  int defindex = BATTLE_No2Index(battle_index, defNo);
   if (CHAR_CHECKINDEX(defindex) == FALSE ||
       CHAR_getWorkInt(defindex, CHAR_WORKBATTLEMODE) == 0 ||
       CHAR_getWorkInt(defindex, CHAR_WORKBATTLEMODE) ==
@@ -6430,10 +6166,10 @@ int BATTLE_TargetCheckDead(int battleindex, int defNo) {
   return TRUE;
 }
 
-int BATTLE_TargetAdjust(int battleindex, int char_index, int myside) {
+int BATTLE_TargetAdjust(int battle_index, int char_index, int myside) {
   int defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-  if (BATTLE_TargetCheck(battleindex, defNo) == FALSE) {
-    defNo = BATTLE_DefaultAttacker(battleindex, 1 - myside);
+  if (BATTLE_TargetCheck(battle_index, defNo) == FALSE) {
+    defNo = BATTLE_DefaultAttacker(battle_index, 1 - myside);
   }
   CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM2, defNo);
   return defNo;
@@ -6524,12 +6260,12 @@ void Compute_Down_SARS(int char_index, int rideindex, int *down1, int *down2,
 void WorkIceCrackPlay(int char_index, int cnt, int workicecracknum) {
   char szBuffer[256] = "";
   int i, value = 0;
-  int battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
+  int battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
   int defNo = CHAR_getWorkInt(
-      char_index, CHAR_WORKBATTLECOM2); // defNo = BATTLE_Index2No( battleindex,
+      char_index, CHAR_WORKBATTLECOM2); // defNo = BATTLE_Index2No( battle_index,
                                         // char_index );
   int ridepet = BATTLE_getRidePet(char_index);
-  int bid = BATTLE_Index2No(battleindex, char_index);
+  int bid = BATTLE_Index2No(battle_index, char_index);
   value = CHAR_getWorkInt(char_index, workicecracknum);
 
   if (cnt <= 0 && value > 0) {
@@ -6537,10 +6273,10 @@ void WorkIceCrackPlay(int char_index, int cnt, int workicecracknum) {
 
     int ToList[SIDE_OFFSET * 2 + 1];
     memset(ToList, -1, sizeof(ToList));
-    BATTLE_MultiList(battleindex, TARGET_SIDE_1, ToList);
+    BATTLE_MultiList(battle_index, TARGET_SIDE_1, ToList);
     // 将魔法参数代入动画
     analysis_profession_parameter(2, 4, defNo, char_index);
-    PROFESSION_MAGIC_ATTAIC_Effect(battleindex, bid, ToList, 2);
+    PROFESSION_MAGIC_ATTAIC_Effect(battle_index, bid, ToList, 2);
 
     if (defNo == 20 || defNo == 25 || defNo == 26) // 右
       bid = 0;
@@ -6549,7 +6285,7 @@ void WorkIceCrackPlay(int char_index, int cnt, int workicecracknum) {
 
     for (i = bid; i < bid + 10; i++) {
       int defType, charaidx, petidx;
-      charaidx = BATTLE_No2Index(battleindex, i);
+      charaidx = BATTLE_No2Index(battle_index, i);
       if (CHAR_CHECKINDEX(charaidx)) {
         if (CHAR_getInt(charaidx, CHAR_HP) > 0) {
           int hp, pethp = 0;
@@ -6612,7 +6348,7 @@ void WorkIceCrackPlay(int char_index, int cnt, int workicecracknum) {
 #endif
 
 static int BATTLE_StatusSeq(int char_index) {
-  int cnt, i, bid, battleindex, down;
+  int cnt, i, bid, battle_index, down;
   char szBuffer[256] = "";
 #ifdef _MAGIC_DEEPPOISON
   int defNo, defindex = 0;
@@ -6621,13 +6357,13 @@ static int BATTLE_StatusSeq(int char_index) {
   int ridepet = BATTLE_getRidePet(char_index);
   int hp = 0, pethp = 0;
 
-  battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
+  battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
 
 #ifdef _MAGIC_DEEPPOISON
-  defNo = BATTLE_Index2No(battleindex, char_index);
-  defindex = BATTLE_No2Index(battleindex, defNo);
+  defNo = BATTLE_Index2No(battle_index, char_index);
+  defindex = BATTLE_No2Index(battle_index, defNo);
 #endif
-  bid = BATTLE_Index2No(battleindex, char_index);
+  bid = BATTLE_Index2No(battle_index, char_index);
   if (BATTLE_CanMoveCheck(char_index) == FALSE) {
     CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
   }
@@ -6665,7 +6401,7 @@ static int BATTLE_StatusSeq(int char_index) {
       BATTLE_BadStatusString(bid, 0);
       // snprintf( szBuffer, sizeof( szBuffer ), "(%s)将(%s)修理完毕。",
       //	CHAR_getUseName( char_index ), aszStatusFull[i] );
-      //	BATTLE_BroadCast( battleindex, szBuffer,
+      //	BATTLE_BroadCast( battle_index, szBuffer,
       //		(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
 // Terry del
 //				sprintf( szBuffer, "BM|%X|%X|", bid, 0 );
@@ -6699,7 +6435,7 @@ static int BATTLE_StatusSeq(int char_index) {
         //	CHAR_getUseName( char_index ),
         //	aszStatusFull[i],
         //	down );
-        // BATTLE_BroadCast( battleindex, szBuffer,
+        // BATTLE_BroadCast( battle_index, szBuffer,
         //	(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
 
 #ifdef _NOTRIDE_
@@ -6716,7 +6452,7 @@ static int BATTLE_StatusSeq(int char_index) {
         //	"(%s的骑宠)因(%s)受到(%d)的损伤。",
         //	CHAR_getUseName( char_index ),
         //	aszStatusFull[i], petdown );
-        // BATTLE_BroadCast( battleindex, szBuffer,
+        // BATTLE_BroadCast( battle_index, szBuffer,
         //	(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
       }
     } break;
@@ -6767,7 +6503,7 @@ static int BATTLE_StatusSeq(int char_index) {
           //	CHAR_getUseName( char_index ),
           //	aszStatusFull[i],
           //	down );
-          // BATTLE_BroadCast( battleindex, szBuffer,
+          // BATTLE_BroadCast( battle_index, szBuffer,
           //	(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
 #ifdef _NOTRIDE_
           sprintf(szBuffer, "BD|r%X|0|0|%X|", bid, (int)(down));
@@ -6806,7 +6542,7 @@ static int BATTLE_StatusSeq(int char_index) {
           //	CHAR_getUseName( char_index ),
           //	aszStatusFull[i],
           //	down );
-          // BATTLE_BroadCast( battleindex, szBuffer,
+          // BATTLE_BroadCast( battle_index, szBuffer,
           //	(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
 #ifdef _NOTRIDE_
           sprintf(szBuffer, "BD|r%X|0|0|%X|", bid, (int)(down));
@@ -6824,7 +6560,7 @@ static int BATTLE_StatusSeq(int char_index) {
           //	CHAR_getUseName( char_index ),
           //	aszStatusFull[i],
           //	petdown );
-          // BATTLE_BroadCast( battleindex, szBuffer,
+          // BATTLE_BroadCast( battle_index, szBuffer,
           //	(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
         }
         break;
@@ -6849,7 +6585,7 @@ static int BATTLE_StatusSeq(int char_index) {
         defNo = side * SIDE_OFFSET + pos;
         if (defNo == bid)
           continue;
-        if (BATTLE_TargetCheck(battleindex, defNo) == TRUE) {
+        if (BATTLE_TargetCheck(battle_index, defNo) == TRUE) {
           CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM2, defNo);
           break;
         }
@@ -6872,7 +6608,7 @@ static int BATTLE_StatusSeq(int char_index) {
         defNo = side * SIDE_OFFSET + pos;
         if (defNo == bid)
           continue;
-        if (BATTLE_TargetCheck(battleindex, defNo) == TRUE) {
+        if (BATTLE_TargetCheck(battle_index, defNo) == TRUE) {
           CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM2, defNo);
           break;
         }
@@ -6891,7 +6627,7 @@ static int BATTLE_StatusSeq(int char_index) {
     {
       // 恢复技能
       if (cnt <= 1) {
-        int defNo = BATTLE_Index2No(battleindex, char_index);
+        int defNo = BATTLE_Index2No(battle_index, char_index);
         int toNo = defNo - 5;
         int toNoindex = -1, pet_no = -1;
         char msg[20];
@@ -6899,7 +6635,7 @@ static int BATTLE_StatusSeq(int char_index) {
         memset(msg, -1, sizeof(msg));
 
         // 主人index
-        toNoindex = BATTLE_No2Index(battleindex, toNo);
+        toNoindex = BATTLE_No2Index(battle_index, toNo);
         CHAR_setWorkInt(char_index, StatusTbl[BATTLE_ST_OBLIVION], 0);
 
         // 宠物编号
@@ -6917,14 +6653,14 @@ static int BATTLE_StatusSeq(int char_index) {
     case CHAR_WORK_F_ENCLOSE: // 火附体
     {
       int ToList[SIDE_OFFSET * 2 + 1];
-      int defNo = BATTLE_Index2No(battleindex, char_index);
+      int defNo = BATTLE_Index2No(battle_index, char_index);
       int old_hp = CHAR_getInt(char_index, CHAR_HP);
       int dec_hp = 0, hp = 0;
       int DAMAGE = 50;
 
       memset(ToList, -1, sizeof(ToList));
-      BATTLE_MultiList(battleindex, defNo, ToList);
-      BATTLE_MagicEffect(battleindex, defNo, ToList, 101699, 101699);
+      BATTLE_MultiList(battle_index, defNo, ToList);
+      BATTLE_MagicEffect(battle_index, defNo, ToList, 101699, 101699);
 
       // 取魔法伤害值
       DAMAGE = DAMAGE * cnt;
@@ -6954,11 +6690,11 @@ static int BATTLE_StatusSeq(int char_index) {
       int old_dex = CHAR_getInt(char_index, CHAR_DEX);
       int dex = 0;
       int ToList[SIDE_OFFSET * 2 + 1];
-      int defNo = BATTLE_Index2No(battleindex, char_index);
+      int defNo = BATTLE_Index2No(battle_index, char_index);
 
       memset(ToList, -1, sizeof(ToList));
-      BATTLE_MultiList(battleindex, defNo, ToList);
-      BATTLE_MagicEffect(battleindex, defNo, ToList, 27692, 101700);
+      BATTLE_MultiList(battle_index, defNo, ToList);
+      BATTLE_MagicEffect(battle_index, defNo, ToList, 27692, 101700);
 
       dex = old_dex * 0.9;
       CHAR_setWorkInt(char_index, CHAR_WORKFIXDEX, dex);
@@ -7013,7 +6749,6 @@ static int BATTLE_StatusSeq(int char_index) {
       break;
     }
 #ifdef _PROFESSION_ADDSKILL
-      /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
     case CHAR_WORKFEAR:
       if (cnt <= 0)
         CHAR_talkToCli(char_index, -1, "攻、防、敏恢复", CHAR_COLORYELLOW);
@@ -7047,7 +6782,7 @@ static int BATTLE_StatusSeq(int char_index) {
         defNo = side * SIDE_OFFSET + pos;
         if (defNo == bid)
           continue;
-        if (BATTLE_TargetCheck(battleindex, defNo) == TRUE) {
+        if (BATTLE_TargetCheck(battle_index, defNo) == TRUE) {
           CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM2, defNo);
           break;
         }
@@ -7057,7 +6792,6 @@ static int BATTLE_StatusSeq(int char_index) {
       }
       break;
     }
-      /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
     case CHAR_WORKSIGN: // 一针见血
     {
       // 吸血
@@ -7194,7 +6928,7 @@ static int BATTLE_StatusSeq(int char_index) {
       if ((add_hp > 0) && (to_old_hp > 0)) {
         int to_bid = 0, to_hp = 0, to_mp = 0;
 
-        to_bid = BATTLE_Index2No(battleindex, to_index);
+        to_bid = BATTLE_Index2No(battle_index, to_index);
         sprintf(szCommand, "BD|r%X|0|1|%X|m%X|", to_bid, add_hp, add_mp);
         BATTLESTR_ADD(szCommand);
 
@@ -7279,7 +7013,7 @@ static int BATTLE_StatusSeq(int char_index) {
       if ((add_hp > 0) && (to_old_hp > 0)) {
         int to_bid = 0, to_hp = 0;
 
-        to_bid = BATTLE_Index2No(battleindex, to_index);
+        to_bid = BATTLE_Index2No(battle_index, to_index);
         sprintf(szCommand, "BD|r%X|0|1|%X|", to_bid, add_hp);
         BATTLESTR_ADD(szCommand);
 
@@ -7312,7 +7046,7 @@ static int BATTLE_StatusSeq(int char_index) {
       int value = 0;
       int defNo = CHAR_getWorkInt(
           char_index, CHAR_WORKBATTLECOM2); // defNo = BATTLE_Index2No(
-                                            // battleindex, char_index );
+                                            // battle_index, char_index );
 
       value = CHAR_getWorkInt(char_index, CHAR_WORKMODICECRACK);
 
@@ -7321,10 +7055,10 @@ static int BATTLE_StatusSeq(int char_index) {
 
         int ToList[SIDE_OFFSET * 2 + 1];
         memset(ToList, -1, sizeof(ToList));
-        BATTLE_MultiList(battleindex, TARGET_SIDE_1, ToList);
+        BATTLE_MultiList(battle_index, TARGET_SIDE_1, ToList);
         // 将魔法参数代入动画
         analysis_profession_parameter(2, 4, defNo, char_index);
-        PROFESSION_MAGIC_ATTAIC_Effect(battleindex, bid, ToList, 2);
+        PROFESSION_MAGIC_ATTAIC_Effect(battle_index, bid, ToList, 2);
 
         if (defNo == 20 || defNo == 25 || defNo == 26) // 右
           bid = 0;
@@ -7333,7 +7067,7 @@ static int BATTLE_StatusSeq(int char_index) {
 
         for (i = bid; i < bid + 10; i++) {
           int defType, charaidx, petidx;
-          charaidx = BATTLE_No2Index(battleindex, i);
+          charaidx = BATTLE_No2Index(battle_index, i);
           if (CHAR_CHECKINDEX(charaidx)) {
             if (CHAR_getInt(charaidx, CHAR_HP) > 0) {
               petidx = BATTLE_getRidePet(charaidx);
@@ -7342,7 +7076,7 @@ static int BATTLE_StatusSeq(int char_index) {
               // BATTLE_BadStatusString( bid, 0 );
               // snprintf( szBuffer, sizeof( szBuffer ), "(%s)将(%s)修理完毕。",
               //	CHAR_getUseName( char_index ), aszStatusFull[i] );
-              //	BATTLE_BroadCast( battleindex, szBuffer,
+              //	BATTLE_BroadCast( battle_index, szBuffer,
               //	(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
               // sprintf( szBuffer, "BM|%X|%X|", bid, 0 );
               // BATTLESTR_ADD( szBuffer );
@@ -7392,7 +7126,7 @@ static int BATTLE_StatusSeq(int char_index) {
                 //	CHAR_getUseName( char_index ),
                 //	aszStatusFull[i],
                 //	damage );
-                // BATTLE_BroadCast( battleindex, szBuffer,
+                // BATTLE_BroadCast( battle_index, szBuffer,
                 //	(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
 
                 sprintf(szBuffer, "%X|%X|%X|%X|", i, i, (int)(damage),
@@ -7407,7 +7141,7 @@ static int BATTLE_StatusSeq(int char_index) {
                 //	"(%s的骑宠)因(%s)受到(%d)的损伤。",
                 //	CHAR_getUseName( char_index ),
                 //	aszStatusFull[i], petdamage );
-                // BATTLE_BroadCast( battleindex, szBuffer,
+                // BATTLE_BroadCast( battle_index, szBuffer,
                 //	(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
               }
             }
@@ -7477,7 +7211,7 @@ static int BATTLE_StatusSeq(int char_index) {
           //	CHAR_getUseName( char_index ),
           //	aszStatusFull[i],
           //	down );
-          // BATTLE_BroadCast( battleindex, szBuffer,
+          // BATTLE_BroadCast( battle_index, szBuffer,
           //	(bid >= 10)? CHAR_COLORGRAY : CHAR_COLORPURPLE ) ;
 
           // 如果是玩家扣 MP
@@ -7551,7 +7285,7 @@ static int BATTLE_StatusSeq(int char_index) {
           if (buf2[j] == -1)
             continue;
 
-          toindex = BATTLE_No2Index(battleindex, buf2[j]);
+          toindex = BATTLE_No2Index(battle_index, buf2[j]);
           if (!CHAR_CHECKINDEX(toindex))
             continue;
           // 得到sars的离开
@@ -7710,7 +7444,7 @@ BOOL BATTLE_CanMoveCheck(int char_index) {
   if (CHAR_getWorkInt(char_index, CHAR_WORKSTONE) > 0) {
     return FALSE;
   }
-  // 戽曰
+  // 眠り  (睡眠)
   if (CHAR_getWorkInt(char_index, CHAR_WORKSLEEP) > 0) {
     return FALSE;
   }
@@ -7788,9 +7522,9 @@ static int aBowW[50] = {
 };
 
 void BATTLE_TargetListSet(int char_index, int attackNo, int *pList) {
-  int i, j = 0, defNo, battleindex = -1;
+  int i, j = 0, defNo, battle_index = -1;
   defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-  battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
+  battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
 
 #ifdef _PREVENT_TEAMATTACK
 #ifdef _SKILLLIMIT // (可开放) Syu ADD 不得攻击我方限制
@@ -7810,7 +7544,7 @@ void BATTLE_TargetListSet(int char_index, int attackNo, int *pList) {
           BATTLE_COM_S_STEALMONEY) { // 捐献
     if (BATTLE_CheckSameSide(char_index, defNo) == 1) {
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
-      //			BATTLE_NoAction( battleindex, attackNo );
+      //			BATTLE_NoAction( battle_index, attackNo );
       return;
     }
   }
@@ -7838,7 +7572,7 @@ void BATTLE_TargetListSet(int char_index, int attackNo, int *pList) {
 #ifdef _SHOOTCHESTNUT // Syu ADD 宠技：丢栗子
     if (BATTLE_CheckSameSide(char_index, defNo) == 1) {
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
-      BATTLE_NoAction(battleindex, attackNo);
+      BATTLE_NoAction(battle_index, attackNo);
       return;
     }
 #endif
@@ -7854,7 +7588,7 @@ void BATTLE_TargetListSet(int char_index, int attackNo, int *pList) {
       return;
     }
     for (i = defsub; i < deftop; i++) {
-      if (BATTLE_TargetCheck(battleindex, i) == FALSE)
+      if (BATTLE_TargetCheck(battle_index, i) == FALSE)
         continue;
       plive[j++] = i;
     }
@@ -7913,7 +7647,7 @@ int BATTLE_GetAttackCount(int char_index) {
   return iRet;
 }
 
-int BATTLE_PetRandomSkill(int battleindex, int char_index) {
+int BATTLE_PetRandomSkill(int battle_index, int char_index) {
 #define PETSKILLSERCHTIME 50
   int i, j, iNum, toNo, k, myNo, side, pskill_array;
   int skill_type;
@@ -7924,7 +7658,7 @@ int BATTLE_PetRandomSkill(int battleindex, int char_index) {
 
   CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
 
-  myNo = BATTLE_Index2No(battleindex, char_index);
+  myNo = BATTLE_Index2No(battle_index, char_index);
   side = CHAR_getWorkInt(char_index, CHAR_WORKBATTLESIDE);
 
 #ifdef _FIXWOLF // Syu ADD 修正狼人变身Bug
@@ -7942,7 +7676,7 @@ int BATTLE_PetRandomSkill(int battleindex, int char_index) {
 #endif
 
   for (k = 0; k < 3; k++) {
-    toNo = BATTLE_DefaultAttacker(battleindex, 1 - side);
+    toNo = BATTLE_DefaultAttacker(battle_index, 1 - side);
     if (toNo == myNo) {
 
     } else {
@@ -8012,8 +7746,8 @@ enum {
   PETAI_MODE_END
 };
 
-static int BATTLE_PetLoyalCheck(int battleindex, int bid, int char_index) {
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
+static int BATTLE_PetLoyalCheck(int battle_index, int bid, int char_index) {
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE) {
     return FALSE;
   }
   if (CHAR_CHECKINDEX(char_index) == FALSE)
@@ -8046,38 +7780,38 @@ static int BATTLE_PetLoyalCheck(int battleindex, int bid, int char_index) {
 
   Rand = RAND(1, 100);
 
-  mode = 0;                   // 恳仄中垫
-  if (ai >= 80) {             // 镝擦蘸ㄧㄟ⊙动晓
-    mode = PETAI_MODE_NORMAL; // 濮覆岳
-  } else if (ai >= 70) {      // 镝擦蘸ㄦㄟ⊙动晓
+  mode = 0;                   // 未設定 (初始未设)
+  if (ai >= 80) {             // 忠誠80以上 (忠诚80以上)
+    mode = PETAI_MODE_NORMAL; // 通常行動 (正常行动)
+  } else if (ai >= 70) {      // 忠誠70以上 (忠诚70以上)
     if (Rand < 10)
-      mode = PETAI_MODE_TARGETRANDOM; // 正□必永玄
+      mode = PETAI_MODE_TARGETRANDOM; // ターゲット (目标)
   } else if (ai >= 60) {
     if (Rand < 20)
-      mode = PETAI_MODE_TARGETRANDOM; // 正□必永玄
+      mode = PETAI_MODE_TARGETRANDOM; // ターゲット (目标)
   } else if (ai >= 50) {
     if (Rand < 35)
-      mode = PETAI_MODE_TARGETRANDOM; // 正□必永玄
+      mode = PETAI_MODE_TARGETRANDOM; // ターゲット (目标)
   } else if (ai >= 40) {
     if (Rand < 50)
-      mode = PETAI_MODE_TARGETRANDOM; // 正□必永玄
+      mode = PETAI_MODE_TARGETRANDOM; // ターゲット (目标)
   } else if (ai >= 30) {
     if (Rand < 70)
-      mode = PETAI_MODE_RANDOMACT; // 垫  仿件母丞
+      mode = PETAI_MODE_RANDOMACT; // ランダム (随机)
   } else if (ai >= 20) {
     if (Rand < 70)
-      mode = PETAI_MODE_RANDOMACT; // 垫  仿件母丞
+      mode = PETAI_MODE_RANDOMACT; // ランダム (随机)
   } else if (ai >= 10) {
     if (Rand < 80) {
-      mode = PETAI_MODE_OWNERATTACK; // 潜谛  猾
+      mode = PETAI_MODE_OWNERATTACK; // 主人 攻撃 (攻击主人)
     } else {
-      mode = PETAI_MODE_ENEMYATTACK; // 衬  猾
+      mode = PETAI_MODE_ENEMYATTACK; // 敵 攻撃 (攻击敌人)
     }
   } else {
     if (Rand < 60) {
-      mode = PETAI_MODE_OWNERATTACK; // 潜谛  猾
+      mode = PETAI_MODE_OWNERATTACK; // 主人 攻撃 (攻击主人)
     } else {
-      mode = PETAI_MODE_ESCAPE; //   仆月
+      mode = PETAI_MODE_ESCAPE; //   逃げ (逃跑)
     }
   }
 
@@ -8105,47 +7839,47 @@ static int BATTLE_PetLoyalCheck(int battleindex, int bid, int char_index) {
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
     } else {
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM2,
-                      BATTLE_DefaultAttacker(battleindex, toSide));
+                      BATTLE_DefaultAttacker(battle_index, toSide));
     }
     break;
-  case PETAI_MODE_RANDOMACT: // 垫  互仿件母丞
-    // 哗萄ㄠ葱  猾蟆反濮覆井尹切扎母丢
+  case PETAI_MODE_RANDOMACT: // ランダム (随机行动)
+    // 回避技 の 前は 通常に戻す (回避技前恢复普通)
     if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1) ==
         BATTLE_COM_S_EARTHROUND0) {
       return 0;
     }
 
-    // 布□犯奴失件白仿弘毛反内允
+    // ガーディアンフラグを はずす (清除守护标志)
     flg = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEFLG);
     flg &= ~CHAR_BATTLEFLG_GUARDIAN;
     CHAR_setWorkInt(char_index, CHAR_WORKBATTLEFLG, flg);
 
-    if (toNo == bid) { // 愤坌毛蓟氏匹仄引匀凶日
-      // 窒手匹五卅中仇午卞允月
+    if (toNo == bid) { // 戦闘を 回避したら (若自身为目标则回避)
+      // 何も できないようにする (设为无法行动)
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
     } else {
-      // 仿件母丞卞檗  毛本永玄
-      BATTLE_PetRandomSkill(battleindex, char_index);
+      // ランダムに 技をセット (随机选择技能)
+      BATTLE_PetRandomSkill(battle_index, char_index);
     }
     break;
 
-  case PETAI_MODE_OWNERATTACK: // 潜谛  猾
+  case PETAI_MODE_OWNERATTACK: // 主人 攻撃 (攻击主人)
     CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_ATTACK);
     CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM2, bid - 5);
     break;
 
-  case PETAI_MODE_ENEMYATTACK: // 衬  猾
+  case PETAI_MODE_ENEMYATTACK: // 敵 攻撃 (攻击敌人)
   {
     int myside = 0;
     if (bid >= BATTLE_ENTRY_MAX)
       myside = 1;
     CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_ATTACK);
-    // 锹澎扔奶玉卞
+    // 敵サイドに (对敌方阵营)
     CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM2,
-                    BATTLE_DefaultAttacker(battleindex, 1 - myside));
+                    BATTLE_DefaultAttacker(battle_index, 1 - myside));
   } break;
 
-  case PETAI_MODE_ESCAPE: //   仆月公及  夫旦玄
+  case PETAI_MODE_ESCAPE: //   逃げ の セット (设置逃跑)
     CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_S_LOSTESCAPE);
     break;
   }
@@ -8168,45 +7902,52 @@ int magic, toindex, magic_count;
 
 #endif
 
-static int BATTLE_Battling(int battleindex) {
+
+// 
+const static char *aszFieldAttr[] = {"无", "地", "水", "火", "风"};
+RoundActionListEntry sRoundActionList[40];
+
+static int BATTLE_Battling(int battle_index) {
   BATTLE *pBattle, *pWatchBattle;
   BATTLE_ENTRY *pEntry[2];
-  char *aszFieldAttr[] = {"无", "地", "ˮ", "火", "风"}, szBuffer[256] = "",
-       szWork[256];
-  int i, j, k, len, entrynum, char_index, attackNo,
-      defNo = -1, aAttackList[BATTLE_ENTRY_MAX * 2 + 1],
-      aDefList[BATTLE_ENTRY_MAX * 2 + 1], ComboId, item_index, AllSize = 0;
-  BATTLE_CHARLIST EntryList[40];
-  int ContFlg, attackNoSub, defNoSub;
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE)
+  char szBuffer[256] = "", szWork[256];
+  int i, j, k, len;
+  int char_index, item_index; // 人物，物品
+  int array, skill; // 后面技能专用的变量
+  int canCountineCounter; // 攻击行为是否继续
+  int attackNo, defNo;
+  int aAttackList[BATTLE_ENTRY_MAX * 2 + 1];
+  int aDefList[BATTLE_ENTRY_MAX * 2 + 1];
+  int AllSize = 0;
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE)
     return BATTLE_ERR_BATTLEINDEX;
-  pBattle = &BattleArray[battleindex];
+  pBattle = &BattleArray[battle_index];
   pEntry[0] = pBattle->Side[0].Entry;
   pEntry[1] = pBattle->Side[1].Entry;
 
-  for (i = 0; i < arraysizeof(EntryList); i++) {
-    EntryList[i].char_index = -1;
-    EntryList[i].combo = 0;
+  for (i = 0; i < arraysizeof(sRoundActionList); i++) {
+    sRoundActionList[i].char_index = -1;
+    sRoundActionList[i].combo = 0;
   }
-  sprintf(szBuffer, "战役 %d 转换 %d 属性 %s", battleindex, pBattle->turn,
+  sprintf(szBuffer, "战役 %d 转换 %d 属性 %s", battle_index, pBattle->turn,
           aszFieldAttr[pBattle->field_att]);
 
-  entrynum = 0;
+  int actionNum = 0;
   for (j = 0; j < 2; j++) {
     for (i = 0; i < BATTLE_ENTRY_MAX; i++) {
       pEntry[j][i].flg &= ~BENT_FLG_ULTIMATE;
       if (!CHAR_CHECKINDEX(pEntry[j][i].char_index))
         continue;
-      EntryList[entrynum].char_index = pEntry[j][i].char_index;
-      EntryList[entrynum].side = j;
-      EntryList[entrynum].num = pEntry[j][i].bid;
-      EntryList[entrynum].dex = BATTLE_DexCalc(pEntry[j][i].char_index);
+      sRoundActionList[actionNum].char_index = pEntry[j][i].char_index;
+      sRoundActionList[actionNum].side = j;
+      sRoundActionList[actionNum].num = pEntry[j][i].bid;
+      sRoundActionList[actionNum].dex = BATTLE_DexCalc(pEntry[j][i].char_index);
 #ifdef _EQUIT_SEQUENCE
-      EntryList[entrynum].sequence =
+      sRoundActionList[actionNum].sequence =
           CHAR_getWorkInt(pEntry[j][i].char_index, CHAR_WORKSEQUENCEPOWER);
 #endif
       BATTLE_talkToCli(pEntry[j][i].char_index, szBuffer, CHAR_COLORYELLOW);
-      entrynum++;
+      actionNum++;
     }
   }
   szAllBattleString[0] = 0;
@@ -8214,16 +7955,13 @@ static int BATTLE_Battling(int battleindex) {
   for (j = 0; j < 2; j++) {
     k = j * SIDE_OFFSET;
     for (i = 0; i < BATTLE_ENTRY_MAX / 2; i++) {
-      szBattleString[0] = 0;
+      szBattleString[0] = '\0';
       if (pBattle->iEntryBack[k] >= 0 &&
           pBattle->Side[j].Entry[i].char_index == -1) {
         if (pBattle->iEntryBack2[k] >= 0) {
           sprintf(szBattleString, "BE|et%X|f1|", k);
-          // BATTLE_BroadCast( battleindex, "突然有人不见了。", CHAR_COLORYELLOW );
         } else {
           print("应是输入ID不正确出现的error。\n");
-          // BATTLE_BroadCast( battleindex, "ID错误的error。", CHAR_COLORYELLOW
-          // );
         }
       }
       k++;
@@ -8232,15 +7970,15 @@ static int BATTLE_Battling(int battleindex) {
   }
   len = strlen(szAllBattleString);
   AllSize += len;
-  EntrySort(EntryList, entrynum);
-  ComboCheck(EntryList, entrynum);
-  for (i = 0; i < entrynum; i++) {
+  RoundActionSort(sRoundActionList, actionNum);
+  ComboSet(sRoundActionList, actionNum);
+  for (i = 0; i < actionNum; i++) {
     int COM, myside, otherside, bi, attack_flg = 1, attack_max = 1,
                                     attack_count = 0;
-    char_index = EntryList[i].char_index;
-    myside = EntryList[i].side;
+    char_index = sRoundActionList[i].char_index;
+    myside = sRoundActionList[i].side;
     otherside = 1 - myside;
-    attackNo = EntryList[i].num;
+    attackNo = sRoundActionList[i].num;
     bi = attackNo - myside * SIDE_OFFSET;
     aAttackList[0] = attackNo;
     aAttackList[1] = -1;
@@ -8251,8 +7989,8 @@ static int BATTLE_Battling(int battleindex) {
     szBadStatusString[0] = 0;
     if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) !=
         BATTLE_CHARMODE_C_OK) {
-      // 历史注释的原始编码已损坏，无法可靠恢复。
-      // BATTLE_BroadCast( battleindex, szBuffer, CHAR_COLORYELLOW );
+      // sprintf( szBuffer, "指令输入不完全。(%s)", CHAR_getUseName( char_index ) );
+      // BATTLE_BroadCast( battle_index, szBuffer, CHAR_COLORYELLOW );
       continue;
     }
     if (CHAR_getInt(char_index, CHAR_HP) <= 0)
@@ -8273,7 +8011,7 @@ static int BATTLE_Battling(int battleindex) {
     }
 #endif
 #ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
-    BATTLE_ProfessionStatusSeq(battleindex, char_index);
+    BATTLE_ProfessionStatusSeq(battle_index, char_index);
 #endif
 
     if (BATTLE_CanMoveCheck(char_index) == FALSE) {
@@ -8351,12 +8089,11 @@ static int BATTLE_Battling(int battleindex) {
     if (gWeponType == ITEM_BREAKTHROW) {
       gBattleStausChange = BATTLE_ST_PARALYSIS;
       gBattleStausTurn = 1 - 1;
-    } else {
     }
 
-    if (BattleArray[battleindex].Side[myside].flg & BSIDE_FLG_SURPRISE) {
+    if (BattleArray[battle_index].Side[myside].flg & BSIDE_FLG_SURPRISE) {
     } else {
-      if (BATTLE_PetLoyalCheck(battleindex, attackNo, char_index)) {
+      if (BATTLE_PetLoyalCheck(battle_index, attackNo, char_index)) {
 #ifdef _FIXWOLF // Syu ADD 修正狼人变身Bug
         if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101428
 #ifdef _EXPANSION_VARY_WOLF
@@ -8430,7 +8167,7 @@ static int BATTLE_Battling(int battleindex) {
       }
       break;
     case BATTLE_COM_COMBO:
-      if (ComboCheck2(EntryList, i, entrynum) == FALSE) {
+      if (ComboCheck(sRoundActionList, i, actionNum) == FALSE) {
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_ATTACK);
       }
       break;
@@ -8455,7 +8192,7 @@ static int BATTLE_Battling(int battleindex) {
 #endif
 
     case BATTLE_COM_S_CHARGE:
-      BATTLE_Charge(battleindex, attackNo);
+      BATTLE_Charge(battle_index, attackNo);
       break;
     case BATTLE_COM_S_RENZOKU:
       attack_max = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
@@ -8494,14 +8231,14 @@ static int BATTLE_Battling(int battleindex) {
       gBattleDamageModyfy =
           CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3) * 0.01;
       gBattleDuckModyfy = CHAR_GETWORKINT_HIGH(
-          char_index, CHAR_WORKBATTLECOM3); //   歹今木膜恳骚橘尺
+          char_index, CHAR_WORKBATTLECOM3); //   逃げられない共通へ  (无法闪避，统一)
       break;
     }
 
     BATTLE_TargetListSet(char_index, attackNo, aDefList);
     COM = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
 
-    ContFlg = FALSE;
+    canCountineCounter = FALSE;
     if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEFLG) &
             CHAR_BATTLEFLG_AIBAD &&
         COM == BATTLE_COM_COMBO) {
@@ -8536,7 +8273,7 @@ static int BATTLE_Battling(int battleindex) {
         flgtime = 150; // 1/100sec
         break;
       }
-      BattleArray[battleindex].flgTime += flgtime;
+      BattleArray[battle_index].flgTime += flgtime;
     }
 #endif
 #ifdef _PETSKILL_BECOMEFOX // 中了媚惑术後攻防敏能力各降 20%
@@ -8555,7 +8292,7 @@ static int BATTLE_Battling(int battleindex) {
     switch (COM) { // 处理攻击
 
 #ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
-    // 历史注释的原始编码已损坏，无法可靠恢复。
+    //==== 直接攻击系 ===============================================================
     //===============================================================
     case BATTLE_COM_S_BRUST:       // 爆击
     case BATTLE_COM_S_CHAIN_ATK:   // 连环攻击
@@ -8563,14 +8300,14 @@ static int BATTLE_Battling(int battleindex) {
     case BATTLE_COM_S_CAVALRY:     // 座骑攻击
     case BATTLE_COM_S_DEAD_ATTACK: // 濒死攻击
     case BATTLE_COM_S_ATTACK_WEAK: // 弱点攻击
-    case BATTLE_COM_S_PLUNDER:     //   体掠夺
+    case BATTLE_COM_S_PLUNDER:     // 体掠夺
     case BATTLE_COM_S_CHAOS:       // 混乱攻击
 #ifdef _PREVENT_TEAMATTACK
     {
       // 防止同队互打
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
       if (BATTLE_CheckSameSide(char_index, defNo) == 1) {
-        BATTLE_NoAction(battleindex, attackNo);
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
     }
@@ -8579,11 +8316,11 @@ static int BATTLE_Battling(int battleindex) {
     {
       CHAR_setFlg(char_index, CHAR_ISATTACKED, 1);
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-      battle_profession_attack_fun(battleindex, attackNo, defNo, char_index);
+      battle_profession_attack_fun(battle_index, attackNo, defNo, char_index);
       // change fix 修正使用职业得不到道具
-      // BATTLE_AddProfit( battleindex, aAttackList);
+      // BATTLE_AddProfit( battle_index, aAttackList);
     } break;
-    // 历史注释的原始编码已损坏，无法可靠恢复。
+    //==== 魔法攻击系 ================================================================
     //================================================================
     case BATTLE_COM_S_VOLCANO_SPRINGS: // 火山泉
     case BATTLE_COM_S_FIRE_BALL:       // 火星球
@@ -8605,7 +8342,7 @@ static int BATTLE_Battling(int battleindex) {
       /*			if( COM == BATTLE_COM_S_DOOM //世界末日集气
                                       || COM == BATTLE_COM_S_FIRE_SPEAR){
                                       if( CHAR_getWorkInt( char_index,
-         CHAR_DOOMTIME ) > 0 ){ BATTLE_NoAction( battleindex, attackNo );
+         CHAR_DOOMTIME ) > 0 ){ BATTLE_NoAction( battle_index, attackNo );
                                               sprintf( szWork, "bt|%x|",
          attackNo ); BATTLESTR_ADD( szWork ); break;
                                       }
@@ -8615,7 +8352,7 @@ static int BATTLE_Battling(int battleindex) {
       // 防止同队互打
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
       if (BATTLE_CheckSameSide(char_index, defNo) == 1) {
-        BATTLE_NoAction(battleindex, attackNo);
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
 #endif
@@ -8651,18 +8388,18 @@ static int BATTLE_Battling(int battleindex) {
         pBattle->ice_char_index[pBattle->ice_count] = char_index;
         pBattle->ice_attackNo[pBattle->ice_count] = attackNo;
         ++pBattle->ice_count;
-        BATTLE_NoAction(battleindex, attackNo);
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n进入冰爆");
         break;
       }
 #endif
-      battle_profession_attack_magic_fun(battleindex, attackNo, defNo,
+      battle_profession_attack_magic_fun(battle_index, attackNo, defNo,
                                          char_index);
       // change fix 修正使用职业得不到道具
-      // BATTLE_AddProfit( battleindex, aAttackList);
+      // BATTLE_AddProfit( battle_index, aAttackList);
       break;
     }
-    // 历史注释的原始编码已损坏，无法可靠恢复。
+    //==== 提升自已能力系 ====================================================================
     //====================================================================
     case BATTLE_COM_S_FOCUS:     // 专注战斗
     case BATTLE_COM_S_AVOID:     // 回避
@@ -8679,10 +8416,10 @@ static int BATTLE_Battling(int battleindex) {
     {
       CHAR_setFlg(char_index, CHAR_ISATTACKED, 1);
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-      battle_profession_assist_fun(battleindex, attackNo, defNo, char_index);
+      battle_profession_assist_fun(battle_index, attackNo, defNo, char_index);
       break;
     }
-    // 历史注释的原始编码已损坏，无法可靠恢复。
+    //==== 击中改变状态系 ====================================================================
     //====================================================================
     case BATTLE_COM_S_SHIELD_ATTACK: // 盾击
     case BATTLE_COM_S_ENTWINE:       // 树根缠绕
@@ -8695,7 +8432,7 @@ static int BATTLE_Battling(int battleindex) {
       // 防止同队互打
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
       if (BATTLE_CheckSameSide(char_index, defNo) == 1) {
-        BATTLE_NoAction(battleindex, attackNo);
+        BATTLE_NoAction(battle_index, attackNo);
         if (COM == BATTLE_COM_S_TOXIN_WEAPON)
           printf("\nbug-同队互打");
         break;
@@ -8716,18 +8453,16 @@ static int BATTLE_Battling(int battleindex) {
 
       CHAR_setFlg(char_index, CHAR_ISATTACKED, 1);
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-      battle_profession_status_chang_fun(battleindex, attackNo, defNo,
+      battle_profession_status_chang_fun(battle_index, attackNo, defNo,
                                          char_index);
 
       break;
     }
-    //====================================================================================
 #endif
 
 #ifdef _PETSKILL_ACUPUNCTURE
     case BATTLE_COM_S_ACUPUNCTURE: // 针刺外皮
       CHAR_setWorkInt(char_index, CHAR_WORKACUPUNCTURE, 1);
-      // 历史注释的原始编码已损坏，无法可靠恢复。
 #endif
     case BATTLE_COM_S_CHARGE_OK:
     case BATTLE_COM_S_POWERBALANCE:
@@ -8743,7 +8478,7 @@ static int BATTLE_Battling(int battleindex) {
     case BATTLE_COM_S_ATTSHOOT:
 #endif
 #ifdef _SKILL_WILDVIOLENT_ATT
-    case BATTLE_COM_S_WILDVIOLENTATTACK: // 历史注释的原始编码已损坏，无法可靠恢复。
+    case BATTLE_COM_S_WILDVIOLENTATTACK: // 狂暴攻击 vincent add 2002/05/16
                                          // 2002/05/16
 #endif
 
@@ -8776,7 +8511,7 @@ static int BATTLE_Battling(int battleindex) {
     case BATTLE_COM_S_PETOUT:
       if (COM == BATTLE_COM_S_PETOUT) {
         int defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-        int defindex = BATTLE_No2Index(battleindex, defNo);
+        int defindex = BATTLE_No2Index(battle_index, defNo);
         if (CHAR_getInt(defindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
           int array = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
           char *skillarg = PETSKILL_getChar(array, PETSKILL_OPTION);
@@ -8820,15 +8555,15 @@ static int BATTLE_Battling(int battleindex) {
 
             int pet_no = CHAR_getInt(defindex, CHAR_DEFAULTPET);
             if (pet_no != -1) {
-              BATTLE_PetIn(battleindex, defNo);
+              BATTLE_PetIn(battle_index, defNo);
               GmsvServer_SPET_send(getfdFromchar_index(defindex), defNo, TRUE);
             }
             if ((strstr(skillarg, "收")) != NULL)
               break;
             // shan End
-            if (BATTLE_S_PetOut(battleindex, defNo, petid) == FALSE) {
+            if (BATTLE_S_PetOut(battle_index, defNo, petid) == FALSE) {
               if (pet_no != -1) {
-                BATTLE_S_PetOut(battleindex, defNo, pet_no);
+                BATTLE_S_PetOut(battle_index, defNo, pet_no);
               }
             }
             GmsvServer_KS_send(getfdFromchar_index(defindex),
@@ -8862,7 +8597,7 @@ static int BATTLE_Battling(int battleindex) {
 
         // 取出战场上存活的人
         for (i = f_num; i < f_num + 5; i++) {
-          if (BATTLE_TargetCheck(battleindex, i) != FALSE) {
+          if (BATTLE_TargetCheck(battle_index, i) != FALSE) {
             temp[j++] = i;
           }
         }
@@ -8871,10 +8606,10 @@ static int BATTLE_Battling(int battleindex) {
           BATTLESTR_ADD(szWork);
         }
         for (i = 0; i < j; i++) {
-          // int atk_index = BATTLE_No2Index( battleindex, attackNo );
-          // int def_index = BATTLE_No2Index( battleindex, temp[i] );
+          // int atk_index = BATTLE_No2Index( battle_index, attackNo );
+          // int def_index = BATTLE_No2Index( battle_index, temp[i] );
 
-          BATTLE_Attack(battleindex, attackNo, temp[i]);
+          BATTLE_Attack(battle_index, attackNo, temp[i]);
         }
 
         BATTLESTR_ADD("FF|");
@@ -8889,14 +8624,14 @@ static int BATTLE_Battling(int battleindex) {
         defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
 
         // 目标死亡,或不存在,或地球一周
-        if (BATTLE_TargetCheck(battleindex, defNo) == FALSE ||
-            CHAR_getWorkInt(BATTLE_No2Index(battleindex, defNo),
+        if (BATTLE_TargetCheck(battle_index, defNo) == FALSE ||
+            CHAR_getWorkInt(BATTLE_No2Index(battle_index, defNo),
                             CHAR_WORKBATTLECOM1) == BATTLE_COM_S_EARTHROUND0) {
           // 随意找一只打
           if (defNo < 10) {
             for (i = 0; i < 10; i++)
-              if (BATTLE_TargetCheck(battleindex, i) &&
-                  CHAR_getWorkInt(BATTLE_No2Index(battleindex, i),
+              if (BATTLE_TargetCheck(battle_index, i) &&
+                  CHAR_getWorkInt(BATTLE_No2Index(battle_index, i),
                                   CHAR_WORKBATTLECOM1) !=
                       BATTLE_COM_S_EARTHROUND0) {
                 defNo = i;
@@ -8904,16 +8639,16 @@ static int BATTLE_Battling(int battleindex) {
               }
           } else {
             for (i = 10; i < 20; i++)
-              if (BATTLE_TargetCheck(battleindex, i) &&
-                  CHAR_getWorkInt(BATTLE_No2Index(battleindex, i),
+              if (BATTLE_TargetCheck(battle_index, i) &&
+                  CHAR_getWorkInt(BATTLE_No2Index(battle_index, i),
                                   CHAR_WORKBATTLECOM1) !=
                       BATTLE_COM_S_EARTHROUND0) {
                 defNo = i;
                 break;
               }
           }
-          if (BATTLE_TargetCheck(battleindex, defNo) == FALSE ||
-              CHAR_getWorkInt(BATTLE_No2Index(battleindex, defNo),
+          if (BATTLE_TargetCheck(battle_index, defNo) == FALSE ||
+              CHAR_getWorkInt(BATTLE_No2Index(battle_index, defNo),
                               CHAR_WORKBATTLECOM1) ==
                   BATTLE_COM_S_EARTHROUND0) {
             return 0;
@@ -8922,7 +8657,7 @@ static int BATTLE_Battling(int battleindex) {
 #ifdef _PREVENT_TEAMATTACK
         // 防止同队互打
         if (BATTLE_CheckSameSide(char_index, defNo) == 1) {
-          BATTLE_NoAction(battleindex, attackNo);
+          BATTLE_NoAction(battle_index, attackNo);
           CHAR_talkToCli(char_index, -1, "不能对同队使用此技能!", CHAR_COLORYELLOW);
           break;
         }
@@ -8935,9 +8670,9 @@ static int BATTLE_Battling(int battleindex) {
         sprintf(szWork, "Bf|a%X|", attackNo);
         BATTLESTR_ADD(szWork);
 
-        BATTLE_Attack_FIREKILL(battleindex, attackNo, defNo);
+        BATTLE_Attack_FIREKILL(battle_index, attackNo, defNo);
 
-        BATTLE_MultiAttMagic_Fire(battleindex, attackNo, defNo, 2,
+        BATTLE_MultiAttMagic_Fire(battle_index, attackNo, defNo, 2,
                                   200); //2与200代表火属性魔法200伤害
         BATTLESTR_ADD("FF|");
 
@@ -8951,22 +8686,20 @@ static int BATTLE_Battling(int battleindex) {
 
         defNo =
             CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2); //取得被攻击者的位置
-        def_index = BATTLE_No2Index(battleindex, defNo); // 取得被攻击者的idx
+        def_index = BATTLE_No2Index(battle_index, defNo); // 取得被攻击者的idx
 
 #ifdef _PREVENT_TEAMATTACK
         // 防止同队互打
         if (BATTLE_CheckSameSide(char_index, defNo) == 1) {
-          BATTLE_NoAction(battleindex, attackNo);
+          BATTLE_NoAction(battle_index, attackNo);
           break;
         }
 #endif
         if (!CHAR_CHECKINDEX(def_index))
           break;
-        char *pszOption, *pszP;
-
+        char *pszP;
         int skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-        pszOption = PETSKILL_getChar(skill, PETSKILL_OPTION);
-
+        char *pszOption = PETSKILL_getChar(skill, PETSKILL_OPTION);
         int fPer = 60;
         if ((pszP = strstr(pszOption, "命%")) != NULL) {
           sscanf(pszP + 3, "%d", &fPer);
@@ -9009,11 +8742,11 @@ static int BATTLE_Battling(int battleindex) {
       if (COM == BATTLE_COM_S_ANTINTER) {
         int skill;
         defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-        if (CHAR_getInt(BATTLE_No2Index(battleindex, defNo), CHAR_WHICHTYPE) ==
+        if (CHAR_getInt(BATTLE_No2Index(battle_index, defNo), CHAR_WHICHTYPE) ==
                 CHAR_TYPEPET &&
-            CHAR_getInt(BATTLE_No2Index(battleindex, defNo), CHAR_HP) <= 0) {
+            CHAR_getInt(BATTLE_No2Index(battle_index, defNo), CHAR_HP) <= 0) {
           skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-          ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+          canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                           BATTLE_COM_S_ANTINTER, skill);
           break;
         }
@@ -9024,11 +8757,11 @@ static int BATTLE_Battling(int battleindex) {
       if (COM == BATTLE_COM_S_RESURRECTION) {
         defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
 
-        if (CHAR_getInt(BATTLE_No2Index(battleindex, defNo), CHAR_HP) <= 0) {
+        if (CHAR_getInt(BATTLE_No2Index(battle_index, defNo), CHAR_HP) <= 0) {
           char szcommand[256];
           int skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
           char *pszP = PETSKILL_getChar(skill, PETSKILL_OPTION);
-          int attackindex = BATTLE_No2Index(battleindex, attackNo);
+          int attackindex = BATTLE_No2Index(battle_index, attackNo);
           int hp = CHAR_getInt(attackindex, CHAR_HP) - atoi(pszP);
           CHAR_setInt(attackindex, CHAR_HP, atoi(pszP));
 
@@ -9037,7 +8770,7 @@ static int BATTLE_Battling(int battleindex) {
             CHAR_setWorkInt(attackindex, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
           }
 
-          BATTLE_MultiRessurect(battleindex, attackNo, defNo, hp, 0,
+          BATTLE_MultiRessurect(battle_index, attackNo, defNo, hp, 0,
                                 MAGIC_EFFECT_USER, SPR_fukkatu3);
           if (CHAR_getInt(attackindex, CHAR_RIDEPET) != -1) {
             sprintf(szcommand, "BD|r%X|0|0|%X|p%X", attackNo, hp * 60, hp * 40);
@@ -9057,12 +8790,12 @@ static int BATTLE_Battling(int battleindex) {
         char szCommand[256];
         defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
 
-        int defHp = CHAR_getInt(BATTLE_No2Index(battleindex, defNo), CHAR_HP);
+        int defHp = CHAR_getInt(BATTLE_No2Index(battle_index, defNo), CHAR_HP);
         int attackHp =
-            CHAR_getInt(BATTLE_No2Index(battleindex, attackNo), CHAR_HP);
+            CHAR_getInt(BATTLE_No2Index(battle_index, attackNo), CHAR_HP);
 
-        CHAR_setInt(BATTLE_No2Index(battleindex, attackNo), CHAR_HP, 1);
-        CHAR_setInt(BATTLE_No2Index(battleindex, defNo), CHAR_HP, 1);
+        CHAR_setInt(BATTLE_No2Index(battle_index, attackNo), CHAR_HP, 1);
+        CHAR_setInt(BATTLE_No2Index(battle_index, defNo), CHAR_HP, 1);
 
         snprintf(szCommand, sizeof(szCommand), "BH|a%X|r%X|0|d%X|FF|", attackNo,
                  defNo, defHp - 1);
@@ -9085,18 +8818,18 @@ static int BATTLE_Battling(int battleindex) {
           defNo = aDefList[attack_count];
           if (attackNo == defNo)
             continue;
-          if (BATTLE_TargetCheck(battleindex, defNo) == TRUE)
+          if (BATTLE_TargetCheck(battle_index, defNo) == TRUE)
             break;
         }
         if (attack_count >= 10) {
-          BATTLE_NoAction(battleindex, attackNo);
+          BATTLE_NoAction(battle_index, attackNo);
           break;
         }
         defNo = aDefList[0];
-      } else if ((defNo = BATTLE_TargetAdjust(battleindex, char_index,
+      } else if ((defNo = BATTLE_TargetAdjust(battle_index, char_index,
                                               myside)) < 0 ||
                  defNo == attackNo) {
-        BATTLE_NoAction(battleindex, attackNo);
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
       if (COM == BATTLE_COM_S_EARTHROUND0) {
@@ -9162,7 +8895,7 @@ static int BATTLE_Battling(int battleindex) {
 
       for (attack_count = 0, k = 0;;) {
         if (gWeponType == ITEM_BOW) {
-          if (BATTLE_TargetCheck(battleindex, defNo) == FALSE) {
+          if (BATTLE_TargetCheck(battle_index, defNo) == FALSE) {
             attack_flg = 0;
           } else {
             attack_flg = 1;
@@ -9170,33 +8903,31 @@ static int BATTLE_Battling(int battleindex) {
         }
 
         if (attack_flg) {
-
-          ContFlg = BATTLE_Attack(battleindex, attackNo, defNo);
+          canCountineCounter = BATTLE_Attack(battle_index, attackNo, defNo);
 #ifdef _PETSKILL_RETRACE
           if (Battle_Attack_ReturnData_x.Battle_Attack_ReturnData ==
                   BATTLE_RET_DODGE &&
               COM == BATTLE_COM_S_RETRACE) {
             if (RAND(1, 100) < 80) { // 80%机率发动2次攻击
               // 攻+20%
-
               CHAR_setWorkInt(
-                  BATTLE_No2Index(battleindex, attackNo), CHAR_WORKATTACKPOWER,
-                  (CHAR_getWorkInt(BATTLE_No2Index(battleindex, attackNo),
+                  BATTLE_No2Index(battle_index, attackNo), CHAR_WORKATTACKPOWER,
+                  (CHAR_getWorkInt(BATTLE_No2Index(battle_index, attackNo),
                                    CHAR_WORKFIXSTR) +
-                   (CHAR_getWorkInt(BATTLE_No2Index(battleindex, attackNo),
+                   (CHAR_getWorkInt(BATTLE_No2Index(battle_index, attackNo),
                                     CHAR_WORKFIXSTR) *
                     0.2)));
 
-              BATTLE_Attack(battleindex, attackNo, defNo);
+              BATTLE_Attack(battle_index, attackNo, defNo);
             }
             Battle_Attack_ReturnData_x.Battle_Attack_ReturnData = 0;
           }
 #endif
-          BATTLE_AddProfit(battleindex, aAttackList);
+          BATTLE_AddProfit(battle_index, aAttackList);
           if (++attack_count >= attack_max)
             break;
           if (CHAR_getInt(char_index, CHAR_HP) <= 0) {
-            ContFlg = FALSE;
+            canCountineCounter = FALSE;
             break;
           }
         }
@@ -9205,30 +8936,26 @@ static int BATTLE_Battling(int battleindex) {
           break;
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM2, defNo);
         if (gWeponType == ITEM_BOW) {
-        } else if ((defNo = BATTLE_TargetAdjust(battleindex, char_index,
+        } else if ((defNo = BATTLE_TargetAdjust(battle_index, char_index,
                                                 myside)) < 0) {
           break;
         }
-        if (BATTLE_CountAlive(battleindex, 0) == 0 ||
-            BATTLE_CountAlive(battleindex, 1) == 0) {
+        if (BATTLE_CountAlive(battle_index, 0) == 0 ||
+            BATTLE_CountAlive(battle_index, 1) == 0) {
           break;
         }
       }
       gBattleDamageModyfy = 1.0;
       gBattleDuckModyfy = 0;
-      for (k = 0; k < 5 && ContFlg == TRUE; k++) {
-        if ((k & 1) == 1) {
-          attackNoSub = attackNo;
-          defNoSub = defNo;
-        } else {
-          defNoSub = attackNo;
-          attackNoSub = defNo;
-        }
+      for (k = 0; k < 5 && canCountineCounter == TRUE; k++) {
+        int round = k & 1;
+        int attackNoSub = round ? attackNo : defNo;
+        int defNoSub = round ? defNo : attackNo;
         // 反击判定
-        ContFlg = BATTLE_Counter(battleindex, attackNoSub, defNoSub);
+        canCountineCounter = BATTLE_Counter(battle_index, attackNoSub, defNoSub);
         aAttackList[0] = attackNoSub;
         aAttackList[1] = -1;
-        BATTLE_AddProfit(battleindex, aAttackList);
+        BATTLE_AddProfit(battle_index, aAttackList);
       }
       aAttackList[0] = -1;
       BATTLESTR_ADD("FF|");
@@ -9241,10 +8968,10 @@ static int BATTLE_Battling(int battleindex) {
                 BATTLE_RET_DODGE) &&
             (Battle_Attack_ReturnData_x.Battle_Attack_ReturnData !=
              BATTLE_RET_ALLGUARD) //没有闪避过
-            && (BATTLE_TargetCheck(battleindex, defNo)) // 还活着
+            && (BATTLE_TargetCheck(battle_index, defNo)) // 还活着
         ) {
           int flg, OnOff;
-          int toindex = BATTLE_No2Index(battleindex, defNo);
+          int toindex = BATTLE_No2Index(battle_index, defNo);
           flg = CHAR_getWorkInt(toindex, CHAR_WORKBATTLEFLG);
           flg ^= CHAR_BATTLEFLG_REVERSE;
           CHAR_setWorkInt(toindex, CHAR_WORKBATTLEFLG, flg);
@@ -9268,21 +8995,21 @@ static int BATTLE_Battling(int battleindex) {
           && (Battle_Attack_ReturnData_x.Battle_Attack_ReturnData !=
               BATTLE_RET_ARRANGE)
 #endif
-          && (BATTLE_TargetCheck(battleindex, defNo)) // 还活着
+          && (BATTLE_TargetCheck(battle_index, defNo)) // 还活着
           && (rand() % 100 < 31) &&
-          (CHAR_getInt(BATTLE_No2Index(battleindex, defNo), CHAR_WHICHTYPE) !=
+          (CHAR_getInt(BATTLE_No2Index(battle_index, defNo), CHAR_WHICHTYPE) !=
            CHAR_TYPEPLAYER) //只有宠物(CHAR_TYPEPET)才可以被媚惑
-          && (CHAR_getWorkInt(BATTLE_No2Index(battleindex, defNo),
+          && (CHAR_getWorkInt(BATTLE_No2Index(battle_index, defNo),
                               CHAR_WORK_PETFLG) != 0)
 #ifdef _PETSKILL_BECOMEPIG
           && (CHAR_getInt(char_index, CHAR_BECOMEPIG) == -1) //没有处於乌力化
 #endif
       ) {
         int ToList[SIDE_OFFSET * 2 + 1];
-        int defindex = BATTLE_No2Index(battleindex, defNo);
+        int defindex = BATTLE_No2Index(battle_index, defNo);
 
-        BATTLE_MultiList(battleindex, defNo, ToList);
-        BATTLE_MagicEffect(battleindex, defNo, ToList, 101120, 101750);
+        BATTLE_MultiList(battle_index, defNo, ToList);
+        BATTLE_MagicEffect(battle_index, defNo, ToList, 101120, 101750);
         CHAR_setWorkInt(defindex, CHAR_WORKFOXROUND, pBattle->turn);
 
         if (CHAR_getInt(defindex, CHAR_RIDEPET) != -1) { // 骑宠就要让他落马
@@ -9306,21 +9033,21 @@ static int BATTLE_Battling(int battleindex) {
           && (Battle_Attack_ReturnData_x.Battle_Attack_ReturnData !=
               BATTLE_RET_ARRANGE)
 #endif
-          && (BATTLE_TargetCheck(battleindex, defNo)) // 还活着
+          && (BATTLE_TargetCheck(battle_index, defNo)) // 还活着
           &&
-          (CHAR_getInt(BATTLE_No2Index(battleindex, defNo), CHAR_WHICHTYPE) ==
+          (CHAR_getInt(BATTLE_No2Index(battle_index, defNo), CHAR_WHICHTYPE) ==
            CHAR_TYPEPLAYER) //只有玩家才可以被乌力化
 #ifdef _PREVENT_TEAMATTACK
           && (BATTLE_CheckSameSide(char_index, defNo) != 1) // 防止同队互打
 #endif
-          && CHAR_getInt(BATTLE_No2Index(battleindex, defNo), CHAR_BECOMEPIG) <
+          && CHAR_getInt(BATTLE_No2Index(battle_index, defNo), CHAR_BECOMEPIG) <
                  2000000000) //防止破表
       {
         char temp[64];
         int ToList[SIDE_OFFSET * 2 + 1], compute, petrate, pettime,
             pigbbi = 100250;
         char *pszOption = NULL;
-        int defindex = BATTLE_No2Index(battleindex, defNo);
+        int defindex = BATTLE_No2Index(battle_index, defNo);
         pszOption = PETSKILL_getChar(
             CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3),
             PETSKILL_OPTION);
@@ -9334,8 +9061,8 @@ static int BATTLE_Battling(int battleindex) {
           CHAR_setWorkInt(defindex, CHAR_WORKNPCMETAMO, 0); // NPC变身取消
           CHAR_setWorkInt(defindex, CHAR_WORKFOXROUND, -1); // 媚惑术变身取消
 
-          BATTLE_MultiList(battleindex, defNo, ToList);
-          BATTLE_MagicEffect(battleindex, defNo, ToList, 101120, 101750);
+          BATTLE_MultiList(battle_index, defNo, ToList);
+          BATTLE_MagicEffect(battle_index, defNo, ToList, 101120, 101750);
 
           if (CHAR_getInt(defindex, CHAR_RIDEPET) != -1) { // 骑宠就要让他落马
             CHAR_setInt(defindex, CHAR_RIDEPET, -1);
@@ -9362,38 +9089,38 @@ static int BATTLE_Battling(int battleindex) {
       }
 #endif
       break;
-      // 以下处理特殊攻击
     case BATTLE_COM_BOOMERANG:
+      // BOOMRANG似乎是回旋镖？
       gBattleDamageModyfy = 0.3;
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
       if (defNo < 0) {
-        defNo = BATTLE_DefaultAttacker(battleindex, 1 - myside);
+        defNo = BATTLE_DefaultAttacker(battle_index, 1 - myside);
       }
       if (0 <= defNo && defNo <= 19) {
         defNo /= 5; //
       } else {
-        BATTLE_NoAction(battleindex, attackNo);
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
       if ((int)(attackNo / 5) == defNo) {
-        BATTLE_NoAction(battleindex, attackNo);
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
       {
         int *pBoomerangTbl = BoomerangVsTbl[defNo];
         for (k = 0; k < 5; k++) {
-          if (BATTLE_TargetCheck(battleindex, pBoomerangTbl[k]) == FALSE) {
+          if (BATTLE_TargetCheck(battle_index, pBoomerangTbl[k]) == FALSE) {
             continue;
           } else {
             break;
           }
         }
         if (k == 5) {
-          defNo = BATTLE_DefaultAttacker(battleindex, 1 - myside);
+          defNo = BATTLE_DefaultAttacker(battle_index, 1 - myside);
           if (0 <= defNo && defNo <= 19) {
             defNo /= 5;
           } else {
-            BATTLE_NoAction(battleindex, attackNo);
+            BATTLE_NoAction(battle_index, attackNo);
             break;
           }
         }
@@ -9415,10 +9142,10 @@ static int BATTLE_Battling(int battleindex) {
           if (j < 0 && k < 0)
             break;
           defNo = pBoomerangTbl[k];
-          if (BATTLE_TargetCheck(battleindex, defNo) == FALSE) {
+          if (BATTLE_TargetCheck(battle_index, defNo) == FALSE) {
             continue;
           }
-          BATTLE_Attack(battleindex, attackNo, defNo);
+          BATTLE_Attack(battle_index, attackNo, defNo);
         }
       }
       gBattleDamageModyfy = 1.0;
@@ -9428,11 +9155,11 @@ static int BATTLE_Battling(int battleindex) {
 
     //---------------------------------------------
     case BATTLE_COM_CAPTURE:
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
-      BATTLE_Capture(battleindex, attackNo, defNo);
+      BATTLE_Capture(battle_index, attackNo, defNo);
       break;
 
       //---------------------------------------------
@@ -9441,8 +9168,8 @@ static int BATTLE_Battling(int battleindex) {
       int ToList[SIDE_OFFSET * 2 + 1];
       int bk_amn = 0;
 
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
 #ifdef _EXPANSION_VARY_WOLF
@@ -9453,18 +9180,18 @@ static int BATTLE_Battling(int battleindex) {
         bk_amn = (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
       }
 
-      BATTLE_MultiList(battleindex, defNo, ToList);
-      BATTLE_MagicEffect(battleindex, attackNo, ToList, 101120, bk_amn);
+      BATTLE_MultiList(battle_index, defNo, ToList);
+      BATTLE_MagicEffect(battle_index, attackNo, ToList, 101120, bk_amn);
 #endif
     } break;
 #endif
     case BATTLE_COM_GUARD:
-      BATTLE_Guard(battleindex, attackNo);
+      BATTLE_Guard(battle_index, attackNo);
 
       break;
     case BATTLE_COM_ESCAPE:
       if (CHAR_getInt(char_index, CHAR_WHICHTYPE) != CHAR_TYPEPET) {
-        if (BATTLE_Escape(battleindex, attackNo, 0) == TRUE) {
+        if (BATTLE_Escape(battle_index, attackNo, 0) == TRUE) {
           if (CHAR_CHECKINDEX(char_index)) {
             if (CHAR_getWorkInt(char_index, CHAR_WORKFMPKFLAG) == 1) {
               CHAR_setWorkInt(char_index, CHAR_WORKFMPKFLAG, -1);
@@ -9475,7 +9202,7 @@ static int BATTLE_Battling(int battleindex) {
       break;
     case BATTLE_COM_COMPELESCAPE: // 强制离开
       if (CHAR_getInt(char_index, CHAR_WHICHTYPE) != CHAR_TYPEPET) {
-        BATTLE_Escape(battleindex, attackNo, 1);
+        BATTLE_Escape(battle_index, attackNo, 1);
         if (CHAR_getWorkInt(char_index, CHAR_WORKFMPKFLAG) == 1)
           CHAR_setWorkInt(char_index, CHAR_WORKFMPKFLAG, -1);
       }
@@ -9483,7 +9210,7 @@ static int BATTLE_Battling(int battleindex) {
 
     case BATTLE_COM_PETIN:
       if (CHAR_getInt(char_index, CHAR_DEFAULTPET) == -1) {
-        BATTLE_NoAction(battleindex, attackNo);
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
       {
@@ -9492,7 +9219,7 @@ static int BATTLE_Battling(int battleindex) {
                  CHAR_getInt(char_index, CHAR_DEFAULTPET));
         CHAR_sendStatusString(char_index, szWork);
       }
-      BATTLE_PetIn(battleindex, attackNo);
+      BATTLE_PetIn(battle_index, attackNo);
       GmsvServer_KS_send(getfdFromchar_index(char_index),
                          CHAR_getInt(char_index, CHAR_DEFAULTPET), 1);
       break;
@@ -9507,23 +9234,9 @@ static int BATTLE_Battling(int battleindex) {
           CHAR_sendStatusString(char_index, szWork);
         }
 
-        BATTLE_PetIn(battleindex, attackNo);
+        BATTLE_PetIn(battle_index, attackNo);
       }
-      /*
-      #ifndef _VERSION_25
-                              // shan 2002/01/14 Begin  五只宠
-                              {
-                                      int attackindex, petNo;
-
-                                      attackindex = BATTLE_No2Index(
-      battleindex, attackNo ); petNo = CHAR_getWorkInt( attackindex,
-      CHAR_WORKBATTLECOM2 ); if( CHAR_getWorkInt(char_index,
-      CHAR_WORK_PET0_STAT+petNo) != PET_STAT_SELECT) break;
-                              }
-      #endif
-      */
-      // shan End
-      BATTLE_PetOut(battleindex, attackNo);
+      BATTLE_PetOut(battle_index, attackNo);
       GmsvServer_KS_send(getfdFromchar_index(char_index),
                          CHAR_getInt(char_index, CHAR_DEFAULTPET), 1);
       break;
@@ -9562,10 +9275,9 @@ static int BATTLE_Battling(int battleindex) {
           break;
         }
       }
-      //			print("toindex->%d\n",toindex);
       MAGIC_DirectUse(char_index, magic, toindex,
                       CHAR_GETWORKINT_HIGH(char_index, CHAR_WORKBATTLECOM3));
-      BATTLE_AddProfit(battleindex, aAttackList);
+      BATTLE_AddProfit(battle_index, aAttackList);
       break;
 #endif
     case BATTLE_COM_JYUJYUTU:
@@ -9583,7 +9295,6 @@ static int BATTLE_Battling(int battleindex) {
               CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM3));
         break;
       }
-/* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
 #ifdef _FIXBUG_ATTACKBOW
       {
         if (CHAR_getWorkInt(char_index, CHAR_WORKITEMMETAMO) > 0 ||
@@ -9622,7 +9333,7 @@ static int BATTLE_Battling(int battleindex) {
 
 #ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
         // 武器专精
-        BATTLE_ProfessionStatus_init(battleindex, char_index);
+        BATTLE_ProfessionStatus_init(battle_index, char_index);
 #endif
       }
 
@@ -9630,51 +9341,51 @@ static int BATTLE_Battling(int battleindex) {
 
 #ifdef _PSKILL_FALLGROUND
     case BATTLE_COM_S_FALLRIDE: // 落马术
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
-      ContFlg = BATTLE_S_FallGround(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_FallGround(battle_index, attackNo, defNo,
                                     BATTLE_COM_S_FALLRIDE);
       break;
 
 #endif
 #ifdef _PETSKILL_EXPLODE
     case BATTLE_COM_S_EXPLODE:
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
-      ContFlg =
-          BATTLE_S_Explode(battleindex, attackNo, defNo, BATTLE_COM_S_EXPLODE);
+      canCountineCounter =
+          BATTLE_S_Explode(battle_index, attackNo, defNo, BATTLE_COM_S_EXPLODE);
       break;
 #endif
 
 #ifdef _PETSKILL_TIMID
     case BATTLE_COM_S_TIMID: {
       int skill;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_TIMID, skill);
     } break;
 #endif
 #ifdef _PETSKILL_2TIMID
     case BATTLE_COM_S_2TIMID: {
       int skill;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_2TIMID, skill);
     } break;
 #endif
@@ -9683,21 +9394,21 @@ static int BATTLE_Battling(int battleindex) {
     case BATTLE_COM_S_PROPERTYSKILL: {
       int skill;
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      BATTLE_S_PetSkillProperty(battleindex, attackNo, COM, skill);
-      BATTLE_NoAction(battleindex, attackNo);
+      BATTLE_S_PetSkillProperty(battle_index, attackNo, COM, skill);
+      BATTLE_NoAction(battle_index, attackNo);
     } break;
 #endif
 
 #ifdef _BATTLE_LIGHTTAKE
     case BATTLE_COM_S_LIGHTTAKE: {
       int skill;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_LIGHTTAKE, skill);
     } break;
 #endif
@@ -9706,13 +9417,13 @@ static int BATTLE_Battling(int battleindex) {
     case BATTLE_COM_S_DAMAGETOHP: // 嗜血技
     {
       int skill;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_DAMAGETOHP, skill);
     } break;
 #endif
@@ -9721,17 +9432,16 @@ static int BATTLE_Battling(int battleindex) {
     case BATTLE_COM_S_DAMAGETOHP2: // 暗月狂狼(嗜血技的变体)
     {
       int skill, attackidxtemp;
-      attackidxtemp = BATTLE_No2Index(battleindex, attackNo);
+      attackidxtemp = BATTLE_No2Index(battle_index, attackNo);
 
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_DAMAGETOHP2, skill);
-
     } break;
 #endif
 
@@ -9739,68 +9449,63 @@ static int BATTLE_Battling(int battleindex) {
     case BATTLE_COM_S_MPDAMAGE: // MP伤害
     {
       int skill;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_MPDAMAGE, skill);
-      break;
     } break;
 #endif
 #ifdef _SKILL_TOOTH
     case BATTLE_COM_S_TOOTHCRUSHE: {
       int skill;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_TOOTHCRUSHE, skill);
-      break;
     } break;
 #endif
 #ifdef _PSKILL_MODIFY
     case BATTLE_COM_S_MODIFYATT: {
-      int skill;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_MODIFYATT, skill);
     } break;
 #endif
 #ifdef _PSKILL_MDFYATTACK
     case BATTLE_COM_S_MDFYATTACK: {
-      int skill;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_MDFYATTACK, skill);
     } break;
 #endif
 
 #ifdef _PETSKILL_TEAR
     case BATTLE_COM_S_PETSKILLTEAR: {
-      int skill;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_PETSKILLTEAR, skill);
     } break;
 #endif
@@ -9809,8 +9514,8 @@ static int BATTLE_Battling(int battleindex) {
     case BATTLE_COM_S_SONIC: {
       int skill, defNo2 = -1, index2 = -1;
 
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
@@ -9823,15 +9528,15 @@ static int BATTLE_Battling(int battleindex) {
       else
         defNo2 = -1;
 
-      battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
-      index2 = BATTLE_No2Index(battleindex, defNo2);
+      battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
+      index2 = BATTLE_No2Index(battle_index, defNo2);
 
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_SONIC, skill);
 
       if (index2 >= 0) {
         if (defNo2 >= 0) {
-          ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo2,
+          canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo2,
                                           BATTLE_COM_S_SONIC2, skill);
         }
       }
@@ -9841,63 +9546,53 @@ static int BATTLE_Battling(int battleindex) {
 
 #ifdef _PETSKILL_REGRET
     case BATTLE_COM_S_REGRET: {
-      int skill, defNo2 = -1, index2 = -1;
-
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      int defNo2 = -1, index2 = -1;
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-
       if (defNo >= 15 && defNo < 20)
         defNo2 = defNo - 5;
       else if (defNo >= 5 && defNo < 10)
         defNo2 = defNo - 5;
       else
         defNo2 = -1;
-
-      battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
-      index2 = BATTLE_No2Index(battleindex, defNo2);
-
-      ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo,
+      battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
+      index2 = BATTLE_No2Index(battle_index, defNo2);
+      canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo,
                                       BATTLE_COM_S_REGRET, skill);
-      if (index2 >= 0) {
-        if (defNo2 >= 0) {
-          ContFlg = BATTLE_S_AttackDamage(battleindex, attackNo, defNo2,
+      if (index2 >= 0 && defNo2 >= 0) {
+          canCountineCounter = BATTLE_S_AttackDamage(battle_index, attackNo, defNo2,
                                           BATTLE_COM_S_REGRET2, skill);
-        }
       }
 
     } break;
 #endif
-
 #ifdef _MAGIC_SUPERWALL
     case BATTLE_COM_S_SUPERWALL: {
-      int skill;
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = PETSKILL_MagicStatusChange_Battle(battleindex, attackNo, defNo,
+      canCountineCounter = PETSKILL_MagicStatusChange_Battle(battle_index, attackNo, defNo,
                                                   skill);
     } break;
 #endif
 #ifdef _PETSKILL_SETDUCK
     case BATTLE_COM_S_SETDUCK: {
-      int skill;
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg =
-          PETSKILL_SetDuckChange_Battle(battleindex, attackNo, defNo, skill);
+      canCountineCounter =
+          PETSKILL_SetDuckChange_Battle(battle_index, attackNo, defNo, skill);
       break;
     }
 #endif
 #ifdef _MAGICPET_SKILL
     case BATTLE_COM_S_SETMAGICPET: {
-      int skill;
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg =
-          PETSKILL_SetMagicPet_Battle(battleindex, attackNo, defNo, skill);
+      canCountineCounter =
+          PETSKILL_SetMagicPet_Battle(battle_index, attackNo, defNo, skill);
       break;
     }
 #endif
@@ -9906,8 +9601,8 @@ static int BATTLE_Battling(int battleindex) {
       int skill;
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
       skill = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg =
-          PETSKILL_SetStrength_Battle(battleindex, attackNo, defNo, skill);
+      canCountineCounter =
+          PETSKILL_SetStrength_Battle(battle_index, attackNo, defNo, skill);
       break;
     }
 #endif
@@ -9915,249 +9610,231 @@ static int BATTLE_Battling(int battleindex) {
     case BATTLE_COM_S_OFFLINE_RECOVERY: {
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
       int HP = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = OFFLINE_MultiRessurect(battleindex, attackNo, defNo, HP, 0);
+      canCountineCounter = OFFLINE_MultiRessurect(battle_index, attackNo, defNo, HP, 0);
       break;
     }
 #endif
 #ifdef _PRO_BATTLEENEMYSKILL
     case BATTLE_COM_S_ENEMYRELIFE:
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
 
-      ContFlg = BATTLE_E_ENEMYREFILE(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_E_ENEMYREFILE(battle_index, attackNo, defNo,
                                      BATTLE_COM_S_ENEMYRELIFE);
-      if (ContFlg == FALSE) {
+      if (canCountineCounter == FALSE) {
         CHAR_setFlg(char_index, CHAR_ISATTACKED, 1);
-        ContFlg = BATTLE_Attack(battleindex, attackNo, defNo);
-        BATTLE_AddProfit(battleindex, aAttackList);
+        canCountineCounter = BATTLE_Attack(battle_index, attackNo, defNo);
+        BATTLE_AddProfit(battle_index, aAttackList);
       }
-      BATTLE_AddProfit(battleindex, aAttackList);
+      BATTLE_AddProfit(battle_index, aAttackList);
       break;
 
     case BATTLE_COM_S_ENEMYREHP:
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
-      ContFlg = BATTLE_E_ENEMYREHP(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_E_ENEMYREHP(battle_index, attackNo, defNo,
                                    BATTLE_COM_S_ENEMYREHP);
-      if (ContFlg == FALSE) {
+      if (canCountineCounter == FALSE) {
         CHAR_setFlg(char_index, CHAR_ISATTACKED, 1);
-        ContFlg = BATTLE_Attack(battleindex, attackNo, defNo);
-        BATTLE_AddProfit(battleindex, aAttackList);
+        canCountineCounter = BATTLE_Attack(battle_index, attackNo, defNo);
+        BATTLE_AddProfit(battle_index, aAttackList);
       }
-      BATTLE_AddProfit(battleindex, aAttackList);
+      BATTLE_AddProfit(battle_index, aAttackList);
       break;
 
     case BATTLE_COM_S_ENEMYHELP:
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         print("\n BATTLE_NoAction()");
         break;
       }
-      ContFlg = BATTLE_E_ENEMYHELP(battleindex, attackNo, defNo,
+      canCountineCounter = BATTLE_E_ENEMYHELP(battle_index, attackNo, defNo,
                                    BATTLE_COM_S_ENEMYREHP);
-      if (ContFlg == FALSE) {
+      if (canCountineCounter == FALSE) {
         CHAR_setFlg(char_index, CHAR_ISATTACKED, 1);
-        ContFlg = BATTLE_Attack(battleindex, attackNo, defNo);
-        BATTLE_AddProfit(battleindex, aAttackList);
+        canCountineCounter = BATTLE_Attack(battle_index, attackNo, defNo);
+        BATTLE_AddProfit(battle_index, aAttackList);
       }
-      BATTLE_AddProfit(battleindex, aAttackList);
+      BATTLE_AddProfit(battle_index, aAttackList);
       break;
 #endif
     case BATTLE_COM_S_GBREAK: // 破除防御
-
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
-      ContFlg = BATTLE_S_GBreak(battleindex, attackNo, defNo);
+      canCountineCounter = BATTLE_S_GBreak(battle_index, attackNo, defNo);
       break;
 #ifdef _SKILL_GUARDBREAK2 // 破除防御2 vincent add 2002/05/20
     case BATTLE_COM_S_GBREAK2:
       // 确定攻击对象
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
-      ContFlg = BATTLE_S_GBreak2(battleindex, attackNo, defNo);
+      canCountineCounter = BATTLE_S_GBreak2(battle_index, attackNo, defNo);
       break;
 #endif
 
 #ifdef _SKILL_SACRIFICE
     case BATTLE_COM_S_SACRIFICE: // 救援 vincent add 2002/05/30
                                  // 确定攻击对象
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
-      ContFlg = BATTLE_S_Sacrifice(battleindex, attackNo, defNo);
+      canCountineCounter = BATTLE_S_Sacrifice(battle_index, attackNo, defNo);
 
       break;
 #endif
 
-#ifdef _SKILL_REFRESH
-    case BATTLE_COM_S_REFRESH: // 状态回复 vincent add 2002/08/08
-    {
-      int array;
+#ifdef _SKILL_REFRESH // 状态回复 vincent add 2002/08/08
+    case BATTLE_COM_S_REFRESH: {
       array = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-      //			print("\n vincent--case
-      // BATTLE_COM_S_REFRESH:-->defNo:%d",defNo);
-      ContFlg = BATTLE_S_Refresh(battleindex, attackNo, defNo, array);
+      canCountineCounter = BATTLE_S_Refresh(battle_index, attackNo, defNo, array);
     } break;
 #endif
-
 #ifdef _SKILL_WEAKEN // vincent宠技:虚弱
     case BATTLE_COM_S_WEAKEN: {
-      int array;
       array = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-      // print("\n vincent--case BATTLE_COM_S_WEAKEN:-->defNo:%d",defNo);
-      ContFlg = BATTLE_S_Weaken(battleindex, attackNo, defNo, array);
+      canCountineCounter = BATTLE_S_Weaken(battle_index, attackNo, defNo, array);
     } break;
 #endif
-
 #ifdef _SKILL_DEEPPOISON // vincent宠技:剧毒
     case BATTLE_COM_S_DEEPPOISON: {
-      int array;
       array = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-      ContFlg = BATTLE_S_Deeppoison(battleindex, attackNo, defNo, array);
+      canCountineCounter = BATTLE_S_Deeppoison(battle_index, attackNo, defNo, array);
     } break;
 #endif
-
 #ifdef _SKILL_BARRIER // vincent宠技:魔障
     case BATTLE_COM_S_BARRIER: {
-      int array;
       array = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-      ContFlg = BATTLE_S_Barrier(battleindex, attackNo, defNo, array);
+      canCountineCounter = BATTLE_S_Barrier(battle_index, attackNo, defNo, array);
     } break;
 #endif
-
 #ifdef _SKILL_NOCAST // vincent宠技:沉默
     case BATTLE_COM_S_NOCAST: {
-      int array;
       array = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
       defNo = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM2);
-      ContFlg = BATTLE_S_Nocast(battleindex, attackNo, defNo, array);
+      canCountineCounter = BATTLE_S_Nocast(battle_index, attackNo, defNo, array);
     } break;
 #endif
-
 #ifdef _SKILL_ROAR // vincent宠技:大吼
     case BATTLE_COM_S_ROAR: {
-      int array;
       // 确定攻击对象
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
       array = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      ContFlg = BATTLE_S_Roar(battleindex, attackNo, defNo, array);
+      canCountineCounter = BATTLE_S_Roar(battle_index, attackNo, defNo, array);
     } break;
 #endif
     case BATTLE_COM_S_ABDUCT: {
-      int array;
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
       array = CHAR_GETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM3);
-      BATTLE_Abduct(battleindex, attackNo, defNo, array);
+      BATTLE_Abduct(battle_index, attackNo, defNo, array);
     } break;
     case BATTLE_COM_COMBO:
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
       gDamageDiv = 1.0;
-      ComboId = EntryList[i].combo;
-      aAttackList[0] = EntryList[i].num; // 伉旦玄卞笛尹月
-      i++;                               // 戚及谛井日
+      int combo_id = sRoundActionList[i].combo;
+      aAttackList[0] = sRoundActionList[i].num; // リストに加える (加入列表)
+      i++;                               // 後の値から (从下一个开始)
       k = 1;
-      for (; EntryList[i].combo == ComboId && i < entrynum; i++) {
+      for (; i < actionNum && sRoundActionList[i].combo == combo_id; ++i) {
         int charmode;
-        // 绣箕允月井民尼永弁
-        if (CHAR_CHECKINDEX(EntryList[i].char_index) == FALSE)
+        // 存在 するかチェック (检查是否存在)
+        if (CHAR_CHECKINDEX(sRoundActionList[i].char_index) == FALSE)
           continue;
 
-        // 爵  卞辅笛仄化中卅中桦宁反戚尺
+        // 戦闘に 参加していない場合は次へ (未参战则跳过)
         charmode =
-            CHAR_getWorkInt(EntryList[i].char_index, CHAR_WORKBATTLEMODE);
+            CHAR_getWorkInt(sRoundActionList[i].char_index, CHAR_WORKBATTLEMODE);
         if (charmode == 0 || charmode == BATTLE_CHARMODE_FINAL) {
           continue;
         }
-
-        // 旦  □正旦唱橘荚汊↓  质
-        BATTLE_StatusSeq(EntryList[i].char_index);
+        // ステータス 処理 (状态处理)
+        BATTLE_StatusSeq(sRoundActionList[i].char_index);
 #ifdef _OTHER_MAGICSTAUTS
-        BATTLE_MagicStatusSeq(EntryList[i].char_index);
+        BATTLE_MagicStatusSeq(sRoundActionList[i].char_index);
 #endif
-        //   仃卅井匀凶桦宁
-        if (BATTLE_CanMoveCheck(EntryList[i].char_index) == FALSE) {
+        // 動けない場合 (不能移动时)
+        if (BATTLE_CanMoveCheck(sRoundActionList[i].char_index) == FALSE) {
           continue;
         }
-        if (CHAR_getInt(EntryList[i].char_index, CHAR_HP) <= 0) {
+        if (CHAR_getInt(sRoundActionList[i].char_index, CHAR_HP) <= 0) {
           continue;
         }
-        aAttackList[k++] = EntryList[i].num;
+        aAttackList[k++] = sRoundActionList[i].num;
       }
       aAttackList[k] = -1;
       i--;
       if (k == 1) {
-        print("\nerr:一人combo bug\n");
+        print("出现一人合击的BUG.\n");
       }
       sprintf(szWork, "BY|r%X|", defNo);
       BATTLESTR_ADD(szWork);
-      BATTLE_Combo(battleindex, aAttackList, defNo);
+      BATTLE_Combo(battle_index, aAttackList, defNo);
 
 #ifdef _Item_ReLifeAct
-      BATTLE_AddProfit(battleindex, aAttackList);
+      BATTLE_AddProfit(battle_index, aAttackList);
 #endif
-      //     反 FF 毛仁匀勾仃月
+      // 終了 は FF を くっつける (结束时附加FF)
       BATTLESTR_ADD("FF|");
       break;
 
     //---------------------------------------------
     case BATTLE_COM_WAIT:
     case BATTLE_COM_NONE:
-      BATTLE_NoAction(battleindex, attackNo);
+      BATTLE_NoAction(battle_index, attackNo);
       break;
 
     //---------------------------------------------
     case BATTLE_COM_S_EARTHROUND1:
-      BATTLE_EarthRoundHide(battleindex, attackNo);
+      BATTLE_EarthRoundHide(battle_index, attackNo);
       break;
 
     //---------------------------------------------
     case BATTLE_COM_S_LOSTESCAPE:
-      BATTLE_LostEscape(battleindex, attackNo);
+      BATTLE_LostEscape(battle_index, attackNo);
       break;
 
     case BATTLE_COM_S_STEAL:
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
-      BATTLE_Steal(battleindex, attackNo, defNo);
+      BATTLE_Steal(battle_index, attackNo, defNo);
       break;
 
 #ifdef _BATTLESTEAL_FIX
     case BATTLE_COM_S_STEALMONEY:
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
-      BATTLE_StealMoney(battleindex, attackNo, defNo);
+      BATTLE_StealMoney(battle_index, attackNo, defNo);
       break;
 #endif
     case BATTLE_COM_S_NOGUARD:
-      BATTLE_NoAction(battleindex, attackNo);
+      BATTLE_NoAction(battle_index, attackNo);
       break;
     case BATTLE_COM_S_CHARGE:
       sprintf(szWork, "bt|%x|", attackNo);
@@ -10165,25 +9842,25 @@ static int BATTLE_Battling(int battleindex) {
       break;
 #ifdef _PETSKILL_LER
     case BATTLE_COM_S_BAT_FLY: {
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
 
-      BATTLE_BatFly(battleindex, attackNo, myside);
+      BATTLE_BatFly(battle_index, attackNo, myside);
     } break;
     case BATTLE_COM_S_DIVIDE_ATTACK: {
-      if ((defNo = BATTLE_TargetAdjust(battleindex, char_index, myside)) < 0) {
-        BATTLE_NoAction(battleindex, attackNo);
+      if ((defNo = BATTLE_TargetAdjust(battle_index, char_index, myside)) < 0) {
+        BATTLE_NoAction(battle_index, attackNo);
         break;
       }
 
-      BATTLE_DivideAttack(battleindex, attackNo, myside);
+      BATTLE_DivideAttack(battle_index, attackNo, myside);
     } break;
 #endif
 #ifdef _PETSKILL_BATTLE_MODEL
     case BATTLE_COM_S_BATTLE_MODEL:
-      BATTLE_BattleModel(battleindex, attackNo, myside);
+      BATTLE_BattleModel(battle_index, attackNo, myside);
       break;
 #endif
     //---------------------------------------------
@@ -10222,7 +9899,7 @@ static int BATTLE_Battling(int battleindex) {
 #endif
 #ifdef _PETSKILL_BECOMEFOX // 判断中了媚惑术後是否已到恢复的回合数
       // if(CHAR_getInt( char_index, CHAR_BASEIMAGENUMBER)==101749)
-      // 历史注释的原始编码已损坏，无法可靠恢复。
+      // 用图号判断的话,若是人变身时,会被自动改回去
       if (CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) != -1) //若是变成小狐狸
       {
         if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) != 101749)
@@ -10230,7 +9907,7 @@ static int BATTLE_Battling(int battleindex) {
 
         if (pBattle->turn - CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) >
             2) {
-          int defNo = BATTLE_Index2No(battleindex, char_index);
+          int defNo = BATTLE_Index2No(battle_index, char_index);
           int toNo = defNo - 5; // 主人的编号
           // print("\n变身人物回复:%s,round:%d", CHAR_getChar( char_index,
           // CHAR_NAME), CHAR_getWorkInt( char_index, CHAR_WORKFOXROUND));
@@ -10249,8 +9926,8 @@ static int BATTLE_Battling(int battleindex) {
           // Change fix 回复宠物忘掉的技能
           sprintf(
               szWork, "W%d",
-              CHAR_getInt(BATTLE_No2Index(battleindex, toNo), CHAR_DEFAULTPET));
-          CHAR_sendStatusString(BATTLE_No2Index(battleindex, toNo), szWork);
+              CHAR_getInt(BATTLE_No2Index(battle_index, toNo), CHAR_DEFAULTPET));
+          CHAR_sendStatusString(BATTLE_No2Index(battle_index, toNo), szWork);
         }
       }
 #endif
@@ -10273,8 +9950,6 @@ static int BATTLE_Battling(int battleindex) {
 #endif
 #ifdef _PROFESSION_ADDSKILL
       {
-          /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
-      } {
         int earth_boundary = GETHIGHVALUE(
             CHAR_getWorkInt(char_index, CHAR_WORKFIXEARTHAT_BOUNDARY));
         int water_boundary = GETHIGHVALUE(
@@ -10345,7 +10020,7 @@ static int BATTLE_Battling(int battleindex) {
             GETHIGHVALUE(CHAR_getWorkInt(char_index,
                                          CHAR_WORKFIXWINDAT_BOUNDARY)) == 0 &&
             boundaryclear) {
-          int toNo = BATTLE_Index2No(battleindex, char_index);
+          int toNo = BATTLE_Index2No(battle_index, char_index);
           if (toNo < 10) // 右方
             snprintf(szWork, sizeof(szWork), "Ba|%X|%X|", 0, 1);
           else
@@ -10360,10 +10035,9 @@ static int BATTLE_Battling(int battleindex) {
     {
       // pEntry
       int k, userindex = -1;
-      //		if( BattleArray[ battleindex].type !=
-      // BATTLE_TYPE_P_vs_P){
+      // if( BattleArray[ battle_index].type != BATTLE_TYPE_P_vs_P){
       for (k = 0; k < 20; k++) {
-        userindex = BATTLE_getBattleDieIndex(battleindex, k);
+        userindex = BATTLE_getBattleDieIndex(battle_index, k);
         if (!CHAR_CHECKINDEX(userindex))
           continue;
         // Change fix CHECK_ITEM_RELIFE里面有检查了,这里不用
@@ -10372,28 +10046,28 @@ static int BATTLE_Battling(int battleindex) {
         if (CHAR_getInt(userindex, CHAR_HP) > 0)
           continue;
         if (CHAR_getInt(userindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-          CHECK_ITEM_RELIFE(battleindex, userindex);
+          CHECK_ITEM_RELIFE(battle_index, userindex);
         }
 #ifdef _LOSE_FINCH_
         else if (CHAR_getInt(userindex, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
-          CHECK_PET_RELIFE(battleindex, userindex);
+          CHECK_PET_RELIFE(battle_index, userindex);
         }
 #endif
       }
     }
 #endif
     BATTLESTR_ADD(szBadStatusString);
-    BATTLE_AddProfit(battleindex, aAttackList); // 取得经验值
+    BATTLE_AddProfit(battle_index, aAttackList); // 取得经验值
     len = pszBattleTop - szBattleString;
     if (AllSize + len >= sizeof(szAllBattleString) - 1) {
-      //     引匹中匀凶井日窒手仄卅中
+    // 満 で いたから 何もしない (缓冲区满则跳过)
     } else {
       memcpy(szAllBattleString + AllSize, szBattleString, len);
-      szAllBattleString[AllSize + len] = 0; // NULL 毛本永玄
+      szAllBattleString[AllSize + len] = 0; // NULL をセット (置NULL)
       AllSize += len;
     }
-    if (BATTLE_CountAlive(battleindex, 0) == 0 ||
-        BATTLE_CountAlive(battleindex, 1) == 0) {
+    if (BATTLE_CountAlive(battle_index, 0) == 0 ||
+        BATTLE_CountAlive(battle_index, 1) == 0) {
       break;
     }
   }
@@ -10401,7 +10075,7 @@ static int BATTLE_Battling(int battleindex) {
   {
     register int i, dieindex;
     for (i = 0; i < 20; i++) {
-      dieindex = BATTLE_getBattleDieIndex(battleindex, i);
+      dieindex = BATTLE_getBattleDieIndex(battle_index, i);
       if (!CHAR_CHECKINDEX(dieindex))
         continue;
       if (CHAR_getFlg(dieindex, CHAR_ISDIE) == FALSE)
@@ -10411,7 +10085,7 @@ static int BATTLE_Battling(int battleindex) {
       // 雷尔死亡,变身
       if (CHAR_getInt(dieindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
           CHAR_getInt(dieindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
-        BATTLE_LerChange(battleindex, dieindex, i);
+        BATTLE_LerChange(battle_index, dieindex, i);
     }
   }
 #endif
@@ -10426,14 +10100,14 @@ static int BATTLE_Battling(int battleindex) {
       // snprintf( szBuffer, sizeof(szBuffer),
       //	"field回复成无属性。"
       //);
-      // BATTLE_BroadCast( battleindex, szBuffer, CHAR_COLORYELLOW );
+      // BATTLE_BroadCast( battle_index, szBuffer, CHAR_COLORYELLOW );
       BATTLESTR_ADD("BV|15|0|");
     }
   }
   // printf("后 szBattleString=%s\n",szBattleString);
   strncatsafe(szAllBattleString, szBattleString, sizeof(szAllBattleString));
-  for (i = 0; i < entrynum; i++) {
-    char_index = EntryList[i].char_index;
+  for (i = 0; i < actionNum; i++) {
+    char_index = sRoundActionList[i].char_index;
     if (!CHAR_CHECKINDEX(char_index))
       continue;
     if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
@@ -10461,13 +10135,13 @@ static int BATTLE_Battling(int battleindex) {
 }
 
 #ifdef _Item_ReLifeAct
-BOOL CHECK_ITEM_RELIFE(int battleindex, int toindex) {
+BOOL CHECK_ITEM_RELIFE(int battle_index, int toindex) {
   int i, item_index;
   CHAR_EquipPlace ep;
   typedef void (*DIERELIFEFUNC)(int, int, int);
   DIERELIFEFUNC Drf;
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE) {
     return FALSE;
   }
 
@@ -10505,7 +10179,7 @@ BOOL CHECK_ITEM_RELIFE(int battleindex, int toindex) {
 #endif
 
 #ifdef _LOSE_FINCH_
-BOOL CHECK_PET_RELIFE(int battleindex, int petindex) {
+BOOL CHECK_PET_RELIFE(int battle_index, int petindex) {
   int ReceveEffect = -1;
   int toNo;
   int attackNo = -1;
@@ -10519,7 +10193,7 @@ BOOL CHECK_PET_RELIFE(int battleindex, int petindex) {
     //	}rePet[]={{1,SPR_fukkatu3,100},{-1,0,0}};
   } rePet[] = {{-1, 0, 0}};
 
-  if (BATTLE_CHECKINDEX(battleindex) == FALSE) {
+  if (BATTLE_CHECKINDEX(battle_index) == FALSE) {
     return FALSE;
   }
   if (CHAR_CHECKINDEX(petindex) == FALSE)
@@ -10541,9 +10215,9 @@ BOOL CHECK_PET_RELIFE(int battleindex, int petindex) {
   ReceveEffect = rePet[i].Effect; // 朱雀动画 未定
 
   WORK_HP = CHAR_getWorkInt(petindex, CHAR_WORKMAXHP) * (rePet[i].Addhp / 100);
-  toNo = BATTLE_Index2No(battleindex, petindex);
+  toNo = BATTLE_Index2No(battle_index, petindex);
   attackNo = -1;
-  BATTLE_MultiReLife(battleindex, attackNo, toNo, WORK_HP, ReceveEffect);
+  BATTLE_MultiReLife(battle_index, attackNo, toNo, WORK_HP, ReceveEffect);
   CHAR_setWorkInt(petindex, CHAR_WORKSPETRELIFE, 1);
   return TRUE;
 }
@@ -10551,10 +10225,10 @@ BOOL CHECK_PET_RELIFE(int battleindex, int petindex) {
 
 #ifdef _OTHER_MAGICSTAUTS
 void BATTLE_MagicStatusSeq(int char_index) {
-  int cnt, i, bid, battleindex;
+  int cnt, i, bid, battle_index;
 
-  battleindex = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
-  bid = BATTLE_Index2No(battleindex, char_index);
+  battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
+  bid = BATTLE_Index2No(battle_index, char_index);
 
   for (i = 1; i < MAXSTATUSTYPE; i++) {
     if ((cnt = CHAR_getWorkInt(char_index, MagicTbl[i])) <= 0)
@@ -10614,7 +10288,7 @@ void CHAR_ComToxicationHp(int char_index) {
 
 #ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
 
-void BATTLE_ProfessionStatus_init(int battleindex, int char_index) {
+void BATTLE_ProfessionStatus_init(int battle_index, int char_index) {
   int profession_class = CHAR_getInt(char_index, PROFESSION_CLASS);
 
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
@@ -10844,7 +10518,7 @@ void BATTLE_ProfessionStatus_init(int battleindex, int char_index) {
   return;
 }
 
-void BATTLE_ProfessionStatusSeq(int battleindex, int char_index) {
+void BATTLE_ProfessionStatusSeq(int battle_index, int char_index) {
   int profession_class = 0, i = 0, j = 0, Pskillid = -1, skillid = -1;
   int skill_level = 0, value = 0, old_value = 0;
   int bid = -1, hp = 0, flag = 0;
@@ -10908,7 +10582,7 @@ void BATTLE_ProfessionStatusSeq(int battleindex, int char_index) {
 
         CHAR_setInt(char_index, CHAR_HP, value + hp);
 
-        bid = BATTLE_Index2No(battleindex, char_index);
+        bid = BATTLE_Index2No(battle_index, char_index);
         sprintf(szcommand, "BD|r%X|0|1|%X|", bid, value);
         BATTLESTR_ADD(szcommand);
 
@@ -10935,9 +10609,9 @@ void BATTLE_ProfessionStatusSeq(int battleindex, int char_index) {
 #endif
 
 #ifdef _ALLBLUES_LUA_1_4
-INLINE BOOL BATTLE_setLUAFunction(int battleindex, int functype, lua_State *L,
+INLINE BOOL BATTLE_setLUAFunction(int battle_index, int functype, lua_State *L,
                                   const char *luafunctable) {
-  if (!BATTLE_CHECKINDEX(battleindex) || functype < 0 ||
+  if (!BATTLE_CHECKINDEX(battle_index) || functype < 0 ||
       functype >= BATTLE_FUNCTABLENUM || L == NULL || luafunctable == NULL)
     return FALSE;
 
@@ -10947,46 +10621,46 @@ INLINE BOOL BATTLE_setLUAFunction(int battleindex, int functype, lua_State *L,
     return FALSE;
   memcpy(name, luafunctable, name_length);
 
-  if (BattleArray[battleindex].luafunctable[functype] != NULL)
-    freeMemory(BattleArray[battleindex].luafunctable[functype]);
-  BattleArray[battleindex].lua[functype] = L;
-  BattleArray[battleindex].luafunctable[functype] = name;
+  if (BattleArray[battle_index].luafunctable[functype] != NULL)
+    freeMemory(BattleArray[battle_index].luafunctable[functype]);
+  BattleArray[battle_index].lua[functype] = L;
+  BattleArray[battle_index].luafunctable[functype] = name;
   return TRUE;
 }
 
-INLINE lua_State *BATTLE_getLUAFunction(int battleindex, int functype) {
-  if (!BATTLE_CHECKINDEX(battleindex) || functype < 0 ||
+INLINE lua_State *BATTLE_getLUAFunction(int battle_index, int functype) {
+  if (!BATTLE_CHECKINDEX(battle_index) || functype < 0 ||
       functype >= BATTLE_FUNCTABLENUM ||
-      BattleArray[battleindex].lua[functype] == NULL ||
-      BattleArray[battleindex].luafunctable[functype] == NULL)
+      BattleArray[battle_index].lua[functype] == NULL ||
+      BattleArray[battle_index].luafunctable[functype] == NULL)
     return NULL;
 
-  lua_getglobal(BattleArray[battleindex].lua[functype],
-                BattleArray[battleindex].luafunctable[functype]);
-  return BattleArray[battleindex].lua[functype];
+  lua_getglobal(BattleArray[battle_index].lua[functype],
+                BattleArray[battle_index].luafunctable[functype]);
+  return BattleArray[battle_index].lua[functype];
 }
 #endif
 
-int BATTLE_getType(int battleindex) {
-  if (battleindex >= BATTLE_battlenum || battleindex < 0)
+int BATTLE_getType(int battle_index) {
+  if (battle_index >= BATTLE_battlenum || battle_index < 0)
     return -1;
 
-  return BattleArray[battleindex].type;
+  return BattleArray[battle_index].type;
 }
 #ifdef _BATTLE_TIMESPEED
-int BATTLE_getCreateTime(int battleindex) {
-  if (battleindex >= BATTLE_battlenum || battleindex < 0)
+int BATTLE_getCreateTime(int battle_index) {
+  if (battle_index >= BATTLE_battlenum || battle_index < 0)
     return -1;
 
-  return BattleArray[battleindex].CreateTime;
+  return BattleArray[battle_index].CreateTime;
 }
 #endif
 
-int BATTLE_getBattleFloor(int battleindex) {
-  if (battleindex >= BATTLE_battlenum || battleindex < 0)
+int BATTLE_getBattleFloor(int battle_index) {
+  if (battle_index >= BATTLE_battlenum || battle_index < 0)
     return -1;
 
-  return BattleArray[battleindex].BattleFloor;
+  return BattleArray[battle_index].BattleFloor;
 }
 #ifdef _JZ_NEWSCRIPT_LUA
 int SearchFmWarRandIndex(int char_index, int fmwarfloor) {

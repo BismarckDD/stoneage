@@ -970,9 +970,9 @@ typedef enum {
   CHAR_WORKBATTLEMODE,
   CHAR_WORKBATTLEINDEX,
   CHAR_WORKBATTLESIDE,
-  CHAR_WORKBATTLECOM1,
-  CHAR_WORKBATTLECOM2,
-  CHAR_WORKBATTLECOM3,
+  CHAR_WORKBATTLECOM1, // 战斗指令
+  CHAR_WORKBATTLECOM2, // 攻击目标
+  CHAR_WORKBATTLECOM3, // 所属阵营
 #ifdef _PSKILL_MDFYATTACK
   CHAR_WORKBATTLECOM4,
 #endif
@@ -984,8 +984,8 @@ typedef enum {
   CHAR_WORKFIXFIREAT,
   CHAR_WORKFIXWINDAT,
 #ifdef _PROFESSION_ADDSKILL
-  CHAR_WORKFIXEARTHAT_BOUNDARY, // 地结界  左16位元存放加强百分比
-                                // 右16位元存放回合数
+// 高16位存放加强百分比数值, 低16位存放持续回合数
+  CHAR_WORKFIXEARTHAT_BOUNDARY, // 地结界
   CHAR_WORKFIXWATERAT_BOUNDARY, // 水结界
   CHAR_WORKFIXFIREAT_BOUNDARY,  // 火结界
   CHAR_WORKFIXWINDAT_BOUNDARY,  // 风结界
@@ -1212,9 +1212,9 @@ typedef enum {
 #ifdef _SUIT_ADDENDUM
   CHAR_WORKRESIST,  // 异常抗性率
   CHAR_WORKCOUNTER, // 反击率
-  CHAR_WORKMPOWER, // 加强法师的魔法( 受影响的法术:火山泉 火星球 召雷术 电流术
-                   // 暴风雨 冰箭术 冰爆术 世界末日 火龙枪 嗜血成性 嗜血蛊
-                   // 一针见血 附身术 )
+  CHAR_WORKMPOWER, // 加强法师的魔法
+  // 受影响的法术:火山泉 火星球 召雷术 电流术 暴风雨 冰箭术 冰爆术
+  // 世界末日 火龙枪 嗜血成性 嗜血蛊 一针见血 附身术
 #endif
 #ifdef _SUIT_TWFWENDUM
   CHAR_WORK_EA, // 地
@@ -1240,7 +1240,7 @@ typedef enum {
 
 #ifdef _IMPRECATE_ITEM
   CHAR_WORKHURTMP,   // 伤害 MP
-  CHAR_WORKWISHESHP, // 祝福 hp
+  CHAR_WORKWISHESHP, // 祝福 HP
   CHAR_WORKWISHESMP, // 祝福 MP
   CHAR_WORKIMPRECATENUM1,
   CHAR_WORKIMPRECATENUM2,

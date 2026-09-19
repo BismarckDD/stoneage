@@ -260,7 +260,7 @@ typedef enum {
   BATTLE_COM_S_DRAGNET,          // 天罗地网
   BATTLE_COM_S_ENTWINE,          // 树根缠绕
   BATTLE_COM_S_AUTARKY,          // 自给自足
-  BATTLE_COM_S_PLUNDER,          //   体掠夺
+  BATTLE_COM_S_PLUNDER,          // 体掠夺
   BATTLE_COM_S_TOXIN_WEAPON,     // 毒素武器
   BATTLE_COM_S_RESIST_FIRE,      // 火抗性提升
   BATTLE_COM_S_RESIST_ICE,       // 冰抗性提升
@@ -474,15 +474,15 @@ typedef enum {
 #endif
 
 typedef struct _Battle {
-  BOOL use;        /* 银匀化中月井升丹井 */
-  int battleindex; /* */
-  int mode;        /* */
-  int type;        /* 战斗类型 (0:PVE)(1:DUEL)(2:PVP) */
-  int dpbattle;    /* DP田玄伙井＂ */
-  int norisk;      /* 韶氏匹手伉旦弁及  中田玄伙井＂ */
-  int turn;        /* 正□件醒 */
-  int timer;       /* 它巨奶玄羁卞银丹正奶穴 */
-  int leaderindex; /* 巨件市它件玄毛粟仇仄凶平乓仿及奶件犯永弁旦 */
+  BOOL use;         /* 呼び出しているかどうか  (是否正在调用) */
+  int battle_index; /* バトル番号  (战斗编号) */
+  int mode;         /* バトルモード  (战斗模式) */
+  int type;         /* 战斗类型 (0:PVE)(1:DUEL)(2:PVP) */
+  int dpbattle;     /* DPバトルか?  (是否DP战斗) */
+  int norisk;       /* 死んでもリスクのないバトルか?  (死亡也无风险的战斗) */
+  int turn;         /* ターン数  (回合数) */
+  int timer;        /* ウェイト時間に使うタイマー  (等待时间用计时器) */
+  int leaderindex;  /* エンカウントを起こしたキャラのインデックス  (触发遭遇的角色索引) */
 #ifdef _AUTO_PK
   char leadercdkey[CDKEYLEN];
   char leadername[CHARNAMELEN];
@@ -494,13 +494,13 @@ typedef struct _Battle {
 #ifdef _TRADE_PK
   STradeList TradeList[2];
 #endif
-  int BattleFloor; /*   厍仄凶扔奶玉 */
-  int winside;     /*   厍仄凶扔奶玉 */
+  int BattleFloor; /* 战场楼层 (CHAR_FLOOR) */
+  int winside;     /* 勝ったサイド  (获胜方) */
   int field_att;   /* 战场属性 */
-  int att_count;   /* 白奴□伙玉及箪岭  祭  及正奶穴 */
-  int att_pow;     /* 白奴□伙玉及箪岭  祭  及由伐□ */
+  int att_count;   /* フィールドの属性変化のタイマー  (场地属性变化计时器) */
+  int att_pow;     /* フィールドの属性変化のパワー  (场地属性变化强度) */
   int field_no;
-  int flg; /* 备潘白仿弘 */
+  int flg; /* 各種フラグ  (各种标志) */
   BATTLE_SIDE Side[2];
 #ifdef _BATTLE_TIMESPEED
   unsigned int CreateTime;
@@ -521,10 +521,10 @@ typedef struct _Battle {
   int ice_attackNo[20];
 #endif
 
-  int iEntryBack[BATTLE_ENTRY_MAX * 2];  // 蟆正□件瓒  今木化中凶丢件田□
-  int iEntryBack2[BATTLE_ENTRY_MAX * 2]; // 蟆正□件瓒  今木化中凶丢件田□
-  int createindex; /* 仇及爵  毛综曰请仄凶平乓仿奶件犯永弁旦(NPC卅升) */
-  int (*WinFunc)(int battleindex, int char_index);
+  int iEntryBack[BATTLE_ENTRY_MAX * 2];  // 前ターンに記録されていたナンバー  (上一回合记录的编号)
+  int iEntryBack2[BATTLE_ENTRY_MAX * 2]; // 前ターンに記録されていたナンバー  (上一回合记录的编号)
+  int createindex; /* この戦いを仕掛けたキャラインデックス(NPCなど)  (发起战斗的角色索引(NPC等)) */
+  int (*WinFunc)(int battle_index, int char_index);
 #ifdef _ALLBLUES_LUA_1_4
   lua_State *lua[BATTLE_FUNCTABLENUM];
   char *luafunctable[BATTLE_FUNCTABLENUM];
@@ -536,8 +536,8 @@ typedef struct _Battle {
   unsigned int tv_usec;
 #endif
 #ifdef _JZ_NEWSCRIPT_LUA
-  int (*BakFunc)(int battleindex, int char_index);
-  int (*EndFunc)(int battleindex);
+  int (*BakFunc)(int battle_index, int char_index);
+  int (*EndFunc)(int battle_index);
   char BakLuaFuncName[32];
   char EndLuaFuncName[32];
   int EndLuaIndex;
@@ -582,16 +582,24 @@ enum {
 
 #endif
 
-extern int gItemCrushRate;                        //   莽  犯白巧伙玄
-extern BATTLE *BattleArray;                       /* 爵  正旦弁     */
-extern int BATTLE_battlenum;                      /*     及醒 */
-extern char szAllBattleString[BATTLE_STRING_MAX]; /* 爵  卞银丹戊穴件玉  侬   */
-extern char *pszBattleTop, *pszBattleLast;        /* 爵  卞银丹  侬  及匏   */
-extern char szBadStatusString[];                  // 旦  □正旦唱橘迕  侬
-extern int gWeponType;                            // 蜇箕及  湛及潘
-extern float gDamageDiv;                          // 母丢□斥坌喃
+#ifdef __BATTLE_C__
+#define EXTERN
+int gItemCrushRate = 400000;
+#else
+#define EXTERN extern
+extern int gItemCrushRate;                        // 破壊デフォルト  (破坏默认值)
+#endif`
+EXTERN BATTLE *BattleArray;                       /* 戦タスク  (战斗任务)     */
+EXTERN int BATTLE_battlenum;                      /* 戦闘の数  (战斗数量) */
+EXTERN char szAllBattleString[BATTLE_STRING_MAX]; /* 戦闘に使用する文字列データ  (战斗用字符串数据)   */
+EXTERN char *pszBattleTop, *pszBattleLast;        /* 戦闘に使用するデータの先頭  (战斗数据开头)   */
+EXTERN char szBadStatusString[1024];              // ステータス異常用データ  (状态异常用数据)
+EXTERN int gWeponType;                            // 現在の 武器の種  (当前武器种类)
+EXTERN float gDamageDiv;                          // ダメージ倍率  (伤害倍率)
 
-BOOL BATTLE_CHECKINDEX(int battleindex);
+#undef EXTERN
+
+BOOL BATTLE_CHECKINDEX(int battle_index);
 #define BATTLE_CHECKSIDE(a) (((a) >= 2 || (a) < 0) ? (FALSE) : (TRUE))
 #define BATTLE_CHECKNO(a) (((a) >= 20 || (a) < 0) ? (FALSE) : (TRUE))
 #define BATTLE_CHECKADDRESS(a)                                                 \
@@ -622,46 +630,46 @@ BOOL BATTLE_CHECKINDEX(int battleindex);
 
 #define BATTLE_MAP_MAX 219
 
-#define CH_FIX_PLAYERLEVELUP (+2) // 皿伊奶乩□及伊矛伙互失永皿
-#define CH_FIX_PLAYERDEAD (-2)    // 皿伊奶乩□互骚橘韶
-#define CH_FIX_PLAYEULTIMATE (-4) // 皿伊奶乩□互失伙  奴丢永玄韶
-#define CH_FIX_PETESCAPE (-1)     // 矢永玄互  仆凶
+#define CH_FIX_PLAYERLEVELUP (+2) // プレイヤーのレベルがアップ  (玩家升级)
+#define CH_FIX_PLAYERDEAD (-2)    // プレイヤーが通常死  (玩家正常死亡)
+#define CH_FIX_PLAYEULTIMATE (-4) // プレイヤーがアルティメット死  (玩家被终极技杀死)
+#define CH_FIX_PETESCAPE (-1)     // ペットが逃げた  (宠物逃跑)
 
-#define AI_FIX_PETLEVELUP (+5 * 100)   // 矢永玄互伊矛伙失永皿
-#define AI_FIX_PETWIN (+1)             // 矢永玄互衬毛逦仄凶
-#define AI_FIX_PETGOLDWIN (+2 * 10)    // 矢永玄互伊矛伙及嫖中衬毛逦仄凶
-#define AI_FIX_PETRECOVERY (+10)       // 爵    卞荚汊仄化手日匀凶
-#define AI_FIX_PETRESSURECT (+3 * 100) // 爵    卞汊唾仄化手日匀凶
-// #define AI_FIX_PETRECOVERY  (+50)    // 爵    卞荚汊仄化手日匀凶
+#define AI_FIX_PETLEVELUP (+5 * 100)   // ペットがレベルアップ  (宠物升级)
+#define AI_FIX_PETWIN (+1)             // ペットが相手を倒した  (宠物击败对手)
+#define AI_FIX_PETGOLDWIN (+2 * 10)    // ペットがレベルの高い相手を倒した  (宠物击败高等级对手)
+#define AI_FIX_PETRECOVERY (+10)       // 戦闘に回復してもらった  (战斗中被回复)
+#define AI_FIX_PETRESSURECT (+3 * 100) // 戦闘に復活してもらった  (战斗中被复活)
+// #define AI_FIX_PETRECOVERY  (+50)    // 戦闘に回復してもらった  (战斗中被回复)
 
-#define AI_FIX_SEKKAN (-2 * 100)          // 愤坌及矢永玄毛  猾
-#define AI_FIX_PLAYERULTIMATE (-10 * 100) // 愤坌及潜谛互失伙  奴丢永玄韶
-#define AI_FIX_PETULTIMATE (-10 * 100)    // 矢永玄互失伙  奴丢永玄韶
-#define AI_FIX_PLAYERDEAD (-1 * 100)      // 愤坌及潜谛互竣濮
-#define AI_FIX_PETDEAD (-5 * 100)         // 矢永玄互竣濮
+#define AI_FIX_SEKKAN (-2 * 100)          // 自分のペットを撃  (击打自己的宠物)
+#define AI_FIX_PLAYERULTIMATE (-10 * 100) // 自分のマジックがアルティメット死  (自己的魔法终极技)
+#define AI_FIX_PETULTIMATE (-10 * 100)    // ペットがアルティメット死  (宠物被终极技杀死)
+#define AI_FIX_PLAYERDEAD (-1 * 100)      // 自分のマジックが気絶  (自己的魔法气绝)
+#define AI_FIX_PETDEAD (-5 * 100)         // ペットが気絶  (宠物气绝)
 
 #ifdef _Item_ReLifeAct
-int BATTLE_getBattleDieIndex(int battleindex, int bid);
+int BATTLE_getBattleDieIndex(int battle_index, int bid);
 #endif
-int BATTLE_AddProfit(int battleindex, int *pBidList);
-int BATTLE_No2Index(int battleindex, int No);
+int BATTLE_AddProfit(int battle_index, int *pBidList);
+int BATTLE_No2Index(int battle_index, int No);
 
-int BATTLE_Index2No(int battleindex, int char_index);
+int BATTLE_Index2No(int battle_index, int char_index);
 
 BOOL BATTLE_initBattleArray(int battlenum);
 
 int BATTLE_CreateBattle(void);
-int BATTLE_DeleteBattle(int battleindex);
+int BATTLE_DeleteBattle(int battle_index);
 
-int BATTLE_NewEntry(int char_index, int battleindex, int side);
+int BATTLE_NewEntry(int char_index, int battle_index, int side);
 
-#define BATTLE_Exit(char_index, battleindex)                                   \
-  _BATTLE_Exit(__FILE__, __LINE__, char_index, battleindex)
-INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battleindex);
+#define BATTLE_Exit(char_index, battle_index)                                   \
+  _BATTLE_Exit(__FILE__, __LINE__, char_index, battle_index)
+INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battle_index);
 
-#define BATTLE_ExitAll(battleindex)                                            \
-  _BATTLE_ExitAll(__FILE__, __LINE__, battleindex)
-INLINE void _BATTLE_ExitAll(char *file, int line, int battleindex);
+#define BATTLE_ExitAll(battle_index)                                            \
+  _BATTLE_ExitAll(__FILE__, __LINE__, battle_index)
+INLINE void _BATTLE_ExitAll(char *file, int line, int battle_index);
 
 int BATTLE_CreateVsPlayer(int char_index0, int char_index1);
 
@@ -670,43 +678,43 @@ int BATTLE_CreateVsEnemyLvNew(int char_index, int npcindex, int *table,
                               int *lvtable);
 int BATTLE_CreateVsEnemyNew(int char_index, int npcindex, int *enemytable);
 
-int BATTLE_CountEntry(int battleindex, int side);
+int BATTLE_CountEntry(int battle_index, int side);
 
 int BATTLE_Loop(void);
 
-int BATTLE_FinishSet(int battleindex);
-int BATTLE_StopSet(int battleindex);
+int BATTLE_FinishSet(int battle_index);
+int BATTLE_StopSet(int battle_index);
 int BATTLE_RescueEntry(int char_index, int toindex);
 
-int BATTLE_PetDefaultExit(int char_index, int battleindex);
+int BATTLE_PetDefaultExit(int char_index, int battle_index);
 
-int BATTLE_PetDefaultEntry(int char_index,  // 矢永玄毛  匀化中月皿伊奶乩□及
-                           int battleindex, // 田玄伙奶件犯永弁旦
+int BATTLE_PetDefaultEntry(int char_index,  // ペットを持っているプレイヤーの  (持有宠物的玩家的)
+                           int battle_index, // バトルインデックス  (战斗索引)
                            int side);
 
 BOOL BATTLE_RescueTry(int char_index);
 
 BOOL BATTLE_RescueParentTry(int char_index, int pindex);
 
-int BATTLE_DefaultAttacker(int battleindex, int side);
+int BATTLE_DefaultAttacker(int battle_index, int side);
 
 BOOL BATTLE_IsThrowWepon(int item_index);
 
 void BATTLE_BadStatusString(int defNo, int status);
-int BATTLE_MultiList(int battleindex, int toNo, int ToList[]);
+int BATTLE_MultiList(int battle_index, int toNo, int ToList[]);
 BOOL BATTLE_IsCharge(int com);
 BOOL BATTLE_CanMoveCheck(int char_index);
-int BATTLE_TargetCheck(int battleindex, int defNo);
+int BATTLE_TargetCheck(int battle_index, int defNo);
 char *BATTLE_CharTitle(int char_index);
-void BATTLE_EscapeDpSend(int battleindex, int char_index);
-int BATTLE_GetDuelPoint(int battleindex, int side, int num);
-int BATTLE_TargetCheckDead(int battleindex, int defNo);
+void BATTLE_EscapeDpSend(int battle_index, int char_index);
+int BATTLE_GetDuelPoint(int battle_index, int side, int num);
+int BATTLE_TargetCheckDead(int battle_index, int defNo);
 
-void BATTLE_MultiListDead(int battleindex, int toNo, int ToList[]);
+void BATTLE_MultiListDead(int battle_index, int toNo, int ToList[]);
 BOOL BATTLE_WatchTry(int char_index);
 int BATTLE_WatchEntry(int char_index, int toindex);
 void BATTLE_WatchStop(int char_index);
-int BATTLE_WatchUnLink(int battleindex);
+int BATTLE_WatchUnLink(int battle_index);
 void BATTLE_BpSendToWatch(BATTLE *pBattle, char *pszBcString);
 
 int BATTLE_GetWepon(int char_index);
@@ -740,17 +748,17 @@ void CHAR_ComToxicationHp(int char_index);
 #endif
 
 #ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
-void BATTLE_ProfessionStatus_init(int battleindex, int char_index);
-void BATTLE_ProfessionStatusSeq(int battleindex, int char_index);
+void BATTLE_ProfessionStatus_init(int battle_index, int char_index);
+void BATTLE_ProfessionStatusSeq(int battle_index, int char_index);
 #endif
 #ifdef _TRADE_PK
 int BATTLE_CreateVsPlayerForTrade(STradeList TradeList1, STradeList TradeList2);
 #endif
 
 #ifdef _ALLBLUES_LUA_1_4
-INLINE BOOL BATTLE_setLUAFunction(int battleindex, int functype, lua_State *L,
+INLINE BOOL BATTLE_setLUAFunction(int battle_index, int functype, lua_State *L,
                                   const char *luafunctable);
-INLINE lua_State *BATTLE_getLUAFunction(int battleindex, int functype);
+INLINE lua_State *BATTLE_getLUAFunction(int battle_index, int functype);
 #endif
 
 #ifdef _PETSKILL_NEW_PASSIVE
@@ -759,7 +767,7 @@ void BATTLE_PassiveSkill(int char_index);
 
 #endif
 
-int BATTLE_getBattleFloor(int battleindex);
-int BATTLE_getCreateIime(int battleindex);
-int BATTLE_getType(int battleindex);
-int BATTLE_CreateForWatcher(int char_index, int battleindex);
+int BATTLE_getBattleFloor(int battle_index);
+int BATTLE_getCreateIime(int battle_index);
+int BATTLE_getType(int battle_index);
+int BATTLE_CreateForWatcher(int char_index, int battle_index);
