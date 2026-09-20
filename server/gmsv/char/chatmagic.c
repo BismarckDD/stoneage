@@ -2730,17 +2730,11 @@ void CHAR_CHAT_DEBUG_send(int char_index, char *message) {
 // ttom end
 void CHAR_CHAT_DEBUG_noenemy(int char_index, char *message) {
   char msgbuf[256];
-  BOOL flg = isstring1or0(message);
-  if (flg == TRUE) {
-    int fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
-    setEqNoenemy(fd, 200);
-  } else {
-    int fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
-    setEqNoenemy(fd, 0);
-  }
+  BOOL flag = isstring1or0(message);
+  int fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
+  setEqNoenemy(fd, flag == TRUE ? 200 : 0);
   snprintf(msgbuf, sizeof(msgbuf), "不遇敌模式%s。",
-           (flg == TRUE) ? "开启" : "关闭");
-
+           (flag == TRUE) ? "开启" : "关闭");
   CHAR_talkToCli(char_index, -1, msgbuf, CHAR_COLORWHITE);
 }
 

@@ -2171,10 +2171,8 @@ void ITEM_equipNoenemy(int char_index, int item_index) {
   char buf[4096];
   int evadelevel;
   int fl, fd;
-
   if (ITEM_CHECKINDEX(item_index) == FALSE)
     return;
-
   if (ITEM_getArgument(ITEM_getChar(item_index, ITEM_ARGUMENT), "noen", buf,
                        sizeof(buf)) == FALSE) {
     return;
@@ -2188,7 +2186,6 @@ void ITEM_equipNoenemy(int char_index, int item_index) {
     return;
   } else if (evadelevel >= 120) {
     setEqNoenemy(fd, 120);
-
     if ((fl == 100) || (fl == 200) || (fl == 300) || (fl == 400) ||
         (fl == 500)) {
       CHAR_talkToCli(char_index, -1, "一道奇异的光芒隐藏了你的行踪。",
@@ -2198,7 +2195,6 @@ void ITEM_equipNoenemy(int char_index, int item_index) {
   } else if (evadelevel >= 80) {
     setEqNoenemy(fd, 80);
     if ((fl == 100) || (fl == 200) || (fl == 300) || (fl == 400)) {
-
       CHAR_talkToCli(char_index, -1, "一道奇异的光芒隐藏了你的行踪。",
                      CHAR_COLORWHITE);
       return;
