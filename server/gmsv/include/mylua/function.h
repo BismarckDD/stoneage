@@ -58,6 +58,8 @@ void FreeAddFMAdv(int char_index, int point);
 #endif
 #endif
 
+BOOL FreeSaMenu(int char_index, int index);
+
 #ifdef _RIDEQUERY_
 void FreeRideQuery(int char_index);
 #endif

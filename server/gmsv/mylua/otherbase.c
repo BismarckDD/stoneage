@@ -3,9 +3,6 @@
 #include "char_base.h"
 #include "mylua/base.h"
 #include "util.h"
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
 #include "gmsv_server.h"
 #include "npc_scheduleman.h"
 #include "mylua/mylua.h"
@@ -68,7 +65,6 @@ static int CallFunction(lua_State *L)
     return FALSE;
   }
   int i;
-
   for(i = 0; i < n; i++){
   	lua_pushnumber(lua, getArrayInt(L, i)); 
   }
@@ -82,10 +78,9 @@ static int CallFunction(lua_State *L)
   	return FALSE;
   }
   lua_isnumber(lua, -1);
-  
   int ret = lua_tonumber(lua, -1);
   lua_pushinteger(L, ret);
-    return TRUE;
+  return TRUE;
 }
 
 
@@ -203,7 +198,6 @@ static int getFmPKsDueltime(lua_State *L)
 static int getFmPKsPreparetime(lua_State *L)
 {
 	const int fmpks_pos = luaL_checkint(L, 1) * MAX_SCHEDULE;
-
 	lua_pushinteger(L, ( fmpks[fmpks_pos+1].prepare_time));
 	return 1;
 }
@@ -213,7 +207,6 @@ static int Hash(lua_State *L)
 {
 	size_t l;
 	char *charId = luaL_checklstring(L, 1, &l);
-
 	int hash = 0;
 	int j;
 	for( j=0; j<strlen(charId); j++) {
@@ -250,36 +243,34 @@ static int Random(lua_State *L)
 {
 	const int rand1 = luaL_checkint(L, 1);
 	const int rand2 = luaL_checkint(L, 2);
-
 	lua_pushinteger(L, RAND(rand1,rand2));
 	return 1;
-
 }
 
 static const luaL_Reg otherlib[] = {
-	{"time", 										nowtime},
-	{"atoi", 										strtoi},
-	{"getString", 							getString},
-	{"CallFunction", 					CallFunction},
-	{"c10to62", 								c10to62},
-	{"NumToAlpha", 						NumToAlpha},
-	{"AlphaToNum", 						AlphaToNum},
+	{"time", 			    nowtime},
+	{"atoi", 				strtoi},
+	{"getString", 			getString},
+	{"CallFunction",		CallFunction},
+	{"c10to62", 			c10to62},
+	{"NumToAlpha",			NumToAlpha},
+	{"AlphaToNum",			AlphaToNum},
 #ifdef _OFFLINE_SYSTEM
-	{"setLuaPLayerNum", 			setLuaPLayerNum},
-	{"getLuaPLayerNum", 			getLuaPLayerNum},
-	{"getOnlinePlayer", 			getOnlinePlayer},
+	{"setLuaPLayerNum", 	setLuaPLayerNum},
+	{"getLuaPLayerNum", 	getLuaPLayerNum},
+	{"getOnlinePlayer", 	getOnlinePlayer},
 #endif
-	{"DataAndData", 						DataAndData},
-	{"DataOrData",							DataOrData},
-	{"getFmPKsGindex", 				getFmPKsGindex},
-	{"getFmPKsHindex", 				getFmPKsHindex},
-	{"getFmPKsDueltime", 		getFmPKsDueltime},
+	{"DataAndData", 		DataAndData},
+	{"DataOrData",			DataOrData},
+	{"getFmPKsGindex", 		getFmPKsGindex},
+	{"getFmPKsHindex", 		getFmPKsHindex},
+	{"getFmPKsDueltime", 	getFmPKsDueltime},
 	{"getFmPKsPreparetime", getFmPKsPreparetime},
-	{"Hash", 										Hash},
-	{"NumRightToNum", 				NumRightToNum},
-	{"NumLeftToNum", 					NumLeftToNum},
-	{"Random", 									Random},
-  {NULL, 											NULL}
+	{"Hash", 				Hash},
+	{"NumRightToNum",		NumRightToNum},
+	{"NumLeftToNum", 		NumLeftToNum},
+	{"Random", 				Random},
+    {NULL, 					NULL}
 };
 
 LUALIB_API int luaopen_Other (lua_State *L) {

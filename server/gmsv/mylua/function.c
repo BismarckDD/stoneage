@@ -811,9 +811,7 @@ BOOL FreePlayerExp(int char_index) {
     luaL_error(lua, "function `f' must return a number");
 
   int ret = lua_tonumber(lua, -1);
-
   lua_pop(lua, 1);
-
   return ret;
 }
 
@@ -824,20 +822,17 @@ BOOL FreeSaMenu(int char_index, int index) {
     if (lua == NULL)
       return FALSE;
   }
-
+  // 查找全局变量并压入栈顶
   lua_getglobal(lua, "FreeSaMenu");
-
+  // 如果栈顶不是函数，弹出栈顶，并返回False
   if (!lua_isfunction(lua, -1)) {
     lua_pop(lua, 1);
     return FALSE;
   }
-
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, index);
-
   // printf("FreeSaMenu:%d,%d\n", char_index, index);
-  docall(lua, 2, 1);
-
+  docall(lua, 2, 1); // 执行lua栈顶的函数，有两个参数，一个返回值
   return TRUE;
 }
 

@@ -6,10 +6,6 @@
 #include "char.h"
 #include "item.h"
 //
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-//
 #include "gmsv_server.h"
 
 #ifdef _PROFESSION_SKILL			// WON ADD 人物职业技能
