@@ -188,8 +188,10 @@ BOOL CONNECT_acfdInitWB(int fd);
 #ifdef _BATTLE_TIMESPEED
 // void setDefBTime( int fd, unsigned int times);
 // unsigned int getDefBTime( int fd);
-BOOL CheckDefBTime(int char_index, int fd, unsigned int lowTime,
-                   unsigned int battletime, unsigned int addTime);
+BOOL CheckDefBTime(int char_index, int fd,
+                   unsigned int battle_create_time,
+                   unsigned int battle_duration_time,
+                   unsigned int extra_time);
 #endif
 
 #ifdef _TYPE_TOXICATION

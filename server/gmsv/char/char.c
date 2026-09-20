@@ -5891,51 +5891,6 @@ void CHAR_Loop(void) {
 #endif
   }
 
-#ifdef _CHAR_LOOP_TIME
-  // 玩家以外的Object用的loop
-  struct timeval st, et;
-  gettimeofday(&st, NULL);
-  while (charcnt++) {
-    gettimeofday(&et, NULL);
-    if (getCharLoopTime() > 0 &&
-        time_diff_us(et, st) > getCharLoopTime() * 1000.0)
-      break;
-    if (charcnt >= charnum)
-      charcnt = playernum;
-    if (CHAR_getCharUse(charcnt) == FALSE)
-      continue;
-    CHAR_callLoop(charcnt);
-  }
-#else
-
-#ifdef _FIX_CHAR_LOOP
-    static int petcnt = 0;
-    static int othercnt = 0;
-    for (i = 0, movecnt = 0; i < CHAR_getPetMaxNum(); i++, petcnt++) {
-      if (petcnt >= petnum)
-        petcnt = playernum;
-      if (CHAR_getCharUse(petcnt) == FALSE)
-        continue;
-      if (CHAR_callLoop(petcnt) == TRUE) {
-        if (++movecnt >= EnemyMoveNum)
-          break;
-      } else {
-        continue;
-      }
-    }
-    for (i = 0, movecnt = 0; i < CHAR_getOthersMaxNum(); i++, othercnt++) {
-      if (othercnt >= charnum)
-        othercnt = petnum;
-      if (CHAR_getCharUse(othercnt) == FALSE)
-        continue;
-      if (CHAR_callLoop(othercnt) == TRUE) {
-        if (++movecnt >= 50)
-          break;
-      } else {
-        continue;
-      }
-    }
-#else
     // 玩家以外的Object用的loop
     for (i = 0, movecnt = 0; i < (petnum / 2); i++, charcnt++) {
       if (charcnt >= charnum)
@@ -5995,8 +5950,6 @@ void CHAR_Loop(void) {
       }
 #endif
     }
-#endif
-#endif
 }
 
 char *CHAR_appendNameAndTitle(int char_index, char *src, char *buf,
@@ -6056,11 +6009,8 @@ BOOL CHAR_createCharacter(int type, int floor, int x, int y, int dir,
     return FALSE;
   }
   CHAR_setWorkInt(*char_index, CHAR_WORKOBJINDEX, *objindex);
-
   /*  生永玄伐□弁毛垫丹  */
-
   CHAR_sendWatchEvent(*objindex, CHAR_ACTSTAND, NULL, 0, TRUE);
-
   return TRUE;
 }
 

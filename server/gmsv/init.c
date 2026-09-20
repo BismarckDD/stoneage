@@ -321,9 +321,7 @@ BOOL init(int argc, char **argv, char **env) {
     print("Player YB Level: %d\n", getYBLevel());
     print("Player Max Level: %d\n", getMaxLevel());
 #endif
-#ifdef _FIX_CHARLOOPS
-    print("Char Loops: %d\n", getCharloops());
-#endif
+    print("战斗最小延迟(秒): %d\n", getBattleDelayTime());
 #ifdef _PLAYER_ANNOUNCE
     if (getPAnnounce() == -1)
       print("Player Announce: Disable\n");

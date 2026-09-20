@@ -1215,7 +1215,7 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battle_index) 
                 battletime =
                     (unsigned int)(BattleArray[battle_index].flgTime / 100);
                 CheckDefBTime(char_index, fd, Dtimes, battletime,
-                              10); //lowTime延迟时间
+                              10); // 2026.09.20 人物死亡后增加10s延时
               }
             }
           }
@@ -1232,20 +1232,12 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battle_index) 
           if (CHAR_getWorkInt(char_index, CHAR_WORK_OFFLINE) == 0)
 #endif
           {
-            unsigned int Dtimes;
-            unsigned int battletime;
-
             int fd = getfdFromchar_index(char_index);
             if (CONNECT_checkfd(fd) == TRUE) {
-              Dtimes = BattleArray[battle_index].CreateTime;
-              battletime =
+              unsigned int create_time = BattleArray[battle_index].CreateTime;
+              unsigned int duration_time =
                   (unsigned int)(BattleArray[battle_index].flgTime / 100);
-              // if( CHAR_getWorkInt( char_index, CHAR_WORKFLG) &
-              // WORKFLG_DEBUGMODE )	{ }else
-              {
-                CheckDefBTime(char_index, fd, Dtimes, battletime,
-                              0); //lowTime延迟时间
-              }
+              CheckDefBTime(char_index, fd, create_time, duration_time, 0);
             }
           }
 #endif

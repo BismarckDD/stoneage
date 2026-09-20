@@ -463,8 +463,6 @@ static int gmsv_session_wants_write(const GmsvSession *session) {
 #define MUTLITHREAD
 #define ANY_THREAD
 
-const int delayTime = 5;
-
 ServerState servstate;
 
 pthread_mutex_t MTIO_servstate_m;
@@ -3629,28 +3627,20 @@ void RescueEntryBTime(int char_index, int fd, unsigned int lowTime,
   Connect[fd].CBTime = now_time;
 }
 
-BOOL CheckDefBTime(int char_index, int fd, unsigned int lowTime,
-                   unsigned int battletime,
-                   unsigned int addTime) //lowTime延迟时间
+// 2026.09.20 重新修改战斗延时的计算规则
+BOOL CheckDefBTime(int char_index, int fd,
+                   unsigned int battle_create_time,
+                   unsigned int battle_duration_time,
+                   unsigned int extra_time)
 {
   if (fd < 0 || fd >= ConnectLen) {
     return TRUE;
   }
-  unsigned int NowTime = (unsigned int)time(NULL);
-  lowTime += battletime;
-  if ((Connect[fd].CBTime + battletime) > lowTime)
-    lowTime = Connect[fd].CBTime + battletime;
   GmsvServer_NU_send(fd, 0);
-#ifdef _FIX_CHARLOOPS
-  if (getCharloops() > 0)
-    Connect[fd].BDTime =
-        NowTime + rand() % getCharloops(); //
-  else
-    Connect[fd].BDTime = NowTime;
-#else
-  Connect[fd].BDTime =
-      (NowTime + rand() % 5) + delayTime + addTime; //
-#endif
+  unsigned int now_time = (unsigned int)time(NULL);
+  now_time += extra_time + getBattleDelayTime();
+  Connect[fd].BDTime = now_time +
+    ((getBattleDelayTime() > 0) ? rand() % getBattleDelayTime() : 0);
   return TRUE;
 }
 #endif

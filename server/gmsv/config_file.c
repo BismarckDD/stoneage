@@ -185,9 +185,7 @@ typedef struct tagServerConfig {
 #ifdef _NEW_PLAYER_RIDE
   int npride;
 #endif
-#ifdef _FIX_CHARLOOPS
-  int charloops;
-#endif
+  int battleDelayTime;
 #ifdef _PLAYER_ANNOUNCE
   int pannounce;
 #endif
@@ -385,9 +383,6 @@ typedef struct tagServerConfig {
 #ifdef _DEFEND_BIGBAO
   int bigbao;
   int bigbao2;
-#endif
-#ifdef _CHAR_LOOP_TIME
-  int charlooptime;
 #endif
 #ifdef _MO_RELOAD_NPC
   int reloadnpctime;
@@ -618,6 +613,8 @@ ReadConf gReadConf[] = {
     {"acwritesize", NULL, 0, (void *)&gServerConfig.acwritesize, INT},
     {"acwbsize", NULL, 0, (void *)&gServerConfig.acwbsize, INT},
     {"erruser_down", NULL, 0, (void *)&gServerConfig.ErrUserDownFlg, INT},
+    // 2026.09.20 增加战斗延迟时间的设置
+    {"battleDelayTime", NULL, 0, (void *)&gServerConfig.battleDelayTime, INT},
 
 #ifdef _PROFESSION_SKILL // WON ADD
     {"profession", gServerConfig.profession, sizeof(gServerConfig.profession),
@@ -744,9 +741,6 @@ ReadConf gReadConf[] = {
 #endif
 #ifdef _NEW_PLAYER_RIDE
     {"NPRIDE", NULL, 0, (void *)&gServerConfig.npride, INT},
-#endif
-#ifdef _FIX_CHARLOOPS
-    {"CHARLOOPS", NULL, 0, (void *)&gServerConfig.charloops, INT},
 #endif
 #ifdef _PLAYER_ANNOUNCE
     {"PANNOUNCE", NULL, 0, (void *)&gServerConfig.pannounce, INT},
@@ -972,9 +966,6 @@ ReadConf gReadConf[] = {
 #ifdef _DEFEND_BIGBAO
     {"BIGBAO", NULL, 0, (void *)&gServerConfig.bigbao, INT},
     {"BIGBAO2", NULL, 0, (void *)&gServerConfig.bigbao2, INT},
-#endif
-#ifdef _CHAR_LOOP_TIME
-    {"charlooptime", NULL, 0, (void *)&gServerConfig.charlooptime, INT},
 #endif
 #ifdef _MO_RELOAD_NPC
     {"RELOADNPCTIME", NULL, 0, (void *)&gServerConfig.reloadnpctime, INT},
@@ -2194,9 +2185,7 @@ char *getPlayerRide(void) {
 }
 #endif
 
-#ifdef _FIX_CHARLOOPS
-int getCharloops(void) { return gServerConfig.charloops - 1; }
-#endif
+int getBattleDelayTime(void) { return gServerConfig.battleDelayTime; }
 
 #ifdef _PLAYER_ANNOUNCE
 int getPAnnounce(void) { return max(-1, gServerConfig.pannounce); }
@@ -2803,9 +2792,6 @@ int getBigBao2(void) {
     return 1024;
   return gServerConfig.bigbao2;
 }
-#endif
-#ifdef _CHAR_LOOP_TIME
-int getCharLoopTime() { return gServerConfig.charlooptime; }
 #endif
 #ifdef _MO_RELOAD_NPC
 int getReloadNpcTime(void) {

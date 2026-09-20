@@ -305,9 +305,7 @@ char *getRevLevel(void);
 #ifdef _NEW_PLAYER_RIDE
 char *getPlayerRide(void);
 #endif
-#ifdef _FIX_CHARLOOPS
-int getCharloops(void);
-#endif
+int getBattleDelayTime(void);
 #ifdef _PLAYER_ANNOUNCE
 int getPAnnounce(void);
 #endif
@@ -526,9 +524,6 @@ int getExpShare(void);
 #ifdef _DEFEND_BIGBAO
 int getBigBao(void);
 int getBigBao2(void);
-#endif
-#ifdef _CHAR_LOOP_TIME
-int getCharLoopTime();
 #endif
 #ifdef _MO_RELOAD_NPC
 int getReloadNpcTime(void);
