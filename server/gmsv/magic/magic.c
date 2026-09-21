@@ -547,7 +547,7 @@ int MAGIC_Metamo(int from_char_index, int to_char_index, int marray, int mp) {
     return FALSE;
   }
 #else
-  if (CHAR_getInt(from_char_index, CHAR_BASEIMAGENUMBER) == 100259) {
+  if (CHAR_getInt(from_char_index, CHAR_IMAGENUMBER) == 100259) {
     CHAR_talkToCli(from_char_index, -1, "无法变身，搭乘中不能变身！",
                    CHAR_COLORWHITE);
     return FALSE;
@@ -580,7 +580,7 @@ int MAGIC_Metamo(int from_char_index, int to_char_index, int marray, int mp) {
     return FALSE;
   }
 
-  if (CHAR_getInt(to_char_index, CHAR_BASEIMAGENUMBER) == 100259) {
+  if (CHAR_getInt(to_char_index, CHAR_IMAGENUMBER) == 100259) {
     CHAR_talkToCli(from_char_index, -1, "不能变身成加美！", CHAR_COLORWHITE);
     return FALSE;
   }
@@ -603,12 +603,12 @@ int MAGIC_Metamo(int from_char_index, int to_char_index, int marray, int mp) {
   }
   CHAR_talkToCli(from_char_index, -1, msg, CHAR_COLORWHITE);
 
-  CHAR_setInt(from_char_index, CHAR_BASEIMAGENUMBER,
-              CHAR_getInt(to_char_index, CHAR_BASEBASEIMAGENUMBER));
+  CHAR_setInt(from_char_index, CHAR_IMAGENUMBER,
+              CHAR_getInt(to_char_index, CHAR_BASEIMAGENUMBER));
   CHAR_complianceParameter(from_char_index);
   CHAR_sendCToArroundCharacter(
       CHAR_getWorkInt(from_char_index, CHAR_WORKOBJINDEX));
-  CHAR_send_P_StatusString(from_char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+  CHAR_send_P_StatusString(from_char_index, CHAR_P_STRING_BASEIMAGENUMBER);
   // #endif
 
   return TRUE;

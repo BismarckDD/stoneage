@@ -46,9 +46,6 @@ enum {
 */
 };
 #define _GAMBLEBANK_U_NOLOCK	//同时对多人
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 #define GAMBLEBANK_LOOPTIME 80
 #define GAMBLEBANK_STANDBY	5000 
 #define GAMBLEBANK_DEF		3	//手续费 / 100

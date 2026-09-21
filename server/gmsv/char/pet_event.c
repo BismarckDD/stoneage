@@ -17,10 +17,6 @@
 
 #ifdef _PET_TALK
 BOOL PetTalk_CheckFree(int meindex, int talker, char *buf);
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 BOOL PetTalk_BSCheck(int meindex, int talker, char *buf);
 BOOL PetTalk_FreeIfCheck(int meindex, int talker, char *buf, int kosuu, int flg,
                          int temp);
@@ -977,7 +973,7 @@ BOOL PET_CheckPlayerBBI(int meindex, int to_index, int BBI, int flg) {
     return FALSE;
   if (BBI < 0)
     return FALSE;
-  const int MyBBI = CHAR_getInt(to_index, CHAR_BASEIMAGENUMBER);
+  const int MyBBI = CHAR_getInt(to_index, CHAR_IMAGENUMBER);
   if (flg == 0) {
     if (BBI == MyBBI)
       return TRUE;

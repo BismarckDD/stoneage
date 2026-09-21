@@ -35,10 +35,6 @@ enum {
 	NPC_PROGRAMEGINEER_DEFIND,
 	NPC_PROGRAMEGINEER_END,
 };
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 enum {
 	NPC_WORK_CURRENTTIME = CHAR_NPCWORKINT1,
 };
@@ -134,7 +130,7 @@ void NPC_NewNpcManTalked( int meindex , int talkerindex , char *msg , int color 
 		return;
 	}
 	CHAR_setWorkInt( talkerindex, CHAR_WORKSHOPRELEVANT, 0);
-	if( CHAR_getInt( talkerindex, CHAR_BASEBASEIMAGENUMBER) != 101578 ){
+	if( CHAR_getInt( talkerindex, CHAR_BASEIMAGENUMBER) != 101578 ){
 		NPC_NewNpcMan_selectWindow( meindex, talkerindex, WINDOW_SELECT1, 0);
 		return;
 	}
@@ -381,10 +377,10 @@ static void NPC_NewNpcMan_selectWindow( int meindex, int toindex, int num, int f
 			}
 			if( i >= 48 )return;
 			CHAR_setWorkInt( toindex, CHAR_WORKNPCMETAMO, meindex);
-			CHAR_setInt( toindex, CHAR_BASEIMAGENUMBER, checkPc[i][2]);
+			CHAR_setInt( toindex, CHAR_IMAGENUMBER, checkPc[i][2]);
 			CHAR_complianceParameter( toindex );
 			CHAR_sendCToArroundCharacter( CHAR_getWorkInt( toindex , CHAR_WORKOBJINDEX ));
-			CHAR_send_P_StatusString( toindex , CHAR_P_STRING_BASEBASEIMAGENUMBER);
+			CHAR_send_P_StatusString( toindex , CHAR_P_STRING_BASEIMAGENUMBER);
 
 			buttontype = WINDOW_BUTTONTYPE_YESNO;
 			windowno = NPC_PROGRAMEGINEER_END;
@@ -393,12 +389,12 @@ static void NPC_NewNpcMan_selectWindow( int meindex, int toindex, int num, int f
 	case WINDOW_END:
 		{
 			CHAR_setWorkInt( toindex, CHAR_WORKNPCMETAMO, -1);
-			CHAR_setInt( toindex, CHAR_BASEBASEIMAGENUMBER,
-				CHAR_getInt( toindex, CHAR_BASEIMAGENUMBER) );
+			CHAR_setInt( toindex, CHAR_BASEIMAGENUMBER,
+				CHAR_getInt( toindex, CHAR_IMAGENUMBER) );
 
 			CHAR_complianceParameter( toindex );
 			CHAR_sendCToArroundCharacter( CHAR_getWorkInt( toindex , CHAR_WORKOBJINDEX ));
-			CHAR_send_P_StatusString( toindex , CHAR_P_STRING_BASEBASEIMAGENUMBER);
+			CHAR_send_P_StatusString( toindex , CHAR_P_STRING_BASEIMAGENUMBER);
 			return;
 		}
 		break;
@@ -558,10 +554,10 @@ BOOL CHECK_PETBBI( int toindex)
 		parry = ENEMYTEMP_getEnemyTempArray( array);
 		PetBBI = ENEMYTEMP_getInt( parry, E_T_IMGNUMBER);
 
-		if( CHAR_getInt( petindex, CHAR_BASEBASEIMAGENUMBER) != PetBBI ||
-			CHAR_getInt( petindex, CHAR_BASEIMAGENUMBER) != PetBBI ){
-			CHAR_setInt( petindex, CHAR_BASEBASEIMAGENUMBER, PetBBI);
+		if( CHAR_getInt( petindex, CHAR_BASEIMAGENUMBER) != PetBBI ||
+			CHAR_getInt( petindex, CHAR_IMAGENUMBER) != PetBBI ){
 			CHAR_setInt( petindex, CHAR_BASEIMAGENUMBER, PetBBI);
+			CHAR_setInt( petindex, CHAR_IMAGENUMBER, PetBBI);
 			sprintf( token, "修正%s图号", CHAR_getUseName( petindex));
 			CHAR_talkToCli( toindex, -1, token, CHAR_COLORYELLOW);
 			Finds = TRUE;

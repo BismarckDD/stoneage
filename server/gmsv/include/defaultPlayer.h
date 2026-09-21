@@ -4,8 +4,8 @@ static Char player = {
     FALSE, /* use */
     {
         0, /*  CHAR_DATAPLACENUMBER */
+        0, /*  CHAR_IMAGENUMBER */
         0, /*  CHAR_BASEIMAGENUMBER */
-        0, /*  CHAR_BASEBASEIMAGENUMBER */
         0, /*  CHAR_FACEIMAGENUMBER */
         0, /*  CHAR_FLOOR */
         0, /*  CHAR_X */

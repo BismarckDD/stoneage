@@ -29,7 +29,7 @@ int Attack(lua_State *L) {
     if (ITEM_getInt(weapon_id, ITEM_TYPE) == ITEM_BOOMERANG) {
       CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_BOOMERANG);
 #ifdef _PETSKILL_BECOMEFOX
-      if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101749 ||
+      if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 101749 ||
           CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) !=
               -1) { // 若是变成小狐狸不可以使用回力标
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);

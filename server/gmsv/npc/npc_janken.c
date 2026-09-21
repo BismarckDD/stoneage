@@ -21,10 +21,6 @@ BOOL NPC_JankenEntryItemCheck(int talker,char *buf);
 BOOL NPC_JankenEntryItemDel(int talker,char *buf);
 void NPC_WarpPointGet(int meindex,int talker,int *fl,int *x,int *y,int judge);
 
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 /*********************************
 * 赓渝质
 *********************************/

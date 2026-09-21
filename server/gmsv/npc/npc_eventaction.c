@@ -58,10 +58,6 @@ static NPC_TimeMan	TimeTble[] = {
 };
 
 extern void BATTLE_changeRideImage( int index );
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 
 #define MAXNPCPOINT 10
 
@@ -686,10 +682,10 @@ BOOL Action_RunDoEventAction( int meindex, int toindex, char *buf1)
 			CHAR_setWorkInt( meindex, CHAR_NPCWORKINT7, NowTime.tv_sec+atoi( buf2) );
 			//变图
 			//NPC_TIME_EVENONBBI = CHAR_NPCWORKINT8,
-			CHAR_setInt( meindex, CHAR_BASEBASEIMAGENUMBER,
+			CHAR_setInt( meindex, CHAR_BASEIMAGENUMBER,
 				CHAR_getWorkInt( meindex, CHAR_NPCWORKINT8));
 
-			CHAR_setInt( meindex, CHAR_BASEIMAGENUMBER,
+			CHAR_setInt( meindex, CHAR_IMAGENUMBER,
 				CHAR_getWorkInt( meindex, CHAR_NPCWORKINT8));
 			CHAR_sendCToArroundCharacter( CHAR_getWorkInt( meindex, CHAR_WORKOBJINDEX ) );
 		}
@@ -1886,7 +1882,7 @@ BOOL NPC_ActionDelPet( int talker, char *buf)
 			
 			if(ridepet == petsel)	{
 				CHAR_setInt( talker , CHAR_RIDEPET, -1 );
-				CHAR_setInt( talker , CHAR_BASEIMAGENUMBER , CHAR_getInt( talker , CHAR_BASEBASEIMAGENUMBER) );
+				CHAR_setInt( talker , CHAR_IMAGENUMBER , CHAR_getInt( talker , CHAR_BASEIMAGENUMBER) );
 				CHAR_complianceParameter( talker );
 				CHAR_sendCToArroundCharacter( CHAR_getWorkInt( talker, CHAR_WORKOBJINDEX ));
 				CHAR_send_P_StatusString( talker , CHAR_P_STRING_RIDEPET);
@@ -2793,7 +2789,7 @@ BOOL NPC_ActionTrans7( int talker, char *buf)
   CHAR_setInt( talker,CHAR_SKILLUPPOINT,CHAR_getInt( talker, CHAR_TRANSMIGRATION)*10);
   CHAR_Skillupsend( talker );
   CHAR_setInt( talker,CHAR_RIDEPET, -1 );
-  CHAR_setInt( talker , CHAR_BASEIMAGENUMBER , CHAR_getInt( talker , CHAR_BASEBASEIMAGENUMBER) );
+  CHAR_setInt( talker , CHAR_IMAGENUMBER , CHAR_getInt( talker , CHAR_BASEIMAGENUMBER) );
 	CHAR_sendStatusString( talker , "P");
 	return TRUE;
 }
@@ -3789,10 +3785,10 @@ BOOL NPC_ActionChangePlayerBBI( int meindex, int charindex, char *Img)
 //=======================
 	CHAR_setWorkInt( charindex, CHAR_WORKNPCMETAMO, meindex);
 	if( strstr( Img, "NPCBBI") != NULL )	{
-		cBBI = CHAR_getInt( meindex, CHAR_BASEBASEIMAGENUMBER);
+		cBBI = CHAR_getInt( meindex, CHAR_BASEIMAGENUMBER);
 		sprintf( buf1, "你化身成了%s的样子。", CHAR_getChar( meindex, CHAR_NAME));
 	}else if( strstr( Img, "MYBBI") != NULL )	{
-		cBBI = CHAR_getInt( charindex, CHAR_BASEBASEIMAGENUMBER);
+		cBBI = CHAR_getInt( charindex, CHAR_BASEIMAGENUMBER);
 		CHAR_setWorkInt( charindex, CHAR_WORKNPCMETAMO, 0);
 		sprintf( buf1, "变回了原来的样子。");
 	}else if( strstr( Img, ",") != NULL )	{
@@ -3817,13 +3813,10 @@ BOOL NPC_ActionChangePlayerBBI( int meindex, int charindex, char *Img)
 		return FALSE;
 	}
 	CHAR_talkToCli( charindex, -1, buf1, CHAR_COLORYELLOW);
-	//CHAR_BASEBASEIMAGENUMBER	CHAR_BASEIMAGENUMBER
-	CHAR_setInt( charindex, CHAR_BASEIMAGENUMBER, cBBI);
+	CHAR_setInt( charindex, CHAR_IMAGENUMBER, cBBI);
 	CHAR_complianceParameter( charindex );
 	CHAR_sendCToArroundCharacter( CHAR_getWorkInt( charindex , CHAR_WORKOBJINDEX ));
-	CHAR_send_P_StatusString( charindex , CHAR_P_STRING_BASEBASEIMAGENUMBER);
-	//CHAR_K_STRING_BASEIMAGENUMBER
-	//CHAR_P_STRING_BASEBASEIMAGENUMBER
+	CHAR_send_P_StatusString( charindex , CHAR_P_STRING_BASEIMAGENUMBER);
 	return TRUE;
 }
 #endif
@@ -3836,7 +3829,7 @@ BOOL NPC_CheckPlayerBBI( int meindex, int charindex, int BBI, int flg)
 		return FALSE;
 	if( BBI < 0 )
 		return FALSE;
-	MyBBI = CHAR_getInt( charindex, CHAR_BASEIMAGENUMBER);
+	MyBBI = CHAR_getInt( charindex, CHAR_IMAGENUMBER);
 	return NPC_ActionBigSmallLastCheck( BBI, MyBBI,flg);
 }
 #endif
@@ -3924,7 +3917,7 @@ BOOL NPC_getTimeXYPoint( int meindex, int Mode)
 	if( NPC_Util_GetStrFromStrWithDelim( npcarg, "GraNo", buf, sizeof( buf)) != NULL ){
 		if( getStringFromIndexWithDelim(buf , "&" , points, buf1, sizeof( buf1)) != FALSE ){
 			GraNo = atoi( buf1);
-			CHAR_setInt( meindex, CHAR_BASEIMAGENUMBER, GraNo);
+			CHAR_setInt( meindex, CHAR_IMAGENUMBER, GraNo);
 		}
 	}
 	return TRUE;
@@ -4067,7 +4060,7 @@ int NPC_DischargePartyForSex( int meindex, int char_index, int fl, int x, int y,
 	int Party[CHAR_PARTYMAX+3] = {-1,-1,-1,-1,-1,-1,-1,-1};
 	int masterindex =-1, i, j, playerNo;
 	if( CHAR_getWorkInt( char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_LEADER ){
-		playerNo = CHAR_getInt( char_index, CHAR_BASEBASEIMAGENUMBER);
+		playerNo = CHAR_getInt( char_index, CHAR_BASEIMAGENUMBER);
 		if( CHAR_getSexInt( playerNo ) == fsex )	{
 			if( MAP_IsValidCoordinate( fl, x, y) != FALSE ){
 				CHAR_warpToSpecificPoint( char_index, fl, x, y);
@@ -4088,7 +4081,7 @@ int NPC_DischargePartyForSex( int meindex, int char_index, int fl, int x, int y,
 	
 	for( i = 0; i < getPartyNum(char_index); i ++ ) {
 		int index = Party[i];
-		playerNo = CHAR_getInt( index, CHAR_BASEBASEIMAGENUMBER);
+		playerNo = CHAR_getInt( index, CHAR_BASEIMAGENUMBER);
 		if( CHAR_getSexInt( playerNo ) == fsex )	{
 			if( MAP_IsValidCoordinate( fl, x, y) != FALSE ){
 				CHAR_warpToSpecificPoint( index, fl, x, y);
@@ -4204,7 +4197,6 @@ BOOL NPC_ActionTreasureRandItemGet(int meidex,int talker,int rand_j,char *buf)
 }
 
 #ifdef  _NPC_ADDLEVELUP				// (不可开) ANDY 外部测试机用来增加玩家等级
-extern  tagRidePetTable ridePetTable[296];
 void NPC_ActionLevelAndTransUp( int meindex, int charindex, int level, int skillpoint, int exp, int ridepet)
 {
 	char szBuffer[256]="";
@@ -4258,9 +4250,9 @@ void NPC_ActionLevelAndTransUp( int meindex, int charindex, int level, int skill
 		petTemp[j++] = basepet[0][rand()%4];
 		petTemp[j++] = basepet[1][rand()%4];
 
-		for( i=0; i< arraysizeof(ridePetTable) ; i++ ){
-			if( CHAR_getInt( charindex, CHAR_BASEBASEIMAGENUMBER) == ridePetTable[i].charNo ){
-				petTemp[j]= ridePetTable[i].petId;
+		for( i=0; i< arraysizeof(gRidePetTable) ; i++ ){
+			if( CHAR_getInt( charindex, CHAR_BASEIMAGENUMBER) == gRidePetTable[i].charNo ){
+				petTemp[j]= gRidePetTable[i].petId;
 				j++;
 				if( j >= arraysizeof( petTemp) )
 					break;
@@ -4298,7 +4290,7 @@ void NPC_ActionLevelAndTransUp( int meindex, int charindex, int level, int skill
 	}
 	CHAR_send_P_StatusString(  charindex, CHAR_P_STRING_DUELPOINT|
 		CHAR_P_STRING_TRANSMIGRATION| CHAR_P_STRING_RIDEPET|
-		CHAR_P_STRING_BASEBASEIMAGENUMBER| CHAR_P_STRING_GOLD|
+		CHAR_P_STRING_BASEIMAGENUMBER| CHAR_P_STRING_GOLD|
 		CHAR_P_STRING_EXP| CHAR_P_STRING_LV| CHAR_P_STRING_HP|CHAR_P_STRING_LEARNRIDE);
 	CHAR_Skillupsend( charindex);
 }

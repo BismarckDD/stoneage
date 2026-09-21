@@ -469,17 +469,17 @@ void NPC_PetRaceMasterLoop( int meindex)
 					// 设定宠物
 					CHAR_setWorkInt(petindex1, NPC_WORK_STATE, NPC_State_Wait);
 					CHAR_setInt(petindex1, CHAR_LOOPINTERVAL, 1000);
-					CHAR_setInt(petindex1, CHAR_BASEIMAGENUMBER, petracegra[randpet].pet1gra);
+					CHAR_setInt(petindex1, CHAR_IMAGENUMBER, petracegra[randpet].pet1gra);
 					CHAR_setChar(petindex1, CHAR_NAME, petracegra[randpet].pet1name);
 
 					CHAR_setWorkInt(petindex2, NPC_WORK_STATE, NPC_State_Wait);
 					CHAR_setInt(petindex2, CHAR_LOOPINTERVAL, 1000);
-					CHAR_setInt(petindex2, CHAR_BASEIMAGENUMBER, petracegra[randpet].pet2gra);
+					CHAR_setInt(petindex2, CHAR_IMAGENUMBER, petracegra[randpet].pet2gra);
 					CHAR_setChar(petindex2, CHAR_NAME, petracegra[randpet].pet2name);
 
 					CHAR_setWorkInt(petindex3, NPC_WORK_STATE, NPC_State_Wait);
 					CHAR_setInt(petindex3, CHAR_LOOPINTERVAL, 1000);
-					CHAR_setInt(petindex3, CHAR_BASEIMAGENUMBER, petracegra[randpet].pet3gra);
+					CHAR_setInt(petindex3, CHAR_IMAGENUMBER, petracegra[randpet].pet3gra);
 					CHAR_setChar(petindex3, CHAR_NAME, petracegra[randpet].pet3name);
 					// 设定宠物状况
 #ifdef _DROPSTAKENEW

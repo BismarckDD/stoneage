@@ -11,10 +11,6 @@
 /* 
  * 加美航空 (Made from Bus)
  */
- #ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 enum {
 	NPC_WORK_ROUTETOX = CHAR_NPCWORKINT1,		/* 升仇尺＂  甄   */
 	NPC_WORK_ROUTETOY = CHAR_NPCWORKINT2,		/* 升仇尺＂  甄   */

@@ -16,9 +16,6 @@
 #ifdef _PET_TRANS
 #include "npc_pettransman.h"
 #endif
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 static void NPC_Transmigration_selectWindow(int meindex, int toindex, int num);
 static int NPC_TransmigrationCheck(int meindex, int talker);
 BOOL NPC_TransmigrationAddPet(int meindex, int talker, int petid);
@@ -851,8 +848,8 @@ BOOL NPC_TransmigrationMain(int meindex, int toindex, char *buf) {
     CHAR_Skillupsend(toindex);
     // CHAR_setInt( toindex,CHAR_LEARNRIDE, 0);
     CHAR_setInt(toindex, CHAR_RIDEPET, -1);
-    CHAR_setInt(toindex, CHAR_BASEIMAGENUMBER,
-                CHAR_getInt(toindex, CHAR_BASEBASEIMAGENUMBER));
+    CHAR_setInt(toindex, CHAR_IMAGENUMBER,
+                CHAR_getInt(toindex, CHAR_BASEIMAGENUMBER));
 
     // CHAR_sendStatusString( toindex , "P");
   }

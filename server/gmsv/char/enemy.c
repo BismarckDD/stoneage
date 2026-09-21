@@ -15,9 +15,6 @@
 #include "pet.h"
 #include "pet_skillinfo.h"
 #include "petmail.h"
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 #ifdef _ADD_ENCOUNT // WON ADD 增加敌遭遇触发修件
 #include "encount.h"
 #include "npcutil.h"
@@ -34,10 +31,6 @@ static GROUP_Table *GROUP_group;
 static int GROUP_groupnum;
 
 int ENEMY_indextable[ENEMY_INDEXTABLEMAXSIZE];
-
-#ifdef _ENEMY_FALLGROUND
-extern tagRidePetTable ridePetTable[296];
-#endif
 
 INLINE BOOL ENEMY_CHECKINDEX(int index) {
   if (index < 0 || index >= ENEMY_enemynum)
@@ -796,10 +789,10 @@ int ENEMY_RandomChange(int enemy_index, int tempno) {
     // 皿伊奶乩□及涌仄凶衬卅及匹｝箪岭手仿件母丞
     //********************************************
     // 铣手仿件母丞
-    CHAR_setInt(enemy_index, CHAR_BASEBASEIMAGENUMBER,
-                gymbody[RAND(0, arraysizeof(gymbody) - 1)]);
     CHAR_setInt(enemy_index, CHAR_BASEIMAGENUMBER,
-                CHAR_getInt(enemy_index, CHAR_BASEBASEIMAGENUMBER));
+                gymbody[RAND(0, arraysizeof(gymbody) - 1)]);
+    CHAR_setInt(enemy_index, CHAR_IMAGENUMBER,
+                CHAR_getInt(enemy_index, CHAR_BASEIMAGENUMBER));
     // 箪岭反赝癫
     work = (RAND(0, 20) - 10) * 10;
     work2 = 100 - ABS(work);
@@ -858,8 +851,8 @@ int ENEMY_createEnemy(int array, int base_level) {
   if (!CHAR_getDefaultChar(&new_char, 31010))
     return -1;
 
-  new_char.data[CHAR_BASEBASEIMAGENUMBER]
-    = new_char.data[CHAR_BASEIMAGENUMBER] = *(gp_gear + E_T_IMGNUMBER);
+  new_char.data[CHAR_BASEIMAGENUMBER]
+    = new_char.data[CHAR_IMAGENUMBER] = *(gp_gear + E_T_IMGNUMBER);
   new_char.data[CHAR_WHICHTYPE] = CHAR_TYPEENEMY;
   new_char.data[CHAR_DUELPOINT] = 0;
 
@@ -1028,11 +1021,11 @@ int ENEMY_createEnemy(int array, int base_level) {
 #ifdef _ENEMY_FALLGROUND
   {
     int i = 0;
-    for (i = 0; i < arraysizeof(ridePetTable); i++) {
-      if (CHAR_getInt(new_index, CHAR_BASEBASEIMAGENUMBER) ==
-          ridePetTable[i].rideNo) {
-        CHAR_setInt(new_index, CHAR_BASEBASEIMAGENUMBER, ridePetTable[i].charNo);
-        CHAR_setInt(new_index, CHAR_BASEIMAGENUMBER, ridePetTable[i].rideNo);
+    for (i = 0; i < arraysizeof(gRidePetTable); i++) {
+      if (CHAR_getInt(new_index, CHAR_BASEIMAGENUMBER) ==
+          gRidePetTable[i].rideNo) {
+        CHAR_setInt(new_index, CHAR_BASEIMAGENUMBER, gRidePetTable[i].charNo);
+        CHAR_setInt(new_index, CHAR_IMAGENUMBER, gRidePetTable[i].rideNo);
         break;
       }
     }
@@ -1378,7 +1371,7 @@ int ENEMY_createPetFromEnemyIndex(int char_index, int array) {
   memset(&CharNew, 0, sizeof(Char));
   if (!CHAR_getDefaultChar(&CharNew, 31010))
     return -1;
-  CharNew.data[CHAR_BASEBASEIMAGENUMBER] = CharNew.data[CHAR_BASEIMAGENUMBER] =
+  CharNew.data[CHAR_BASEIMAGENUMBER] = CharNew.data[CHAR_IMAGENUMBER] =
       *(tp + E_T_IMGNUMBER);
   CharNew.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
   level = RAND((*(p + ENEMY_LV_MIN)), (*(p + ENEMY_LV_MAX)));
@@ -1520,7 +1513,7 @@ int ENEMY_createPet(int array, int vital, int str, int tgh, int dex) {
   memset(&CharNew, 0, sizeof(Char));
   if (!CHAR_getDefaultChar(&CharNew, 31010))
     return -1;
-  CharNew.data[CHAR_BASEBASEIMAGENUMBER] = CharNew.data[CHAR_BASEIMAGENUMBER] =
+  CharNew.data[CHAR_BASEIMAGENUMBER] = CharNew.data[CHAR_IMAGENUMBER] =
       *(tp + E_T_IMGNUMBER);
   CharNew.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
   level = RAND((*(p + ENEMY_LV_MIN)), (*(p + ENEMY_LV_MAX)));
@@ -1664,7 +1657,7 @@ int ENEMY_TEST_createPetIndex(int array) {
   memset(&CharNew, 0, sizeof(Char));
   if (!CHAR_getDefaultChar(&CharNew, 31010))
     return -1;
-  CharNew.data[CHAR_BASEBASEIMAGENUMBER] = CharNew.data[CHAR_BASEIMAGENUMBER] =
+  CharNew.data[CHAR_BASEIMAGENUMBER] = CharNew.data[CHAR_IMAGENUMBER] =
       *(tp + E_T_IMGNUMBER);
   CharNew.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
   level = RAND((*(p + ENEMY_LV_MIN)), (*(p + ENEMY_LV_MAX)));
@@ -1963,7 +1956,7 @@ int EVOLUTION_createPetFromEnemyIndex(int char_index, int baseindex, int flg) {
     print("ANDY !CHAR_getDefaultChar( &CharNew,31010 )\n");
     return -1;
   }
-  CharNew.data[CHAR_BASEBASEIMAGENUMBER] = CharNew.data[CHAR_BASEIMAGENUMBER] =
+  CharNew.data[CHAR_BASEIMAGENUMBER] = CharNew.data[CHAR_IMAGENUMBER] =
       *(tp + E_T_IMGNUMBER);
   CharNew.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
   level = RAND((*(p + ENEMY_LV_MIN)), (*(p + ENEMY_LV_MAX)));

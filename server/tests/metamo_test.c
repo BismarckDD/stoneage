@@ -5,8 +5,8 @@
 #define CDKEYLEN 32
 #define FALSE 0
 #define ISSPACETAB(c) ((c) == ' ' || (c) == '\t')
-enum { CHAR_BASEIMAGENUMBER, CHAR_BASEBASEIMAGENUMBER, CHAR_CDKEY, CHAR_NAME,
-       CHAR_WORKOBJINDEX, CHAR_P_STRING_BASEBASEIMAGENUMBER, CHAR_COLORYELLOW };
+enum { CHAR_IMAGENUMBER, CHAR_BASEIMAGENUMBER, CHAR_CDKEY, CHAR_NAME,
+       CHAR_WORKOBJINDEX, CHAR_P_STRING_BASEIMAGENUMBER, CHAR_COLORYELLOW };
 static int images[2][2], writes;
 static void CHAR_talkToCli(int a, int b, const char *text, int color) {
   (void)a; (void)b; (void)text; (void)color;

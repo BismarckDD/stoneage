@@ -1,3 +1,4 @@
+#define __FAMILY_C__
 #include "version.h"
 //
 #include "gmsv_server.h"
@@ -29,16 +30,6 @@
 #else
 #define MANORNUM 4
 #endif
-
-int familyNumTotal = 0;
-char familyListBuf[MAXFAMILYLIST];
-
-int channelMember[FAMILY_MAXNUM][FAMILY_MAXCHANNEL][FAMILY_MAXMEMBER];
-int familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
-
-int familyTax[FAMILY_MAXNUM];
-
-extern tagRidePetTable ridePetTable[296];
 
 void LeaveMemberIndex(int char_index, int fmindexi);
 
@@ -116,7 +107,8 @@ struct FM_POINTLIST fmpointlist;
 ManorSchedule_t ManorSchedule[MANORNUM];
 #endif
 struct FMS_DPTOP fmdptop;
-struct FM_PKFLOOR fmpkflnum[FAMILY_FMPKFLOOR] = {
+// 九大家族庄园的PK
+FM_PKFLOOR fmpkflnum[FAMILY_FMPKFLOOR] = {
     {142},  {143},  {144},  {145},  {146},  {1042},  {2032}, {3032}, {4032},
 #ifdef _FAMILY_MANORNUM_CHANGE // CoolFish 用来修改装园数量
     {5032}, {6032}, {7032}, {8032}, {9032}, {10032},
@@ -159,15 +151,13 @@ void SetFMVarInit(int meindex) {
 
 void FAMILY_Init(void) {
   int i, j, k;
-  for (i = 0; i < FAMILY_MAXNUM; i++) {
+  for (i = 0; i < FAMILY_MAXNUM; i++)
     for (j = 0; j < FAMILY_MAXCHANNEL; j++)
       for (k = 0; k < FAMILY_MAXMEMBER; k++)
-        channelMember[i][j][k] = -1;
-  }
-
+        gChannelMember[i][j][k] = -1;
   for (i = 0; i < FAMILY_MAXNUM; i++)
     for (j = 0; j < FAMILY_MAXMEMBER; j++)
-      familyMemberIndex[i][j] = -1;
+      gFamilyMemberIndex[i][j] = -1;
 #ifdef _NEW_MANOR_LAW
   for (i = 0; i < FAMILY_MAXHOME; i++) {
     fmpointlist.fm_momentum[i] = -1;
@@ -180,9 +170,8 @@ void FAMILY_Init(void) {
     }
   }
 #endif
-  familyListBuf[0] = '\0';
+  gFamilyList[0] = '\0';
   SaacClient__ACShowFMList_send(acfd);
-  // print("FamilyData_Init:%s ", familyListBuf );
 }
 
 void CHAR_Family(int fd, int index, char *message) {
@@ -250,8 +239,8 @@ void CHAR_Family(int fd, int index, char *message) {
           printf("[RIDE] dismount: char=%d currentSlot=%d\n", index,
                  CHAR_getInt(index, CHAR_RIDEPET));
           CHAR_setInt(index, CHAR_RIDEPET, -1);
-          CHAR_setInt(index, CHAR_BASEIMAGENUMBER,
-                      CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER));
+          CHAR_setInt(index, CHAR_IMAGENUMBER,
+                      CHAR_getInt(index, CHAR_BASEIMAGENUMBER));
           CHAR_complianceParameter(index);
           CHAR_sendCToArroundCharacter(
               CHAR_getWorkInt(index, CHAR_WORKOBJINDEX));
@@ -451,7 +440,7 @@ void FAMILY_Add(int fd, int meindex, char *message) {
     sprintf(petname, "%s", CHAR_getChar(petindex, CHAR_NAME));
   else
     sprintf(petname, "%s", CHAR_getChar(petindex, CHAR_USERPETNAME));
-  sprintf(petattr, "%d %d %d %d", CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER),
+  sprintf(petattr, "%d %d %d %d", CHAR_getInt(petindex, CHAR_IMAGENUMBER),
           CHAR_getWorkInt(petindex, CHAR_WORKATTACKPOWER),
           CHAR_getWorkInt(petindex, CHAR_WORKDEFENCEPOWER),
           CHAR_getWorkInt(petindex, CHAR_WORKQUICK));
@@ -802,8 +791,8 @@ void ACLeaveFM(int fd, int result, int resultflag) {
     CHAR_talkToCli(meindex, -1, "退出家族个人气势归零", CHAR_COLORYELLOW);
 #endif
     CHAR_setInt(meindex, CHAR_RIDEPET, -1);
-    CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
-                CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER));
+    CHAR_setInt(meindex, CHAR_IMAGENUMBER,
+                CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER));
     CHAR_complianceParameter(meindex);
     CHAR_sendCToArroundCharacter(CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
     CHAR_send_P_StatusString(meindex, CHAR_P_STRING_RIDEPET);
@@ -840,7 +829,7 @@ void ACDelFM(int fd, int result) {
     /*
     for( i=0; i<FAMILY_MAXMEMBER; i++)
     {
-                    familyMemberIndex[ CHAR_getWorkInt(meindex,
+                    gFamilyMemberIndex[ CHAR_getWorkInt(meindex,
     CHAR_WORKFMINDEXI) ][i] = -1;
     }
     */
@@ -872,15 +861,10 @@ void ACDelFM(int fd, int result) {
   CHAR_sendStatusString(meindex, "F");
 }
 
-void ACShowFMList(int result, int fmnum, char *data) {
-  if (result != 1)
-    return;
-
-  // print("\ngetFamilyListFromAC:%d", fmnum );
-  familyNumTotal = fmnum;
-  strcpy(familyListBuf, data);
-
-  //   print( "FamilyData:%s ", familyListBuf );
+void ACShowFMList(int result, int family_num, char *data) {
+  if (result != 1) return;
+  gFamilyNumTotal = family_num;
+  strcpy(gFamilyList, data);
 }
 
 void ACShowMemberList(int result, int index, int fmnum, int fmacceptflag,
@@ -1215,8 +1199,8 @@ void ACFMCharLogin(int fd, int result, int index, int floor, int fmdp,
                      CHAR_COLORYELLOW);
       CHAR_setWorkInt(meindex, CHAR_WORKFMFLOOR, -1);
       CHAR_setInt(meindex, CHAR_RIDEPET, -1);
-      CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
-                  CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER));
+      CHAR_setInt(meindex, CHAR_IMAGENUMBER,
+                  CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER));
       CHAR_complianceParameter(meindex);
       CHAR_sendCToArroundCharacter(CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
       CHAR_send_P_StatusString(meindex, CHAR_P_STRING_RIDEPET);
@@ -1254,21 +1238,18 @@ void FAMILY_Detail(int fd, int meindex, char *message) {
     pindex1 = (atoi(token2) - 1) * 10 + 1;
 
     for (i = pindex1; i < pindex1 + 10; i++) {
-      if (i > familyNumTotal)
+      if (i > gFamilyNumTotal)
         break;
-      if (getStringFromIndexWithDelim(familyListBuf, "|", i, subbuf,
+      if (getStringFromIndexWithDelim(gFamilyList, "|", i, subbuf,
                                       sizeof(subbuf)) == FALSE)
         break;
       strcat(buf, "|");
       strcat(buf, subbuf);
       j++;
-
-      // print(" |%s| ", subbuf);
     }
 
-    sprintf(sendbuf, "S|F|%d|%d|%d%s", familyNumTotal, atoi(token2), j, buf);
+    sprintf(sendbuf, "S|F|%d|%d|%d%s", gFamilyNumTotal, atoi(token2), j, buf);
     GmsvServer_FM_send(fd, sendbuf);
-
     return;
   }
 
@@ -1753,8 +1734,8 @@ void FAMILY_Channel(int fd, int meindex, char *message) {
     if (nowchannel >= 0 && nowchannel < FAMILY_MAXCHANNEL) {
       i = 0;
       while (i < FAMILY_MAXMEMBER) {
-        if (channelMember[fmindexi][nowchannel][i] == meindex) {
-          channelMember[fmindexi][nowchannel][i] = -1;
+        if (gChannelMember[fmindexi][nowchannel][i] == meindex) {
+          gChannelMember[fmindexi][nowchannel][i] = -1;
           break;
         }
         i++;
@@ -1764,8 +1745,8 @@ void FAMILY_Channel(int fd, int meindex, char *message) {
     if (channel > 0 && channel < FAMILY_MAXCHANNEL) {
       i = 0;
       while (i < FAMILY_MAXCHANNELMEMBER) {
-        if (channelMember[fmindexi][channel][i] < 0) {
-          channelMember[fmindexi][channel][i] = meindex;
+        if (gChannelMember[fmindexi][channel][i] < 0) {
+          gChannelMember[fmindexi][channel][i] = meindex;
           break;
         }
         i++;
@@ -1780,18 +1761,18 @@ void FAMILY_Channel(int fd, int meindex, char *message) {
       if (nowchannel >= 0 && nowchannel < FAMILY_MAXCHANNEL) {
         sprintf(buf, "%s 退出频道。", CHAR_getChar(meindex, CHAR_NAME));
         for (i = 0; i < FAMILY_MAXCHANNELMEMBER; i++) {
-          if (CHAR_CHECKINDEX(channelMember[fmindexi][nowchannel][i]) &&
-              channelMember[fmindexi][nowchannel][i] != meindex) {
-            CHAR_talkToCli(channelMember[fmindexi][nowchannel][i], -1, buf,
+          if (CHAR_CHECKINDEX(gChannelMember[fmindexi][nowchannel][i]) &&
+              gChannelMember[fmindexi][nowchannel][i] != meindex) {
+            CHAR_talkToCli(gChannelMember[fmindexi][nowchannel][i], -1, buf,
                            CHAR_COLORWHITE);
           }
         }
       }
       sprintf(buf, "%s 加入频道。", CHAR_getChar(meindex, CHAR_NAME));
       for (i = 0; i < FAMILY_MAXCHANNELMEMBER; i++) {
-        if (CHAR_CHECKINDEX(channelMember[fmindexi][channel][i]) &&
-            channelMember[fmindexi][channel][i] != meindex) {
-          CHAR_talkToCli(channelMember[fmindexi][channel][i], -1, buf,
+        if (CHAR_CHECKINDEX(gChannelMember[fmindexi][channel][i]) &&
+            gChannelMember[fmindexi][channel][i] != meindex) {
+          CHAR_talkToCli(gChannelMember[fmindexi][channel][i], -1, buf,
                          CHAR_COLORWHITE);
         }
       }
@@ -1799,8 +1780,8 @@ void FAMILY_Channel(int fd, int meindex, char *message) {
     } else if (channel == 0) {
       i = 0;
       while (i < FAMILY_MAXMEMBER) {
-        if (channelMember[fmindexi][0][i] < 0) {
-          channelMember[fmindexi][0][i] = meindex;
+        if (gChannelMember[fmindexi][0][i] < 0) {
+          gChannelMember[fmindexi][0][i] = meindex;
           break;
         }
         i++;
@@ -1817,18 +1798,18 @@ void FAMILY_Channel(int fd, int meindex, char *message) {
       if (nowchannel >= 0 && nowchannel < FAMILY_MAXCHANNEL) {
         sprintf(buf, "%s 退出频道。", CHAR_getChar(meindex, CHAR_NAME));
         for (i = 0; i < FAMILY_MAXCHANNELMEMBER; i++) {
-          if (CHAR_CHECKINDEX(channelMember[fmindexi][nowchannel][i]) &&
-              channelMember[fmindexi][nowchannel][i] != meindex) {
-            CHAR_talkToCli(channelMember[fmindexi][nowchannel][i], -1, buf,
+          if (CHAR_CHECKINDEX(gChannelMember[fmindexi][nowchannel][i]) &&
+              gChannelMember[fmindexi][nowchannel][i] != meindex) {
+            CHAR_talkToCli(gChannelMember[fmindexi][nowchannel][i], -1, buf,
                            CHAR_COLORWHITE);
           }
         }
       }
       sprintf(buf, "%s 加入频道。", CHAR_getChar(meindex, CHAR_NAME));
       for (i = 0; i < FAMILY_MAXCHANNELMEMBER; i++) {
-        if (CHAR_CHECKINDEX(channelMember[fmindexi][channel][i]) &&
-            channelMember[fmindexi][channel][i] != meindex) {
-          CHAR_talkToCli(channelMember[fmindexi][channel][i], -1, buf,
+        if (CHAR_CHECKINDEX(gChannelMember[fmindexi][channel][i]) &&
+            gChannelMember[fmindexi][channel][i] != meindex) {
+          CHAR_talkToCli(gChannelMember[fmindexi][channel][i], -1, buf,
                          CHAR_COLORWHITE);
         }
       }
@@ -1852,8 +1833,8 @@ void FAMILY_Channel(int fd, int meindex, char *message) {
       channel = 0;
       i = 0;
       while (i < FAMILY_MAXMEMBER) {
-        if (channelMember[fmindexi][0][i] < 0) {
-          channelMember[fmindexi][0][i] = meindex;
+        if (gChannelMember[fmindexi][0][i] < 0) {
+          gChannelMember[fmindexi][0][i] = meindex;
           break;
         }
         i++;
@@ -1862,9 +1843,9 @@ void FAMILY_Channel(int fd, int meindex, char *message) {
 
       sprintf(buf, "%s 退出频道。", CHAR_getChar(meindex, CHAR_NAME));
       for (i = 0; i < FAMILY_MAXCHANNELMEMBER; i++) {
-        if (CHAR_CHECKINDEX(channelMember[fmindexi][nowchannel][i]) &&
-            channelMember[fmindexi][nowchannel][i] != meindex) {
-          CHAR_talkToCli(channelMember[fmindexi][nowchannel][i], -1, buf,
+        if (CHAR_CHECKINDEX(gChannelMember[fmindexi][nowchannel][i]) &&
+            gChannelMember[fmindexi][nowchannel][i] != meindex) {
+          CHAR_talkToCli(gChannelMember[fmindexi][nowchannel][i], -1, buf,
                          CHAR_COLORWHITE);
         }
       }
@@ -1892,16 +1873,11 @@ void FAMILY_Channel(int fd, int meindex, char *message) {
 
     for (j = 0; j < FAMILY_MAXMEMBER; j++) {
       bFind = 0;
-      tempindex = familyMemberIndex[fmindexi][j];
+      tempindex = gFamilyMemberIndex[fmindexi][j];
       // if( tempindex >= 0 ) {
       if (CHAR_CHECKINDEX(tempindex)) {
         for (i = 0; i < membernum; i++) {
-          if (tempindex == channelMember[fmindexi][channel][i]) {
-            // if( CHAR_getChar( tempindex, CHAR_NAME ) == NULL ) {
-            //	familyMemberIndex[fmindexi][j] = -1;
-            //	channelMember[fmindexi][channel][i] = -1;
-            //	continue;
-            // }
+          if (tempindex == gChannelMember[fmindexi][channel][i]) {
             bFind = 1;
             break;
           }
@@ -2166,7 +2142,7 @@ void ACFMAnnounce(int ret, char *fmname, int fmindex, int index, int kindflag,
   //   print("fmname:%s fmindex:%d index:%d kindflag:%d data:%s color:%d\n",
   //   	fmname, fmindex, index, kindflag, data, color);
   for (i = 0; i < FAMILY_MAXMEMBER; i++) {
-    chindex = familyMemberIndex[index][i];
+    chindex = gFamilyMemberIndex[index][i];
     if (chindex >= 0) {
       if (CHAR_getCharUse(chindex)) {
         if (kindflag == 1) {
@@ -2190,7 +2166,7 @@ void ACFMAnnounce(int ret, char *fmname, int fmindex, int index, int kindflag,
                          CHAR_COLORRED);
         }
       } else
-        familyMemberIndex[index][i] = -1;
+        gFamilyMemberIndex[index][i] = -1;
     }
   }
   if (kindflag == 3) {
@@ -2206,8 +2182,8 @@ void ACFMAnnounce(int ret, char *fmname, int fmindex, int index, int kindflag,
 
     } else if (strstr(data, "已经将你踢出家族了！") != NULL) {
       CHAR_setInt(meindex, CHAR_RIDEPET, -1);
-      CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
-                  CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER));
+      CHAR_setInt(meindex, CHAR_IMAGENUMBER,
+                  CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER));
       CHAR_complianceParameter(meindex);
       CHAR_sendCToArroundCharacter(CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
       CHAR_send_P_StatusString(meindex, CHAR_P_STRING_RIDEPET);
@@ -2408,7 +2384,7 @@ void FAMILY_FixRule(int fd, int meindex, char *message) {
       sprintf(petname, "%s", CHAR_getChar(petindex, CHAR_NAME));
     else
       sprintf(petname, "%s", CHAR_getChar(petindex, CHAR_USERPETNAME));
-    sprintf(petattr, "%d %d %d %d", CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER),
+    sprintf(petattr, "%d %d %d %d", CHAR_getInt(petindex, CHAR_IMAGENUMBER),
             CHAR_getWorkInt(petindex, CHAR_WORKATTACKPOWER),
             CHAR_getWorkInt(petindex, CHAR_WORKDEFENCEPOWER),
             CHAR_getWorkInt(petindex, CHAR_WORKQUICK));
@@ -2428,13 +2404,13 @@ void JoinMemberIndex(int meindex, int fmindexi) {
   int i;
 
   for (i = 0; i < FAMILY_MAXMEMBER; i++) {
-    if (familyMemberIndex[fmindexi][i] == meindex)
-      familyMemberIndex[fmindexi][i] = -1;
+    if (gFamilyMemberIndex[fmindexi][i] == meindex)
+      gFamilyMemberIndex[fmindexi][i] = -1;
   }
 
   for (i = 0; i < FAMILY_MAXMEMBER; i++) {
-    if (familyMemberIndex[fmindexi][i] < 0) {
-      familyMemberIndex[fmindexi][i] = meindex;
+    if (gFamilyMemberIndex[fmindexi][i] < 0) {
+      gFamilyMemberIndex[fmindexi][i] = meindex;
       break;
     }
   }
@@ -2442,16 +2418,16 @@ void JoinMemberIndex(int meindex, int fmindexi) {
   i = 0;
   // 先清掉旧的频道记录
   while (i < FAMILY_MAXMEMBER) {
-    if (channelMember[fmindexi][0][i] == meindex) {
-      channelMember[fmindexi][0][i] = -1;
+    if (gChannelMember[fmindexi][0][i] == meindex) {
+      gChannelMember[fmindexi][0][i] = -1;
     }
     i++;
   }
   i = 0;
   // 加入频道
   while (i < FAMILY_MAXMEMBER) {
-    if (channelMember[fmindexi][0][i] == -1) {
-      channelMember[fmindexi][0][i] = meindex;
+    if (gChannelMember[fmindexi][0][i] == -1) {
+      gChannelMember[fmindexi][0][i] = meindex;
       CHAR_setWorkInt(meindex, CHAR_WORKFMCHANNEL, 0);
       break;
     }
@@ -2464,15 +2440,15 @@ void LeaveMemberIndex(int meindex, int fmindexi) {
   int i;
 
   for (i = 0; i < FAMILY_MAXMEMBER; i++) {
-    if (familyMemberIndex[fmindexi][i] == meindex)
-      familyMemberIndex[fmindexi][i] = -1;
+    if (gFamilyMemberIndex[fmindexi][i] == meindex)
+      gFamilyMemberIndex[fmindexi][i] = -1;
   }
 #ifdef _CHANNEL_MODIFY
   i = 0;
   // 清掉旧的频道记录
   while (i < FAMILY_MAXMEMBER) {
-    if (channelMember[fmindexi][0][i] == meindex) {
-      channelMember[fmindexi][0][i] = -1;
+    if (gChannelMember[fmindexi][0][i] == meindex) {
+      gChannelMember[fmindexi][0][i] = -1;
     }
     i++;
   }
@@ -2496,7 +2472,7 @@ int FAMILY_RidePet(int fd, int meindex, char *message) {
       fd, meindex, CHAR_getChar(meindex, CHAR_NAME),
       message != NULL ? message : "(null)", CHAR_getInt(meindex, CHAR_RIDEPET),
       CHAR_getInt(meindex, CHAR_LEARNRIDE), CHAR_getInt(meindex, CHAR_LV),
-      CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER),
+      CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER),
       CHAR_getWorkInt(meindex, CHAR_WORKBATTLEMODE),
       CHAR_getWorkInt(meindex, CHAR_WORKTRADEMODE));
 
@@ -2547,7 +2523,7 @@ int FAMILY_RidePet(int fd, int meindex, char *message) {
   printf("[RIDE] pet: slot=%d pet_index=%d name='%s' baseGra=%d lv=%d "
          "loyalty=%d trans=%d\n",
          atoi(token2), petindex, CHAR_getChar(petindex, CHAR_NAME),
-         CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER),
+         CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER),
          CHAR_getInt(petindex, CHAR_LV),
          CHAR_getWorkInt(petindex, CHAR_WORKFIXAI),
          CHAR_getInt(petindex, CHAR_TRANSMIGRATION));
@@ -2608,12 +2584,12 @@ int FAMILY_RidePet(int fd, int meindex, char *message) {
   // 2026.09.16 根据人物ID和宠物ID获取骑宠形象NO
   int rideGraNo = RIDEPET_getRideImage(meindex, petindex);
   printf("[RIDE] mapping: playerBaseGra=%d petBaseGra=%d rideGra=%d\n",
-         CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER),
-         CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER), rideGraNo);
+         CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER),
+         CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER), rideGraNo);
 
   if (rideGraNo > 0) {
     CHAR_setInt(meindex, CHAR_RIDEPET, atoi(token2));
-    CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER, rideGraNo);
+    CHAR_setInt(meindex, CHAR_IMAGENUMBER, rideGraNo);
     CHAR_complianceParameter(meindex);
     CHAR_sendCToArroundCharacter(
         CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
@@ -2623,8 +2599,8 @@ int FAMILY_RidePet(int fd, int meindex, char *message) {
     return 1;
   }
   printf("[RIDE] reject: no mapping for playerBaseGra=%d petBaseGra=%d\n",
-         CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER),
-         CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
+         CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER),
+         CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER));
   if (rideGraNo == -2) {
     CHAR_talkToCli(meindex, -1, "你的角色尚未获得骑乘该宠物的资格。",
                    CHAR_COLORYELLOW);
@@ -2642,42 +2618,39 @@ void ACFixFMPK(int winindex, int loseindex, int data) {
   sprintf(msg1, "恭喜您！家族声望提高了%8d点！", (data / 100));
   sprintf(msg2, "家族声望减少了%8d点！", (data / 100));
   for (i = 0; i < FAMILY_MAXMEMBER; i++) {
-    charindex = familyMemberIndex[winindex][i];
+    charindex = gFamilyMemberIndex[winindex][i];
     if (charindex >= 0) {
       if (CHAR_getCharUse(charindex))
         CHAR_talkToCli(charindex, -1, msg1, CHAR_COLORYELLOW);
       else
-        familyMemberIndex[winindex][i] = -1;
+        gFamilyMemberIndex[winindex][i] = -1;
     }
-    charindex = familyMemberIndex[loseindex][i];
+    charindex = gFamilyMemberIndex[loseindex][i];
     if (charindex >= 0) {
       if (CHAR_getCharUse(charindex))
         CHAR_talkToCli(charindex, -1, msg2, CHAR_COLORRED);
       else
-        familyMemberIndex[loseindex][i] = -1;
+        gFamilyMemberIndex[loseindex][i] = -1;
     }
   }
 }
 
 void getNewFMList() { SaacClient__ACShowFMList_send(acfd); }
 
-// int     channelMember[FAMILY_MAXNUM][FAMILY_MAXCHANNEL][FAMILY_MAXMEMBER];
-// int     familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
-
 void checkFamilyIndex(void) {
   int i, j, k, char_index, err1 = 0, err2 = 0;
   for (i = 0; i < FAMILY_MAXNUM; i++) {
     for (j = 0; j < FAMILY_MAXMEMBER; j++) {
-      char_index = familyMemberIndex[i][j];
+      char_index = gFamilyMemberIndex[i][j];
       if (char_index == -1)
         continue;
       if (!CHAR_CHECKINDEX(char_index)) {
-        familyMemberIndex[i][j] = -1;
+        gFamilyMemberIndex[i][j] = -1;
         err1++;
         continue;
       }
       if (CHAR_getWorkInt(char_index, CHAR_WORKFMINDEXI) != i) {
-        familyMemberIndex[i][j] = -1;
+        gFamilyMemberIndex[i][j] = -1;
         err1++;
         continue;
       }
@@ -2685,16 +2658,16 @@ void checkFamilyIndex(void) {
 
     for (j = 0; j < FAMILY_MAXCHANNEL; j++)
       for (k = 0; k < FAMILY_MAXMEMBER; k++) {
-        char_index = channelMember[i][j][k];
+        char_index = gChannelMember[i][j][k];
         if (char_index == -1)
           continue;
         if (!CHAR_CHECKINDEX(char_index)) {
-          channelMember[i][j][k] = -1;
+          gChannelMember[i][j][k] = -1;
           err2++;
           continue;
         }
         if (CHAR_getWorkInt(char_index, CHAR_WORKFMINDEXI) != i) {
-          channelMember[i][j][k] = -1;
+          gChannelMember[i][j][k] = -1;
           err2++;
           continue;
         }
@@ -2915,7 +2888,7 @@ void FAMILY_LeaderFunc(int fd, int meindex, char *message) {
 
       strcpy(subbuf, "");
       for (j = 0; j < FAMILY_MAXMEMBER; j++) {
-        int tempindex = familyMemberIndex[fmindexi][j];
+        int tempindex = gFamilyMemberIndex[fmindexi][j];
 
         // CoolFish: 2001/9/22
         if (!CHAR_CHECKINDEX(tempindex))
@@ -2959,7 +2932,7 @@ void FAMILY_LeaderFunc(int fd, int meindex, char *message) {
       if (atoi(token3) < 0 || atoi(token3) > FAMILY_MAXMEMBER)
         return;
 
-      toindex = familyMemberIndex[fmindexi][atoi(token3)];
+      toindex = gFamilyMemberIndex[fmindexi][atoi(token3)];
       if (!CHAR_CHECKINDEX(toindex))
         return;
       if (strcmp(token4, CHAR_getChar(toindex, CHAR_NAME)) != 0)

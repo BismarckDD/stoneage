@@ -16,12 +16,7 @@
 #include "readmap.h"
 #include "saac_client.h"
 
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
-
 #ifdef _AUTO_PK
-
 #define AWARDNO (1 << 0)
 #define AWARDPET (1 << 1)
 #define AWARDITEM (1 << 2)

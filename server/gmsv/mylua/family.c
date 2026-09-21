@@ -1,16 +1,11 @@
-#include <string.h>
 #include "char.h"
 #include "char_base.h"
 #include "family.h"
 #include "mylua/base.h"
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
 #include "saac_client.h"
 
 #ifdef _ALLBLUES_LUA
 
-extern char	familyListBuf[MAXFAMILYLIST];
 #ifdef _MO_LUA_FMPOINT
 extern struct  FM_POINTLIST fmpointlist;                   // 家族据点
 #endif
@@ -20,7 +15,7 @@ static int ShowFamilyList(lua_State *L)
 	size_t l;
 	const int index = luaL_checkint(L, 1);
 	char subbuf[256];
-	if( getStringFromIndexWithDelim( familyListBuf, "|", index, subbuf, sizeof(subbuf) ) == TRUE){
+	if( getStringFromIndexWithDelim( gFamilyList, "|", index, subbuf, sizeof(subbuf) ) == TRUE){
 		lua_pushstring(L, subbuf);
 	}else{
 		lua_pushstring(L, "");
@@ -37,7 +32,7 @@ static int ShowPointListArray(lua_State *L)
 	return 1;
 }
 #endif
-extern int getFamilyBadge(int index);
+
 static int GetFamilyBadge(lua_State *L)
 {
 	const int index = luaL_checkint(L, 1);

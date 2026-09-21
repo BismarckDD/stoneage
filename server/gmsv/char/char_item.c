@@ -18,9 +18,6 @@
 extern struct MissionInfo missionlist[MAXMISSION];
 extern struct MissionTable missiontable[MAXMISSIONTABLE];
 #endif
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 extern int itemLine;
 
 #ifdef _DROPSTAKENEW
@@ -247,7 +244,7 @@ static void CHAR_sendItemDetachEvent(int char_index, int item_index) {
     CHAR_complianceParameter(char_index);
     CHAR_sendCToArroundCharacter(
         CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-    CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+    CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
     CHAR_talkToCli(char_index, -1, "变身失效了！", CHAR_COLORWHITE);
   }
 #endif
@@ -258,10 +255,10 @@ static void CHAR_sendItemDetachEvent(int char_index, int item_index) {
       char *itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
       getStringFromIndexWithDelim(itemarg, "|", 2, ridemetamo,
                                   sizeof(ridemetamo));
-      if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == atoi(ridemetamo)) {
+      if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == atoi(ridemetamo)) {
         CHAR_setInt(char_index, CHAR_RIDEPET, -1);
-        CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
-                    CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER));
+        CHAR_setInt(char_index, CHAR_IMAGENUMBER,
+                    CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
         CHAR_complianceParameter(char_index);
         CHAR_sendCToArroundCharacter(
             CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
@@ -317,7 +314,6 @@ int CHAR_findSurplusItemBox(int char_index) {
   }
   return remnants;
 }
-extern int CheckCharMaxItemChar(Char *ch);
 
 static int CHAR_findEmptyItemBoxFromChar(Char *ch) {
   int i;

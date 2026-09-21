@@ -23,10 +23,6 @@ static void NPC_WarpMan_selectWindow(int npc_index, int toindex, int num,
 BOOL NPC_GetDuelPointCheck(int npc_index, int talker);
 BOOL NPC_PARTY_CHAECK(int npc_index, int talkerindex);
 void NPC_ERR_DiSP(int npc_index, int talker, int errNO);
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 BOOL NPC_BigSmallLastCheck(int point1, int mypoint, int flg);
 
 // BOOL NPC_ItemCheck(int npc_index,int talker,int itemNo,int flg);
@@ -952,9 +948,9 @@ void NPC_WarpManWatch(int meobjindex, int objindex, CHAR_ACTION act, int x,
       // 变回宝箱
       CHAR_setWorkInt(npc_index, NPC_TIME_EVENTMODE, NPC_EVENTMODE_EVENT);
       // 变图
-      CHAR_setInt(npc_index, CHAR_BASEBASEIMAGENUMBER,
-                  CHAR_getWorkInt(npc_index, NPC_TIME_EVENOFFDBBI));
       CHAR_setInt(npc_index, CHAR_BASEIMAGENUMBER,
+                  CHAR_getWorkInt(npc_index, NPC_TIME_EVENOFFDBBI));
+      CHAR_setInt(npc_index, CHAR_IMAGENUMBER,
                   CHAR_getWorkInt(npc_index, NPC_TIME_EVENOFFDBBI));
       NPC_TreasureEventRunMsg(npc_index); // 是否warp
       CHAR_sendCToArroundCharacter(CHAR_getWorkInt(npc_index, CHAR_WORKOBJINDEX));
@@ -1057,7 +1053,6 @@ BOOL NPC_TreasureRandItemGet(int meidex, int talker, int rand_j, char *buf) {
 }
 
 #ifdef _NPC_ADDLEVELUP // (不可开) ANDY 外部测试机用来增加玩家等级
-extern tagRidePetTable ridePetTable[296];
 void NPC_LevelAndTransUp(int npc_index, int charindex, int level, int skillpoint,
                          int exp, int ridepet) {
   char szBuffer[256] = "";
@@ -1107,10 +1102,10 @@ void NPC_LevelAndTransUp(int npc_index, int charindex, int level, int skillpoint
     petTemp[j++] = basepet[0][rand() % 4];
     petTemp[j++] = basepet[1][rand() % 4];
 
-    for (i = 0; i < arraysizeof(ridePetTable); i++) {
-      if (CHAR_getInt(charindex, CHAR_BASEBASEIMAGENUMBER) ==
-          ridePetTable[i].charNo) {
-        petTemp[j] = ridePetTable[i].petId;
+    for (i = 0; i < arraysizeof(gRidePetTable); i++) {
+      if (CHAR_getInt(charindex, CHAR_BASEIMAGENUMBER) ==
+          gRidePetTable[i].charNo) {
+        petTemp[j] = gRidePetTable[i].petId;
         j++;
         if (j >= arraysizeof(petTemp))
           break;
@@ -1148,7 +1143,7 @@ void NPC_LevelAndTransUp(int npc_index, int charindex, int level, int skillpoint
   }
   CHAR_send_P_StatusString(
       charindex, CHAR_P_STRING_DUELPOINT | CHAR_P_STRING_TRANSMIGRATION |
-                     CHAR_P_STRING_RIDEPET | CHAR_P_STRING_BASEBASEIMAGENUMBER |
+                     CHAR_P_STRING_RIDEPET | CHAR_P_STRING_BASEIMAGENUMBER |
                      CHAR_P_STRING_GOLD | CHAR_P_STRING_EXP | CHAR_P_STRING_LV |
                      CHAR_P_STRING_HP | CHAR_P_STRING_LEARNRIDE);
   CHAR_Skillupsend(charindex);

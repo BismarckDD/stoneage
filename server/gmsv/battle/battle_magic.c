@@ -239,12 +239,12 @@ void BATTLE_MultiRecovery(int battleindex, int attackNo, int toNo, int kind,
     case BD_KIND_UNBECOMEPIG:
       if (CHAR_getInt(toindex, CHAR_BECOMEPIG) > -1) {
         CHAR_setInt(toindex, CHAR_BECOMEPIG, -1);
-        CHAR_setInt(toindex, CHAR_BASEIMAGENUMBER,
-                    CHAR_getInt(toindex, CHAR_BASEBASEIMAGENUMBER));
+        CHAR_setInt(toindex, CHAR_IMAGENUMBER,
+                    CHAR_getInt(toindex, CHAR_BASEIMAGENUMBER));
         CHAR_complianceParameter(toindex);
         CHAR_sendCToArroundCharacter(
             CHAR_getWorkInt(toindex, CHAR_WORKOBJINDEX));
-        CHAR_send_P_StatusString(toindex, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+        CHAR_send_P_StatusString(toindex, CHAR_P_STRING_BASEIMAGENUMBER);
         CHAR_talkToCli(toindex, -1, "乌力化失效了。", CHAR_COLORWHITE);
       }
       break;

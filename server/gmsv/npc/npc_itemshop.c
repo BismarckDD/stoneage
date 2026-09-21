@@ -11,9 +11,6 @@
 #include "pet_skill.h"
 #include "readmap.h"
 #include "saac_client.h"
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 #define MAXSHOPITEM 33
 static void NPC_ItemShop_selectWindow(int meindex, int talker, int num,
                                       int select);

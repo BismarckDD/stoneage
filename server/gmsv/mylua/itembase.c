@@ -5,10 +5,6 @@
 #include "char.h"
 #include "item.h"
 #include "gmsv_server.h"
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 #ifdef _ALLBLUES_LUA_1_2   
 #include "mylua/mylua.h"
 

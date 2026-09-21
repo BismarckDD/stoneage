@@ -15,22 +15,22 @@
 #define _ATTESTAION_ID 1
 
 #ifndef _VERSION_25
-  #define _TEACHER_SYSTEM   // 导师系统(未开放)
-  #define _ALLDOMAN        // (可开放) Syu ADD 排行榜NPC
+  #define _TEACHER_SYSTEM     // 导师系统(未开放)
+  #define _ALLDOMAN           // (可开放) Syu ADD 排行榜NPC
 #endif
-  #define _CHANNEL_MODIFY    // 频道功能整合
-  #define _NEW_MANOR_LAW    // 新庄园规则
+#define _CHANNEL_MODIFY       // 频道功能整合
+#define _NEW_MANOR_LAW        // 新庄园规则
 /* -------------------------------------------------------------------
  * 专案：族人职务与家族功能补充
  * 人员：小瑜、彦勋、志伟、小民
  * 说明：
  */
-#define _LEADERFLAG_VER    // 嗯、ㄟ、这个.... (可开放)
-#define _FAMILY      //  (可开放)
-#define _PERSONAL_FAME    // Arminius 8.30 家族个人声望  (可开放)
-#define _FMVER21      // CoolFish: 家族族长职务代理人 2001/8/30 (可开放)
+#define _LEADERFLAG_VER     // 嗯、ㄟ、这个.... (可开放)
+#define _FAMILY             //  (可开放)
+#define _PERSONAL_FAME      // Arminius 8.30 家族个人声望  (可开放)
+#define _FMVER21            // CoolFish: 家族族长职务代理人 2001/8/30 (可开放)
 #define _CHAR_POOLITEM      // (可开放) ANDY 共用仓库
-#define _CHAR_POOLPET      // (可开放) Robin 共用宠物仓库
+#define _CHAR_POOLPET       // (可开放) Robin 共用宠物仓库
 
 /* -------------------------------------------------------------------
  * 专案：当机不回朔之人物资料存档方式修正
@@ -110,7 +110,6 @@
   #if _ATTESTAION_ID == 5
     #define _FORMULATE_AUTO_PK       // 制定自动化PK系统
   #else
-    #define _OLDPS_TO_MD5PS         // 把旧的密码转成MD5密码
     #ifdef _NEW_VIP_SHOP
         #define _COST_ITEM             // 充值道具
     #endif

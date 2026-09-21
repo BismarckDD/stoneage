@@ -543,9 +543,9 @@ int PETSKILL_Use(int char_index, int havepetskill, int toindex, char *data
 
 #ifdef _FIXWOLF // Syu ADD 修正狼人变身Bug
   if (petskillid == 600) {
-    if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101428
+    if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 101428
 #ifdef _EXPANSION_VARY_WOLF
-        || CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 104109
+        || CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 104109
 #endif
     )
       petskillid = -1;
@@ -993,14 +993,14 @@ int PETSKILL_Vary(int cindex, int tindex, int id, char *data) {
     int image = 0;
     sscanf(pszP + 3, "%d", &image);
 
-    CHAR_setInt(cindex, CHAR_BASEIMAGENUMBER, image);
+    CHAR_setInt(cindex, CHAR_IMAGENUMBER, image);
   } else {
-    CHAR_setInt(cindex, CHAR_BASEIMAGENUMBER, 101428);
+    CHAR_setInt(cindex, CHAR_IMAGENUMBER, 101428);
   }
   CHAR_SETWORKINT_LOW(cindex, CHAR_WORKBATTLECOM3,
-                      CHAR_getInt(cindex, CHAR_BASEIMAGENUMBER));
+                      CHAR_getInt(cindex, CHAR_IMAGENUMBER));
 #else
-  CHAR_setInt(cindex, CHAR_BASEIMAGENUMBER, 101428);
+  CHAR_setInt(cindex, CHAR_IMAGENUMBER, 101428);
 #endif
 
   CHAR_setWorkInt(cindex, CHAR_WORKTURN, 0);

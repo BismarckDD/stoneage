@@ -26,9 +26,6 @@ ITEM_Index *ITEM_gIndex = NULL;
 static char *ITEM_checkString(char *string);
 static int ITEM_getRandomValue(const char *string, int *randomwidth, int num);
 static int ITEM_isstring1or0(const char *string, int *randomwidth, int num);
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 
 #ifdef _SIMPLIFY_ITEMSTRING
 
@@ -2022,9 +2019,9 @@ void Other_DefcharWorkInt(int index) {
 #endif
 
 #ifdef _VARY_WOLF
-  if (CHAR_getInt(index, CHAR_BASEIMAGENUMBER) == 101428
+  if (CHAR_getInt(index, CHAR_IMAGENUMBER) == 101428
 #ifdef _EXPANSION_VARY_WOLF
-      || CHAR_getInt(index, CHAR_BASEIMAGENUMBER) == 104109
+      || CHAR_getInt(index, CHAR_IMAGENUMBER) == 104109
 #endif
   ) {
     int Rands = 0, power;

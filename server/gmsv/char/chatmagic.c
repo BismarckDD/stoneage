@@ -46,10 +46,6 @@
 #endif
 // WON ADD 修正族长问题
 #include "family.h"
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int char_index);
-#endif
 #include "petmail.h"
 
 #ifdef _AUTO_PK
@@ -64,7 +60,6 @@ extern int CheckCharMaxItem(int char_index);
 #include "readnpc.h"
 #endif
 
-extern tagRidePetTable ridePetTable[296];
 extern int *pWorkAttackPower;
 extern time_t initTime;
 int *pWorkAttackPower = NULL;
@@ -663,12 +658,12 @@ void CHAR_CHAT_DEBUG_metamo(int char_index, char *message) {
       CHAR_talkToCli(char_index, -1, "此账号不在线~", CHAR_COLORYELLOW);
       return;
     }
+    CHAR_setInt(i, CHAR_IMAGENUMBER, image);
     CHAR_setInt(i, CHAR_BASEIMAGENUMBER, image);
-    CHAR_setInt(i, CHAR_BASEBASEIMAGENUMBER, image);
 
     CHAR_complianceParameter(i);
     CHAR_sendCToArroundCharacter(CHAR_getWorkInt(i, CHAR_WORKOBJINDEX));
-    CHAR_send_P_StatusString(i, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+    CHAR_send_P_StatusString(i, CHAR_P_STRING_BASEIMAGENUMBER);
     sprintf(token, "[GM]%s把你的人物形象设置为%d!",
             CHAR_getChar(char_index, CHAR_NAME), image);
     CHAR_talkToCli(i, -1, token, CHAR_COLORYELLOW);
@@ -676,12 +671,12 @@ void CHAR_CHAT_DEBUG_metamo(int char_index, char *message) {
             image);
     CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
   } else {
+    CHAR_setInt(char_index, CHAR_IMAGENUMBER, image);
     CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, image);
-    CHAR_setInt(char_index, CHAR_BASEBASEIMAGENUMBER, image);
 
     CHAR_complianceParameter(char_index);
     CHAR_sendCToArroundCharacter(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-    CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+    CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
     sprintf(token, "人物形象设置为%d!", image);
     CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
   }
@@ -715,8 +710,8 @@ void CHAR_CHAT_DEBUG_info(int char_index, char *message) {
   snprintf(
       line, sizeof(line), "name:%s i:%d B:%d BB:%d LV:%d EXP:%d MakeSeq:%d",
       CHAR_getChar(index, CHAR_NAME), char_index,
-      CHAR_getInt(index, CHAR_BASEIMAGENUMBER),
-      CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER), CHAR_getInt(index, CHAR_LV),
+      CHAR_getInt(index, CHAR_IMAGENUMBER),
+      CHAR_getInt(index, CHAR_BASEIMAGENUMBER), CHAR_getInt(index, CHAR_LV),
       CHAR_getInt(index, CHAR_EXP), CHAR_getCharMakeSequenceNumber(index));
 
   CHAR_talkToCli(char_index, -1, line, CHAR_COLORWHITE);
@@ -3490,10 +3485,10 @@ void CHAR_CHAT_DEBUG_engineer(int char_index, char *message) {
     int i, j;
     int k = 0, petindex, enemyarray;
     j = 1;
-    for (i = 0; i < arraysizeof(ridePetTable); i++) {
-      if (CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER) ==
-          ridePetTable[i].charNo) {
-        petTemp[j] = ridePetTable[i].petId;
+    for (i = 0; i < arraysizeof(gRidePetTable); i++) {
+      if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) ==
+          gRidePetTable[i].charNo) {
+        petTemp[j] = gRidePetTable[i].petId;
         j++;
         if (j >= arraysizeof(petTemp))
           break;
@@ -3522,7 +3517,7 @@ void CHAR_CHAT_DEBUG_engineer(int char_index, char *message) {
   }
   CHAR_send_P_StatusString(
       char_index, CHAR_P_STRING_DUELPOINT | CHAR_P_STRING_TRANSMIGRATION |
-                     CHAR_P_STRING_RIDEPET | CHAR_P_STRING_BASEBASEIMAGENUMBER |
+                     CHAR_P_STRING_RIDEPET | CHAR_P_STRING_BASEIMAGENUMBER |
                      CHAR_P_STRING_GOLD | CHAR_P_STRING_EXP | CHAR_P_STRING_LV |
                      CHAR_P_STRING_HP | CHAR_P_STRING_LEARNRIDE);
   CHAR_Skillupsend(char_index);
@@ -4287,7 +4282,7 @@ void CHAR_CHAT_DEBUG_set_manor_owner(int char_index, char *message) {
       }
     }
     for (i = 0;; i++) {
-      if (getStringFromIndexWithDelim(familyListBuf, "|", i, szToken,
+      if (getStringFromIndexWithDelim(gFamilyList, "|", i, szToken,
                                       sizeof(szToken))) {
         if ((getStringFromIndexWithDelim(szToken, " ", 1, szFamilyIndex,
                                          sizeof(szFamilyIndex))) &&
@@ -4310,7 +4305,7 @@ void CHAR_CHAT_DEBUG_set_manor_owner(int char_index, char *message) {
                                 szGetFamilyName, index + 1, index, atoi(szId));
   } else {
     for (i = 0;; i++) {
-      if (getStringFromIndexWithDelim(familyListBuf, "|", i, szToken,
+      if (getStringFromIndexWithDelim(gFamilyList, "|", i, szToken,
                                       sizeof(szToken))) {
         if ((getStringFromIndexWithDelim(szToken, " ", 1, szFamilyIndex,
                                          sizeof(szFamilyIndex))) &&
@@ -5396,8 +5391,8 @@ void CHAR_CHAT_DEBUG_Trans(int char_index, char *message) {
               CHAR_getInt(char_index, CHAR_TRANSMIGRATION) * 10);
   CHAR_Skillupsend(char_index);
   CHAR_setInt(char_index, CHAR_RIDEPET, -1);
-  CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
-              CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER));
+  CHAR_setInt(char_index, CHAR_IMAGENUMBER,
+              CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
   CHAR_sendStatusString(char_index, "P");
 }
 #endif

@@ -4678,7 +4678,7 @@ int NPC_Lua_Char_getFamilyPlayIndex(lua_State *_NLL)
 
 	}
 
-	int playindex =  channelMember[familyindex][familymode][familychar_index];
+	int playindex =  gChannelMember[familyindex][familymode][familychar_index];
 
 	LRetInt(_NLL,playindex);
 

@@ -10,10 +10,6 @@
 #include "object.h"
 #include "npc_eventaction.h"
 #ifdef _ALLBLUES_LUA
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 static int CreateNpc(lua_State *L) {
   Char one;
   size_t l;
@@ -28,8 +24,8 @@ static int CreateNpc(lua_State *L) {
 
   strncpysafe(one.string[CHAR_NAME].string,
               sizeof(one.string[CHAR_NAME].string), npc_name);
-  one.data[CHAR_BASEBASEIMAGENUMBER] = image;
   one.data[CHAR_BASEIMAGENUMBER] = image;
+  one.data[CHAR_IMAGENUMBER] = image;
   one.data[CHAR_FLOOR] = floor;
   one.data[CHAR_X] = x;
   one.data[CHAR_Y] = y;
@@ -470,8 +466,8 @@ static int CreateSpecialNpc(lua_State *L) {
 
   CHAR_setInt(npcindex, CHAR_WHICHTYPE, CHAR_TYPEPLAYERNPC);
   CHAR_setChar(npcindex, CHAR_NAME, Name);
-  CHAR_setInt(npcindex, CHAR_BASEBASEIMAGENUMBER, Image);
   CHAR_setInt(npcindex, CHAR_BASEIMAGENUMBER, Image);
+  CHAR_setInt(npcindex, CHAR_IMAGENUMBER, Image);
   CHAR_setInt(npcindex, CHAR_FLOOR, Floor);
   CHAR_setInt(npcindex, CHAR_X, x);
   CHAR_setInt(npcindex, CHAR_Y, y);
@@ -525,8 +521,8 @@ static int CreatePlayer(lua_State *L) {
 
   strncpysafe(one.string[CHAR_NAME].string,
               sizeof(one.string[CHAR_NAME].string), Name);
-  one.data[CHAR_BASEBASEIMAGENUMBER] = Image;
   one.data[CHAR_BASEIMAGENUMBER] = Image;
+  one.data[CHAR_IMAGENUMBER] = Image;
   one.data[CHAR_FLOOR] = Floor;
   one.data[CHAR_X] = x;
   one.data[CHAR_Y] = y;

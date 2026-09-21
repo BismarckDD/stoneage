@@ -94,7 +94,9 @@ add_executable(saac
   saac/mail.c
   saac/acfamily.c
   saac/lock.c
+  saac/sa_db.c
   saac/sasql_cygwin.c
+  third_party/sqlite/sqlite3.c
   ${COMMON_UTIL_SOURCES}
   common/saac_server_send.c
   common/saac_server_recv.c)
@@ -144,6 +146,7 @@ target_include_directories(saac PRIVATE
   "${CMAKE_BINARY_DIR}/generated/saac"
   "${CMAKE_CURRENT_SOURCE_DIR}/saac/include"
   "${CMAKE_CURRENT_SOURCE_DIR}/saac"
+  "${CMAKE_CURRENT_SOURCE_DIR}/third_party/sqlite"
   "${CMAKE_CURRENT_SOURCE_DIR}/common"
   "${CMAKE_CURRENT_SOURCE_DIR}/common/utils")
 
@@ -153,8 +156,6 @@ foreach(target gmsv saac)
   target_link_libraries(${target} PRIVATE ws2_32)
 endforeach()
 
-# The Windows SAAC implementation links directly to MySQL via libmysqlclient.
-# Install via MSYS2: pacman -S mingw-w64-ucrt-x86_64-libmysqlclient
 find_package(PkgConfig QUIET)
 if(PKG_CONFIG_FOUND)
   pkg_check_modules(MYSQL IMPORTED_TARGET mysqlclient)
@@ -162,8 +163,7 @@ endif()
 if(MYSQL_FOUND)
   target_link_libraries(saac PRIVATE PkgConfig::MYSQL)
 else()
-  # Fallback: assume headers are in ucrt64/include/mysql and libs in ucrt64/lib
-  set(MYSQL_ROOT "C:/msys64/ucrt64")
+  set(MYSQL_ROOT "C:/msys64/ucrt64" CACHE PATH "MySQL client root")
   if(DEFINED ENV{MSYS2_ROOT})
     set(MYSQL_ROOT "$ENV{MSYS2_ROOT}/ucrt64")
   endif()
@@ -171,6 +171,8 @@ else()
   target_link_directories(saac PRIVATE "${MYSQL_ROOT}/lib")
   target_link_libraries(saac PRIVATE mysqlclient)
 endif()
+target_compile_definitions(saac PRIVATE
+  SQLITE_THREADSAFE=1 SQLITE_OMIT_LOAD_EXTENSION SQLITE_DEFAULT_FOREIGN_KEYS=1)
 target_link_libraries(saac PRIVATE z)
 target_link_libraries(gmsv PRIVATE z m)
 # Lua must come after the objects that reference it.
@@ -256,4 +258,25 @@ if(BUILD_TESTING)
   target_compile_options(saac_db_test PRIVATE ${STONEAGE_GNU_OPTIONS})
   target_link_libraries(saac_db_test PRIVATE ws2_32)
   add_test(NAME saac_db_test COMMAND saac_db_test)
+
+  add_executable(sa_db_sqlite_test
+    tests/sa_db_sqlite_test.c
+    saac/sa_db.c
+    third_party/sqlite/sqlite3.c)
+  target_include_directories(sa_db_sqlite_test PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/saac/include"
+    "${CMAKE_CURRENT_SOURCE_DIR}/third_party/sqlite")
+  target_compile_definitions(sa_db_sqlite_test PRIVATE
+    ${STONEAGE_WINDOWS_DEFINITIONS}
+    SQLITE_THREADSAFE=1 SQLITE_OMIT_LOAD_EXTENSION
+    SQLITE_DEFAULT_FOREIGN_KEYS=1)
+  if(MYSQL_FOUND)
+    target_link_libraries(sa_db_sqlite_test PRIVATE PkgConfig::MYSQL)
+  else()
+    target_include_directories(sa_db_sqlite_test PRIVATE "${MYSQL_ROOT}/include")
+    target_link_directories(sa_db_sqlite_test PRIVATE "${MYSQL_ROOT}/lib")
+    target_link_libraries(sa_db_sqlite_test PRIVATE mysqlclient)
+  endif()
+  target_compile_options(sa_db_sqlite_test PRIVATE ${STONEAGE_GNU_OPTIONS})
+  add_test(NAME sa_db_sqlite_test COMMAND sa_db_sqlite_test)
 endif()

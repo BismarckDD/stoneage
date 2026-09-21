@@ -93,8 +93,6 @@ void shutdownProgram(void) {
 #ifdef _KEEP_UP_NO_LOGIN
 extern char keepupnologin[256];
 #endif
-extern int player_online;
-extern int player_maxonline;
 static char saacrecvfunc_buf[255] = "";
 char *saacrecvfunc = saacrecvfunc_buf;
 static char saacsendfunc_buf[255] = "";
@@ -121,9 +119,9 @@ void sigshutdown(int number) {
     logerr(buff);
     sprintf(buff, "标准信息: %d\n", number);
     logerr(buff);
-    sprintf(buff, "在线人数: %d\n", player_online);
+    sprintf(buff, "在线人数: %d\n", gPlayerOnline);
     logerr(buff);
-    sprintf(buff, "最高在线: %d\n", player_maxonline);
+    sprintf(buff, "最高在线: %d\n", gPlayerOnlineMax);
     logerr(buff);
     sprintf(buff, "SAAC接收: %s\n", saacrecvfunc);
     logerr(buff);
@@ -140,8 +138,8 @@ void sigshutdown(int number) {
     logerr(buff);
   }
   if (number == 0 || number == 2) {
-    printf("在线人数: %d\n", player_online);
-    printf("最高在线: %d\n", player_maxonline);
+    printf("在线人数: %d\n", gPlayerOnline);
+    printf("最高在线: %d\n", gPlayerOnlineMax);
     printf("当前版本: %s\n", SERVER_VERSION);
   }
 

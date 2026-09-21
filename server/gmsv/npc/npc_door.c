@@ -50,7 +50,7 @@ BOOL NPC_DoorInit(int meindex) {
   getStringFromIndexWithDelim(arg, "|", 7, buf, sizeof(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOORPASSFLG, atoi(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOORORIGINALGRAPHIC,
-                  CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER));
+                  CHAR_getInt(meindex, CHAR_IMAGENUMBER));
   CHAR_setInt(meindex, CHAR_LV, 0);
   if (getStringFromIndexWithDelim(arg, "|", 8, buf, sizeof(buf))) {
     if (strncmp(buf, "title", 5) == 0) {
@@ -88,7 +88,7 @@ BOOL NPC_DoorInit(int meindex) {
     if (CHAR_getWorkInt(meindex, CHAR_WORKDOORPASSFLG) == 2) {
       CHAR_setWorkInt(meindex, CHAR_WORKDOORKEYITEMID, -2);
     }
-    if (CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER) == ROPEGRAPHIC) {
+    if (CHAR_getInt(meindex, CHAR_IMAGENUMBER) == ROPEGRAPHIC) {
       CHAR_setWorkInt(meindex, CHAR_WORKDOORKEYITEMID, -2);
     }
   }
@@ -194,7 +194,7 @@ BOOL NPC_DoorInit(int meindex) {
     }
   }
 
-  CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
+  CHAR_setInt(meindex, CHAR_IMAGENUMBER,
               CHAR_getWorkInt(meindex, CHAR_WORKDOORCLOSEG));
   NPC_DoorRefreshOverFlg(meindex);
   CHAR_setWorkInt(meindex, CHAR_WORKEVENTTYPE, CHAR_EVENT_NPC);
@@ -448,7 +448,7 @@ void NPC_DoorFlip(int meindex, int doindex) {
 }
 
 void NPC_DoorClose(int meindex, int doindex) {
-  CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
+  CHAR_setInt(meindex, CHAR_IMAGENUMBER,
               CHAR_getWorkInt(meindex, CHAR_WORKDOORCLOSEG));
   NPC_DoorRefreshOverFlg(meindex);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
@@ -459,7 +459,7 @@ void NPC_DoorClose(int meindex, int doindex) {
 void NPC_DoorOpen(int meindex, int doindex) {
   CHAR_setWorkInt(meindex, CHAR_WORKDOORCLOSETIME,
                   NowTime.tv_sec + CHAR_getInt(meindex, CHAR_MERCHANTLEVEL));
-  CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
+  CHAR_setInt(meindex, CHAR_IMAGENUMBER,
               CHAR_getWorkInt(meindex, CHAR_WORKDOOROPENG));
   NPC_DoorRefreshOverFlg(meindex);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
@@ -468,7 +468,7 @@ void NPC_DoorOpen(int meindex, int doindex) {
 }
 
 static int NPC_Door_isOpen(int meindex) {
-  int now_g = CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER);
+  int now_g = CHAR_getInt(meindex, CHAR_IMAGENUMBER);
   int open_g = CHAR_getWorkInt(meindex, CHAR_WORKDOOROPENG);
   if (now_g == open_g)
     return 1;
@@ -492,9 +492,9 @@ BOOL NPC_DoorSetRopeFlag(int fl, int x, int y, int flag) {
   if (ind < 0)
     return FALSE;
   if (flag) {
-    CHAR_setInt(ind, CHAR_BASEIMAGENUMBER, ROPEGRAPHIC);
+    CHAR_setInt(ind, CHAR_IMAGENUMBER, ROPEGRAPHIC);
   } else {
-    CHAR_setInt(ind, CHAR_BASEIMAGENUMBER, 0);
+    CHAR_setInt(ind, CHAR_IMAGENUMBER, 0);
   }
   NPC_DoorRefreshOverFlg(ind);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(ind, CHAR_WORKOBJINDEX));

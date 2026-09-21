@@ -425,8 +425,8 @@ void CHAR_loopFunc( int char_index )
 
 void CHAR_playerresurrect( int char_index, int hp )
 {
-    CHAR_setInt(char_index,CHAR_BASEIMAGENUMBER,
-                CHAR_getInt(char_index,CHAR_BASEBASEIMAGENUMBER));
+    CHAR_setInt(char_index,CHAR_IMAGENUMBER,
+                CHAR_getInt(char_index,CHAR_BASEIMAGENUMBER));
     CHAR_setFlg(char_index,CHAR_ISDIE,      0);
     CHAR_setFlg(char_index,CHAR_ISATTACKED, 1);
     CHAR_setFlg(char_index,CHAR_ISOVERED, 0);

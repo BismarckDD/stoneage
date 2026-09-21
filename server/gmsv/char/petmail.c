@@ -12,9 +12,6 @@
 #include "petmail.h"
 #include "npcutil.h"
 #include "log.h"
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 #define	PETMAIL_BATTLETIMEOUT 660
 #define	PETMAIL_IDLETIMEOUT	10
 #define	PETMAIL_IDLETIME 1
@@ -630,7 +627,7 @@ static void PETMAIL_sendPetmail( int index, int tochar_index)
 	    		"%2d/%02d %2d:%02d|%s|%d|%d|%s|%d", 
 	    		tm1.tm_mon +1, tm1.tm_mday, tm1.tm_hour, tm1.tm_min,
 	    		offmsg->text, 
-	    		CHAR_getInt( index, CHAR_BASEIMAGENUMBER),
+	    		CHAR_getInt( index, CHAR_IMAGENUMBER),
 	    		CHAR_getInt( index, CHAR_LV),
 	    		makeEscapeString( CHAR_getUseName( index), escapebuf,
 	    							sizeof( escapebuf)),

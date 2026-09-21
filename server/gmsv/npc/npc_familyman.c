@@ -10,8 +10,6 @@
 #include "npc_familyman.h"
 #include "family.h"
 #include "autil.h"
-extern	int	familyNumTotal;
-extern	char	familyListBuf[MAXFAMILYLIST]; 
 
 char sendbuf[1024];
 char buf[1024];
@@ -236,15 +234,15 @@ void NPC_FamilymanWindowTalked( int meindex, int talkerindex,
 			strcpy( buf, "");
 			j = 0;
 			for( i=1 ; i<=8 ; i++  ) {
-				if( i > familyNumTotal )	break;
-				if( getStringFromIndexWithDelim( familyListBuf, "|", i, subbuf,
+				if( i > gFamilyNumTotal )	break;
+				if( getStringFromIndexWithDelim( gFamilyList, "|", i, subbuf,
 				        sizeof(subbuf) ) == FALSE)	break;
 				strcat( buf, "|" );
 				strcat( buf, subbuf );
 				j++;
 			}
 
-			sprintf( sendbuf, "S|F|%d|%d|%d%s", familyNumTotal, 1, j, buf );
+			sprintf( sendbuf, "S|F|%d|%d|%d%s", gFamilyNumTotal, 1, j, buf );
 			//print(" FL:%s ", sendbuf );			
 			GmsvServer_FM_send( fd, sendbuf );
 			*/

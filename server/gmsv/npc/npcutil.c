@@ -21,9 +21,6 @@
 #define IS_2BYTEWORD(_a_) ((char)(0x80) <= (_a_) && (_a_) <= (char)(0xFF))
 
 extern struct FM_POINTLIST fmpointlist;
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 #ifdef _PERSONAL_FAME // Arminius 8.30: 家族个人声望
 
 // Arminius: 我把声望值减半

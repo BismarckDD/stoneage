@@ -187,10 +187,12 @@ struct FM_POINTLIST {
 #endif
 };
 // 家族PK图层
-struct FM_PKFLOOR {
+typedef struct tagFM_PKFLOOR {
   int fl;
-};
+} FM_PKFLOOR;
 // End
+
+extern FM_PKFLOOR fmpkflnum[FAMILY_FMPKFLOOR];
 
 #ifdef _NEW_MANOR_LAW
 typedef struct _ManorSchedule_t {
@@ -206,11 +208,25 @@ extern ManorSchedule_t ManorSchedule[MANORNUM];
 #endif
 
 #define MAXFAMILYLIST 128 * 1024
-extern char familyListBuf[MAXFAMILYLIST];
+
+#ifdef __FAMILY_C__
+#define EXTERN
+#else
+#define EXTERN extern
+#endif
+
+EXTERN int gFamilyNumTotal;
+EXTERN char gFamilyList[MAXFAMILYLIST];
+EXTERN int gChannelMember[FAMILY_MAXNUM][FAMILY_MAXCHANNEL][FAMILY_MAXMEMBER];
+EXTERN int gFamilyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
+EXTERN int familyTax[FAMILY_MAXNUM];
+
+#undef EXTERN
+
 
 void JoinMemberIndex(int char_index, int fmindexi);
 
-int channelMember[FAMILY_MAXNUM][FAMILY_MAXCHANNEL][FAMILY_MAXMEMBER];
-int familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
+int gChannelMember[FAMILY_MAXNUM][FAMILY_MAXCHANNEL][FAMILY_MAXMEMBER];
+int gFamilyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
 
 #endif

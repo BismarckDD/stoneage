@@ -12,9 +12,6 @@
 #include "object.h"
 #include "saac_client.h"
 
-extern int familyNumTotal;
-extern char familyListBuf[MAXFAMILYLIST];
-
 char sendbuf[1024];
 char buf[1024];
 char subbuf[128];

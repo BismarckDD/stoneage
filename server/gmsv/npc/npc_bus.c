@@ -24,10 +24,7 @@ enum {
 	NPC_WORK_CURRENTTIME = CHAR_NPCWORKINT9,
 	NPC_WORK_SEFLG = CHAR_NPCWORKINT10,
 };
-#ifdef _NEW_ITEM_
 
-extern int CheckCharMaxItem(int charindex);
-#endif
 /* 蛐  丢永本□斥及enum */
 enum {
 	NPC_BUS_MSG_GETTINGON,

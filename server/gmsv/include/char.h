@@ -772,3 +772,15 @@ void CHAR_CheckUserItem(int char_index);
 BOOL CHAR_PileItemFromItemBoxToItemBox(int char_index, int fromindex,
                                        int toindex);
 #endif
+
+
+#ifdef __CHAR_C__
+#define EXTERN
+#else
+#define EXTERN extern
+#endif
+EXTERN int gRealPlayerOnline;
+EXTERN int gLuaPlayerOnline;
+EXTERN int gPlayerOnline;
+EXTERN int gPlayerOnlineMax;
+#undef EXTERN

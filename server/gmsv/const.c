@@ -1,4 +1,5 @@
 #include "version.h"
+//
 #include "char.h"
 #include "char_data.h"
 #include "item.h"
@@ -19,13 +20,14 @@
 #define LUA_DATALINE3 6000
 #define LUA_DATALINE4 8000
 #define LUA_DATALINE5 10000
+//
 #ifdef _JZ_NEWSCRIPT_LUA
 
 lua_const M_Lua_RegConstList[] = {
   {"对像_VIP%", sizeof("对像_VIP%"), LUA_DATALINE5 + 1},
   {"对像_序%", sizeof("对像_序%"), LUA_DATALINE0 + CHAR_DATAPLACENUMBER},
-  {"对像_形象%", sizeof("对像_形象%"), LUA_DATALINE0 + CHAR_BASEIMAGENUMBER},
-  {"对像_原形%", sizeof("对像_原形%"), LUA_DATALINE0 + CHAR_BASEBASEIMAGENUMBER},
+  {"对像_形象%", sizeof("对像_形象%"), LUA_DATALINE0 + CHAR_IMAGENUMBER},
+  {"对像_原形%", sizeof("对像_原形%"), LUA_DATALINE0 + CHAR_BASEIMAGENUMBER},
   {"对像_脸%", sizeof("对像_脸%"), LUA_DATALINE0 + CHAR_FACEIMAGENUMBER},
   {"对像_地图%", sizeof("对像_地图%"), LUA_DATALINE0 + CHAR_FLOOR},
   {"对像_X%", sizeof("对像_X%"), LUA_DATALINE0 + CHAR_X},
@@ -773,7 +775,7 @@ lua_const M_Lua_RegConstList[] = {
   {"更新3_昵称%", sizeof("更新3_昵称%"), CHAR_P_STRING_OWNTITLE},
   {"更新3_骑宠%", sizeof("更新3_骑宠%"), CHAR_P_STRING_RIDEPET},
   {"更新3_学骑等级%", sizeof("更新3_学骑等级%"), CHAR_P_STRING_LEARNRIDE},
-  {"更新3_形象%", sizeof("更新3_形象%"), CHAR_P_STRING_BASEBASEIMAGENUMBER},
+  {"更新3_形象%", sizeof("更新3_形象%"), CHAR_P_STRING_BASEIMAGENUMBER},
   {"更新3_天行者模式%", sizeof("更新3_天行者模式%"), CHAR_P_STRING_SKYWALKER},
   {"更新3_调试模式%", sizeof("更新3_调试模式%"), CHAR_P_STRING_DEBUGMODE},
   {"精灵_名%", sizeof("精灵_名%"), LUA_DATALINE1 + MAGIC_NAME},

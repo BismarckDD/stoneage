@@ -648,7 +648,7 @@ int NPC_GetCost(int npc_index, int talker, int petindex) {
 
   getlevel = CHAR_getInt(petindex, CHAR_PETGETLV);
   level = CHAR_getInt(petindex, CHAR_LV);
-  graNo = CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER);
+  graNo = CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER);
   rare = CHAR_getInt(petindex, CHAR_RARE);
 
   if (getlevel == 0)

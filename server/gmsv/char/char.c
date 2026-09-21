@@ -45,28 +45,18 @@
 #include "npc_autopk.h"
 #endif
 #include "npc_autopk.h"
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int char_index);
-#endif
 #ifdef _CHATROOMPROTOCOL // (不可开) Syu ADD 聊天室频道
 #include "chatroom.h"
 #endif
 #ifdef _NPC_EVENT_NOTICE
 #include "npcutil.h"
 #endif
-extern int channelMember[FAMILY_MAXNUM][FAMILY_MAXCHANNEL][FAMILY_MAXMEMBER];
-extern int familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
-
-extern tagRidePetTable ridePetTable[296];
 extern int BATTLE_getRidePet(int char_index);
 
 #ifdef _CHANNEL_MODIFY
 extern int InitOccChannel(void);
 #endif
-#ifdef _OFFLINE_SYSTEM
-extern int playeronlinenum;
-#endif
+
 #ifdef _ANGEL_SUMMON
 extern int checkIfAngelByName(char *nameinfo);
 extern char *getMissionNameInfo(int char_index, char *nameinfo);
@@ -267,8 +257,8 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
     CONNECT_setState(clifd, NOTLOGIN);
     return;
   }
+  ch.data[CHAR_IMAGENUMBER] = imgno;
   ch.data[CHAR_BASEIMAGENUMBER] = imgno;
-  ch.data[CHAR_BASEBASEIMAGENUMBER] = imgno;
   ch.data[CHAR_FACEIMAGENUMBER] = faceimgno;
   ch.data[CHAR_DATAPLACENUMBER] = dataplacenum;
 
@@ -1085,8 +1075,8 @@ void CHAR_login(int clifd, char *data, int saveindex) {
     int oyaindex = CHAR_getWorkInt(char_index, CHAR_WORKPARTYINDEX1);
     if (CHAR_CHECKINDEX(oyaindex)) {
       if (CHAR_getInt(oyaindex, CHAR_WHICHTYPE) == CHAR_TYPEBUS) {
-        if ((CHAR_getInt(oyaindex, CHAR_BASEIMAGENUMBER) != 100355) &&
-            (CHAR_getInt(oyaindex, CHAR_BASEIMAGENUMBER) != 100461)) {
+        if ((CHAR_getInt(oyaindex, CHAR_IMAGENUMBER) != 100355) &&
+            (CHAR_getInt(oyaindex, CHAR_IMAGENUMBER) != 100461)) {
 
           if (CHAR_getWorkInt(oyaindex, CHAR_NPCWORKINT5) == 1) {
             if (CHAR_getInt(char_index, CHAR_LASTTALKELDER) >= 0) {
@@ -1198,9 +1188,9 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   }
   {
     int EQ_BBI = -1, EQ_ARM = -1, EQ_NUM = -1, EQ_BI = -1;
-    int CH_BI = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
+    int CH_BI = CHAR_getInt(char_index, CHAR_IMAGENUMBER);
 
-    EQ_BBI = CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER);
+    EQ_BBI = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
     if (CH_BI != EQ_BBI) {
       EQ_ARM = CHAR_getItemIndex(char_index, CHAR_ARM);
       EQ_NUM = ITEM_FIST;
@@ -1211,8 +1201,8 @@ void CHAR_login(int clifd, char *data, int saveindex) {
       if (CHAR_getInt(char_index, CHAR_RIDEPET) == -1) { // 非骑宠
         if (EQ_BI != CH_BI) {
           print("\n 非骑宠形象 %d [%d=>%d]", char_index,
-                CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER), EQ_BI);
-          CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, EQ_BI);
+                CHAR_getInt(char_index, CHAR_IMAGENUMBER), EQ_BI);
+          CHAR_setInt(char_index, CHAR_IMAGENUMBER, EQ_BI);
         }
       }
     }
@@ -1278,8 +1268,8 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   }
 #endif
 #ifdef _FM_METAMO
-  if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) >= 100700 &&
-      CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) < 100819 &&
+  if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) >= 100700 &&
+      CHAR_getInt(char_index, CHAR_IMAGENUMBER) < 100819 &&
       (CHAR_getInt(char_index, CHAR_FMLEADERFLAG) == FMMEMBER_NONE ||
        CHAR_getInt(char_index, CHAR_FMLEADERFLAG) == FMMEMBER_APPLY)) {
     switch (CHAR_getWorkInt(char_index, CHAR_WORKFMFLOOR)) {
@@ -1384,8 +1374,8 @@ void CHAR_login(int clifd, char *data, int saveindex) {
 //        petstring = CHAR_makePetStringFromPetIndex( petindex);
 #ifdef _REEDIT_PETBBIS
         if (ID1 == 1133) {
+          CHAR_setInt(petindex, CHAR_IMAGENUMBER, 101578);
           CHAR_setInt(petindex, CHAR_BASEIMAGENUMBER, 101578);
-          CHAR_setInt(petindex, CHAR_BASEBASEIMAGENUMBER, 101578);
           print("PET:%s fix BBI\n", CHAR_getUseName(petindex));
         }
 #endif
@@ -1462,8 +1452,8 @@ void CHAR_login(int clifd, char *data, int saveindex) {
         ID1 = CHAR_getInt(petindex, CHAR_PETID);
 #ifdef _REEDIT_PETBBIS
         if (ID1 == 1133) {
+          CHAR_setInt(petindex, CHAR_IMAGENUMBER, 101578);
           CHAR_setInt(petindex, CHAR_BASEIMAGENUMBER, 101578);
-          CHAR_setInt(petindex, CHAR_BASEBASEIMAGENUMBER, 101578);
         }
 #endif
 
@@ -1569,7 +1559,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
 #ifdef _PETSKILL_BECOMEPIG
   if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > -1)
   {
-    CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
+    CHAR_setInt(char_index, CHAR_IMAGENUMBER,
                 CHAR_getInt(char_index, CHAR_BECOMEPIG_BBI));
   }
   else // change fix 处理负很大的乌力时间
@@ -1763,7 +1753,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
   CHAR_setWorkInt(char_index, CHAR_WORK_LOGIN_TIME, time(NULL));
 #endif
 #ifdef _OFFLINE_SYSTEM
-  playeronlinenum++;
+  gRealPlayerOnline++;
 #endif
   // print("\n登陆人物名称:%s ", CHAR_getChar(char_index, CHAR_NAME ) );
 
@@ -2126,8 +2116,8 @@ BOOL _CHAR_logout(char *file, int line, int char_index, BOOL save) {
   if ((fmindexi > 0) && (channel >= 0) && (fmindexi < FAMILY_MAXNUM) &&
       (channel < FAMILY_MAXCHANNEL)) {
     while (i < FAMILY_MAXMEMBER) {
-      if (channelMember[fmindexi][channel][i] == char_index) {
-        channelMember[fmindexi][channel][i] = -1;
+      if (gChannelMember[fmindexi][channel][i] == char_index) {
+        gChannelMember[fmindexi][channel][i] = -1;
         break;
       }
       i++;
@@ -2150,8 +2140,8 @@ BOOL _CHAR_logout(char *file, int line, int char_index, BOOL save) {
   CHAR_pickupFollowPet(char_index, -1);
   for (i = 0; i < FAMILY_MAXMEMBER; i++) {
     if ((fmindexi > 0) && (fmindexi < FAMILY_MAXNUM)) {
-      if (familyMemberIndex[fmindexi][i] == char_index)
-        familyMemberIndex[fmindexi][i] = -1;
+      if (gFamilyMemberIndex[fmindexi][i] == char_index)
+        gFamilyMemberIndex[fmindexi][i] = -1;
     }
   }
   // Robin 0629 silent
@@ -2270,7 +2260,7 @@ BOOL _CHAR_logout(char *file, int line, int char_index, BOOL save) {
 #endif
 
 #ifdef _OFFLINE_SYSTEM
-  playeronlinenum--;
+  gRealPlayerOnline--;
 #endif
 
   if (save) {
@@ -2835,7 +2825,7 @@ char *CHAR_makeStatusString(int index, char *category) {
         CHAR_getInt(index, CHAR_DUELPOINT),
         CHAR_getInt(index, CHAR_TRANSMIGRATION),
         CHAR_getInt(index, CHAR_RIDEPET), CHAR_getInt(index, CHAR_LEARNRIDE),
-        CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER)
+        CHAR_getInt(index, CHAR_BASEIMAGENUMBER)
 #ifdef _NEW_RIDEPETS
         , CHAR_getInt(index, CHAR_LOWRIDEPETS)
 #endif
@@ -3130,7 +3120,7 @@ char *CHAR_makeStatusString(int index, char *category) {
 #else
             "K%d|1|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|%d|",
 #endif
-          num, CHAR_getInt(pindex, CHAR_BASEIMAGENUMBER),
+          num, CHAR_getInt(pindex, CHAR_IMAGENUMBER),
           CHAR_getInt(pindex, CHAR_HP), CHAR_getWorkInt(pindex, CHAR_WORKMAXHP),
           CHAR_getInt(pindex, CHAR_MP), CHAR_getWorkInt(pindex, CHAR_WORKMAXMP),
           CHAR_getInt(pindex, CHAR_EXP),
@@ -4023,11 +4013,11 @@ int _CHAR_complianceParameter(int index, char *FILE, int LINE) {
 #endif
   }
   if (CHAR_getFlg(index, CHAR_ISDIE) == FALSE) {
-    int oldimagenumber = CHAR_getInt(index, CHAR_BASEIMAGENUMBER);
+    int oldimagenumber = CHAR_getInt(index, CHAR_IMAGENUMBER);
     int item_index = CHAR_getItemIndex(index, CHAR_ARM);
     int category;
     int newimagenumber;
-    int basebaseimagenumber = CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER);
+    int basebaseimagenumber = CHAR_getInt(index, CHAR_BASEIMAGENUMBER);
     if (!ITEM_CHECKINDEX(item_index))
       category = ITEM_FIST;
     else
@@ -4066,9 +4056,9 @@ int _CHAR_complianceParameter(int index, char *FILE, int LINE) {
 #endif
       if (CHAR_getInt(index, CHAR_RIDEPET) == -1) {
         if (newimagenumber == -1) {
-          CHAR_setInt(index, CHAR_BASEIMAGENUMBER, basebaseimagenumber);
+          CHAR_setInt(index, CHAR_IMAGENUMBER, basebaseimagenumber);
         } else {
-          CHAR_setInt(index, CHAR_BASEIMAGENUMBER, newimagenumber);
+          CHAR_setInt(index, CHAR_IMAGENUMBER, newimagenumber);
         }
       }
 #ifdef _ENEMY_FALLGROUND
@@ -4392,7 +4382,7 @@ BOOL _CHAR_makeObjectCString(char *file, int line, int objindex, char *buf,
              whichtype, cnv10to62(objindex, objindexbuf, sizeof(objindexbuf)),
              OBJECT_getX(objindex), OBJECT_getY(objindex),
              CHAR_getInt(char_index, CHAR_DIR),
-             CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER),
+             CHAR_getInt(char_index, CHAR_IMAGENUMBER),
              CHAR_getInt(char_index, CHAR_LV), namecolortbl[namecolor],
              showname,
              makeEscapeString(CHAR_getChar(char_index, CHAR_OWNTITLE),
@@ -4720,7 +4710,7 @@ BOOL _CHAR_makeObjectCStringNew(char *file, int line, int objindex,
              whichtype, cnv10to62(objindex, objindexbuf, sizeof(objindexbuf)),
              OBJECT_getX(objindex), OBJECT_getY(objindex),
              CHAR_getInt(char_index, CHAR_DIR),
-             CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER),
+             CHAR_getInt(char_index, CHAR_IMAGENUMBER),
              CHAR_getInt(char_index, CHAR_LV), namecolortbl[namecolor],
              showname,
              makeEscapeString(CHAR_getChar(char_index, CHAR_OWNTITLE),
@@ -7433,7 +7423,7 @@ static char *CHAR_make_P_StatusString(int char_index, unsigned int indextable) {
       {CHAR_P_STRING_TRANSMIGRATION, CHAR_TRANSMIGRATION, 0},
       {CHAR_P_STRING_RIDEPET, CHAR_RIDEPET, 0},
       {CHAR_P_STRING_LEARNRIDE, CHAR_LEARNRIDE, 0},
-      {CHAR_P_STRING_BASEBASEIMAGENUMBER, CHAR_BASEBASEIMAGENUMBER, 0},
+      {CHAR_P_STRING_BASEIMAGENUMBER, CHAR_BASEIMAGENUMBER, 0},
       {CHAR_P_STRING_SKYWALKER, CHAR_WORKSKYWALKER, 1},
 #ifdef _CHARSIGNDAY_
       {CHAR_P_STRING_DEBUGMODE, CHAR_QIANDAORI, 3},
@@ -7517,7 +7507,7 @@ static char *CHAR_make_P_StatusString(int char_index, unsigned int indextable) {
 
 BOOL CHAR_send_P_StatusString(int char_index, unsigned int indextable) {
   char *string;
-  // if( indextable >= ( CHAR_P_STRING_BASEBASEIMAGENUMBER << 1)) {
+  // if( indextable >= ( CHAR_P_STRING_BASEIMAGENUMBER << 1)) {
   if (indextable > 0xA0000000) {
     // if( indextable >= ( CHAR_P_STRING_DEBUGMODE << 1)) {
     // print( "send_P invalid index[%d]\n", indextable);
@@ -7682,19 +7672,13 @@ BOOL CHAR_send_N_StatusString(int char_index, int num,
 }
 
 static char CHAR_K_statusSendBuffer[STRINGBUFSIZ];
-static char *CHAR_make_K_StatusString(int char_index, int num,
-                                      unsigned int indextable) {
-  int i, j;
-  int ret = 0;
-  int strlength;
-  int pindex;
-  char buf[64];
-  struct {
+
+static const struct {
     unsigned int kind;
     int intdataindex;
     int gettype;
   } chk[] = {
-      {CHAR_K_STRING_BASEIMAGENUMBER, CHAR_BASEIMAGENUMBER, 0},
+      {CHAR_K_STRING_IMAGENUMBER, CHAR_IMAGENUMBER, 0},
       {CHAR_K_STRING_HP, CHAR_HP, 0},
       {CHAR_K_STRING_MAXHP, CHAR_WORKMAXHP, 1},
       {CHAR_K_STRING_MP, CHAR_MP, 0},
@@ -7720,6 +7704,15 @@ static char *CHAR_make_K_StatusString(int char_index, int num,
       {CHAR_K_STRING_YLV, CHAR_YLV, 0},
 #endif
   };
+
+static char *CHAR_make_K_StatusString(int char_index, int num,
+                                      unsigned int indextable) {
+  int i, j;
+  int ret = 0;
+  int strlength;
+  int pindex;
+  char buf[64];
+
   /*       凝民尼永弁 */
   if (num < 0 || num >= CHAR_MAXPETHAVE) {
     print("宠物模式失败 (%c)%d \n", num, num);
@@ -8001,7 +7994,7 @@ void CHAR_sendPMEToArroundCharacterFLXY(int petindex, int fl, int x, int y,
   char buff[2048];
 
   objindex = CHAR_getWorkInt(petindex, CHAR_WORKOBJINDEX);
-  graphicsno = CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER);
+  graphicsno = CHAR_getInt(petindex, CHAR_IMAGENUMBER);
 #ifndef _NPC_EVENT_NOTICE
   if (CHAR_makeObjectCString(objindex, buff, sizeof(buff)) == FALSE) {
     buff[0] = '\0';
@@ -9723,10 +9716,6 @@ CHAR_COLORRED); break;
               break;
             }
 #endif
-#ifdef _NEW_ITEM_
-
-            extern int CheckCharMaxItem(int char_index);
-#endif
             // 新增买方的
             if ((iRet = CHAR_addItemSpecificItemIndex(
                      char_index, iItemIndex)) >= CheckCharMaxItem(char_index)) {
@@ -10515,7 +10504,7 @@ void CHAR_sendStreetVendorOneDataToCli(int char_index, int toindex,
                 CHAR_getInt(itempetindex, CHAR_WINDAT),
                 CHAR_getWorkInt(itempetindex, CHAR_WORKFIXAI),
                 CHAR_getInt(itempetindex, CHAR_TRANSMIGRATION),
-                CHAR_getInt(itempetindex, CHAR_BASEBASEIMAGENUMBER)
+                CHAR_getInt(itempetindex, CHAR_BASEIMAGENUMBER)
 #ifdef _PETCOM_
                     ,
                 CHAR_getInt(itempetindex, CHAR_YLV),
@@ -10545,7 +10534,7 @@ void CHAR_sendStreetVendorOneDataToCli(int char_index, int toindex,
                 CHAR_getInt(itempetindex, CHAR_WINDAT),
                 CHAR_getWorkInt(itempetindex, CHAR_WORKFIXAI),
                 CHAR_getInt(itempetindex, CHAR_TRANSMIGRATION),
-                CHAR_getInt(itempetindex, CHAR_BASEBASEIMAGENUMBER)
+                CHAR_getInt(itempetindex, CHAR_BASEIMAGENUMBER)
 #ifdef _PETCOM_
                     ,
                 CHAR_getInt(itempetindex, CHAR_YLV),

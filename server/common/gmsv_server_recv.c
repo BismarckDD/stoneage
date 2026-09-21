@@ -36,16 +36,12 @@
 #ifdef _CHATROOMPROTOCOL
 #include "chatroom.h"
 #endif
-extern int player_online;
 
 char message[256];
 char buf[256];
 
 // Forward declarations for functions defined in gmsv source
-extern int CheckCharMaxItem(int charindex);
 BOOL checkStringErr(char *);
-
-extern struct FM_PKFLOOR fmpkflnum[FAMILY_FMPKFLOOR];
 
 /* The current client transports protocol strings as UTF-8. */
 static BOOL isValidUtf8CharacterName(const char *name) {
@@ -174,7 +170,7 @@ void GmsvServer_ClientLogin_recv(int client_fd, char *cdkey, char *passwd, char 
     res = sasql_query(cdkey, passwd);
     printf("[登录预检查] sasql_query结果 res=%d (0=失败,1=成功,2=密码错,3=未注册)\n", res);
     if (res == 3) {
-      if (getNoCdkeyPlayer() > 0 && client_fd - player_online >= getNoCdkeyPlayer() &&
+      if (getNoCdkeyPlayer() > 0 && client_fd - gPlayerOnline >= getNoCdkeyPlayer() &&
           getNoCdkeyMode() != 0) {
         if (strcmp(ip, getNoAttIp(0)) != 0 && strcmp(ip, getNoAttIp(1)) != 0 &&
             strcmp(ip, getNoAttIp(2)) != 0 && strcmp(ip, getNoAttIp(3)) != 0 &&
@@ -194,7 +190,7 @@ void GmsvServer_ClientLogin_recv(int client_fd, char *cdkey, char *passwd, char 
       }
     } else if (res != 1) {
       printf("[登录失败] 预检查未通过 res=%d cdkey='%s'\n", res, cdkey);
-      if (getNoCdkeyPlayer() > 0 && client_fd - player_online >= getNoCdkeyPlayer() &&
+      if (getNoCdkeyPlayer() > 0 && client_fd - gPlayerOnline >= getNoCdkeyPlayer() &&
           getNoCdkeyMode() == 2) {
         if (strcmp(ip, getNoAttIp(0)) != 0 && strcmp(ip, getNoAttIp(1)) != 0 &&
             strcmp(ip, getNoAttIp(2)) != 0 && strcmp(ip, getNoAttIp(3)) != 0 &&

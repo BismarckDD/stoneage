@@ -217,7 +217,7 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 			  }
 #endif
 			  sprintf(info, "%s|%d|%d|%d|%d|%d|%d|%d|", CHAR_getChar(petindex, CHAR_NAME), 
-			  																							CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER), 
+			  																							CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER), 
 																						  				CHAR_getInt(petindex, CHAR_LV),
 																											CHAR_getWorkInt(petindex, CHAR_WORKATTACKPOWER),
 																											CHAR_getWorkInt(petindex, CHAR_WORKDEFENCEPOWER),

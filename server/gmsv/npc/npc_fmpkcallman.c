@@ -235,12 +235,7 @@ static void NPC_FMPKCallMan_selectWindow(int meindex, int toindex, int num,
 
 /*-----------------------------------------
  * 弁仿奶失件玄井日忒匀化五凶凛卞裟太请今木月［
- *
 -------------------------------------------*/
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 void NPC_FMPKCallManWindowTalked(int meindex, int talkerindex, int seqno,
                                  int select, char *data) {
   int datanum = -1, fl, x, y;
@@ -341,15 +336,13 @@ void NPC_FMPKCallManWindowTalked(int meindex, int talkerindex, int seqno,
   }
 }
 
-extern struct FM_PKFLOOR fmpkflnum[FAMILY_FMPKFLOOR];
 void NPC_CallFMMember(int meindex, int floor, int fmindex, char *fmname,
                       int index) {
   int i, charindex;
   char buf[256];
-  extern int familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
   print("CallFMMember_NPC_meindex:%d\n", meindex);
   for (i = 0; i < FAMILY_MAXMEMBER; i++) {
-    charindex = familyMemberIndex[index][i];
+    charindex = gFamilyMemberIndex[index][i];
     if (charindex >= 0) {
       if (CHAR_getCharUse(charindex)) {
         print("charindex:%d name:%s\n", charindex,
@@ -385,7 +378,7 @@ void NPC_CallFMMember(int meindex, int floor, int fmindex, char *fmname,
                                  buf, sizeof(buf)));
         }
       } else
-        familyMemberIndex[index][i] = -1;
+        gFamilyMemberIndex[index][i] = -1;
     }
   }
 }

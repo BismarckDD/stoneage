@@ -237,8 +237,6 @@ pthread_mutex_t lianbiaoRecvmutex;
 #define CONNECT_RecvUNLOCK(i) pthread_mutex_unlock(&Connect[i].rEcvmutex);
 #endif
 
-extern int luaplayernum;
-
 int CHAR_players();
 #define CONO_CHECK_LOGIN 0x001
 #define CONO_CHECK_ITEM 0x010
@@ -1965,7 +1963,7 @@ void CONNECT_SysEvent_Loop(void) {
               CHAR_sendCToArroundCharacter(
                   CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
               CHAR_send_P_StatusString(char_index,
-                                       CHAR_P_STRING_BASEBASEIMAGENUMBER);
+                                       CHAR_P_STRING_BASEIMAGENUMBER);
               CHAR_talkToCli(char_index, -1, "乌力化失效了。", CHAR_COLORWHITE);
             }
           } else {
@@ -2100,19 +2098,16 @@ void CONNECT_SysEvent_Loop(void) {
           CHAR_sendCToArroundCharacter(
               CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
           CHAR_send_P_StatusString(char_index,
-                                   CHAR_P_STRING_BASEBASEIMAGENUMBER);
+                                   CHAR_P_STRING_BASEIMAGENUMBER);
           CHAR_talkToCli(char_index, -1, "变身失效了。", CHAR_COLORWHITE);
         }
 
 #endif
 #ifdef _ITEM_TIME_LIMIT
-        ITEM_TimeLimit(
-            char_index); // (可开放) shan time limit of item. code:shan
-
+        ITEM_TimeLimit(char_index);
+        // (可开放) shan time limit of item. code:shan
 #endif
-
       } //%30
-
 #ifdef _PETSKILL_BECOMEPIG
       if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) ==
           BATTLE_CHARMODE_NONE) { //不是在战斗状态下
@@ -2283,8 +2278,6 @@ int isThereThisIP(unsigned long ip) {
   return 0;
 }
 
-int player_online = 0;
-int player_maxonline = 0;
 
 #ifdef _KEEP_UP_NO_LOGIN
 char keepupnologin[256] = "";
@@ -2454,7 +2447,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         mess[0] = 'N'; // 2026.09.07 以后统一用新协议
         if (!from_acsv) {
 #ifdef _NO_FULLPLAYER_ATT
-          if (sockfd - player_online >= getNoFullPlayer()) {
+          if (sockfd - gPlayerOnline >= getNoFullPlayer()) {
             time_t curtime;
             struct tm *p;
             time(&curtime);
@@ -2585,7 +2578,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         int i;
         int item_max;
         if (i_counter > 10) {
-          player_online = 0;
+          gPlayerOnline = 0;
 #ifdef _AC_PIORITY
           totalloop = 0;
           totalfd = 0;
@@ -2597,11 +2590,11 @@ SINGLETHREAD BOOL netloop_faster(void) {
           for (i = 0; i < ConnectLen; i++) {
             if ((Connect[i].use) && (i != acfd)) {
               if (CHAR_CHECKINDEX(Connect[i].char_index))
-                player_online++;
+                gPlayerOnline++;
             }
           }
-          if (player_online > player_maxonline) {
-            player_maxonline = player_online;
+          if (gPlayerOnline > gPlayerOnlineMax) {
+            gPlayerOnlineMax = gPlayerOnline;
           }
           {
             int max, min;
@@ -2619,7 +2612,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
             CHAR_getCharOnArrayPercentage(1, &max, &min, &petcnt);
             sprintf(buff1,
                     "\n在线玩家=%d 离线玩家=%d 宠物=%d 物品=%d 邮件:%d 战斗:%d %s",
-                    player_online, luaplayernum, petcnt, total_item_use,
+                    gPlayerOnline, gLuaPlayerOnline, petcnt, total_item_use,
                     PETMAIL_getPetMailTotalnums(), Battle_getTotalBattleNum(),
                     szBuff1);
 

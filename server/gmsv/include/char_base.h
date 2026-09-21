@@ -416,8 +416,8 @@ typedef enum {
 
 typedef enum {
   CHAR_DATAPLACENUMBER,
+  CHAR_IMAGENUMBER,
   CHAR_BASEIMAGENUMBER,
-  CHAR_BASEBASEIMAGENUMBER,
   CHAR_FACEIMAGENUMBER,
   CHAR_FLOOR,
   CHAR_X,
@@ -1701,7 +1701,7 @@ typedef enum {
 #define CHAR_P_STRING_OWNTITLE (1 << 26)
 #define CHAR_P_STRING_RIDEPET (1 << 27)             // 0x08000000
 #define CHAR_P_STRING_LEARNRIDE (1 << 28)           // 0x10000000
-#define CHAR_P_STRING_BASEBASEIMAGENUMBER (1 << 29) // 0x20000000
+#define CHAR_P_STRING_BASEIMAGENUMBER (1 << 29) // 0x20000000
 // #define CHAR_P_STRING_PKDP        ( 1 << 30 )
 // #ifdef _CHAR_PROFESSION
 // #define CHAR_P_STRING_PROFESSION  ( 1 << 30 )
@@ -1717,7 +1717,7 @@ typedef enum {
 #define CHAR_N_STRING_MP (1 << 5)
 #define CHAR_N_STRING_NAME (1 << 6)
 
-#define CHAR_K_STRING_BASEIMAGENUMBER (1 << 1)
+#define CHAR_K_STRING_IMAGENUMBER (1 << 1)
 #define CHAR_K_STRING_HP (1 << 2)
 #define CHAR_K_STRING_MAXHP (1 << 3)
 #define CHAR_K_STRING_MP (1 << 4)
@@ -1947,12 +1947,14 @@ INLINE int CHAR_HandleExp(int char_index);
 #endif
 
 // ride Pet table
-typedef struct tagtagRidePetTable {
+typedef struct tagRidePetTableNode {
   int rideNo; // 骑乘后整体形象
   int charNo; // 人物基础形象
   int petNo;  // 宠物基础形象
   int petId;  // 宠物在Enemy中的ID
-} tagRidePetTable;
+} RidePetTableNode;
+
+extern RidePetTableNode gRidePetTable[296];
 
 // CoolFish: Family Member Kind 2001/8/28
 typedef enum {
@@ -2232,7 +2234,7 @@ void CHAR_CancelNewTitle(int char_index);
 #endif
 
 // Forward declaration (defined later in this file)
-extern int CheckCharMaxItem(int charindex);
+extern int CheckCharMaxItem(int char_index);
 extern int CheckCharMaxItemChar(Char *ch);
 extern char *CHAR_setintdata[CHAR_DATAINTNUM];
 extern char *CHAR_setchardata[CHAR_DATACHARNUM];

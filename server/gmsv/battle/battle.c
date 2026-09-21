@@ -1089,26 +1089,26 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battle_index) 
 #endif
 #ifdef _PETSKILL_BECOMEFOX // 离开战斗时将媚惑术造成的变身效果清除
   // print("\n检查图号:%s,%d", CHAR_getChar( char_index, CHAR_NAME), CHAR_getInt(
-  // char_index, CHAR_BASEIMAGENUMBER));
+  // char_index, CHAR_IMAGENUMBER));
 
-  if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101749 ||
+  if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 101749 ||
       CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) != -1) { //变成小狐狸
-    CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
-                CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER));
+    CHAR_setInt(char_index, CHAR_IMAGENUMBER,
+                CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
     CHAR_setWorkInt(char_index, CHAR_WORKFOXROUND, -1);
-    // print("\n变回去:%d",CHAR_getInt( char_index, CHAR_BASEIMAGENUMBER));
+    // print("\n变回去:%d",CHAR_getInt( char_index, CHAR_IMAGENUMBER));
   }
 #endif
 
 #ifdef _PETSKILL_BECOMEPIG
   if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > -1 &&
       CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-    CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
+    CHAR_setInt(char_index, CHAR_IMAGENUMBER,
                 CHAR_getInt(char_index, CHAR_BECOMEPIG_BBI));
     CHAR_complianceParameter(char_index);
     CHAR_sendCToArroundCharacter(
         CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-    CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+    CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
   }
 #endif
 
@@ -1281,11 +1281,11 @@ INLINE int _BATTLE_Exit(char *file, int line, int char_index, int battle_index) 
           CHAR_setWorkInt(char_index, CHAR_WORKSPETRELIFE, 0);
 #endif
 #ifdef _VARY_WOLF
-          if (CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER) !=
-              CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER)) // Robin fix
+          if (CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER) !=
+              CHAR_getInt(petindex, CHAR_IMAGENUMBER)) // Robin fix
           {
-            CHAR_setInt(petindex, CHAR_BASEIMAGENUMBER,
-                        CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
+            CHAR_setInt(petindex, CHAR_IMAGENUMBER,
+                        CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER));
             sprintf(szPet, "K%d", k);
             CHAR_sendStatusString(char_index, szPet);
           }
@@ -2341,7 +2341,7 @@ int BATTLE_CreateVsEnemyNew(int char_index, int npcindex, int *table) {
     if (CHAR_getInt(enemy_index, CHAR_DUELPOINT) > 0) {
       BattleArray[battle_index].dpbattle = 1;
     }
-    work = CHAR_getInt(enemy_index, CHAR_BASEBASEIMAGENUMBER);
+    work = CHAR_getInt(enemy_index, CHAR_BASEIMAGENUMBER);
     if (100466 <= work && work <= 100471) {
       CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLEFLG,
                       CHAR_getWorkInt(enemy_index, CHAR_WORKBATTLEFLG) |
@@ -2532,7 +2532,7 @@ int BATTLE_CreateVsEnemyLvNew(int char_index, int npcindex, int *table,
     if (CHAR_getInt(enemy_index, CHAR_DUELPOINT) > 0) {
       BattleArray[battle_index].dpbattle = 1;
     }
-    work = CHAR_getInt(enemy_index, CHAR_BASEBASEIMAGENUMBER);
+    work = CHAR_getInt(enemy_index, CHAR_BASEIMAGENUMBER);
     if (100466 <= work && work <= 100471) {
       CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLEFLG,
                       CHAR_getWorkInt(enemy_index, CHAR_WORKBATTLEFLG) |
@@ -2716,10 +2716,10 @@ int BATTLE_CreateVsEnemy(int char_index, int mode, int npcindex) {
 
     if (mode == 2) {
       if (i == 0) {
-        CHAR_setInt(enemy_index, CHAR_BASEBASEIMAGENUMBER,
-                    CHAR_getInt(npcindex, CHAR_BASEBASEIMAGENUMBER));
         CHAR_setInt(enemy_index, CHAR_BASEIMAGENUMBER,
-                    CHAR_getInt(npcindex, CHAR_BASEBASEIMAGENUMBER));
+                    CHAR_getInt(npcindex, CHAR_BASEIMAGENUMBER));
+        CHAR_setInt(enemy_index, CHAR_IMAGENUMBER,
+                    CHAR_getInt(npcindex, CHAR_BASEIMAGENUMBER));
         CHAR_setChar(enemy_index, CHAR_NAME, CHAR_getChar(npcindex, CHAR_NAME));
         CHAR_complianceParameter(enemy_index);
       }
@@ -2730,7 +2730,7 @@ int BATTLE_CreateVsEnemy(int char_index, int mode, int npcindex) {
     if (CHAR_getInt(enemy_index, CHAR_DUELPOINT) > 0) {
       BattleArray[battle_index].dpbattle = 1;
     }
-    work = CHAR_getInt(enemy_index, CHAR_BASEBASEIMAGENUMBER);
+    work = CHAR_getInt(enemy_index, CHAR_BASEIMAGENUMBER);
     if (100466 <= work && work <= 100471) {
       CHAR_setWorkInt(enemy_index, CHAR_WORKBATTLEFLG,
                       CHAR_getWorkInt(enemy_index, CHAR_WORKBATTLEFLG) |
@@ -3963,9 +3963,7 @@ int BATTLE_GetDuelPoint(int battle_index, // 戦闘インデックス (战斗索
   }
   return 0;
 }
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
+
 int BATTLE_GetExpGold(int battle_index,
                       int side,
                       int num
@@ -8017,7 +8015,7 @@ static int BATTLE_Battling(int battle_index) {
     gWeponType = BATTLE_GetWepon(char_index);
 #ifdef _PETSKILL_BECOMEFOX
     if (CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) != -1 //若是变成小狐狸
-        || CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101749) {
+        || CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 101749) {
       int COM = CHAR_getWorkInt(char_index, CHAR_WORKBATTLECOM1);
       gWeponType = ITEM_FIST;
 
@@ -8087,14 +8085,14 @@ static int BATTLE_Battling(int battle_index) {
     } else {
       if (BATTLE_PetLoyalCheck(battle_index, attackNo, char_index)) {
 #ifdef _FIXWOLF // Syu ADD 修正狼人变身Bug
-        if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101428
+        if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 101428
 #ifdef _EXPANSION_VARY_WOLF
-            || CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 104109
+            || CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 104109
 #endif
         ) {
           if (CHAR_getWorkInt(char_index, CHAR_WORKTURN) == 0) {
-            CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
-                        CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER));
+            CHAR_setInt(char_index, CHAR_IMAGENUMBER,
+                        CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
             CHAR_setWorkInt(char_index, CHAR_WORKATTACKPOWER,
                             CHAR_getWorkInt(char_index, CHAR_WORKFIXSTR));
             CHAR_setWorkInt(char_index, CHAR_WORKDEFENCEPOWER,
@@ -8144,7 +8142,7 @@ static int BATTLE_Battling(int battle_index) {
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_BOOMERANG);
 
 #ifdef _PETSKILL_BECOMEFOX
-        if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101749 ||
+        if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 101749 ||
             CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) !=
                 -1) { //若是变成小狐狸不可以使用回力标
           CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
@@ -9010,7 +9008,7 @@ static int BATTLE_Battling(int battle_index) {
           CHAR_setWorkInt(defindex, CHAR_WORKPETFALL, 1);
         }
 
-        CHAR_setInt(defindex, CHAR_BASEIMAGENUMBER, 101749);
+        CHAR_setInt(defindex, CHAR_IMAGENUMBER, 101749);
       }
 #endif
 #ifdef _PETSKILL_BECOMEPIG // 向对方使用乌力化
@@ -9065,7 +9063,7 @@ static int BATTLE_Battling(int battle_index) {
           CHAR_setInt(defindex, CHAR_BECOMEPIG_BBI, pigbbi);
 
           compute = CHAR_getInt(defindex, CHAR_BECOMEPIG);
-          CHAR_setInt(defindex, CHAR_BASEIMAGENUMBER,
+          CHAR_setInt(defindex, CHAR_IMAGENUMBER,
                       CHAR_getInt(defindex, CHAR_BECOMEPIG_BBI));
           if (compute == -1) // 第一次中
             CHAR_setInt(defindex, CHAR_BECOMEPIG,
@@ -9165,11 +9163,11 @@ static int BATTLE_Battling(int battle_index) {
         break;
       }
 #ifdef _EXPANSION_VARY_WOLF
-      if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101428) {
-        bk_amn = (CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER) + 5) +
+      if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 101428) {
+        bk_amn = (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) + 5) +
                  (myside * 4);
       } else {
-        bk_amn = (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
+        bk_amn = (CHAR_getInt(char_index, CHAR_IMAGENUMBER));
       }
 
       BATTLE_MultiList(battle_index, defNo, ToList);
@@ -9320,7 +9318,7 @@ static int BATTLE_Battling(int battle_index) {
           itemtype == CHAR_BODY || itemtype == CHAR_DECORATION1 ||
           itemtype == CHAR_DECORATION2) {
         sprintf(szWork, "BN|a%X|%X|", attackNo,
-                CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
+                CHAR_getInt(char_index, CHAR_IMAGENUMBER));
         BATTLESTR_ADD(szWork);
 
 #ifdef _PROFESSION_SKILL // WON ADD 人物职业技能
@@ -9865,9 +9863,9 @@ static int BATTLE_Battling(int battle_index) {
     }
     if (CHAR_CHECKINDEX(char_index)) {
 #ifdef _VARY_WOLF
-      if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101428
+      if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 101428
 #ifdef _EXPANSION_VARY_WOLF
-          || CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 104109
+          || CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 104109
 #endif
       ) {
         if (CHAR_getWorkInt(char_index, CHAR_WORKTURN) == 0)
@@ -9877,8 +9875,8 @@ static int BATTLE_Battling(int battle_index) {
                           CHAR_getWorkInt(char_index, CHAR_WORKTURN) + 1);
 
         if (CHAR_getWorkInt(char_index, CHAR_WORKTURN) > 5) {
-          CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
-                      CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER));
+          CHAR_setInt(char_index, CHAR_IMAGENUMBER,
+                      CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
           CHAR_setWorkInt(char_index, CHAR_WORKATTACKPOWER,
                           CHAR_getWorkInt(char_index, CHAR_WORKFIXSTR));
           CHAR_setWorkInt(char_index, CHAR_WORKDEFENCEPOWER,
@@ -9890,12 +9888,12 @@ static int BATTLE_Battling(int battle_index) {
       }
 #endif
 #ifdef _PETSKILL_BECOMEFOX // 判断中了媚惑术後是否已到恢复的回合数
-      // if(CHAR_getInt( char_index, CHAR_BASEIMAGENUMBER)==101749)
+      // if(CHAR_getInt( char_index, CHAR_IMAGENUMBER)==101749)
       // 用图号判断的话,若是人变身时,会被自动改回去
       if (CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) != -1) //若是变成小狐狸
       {
-        if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) != 101749)
-          CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, 101749);
+        if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) != 101749)
+          CHAR_setInt(char_index, CHAR_IMAGENUMBER, 101749);
 
         if (pBattle->turn - CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) >
             2) {
@@ -9904,8 +9902,8 @@ static int BATTLE_Battling(int battle_index) {
           // print("\n变身人物回复:%s,round:%d", CHAR_getChar( char_index,
           // CHAR_NAME), CHAR_getWorkInt( char_index, CHAR_WORKFOXROUND));
 
-          CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
-                      CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER));
+          CHAR_setInt(char_index, CHAR_IMAGENUMBER,
+                      CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
 
           CHAR_setWorkInt(char_index, CHAR_WORKATTACKPOWER,
                           CHAR_getWorkInt(char_index, CHAR_WORKFIXSTR));
@@ -9927,7 +9925,7 @@ static int BATTLE_Battling(int battle_index) {
       if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > -1 &&
           (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER)) {
         char pigbuffer[128];
-        CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
+        CHAR_setInt(char_index, CHAR_IMAGENUMBER,
                     CHAR_getInt(char_index, CHAR_BECOMEPIG_BBI));
         if (CHAR_getInt(char_index, CHAR_BECOMEPIG) > 0) {
           sprintf(pigbuffer, "乌力时间:%d秒",
@@ -10075,8 +10073,8 @@ static int BATTLE_Battling(int battle_index) {
       if (CHAR_getInt(dieindex, CHAR_HP) > 0)
         continue;
       // 雷尔死亡,变身
-      if (CHAR_getInt(dieindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-          CHAR_getInt(dieindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+      if (CHAR_getInt(dieindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+          CHAR_getInt(dieindex, CHAR_BASEIMAGENUMBER) == 101814)
         BATTLE_LerChange(battle_index, dieindex, i);
     }
   }

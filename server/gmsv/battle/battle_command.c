@@ -124,7 +124,7 @@ void BattleCommandDispach(int fd, char *command) {
         CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_BOOMERANG);
         // print("ITEM_TYPE=%d iNum=%d",At_SoubiIndex,iNum);
 #ifdef _PETSKILL_BECOMEFOX
-        if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101749 ||
+        if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 101749 ||
             CHAR_getWorkInt(char_index, CHAR_WORKFOXROUND) !=
                 -1) { //若是变成小狐狸不可以使用回力标
           CHAR_setWorkInt(char_index, CHAR_WORKBATTLECOM1, BATTLE_COM_NONE);
@@ -756,7 +756,7 @@ BOOL BATTLE_MakeCharaString(int battleindex, char *pszCommand, int size) {
 
       sprintf(szBuffer, "%X|%s|%s|%X|%X|%X|%X|%X|%X|%s|%X|%X|%X|",
               pEntry[i].bid, szEscapeName, szEscapeTitle,
-              CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER),
+              CHAR_getInt(char_index, CHAR_IMAGENUMBER),
               CHAR_getInt(char_index, CHAR_LV),
               max(CHAR_getInt(char_index, CHAR_HP), 0),
               CHAR_getWorkInt(char_index, CHAR_WORKMAXHP), flg, rideflg,
@@ -858,7 +858,7 @@ void BATTLE_CharSendAll(int battleindex) {
 #endif
 
 #ifdef _PETSKILL_BECOMEFOX // 限制中了媚惑术的宠物的技能
-        // if( CHAR_getInt( pindex, CHAR_BASEIMAGENUMBER) == 101749 ){
+        // if( CHAR_getInt( pindex, CHAR_IMAGENUMBER) == 101749 ){
         if (CHAR_getWorkInt(pindex, CHAR_WORKFOXROUND) != -1) { // 若是变成小狐狸
           char msg[32] = {0};
           sprintf(msg, "a%d", pet);

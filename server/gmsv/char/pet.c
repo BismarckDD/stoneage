@@ -40,7 +40,7 @@ int PET_DEBUG_initPetOne(int char_index) {
   if (!CHAR_getDefaultChar(&ch, 31010))
     return -1;
 
-  ch.data[CHAR_BASEBASEIMAGENUMBER] = ch.data[CHAR_BASEIMAGENUMBER] = 30008;
+  ch.data[CHAR_BASEIMAGENUMBER] = ch.data[CHAR_IMAGENUMBER] = 30008;
   ch.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
   ch.workint[CHAR_WORKATTACKPOWER] = 100;
   ch.workint[CHAR_WORKDEFENCEPOWER] = 50;
@@ -333,8 +333,8 @@ int PET_createPetFromCharaIndex(int char_index, int enemy_index) {
     return -1;
   PET_CaptureTrace("pet.create default done owner=%d enemy=%d", char_index,
                    enemy_index);
-  CharNew.data[CHAR_BASEBASEIMAGENUMBER] = CharNew.data[CHAR_BASEIMAGENUMBER] =
-      CHAR_getInt(enemy_index, CHAR_BASEIMAGENUMBER);
+  CharNew.data[CHAR_BASEIMAGENUMBER] = CharNew.data[CHAR_IMAGENUMBER] =
+      CHAR_getInt(enemy_index, CHAR_IMAGENUMBER);
   CharNew.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
   CharNew.data[CHAR_HP] = CHAR_getInt(enemy_index, CHAR_HP);
   CharNew.data[CHAR_MP] = CHAR_getInt(enemy_index, CHAR_MP);

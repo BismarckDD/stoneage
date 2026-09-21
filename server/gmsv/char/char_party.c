@@ -16,11 +16,6 @@
 #ifdef _ITEM_QUITPARTY
 #include "init.h"
 #endif
-extern struct FM_PKFLOOR fmpkflnum[FAMILY_FMPKFLOOR];
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 
 int CHAR_getEmptyPartyArray(int char_index) {
   int i = -1;
@@ -288,21 +283,21 @@ BOOL CHAR_JoinParty(int char_index) {
         break;
       }
       { // Arminius 7.10 Airplane
-        int busimg = CHAR_getInt(toindex, CHAR_BASEIMAGENUMBER);
+        int busimg = CHAR_getInt(toindex, CHAR_IMAGENUMBER);
         if ((busimg != 100355) && (busimg != 100461)) {
 #ifdef _SHIP_MATEMO
           if (busimg == 100348) {
             int metamo =
-                (CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER) - 100000) /
+                (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) - 100000) /
                 20;
             if (metamo < 0)
               metamo = 0;
             else if (metamo > 11)
               metamo = 11;
-            CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, 102062 + metamo);
+            CHAR_setInt(char_index, CHAR_IMAGENUMBER, 102062 + metamo);
           } else
 #endif
-            CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, busimg);
+            CHAR_setInt(char_index, CHAR_IMAGENUMBER, busimg);
           CHAR_setInt(char_index, CHAR_RIDEPET, -1);
           CHAR_sendCToArroundCharacter(
               CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
@@ -382,8 +377,8 @@ static BOOL CHAR_DischargePartySub(int char_index, int msgflg) {
     int pindex, airplaneflag = 0;
     // Arminius 7.10 Airplane
     if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEBUS) {
-      if ((CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) != 100355) &&
-          (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) != 100461)) {
+      if ((CHAR_getInt(char_index, CHAR_IMAGENUMBER) != 100355) &&
+          (CHAR_getInt(char_index, CHAR_IMAGENUMBER) != 100461)) {
         airplaneflag = 1;
       }
     }
@@ -428,7 +423,7 @@ static BOOL CHAR_DischargePartySub(int char_index, int msgflg) {
         if (airplaneflag &&
             (CHAR_getInt(pindex, CHAR_WHICHTYPE) != CHAR_TYPEBUS)) {
           int bi, bbi, ii, category;
-          bbi = CHAR_getInt(pindex, CHAR_BASEBASEIMAGENUMBER);
+          bbi = CHAR_getInt(pindex, CHAR_BASEIMAGENUMBER);
           ii = CHAR_getItemIndex(pindex, CHAR_ARM);
           if (!ITEM_CHECKINDEX(ii))
             category = ITEM_FIST;
@@ -437,7 +432,7 @@ static BOOL CHAR_DischargePartySub(int char_index, int msgflg) {
           bi = CHAR_getNewImagenumberFromEquip(pindex, bbi, category);
           if (bi == -1)
             bi = bbi;
-          CHAR_setInt(pindex, CHAR_BASEIMAGENUMBER, bi);
+          CHAR_setInt(pindex, CHAR_IMAGENUMBER, bi);
           // Robin 0810 debug
           CHAR_complianceParameter(pindex);
           CHAR_sendCToArroundCharacter(
@@ -457,11 +452,11 @@ static BOOL CHAR_DischargePartySub(int char_index, int msgflg) {
     if (CHAR_getInt(toindex, CHAR_WHICHTYPE) == CHAR_TYPEBUS) {
       NPC_BusCheckAllowItem(toindex, char_index, TRUE);
       // Arminius 7.9 Airplane
-      if ((CHAR_getInt(toindex, CHAR_BASEIMAGENUMBER) != 100355) &&
-          (CHAR_getInt(toindex, CHAR_BASEIMAGENUMBER) != 100461)) {
+      if ((CHAR_getInt(toindex, CHAR_IMAGENUMBER) != 100355) &&
+          (CHAR_getInt(toindex, CHAR_IMAGENUMBER) != 100461)) {
         int bi, bbi, ii, category;
 
-        bbi = CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER);
+        bbi = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
         ii = CHAR_getItemIndex(char_index, CHAR_ARM);
         if (!ITEM_CHECKINDEX(ii))
           category = ITEM_FIST;
@@ -470,7 +465,7 @@ static BOOL CHAR_DischargePartySub(int char_index, int msgflg) {
         bi = CHAR_getNewImagenumberFromEquip(char_index, bbi, category);
         if (bi == -1)
           bi = bbi;
-        CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, bi);
+        CHAR_setInt(char_index, CHAR_IMAGENUMBER, bi);
         CHAR_setInt(char_index, CHAR_RIDEPET, -1);
         // Robin 0810 debug
         CHAR_complianceParameter(char_index);

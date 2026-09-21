@@ -11,9 +11,7 @@
 #include "npctemplate.h"
 #include "object.h"
 #include "readmap.h"
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
+
 typedef struct tagNPC_searchPoint {
   int floor;
   int x;
@@ -222,10 +220,10 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
   one.data[CHAR_ACTIONSTYLE] = cr->intdata[NPC_CREATEACTION];
 #endif
 
-  one.data[CHAR_BASEBASEIMAGENUMBER] = one.data[CHAR_BASEIMAGENUMBER] =
+  one.data[CHAR_BASEIMAGENUMBER] = one.data[CHAR_IMAGENUMBER] =
       template->intdata[NPC_TEMPLATEIMAGENUMBER];
   if (cr->intdata[NPC_CREATEBASEIMAGENUMBER] != -1)
-    one.data[CHAR_BASEBASEIMAGENUMBER] = one.data[CHAR_BASEIMAGENUMBER] =
+    one.data[CHAR_BASEIMAGENUMBER] = one.data[CHAR_IMAGENUMBER] =
         cr->intdata[NPC_CREATEBASEIMAGENUMBER];
 
   strncpysafe(one.string[CHAR_NAME].string,
@@ -270,9 +268,7 @@ static BOOL NPC_generateNPC(int createindex, int createtemplateindex) {
     one.data[CHAR_MP] = one.data[CHAR_MAXMP];
   }
   {
-    extern int CheckCharMaxItemChar(Char * ch);
     int item_index = CHAR_STARTITEMARRAY;
-
     int itemMax = CheckCharMaxItemChar(&one);
     for (i = 0; i < template->intdata[NPC_TEMPLATEITEMNUM]; i++) {
       if (RAND(0, 32767) <= template->haveitem[i].haverate) {

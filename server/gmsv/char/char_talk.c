@@ -23,29 +23,22 @@
 #include "char_talk.h"
 #include "net.h"
 
-extern int channelMember[FAMILY_MAXNUM][FAMILY_MAXCHANNEL][FAMILY_MAXMEMBER];
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 #ifdef _CHANNEL_MODIFY
 int *piOccChannelMember = NULL;
 #endif
-
 #ifdef _TALK_ACTION
 void TalkAction(int char_index, char *message);
 #endif
-
 #ifdef _GM_ITEM
 static BOOL player_useChatMagic(int char_index, char *data, BOOL isDebug);
 #endif
 
 #define DEBUGCDKEYNUM 100
-struct tagDebugCDKey {
+typedef struct tagDebugCDKey {
   int use;
   char cdkey[9];
-};
-static struct tagDebugCDKey DebugCDKey[DEBUGCDKEYNUM];
+} DebugCdKey;
+static DebugCdKey gDebugCdKey[DEBUGCDKEYNUM];
 
 typedef struct tagCHAR_ChatMagicTable {
   char magicname[128];
@@ -88,7 +81,6 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
 #ifdef _EQUIT_SEQUENCE
     {"sequence", CHAR_CHAT_DEBUG_sequence, TRUE, 0, 3, "数值"},
 #endif
-
     // 系统
     {"announce", CHAR_CHAT_DEBUG_announce, TRUE, 0, 2, "内容"},
     {"loginannounce", CHAR_CHAT_DEBUG_loginannounce, TRUE, 0, 2, "内容"},
@@ -329,8 +321,8 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
 void CHAR_initDebugChatCdkey(void) {
   int i;
   for (i = 0; i < DEBUGCDKEYNUM; i++) {
-    DebugCDKey[i].use = FALSE;
-    DebugCDKey[i].cdkey[0] = '\0';
+    gDebugCdKey[i].use = FALSE;
+    gDebugCdKey[i].cdkey[0] = '\0';
   }
 }
 /*------------------------------------------------------------
@@ -340,8 +332,8 @@ void CHAR_initChatMagic(void) {
   for (i = 0; i < arraysizeof(CHAR_cmtbl); i++)
     CHAR_cmtbl[i].hash = hashpjw(CHAR_cmtbl[i].magicname);
   for (i = 0; i < DEBUGCDKEYNUM; i++) {
-    DebugCDKey[i].use = FALSE;
-    DebugCDKey[i].cdkey[0] = '\0';
+    gDebugCdKey[i].use = FALSE;
+    gDebugCdKey[i].cdkey[0] = '\0';
   }
 }
 
@@ -352,18 +344,18 @@ int CHAR_setChatMagicCDKey(int mode, char *cdkey) {
     return -1;
   }
   for (i = 0; i < DEBUGCDKEYNUM; i++) {
-    if (DebugCDKey[i].use == FALSE) {
+    if (gDebugCdKey[i].use == FALSE) {
       if (mode == 0) {
-        DebugCDKey[i].use = TRUE;
-        strncpysafe(DebugCDKey[i].cdkey, sizeof(DebugCDKey[i].cdkey), cdkey);
+        gDebugCdKey[i].use = TRUE;
+        strncpysafe(gDebugCdKey[i].cdkey, sizeof(gDebugCdKey[i].cdkey), cdkey);
         found = TRUE;
         break;
       }
     } else {
       if (mode == 1) {
-        if (strcmp(DebugCDKey[i].cdkey, cdkey) == 0) {
-          DebugCDKey[i].use = FALSE;
-          DebugCDKey[i].cdkey[0] = '\0';
+        if (strcmp(gDebugCdKey[i].cdkey, cdkey) == 0) {
+          gDebugCdKey[i].use = FALSE;
+          gDebugCdKey[i].cdkey[0] = '\0';
           found = TRUE;
         }
       }
@@ -440,7 +432,7 @@ static BOOL CHAR_useChatMagic(int char_index, char *data, BOOL isDebug) {
 #endif
       if (i >= GMMAXNUM) {
         for (i = 0; i < DEBUGCDKEYNUM; i++) {
-          if (DebugCDKey[i].use && strcmp(p, DebugCDKey[i].cdkey) == 0) {
+          if (gDebugCdKey[i].use && strcmp(p, gDebugCdKey[i].cdkey) == 0) {
             break;
           }
         }
@@ -1431,9 +1423,8 @@ void CHAR_Talk(int fd, int index, char *message, int color, int area) {
                                      buf, color);
         return;
       } else
-
         for (i = 0; i < FAMILY_MAXMEMBER; i++) {
-          tindex = channelMember[fmindexi][channel][i];
+          tindex = gChannelMember[fmindexi][channel][i];
           if (!CHAR_CHECKINDEX(tindex))
             continue;
           if (tindex >= 0 && tindex != index) {

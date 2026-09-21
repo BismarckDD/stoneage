@@ -29,8 +29,6 @@
 // 全部的家族 pk 赛程
 FamilyPKSchedule fmpks[MAX_SCHEDULE*MAX_SCHEDULEMAN];
 
-extern  int     familyNumTotal;
-
 enum {
 	NPC_WORK_ID = CHAR_NPCWORKINT1,		// 登记员 ID, 从 0 开始
 	NPC_WORK_CHALLENGETIMEOUT = CHAR_NPCWORKINT2,	// 同意挑战的 timeout
@@ -206,7 +204,7 @@ void NPC_SchedulemanWindowTalked(int meindex, int talkerindex,
                 CHAR_setWorkInt(talkerindex, CHAR_WORK_DUELTIME, dt);
                 NPC_SELECT_gendata(meindex, talkerindex, 1, buf, sizeof(buf));
                 buttontype=0;
-                if (familyNumTotal>MAXFAMILYINONEWINDOW)
+                if (gFamilyNumTotal>MAXFAMILYINONEWINDOW)
                   buttontype |= WINDOW_BUTTONTYPE_NEXT;
                 GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_PKSCHEDULESELECTFAMILY,
         			   buttontype,
@@ -307,8 +305,8 @@ void NPC_SchedulemanWindowTalked(int meindex, int talkerindex,
         page=1;
         buttontype=WINDOW_BUTTONTYPE_NEXT;
       }
-      if (page>familyNumTotal-MAXFAMILYINONEWINDOW+1) {
-        page=familyNumTotal-MAXFAMILYINONEWINDOW+1;
+      if (page>gFamilyNumTotal-MAXFAMILYINONEWINDOW+1) {
+        page=gFamilyNumTotal-MAXFAMILYINONEWINDOW+1;
         buttontype=WINDOW_BUTTONTYPE_PREV;
       }
       CHAR_setWorkInt(talkerindex, CHAR_WORK_PAGE, page);
@@ -772,7 +770,7 @@ void NPC_SELECT_gendata(int meindex, int talkerindex, int page, char *buf, int s
   memset(buf, 0, size);		// clear buffer
   strcpy(buf,"8");
   for (i=0,j=0; i<MAXFAMILYINONEWINDOW; i++,j++) {
-    if (getStringFromIndexWithDelim(familyListBuf,"|",page+j,token,sizeof(token))) {
+    if (getStringFromIndexWithDelim(gFamilyList,"|",page+j,token,sizeof(token))) {
       if ( (getStringFromIndexWithDelim(token," ",1,fmindex,sizeof(fmindex))) &&
            (getStringFromIndexWithDelim(token," ",2,fmname,sizeof(fmname))) ) {
         if (tkfmindex!=atoi(fmindex)-1) {

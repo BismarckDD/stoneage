@@ -70,6 +70,10 @@ Write_Family 600
 
 ##############################
 #MYSQL基本配置
+# 数据库后端: mysql 或 sqlite（默认 mysql）
+sql_backend     mysql
+# SQLite 模式下的本地数据库文件；首次使用请导入 database.sqlite.sql
+sql_sqlite_path saac.sqlite3
 #sql服务器HOST
 sql_IP          127.0.0.1
 #sql服务器PORT

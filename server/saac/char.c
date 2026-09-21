@@ -167,17 +167,14 @@ int charSave(int ti, char *id, char *charname, char *opt, char *charinfo,
              int unlock, int mesgid)
 #endif
 {
-#ifdef _NewSave
-#else
+#ifndef _NewSave
   int char_index;
 #endif
   /* SAAC dispatches requests on one thread.  Keep MiB-sized scratch storage
    * out of the small native Windows thread stack. */
   static char savebuf[CHARDATASIZE];
   int ret = -1;
-
   memset(savebuf, 0, sizeof(savebuf));
-
   // andy_log
   if (strstr(charinfo, "DATAEND=") == NULL) {
     FILE *fp;

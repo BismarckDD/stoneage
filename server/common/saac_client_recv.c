@@ -1268,9 +1268,6 @@ void SaacClient_NewVipShop_recv(int client_fd, int point, char *buf, int flag) {
     }
 
     itemindex = ITEM_makeItemAndRegist(itemID);
-#ifdef _NEW_ITEM_
-    extern int CheckCharMaxItem(int charindex);
-#endif
     if (itemindex != -1) {
       ret = CHAR_addItemSpecificItemIndex(charaindex, itemindex);
       if (ret < 0 || ret >= CheckCharMaxItem(charaindex)) {

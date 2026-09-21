@@ -24,9 +24,6 @@
 #include "log.h"
 
 Char *CHAR_chara;
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 static int CHAR_charanum;
 static int CHAR_playernum;
 static int CHAR_petnum;
@@ -51,7 +48,7 @@ static INITCHARCOUNTER initCharCounter[3] = {
     {-1, -1, -1}, {-1, -1, -1}, {-1, -1, -1}};
 
 // 2.0骑宠: 红/黄/绿/金虎, 红/黄/绿/蓝雷龙
-tagRidePetTable ridePetTable[296] = {
+RidePetTableNode gRidePetTable[296] = {
     {101000, 100000, 100352, 331},  {101001, 100005, 100352, 331},
     {101002, 100010, 100352, 331},  {101003, 100015, 100352, 331},
     {101004, 100000, 100329, 309},  {101005, 100005, 100327, 307},
@@ -419,13 +416,13 @@ int RIDEPET_getRideImage(int char_index, int pet_index) {
 
   if (!CHAR_CHECKINDEX(char_index) || !CHAR_CHECKINDEX(pet_index))
     return -1;
-  int charNo = CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER);
-  int petNo = CHAR_getInt(pet_index, CHAR_BASEBASEIMAGENUMBER);
+  int charNo = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
+  int petNo = CHAR_getInt(pet_index, CHAR_BASEIMAGENUMBER);
   int i;
-  for (i = 0; i < arraysizeof(ridePetTable); i++) {
-    if (ridePetTable[i].charNo == charNo &&
-        ridePetTable[i].petNo == petNo)
-      return ridePetTable[i].rideNo;
+  for (i = 0; i < arraysizeof(gRidePetTable); i++) {
+    if (gRidePetTable[i].charNo == charNo &&
+        gRidePetTable[i].petNo == petNo)
+      return gRidePetTable[i].rideNo;
   }
   // 在ridePetTable中没有
   // 确定人物是哪种类型, 一种角色有四种配色
@@ -647,8 +644,8 @@ PetSetIntData PET_SetIntData[ ]={
 char *CHAR_setintdata[CHAR_DATAINTNUM] = {
     /* dci  , PLAYER,  */
     "pn",  /* CHAR_DATAPLACENUMBER */
-    "bi",  /* CHAR_BASEIMAGENUMBER */
-    "bbi", /* CHAR_BASEBASEIMAGENUMBER */
+    "bi",  /* CHAR_IMAGENUMBER */
+    "bbi", /* CHAR_BASEIMAGENUMBER */
     "fb",  /* CHAR_FACEIMAGENUMBER */
     "fl",  /* CHAR_FLOOR */
     "x",   /* CHAR_X */
@@ -1459,13 +1456,11 @@ INLINE int _CHAR_setItemIndex(char *file, int line, int index, int iindex,
 
 #ifdef _ITEM_TIME_LIMIT
   if ((id != -1) && ITEM_getWorkInt(id, ITEM_WORKTIMELIMIT) == -1) {
-    char *arg, *p = NULL, tmp[16] = "";
-    long iTmp;
+    char *p = NULL, tmp[16] = "";
     time_t iTime;
-
     time(&iTime);
-    iTmp = iTime;
-    arg = ITEM_getChar(id, ITEM_ARGUMENT);
+    int iTmp = iTime;
+    char *arg = ITEM_getChar(id, ITEM_ARGUMENT);
     if (arg && (p = strstr(arg, "Time")) != NULL) {
       // andy_log
       print("%s setTime arg:%s \n", ITEM_getChar(id, ITEM_NAME), arg);
@@ -2972,7 +2967,7 @@ void CHAR_DetainSameUCodePoolItem(int char_index, int item_index, int Ti) {
 
 // Arminius 12.15 判断是否是男士
 int IsMale(int charindex) {
-  int bbi = CHAR_getInt(charindex, CHAR_BASEBASEIMAGENUMBER);
+  int bbi = CHAR_getInt(charindex, CHAR_BASEIMAGENUMBER);
 
   if ((bbi == SPR_001em) || (bbi == SPR_002em) || (bbi == SPR_003em) ||
       (bbi == SPR_004em) || (bbi == SPR_011em) || (bbi == SPR_012em) ||
@@ -2990,7 +2985,7 @@ int IsMale(int charindex) {
 
 // Arminius 12.15 判断是否是女士
 int IsFemale(int charindex) {
-  int bbi = CHAR_getInt(charindex, CHAR_BASEBASEIMAGENUMBER);
+  int bbi = CHAR_getInt(charindex, CHAR_BASEIMAGENUMBER);
 
   if ((bbi == SPR_061em) || (bbi == SPR_062em) || (bbi == SPR_063em) ||
       (bbi == SPR_064em) || (bbi == SPR_071em) || (bbi == SPR_072em) ||
@@ -3973,9 +3968,9 @@ int CHAR_FmLeaderRide(int meindex, int pet) {
   for (i = 0; i < FMPOINTNUM; i++) {
     if (floor == FmLeaderRide[i].fmfloor) {
       int ti = -1, index, image = -1;
-      int playerNo = CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER);
+      int playerNo = CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER);
       int petindex = CHAR_getCharPet(meindex, pet);
-      int petNo = CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER);
+      int petNo = CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER);
       int playerlowsride = 0;
       int playerlowsride1 = 0;
 
@@ -4019,7 +4014,7 @@ int CHAR_FmLeaderRide(int meindex, int pet) {
       {
         if ((index = RIDEPET_getCharNoIdxByCharNo(playerNo)) >= 0) {
           if ((image = RIDEPET_getRideNo(index, ti)) >= 0) {
-            CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER, image);
+            CHAR_setInt(meindex, CHAR_IMAGENUMBER, image);
           }
         }
       }
@@ -4039,8 +4034,8 @@ int CHAR_FmLeaderRide(int meindex, int pet) {
 #endif
 
 #ifdef _NEW_ITEM_
-int CheckCharMaxItem(int charindex) {
-  (void)charindex;
+int CheckCharMaxItem(int char_index) {
+  (void)char_index;
   return CHAR_STARTITEMARRAY + CHAR_MAXITEMNUM * 3;
 }
 int CheckCharMaxItemChar(Char *ch) {
@@ -4048,13 +4043,14 @@ int CheckCharMaxItemChar(Char *ch) {
   return CHAR_STARTITEMARRAY + CHAR_MAXITEMNUM * 3;
 }
 #else
-int CheckCharMaxItem(int charindex) {
+int CheckCharMaxItem(int char_index) {
+  (void)char_index;
   return CHAR_STARTITEMARRAY + CHAR_MAXITEMNUM;
 }
 int CheckCharMaxItemChar(Char *ch) {
+  (void)ch;
   return CHAR_STARTITEMARRAY + CHAR_MAXITEMNUM;
 }
-
 #endif
 
 #ifdef _NEW_RIDEPETS

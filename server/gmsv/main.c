@@ -296,8 +296,6 @@ void warplog_proc() {
 
 #ifdef _ANGEL_SUMMON
 
-extern int player_online;
-
 void AngelReadyProc() {
   time_t nowTime;
   struct tm *temptime;
@@ -306,28 +304,28 @@ void AngelReadyProc() {
   if (nowTime < AngelNextTime)
     return;
 #ifdef _ANGEL_TIME
-  if (player_online <= getAngelPlayerMun())
+  if (gPlayerOnline <= getAngelPlayerMun())
 #else
-  if (player_online <= 10)
+  if (gPlayerOnline <= 10)
 #endif
   {
-    // print("\n当前在线人数=%d\n",	player_online);
+    // print("\n当前在线人数=%d\n",	gPlayerOnline);
     return;
   }
   AngelReady = 1;
-  // AngelNextTime = min((int)(10000/player_online), 100)*60 + (unsigned long)nowTime;
+  // AngelNextTime = min((int)(10000/gPlayerOnline), 100)*60 + (unsigned long)nowTime;
 #ifdef _ANGEL_TIME
-  AngelNextTime = min((int)(getAngelPlayerTime() / player_online), 100) * 60 +
+  AngelNextTime = min((int)(getAngelPlayerTime() / gPlayerOnline), 100) * 60 +
                   (unsigned long)nowTime;
 #else
   AngelNextTime =
-      min((int)(5000 / player_online), 100) * 60 + (unsigned long)nowTime;
+      min((int)(5000 / gPlayerOnline), 100) * 60 + (unsigned long)nowTime;
 #endif
 
   temptime = localtime(&AngelNextTime);
   sprintf(msg, "\n下一次出现天使召唤的时间=(%d::%d::%d::%d), 在线人数=%d\n",
           temptime->tm_mon + 1, temptime->tm_mday, temptime->tm_hour,
-          temptime->tm_min, player_online);
+          temptime->tm_min, gPlayerOnline);
   print(msg);
 }
 

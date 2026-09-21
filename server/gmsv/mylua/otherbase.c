@@ -92,26 +92,23 @@ static int c10to62(lua_State *L)
 	lua_pushstring(L, token);
 	return 1;
 }
+
+
 #ifdef _OFFLINE_SYSTEM
-int luaplayernum=0;
 static int setLuaPLayerNum(lua_State *L) 
 {
 	const int num = luaL_checkint(L, 1);
-	
-	luaplayernum = num;
+	gLuaPlayerOnline = num;
 	return 1;
 }
-
 static int getLuaPLayerNum(lua_State *L) 
 {
-	lua_pushinteger(L, luaplayernum);
+	lua_pushinteger(L, gLuaPlayerOnline);
 	return 1;
 }
-extern playeronlinenum;
-
 static int getOnlinePlayer(lua_State *L) 
 {
-	lua_pushinteger(L, playeronlinenum + luaplayernum + getPlayerNum());
+	lua_pushinteger(L, gRealPlayerOnline + gLuaPlayerOnline + getPlayerNum());
 	return 1;
 }
 #endif

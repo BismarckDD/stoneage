@@ -17,9 +17,6 @@
 #include "log.h"
 #include "magic_base.h"
 #include "saac_client.h"
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 #define DEBUGPRINT 0
 #define DEBUGPRINT_DETAIL 0
 

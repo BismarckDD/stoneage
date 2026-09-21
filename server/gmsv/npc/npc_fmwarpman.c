@@ -83,7 +83,7 @@ void CHECK_FMPknumInFloor( int meindex)
 	CHAR_setWorkInt( meindex, NPC_WORK_FMNUMII, fmnum2);
 }
 
-extern int familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
+extern int gFamilyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
 
 BOOL NPC_FMWarpManInit( int meindex )
 {
@@ -368,7 +368,7 @@ void NPC_FMWarpManLoop(int meindex)
 						// 原家族守住了庄园,家族成员可得到石币
 						iFmIndex1 = fmpks[fmpks_pos].host_index;
 						for(i=0;i<FAMILY_MAXMEMBER;i++){
-							iCharindex = familyMemberIndex[iFmIndex1][i];
+							iCharindex = gFamilyMemberIndex[iFmIndex1][i];
 							// 若在线上才给钱
 							if(iCharindex >= 0 && CHAR_getCharUse(iCharindex)){
 								// 获得金钱 = 个人气势 * 5000
@@ -403,13 +403,13 @@ void NPC_FMWarpManLoop(int meindex)
 						int iFmIndex1 = fmpks[fmpks_pos].guest_index;
 						int i;
 						for(i=0;i<FAMILY_MAXMEMBER;i++){
-							int iCharindex = familyMemberIndex[iFmIndex1][i];
+							int iCharindex = gFamilyMemberIndex[iFmIndex1][i];
 							if(iCharindex >= 0 && CHAR_getCharUse(iCharindex)){
 						   if( CHAR_getInt( meindex, CHAR_RIDEPET ) != -1 )
 						   {
 							   int rideindex = CHAR_getCharPet( iCharindex, CHAR_getInt( iCharindex, CHAR_RIDEPET) );
 							
-							   if( CHAR_getInt( rideindex, CHAR_BASEBASEIMAGENUMBER) == 100372 || CHAR_getInt( rideindex, CHAR_BASEBASEIMAGENUMBER) == 100373 )
+							   if( CHAR_getInt( rideindex, CHAR_BASEIMAGENUMBER) == 100372 || CHAR_getInt( rideindex, CHAR_BASEIMAGENUMBER) == 100373 )
 							   {
 								   CHAR_setInt( iCharindex, CHAR_RIDEPET, -1);
 								   CHAR_send_P_StatusString( iCharindex, CHAR_P_STRING_RIDEPET );
@@ -456,12 +456,12 @@ void NPC_FMWarpManLoop(int meindex)
 						int iFmIndex1 = fmpks[fmpks_pos].host_index;
 						int i;
 						for(i=0;i<FAMILY_MAXMEMBER;i++){
-							int iCharindex = familyMemberIndex[iFmIndex1][i];
+							int iCharindex = gFamilyMemberIndex[iFmIndex1][i];
 							if(iCharindex >= 0 && CHAR_getCharUse(iCharindex)){
 						   if( CHAR_getInt( meindex, CHAR_RIDEPET ) != -1 )
 						   {
 							   int rideindex = CHAR_getCharPet( iCharindex, CHAR_getInt( iCharindex, CHAR_RIDEPET) );
-							   if( CHAR_getInt( rideindex, CHAR_BASEBASEIMAGENUMBER) == 100372 || CHAR_getInt( rideindex, CHAR_BASEBASEIMAGENUMBER) == 100373 )
+							   if( CHAR_getInt( rideindex, CHAR_BASEIMAGENUMBER) == 100372 || CHAR_getInt( rideindex, CHAR_BASEIMAGENUMBER) == 100373 )
 							   {
 								   CHAR_setInt( iCharindex, CHAR_RIDEPET, -1);
 								   CHAR_send_P_StatusString( iCharindex, CHAR_P_STRING_RIDEPET );
@@ -493,13 +493,13 @@ void NPC_FMWarpManLoop(int meindex)
 					iFmIndex1 = fmpks[fmpks_pos].host_index;
 					iFmIndex2 = fmpks[fmpks_pos].guest_index;
 					for(i=0;i<FAMILY_MAXMEMBER;i++){
-						iCharindex = familyMemberIndex[iFmIndex1][i];
+						iCharindex = gFamilyMemberIndex[iFmIndex1][i];
 						// 若有在线上则清除,不在线上的在登入游戏时清除
 						if(iCharindex >= 0 && CHAR_getCharUse(iCharindex)){
 							CHAR_setInt(iCharindex,CHAR_MOMENTUM,0);
 							CHAR_talkToCli(iCharindex,-1,"庄园战後个人及家族气势归零",CHAR_COLORRED);
 						}
-						iCharindex = familyMemberIndex[iFmIndex2][i];
+						iCharindex = gFamilyMemberIndex[iFmIndex2][i];
 						if(iCharindex >= 0 && CHAR_getCharUse(iCharindex)){
 							CHAR_setInt(iCharindex,CHAR_MOMENTUM,0);
 							CHAR_talkToCli(iCharindex,-1,"庄园战後个人及家族气势归零",CHAR_COLORRED);
@@ -553,13 +553,13 @@ void NPC_FMWarpManLoop(int meindex)
 					iFmIndex1 = fmpks[fmpks_pos].host_index;
 					iFmIndex2 = fmpks[fmpks_pos].guest_index;
 					for(i=0;i<FAMILY_MAXMEMBER;i++){
-						iCharindex = familyMemberIndex[iFmIndex1][i];
+						iCharindex = gFamilyMemberIndex[iFmIndex1][i];
 						// 若有在线上则清除,不在线上的在登入游戏时清除
 						if(iCharindex >= 0 && CHAR_getCharUse(iCharindex)){
 							CHAR_setInt(iCharindex,CHAR_MOMENTUM,0);
 							CHAR_talkToCli(iCharindex,-1,"庄园战後个人及家族气势归零",CHAR_COLORRED);
 						}
-						iCharindex = familyMemberIndex[iFmIndex2][i];
+						iCharindex = gFamilyMemberIndex[iFmIndex2][i];
 						if(iCharindex >= 0 && CHAR_getCharUse(iCharindex)){
 							CHAR_setInt(iCharindex,CHAR_MOMENTUM,0);
 							CHAR_talkToCli(iCharindex,-1,"庄园战後个人及家族气势归零",CHAR_COLORRED);
@@ -1054,19 +1054,19 @@ void NPC_GetPKFMNum(int floor, int index1, int index2, int *num1, int *num2)
 
 	/* 皿伊奶乩□民尼永弁 */
 	for (i = 0 ; i < FAMILY_MAXMEMBER; i++ ){
-		charindex = familyMemberIndex[ index1][i];
+		charindex = gFamilyMemberIndex[ index1][i];
 		if( CHAR_getCharUse( charindex) ){
 			if (CHAR_getInt(charindex, CHAR_FLOOR) == floor)
 				*num1 = *num1 + 1;
 		}else
-			familyMemberIndex[ index1][i] = -1;
+			gFamilyMemberIndex[ index1][i] = -1;
 
-		charindex = familyMemberIndex[index2][i];
+		charindex = gFamilyMemberIndex[index2][i];
 		if (CHAR_getCharUse(charindex)){
 			if (CHAR_getInt(charindex, CHAR_FLOOR) == floor)
 				*num2 = *num2 + 1;
 		}else
-			familyMemberIndex[ index2][i] = -1;
+			gFamilyMemberIndex[ index2][i] = -1;
 	}
 
 }
@@ -1077,7 +1077,7 @@ void NPC_FMBATTLESET(int floor, int index1, int index2, int flag)
 
 	for (i = 0; i < FAMILY_MAXMEMBER; i++)
 	{
-		charindex = familyMemberIndex[index1][i];
+		charindex = gFamilyMemberIndex[index1][i];
 		if (CHAR_getCharUse(charindex))
 		{
 			if (CHAR_getInt(charindex ,CHAR_FLOOR) == floor)
@@ -1088,8 +1088,8 @@ void NPC_FMBATTLESET(int floor, int index1, int index2, int flag)
 		        }
 		}
 		else
-			familyMemberIndex[index1][i] = -1;
-		charindex = familyMemberIndex[index2][i];
+			gFamilyMemberIndex[index1][i] = -1;
+		charindex = gFamilyMemberIndex[index2][i];
 		if (CHAR_getCharUse(charindex))
 		{
 			if (CHAR_getInt(charindex ,CHAR_FLOOR) == floor)
@@ -1100,7 +1100,7 @@ void NPC_FMBATTLESET(int floor, int index1, int index2, int flag)
 			}
 		}
 		else
-			familyMemberIndex[index2][i] = -1;
+			gFamilyMemberIndex[index2][i] = -1;
 	}
 }
 
@@ -1126,7 +1126,7 @@ void NPC_talkToFloor(int floor, int index1, int index2, char *data)
 
 	for (i = 0; i < FAMILY_MAXMEMBER; i++)
 	{
-		charindex = familyMemberIndex[index1][i];
+		charindex = gFamilyMemberIndex[index1][i];
 		if (CHAR_getCharUse(charindex))
 		{
 //			print("charname:%s fmname:%s\n", 
@@ -1136,8 +1136,8 @@ void NPC_talkToFloor(int floor, int index1, int index2, char *data)
 				CHAR_talkToCli(charindex, -1, data, CHAR_COLORYELLOW);
 		}
 		else
-			familyMemberIndex[index1][i] = -1;
-		charindex = familyMemberIndex[index2][i];
+			gFamilyMemberIndex[index1][i] = -1;
+		charindex = gFamilyMemberIndex[index2][i];
 		if (CHAR_getCharUse(charindex))
 		{
 //			print("charname:%s fmname:%s\n", 
@@ -1147,7 +1147,7 @@ void NPC_talkToFloor(int floor, int index1, int index2, char *data)
 				CHAR_talkToCli(charindex, -1, data, CHAR_COLORRED);
 		}
 		else
-			familyMemberIndex[index2][i] = -1;
+			gFamilyMemberIndex[index2][i] = -1;
 	}
 }
 
@@ -1156,8 +1156,8 @@ void NPC_WarpFamily(int floor, int index1, int index2, int fl, int x, int y)
         int     i, charindex1, charindex2;
 
         for (i = 0; i < FAMILY_MAXMEMBER; i++){
-                charindex1 = familyMemberIndex[index1][i];
-                charindex2 = familyMemberIndex[index2][i];
+                charindex1 = gFamilyMemberIndex[index1][i];
+                charindex2 = gFamilyMemberIndex[index2][i];
                 if (CHAR_getCharUse(charindex1))
                 {
                    if (CHAR_getInt(charindex1, CHAR_FLOOR) == floor)
@@ -1167,7 +1167,7 @@ void NPC_WarpFamily(int floor, int index1, int index2, int fl, int x, int y)
                    }
                 }
                 else
-                         familyMemberIndex[index1][i] = -1;
+                         gFamilyMemberIndex[index1][i] = -1;
                 if (CHAR_getCharUse(charindex2))
                 {
                    if (CHAR_getInt(charindex2, CHAR_FLOOR) == floor)
@@ -1177,7 +1177,7 @@ void NPC_WarpFamily(int floor, int index1, int index2, int fl, int x, int y)
                    }
                 }
                 else
-                         familyMemberIndex[index1][i] = -1;
+                         gFamilyMemberIndex[index1][i] = -1;
         }
 }
 
@@ -1187,21 +1187,21 @@ void NPC_BattleOut(int index1, int index2)
 
         for (i = 0; i < FAMILY_MAXMEMBER; i++)
         {
-                charindex1 = familyMemberIndex[index1][i];
-                charindex2 = familyMemberIndex[index2][i];
+                charindex1 = gFamilyMemberIndex[index1][i];
+                charindex2 = gFamilyMemberIndex[index2][i];
                 if(CHAR_getCharUse(charindex1)){
                          if(CHAR_getWorkInt( charindex1, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
                                  BATTLE_WatchStop(charindex1);
                 }
                 else
-                         familyMemberIndex[index1][i] = -1;
+                         gFamilyMemberIndex[index1][i] = -1;
 
                 if(CHAR_getCharUse(charindex2)){
                          if(CHAR_getWorkInt( charindex2, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
                                  BATTLE_WatchStop(charindex2);
                 }
                 else
-                         familyMemberIndex[index2][i] = -1;
+                         gFamilyMemberIndex[index2][i] = -1;
         }   
 }
 
@@ -1214,7 +1214,7 @@ void CheckLeavePK(int npcindex, int floor, int index1, int index2)
 
 	for (i = 0; i < FAMILY_MAXMEMBER; i++)
 	{
-	   charindex = familyMemberIndex[index1][i];
+	   charindex = gFamilyMemberIndex[index1][i];
 	   if (CHAR_getCharUse(charindex)){
 	      if (CHAR_getInt(charindex, CHAR_FLOOR) == floor){
 	         if (CHAR_getWorkInt(charindex, CHAR_WORKFMPKFLAG) < 0){
@@ -1227,8 +1227,8 @@ void CheckLeavePK(int npcindex, int floor, int index1, int index2)
 	         }
 	      }
 	   }else
-	      familyMemberIndex[index1][i] = -1;
-	   charindex = familyMemberIndex[index2][i];
+	      gFamilyMemberIndex[index1][i] = -1;
+	   charindex = gFamilyMemberIndex[index2][i];
 	   if (CHAR_getCharUse(charindex)){
 	      if (CHAR_getInt(charindex, CHAR_FLOOR) == floor){
 	         if (CHAR_getWorkInt(charindex, CHAR_WORKFMPKFLAG) < 0){
@@ -1241,6 +1241,6 @@ void CheckLeavePK(int npcindex, int floor, int index1, int index2)
 	         }
 	      }
 	   }else
-	      familyMemberIndex[index2][i] = -1;
+	      gFamilyMemberIndex[index2][i] = -1;
 	}
 }

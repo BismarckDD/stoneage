@@ -268,7 +268,7 @@ int NPC_Lua_Create(const char *_DoFile, const char *_InitFuncName, char *_seek,
 
   TM_char.string[CHAR_NAME].string[0] = '\0';
 
-  TM_char.data[CHAR_BASEBASEIMAGENUMBER] = TM_char.data[CHAR_BASEIMAGENUMBER] =
+  TM_char.data[CHAR_BASEIMAGENUMBER] = TM_char.data[CHAR_IMAGENUMBER] =
       0;
 
 #ifdef _ADD_ACTION

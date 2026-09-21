@@ -12,9 +12,6 @@
 #include "npcutil.h"
 #include "object.h"
 #include "saac_client.h"
-extern int familyNumTotal;
-extern char familyListBuf[MAXFAMILYLIST];
-extern tagRidePetTable ridePetTable[296];
 extern struct FM_POINTLIST fmpointlist;
 
 char sendbuf[1024];
@@ -168,7 +165,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
     // 学习 Lv 40
     if (newwin == 6) {
-      int charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
+      int charImg = CHAR_getInt(talkerindex, CHAR_BASEIMAGENUMBER);
       if (CHAR_getInt(talkerindex, CHAR_LEARNRIDE) >= 40) {
         GmsvServer_WN_send(
             fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
@@ -230,7 +227,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
     // 学习 Lv 80
     if (newwin == 7) {
-      int charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
+      int charImg = CHAR_getInt(talkerindex, CHAR_BASEIMAGENUMBER);
       if (CHAR_getInt(talkerindex, CHAR_LEARNRIDE) >= 80) {
         GmsvServer_WN_send(
             fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
@@ -300,7 +297,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
     // 学习 Lv 120
     if (newwin == 8) {
-      int charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
+      int charImg = CHAR_getInt(talkerindex, CHAR_BASEIMAGENUMBER);
       if (CHAR_getInt(talkerindex, CHAR_LEARNRIDE) >= 120) {
         GmsvServer_WN_send(
             fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
@@ -370,7 +367,7 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
     // 学习  Lv All
     if (newwin == 9) {
-      int charImg = CHAR_getInt(talkerindex, CHAR_BASEBASEIMAGENUMBER);
+      int charImg = CHAR_getInt(talkerindex, CHAR_BASEIMAGENUMBER);
       if (CHAR_getInt(talkerindex, CHAR_LEARNRIDE) > 200) {
         GmsvServer_WN_send(
             fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,

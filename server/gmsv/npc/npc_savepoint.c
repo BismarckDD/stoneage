@@ -27,11 +27,6 @@ BOOL NPC_SavePointItemDelete(int meindex, int talker, int itemNo, int kosuu);
 
 extern time_t initTime;
 
-#ifdef _OFFLINE_SYSTEM
-int playeronlinenum = 0;
-extern int luaplayernum;
-#endif
-
 BOOL NPC_SavePointInit(int meindex) {
   int oldmanid = 0, bornfl = 0, bornx = 0, borny = 0;
   char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
@@ -180,9 +175,9 @@ void NPC_SavePointTalked(int meindex, int talkerindex, char *msg, int color) {
 #ifdef _OFFLINE_SYSTEM
       if (getPlayerNum() > 0) {
         sprintf(temp, "目前线上人数为 %d 人。",
-                playeronlinenum + luaplayernum + getPlayerNum());
+                gRealPlayerOnline + gLuaPlayerOnline + getPlayerNum());
       } else {
-        sprintf(temp, "目前线上人数为 %d 人。", playeronlinenum + luaplayernum);
+        sprintf(temp, "目前线上人数为 %d 人。", gRealPlayerOnline + gLuaPlayerOnline);
       }
 #else
       extern unsigned int StateTable[];

@@ -14,10 +14,6 @@ enum {
   NPC_WORK_COST = CHAR_NPCWORKINT1,
   NPC_WORK_CURRENTTIME = CHAR_NPCWORKINT9,
 };
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 enum {
   NPC_POOLITEMSHOP_MSG_MAIN = 0,
   NPC_POOLITEMSHOP_MSG_POOL,

@@ -16,9 +16,7 @@
 typedef enum
 
 {
-
   LUAITEM_PREOVERFUNC = ITEM_PREOVERFUNC - ITEM_FIRSTFUNCTION,
-
   LUAITEM_POSTOVERFUNC = ITEM_POSTOVERFUNC - ITEM_FIRSTFUNCTION,
 
   LUAITEM_WATCHFUNC = ITEM_WATCHFUNC - ITEM_FIRSTFUNCTION,
@@ -135,15 +133,10 @@ static luaL_Reg Spell_RegList[] = {
 #ifdef _CHAR_PROFESSION
 
     {"PETSKILL_GetData", NPC_Lua_Spell_PETSKILL_GetData},
-
     {"PROFESSION_GetData", NPC_Lua_Spell_PROFESSION_GetData},
-
     {"MAGIC_GetData", NPC_Lua_Spell_MAGIC_GetData},
-
     {"PETSKILL_SetData", NPC_Lua_Spell_PETSKILL_SetData}, // 未测试
-
     {"PROFESSION_SetData", NPC_Lua_Spell_PROFESSION_SetData}, // 未测试
-
     {"MAGIC_SetData", NPC_Lua_Spell_MAGIC_SetData}, // 未测试
 
     {"取宠物技能数据", NPC_Lua_Spell_PETSKILL_GetData},
@@ -2485,29 +2478,16 @@ void NPC_Lua_WindowTalkedCallBack(int _meindex, int _talkindex, int _seqno,
 #ifdef _USER_CHARLOOPS
 
 int NPC_Lua_CharLoopsCallBack(int _meindex)
-
 {
-
   if (M_Script_Lua == NULL)
-
   {
-
     print("M_Script_Lua Null!");
-
     return 0;
   }
-
   Char *TM_char = CHAR_getCharPointer(_meindex);
-
   if (TM_char == NULL)
-
-  {
-
     return 0;
-  }
-
   int TM_Ret = 0;
-
   lua_getglobal(
       M_Script_Lua,
       (const char *)TM_char->lua_charfunctable[CHAR_LOOPFUNCTEMP1].string);
@@ -2517,18 +2497,11 @@ int NPC_Lua_CharLoopsCallBack(int _meindex)
   TM_Ret = lua_pcall(M_Script_Lua, 1, 1, 0);
 
   if (TM_Ret != 0)
-
-  {
-
     // 失败-输出错误信息
-
     print("NPC_Lua_CharLoopsCallBack Lua Err :%d(%s)\n", TM_Ret,
           lua_tostring(M_Script_Lua, -1));
-
     // 出栈
-
     lua_pop(M_Script_Lua, 1);
-
     return 0;
   }
 
@@ -2545,11 +2518,8 @@ int NPC_Lua_BattleProPertyCallBack(int _attackindex, int _defindex,
 {
 
   if (M_Script_Lua == NULL)
-
   {
-
     print("M_Script_Lua Null!");
-
     return 0;
   }
 
@@ -3688,7 +3658,7 @@ int NPC_Lua_CreateVsEnemy(lua_State *_NLL, int _CharaIndex, int _NpcIndex,
       BattleArray[TM_BattleIndex].dpbattle = 1;
     }
 
-    TM_Work = CHAR_getInt(TM_EnemyIndex, CHAR_BASEBASEIMAGENUMBER);
+    TM_Work = CHAR_getInt(TM_EnemyIndex, CHAR_BASEIMAGENUMBER);
 
     if (100466 <= TM_Work && TM_Work <= 100471) {
 

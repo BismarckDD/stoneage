@@ -159,9 +159,7 @@ void ITEM_useSkillCanned( int char_index, int toindex, int itemNo);
 void ITEM_useLearnRideCode( int char_index, int toindex, int haveitem_index);
 #endif
 
-#ifdef _ITEM_WARP_FIX_BI
-void recoverbi(int index);
-#endif
+void reCalcImageNumber(int index);
 
 #ifdef _ITEM_TIME_LIMIT
 void ITEM_TimeLimit( int char_index);

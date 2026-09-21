@@ -1940,8 +1940,8 @@ static void LogSelfPlayerImage(int client_fd, const char *data) {
 #endif
               CHAR_getInt(charindex, CHAR_FLOOR),
               CHAR_getInt(charindex, CHAR_X), CHAR_getInt(charindex, CHAR_Y),
+              CHAR_getInt(charindex, CHAR_IMAGENUMBER),
               CHAR_getInt(charindex, CHAR_BASEIMAGENUMBER),
-              CHAR_getInt(charindex, CHAR_BASEBASEIMAGENUMBER),
               wireGra, (unsigned)len, valid);
       }
       field = sep < end ? sep + 1 : end;

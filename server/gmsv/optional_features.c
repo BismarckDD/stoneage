@@ -4,12 +4,6 @@
 #include "npc_roomadminnew.h"
 #include "util.h"
 
-
-#if !defined(_OFFLINE_SYSTEM)
-int luaplayernum = 0;
-#endif
-
-
 BOOL NPC_RoomAdminNew_ReadFile(char *room_name, NPC_ROOMINFO *data) {
   char filename[512];
   char line[1024];

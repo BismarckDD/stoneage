@@ -16,10 +16,6 @@
 #include "readmap.h"
 #include "log.h"
 
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
-
 enum {
   CHAR_WORK_ENCOUNTTYPE = CHAR_NPCWORKINT1, /* 巨件市它件玄及酷   */
   CHAR_WORK_DIEACT = CHAR_NPCWORKINT2,      /* 韶氏分凛升丹允月井 */
@@ -131,10 +127,10 @@ BOOL NPC_NPCEnemyInit(int meindex) {
   gym = NPC_Util_GetNumFromStrWithDelim(argstr, "gym");
 
   if (gym > 0) {
-    CHAR_setInt(meindex, CHAR_BASEBASEIMAGENUMBER,
-                gymbody[RAND(0, arraysizeof(gymbody) - 1)]);
     CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
-                CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER));
+                gymbody[RAND(0, arraysizeof(gymbody) - 1)]);
+    CHAR_setInt(meindex, CHAR_IMAGENUMBER,
+                CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER));
     CHAR_setInt(meindex, CHAR_LV, gym);
   }
   tmp = NPC_Util_GetNumFromStrWithDelim(argstr, "dieact");
@@ -203,7 +199,7 @@ BOOL NPC_NPCEnemyInit(int meindex) {
   CHAR_setInt(meindex, CHAR_WHICHTYPE, CHAR_TYPENPCENEMY);
   CHAR_setWorkInt(meindex, CHAR_WORKEVENTTYPE, CHAR_EVENT_ENEMY);
   CHAR_setWorkInt(meindex, CHAR_WORK_BASEIMGBAK,
-                  CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER));
+                  CHAR_getInt(meindex, CHAR_IMAGENUMBER));
   return TRUE;
 }
 
@@ -243,7 +239,7 @@ int NPC_NPCEnemy_Encount(int meindex, int char_index, int mode) {
   BOOL flg = TRUE;
   int battlemax = getBattlenum();
   int i;
-  if (CHAR_getInt(meindex, CHAR_BASEIMAGENUMBER) == 0) {
+  if (CHAR_getInt(meindex, CHAR_IMAGENUMBER) == 0) {
     return FALSE;
   }
   if (mode == 0) {
@@ -563,7 +559,7 @@ int NPC_NPCEnemy_Dying(int battleindex, int meindex) {
   CHAR_setWorkInt(meindex, CHAR_WORK_DIEACT, tmp);
   if (CHAR_getWorkInt(meindex, CHAR_WORK_DIEACT) == 0) {
     Char *ch;
-    CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER, 0);
+    CHAR_setInt(meindex, CHAR_IMAGENUMBER, 0);
     // print("bbi---->bi10");
     CHAR_sendCToArroundCharacter(CHAR_getWorkInt(meindex, CHAR_WORKOBJINDEX));
 
@@ -628,7 +624,7 @@ void NPC_NPCEnemyLoop(int meindex) {
   if (NowTime.tv_sec > CHAR_getWorkInt(meindex, CHAR_WORK_DIETIME) +
                            CHAR_getWorkInt(meindex, CHAR_WORK_REVIVALTIME)) {
     Char *ch;
-    CHAR_setInt(meindex, CHAR_BASEIMAGENUMBER,
+    CHAR_setInt(meindex, CHAR_IMAGENUMBER,
                 CHAR_getWorkInt(meindex, CHAR_WORK_BASEIMGBAK));
     // print("bbi---->bi11");
 

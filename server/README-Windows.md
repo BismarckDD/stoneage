@@ -51,7 +51,16 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass `
 它误当成完整运行包。Windows 路径建议在配置中统一使用 `/`，例如
 `D:/stoneage/runtime/data/map`；相对路径会以运行数据目录为基准。
 
-SAAC 使用 MySQL 直连方式，在 `acserv.cf` 中配置数据库连接参数：
+SAAC 可在 MySQL 和内嵌 SQLite 之间切换。在 `acserv.cf` 中设置
+`sql_backend mysql`（默认）或 `sql_backend sqlite`。SQLite 模式还需设置
+`sql_sqlite_path saac.sqlite3`，并先用 `db/database.sqlite.sql` 初始化数据库。
+
+同一个 SAAC 可执行文件始终包含两个后端；修改 `acserv.cf` 后重启 SAAC
+即可切换，不需要重新构建。构建时仍需 MySQL 客户端开发库，运行 SQLite
+模式时也需确保 MySQL 客户端运行库可被加载。SQLite 3.51.2 amalgamation
+已直接编译进 SAAC。
+
+MySQL 模式的连接参数如下：
 
 ```
 sql_IP          127.0.0.1

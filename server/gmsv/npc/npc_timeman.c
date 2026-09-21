@@ -79,7 +79,7 @@ BOOL NPC_TimeManInit( int meindex )
 		CHAR_setWorkInt( meindex,E_INT_GRAPHIC2, 9999 );
 	}
 
-	CHAR_setWorkInt( meindex, E_INT_GRAPHIC, CHAR_getInt( meindex, CHAR_BASEIMAGENUMBER) );
+	CHAR_setWorkInt( meindex, E_INT_GRAPHIC, CHAR_getInt( meindex, CHAR_IMAGENUMBER) );
 
 	if( NPC_Util_GetStrFromStrWithDelim( argstr, "time", buf, sizeof( buf)) != NULL ){
 		for(i=0 ; i<9 ; i++){
@@ -109,7 +109,7 @@ void NPC_TimeManTalked( int meindex , int talkerindex , char *msg ,int color )
 		if( NPC_Util_CharDistance( talkerindex ,meindex ) > 1) return;
 	}
 
-	if(CHAR_getInt(meindex,CHAR_BASEIMAGENUMBER)==9999){
+	if(CHAR_getInt(meindex,CHAR_IMAGENUMBER)==9999){
 		/*--壅尹化中月乒□玉--*/
 		return;
 	}
@@ -176,23 +176,23 @@ void NPC_TimeManWatch( int meobjindex, int objindex, CHAR_ACTION act,
 			if(CHAR_getWorkInt(meindex,E_INT_NOWGRAPHIC)
 				==CHAR_getWorkInt( meindex, E_INT_GRAPHIC)) return;
 
-			CHAR_setInt(meindex,CHAR_BASEIMAGENUMBER,
+			CHAR_setInt(meindex,CHAR_IMAGENUMBER,
 							CHAR_getWorkInt( meindex, E_INT_GRAPHIC));
 			CHAR_sendCToArroundCharacter( CHAR_getWorkInt( meindex, CHAR_WORKOBJINDEX ) );
 			CHAR_setWorkInt(meindex,E_INT_MODE,0);		
 			CHAR_setWorkInt(meindex,E_INT_NOWGRAPHIC,
-								CHAR_getInt(meindex,CHAR_BASEIMAGENUMBER));
+								CHAR_getInt(meindex,CHAR_IMAGENUMBER));
 		}else{
 			/*-壅尹化中月--*/
 			if(CHAR_getWorkInt(meindex,E_INT_NOWGRAPHIC)
 				==CHAR_getWorkInt( meindex, E_INT_GRAPHIC2)) return;
 
-			CHAR_setInt(meindex,CHAR_BASEIMAGENUMBER,
+			CHAR_setInt(meindex,CHAR_IMAGENUMBER,
 								CHAR_getWorkInt( meindex, E_INT_GRAPHIC2));
 			CHAR_sendCToArroundCharacter( CHAR_getWorkInt( meindex, CHAR_WORKOBJINDEX ) );
 			CHAR_setWorkInt(meindex,E_INT_MODE,1);
 			CHAR_setWorkInt(meindex,E_INT_NOWGRAPHIC,
-								CHAR_getInt(meindex,CHAR_BASEIMAGENUMBER));		
+								CHAR_getInt(meindex,CHAR_IMAGENUMBER));		
 
 		}
 	}else{
@@ -203,22 +203,22 @@ void NPC_TimeManWatch( int meobjindex, int objindex, CHAR_ACTION act,
 			if(CHAR_getWorkInt(meindex,E_INT_NOWGRAPHIC)
 				==CHAR_getWorkInt( meindex, E_INT_GRAPHIC)) return;
 	
-			CHAR_setInt(meindex,CHAR_BASEIMAGENUMBER,
+			CHAR_setInt(meindex,CHAR_IMAGENUMBER,
 							CHAR_getWorkInt( meindex, E_INT_GRAPHIC));
 			CHAR_sendCToArroundCharacter( CHAR_getWorkInt( meindex, CHAR_WORKOBJINDEX ) );
 			CHAR_setWorkInt(meindex,E_INT_MODE,0);
 			CHAR_setWorkInt(meindex,E_INT_NOWGRAPHIC,
-							CHAR_getInt(meindex,CHAR_BASEIMAGENUMBER));		
+							CHAR_getInt(meindex,CHAR_IMAGENUMBER));		
 		}else{
 			if(CHAR_getWorkInt(meindex,E_INT_NOWGRAPHIC)
 				==CHAR_getWorkInt( meindex, E_INT_GRAPHIC2)) return;
 			
-			CHAR_setInt(meindex,CHAR_BASEIMAGENUMBER,
+			CHAR_setInt(meindex,CHAR_IMAGENUMBER,
 							CHAR_getWorkInt( meindex, E_INT_GRAPHIC2));
 			CHAR_sendCToArroundCharacter( CHAR_getWorkInt( meindex, CHAR_WORKOBJINDEX ) );
 			CHAR_setWorkInt(meindex,E_INT_MODE,1);
 			CHAR_setWorkInt(meindex,E_INT_NOWGRAPHIC,
-							CHAR_getInt(meindex,CHAR_BASEIMAGENUMBER));		
+							CHAR_getInt(meindex,CHAR_IMAGENUMBER));		
 		}
 	}
 

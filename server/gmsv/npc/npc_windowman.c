@@ -11,7 +11,6 @@
 #include "object.h"
 #ifdef _NEW_ITEM_
 
-extern int CheckCharMaxItem(int charindex);
 #endif
 struct {
   int windowno;

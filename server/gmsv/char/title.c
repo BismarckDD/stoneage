@@ -67,7 +67,7 @@ TITLE_PARAM TITLE_param[] = {
     {CHAR_WALKCOUNT, TITLE_IntCheck, "WALKCNT"},
     {CHAR_DEADCOUNT, TITLE_IntCheck, "DEADCNT"},
     {CHAR_LOGINCOUNT, TITLE_IntCheck, "LOGINCNT"},
-    {CHAR_BASEBASEIMAGENUMBER, TITLE_IntCheck, "BASEIMAGENUMBER"},
+    {CHAR_BASEIMAGENUMBER, TITLE_IntCheck, "BASEIMAGENUMBER"},
     {CHAR_GOLD, TITLE_IntCheck, "GOLD"},
     {-1, TITLE_SexCheck, "SEX"},
 };
@@ -881,10 +881,6 @@ static int TITLE_ItemCheckMain(int char_index, int itemhaveindex, int *data,
   return rc;
 }
 
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 static int TITLE_ItemCheck(int char_index, int elem, int *data, int flg) {
   return (TITLE_ItemCheckMain(char_index
 #ifdef _NEW_ITEM_
@@ -980,7 +976,7 @@ static int TITLE_SexCheck(int char_index, int elem, int *data, int flg) {
                  -1,    -1,    -1,    -1,    -1,    -1,    -1}}};
   for (i = 0; i < 2; i++) {
     for (j = 0; s_sex[i].sex[j] != -1; j++) {
-      if (CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER) ==
+      if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) ==
           s_sex[i].sex[j]) {
         if (i == *data)
           return TRUE;

@@ -212,8 +212,8 @@ static CharBase CharBaseWorkValue[] = {
     {{"长老"}, FMMEMBER_ELDER}};
 
 static CharBase CharBaseInt[] = {
-    {{"图像号"}, CHAR_BASEIMAGENUMBER},
-    {{"原图像号"}, CHAR_BASEBASEIMAGENUMBER},
+    {{"图像号"}, CHAR_IMAGENUMBER},
+    {{"原图像号"}, CHAR_BASEIMAGENUMBER},
     {{"头像号"}, CHAR_FACEIMAGENUMBER},
     {{"存档"}, CHAR_SAVEINDEXNUMBER},
     {{"地图号"}, CHAR_FLOOR},
@@ -603,7 +603,7 @@ static CharBase CharBaseUpdata[] = {
     {{"昵称"}, CHAR_P_STRING_OWNTITLE},
     {{"骑宠"}, CHAR_P_STRING_RIDEPET},
     {{"学骑"}, CHAR_P_STRING_LEARNRIDE},
-    {{"图像"}, CHAR_P_STRING_BASEBASEIMAGENUMBER},
+    {{"图像"}, CHAR_P_STRING_BASEIMAGENUMBER},
     {{"天行者"}, CHAR_P_STRING_SKYWALKER},
     {{"调试模式"}, CHAR_P_STRING_DEBUGMODE}};
 
@@ -1298,10 +1298,7 @@ static int Additem(lua_State *L) {
   lua_pushinteger(L, item_index);
   return 1;
 }
-#ifdef _NEW_ITEM_
 
-extern int CheckCharMaxItem(int charindex);
-#endif
 static int Finditem(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
   const int itemid = luaL_checkint(L, 2);
@@ -1761,7 +1758,7 @@ static int FindPetFormMatemo(lua_State *L) {
     int petindex = CHAR_getCharPet(char_index, i);
     if (!CHAR_CHECKINDEX(petindex))
       continue;
-    if (CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER) == metamo) {
+    if (CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER) == metamo) {
       if (lv > 0) {
         if (CHAR_getInt(petindex, CHAR_LV) != lv) {
           continue;
@@ -2042,10 +2039,10 @@ int copyChar(lua_State *L) {
   if (!CHAR_CHECKINDEX(toindex))
     return 1;
 
+  CHAR_setInt(toindex, CHAR_IMAGENUMBER,
+              CHAR_getInt(fromindex, CHAR_IMAGENUMBER));
   CHAR_setInt(toindex, CHAR_BASEIMAGENUMBER,
               CHAR_getInt(fromindex, CHAR_BASEIMAGENUMBER));
-  CHAR_setInt(toindex, CHAR_BASEBASEIMAGENUMBER,
-              CHAR_getInt(fromindex, CHAR_BASEBASEIMAGENUMBER));
   CHAR_setInt(toindex, CHAR_TRANSMIGRATION,
               CHAR_getInt(fromindex, CHAR_TRANSMIGRATION));
   CHAR_setInt(toindex, CHAR_LV, CHAR_getInt(fromindex, CHAR_LV));
@@ -2141,26 +2138,15 @@ static int sendAction(lua_State *L) {
   CHAR_sendAction(char_index, actionno, flg);
   return 1;
 }
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 
 static int GetEmptyItemBoxNum(lua_State *_NLL)
-
 {
-
   const int TM_CharIndex = luaL_checkint(_NLL, 1);
-
   if (!CHAR_CHECKINDEX(TM_CharIndex))
-
   {
-
     lua_pushinteger(_NLL, -1);
-
     return 0;
   }
-
   int i = CHAR_EQUIPPLACENUM;
   int EmptyNum = 0;
 #ifdef _NEW_ITEM_
@@ -2172,7 +2158,6 @@ static int GetEmptyItemBoxNum(lua_State *_NLL)
     if (CHAR_getItemIndex(TM_CharIndex, i) == -1)
       EmptyNum++;
   }
-
   lua_pushinteger(_NLL, EmptyNum);
 }
 

@@ -334,7 +334,7 @@ void BATTLE_changeRideImage(int index) {
   int item_index = CHAR_getItemIndex(index, CHAR_ARM);
   int category;
   int newimagenumber;
-  int basebaseimagenumber = CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER);
+  int basebaseimagenumber = CHAR_getInt(index, CHAR_BASEIMAGENUMBER);
   if (!ITEM_CHECKINDEX(item_index)) {
     category = ITEM_FIST;
   } else {
@@ -343,9 +343,9 @@ void BATTLE_changeRideImage(int index) {
   newimagenumber =
       CHAR_getNewImagenumberFromEquip(index, basebaseimagenumber, category);
   if (newimagenumber == -1) {
-    CHAR_setInt(index, CHAR_BASEIMAGENUMBER, basebaseimagenumber);
+    CHAR_setInt(index, CHAR_IMAGENUMBER, basebaseimagenumber);
   } else {
-    CHAR_setInt(index, CHAR_BASEIMAGENUMBER, newimagenumber);
+    CHAR_setInt(index, CHAR_IMAGENUMBER, newimagenumber);
   }
 }
 
@@ -1285,8 +1285,8 @@ static int BATTLE_CriticalCheckPlayer(int attackindex, int defindex) {
     per = 10000;
 #ifdef _PETSKILL_LER
   // 雷尔不能被打飞
-  if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-      CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+  if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+      CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
     per = 0;
 #endif
   return (int)per;
@@ -1981,8 +1981,8 @@ int BATTLE_DamageSub(int attackindex, int defindex, int *pDamage,
   }
 #ifdef _PETSKILL_LER
   // 雷尔不能被打飞
-  if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-      CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+  if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+      CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
     IsUltimate = 0;
 #endif
 
@@ -2294,8 +2294,8 @@ int BATTLE_DamageSub_FIREKILL(int attackindex, int defindex, int *pDamage,
 
 #ifdef _PETSKILL_LER
   // 雷尔不能被打飞
-  if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-      CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+  if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+      CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
     IsUltimate = 0;
 #endif
 
@@ -2472,8 +2472,8 @@ int BATTLE_DamageSub2(int attackindex, int defindex, int *pDamage,
   }
 #ifdef _PETSKILL_LER
   // 雷尔不能被打飞
-  if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-      CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+  if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+      CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
     IsUltimate = 0;
 #endif
 
@@ -2787,8 +2787,8 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
 
 #ifdef _PETSKILL_LER
     // 雷尔不能被打飞
-    if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-        CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+    if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+        CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
       ultimate = 0;
 #endif
     iRet = FALSE;
@@ -3148,8 +3148,8 @@ int BATTLE_Attack_FIREKILL(int battleindex, int attackNo, int defNo) {
     }
 #ifdef _PETSKILL_LER
     // 雷尔不能被打飞
-    if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-        CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+    if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+        CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
       ultimate = 0;
 #endif
     iRet = FALSE;
@@ -3621,8 +3621,8 @@ BOOL BATTLE_Counter(int battleindex, int attackNo, int defNo) {
     }
 #ifdef _PETSKILL_LER
     // 雷尔不能被打飞
-    if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-        CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+    if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+        CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
       ultimate = 0;
 #endif
     iRet = FALSE;
@@ -3830,9 +3830,7 @@ static int IsNeedCaptureItem(int char_index) {
   }
   return -1;
 }
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
+
 BOOL BATTLE_CaptureItemCheck(int attackindex, int defindex) {
 #ifdef _CAPTURE_FREES
   int i;
@@ -4300,9 +4298,9 @@ int BATTLE_PetIn(int battleindex, int attackNo) {
   petindex = CHAR_getInt(attackindex, CHAR_DEFAULTPET);
   petindex = CHAR_getCharPet(attackindex, petindex);
 #ifdef _FIXWOLF // Syu ADD 修正狼人变身Bug
-  if (CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER) == 101428) {
-    CHAR_setInt(petindex, CHAR_BASEIMAGENUMBER,
-                CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
+  if (CHAR_getInt(petindex, CHAR_IMAGENUMBER) == 101428) {
+    CHAR_setInt(petindex, CHAR_IMAGENUMBER,
+                CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER));
     CHAR_setWorkInt(petindex, CHAR_WORKATTACKPOWER,
                     CHAR_getWorkInt(petindex, CHAR_WORKFIXSTR));
     CHAR_setWorkInt(petindex, CHAR_WORKQUICK,
@@ -4311,9 +4309,9 @@ int BATTLE_PetIn(int battleindex, int attackNo) {
 #endif
 #ifdef _PETSKILL_BECOMEFOX // 宠物中媚惑术收回後再放出来时要恢复正常状态
   if (CHAR_getWorkInt(petindex, CHAR_WORKFOXROUND) != -1 ||
-      CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER) == 101749) { //若是变身为狸
-    CHAR_setInt(petindex, CHAR_BASEIMAGENUMBER,
-                CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
+      CHAR_getInt(petindex, CHAR_IMAGENUMBER) == 101749) { //若是变身为狸
+    CHAR_setInt(petindex, CHAR_IMAGENUMBER,
+                CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER));
     CHAR_setWorkInt(petindex, CHAR_WORKATTACKPOWER,
                     CHAR_getWorkInt(petindex, CHAR_WORKFIXSTR));
     CHAR_setWorkInt(petindex, CHAR_WORKQUICK,
@@ -4385,7 +4383,7 @@ int BATTLE_PetOut(int battleindex, int attackNo) {
                      sizeof(szEscapeName));
 
     sprintf(szCommand, "BS|s%X|f1|g%X|l%X|h%X|%s|m%X|", attackNo,
-            CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER),
+            CHAR_getInt(petindex, CHAR_IMAGENUMBER),
             CHAR_getInt(petindex, CHAR_LV), CHAR_getInt(petindex, CHAR_HP),
             szEscapeName, CHAR_getWorkInt(petindex, CHAR_WORKMAXHP));
     BATTLESTR_ADD(szCommand);
@@ -4428,7 +4426,7 @@ int BATTLE_S_PetOut(int battleindex, int attackNo, int petNo) {
                      sizeof(szEscapeName));
 
     sprintf(szCommand, "|BS|s%X|f1|g%X|l%X|h%X|%s|m%X|", attackNo,
-            CHAR_getInt(petindex, CHAR_BASEIMAGENUMBER),
+            CHAR_getInt(petindex, CHAR_IMAGENUMBER),
             CHAR_getInt(petindex, CHAR_LV), CHAR_getInt(petindex, CHAR_HP),
             szEscapeName, CHAR_getWorkInt(petindex, CHAR_WORKMAXHP));
     BATTLESTR_ADD(szCommand);
@@ -4581,8 +4579,8 @@ int BATTLE_S_GBreak(int battleindex, int attackNo, int defNo) {
     }
 #ifdef _PETSKILL_LER
     // 雷尔不能被打飞
-    if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-        CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+    if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+        CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
       ultimate = 0;
 #endif
     iRet = FALSE;
@@ -4898,8 +4896,8 @@ int BATTLE_S_GBreak2(int battleindex, int attackNo, int defNo) {
     }
 #ifdef _PETSKILL_LER
     // 雷尔不能被打飞
-    if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-        CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+    if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+        CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
       ultimate = 0;
 #endif
     iRet = FALSE;
@@ -5272,8 +5270,8 @@ int BATTLE_Combo(int battle_index, int *pAttackList, int defNo) {
       }
 #ifdef _PETSKILL_LER
       // 雷尔不能被打飞
-      if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-          CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+      if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+          CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
         ultimate = 0;
 #endif
       iRet = FALSE;
@@ -5870,8 +5868,8 @@ int BATTLE_S_FallGround(int battleindex, int attackNo, int defNo,
     }
 #ifdef _PETSKILL_LER
     // 雷尔不能被打飞
-    if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-        CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+    if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+        CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
       ultimate = 0;
 #endif
     iRet = FALSE;
@@ -6047,8 +6045,8 @@ int BATTLE_S_Explode(int battleindex, int attackNo, int defNo, int skill_type) {
     }
 #ifdef _PETSKILL_LER
     // 雷尔不能被打飞
-    if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-        CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+    if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+        CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
       ultimate = 0;
 #endif
     iRet = FALSE;
@@ -6344,8 +6342,8 @@ int BATTLE_DefDieType(int defindex, int iRet, int *ultimate, int *flg,
 
 #ifdef _PETSKILL_LER
     // 雷尔不能被打飞
-    if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-        CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+    if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+        CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
       *ultimate = 0;
 #endif
     iRet = FALSE;
@@ -9668,8 +9666,8 @@ int BATTLE_PROFESSION_ATK_PET_DamageSub(int attackindex, int defindex,
   }
 #ifdef _PETSKILL_LER
   // 雷尔不能被打飞
-  if (CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-      CHAR_getInt(defindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+  if (CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+      CHAR_getInt(defindex, CHAR_BASEIMAGENUMBER) == 101814)
     IsUltimate = 0;
 #endif
 
@@ -9970,7 +9968,7 @@ void BATTLE_LerChange(int battleindex, int char_index, int no) {
   BATTLE *pBattle;
   BATTLE_ENTRY *pEntry;
 
-  if (CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER) == 101813) {
+  if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101813) {
     array = ENEMY_getEnemyArrayFromId(2534);
     if (array == -1)
       return;
@@ -9983,7 +9981,7 @@ void BATTLE_LerChange(int battleindex, int char_index, int no) {
     CHAR_setWorkInt(newindex, CHAR_WORK_RELIFE, 101810);
 #endif
     CHAR_setWorkInt(newindex, CHAR_WORKBATTLESIDE, no > 10 ? 1 : 0);
-  } else if (CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER) == 101814) {
+  } else if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 101814) {
     array = ENEMY_getEnemyArrayFromId(2510);
     if (array == -1)
       return;
@@ -10098,8 +10096,8 @@ void BATTLE_BattleModel_ATTACK(int battleindex, int char_index,
     }
 #ifdef _PETSKILL_LER
     // 雷尔不能被打飞
-    if (CHAR_getInt(iDefindex, CHAR_BASEBASEIMAGENUMBER) == 101813 ||
-        CHAR_getInt(iDefindex, CHAR_BASEBASEIMAGENUMBER) == 101814)
+    if (CHAR_getInt(iDefindex, CHAR_BASEIMAGENUMBER) == 101813 ||
+        CHAR_getInt(iDefindex, CHAR_BASEIMAGENUMBER) == 101814)
       iUltimate = 0;
 #endif
     iFlg |= BCF_DEATH;

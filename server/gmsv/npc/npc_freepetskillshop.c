@@ -389,10 +389,7 @@ BOOL NPC_FreePetSkillMakeStr(int meindex, int toindex, int select) {
 
   return TRUE;
 }
-#ifdef _NEW_ITEM_
 
-extern int CheckCharMaxItem(int charindex);
-#endif
 BOOL NPC_SkillShopItemCheck(int meindex, int talker, int itemNo, int cou) {
   int i;
   int item_index = -1;

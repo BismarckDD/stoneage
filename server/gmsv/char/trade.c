@@ -20,10 +20,6 @@
 #ifdef _TRADESYSTEM2	// (不可开) Syu ADD 新交易系统
 #include "pet_skill.h"
 #endif
-#ifdef _NEW_ITEM_
-
-extern int CheckCharMaxItem(int charindex);
-#endif
 #define TRADE_WAIT		"请稍候，连络%s中···"
 #define TRADE_REFUSE   "%s拒绝了你的交易请求！"
 #define TRADE_NONE		"前方什麽人也没有！"
@@ -1912,7 +1908,7 @@ BOOL TRADE_HandlePet( int meindex, int showindex, char *message, char *outmess)
 				
         if(type > 0){
 					sprintf( token, "%d|%s %s+%d|%d|%d|%d|%d|%d|%d",
-								CHAR_getInt( petindex, CHAR_BASEIMAGENUMBER),
+								CHAR_getInt( petindex, CHAR_IMAGENUMBER),
 								makeEscapeString( CHAR_getUseName(petindex), buf, sizeof(buf)),str[type], value,
 								CHAR_getInt( petindex, CHAR_LV),
 								CHAR_getWorkInt( petindex, CHAR_WORKATTACKPOWER),
@@ -1936,7 +1932,7 @@ BOOL TRADE_HandlePet( int meindex, int showindex, char *message, char *outmess)
 					if (atoi(buff2)>0)workdex = -1*(workdex);
 				}
 				sprintf( token, "%d|%s|%d|%d|%d|%d|%d|%d",
-							CHAR_getInt( petindex, CHAR_BASEIMAGENUMBER),
+							CHAR_getInt( petindex, CHAR_IMAGENUMBER),
 							makeEscapeString( CHAR_getUseName(petindex), buf, sizeof(buf)),
 							CHAR_getInt( petindex, CHAR_LV),
 							workatt,
@@ -1947,7 +1943,7 @@ BOOL TRADE_HandlePet( int meindex, int showindex, char *message, char *outmess)
 
 #else
 					sprintf( token, "%d|%s|%d|%d|%d|%d|%d|%d",
-								CHAR_getInt( petindex, CHAR_BASEIMAGENUMBER),
+								CHAR_getInt( petindex, CHAR_IMAGENUMBER),
 								makeEscapeString( CHAR_getUseName(petindex), buf, sizeof(buf)),
 								CHAR_getInt( petindex, CHAR_LV),
 								CHAR_getWorkInt( petindex, CHAR_WORKATTACKPOWER),
@@ -1960,7 +1956,7 @@ BOOL TRADE_HandlePet( int meindex, int showindex, char *message, char *outmess)
 }
 #else
 	sprintf( token, "%d|%s|%d|%d|%d|%d|%d|%d",
-			CHAR_getInt( petindex, CHAR_BASEIMAGENUMBER),
+			CHAR_getInt( petindex, CHAR_IMAGENUMBER),
 			makeEscapeString( CHAR_getUseName(petindex), buf, sizeof(buf)),
 			CHAR_getInt( petindex, CHAR_LV),
 			CHAR_getWorkInt( petindex, CHAR_WORKATTACKPOWER),

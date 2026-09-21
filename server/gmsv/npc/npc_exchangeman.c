@@ -26,8 +26,6 @@ enum {
   CHAR_WORK_EVENTWARP = CHAR_NPCWORKINT4,
 
 };
-extern int CheckCharMaxItem(int talker);
-
 /*********************************
  * 赓渝质
  *********************************/
@@ -3289,8 +3287,8 @@ BOOL NPC_EventTRANS(int meindex, int talker, char *buff2, int mode) {
               CHAR_getInt(talker, CHAR_TRANSMIGRATION) * 10);
   CHAR_Skillupsend(talker);
   CHAR_setInt(talker, CHAR_RIDEPET, -1);
-  CHAR_setInt(talker, CHAR_BASEIMAGENUMBER,
-              CHAR_getInt(talker, CHAR_BASEBASEIMAGENUMBER));
+  CHAR_setInt(talker, CHAR_IMAGENUMBER,
+              CHAR_getInt(talker, CHAR_BASEIMAGENUMBER));
   CHAR_sendStatusString(talker, "P");
 
   CHAR_talkToCli(talker, -1, buff2, CHAR_COLORYELLOW);

@@ -28,9 +28,6 @@
 #ifdef _Item_ReLifeAct
 #include "battle_magic.h"
 #endif
-#ifdef _ITEM_WARP_FIX_BI
-extern tagRidePetTable ridePetTable[296];
-#endif
 #include "npc_poolitemshop.h"
 #include "pet_skill.h"
 #ifdef _CFREE_petskill
@@ -46,9 +43,6 @@ extern tagRidePetTable ridePetTable[296];
 #ifdef _ITEM_LUA
 #include "npc_lua.h"
 #include "npc_lua_interface.h"
-#endif
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int char_index);
 #endif
 
 int ITEM_TimeDelCheck(int item_index) {
@@ -622,7 +616,7 @@ void ITEM_useRecovery_Field(int char_index, int toindex, int haveitem_index) {
       CHAR_setInt(toindex, CHAR_BECOMEPIG, -1);
       CHAR_complianceParameter(toindex);
       CHAR_sendCToArroundCharacter(CHAR_getWorkInt(toindex, CHAR_WORKOBJINDEX));
-      CHAR_send_P_StatusString(toindex, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+      CHAR_send_P_StatusString(toindex, CHAR_P_STRING_BASEIMAGENUMBER);
       CHAR_talkToCli(toindex, -1, "乌力化失效了。", CHAR_COLORWHITE);
       CHAR_DelItemMess(char_index, haveitem_index, 0);
     }
@@ -1866,10 +1860,8 @@ void ITEM_WarpDelErrorItem(int char_index) {
       }
     }
   }
-#ifdef _ITEM_WARP_FIX_BI
   if (!CHAR_getWorkInt(char_index, CHAR_WORKITEMMETAMO))
-    recoverbi(char_index);
-#endif
+    reCalcImageNumber(char_index);
 }
 
 BOOL ITEM_WarpForAny(int char_index, int ff, int fx, int fy, int flg) {
@@ -2856,7 +2848,7 @@ void ITEM_metamo(int char_index, int toindex, int haveitem_index) {
     return;
   }
 #else
-  if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 100259) {
+  if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 100259) {
     CHAR_talkToCli(
         char_index, -1,
         "无法变身，搭乘中不能变身！",
@@ -2941,11 +2933,11 @@ void ITEM_metamo(int char_index, int toindex, int haveitem_index) {
   }
   CHAR_talkToCli(char_index, -1, msg, CHAR_COLORYELLOW);
 
-  CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
-              CHAR_getInt(toindex, CHAR_BASEBASEIMAGENUMBER));
+  CHAR_setInt(char_index, CHAR_IMAGENUMBER,
+              CHAR_getInt(toindex, CHAR_BASEIMAGENUMBER));
   CHAR_complianceParameter(char_index);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
 
   CHAR_DelItem(char_index, haveitem_index);
 }
@@ -3360,27 +3352,21 @@ void ITEM_P_MagicEquitReWear(int char_index, int item_index) {
 }
 #endif
 
-#ifdef _ITEM_WARP_FIX_BI
-void recoverbi(int index) {
-
-  int eBbi = -1, eArm = -1, eNum = -1, eBi = -1, bi = -1;
-
-  bi = CHAR_getInt(index, CHAR_BASEIMAGENUMBER);
-  eBbi = CHAR_getInt(index, CHAR_BASEBASEIMAGENUMBER);
-  eArm = CHAR_getItemIndex(index, CHAR_ARM);
-  eNum = ITEM_FIST;
-  if (ITEM_CHECKINDEX(eArm))
-    eNum = ITEM_getInt(eArm, ITEM_TYPE);
-
-  eBi = CHAR_getNewImagenumberFromEquip(index, eBbi, eNum);
-
-  if (CHAR_getInt(index, CHAR_RIDEPET) != -1) // 骑宠
-    CHAR_complianceParameter(index);
-  else // 非骑宠
-    if ((eBi != -1) && (eBi != bi))
-      CHAR_setInt(index, CHAR_BASEIMAGENUMBER, eBi);
+// 2026.09.21 移除宏定义
+// 重算人物形象, 传送后人物形象可能变化(比如落马、装备丢失)
+void reCalcImageNumber(int char_index) {
+  int imageNo = CHAR_getInt(char_index, CHAR_IMAGENUMBER);
+  int baseImageNo = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
+  int armIdx = CHAR_getItemIndex(char_index, CHAR_ARM);
+  int armType = ITEM_FIST;
+  if (ITEM_CHECKINDEX(armIdx))
+    armType = ITEM_getInt(armIdx, ITEM_TYPE);
+  int newImageNo = CHAR_getNewImagenumberFromEquip(char_index, baseImageNo, armType);
+  if (CHAR_getInt(char_index, CHAR_RIDEPET) != -1) // 骑宠
+    CHAR_complianceParameter(char_index);
+  else if ((newImageNo != -1) && (newImageNo != imageNo)) // 非骑宠
+    CHAR_setInt(char_index, CHAR_IMAGENUMBER, newImageNo);
 }
-#endif
 
 #ifdef _ITEM_TIME_LIMIT
 void ITEM_TimeLimit(int char_index) {
@@ -4404,7 +4390,7 @@ void ITEM_ColorMetamo(int char_index, int toindex, int haveitem_index) {
   itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
   if (itemarg == "\0")
     return;
-  OldMetamoId = CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER);
+  OldMetamoId = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
   for (i = 0; i < 12; i++)
     if ((OldMetamoId >= MetamoList[i][0] &&
          OldMetamoId < MetamoList[i + 1][0]) ||
@@ -4500,12 +4486,12 @@ void ITEM_ColorMetamo(int char_index, int toindex, int haveitem_index) {
   }
   if (NewMetamoId == 0)
     return;
+  CHAR_setInt(char_index, CHAR_IMAGENUMBER, NewMetamoId);
   CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, NewMetamoId);
-  CHAR_setInt(char_index, CHAR_BASEBASEIMAGENUMBER, NewMetamoId);
 
   CHAR_complianceParameter(char_index);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
   CHAR_DelItem(char_index, haveitem_index);
 }
 
@@ -4537,7 +4523,7 @@ void ITEM_CharaMetamo(int char_index, int toindex, int haveitem_index) {
   itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
   if (itemarg == "\0")
     return;
-  OldMetamoId = CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER);
+  OldMetamoId = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
   if ((OldMetamoId >= 100000 && OldMetamoId < 100240) ||
       (OldMetamoId >= 100700 && OldMetamoId < 100820)) {
     if (strstr(itemarg, "豆丁囝") && OldMetamoId >= 100000 &&
@@ -4701,18 +4687,18 @@ void ITEM_CharaMetamo(int char_index, int toindex, int haveitem_index) {
     CHAR_talkToCli(char_index, -1, "你的性别不同，无没更改此造型!", CHAR_COLORYELLOW);
     return;
   }
+  CHAR_setInt(char_index, CHAR_IMAGENUMBER, NewMetamoId);
   CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, NewMetamoId);
-  CHAR_setInt(char_index, CHAR_BASEBASEIMAGENUMBER, NewMetamoId);
 
   CHAR_complianceParameter(char_index);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
   CHAR_DelItem(char_index, haveitem_index);
 }
 
 void ITEM_SexMetamo(int char_index, int toindex, int haveitem_index) {
   int OldMetamoId, NewMetamoId;
-  OldMetamoId = CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER);
+  OldMetamoId = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
   if (OldMetamoId >= 100000 && OldMetamoId < 100020) { // 豆丁囝
     NewMetamoId = OldMetamoId + 120;
     CHAR_talkToCli(char_index, -1, "恭喜你变性成豆丁囡!", CHAR_COLORYELLOW);
@@ -4794,12 +4780,12 @@ void ITEM_SexMetamo(int char_index, int toindex, int haveitem_index) {
   }
   if (NewMetamoId == 0)
     return;
+  CHAR_setInt(char_index, CHAR_IMAGENUMBER, NewMetamoId);
   CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, NewMetamoId);
-  CHAR_setInt(char_index, CHAR_BASEBASEIMAGENUMBER, NewMetamoId);
 
   CHAR_complianceParameter(char_index);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
   CHAR_DelItem(char_index, haveitem_index);
 }
 #endif
@@ -4995,7 +4981,7 @@ void ITEM_MetamoTime(int char_index, int toindex, int haveitem_index) {
     return;
   }
 #else
-  if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == 100259) {
+  if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == 100259) {
     CHAR_talkToCli(
         char_index, -1,
         "无法变身，搭乘中不能变身！",
@@ -5055,10 +5041,10 @@ void ITEM_MetamoTime(int char_index, int toindex, int haveitem_index) {
 
   CHAR_talkToCli(char_index, -1, msg, CHAR_COLORYELLOW);
 
-  CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, metamoNo);
+  CHAR_setInt(char_index, CHAR_IMAGENUMBER, metamoNo);
   CHAR_complianceParameter(char_index);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
 }
 #endif
 
@@ -5254,12 +5240,12 @@ void ITEM_efMetamo(int char_index, int toindex, int haveitem_index) {
     CHAR_talkToCli(char_index, -1, "这是个永久变身戒指!", CHAR_COLORYELLOW);
     return;
   }
+  CHAR_setInt(char_index, CHAR_IMAGENUMBER, atoi(itemarg));
   CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, atoi(itemarg));
-  CHAR_setInt(char_index, CHAR_BASEBASEIMAGENUMBER, atoi(itemarg));
 
   CHAR_complianceParameter(char_index);
   CHAR_sendCToArroundCharacter(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
   CHAR_DelItem(char_index, haveitem_index);
 }
 #endif
@@ -5822,21 +5808,21 @@ void ITEM_SpecialCheckSuitEquip(int char_index, int item_index) {
   if (CHAR_getInt(char_index, CHAR_RIDEPET) == -1) {
     if (num >= 5) {
       if (defCode >= 100000) {
-        CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, defCode);
+        CHAR_setInt(char_index, CHAR_IMAGENUMBER, defCode);
 
         CHAR_complianceParameter(char_index);
         CHAR_sendCToArroundCharacter(
             CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-        CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+        CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
       }
     } else {
-      CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER,
-                  CHAR_getInt(char_index, CHAR_BASEBASEIMAGENUMBER));
+      CHAR_setInt(char_index, CHAR_IMAGENUMBER,
+                  CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER));
 
       CHAR_complianceParameter(char_index);
       CHAR_sendCToArroundCharacter(
           CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-      CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+      CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
     }
   }
 }

@@ -56,7 +56,7 @@ void NPC_ManorLoadPKSchedule(int meindex);	// Load schedule from disk
 #ifdef _NEW_MANOR_LAW
 void SortManorSchedule();
 int SortManorScheduleMomentum(const void *indexa, const void *indexb);
-extern int familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
+extern int gFamilyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
 int g_iSortManor;
 #endif
 
@@ -1057,7 +1057,7 @@ void NPC_ManorSmanLoop(int meindex)
 						Logfmpk(fmname,iFmIndex1,-1,"无人挑战",-1,-1,token,"","",2);
 						// 原家族守住了庄园,家族成员可得到石币
 						for(i=0;i<FAMILY_MAXMEMBER;i++){
-							iCharindex = familyMemberIndex[iFmIndex1][i];
+							iCharindex = gFamilyMemberIndex[iFmIndex1][i];
 							// 若在线上才给钱
 							if(iCharindex >= 0 && CHAR_getCharUse(iCharindex)){
 								// 获得金钱 = 个人气势 * 5000

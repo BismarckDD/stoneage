@@ -329,7 +329,7 @@ BOOL NPC_PairForage( int meindex, int toindex, char *arg, char *token)
 	char buf1[256];
 	int i;
 	int codes = CHAR_getWorkInt( toindex, CHAR_MYPAIRCODE);
-	int Psex = CHAR_getSexInt( CHAR_getInt( toindex, CHAR_BASEBASEIMAGENUMBER) );
+	int Psex = CHAR_getSexInt( CHAR_getInt( toindex, CHAR_BASEIMAGENUMBER) );
 	Psex = (Psex==1)?1:0;
 
 
@@ -388,7 +388,7 @@ BOOL NPC_PairRegister( int toindex)
 	char *cdKey = CHAR_getChar( toindex, CHAR_CDKEY);
 	char *name = CHAR_getChar( toindex, CHAR_NAME);
 	int space=-1,i;
-	int Psex = CHAR_getSexInt( CHAR_getInt( toindex, CHAR_BASEBASEIMAGENUMBER) );
+	int Psex = CHAR_getSexInt( CHAR_getInt( toindex, CHAR_BASEIMAGENUMBER) );
 	Psex = (Psex==1)?0:1;
 	for( i=0; i<MAXPAIRNUMS; i++)	{
 		if( PairList[Psex][i].use <= 0 ){

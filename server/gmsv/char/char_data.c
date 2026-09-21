@@ -19,9 +19,6 @@
 #include "char_base.h"
 #include "config_file.h"
 #endif
-#ifdef _NEW_ITEM_
-extern int CheckCharMaxItem(int charindex);
-#endif
 #include "../ls2data.h"
 #include "defaultPlayer.h"
 #include "family.h"
@@ -183,10 +180,8 @@ BOOL CHAR_getDefaultChar(Char *nc, int imagenumber) {
 #endif
   for (j = 0; j < arraysizeof(nc->flg); j++)
     nc->flg[j] = defaultchar->flg[j];
-  extern int CheckCharMaxItemChar(Char * ch);
   for (j = 0; j < CHAR_DATACHARNUM; j++)
     nc->string[j].string[0] = '\0';
-
   for (j = 0; j < CHAR_MAXITEMHAVE; j++)
     nc->indexOfExistItems[j] = -1;
   for (j = 0; j < CHAR_MAXPETHAVE; j++)
@@ -584,7 +579,7 @@ int CHAR_getNewImagenumberFromEquip(int index, int base_image_number,
       }
 #ifdef _ITEM_EQUITSPACE
     } else {
-      return CHAR_getInt(index, CHAR_BASEIMAGENUMBER);
+      return CHAR_getInt(index, CHAR_IMAGENUMBER);
     }
 #endif
   }
@@ -1984,7 +1979,7 @@ int CHAR_findSurplusPetBox(int char_index) {
 
 #ifdef _FM_METAMO
 void CHAR_ReMetamo(int char_index) {
-  int oldMetamo = CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER);
+  int oldMetamo = CHAR_getInt(char_index, CHAR_IMAGENUMBER);
   if (oldMetamo >= 100700 && oldMetamo < 100819) {
     int newMetamo;
     int hbMetamo[] = {
@@ -1993,11 +1988,11 @@ void CHAR_ReMetamo(int char_index) {
         100165, 100160, 100190, 100185, 100200, 100210, 100230, 100220,
     };
     newMetamo = hbMetamo[(oldMetamo - 100700) / 5];
+    CHAR_setInt(char_index, CHAR_IMAGENUMBER, newMetamo);
     CHAR_setInt(char_index, CHAR_BASEIMAGENUMBER, newMetamo);
-    CHAR_setInt(char_index, CHAR_BASEBASEIMAGENUMBER, newMetamo);
     CHAR_sendCToArroundCharacter(
         CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-    CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEBASEIMAGENUMBER);
+    CHAR_send_P_StatusString(char_index, CHAR_P_STRING_BASEIMAGENUMBER);
     CHAR_complianceParameter(char_index);
   }
 }
@@ -2019,7 +2014,7 @@ void CHAR_PlayerRide(int char_index) {
   };
   for (i = 0; i < 4; i++)
     for (j = 0; j < 12; j++)
-      if (CHAR_getInt(char_index, CHAR_BASEIMAGENUMBER) == MetamoList[i][j]) {
+      if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == MetamoList[i][j]) {
         if (strstr(getPlayerRide(), "配套送虎加雷")) {
           setNewplayergivepet(3, MetamoList[i][12]);
           setNewplayergivepet(4, MetamoList[4][j]);
