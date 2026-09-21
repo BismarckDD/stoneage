@@ -59,7 +59,7 @@ void SaacClient_ACCharLoad_recv(int saac_fd, char *result, char *data, const int
 #ifdef _NEWSAVE
 void SaacClient_ACCharSave_send(int saac_fd, char *id, char *charname, char *opt,
                                 char *charinfo, int unlock, int mesgid,
-                                int saveindex);
+                                int save_index);
 #else
 void SaacClient_ACCharSave_send(int saac_fd, char *id, char *charname, char *opt,
                                 char *charinfo, int unlock, int mesgid);

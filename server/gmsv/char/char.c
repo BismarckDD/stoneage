@@ -1021,7 +1021,7 @@ static void CHAR_setLuck(int char_index);
 #ifdef _CHANNEL_MODIFY
 extern int *piOccChannelMember;
 #endif
-void CHAR_login(int clifd, char *data, int saveindex) {
+void CHAR_login(int clifd, char *data, int save_index) {
   int char_index, objindex, pet;
   Char ch;
   int per;
@@ -1047,11 +1047,8 @@ void CHAR_login(int clifd, char *data, int saveindex) {
     // CHAR_endCharData(&ch);
     goto MAKECHARDATAERROR;
   }
-
 #ifdef _NEWSAVE
-  CHAR_setInt(char_index, CHAR_SAVEINDEXNUMBER, saveindex);
-  // print("存档装载索引:%d\n", CHAR_getInt( char_index, CHAR_SAVEINDEXNUMBER)
-  // );
+  CHAR_setInt(char_index, CHAR_SAVEINDEXNUMBER, save_index);
 #endif
   if (CHAR_getFlg(char_index, CHAR_ISDIE)) {
     print("?data? ISDIE flg is standing.\n");
@@ -1772,7 +1769,7 @@ void CHAR_login(int clifd, char *data, int saveindex) {
 #endif
 
     LogLogin(CHAR_getChar(char_index, CHAR_CDKEY),
-             CHAR_getChar(char_index, CHAR_NAME), saveindex, ipstr
+             CHAR_getChar(char_index, CHAR_NAME), save_index, ipstr
 #ifdef _NEWCLISETMAC
              ,
              CHAR_getWorkChar(char_index, CHAR_WORK_MAC)

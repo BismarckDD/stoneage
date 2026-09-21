@@ -68,7 +68,7 @@ static int NPC_NPCEnemy_StealItem(char *argstr, int meindex, int char_index);
 
 BOOL NPC_NPCEnemyInit(int meindex) {
   char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
-  char buf[64];
+  char buf[256];
   int tmp, gym;
 
   // 2026.08.21 这个argstr值不对
@@ -90,7 +90,7 @@ BOOL NPC_NPCEnemyInit(int meindex) {
   int curEnemy;
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "enemyno", buf, sizeof(buf)) ==
       NULL) {
-    print("NPCEnemy enemyno:%d argstr:%s\n", meindex, argstr);
+    print("NPCEnemy: Pram Error!!! [enemyno]:%d argstr:%s\n", meindex, argstr);
     flag = FALSE;
   } else {
     int i;

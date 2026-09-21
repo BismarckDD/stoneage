@@ -95,7 +95,7 @@ void SaacClient_ACCharLoad_send(int saac_fd, char *id, char *pas, char *char_nam
 #ifdef _NEWSAVE // USE
 void SaacClient_ACCharSave_send(int saac_fd, char *id, char *charname, char *opt,
                                 char *charinfo, int unlock, int msg_id,
-                                int saveindex)
+                                int save_index)
 #else
 void SaacClient_ACCharSave_send(int saac_fd, char *id, char *charname, char *opt,
                                 char *charinfo, int unlock, int msg_id)
@@ -109,7 +109,7 @@ void SaacClient_ACCharSave_send(int saac_fd, char *id, char *charname, char *opt
   strncatsafe(ws->work, mkstr_int(unlock), ws->work_buf_size);
   strncatsafe(ws->work, mkstr_int(msg_id), ws->work_buf_size);
 #ifdef _NEWSAVE
-  strncatsafe(ws->work, mkstr_int(saveindex), ws->work_buf_size);
+  strncatsafe(ws->work, mkstr_int(save_index), ws->work_buf_size);
 #endif
   Send(ws, saac_fd, ws->work);
 }
@@ -652,9 +652,6 @@ int SaacClient_ClientDispatchMessage(int saac_fd, char *line) {
   }
 
   if (strcmp(funcname, "ACCharLoad") == 0) {
-#ifdef _NEWSAVE
-    int saveindex;
-#endif
     char *result = strncpysafe(ws->string_buffer[1], ws->work_buf_size,
                                demkstr_string(ws->token_list[2]));
     char *data = strncpysafe(ws->string_buffer[2], ws->work_buf_size,
@@ -665,8 +662,8 @@ int SaacClient_ClientDispatchMessage(int saac_fd, char *line) {
     if (result == NULL)
       return 0;
 #ifdef _NEWSAVE
-    saveindex = demkstr_int(ws->token_list[5]);
-    SaacClient_ACCharLoad_recv(saac_fd, result, data, client_fdid, saveindex);
+    int save_index = demkstr_int(ws->token_list[5]);
+    SaacClient_ACCharLoad_recv(saac_fd, result, data, client_fdid, save_index);
 #else
     SaacClient_ACCharLoad_recv(saac_fd, result, data, id, -1);
 #endif

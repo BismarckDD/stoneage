@@ -813,15 +813,12 @@ char *CHAR_setintdata[CHAR_DATAINTNUM] = {
     "fusionbe",    // CHAR_FUSIONBEIT
     "futimelimit", // CHAR_FUSIONTIMELIMIT
 #endif
-
 #ifdef _PERSONAL_FAME // Arminius 8.30: 家族个人声望
     "fame",
 #endif
-
 #ifdef _NEWSAVE
     "sindex", /*  CHAR_SAVEINDEXNUMBER */
 #endif
-
 #ifdef _ATTACK_MAGIC
     "earth_exp",          // 玩家的地魔法熟练度
     "water_exp",          // 玩家的水魔法熟练度

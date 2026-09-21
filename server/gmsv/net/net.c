@@ -3025,8 +3025,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
 
     // ttom start : because of the second have this
     if (gConnectionList[fdremember].close_request) {
-      // 历史注释的原始编码已损坏，无法可靠恢复。
-      //      ));
       CONNECT_endOne_debug(fdremember);
       continue;
     }
@@ -3480,13 +3478,7 @@ void saveforsaac() {
       ret = write(acfd, gConnectionList[acfd].wb,
                   (gConnectionList[acfd].wbuse < acwritesize) ? gConnectionList[acfd].wbuse
                                                       : acwritesize);
-
       if (ret == -1 && errno != EINTR) {
-#ifdef _NETLOG_
-        char log[512];
-        sprintf(log, "写入返回: %d %s \n", errno, strerror(errno));
-        LogCharOut("", "", __FILE__, __FUNCTION__, __LINE__, log);
-#endif
         CONNECT_endOne_debug(acfd);
         continue;
       } else if (ret > 0) {

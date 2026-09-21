@@ -1165,7 +1165,7 @@ static int NPCUtil_enemytbl[NPC_ENEMY_ENEMYNUMBER + 1];
 int *NPC_Util_getEnemy(int meindex, int char_index) {
   int i;
   char argstr[NPC_UTIL_GETARGSTR_BUFSIZE];
-  char buf[64];
+  char buf[256];
   int ret;
   int bigcnt;
   int insert;

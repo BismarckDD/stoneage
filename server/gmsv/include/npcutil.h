@@ -1,5 +1,5 @@
-#ifndef _NPCUTIL_H_
-#define _NPCUTIL_H_
+#ifndef __NPCUTIL_H__
+#define __NPCUTIL_H__
 
 #include "util.h"
 
@@ -31,11 +31,7 @@ BOOL NPC_Util_charIsInFrontOfChar(int index1, int index2, int distance);
 
 int NPC_Util_SearchItemInChar(int charindex, int item_index);
 int NPC_Util_GiveAllItemToChar(int give, int take);
-/*
-int NPC_Util_ControlOtherNPC( CHAR_TYPE chartype ,
-                              char *npcname,
-                              char *command );
-*/
+
 void NPC_Util_NPCDelete(int srcindex);
 BOOL NPC_Util_moveItemToMap(int item_index, int fl, int x, int y, BOOL net);
 char *NPC_Util_GetArgStr(int index, char *argstr, int len);
@@ -70,11 +66,12 @@ int addNpcFamilyTax(int meindex, int talkerindex, int income);
 #ifdef _JZ_NEWSCRIPT_LUA
 void NPC_EndEventSetFlgCls(int talker, int shiftbit);
 #endif
-#define NPC_ENEMY_ENEMYNUMBER 1
+
+// 2026.09.21 定义了一次由NPC生成的敌人的数量, 必须为10
+#define NPC_ENEMY_ENEMYNUMBER 10
 
 #define NPC_UTIL_GETARGSTR_LINEMAX 4096
 #ifdef _NEWEVENT
-// #define NPC_UTIL_GETARGSTR_BUFSIZE	1024*1200
 #define NPC_UTIL_GETARGSTR_BUFSIZE 1024 * 128
 #else
 #define NPC_UTIL_GETARGSTR_BUFSIZE 1024 * 32
@@ -82,4 +79,5 @@ void NPC_EndEventSetFlgCls(int talker, int shiftbit);
 #ifdef _NPC_EVENT_NOTICE
 int getPlayerEventNoticeNo(int meindex, int talker);
 #endif
-#endif
+
+#endif // __NPCUTIL_H__
