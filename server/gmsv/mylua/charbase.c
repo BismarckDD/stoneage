@@ -519,7 +519,6 @@ static CharBase CharBaseChar[] = {{{"名字"}, CHAR_NAME},
                                   ,
                                   {{"主人账号"}, CHAR_OWNERCDKEY},
                                   {{"主人名字"}, CHAR_OWNERCHARANAME}
-
 #ifdef _POWER_UP
                                   ,
                                   {{"能力提升"}, CHAR_POWER_UP}
@@ -683,32 +682,27 @@ static CharBase CharBaseAction[] = {{{"站立"}, CHAR_ACTSTAND},
 
 static int getCharNum(lua_State *L) {
   lua_pushinteger(L, CHAR_getCharNum());
-
   return 1;
 }
 
 static int getPlayerMaxNum(lua_State *L) {
   lua_pushinteger(L, CHAR_getPlayerMaxNum());
-
   return 1;
 }
 
 static int getPetMaxNum(lua_State *L) {
   lua_pushinteger(L, CHAR_getPetMaxNum());
-
   return 1;
 }
 
 static int getOthersMaxNum(lua_State *L) {
   lua_pushinteger(L, CHAR_getOthersMaxNum());
-
   return 1;
 }
 
 static int check(lua_State *L) {
   const int index = luaL_checkint(L, 1);
   lua_pushinteger(L, CHAR_CHECKINDEX(index));
-
   return 1;
 }
 
@@ -728,7 +722,6 @@ static int getFlg(lua_State *L) {
   const int index = luaL_checkint(L, 1);
   const int element =
       getCharBaseValue(L, 2, CharBaseFlg, arraysizeof(CharBaseFlg));
-
   lua_pushinteger(L, CHAR_getFlg(index, element));
   return 1;
 }
@@ -1430,25 +1423,19 @@ static int AddPetCf(lua_State *L) {
   CHAR_setInt(petindex, CHAR_TRANSMIGRATION, trn);
 
   CHAR_setCharPet(index, havepetelement, petindex);
-
   //  CHAR_setChar( petindex, CHAR_OWNERCDKEY, CHAR_getChar( index,
   //  CHAR_CDKEY)); CHAR_setChar( petindex, CHAR_OWNERCHARANAME, CHAR_getChar(
   //  index, CHAR_NAME));
-
   CHAR_setWorkInt(petindex, CHAR_WORKPLAYERINDEX, index);
 
   char token[64];
-
   CHAR_setInt(petindex, CHAR_VARIABLEAI, 10000);
   CHAR_complianceParameter(petindex);
-
   CHAR_setInt(petindex, CHAR_HP, CHAR_getWorkInt(petindex, CHAR_WORKMAXHP));
-
   snprintf(token, sizeof(token), "K%d", havepetelement);
   CHAR_sendStatusString(index, token);
   snprintf(token, sizeof(token), "W%d", havepetelement);
   CHAR_sendStatusString(index, token);
-
   LogPet(CHAR_getChar(index, CHAR_NAME), CHAR_getChar(index, CHAR_CDKEY),
          CHAR_getChar(petindex, CHAR_NAME), CHAR_getInt(petindex, CHAR_LV),
          "来至LUA的char.AddPetCf", CHAR_getInt(index, CHAR_FLOOR),
@@ -1457,7 +1444,6 @@ static int AddPetCf(lua_State *L) {
   );
 
   lua_pushinteger(L, petindex);
-
   return 1;
 }
 
@@ -1528,23 +1514,15 @@ static int Coordinate(lua_State *L) {
   const int index = luaL_checkint(L, 1);
   if (CHAR_getWorkInt(index, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return 0;
-
   const int X = luaL_checkint(L, 2);
   const int Y = luaL_checkint(L, 3);
-
   POINT start, end;
-
   start.x = CHAR_getInt(index, CHAR_X);
   start.y = CHAR_getInt(index, CHAR_Y);
-
   end.x = X;
   end.y = Y;
-
   int dir = NPC_Util_getDirFromTwoPoint(&start, &end);
-
-  if (dir != -1) {
-    CHAR_walk(index, dir, 0);
-  }
+  if (dir != -1) CHAR_walk(index, dir, 0);
   return 1;
 }
 
@@ -1592,26 +1570,20 @@ static int JoinParty(lua_State *L) {
 static int getRightTo8(lua_State *L) {
   const int value = luaL_checkint(L, 1);
   const int flg = luaL_checkint(L, 2);
-
   lua_pushinteger(L, (value >> (4 - flg) * 8) & 0xFF);
-
   return 1;
 }
 
 static int getLiftTo8(lua_State *L) {
   const int value = luaL_checkint(L, 1);
   const int flg = luaL_checkint(L, 2);
-
   lua_pushinteger(L, (value << (4 - flg) * 8));
-
   return 1;
 }
 
 static int complianceParameter(lua_State *L) {
   const int index = luaL_checkint(L, 1);
-
   CHAR_complianceParameter(index);
-
   return 1;
 }
 

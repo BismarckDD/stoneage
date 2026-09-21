@@ -334,74 +334,57 @@ static int NPC_searchFunctionSet(char *name, int *unuse) {
 BOOL NPC_copyFunctionSetToChar(int id, Char *ch) {
   if (id < 0 || id >= arraysizeof(functionSet))
     return FALSE;
-
   strncpysafe(ch->charfunctable[CHAR_INITFUNC].string,
               sizeof(ch->charfunctable[CHAR_INITFUNC].string),
               functionSet[id].initfunc);
-
   strncpysafe(ch->charfunctable[CHAR_WALKPREFUNC].string,
               sizeof(ch->charfunctable[CHAR_WALKPREFUNC].string),
               functionSet[id].walkprefunc);
-
   strncpysafe(ch->charfunctable[CHAR_WALKPOSTFUNC].string,
               sizeof(ch->charfunctable[CHAR_WALKPOSTFUNC].string),
               functionSet[id].walkpostfunc);
-
   strncpysafe(ch->charfunctable[CHAR_PREOVERFUNC].string,
               sizeof(ch->charfunctable[CHAR_PREOVERFUNC].string),
               functionSet[id].preoverfunc);
-
   strncpysafe(ch->charfunctable[CHAR_POSTOVERFUNC].string,
               sizeof(ch->charfunctable[CHAR_POSTOVERFUNC].string),
               functionSet[id].postoverfunc);
-
   strncpysafe(ch->charfunctable[CHAR_WATCHFUNC].string,
               sizeof(ch->charfunctable[CHAR_WATCHFUNC].string),
               functionSet[id].watchfunc);
-
   strncpysafe(ch->charfunctable[CHAR_LOOPFUNC].string,
               sizeof(ch->charfunctable[CHAR_LOOPFUNC].string),
               functionSet[id].loopfunc);
-
   strncpysafe(ch->charfunctable[CHAR_TALKEDFUNC].string,
               sizeof(ch->charfunctable[CHAR_TALKEDFUNC].string),
               functionSet[id].talkedfunc);
-
   strncpysafe(ch->charfunctable[CHAR_DYINGFUNC].string,
               sizeof(ch->charfunctable[CHAR_DYINGFUNC].string),
               functionSet[id].dyingfunc);
-
   strncpysafe(ch->charfunctable[CHAR_PREATTACKEDFUNC].string,
               sizeof(ch->charfunctable[CHAR_PREATTACKEDFUNC].string),
               functionSet[id].preattackedfunc);
   strncpysafe(ch->charfunctable[CHAR_POSTATTACKEDFUNC].string,
               sizeof(ch->charfunctable[CHAR_POSTATTACKEDFUNC].string),
               functionSet[id].postattackedfunc);
-
   strncpysafe(ch->charfunctable[CHAR_OFFFUNC].string,
               sizeof(ch->charfunctable[CHAR_OFFFUNC].string),
               functionSet[id].offfunc);
-
   strncpysafe(ch->charfunctable[CHAR_LOOKEDFUNC].string,
               sizeof(ch->charfunctable[CHAR_LOOKEDFUNC].string),
               functionSet[id].lookedfunc);
-
   strncpysafe(ch->charfunctable[CHAR_ITEMPUTFUNC].string,
               sizeof(ch->charfunctable[CHAR_ITEMPUTFUNC].string),
               functionSet[id].itemputfunc);
-
   strncpysafe(ch->charfunctable[CHAR_SPECIALTALKEDFUNC].string,
               sizeof(ch->charfunctable[CHAR_SPECIALTALKEDFUNC].string),
               functionSet[id].specialtalkedfunc);
-
   strncpysafe(ch->charfunctable[CHAR_WINDOWTALKEDFUNC].string,
               sizeof(ch->charfunctable[CHAR_WINDOWTALKEDFUNC].string),
               functionSet[id].windowtalkedfunc);
-
 #ifdef _USER_CHARLOOPS
   strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
               sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string), "");
-
   strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP2].string,
               sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP2].string), "");
 #endif

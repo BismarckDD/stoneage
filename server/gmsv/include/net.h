@@ -3,12 +3,6 @@
 
 #include "common.h"
 
-#undef EXTERN
-#ifdef __NET_C__
-#define EXTERN
-#else
-#define EXTERN extern
-#endif
 
 #define LSGENWORKINGBUFFER SLICE_SIZE
 
@@ -55,7 +49,14 @@ typedef enum {
 // SAAC网络读缓冲区大小
 #define AC_RBSIZE (1024 * 1024 * 6)
 // SAAC网络写缓冲区大小
+
+#ifdef __NET_C__
+#define EXTERN
+int AC_WBSIZE = 1024 * 1024;
+#else
+#define EXTERN extern
 extern int AC_WBSIZE;
+#endif
 
 EXTERN int epfd;
 EXTERN int nfds;
@@ -63,6 +64,9 @@ EXTERN int bindedfd;
 EXTERN int acfd;
 EXTERN int svfd;
 EXTERN int ConnectLen;
+EXTERN char szForbiddenLogin[256];
+#undef EXTERN
+
 #define CONNECT_WINDOWBUFSIZE 7
 
 // declaration: 2026.08.23
@@ -288,5 +292,6 @@ int CONNECT_getversionpass(int fd);
 void Dispatch_read_buffer(int fdremember, int threadflag);
 void System_Loop();
 #endif
+
 
 #endif

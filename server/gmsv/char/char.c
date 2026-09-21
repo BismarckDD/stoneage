@@ -7258,39 +7258,19 @@ BOOL CHAR_setMyPosition_main(int index, int x, int y, int setdir, BOOL CAFlg) {
   int objindex;
   int prev_x, prev_y;
   int fl;
-
   prev_x = CHAR_getInt(index, CHAR_X);
   prev_y = CHAR_getInt(index, CHAR_Y);
   if (prev_x == x && prev_y == y) {
     return FALSE;
   }
-
   if (CHAR_getWorkInt(index, CHAR_WORKPARTYMODE) == CHAR_PARTY_CLIENT) {
     return FALSE;
   }
-
   if (CHAR_getFlg(index, CHAR_ISWARP))
     return FALSE;
-
   objindex = CHAR_getWorkInt(index, CHAR_WORKOBJINDEX);
   fl = CHAR_getInt(index, CHAR_FLOOR);
-
   if (!MAP_IsValidCoordinate(fl, x, y)) {
-
-#ifdef _NETLOG_
-
-    char cdkey[16];
-
-    char charname[32];
-
-    CONNECT_getCharname(CHAR_getWorkInt(index, CHAR_WORKFD), charname, 32);
-
-    CONNECT_getCdkey(CHAR_getWorkInt(index, CHAR_WORKFD), cdkey, 16);
-
-    LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
-               "CHAR_setMyPosition_main");
-
-#endif
     CONNECT_setCloseRequest(CHAR_getWorkInt(index, CHAR_WORKFD), 1);
     return FALSE;
   }

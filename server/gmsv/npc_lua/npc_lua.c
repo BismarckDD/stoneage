@@ -475,237 +475,121 @@ static luaL_Reg Char_RegList[] = {
     {"SetWindowTalkedEvent", NPC_Lua_Char_SetWindowTalkedEvent},
 
 #ifdef _USER_CHARLOOPS
-
     {"SetCharLoopsEvent", NPC_Lua_Char_SetCharLoopsEvent},
-
     {"SetBattleProPertyEvent", NPC_Lua_Char_SetBattleProPertyEvent},
-
 #endif
-
     // 金币接口
-
     {"VipPoint", NPC_Lua_Char_VipPoint},
-
     {"HealAll", NPC_Lua_Char_HealAll},
-
     {"GetPetSkillId", NPC_Lua_Char_GetPetSkillId},
-
     {"GetPetSkillName", NPC_Lua_Char_GetPetSkillName},
-
     {"GetPetSkillMsg", NPC_Lua_Char_GetPetSkillMsg},
-
     {"SetPetSkill", NPC_Lua_Char_SetPetSkill},
-
     //	{"RandMsg", NPC_Lua_Char_RandMsg},
-
     {"GetBeatitudeNum", NPC_Lua_Char_GetBeatitudeNum},
-
     {"RandRandWalk", RandRandWalk},
-
     {"随机走路", RandRandWalk},
-
     {"logout", NPC_Lua_Char_logout},
-
     {"登出", NPC_Lua_Char_logout},
-
     {"copyChar", copyChar},
-
     {"复制人物数据", copyChar},
-
     // 取数据的接口
-
     {"是否完成任务", NPC_Lua_Char_IsEventEnd},
-
     {"是否进行任务", NPC_Lua_Char_IsEventNow},
-
     {"取金币数", NPC_Lua_Char_GetVipPoint},
-
     {"置金币数", NPC_Lua_Char_SetVipPoint},
-
     {"取积分点数", NPC_Lua_Char_GetAmPoint},
-
     {"置积分点数", NPC_Lua_Char_SetAmPoint},
-
     {"取彩币点数", NPC_Lua_Char_GetRmbPoint},
-
     {"置彩币点数", NPC_Lua_Char_SetRmbPoint},
-
     {"寻找道具ID", NPC_Lua_Char_FindItemId},
-
     {"寻找道具id", NPC_Lua_Char_FindItemId},
-
     {"寻找宠物ID", NPC_Lua_Char_FindPetEnemyId},
-
     {"寻找宠物id", NPC_Lua_Char_FindPetEnemyId},
-
     {"取数据", NPC_Lua_Char_GetData},
-
     {"取道具ID", NPC_Lua_Char_GetItemId},
-
     {"取道具id", NPC_Lua_Char_GetItemId},
-
     {"取宠物ID", NPC_Lua_Char_GetPetEnemyId},
-
     {"取宠物id", NPC_Lua_Char_GetPetEnemyId},
-
     {"取道具索引", NPC_Lua_Char_GetItemIndex},
-
     {"取宠物索引", NPC_Lua_Char_GetPetIndex},
-
     {"取团队索引", NPC_Lua_Char_GetTeamIndex},
-
     // 置数据的接口
-
     {"取消完成任务", NPC_Lua_Char_ClrEvtEnd},
-
     {"取消进行任务", NPC_Lua_Char_ClrEvtNow},
-
     {"完成任务", NPC_Lua_Char_SetEvtEnd},
-
     {"进行任务", NPC_Lua_Char_SetEvtNow},
-
     {"置数据", NPC_Lua_Char_SetData},
-
     // 事件置的接口
-
     {"注册移动时回调", NPC_Lua_Char_SetWalkPreEvent},
-
     {"注册移动后回调", NPC_Lua_Char_SetWalkPostEvent},
-
     {"注册踩踏时回调", NPC_Lua_Char_SetPreOverEvent},
-
     {"注册踩踏后回调", NPC_Lua_Char_SetPostOverEvent},
-
     {"注册动作时回调", NPC_Lua_Char_SetWatchEvent},
-
     {"注册循环回调", NPC_Lua_Char_SetLoopEvent},
-
     {"注册对话回调", NPC_Lua_Char_SetTalkedEvent},
-
     {"SetOFFEvent", NPC_Lua_Char_SetOFFEvent},
-
     {"注册方向回调", NPC_Lua_Char_SetLookedEvent},
-
     {"注册道具丢弃踩踏回调", NPC_Lua_Char_SetItemPutEvent},
-
     {"注册对话框回调", NPC_Lua_Char_SetWindowTalkedEvent},
-
 #ifdef _USER_CHARLOOPS
-
     {"注册原地回调", NPC_Lua_Char_SetCharLoopsEvent},
-
     {"注册战斗回调", NPC_Lua_Char_SetBattleProPertyEvent},
-
 #endif
-
     // 金币接口
-
     {"取金币", NPC_Lua_Char_VipPoint},
-
     {"全体恢复", NPC_Lua_Char_HealAll},
-
     {"取宠物技能ID", NPC_Lua_Char_GetPetSkillId},
-
     {"取宠物技能id", NPC_Lua_Char_GetPetSkillId},
-
     {"取宠物技能名", NPC_Lua_Char_GetPetSkillName},
-
     {"取宠物技能说明", NPC_Lua_Char_GetPetSkillMsg},
-
     {"置宠物技能ID", NPC_Lua_Char_SetPetSkill},
-
     {"置宠物技能id", NPC_Lua_Char_SetPetSkill},
-
     {"检测玩家索引", NPC_Lua_CHAR_CHECKINDEX},
-
     {"寻找道具索引", NPC_Lua_Char_FindItemIndex},
-
     {"取道具数量", NPC_Lua_Char_HcItemId},
-
     {"删除道具", NPC_Lua_Char_DelHcItem},
-
     {"取家族信息", NPC_Lua_Char_GETFM},
-
     {"寻找宠物原型ID", NPC_Lua_Char_FindPetEnemyBaseId},
-
     {"寻找宠物原型id", NPC_Lua_Char_FindPetEnemyBaseId},
-
     {"创建宠物", createPet},
-
     {"createPet", createPet},
-
     {"setCharPet", setCharPet},
-
     {"getCharPet", getCharPet},
-
     {"ToAroundChar", ToAroundChar},
-
     {"取道具原名", NPC_Lua_Char_ITEMID_NAME},
-
     {"取道具说名", NPC_Lua_Char_ITEMID_NAME2},
-
     {"取道具等级", NPC_Lua_Char_ITEMID_LEVEL},
-
     {"取道具价格", NPC_Lua_Char_ITEMID_GOLD},
-
     {"取道具图片", NPC_Lua_Char_ITEMID_RANO},
-
     {"寻宠物索引", NPC_Lua_Char_FindPetIndex},
-
     {"检测骑证", NPC_Lua_Char_CharRidNo},
-
     {"取宠物主人索引", NPC_Lua_Char_GetPetOwner},
-
     {"取宠物数据来自原型", NPC_Lua_Char_GetDataFromEnemyBase},
-
     {"取宠物ID来自调用", NPC_Lua_Char_GetEnemyBaseIdFromEnemyId},
-
     {"取宠物调用ID来自原型", NPC_Lua_Char_GetEnemyIdFromEnemyBaseId},
-
     {"取宠物id来自调用", NPC_Lua_Char_GetEnemyBaseIdFromEnemyId},
-
     {"取宠物调用id来自原型", NPC_Lua_Char_GetEnemyIdFromEnemyBaseId},
-
     {"取IP", NPC_Lua_Char_GetIp},
-
     {"取ip", NPC_Lua_Char_GetIp},
-
     {"取宠物四围", NPC_Lua_Char_GetAllocPoint},
-
     {"置宠物四围", NPC_Lua_Char_SetAllocPoint},
-
     {"取宠物最大索引", NPC_Lua_Char_GetMaxPetIndex},
-
     {"取人物最大索引", NPC_Lua_Char_GetMaxPlayerIndex},
-
     {"保存宠物描述", NPC_Lua_Char_SavePetToString},
-
     {"加载宠物描述", NPC_Lua_Char_LoadPetFromString},
-
     {"计算数据", NPC_Lua_Char_ComplianceParameter},
-
     {"取人物索引来自帐号密码", NPC_Lua_Char_GetPlayerFromAccAndName},
-
     {"取道具数量", NPC_Lua_Char_GetPlayerItemNum},
-
     {"取宠物数量", NPC_Lua_Char_GetPlayerPetNum},
-
     {"取道具空数量", NPC_Lua_Char_GetEmptyItemBoxNum},
-
     {"取宠物空数量", NPC_Lua_Char_GetEmptyPetBoxNum},
-
     {"检测宠物索引", NPC_Lua_Char_CheckPet},
-
     {"检测人物索引", NPC_Lua_Char_CheckPlayer},
-
     {"检测道具索引", NPC_Lua_Char_CheckItemIndex},
-
     {"加入队伍", NPC_Lua_Char_JoinParty},
-
     {"取家族人物索引", NPC_Lua_Char_getFamilyPlayIndex},
-
     {"取人物最大数", NPC_ABLua_char_getPlayerMaxNum},
-
     //	{"取虚拟人物最大数", getOnlinePlayer_},
 
     {"取战斗经验倍数", NPC_ABLua_char_getBattleexp},
@@ -2514,7 +2398,6 @@ int NPC_Lua_CharLoopsCallBack(int _meindex)
 
 int NPC_Lua_BattleProPertyCallBack(int _attackindex, int _defindex,
                                    int *_damage, int *_powarray, int _arraynum)
-
 {
 
   if (M_Script_Lua == NULL)

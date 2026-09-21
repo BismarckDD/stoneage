@@ -1862,39 +1862,15 @@ int NPC_Lua_NLG_WalkJc(lua_State *_NLL) // 检查前方障碍
 }
 
 int NPC_Lua_NLG_KickPlayer(lua_State *_NLL)
-
 {
-
   CheckEx(_NLL, 1);
-
   CheckIndexNull(_NLL, 1);
-
   int TM_index = (int)lua_tointeger(_NLL, 1);
-
   if (!CHAR_CHECKINDEX(TM_index)) {
-
     LRetErrInt(_NLL, -1, "人物传入的索引是无效的！");
-
     return;
   }
-
-#ifdef _NETLOG_
-
-  char cdkey[16];
-
-  char charname[32];
-
-  CONNECT_getCharname(CHAR_getWorkInt(TM_index, CHAR_WORKFD), charname, 32);
-
-  CONNECT_getCdkey(CHAR_getWorkInt(TM_index, CHAR_WORKFD), cdkey, 16);
-
-  LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
-             "NPC_Lua_NLG_KickPlayer 处理下线");
-
-#endif
-
   CONNECT_setCloseRequest(getfdFromCharaIndex(TM_index), 1);
-
   LRetBool(_NLL, TRUE);
 }
 
@@ -2574,43 +2550,25 @@ int NPC_Lua_NLG_StayEncount(lua_State *_NLL)
                  CHAR_COLORYELLOW);
 
 #ifdef _USER_CHARLOOPS
-
   {
-
-    Char *ch;
-
-    ch = CHAR_getCharPointer(char_index);
-
-    if (ch == NULL)
-      return;
-
+    Char *ch = CHAR_getCharPointer(char_index);
+    if (ch == NULL) return;
     strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
-
                 sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]),
                 "CHAR_BattleStayLoop"); // 战斗
-
     CHAR_setInt(char_index, CHAR_LOOPINTERVAL, 2500);
-
     CHAR_constructFunctable(char_index);
   }
-
 #endif
-
   LRetBool(_NLL, TRUE);
 }
 
 int NPC_Lua_NLG_HealerAllHeal(lua_State *_NLL)
-
 {
-
   CheckEx(_NLL, 1);
-
   CheckIndexNull(_NLL, 1);
-
   int TM_Index = (int)lua_tointeger(_NLL, 1);
-
   NPC_HealerAllHeal(TM_Index);
-
   LRetNull(_NLL);
 }
 

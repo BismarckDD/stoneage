@@ -121,7 +121,7 @@ BOOL init(int argc, char **argv, char **env) {
   RETURN_FALSE_IF_FALSE(parseCommandLine(argc, argv));
   RETURN_FALSE_IF_FALSE(parseEnvironment(env));
 
-  signalset();
+  signalSet();
 
   {
     Char aho;

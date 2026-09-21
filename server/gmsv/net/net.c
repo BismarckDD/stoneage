@@ -243,7 +243,6 @@ int CHAR_players();
 #define CONO_CHECK_PET 0x100
 int cono_check = 0x111;
 
-int AC_WBSIZE = (1024 * 1024);
 // ttom+1 for the performatce
 static unsigned int MAX_item_use = 0;
 int i_shutdown_time = 0;       // ttom
@@ -844,7 +843,6 @@ ANY_THREAD BOOL _CONNECT_endOne(char *file, int fromline, int sockfd, int line) 
     return TRUE;
   }
   CONNECT_LOCK_ARG2(sockfd, line);
-
   if (Connect[sockfd].use == FALSE) {
     CONNECT_UNLOCK_ARG2(sockfd, line);
     print("Connect [%d] is not used.!!!\n", sockfd);
@@ -859,11 +857,9 @@ ANY_THREAD BOOL _CONNECT_endOne(char *file, int fromline, int sockfd, int line) 
       CHAR_setWorkInt(Connect[sockfd].char_index, CHAR_WORKFD, -1);
     } else
 #endif
-    {
-      if (!CHAR_logout(Connect[sockfd].char_index, TRUE)) {
-      }
-      print("Connect cd key=%s.\n", Connect[sockfd].cdkey);
+    if (!CHAR_logout(Connect[sockfd].char_index, TRUE)) {
     }
+    print("Connect cd key=%s.\n", Connect[sockfd].cdkey);
     CONNECT_LOCK_ARG2(sockfd, line);
   }
 #ifdef _NO_ATTACK
@@ -1203,16 +1199,6 @@ ANY_THREAD void CONNECT_checkStatecount(int a) {
       Connect[i].nstatecount = (int)time(NULL) + 60;
     } else {
       if (Connect[i].nstatecount < (int)time(NULL)) {
-#ifdef _NETLOG_
-        char cdkey[16];
-        char charname[32];
-        CONNECT_getCharname(CONNECT_getCharaindex(i), charname, 32);
-        CONNECT_getCdkey(CONNECT_getCharaindex(i), cdkey, 16);
-        char token[128];
-        sprintf(token, "CONNECT_checkStatecount  T人 ");
-        LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
-#endif
-
         CONNECT_endOne_debug(i);
         count++;
       }
@@ -2220,18 +2206,6 @@ void CONNECT_SysEvent_Loop(void) {
         if (Connect[i].state == NOTLOGIN) {
           Connect[i].cotime++;
           if (Connect[i].cotime > 30) {
-            print("LATE");
-#ifdef _NETLOG_
-            char cdkey[16];
-            char charname[32];
-            CONNECT_getCharname(CONNECT_getCharaindex(i), charname, 32);
-            CONNECT_getCdkey(CONNECT_getCharaindex(i), cdkey, 16);
-            char token[128];
-            sprintf(token, "玩家没有登陆游戏导致T人 ");
-            LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
-                       token);
-#endif
-
             CONNECT_endOne_debug(i);
           }
         } else {
@@ -2279,9 +2253,6 @@ int isThereThisIP(unsigned long ip) {
 }
 
 
-#ifdef _KEEP_UP_NO_LOGIN
-char keepupnologin[256] = "";
-#endif
 struct timeval speedst, speedet;
 
 /* 聚合连接轮询：每轮只调用一次 select，然后按原有的公平顺序
@@ -2339,7 +2310,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
 
   NETWATCH_set("netloop", -1, NULL);
 
-#ifdef _AC_PIORITY
+#ifdef _AC_PRIORITY
   static int flag_ac = 1;
   static int fdremembercopy = 0;
   static int totalloop = 0;
@@ -2371,10 +2342,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
   if (ret > 0 && FD_ISSET(bindedfd, &rfds)) {
     struct sockaddr_in sin;
     int addrlen = sizeof(struct sockaddr_in);
-    int sockfd;
-
     NETWATCH_set("accept", bindedfd, NULL);
-    sockfd = accept(bindedfd, (struct sockaddr *)&sin, &addrlen);
+    int sockfd = accept(bindedfd, (struct sockaddr *)&sin, &addrlen);
     NETWATCH_set("netloop", -1, NULL);
 
     SetTcpBuf(sockfd, &rfds);
@@ -2435,9 +2404,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
       }
 #endif
 #ifdef _KEEP_UP_NO_LOGIN
-      else if (strlen(keepupnologin) > 0) {
+      else if (strlen(szForbiddenLogin) > 0) {
         char mess[64];
-        sprintf(mess, "E%s", keepupnologin);
+        sprintf(mess, "E%s", szForbiddenLogin);
         write(sockfd, mess, strlen(mess) + 1);
         close(sockfd);
       }
@@ -2579,7 +2548,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         int item_max;
         if (i_counter > 10) {
           gPlayerOnline = 0;
-#ifdef _AC_PIORITY
+#ifdef _AC_PRIORITY
           totalloop = 0;
           totalfd = 0;
           totalacfd = 0;
@@ -2854,7 +2823,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         //------------------------------------------------------------
       } // switch()
 
-#ifdef _AC_PIORITY
+#ifdef _AC_PRIORITY
       if (flag_ac == 2)
         fdremember = fdremembercopy;
       flag_ac = 1;
@@ -2863,7 +2832,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       break; // Break while
     }        // if(>0.1sec)
     loop_num++;
-#ifdef _AC_PIORITY
+#ifdef _AC_PRIORITY
     switch (flag_ac) {
     case 1:
       fdremembercopy = fdremember;
@@ -2884,7 +2853,6 @@ SINGLETHREAD BOOL netloop_faster(void) {
     }
 #else
     fdremember++;
-
 #endif
 
     if (fdremember == ConnectLen) {
@@ -2927,12 +2895,10 @@ SINGLETHREAD BOOL netloop_faster(void) {
         }
       }
     }
-#ifdef _AC_PIORITY
+#ifdef _AC_PRIORITY
     totalfd++;
-
     if (fdremember == acfd)
       totalacfd++;
-
 #endif
     if (sa_tcp_take_readable(&ready[fdremember])) {
       sweep_did_work = 1;
@@ -2957,7 +2923,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         {
           print("读取返回:ret=%d,errno=%s\n", ret, strerror(errno));
           print("GMSV与SAAC失去连接! 程序正常退出......");
-          sigshutdown(0);
+          signalShutdown(0);
         }
         else {
 #ifdef _NETLOG_
@@ -3851,14 +3817,16 @@ void procAcceptEpoll() {
       close(sockfd);
       return;
     }
-    if (strlen(keepupnologin) > 0) {
+#ifdef _KEEP_UP_NO_LOGIN
+    if (strlen(szForbiddenLogin) > 0) {
       char mess[64];
-      sprintf(mess, "E游戏维护中。。。。。");
+      sprintf(mess, "E游戏维护中......");
       mess[strlen(mess)] = 0;
       write(sockfd, mess, strlen(mess) + 1);
       close(sockfd);
       return;
     }
+#endif
     int cono = 1;
     if (cono_check & CONO_CHECK_LOGIN) {
       if (StateTable[WHILELOGIN] + StateTable[WHILELOGOUTSAVE] >
@@ -3934,7 +3902,7 @@ BOOL procRecvEpoll(int sockfd) {
       if (sockfd == acfd) {
         print("读取返回:ret=%d,errno=%s\n", ret, strerror(errno));
         print("GMSV与SAAC失去连接! 程序异常退出......");
-        sigshutdown(-1);
+        signalShutdown(-1);
         exit(1);
       } else {
         char cdkey[16];

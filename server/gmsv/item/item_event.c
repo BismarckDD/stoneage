@@ -2515,7 +2515,6 @@ void ITEM_remNoenemy(int char_index, int item_index) {
   CHAR_talkToCli(char_index, -1, "什麽事也没有发生。", CHAR_COLORWHITE);
 }
 
-extern void setStayEncount(int fd);
 void ITEM_useEncounter(int char_index, int toindex, int haveitem_index) {
   int item_index, fd;
   item_index = CHAR_getItemIndex(char_index, haveitem_index);

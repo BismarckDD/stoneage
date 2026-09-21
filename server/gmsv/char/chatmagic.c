@@ -2493,7 +2493,7 @@ void CHAR_CHAT_DEBUG_getuser(int char_index, char *message) // ttom 14/11/2000
   }
 }
 
-void CHAR_CHAT_DEBUG_waeikick(int char_index, char *message) {
+void CHAR_CHAT_DEBUG_kick(int char_index, char *message) {
   char kcmsg[256], kctalk[256];
   char buf[256];
   BOOL find = FALSE;
@@ -2525,30 +2525,14 @@ void CHAR_CHAT_DEBUG_waeikick(int char_index, char *message) {
         }
       } else
 #endif
-      {
-        CHAR_talkToCli(i, -1, "因做坏事而断线。", CHAR_COLORYELLOW);
-#ifdef _NETLOG_
-        char charname[32];
-        CONNECT_getCharname(CHAR_getWorkInt(i, CHAR_WORKFD), charname, 32);
-        CONNECT_getCdkey(CHAR_getWorkInt(i, CHAR_WORKFD), cdkey, 16);
-        LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
-                   "因做坏事而断线");
-#endif
-        CONNECT_setCloseRequest(getfdFromCharaIndex(i), 1);
-      }
+      CHAR_talkToCli(i, -1, "因做坏事而断线。", CHAR_COLORYELLOW);
+      CONNECT_setCloseRequest(getfdFromCharaIndex(i), 1);
       find = TRUE;
       break;
     }
   }
   if (find) {
-#ifdef _GM_KING
-    sprintf(kctalk,
-            "%s大魔王施展超无敌挤奶手「挤挤挤挤挤挤挤．．．．．．．把」",
-            CHAR_getChar(char_index, CHAR_NAME));
-#else
-    sprintf(kctalk,
-            "极度大魔王施展超无敌挤奶手「挤挤挤挤挤挤挤．．．．．．．把」");
-#endif
+    sprintf(kctalk, "大魔王将你关进监狱！");
     MAX_USER = getFdnum();
     for (i = 0; i < MAX_USER; i++) {
       int i_use;
@@ -2562,7 +2546,7 @@ void CHAR_CHAT_DEBUG_waeikick(int char_index, char *message) {
   }   // if find
 }
 
-void CHAR_CHAT_DEBUG_waeikickall(int char_index, char *message) {
+void CHAR_CHAT_DEBUG_kickall(int char_index, char *message) {
   int i = 0;
   int playernum = CHAR_getPlayerMaxNum();
   for (i = 0; i < playernum; i++) {
@@ -2581,7 +2565,7 @@ void CHAR_CHAT_DEBUG_waeikickall(int char_index, char *message) {
       CONNECT_getCharname(CHAR_getWorkInt(i, CHAR_WORKFD), charname, 32);
       CONNECT_getCdkey(CHAR_getWorkInt(i, CHAR_WORKFD), cdkey, 16);
       LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
-                 "CHAR_CHAT_DEBUG_waeikickall函数处理");
+                 "CHAR_CHAT_DEBUG_kickall函数处理");
 #endif
       CONNECT_setCloseRequest(getfdFromCharaIndex(i), 1);
     }
@@ -2647,13 +2631,7 @@ void CHAR_CHAT_DEBUG_jail(int char_index, char *message) {
     }
   } // for i
   if (find) {
-#ifdef _GM_KING
-    sprintf(kctalk, "%s大魔王施展超无敌抓奶手「抓抓抓抓抓抓．．．．．．．把」",
-            CHAR_getChar(char_index, CHAR_NAME));
-#else
-    sprintf(kctalk,
-            "极度大魔王施展超无敌抓奶手「抓抓抓抓抓抓．．．．．．．把」");
-#endif
+    sprintf(kctalk, "大魔王将你关进监狱！");
     for (i = 0; i < MAX_USER; i++) {
       int i_use;
       i_use = CONNECT_getUse(i);
@@ -2716,8 +2694,7 @@ void CHAR_CHAT_DEBUG_send(int char_index, char *message) {
         snprintf(line, sizeof(line), "把名称:%s 账号:%s 传送到 FL=%d X=%d Y=%d",
                  szName, cdkey, fl, x, y);
         CHAR_talkToCli(char_index, -1, line, CHAR_COLORWHITE);
-        CHAR_talkToCli(fd_char_index, -1, "＊.＊被极度大魔王传送",
-                       CHAR_COLORWHITE);
+        CHAR_talkToCli(fd_char_index, -1, "被大魔王传送", CHAR_COLORWHITE);
       }
     }
   }
@@ -4132,22 +4109,10 @@ void CHAR_CHAT_DEBUG_silent(int char_index, char *message) {
       // print("\n<shut_up>--token=%s",token);
       if (strcmp(token, cdkey) == 0) {
         int index = CONNECT_getCharaindex(i);
-        // print("\n<shut_up>--find-->cdkey %s",cdkey);
-        // Robin
         CHAR_setInt(index, CHAR_SILENT, minu * 60);
-        // CHAR_setInt(index,CHAR_SILENT, (int)NowTime.tv_sec +(minu*60) );
-        { CHAR_setWorkInt(index, CHAR_WORKLOGINTIME, (int)NowTime.tv_sec); }
-        // print(" set_silent:%s:%dmin ", cdkey, minu);
-
-        // print("\n<Set TRUE");
-#ifdef _GM_KING
-        snprintf(line, sizeof(line), "%s大魔王将 %s 封嘴%d分钟。",
-                 CHAR_getChar(index, CHAR_NAME), CHAR_getChar(index, CHAR_NAME),
-                 minu);
-#else
-        snprintf(line, sizeof(line), "极度大魔王将 %s 封嘴%d分钟。",
+        CHAR_setWorkInt(index, CHAR_WORKLOGINTIME, (int)NowTime.tv_sec);
+        snprintf(line, sizeof(line), "大魔王将 %s 封嘴%d分钟。",
                  CHAR_getChar(index, CHAR_NAME), minu);
-#endif
         CHAR_talkToCli(char_index, -1, line, CHAR_COLORWHITE);
         CHAR_talkToCli(index, -1, line, CHAR_COLORWHITE);
       }
@@ -5840,10 +5805,9 @@ void CHAR_CHAT_DEBUG_GmSaveAllChar(int char_index, char *message) {
 #endif
 
 #ifdef _KEEP_UP_NO_LOGIN
-extern char keepupnologin[256];
 void CHAR_CHAT_DEBUG_KeepUpNoLogin(int char_index, char *message) {
-  strcpy(keepupnologin, message);
-  CHAR_talkToCli(char_index, -1, keepupnologin, CHAR_COLORRED);
+  strcpy(szForbiddenLogin, message);
+  CHAR_talkToCli(char_index, -1, szForbiddenLogin, CHAR_COLORRED);
 }
 #endif
 #ifdef _NEW_LOAD_NPC

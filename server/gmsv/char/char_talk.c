@@ -96,7 +96,7 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
     {"gmreload", CHAR_CHAT_DEBUG_gmreload, TRUE, 0, 3, "all/cdkey level"},
 #endif
 
-    {"waeikickall", CHAR_CHAT_DEBUG_waeikickall, TRUE, 0, 3, "无"},
+    {"waeikickall", CHAR_CHAT_DEBUG_kickall, TRUE, 0, 3, "无"},
     {"checktrade", CHAR_CHAT_DEBUG_checktrade, TRUE, 0, 3, "waei"},
     // 工具	初级GM
     {"debug", CHAR_CHAT_DEBUG_debug, TRUE, 0, 1, "on/off"},
@@ -112,7 +112,7 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
     {"battlewatch", CHAR_CHAT_DEBUG_battlewatch, TRUE, 0, 2, "无"},
     {"getuser", CHAR_CHAT_DEBUG_getuser, TRUE, 0, 2, "人物名 地图号 (npc)"},
     {"warp", CHAR_CHAT_DEBUG_warp, TRUE, 0, 2, "地图号 x y"},
-    {"waeikick", CHAR_CHAT_DEBUG_waeikick, TRUE, 0, 2, "帐号"},
+    {"waeikick", CHAR_CHAT_DEBUG_kick, TRUE, 0, 2, "帐号"},
     {"jail", CHAR_CHAT_DEBUG_jail, TRUE, 0, 2, "帐号"},
     {"send", CHAR_CHAT_DEBUG_send, TRUE, 0, 1, "floor x y 帐号"},
 #ifdef _SendTo
@@ -296,7 +296,7 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
     {"GmSaveAllChar", CHAR_CHAT_DEBUG_GmSaveAllChar, TRUE, 0, 3, ""},
 #endif
 #ifdef _KEEP_UP_NO_LOGIN
-    {"keepupnologin", CHAR_CHAT_DEBUG_KeepUpNoLogin, TRUE, 0, 3, ""},
+    {"keepUpNoLogin", CHAR_CHAT_DEBUG_KeepUpNoLogin, TRUE, 0, 3, ""},
 #endif
 #ifdef _NEW_LOAD_NPC
     {"newloadnpc", CHAR_CHAT_DEBUG_NewLoadNpc, TRUE, 0, 3, ""},

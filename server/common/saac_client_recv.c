@@ -158,7 +158,7 @@ void SaacClient_ACCharSave_recv(int saac_fd, char *result, char *data, int clien
       print("Server is shutdown.\n");
       print("\nShutDown in Time=%d.\n", i_shutdown_time); // ttom
       if (i_shutdown_time == 1) {
-        sigshutdown(0);
+        signalShutdown(0);
       }
     }
   default:

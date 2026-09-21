@@ -44,7 +44,7 @@ void CHAR_CHAT_DEBUG_visaudit(int char_index, char *message);
 void CHAR_CHAT_DEBUG_getuser(int charindex, char *message); // ttom +1
                                                             // 14/11/2000
 void CHAR_CHAT_DEBUG_shutup(int charindex, char *message);   // ttom 22/11/2000
-void CHAR_CHAT_DEBUG_waeikick(int charindex, char *message); // ttom 12/02/2000
+void CHAR_CHAT_DEBUG_kick(int charindex, char *message); // ttom 12/02/2000
 void CHAR_CHAT_DEBUG_effect(int char_index, char *message);
 void CHAR_CHAT_DEBUG_jail(int charindex, char *message);      // ttom 01/11/2001
 void CHAR_CHAT_DEBUG_shutupall(int charindex, char *message); // ttom 02/01/2001
@@ -67,7 +67,7 @@ void CHAR_CHAT_DEBUG_fixfmpk(int char_index, char *message);
 void CHAR_CHAT_DEBUG_reloadmsip(int char_index, char *message);
 void CHAR_CHAT_DEBUG_cleanfreepet(int char_index, char *message);
 void CHAR_CHAT_DEBUG_engineer(int charindex, char *message);
-void CHAR_CHAT_DEBUG_waeikickall(int charindex, char *message);
+void CHAR_CHAT_DEBUG_kickall(int charindex, char *message);
 void CHAR_CHAT_DEBUG_showMem(int char_index, char *message);
 void CHAR_CHAT_DEBUG_playerspread(int char_index, char *message);
 void CHAR_CHAT_DEBUG_reset(int char_index, char *message);

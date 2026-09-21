@@ -305,7 +305,7 @@
 #define _FM_MODIFY               // 家族功能修改(开放)
 #define _PETSKILL_OPTIMUM        // Robin 宠物技能处理最佳化
 #define _MAGIC_OPTIMUM           // Robin Magic table 最佳化
-#define _AC_PIORITY              // Nuke 提高AC的优先权(可开)
+#define _AC_PRIORITY             // Nuke 提高SAAC连接的优先权(可开)
 
 // -------------------------------------------------------------------
 //专案 7.5  精灵的招唤  人员：彦勋 奇铨 小威

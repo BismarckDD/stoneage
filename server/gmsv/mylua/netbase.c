@@ -11,24 +11,14 @@
 static int endOne(lua_State *L) 
 {
 	const int sockfd = luaL_checkint(L, 1);
-#ifdef _NETLOG_
-	char cdkey[16];
-	char charname[32];
-	CONNECT_getCharname(sockfd,charname,32);
-	CONNECT_getCdkey(sockfd,cdkey,16);
-	LogCharOut(charname,cdkey,__FILE__,__FUNCTION__,__LINE__,"ABLUA踢下线");
-#endif
 	CONNECT_endOne_debug(sockfd);
-
 	return 1;
 }
 
 static int userip(lua_State *L) 
 {
 	int char_index = luaL_checkint(L, 1);
-
 	int sockfd = getfdFromCharaIndex(char_index);
-
 	unsigned long ip;
 	int a,b,c,d;
 	char strIP[32];

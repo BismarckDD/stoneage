@@ -49,21 +49,14 @@ void dump() {
   size_t size;
   char **strings;
   size_t i;
-
   size = backtrace(array, 10);
   strings = backtrace_symbols(array, size);
-
   printf("Obtained %zd stack frames.\n", size);
-
-  for (i = 0; i < size; i++) {
+  for (i = 0; i < size; i++)
     logerr(strings[i]);
-  }
-
   free(strings);
 #endif
 }
-
-void signalset(void);
 
 static void allDataDump(void) {
   int i;
@@ -90,9 +83,6 @@ void shutdownProgram(void) {
   memEnd();
 }
 
-#ifdef _KEEP_UP_NO_LOGIN
-extern char keepupnologin[256];
-#endif
 static char saacrecvfunc_buf[255] = "";
 char *saacrecvfunc = saacrecvfunc_buf;
 static char saacsendfunc_buf[255] = "";
@@ -100,19 +90,12 @@ char *saacsendfunc = saacsendfunc_buf;
 int cliretfunc = 0;
 int clisendfunc = 0;
 
-void sigshutdown(int number) {
+void signalShutdown(int number) {
   char buff[256];
 
   if (number == 0) {
     printf("\n\n\nGMSV正常关闭\n");
   } else if (number == 2) {
-#ifdef _KEEP_UP_NO_LOGIN
-    if (strlen(keepupnologin) > 0) {
-      strcpy(keepupnologin, "");
-      printf("已解除禁止登陆状态\n");
-      return;
-    }
-#endif
     printf("\n\n\nGMSV被CTRL+C手动中断\n");
   } else {
     sprintf(buff, "\n=========以下是服务器出错原因=========\n");
@@ -168,7 +151,7 @@ void sigshutdown(int number) {
   exit(number);
 }
 
-void signalset(void) {
+void signalSet(void) {
   // CoolFish: Test Signal 2001/10/26
   print("\n开始获取信号..\n");
   print("SIGINT:%d\n", SIGINT);
@@ -184,19 +167,19 @@ void signalset(void) {
   print("SIGPIPE:%d\n", SIGPIPE);
 #endif
   print("SIGTERM:%d\n", SIGTERM);
-  signal(SIGINT, sigshutdown);
+  signal(SIGINT, signalShutdown);
 #ifndef _WIN32
-  signal(SIGQUIT, sigshutdown);
-  signal(SIGILL, sigshutdown);
-  signal(SIGTRAP, sigshutdown);
-  signal(SIGIOT, sigshutdown);
-  signal(SIGBUS, sigshutdown);
-  signal(SIGFPE, sigshutdown);
-  signal(SIGKILL, sigshutdown);
-  signal(SIGSEGV, sigshutdown);
+  signal(SIGQUIT, signalShutdown);
+  signal(SIGILL, signalShutdown);
+  signal(SIGTRAP, signalShutdown);
+  signal(SIGIOT, signalShutdown);
+  signal(SIGBUS, signalShutdown);
+  signal(SIGFPE, signalShutdown);
+  signal(SIGKILL, signalShutdown);
+  signal(SIGSEGV, signalShutdown);
   signal(SIGPIPE, SIG_IGN);
 #else
-  sa_install_console_handler(sigshutdown);
+  sa_install_console_handler(signalShutdown);
 #endif
-  signal(SIGTERM, sigshutdown);
+  signal(SIGTERM, signalShutdown);
 }
