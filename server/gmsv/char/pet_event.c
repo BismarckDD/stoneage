@@ -37,8 +37,7 @@ BOOL PetTalk_CheckMyFloor(int meindex, int talker, char *buf, int flg);
 #ifdef _PET_TALKBBI
 BOOL PET_CheckPlayerBBI(int meindex, int charindex, int BBI, int flg);
 #endif
-#ifdef _PET_TALKPRO
-#else
+#ifndef _PET_TALKPRO
 char *Pet_TalkGetFunStr(char *temp, char *buf, int len) {
   char filename[56];
   char pathfile[128];
@@ -50,7 +49,6 @@ char *Pet_TalkGetFunStr(char *temp, char *buf, int len) {
   char line[4096];
   BOOL find = FALSE;
   talkfun[0] = '\0';
-
   while (getStringFromIndexWithDelim(pettalktext, "&", talkNo, buf1,
                                      sizeof(buf1)) != FALSE) {
     talkNo++;
@@ -107,9 +105,9 @@ char *Pet_TalkGetFunStr(char *temp, char *buf, int len) {
   return (cStr);
 }
 #endif
+
 void PET_Talkfunc(int meindex, int talkerindex, char *msg, int color) {
   char buf2[1024], buf3[256];
-
   char TalkType[][16] = {"TALKRUN", "EVENTRUN", "BOTH"};
   char AllTalk[PETTALK_MAXID][1024];
   int Type = 0, j, i;

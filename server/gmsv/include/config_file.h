@@ -11,7 +11,8 @@
 #endif /*  __CONFIGFILE_C__  */
 
 // Arminius 7.12 login announce
-extern char announcetext[8192];
+EXTERN char gAnnounceText[8192];
+
 void AnnounceToPlayer(int char_index);
 // Robin 0720
 void AnnounceToPlayerWN(int fd);
@@ -23,12 +24,11 @@ typedef struct {
   int ID;
   char DATA[1024 * 64]; // 1M
 } PTALK;
-extern PTALK pettalktext[PETTALK_MAXID];
-void LoadPetTalk(void);
+EXTERN PTALK pettalktext[PETTALK_MAXID];
 #else
-extern char pettalktext[4096];
-void LoadPetTalk(void);
+EXTERN char pettalktext[4096];
 #endif
+void LoadPetTalk(void);
 
 #ifdef _GAMBLE_BANK
 #define GAMBLEBANK_ITEMSMAX 100
@@ -545,15 +545,6 @@ unsigned int getNoTransItem(void);
 #ifdef _MAX_MERGE_LEVEL
 unsigned int getMaxMergeLevel(void);
 #endif
-#ifdef _NO_ATTACK
-int getAttTime(void);
-int getAttSafeTime(void);
-int getAttCnt(void);
-int getLateTime(void);
-int getAttDmeTime(void);
-int getAttDmeCnt(void);
-#endif
-
 char *getNoAttIp(int num);
 
 #ifdef _NO_FULLPLAYER_ATT

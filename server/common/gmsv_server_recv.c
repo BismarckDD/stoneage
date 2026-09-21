@@ -182,7 +182,6 @@ void GmsvServer_ClientLogin_recv(int client_fd, char *cdkey, char *passwd, char 
               return;
             }
           } else {
-            print("???\n");
             CONNECT_endOne_debug(client_fd);
             return;
           }
@@ -608,15 +607,6 @@ void GmsvServer_W_recv(int client_fd, int x, int y, char *direction) {
   if (checkNu(client_fd) < 0) {
     print("NU-Error\n");
     CHAR_talkToCli(char_index, -1, "NU_ERROR", CHAR_COLORYELLOW);
-
-#ifdef _NETLOG_
-    char cdkey[16];
-    char charname[32];
-    CONNECT_getCharname(CHAR_getWorkInt(char_index, CHAR_WORKFD), charname, 32);
-    CONNECT_getCdkey(CHAR_getWorkInt(char_index, CHAR_WORKFD), cdkey, 16);
-    LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, "讯号错误");
-#endif
-
     CONNECT_setCloseRequest(client_fd, 1);
     return;
   }
@@ -2303,7 +2293,7 @@ void GmsvServer_PlayerNumGet_recv(int client_fd) {
     int    i;
     int    clicnt  =0;
     int    playercnt = 0;
-      for( i = 0; i < ConnectLen; i ++ ) {
+      for( i = 0; i < gConnectionListLength; i ++ ) {
           if( CONNECT_getUse_debug(i,1017) ){
               if( CONNECT_getCtype(i) == CLI) {
                 clicnt ++;

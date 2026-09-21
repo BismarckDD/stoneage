@@ -67,7 +67,7 @@ void NETTRACE_armWrite(int fd) {
 static void nettrace_poll_result(SaTcpPollItem *items, int poll_result) {
   int fd = g_nettrace_write_fd;
   int write_size = -1, ca_size = -1;
-  if (fd < 0 || fd >= ConnectLen || items == NULL)
+  if (fd < 0 || fd >= gConnectionListLength || items == NULL)
     return;
   CONNECT_getPendingBufferSizes(fd, &write_size, &ca_size);
   g_nettrace_poll_count++;
@@ -231,10 +231,10 @@ pthread_mutex_t lianbiaoRecvmutex;
 #define LIANBIAORECVLOCK pthread_mutex_lock(&lianbiaoRecvmutex);
 #define LIANBIAORECVUNLOCK pthread_mutex_unlock(&lianbiaoRecvmutex);
 
-#define CONNECT_LOCK(i) pthread_mutex_lock(&Connect[i].sEndmutex);
-#define CONNECT_UNLOCK(i) pthread_mutex_unlock(&Connect[i].sEndmutex);
-#define CONNECT_RecvLOCK(i) pthread_mutex_lock(&Connect[i].rEcvmutex);
-#define CONNECT_RecvUNLOCK(i) pthread_mutex_unlock(&Connect[i].rEcvmutex);
+#define CONNECT_LOCK(i) pthread_mutex_lock(&gConnectionList[i].sEndmutex);
+#define CONNECT_UNLOCK(i) pthread_mutex_unlock(&gConnectionList[i].sEndmutex);
+#define CONNECT_RecvLOCK(i) pthread_mutex_lock(&gConnectionList[i].rEcvmutex);
+#define CONNECT_RecvUNLOCK(i) pthread_mutex_unlock(&gConnectionList[i].rEcvmutex);
 #endif
 
 int CHAR_players();
@@ -251,15 +251,6 @@ BOOL b_first_shutdown = FALSE; // ttom
 int mfdfulll = 0;
 int sendspeed = 0;
 int recvspeed = 0;
-
-#ifdef _NO_ATTACK
-unsigned int atttime = 0;
-static unsigned long useripnum = 100000;
-static unsigned long *userip = 0;
-static unsigned long *userip_count_data = 0;
-static unsigned long useripcount = 0;
-static unsigned long *useriptime = 0;
-#endif
 
 typedef struct tagServerState {
   BOOL acceptmore;
@@ -403,7 +394,7 @@ typedef struct tagGmsvSession {
 #endif
 } GmsvSession;
 
-GmsvSession *Connect;
+GmsvSession *gConnectionList;
 
 static int gmsv_session_is_pollable(const GmsvSession *session) {
   return session->use && session->state != WHILECLOSEALLSOCKETSSAVE;
@@ -422,10 +413,10 @@ ServerState servstate;
 pthread_mutex_t MTIO_servstate_m;
 #define SERVSTATE_LOCK() pthread_mutex_lock(&MTIO_servstate_m);
 #define SERVSTATE_UNLOCK() pthread_mutex_unlock(&MTIO_servstate_m);
-#define CONNECT_LOCK_ARG2(i, j) pthread_mutex_lock(&Connect[i].mutex);
-#define CONNECT_UNLOCK_ARG2(i, j) pthread_mutex_unlock(&Connect[i].mutex);
-#define CONNECT_LOCK(i) pthread_mutex_lock(&Connect[i].mutex);
-#define CONNECT_UNLOCK(i) pthread_mutex_unlock(&Connect[i].mutex);
+#define CONNECT_LOCK_ARG2(i, j) pthread_mutex_lock(&gConnectionList[i].mutex);
+#define CONNECT_UNLOCK_ARG2(i, j) pthread_mutex_unlock(&gConnectionList[i].mutex);
+#define CONNECT_LOCK(i) pthread_mutex_lock(&gConnectionList[i].mutex);
+#define CONNECT_UNLOCK(i) pthread_mutex_unlock(&gConnectionList[i].mutex);
 
 void SetTcpBuf(int fd, fd_set *fds) {
   int result = sa_tcp_configure_connected(fd);
@@ -563,71 +554,71 @@ ANY_THREAD void SERVSTATE_setDsptime(int a) {
 static int appendWB(int fd, const char *buf, int size) {
   int capacity;
   if (fd != acfd) {
-    if (Connect[fd].wbuse + size >= WBSIZE) {
-      print("appendWB:err buffer over[%d]:%s \n", Connect[fd].wbuse + size,
-            Connect[fd].cdkey);
+    if (gConnectionList[fd].wbuse + size >= WBSIZE) {
+      print("appendWB:err buffer over[%d]:%s \n", gConnectionList[fd].wbuse + size,
+            gConnectionList[fd].cdkey);
       return -1;
     }
   } else {
-    if (Connect[fd].wbuse + size > AC_WBSIZE) {
+    if (gConnectionList[fd].wbuse + size > AC_WBSIZE) {
       return -1;
     }
   }
   capacity =
       fd == acfd ? AC_WBSIZE : WBSIZE;
-  return sa_tcp_buffer_append(Connect[fd].wb, &Connect[fd].wbuse, capacity,
+  return sa_tcp_buffer_append(gConnectionList[fd].wb, &gConnectionList[fd].wbuse, capacity,
                               buf, size);
 }
 
 static int appendRB(int fd, char *buf, int size) {
   if (fd != acfd) {
-    if (Connect[fd].rbuse + size > RBSIZE) {
+    if (gConnectionList[fd].rbuse + size > RBSIZE) {
       return -1;
     }
   } else {
     if (strlen(buf) > size) {
       print("appendRB AC buffer len err : %d/%d=\n", strlen(buf), size);
     }
-    if (Connect[fd].rbuse + size > AC_RBSIZE) {
+    if (gConnectionList[fd].rbuse + size > AC_RBSIZE) {
       printf("%s\n", buf);
       print("appendRB AC err buffer over: len:%d - AC_RBSIZE:%d \n",
-            Connect[fd].rbuse + size, AC_RBSIZE);
+            gConnectionList[fd].rbuse + size, AC_RBSIZE);
       return -1;
     }
   }
   return sa_tcp_buffer_append(
-      Connect[fd].rb, &Connect[fd].rbuse,
+      gConnectionList[fd].rb, &gConnectionList[fd].rbuse,
       fd == acfd ? AC_RBSIZE : RBSIZE,
       buf, size);
 }
 
 static int shiftWB(int fd, int len) {
-  if (Connect[fd].wbuse < len) {
+  if (gConnectionList[fd].wbuse < len) {
     print("shiftWB: err\n");
     return -1;
   }
 
-  sa_tcp_buffer_consume(Connect[fd].wb, &Connect[fd].wbuse, len);
+  sa_tcp_buffer_consume(gConnectionList[fd].wb, &gConnectionList[fd].wbuse, len);
 
-  if (Connect[fd].wbuse < 0) {
+  if (gConnectionList[fd].wbuse < 0) {
     print("shiftWB:wbuse err\n");
-    Connect[fd].wbuse = 0;
+    gConnectionList[fd].wbuse = 0;
   }
 
   return len;
 }
 
 static int shiftRB(int fd, int len) {
-  if (Connect[fd].rbuse < len) {
+  if (gConnectionList[fd].rbuse < len) {
     print("shiftRB: err\n");
     return -1;
   }
 
-  sa_tcp_buffer_consume(Connect[fd].rb, &Connect[fd].rbuse, len);
+  sa_tcp_buffer_consume(gConnectionList[fd].rb, &gConnectionList[fd].rbuse, len);
 
-  if (Connect[fd].rbuse < 0) {
+  if (gConnectionList[fd].rbuse < 0) {
     print("shiftRB:rbuse err\n");
-    Connect[fd].rbuse = 0;
+    gConnectionList[fd].rbuse = 0;
   }
 
   return len;
@@ -636,11 +627,11 @@ static int shiftRB(int fd, int len) {
 SINGLETHREAD int lsrpcClientWriteFunc(int fd, const char *buf, int size) {
   int r;
 
-  if (Connect[fd].use == FALSE) {
+  if (gConnectionList[fd].use == FALSE) {
     return FALSE;
   }
 
-  if (Connect[fd].appendwb_overflow_flag) {
+  if (gConnectionList[fd].appendwb_overflow_flag) {
     print("lsrpcClientWriteFunc: buffer overflow fd:%d\n", fd);
     return -1;
   }
@@ -649,21 +640,9 @@ SINGLETHREAD int lsrpcClientWriteFunc(int fd, const char *buf, int size) {
 
   // Nuke *1 0907: Ignore acfd from WB error
   if ((r < 0) && (fd != acfd)) {
-    Connect[fd].appendwb_overflow_flag = 1;
-#ifdef _NETLOG_
-    char cdkey[16];
-    char charname[32];
-    CONNECT_getCharname(fd, charname, 32);
-    CONNECT_getCdkey(fd, cdkey, 16);
-    char token[128];
-    sprintf(token, "appendWB错误  r=%d    Connect[ fd ].wbuse + size=%d", r,
-            Connect[fd].wbuse + size);
-    LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
-#endif
-
+    gConnectionList[fd].appendwb_overflow_flag = 1;
     CONNECT_endOne_debug(fd);
     // Nuke + 1 0901: Why close
-    //  print("closed in lsrpcClientWriteFunc");
 #ifdef _EPOLL
   } else {
     ModEpollOut(fd);
@@ -677,20 +656,20 @@ static int logRBuseErr = 0;
 SINGLETHREAD BOOL GetOneLine_fix(int fd, char *buf, int max) {
   int result;
 
-  if (Connect[fd].rbuse == 0)
+  if (gConnectionList[fd].rbuse == 0)
     return FALSE;
 
-  if (Connect[fd].check_rb_oneline_b == 0 &&
-      Connect[fd].check_rb_oneline_b == Connect[fd].rbuse) {
+  if (gConnectionList[fd].check_rb_oneline_b == 0 &&
+      gConnectionList[fd].check_rb_oneline_b == gConnectionList[fd].rbuse) {
     return FALSE;
   }
 
-  result = sa_tcp_buffer_read_line(Connect[fd].rb, &Connect[fd].rbuse, buf,
+  result = sa_tcp_buffer_read_line(gConnectionList[fd].rb, &gConnectionList[fd].rbuse, buf,
                                    max, TRUE);
   if (result > 0) {
     logRBuseErr = 0;
-    Connect[fd].check_rb_oneline_b = 0;
-    Connect[fd].check_rb_time = 0;
+    gConnectionList[fd].check_rb_oneline_b = 0;
+    gConnectionList[fd].check_rb_time = 0;
     return TRUE;
   }
 
@@ -699,142 +678,142 @@ SINGLETHREAD BOOL GetOneLine_fix(int fd, char *buf, int max) {
   }
 
   if (logRBuseErr >= 50) {
-    Connect[fd].rb[Connect[fd].rbuse] = '\n';
-    printf("rebuse err %d:%d\n", logRBuseErr, Connect[fd].rbuse);
+    gConnectionList[fd].rb[gConnectionList[fd].rbuse] = '\n';
+    printf("rebuse err %d:%d\n", logRBuseErr, gConnectionList[fd].rbuse);
     logRBuseErr = 0;
   }
 
-  if (fd == acfd && strstr(Connect[fd].rb, "ACCharLoad") != NULL &&
-      logRBuseErr >= 50) { // Connect[fd].rb
-    const size_t log_size = (size_t)Connect[fd].rbuse + 1;
+  if (fd == acfd && strstr(gConnectionList[fd].rb, "ACCharLoad") != NULL &&
+      logRBuseErr >= 50) { // gConnectionList[fd].rb
+    const size_t log_size = (size_t)gConnectionList[fd].rbuse + 1;
     char *log_buf = allocateMemory(log_size);
     if (log_buf != NULL) {
-      memcpy(log_buf, Connect[fd].rb, (size_t)Connect[fd].rbuse);
-      log_buf[Connect[fd].rbuse] = '\0';
+      memcpy(log_buf, gConnectionList[fd].rb, (size_t)gConnectionList[fd].rbuse);
+      log_buf[gConnectionList[fd].rbuse] = '\0';
       LogAcMess(fd, "RBUFFER", log_buf);
       freeMemory(log_buf);
     }
     logRBuseErr = 0;
   }
-  Connect[fd].check_rb_oneline_b = Connect[fd].rbuse;
+  gConnectionList[fd].check_rb_oneline_b = gConnectionList[fd].rbuse;
   return FALSE;
 }
 
 ANY_THREAD BOOL initConnectOne(int sockfd, struct sockaddr_in *sin, int len) {
   CONNECT_LOCK(sockfd);
-  Connect[sockfd].use = TRUE;
-  Connect[sockfd].ctype = NOTDETECTED;
-  Connect[sockfd].wbuse = Connect[sockfd].rbuse = 0;
-  Connect[sockfd].check_rb_oneline_b = 0;
-  Connect[sockfd].check_rb_time = 0;
+  gConnectionList[sockfd].use = TRUE;
+  gConnectionList[sockfd].ctype = NOTDETECTED;
+  gConnectionList[sockfd].wbuse = gConnectionList[sockfd].rbuse = 0;
+  gConnectionList[sockfd].check_rb_oneline_b = 0;
+  gConnectionList[sockfd].check_rb_time = 0;
 
-  memset(Connect[sockfd].cdkey, 0, sizeof(Connect[sockfd].cdkey));
-  memset(Connect[sockfd].passwd, 0, sizeof(Connect[sockfd].passwd));
+  memset(gConnectionList[sockfd].cdkey, 0, sizeof(gConnectionList[sockfd].cdkey));
+  memset(gConnectionList[sockfd].passwd, 0, sizeof(gConnectionList[sockfd].passwd));
 
-  Connect[sockfd].state = NULLCONNECT;
-  Connect[sockfd].nstatecount = 0;
-  memset(Connect[sockfd].charname, 0, sizeof(Connect[sockfd].charname));
-  Connect[sockfd].char_index = -1;
+  gConnectionList[sockfd].state = NULLCONNECT;
+  gConnectionList[sockfd].nstatecount = 0;
+  memset(gConnectionList[sockfd].charname, 0, sizeof(gConnectionList[sockfd].charname));
+  gConnectionList[sockfd].char_index = -1;
 
-  Connect[sockfd].CAbufsiz = 0;
-  Connect[sockfd].CDbufsiz = 0;
-  Connect[sockfd].rbuse = 0;
-  Connect[sockfd].wbuse = 0;
-  Connect[sockfd].check_rb_oneline_b = 0;
-  Connect[sockfd].check_rb_time = 0;
-  Connect[sockfd].close_request = 0; /* 濠蝇邰菲白仿弘 */
+  gConnectionList[sockfd].CAbufsiz = 0;
+  gConnectionList[sockfd].CDbufsiz = 0;
+  gConnectionList[sockfd].rbuse = 0;
+  gConnectionList[sockfd].wbuse = 0;
+  gConnectionList[sockfd].check_rb_oneline_b = 0;
+  gConnectionList[sockfd].check_rb_time = 0;
+  gConnectionList[sockfd].close_request = 0; /* 濠蝇邰菲白仿弘 */
   // Nuke 08/27 For acceleration avoidance
-  Connect[sockfd].Walktime = 0;
-  Connect[sockfd].lastWalktime = 0;
-  Connect[sockfd].Walkcount = 0;
-  Connect[sockfd].Walkspool = WALK_SPOOL;
-  Connect[sockfd].Walkrestore = WALK_RESTORE;
-  Connect[sockfd].Btime = 0;
-  Connect[sockfd].lastBtime = 0;
-  Connect[sockfd].lastlastBtime = 0;
-  Connect[sockfd].EOtime = 0;
-  Connect[sockfd].nu_decrease = 0;
+  gConnectionList[sockfd].Walktime = 0;
+  gConnectionList[sockfd].lastWalktime = 0;
+  gConnectionList[sockfd].Walkcount = 0;
+  gConnectionList[sockfd].Walkspool = WALK_SPOOL;
+  gConnectionList[sockfd].Walkrestore = WALK_RESTORE;
+  gConnectionList[sockfd].Btime = 0;
+  gConnectionList[sockfd].lastBtime = 0;
+  gConnectionList[sockfd].lastlastBtime = 0;
+  gConnectionList[sockfd].EOtime = 0;
+  gConnectionList[sockfd].nu_decrease = 0;
 #ifdef _BATTLE_TIMESPEED
-  // Connect[sockfd].DefBtime = 0;
-  Connect[sockfd].BDTime = 0;
-  Connect[sockfd].CBTime = 0;
+  // gConnectionList[sockfd].DefBtime = 0;
+  gConnectionList[sockfd].BDTime = 0;
+  gConnectionList[sockfd].CBTime = 0;
 #endif
 #ifdef _TYPE_TOXICATION
-  Connect[sockfd].toxication = 0;
+  gConnectionList[sockfd].toxication = 0;
 #endif
 #ifdef _ITEM_ADDEXP //vincent 经验提升
-  Connect[sockfd].EDTime = 0;
+  gConnectionList[sockfd].EDTime = 0;
 #endif
-  //      Connect[sockfd].BEO = 0;
-  Connect[sockfd].BEOspool = BEO_SPOOL;
-  Connect[sockfd].BEOrestore = BEO_RESTORE;
+  //      gConnectionList[sockfd].BEO = 0;
+  gConnectionList[sockfd].BEOspool = BEO_SPOOL;
+  gConnectionList[sockfd].BEOrestore = BEO_RESTORE;
   // ttom
-  Connect[sockfd].b_shut_up = FALSE;
-  Connect[sockfd].Wtime.tv_sec = 0;   //
-  Connect[sockfd].Wtime.tv_usec = 0;  //
-  Connect[sockfd].WLtime.tv_sec = 0;  //
-  Connect[sockfd].WLtime.tv_usec = 0; //
-  Connect[sockfd].b_first_warp = FALSE;
-  Connect[sockfd].state_trans = 0; // avoid the trans
-  Connect[sockfd].credit = 3;
-  Connect[sockfd].fcold = 0;
+  gConnectionList[sockfd].b_shut_up = FALSE;
+  gConnectionList[sockfd].Wtime.tv_sec = 0;   //
+  gConnectionList[sockfd].Wtime.tv_usec = 0;  //
+  gConnectionList[sockfd].WLtime.tv_sec = 0;  //
+  gConnectionList[sockfd].WLtime.tv_usec = 0; //
+  gConnectionList[sockfd].b_first_warp = FALSE;
+  gConnectionList[sockfd].state_trans = 0; // avoid the trans
+  gConnectionList[sockfd].credit = 3;
+  gConnectionList[sockfd].fcold = 0;
   // Nuke 0406: New Flow Control
-  Connect[sockfd].nu = 30;
+  gConnectionList[sockfd].nu = 30;
   // Nuke 1213: Flow Control 2
-  Connect[sockfd].packetin = 30; // if 10x10 seconds no packet, drop the line
+  gConnectionList[sockfd].packetin = 30; // if 10x10 seconds no packet, drop the line
   // Nuke 0624: Avoid Useless Connection
-  Connect[sockfd].cotime = 0;
+  gConnectionList[sockfd].cotime = 0;
   // Nuke 0626: For no enemy
-  Connect[sockfd].noEnemy = 0;
+  gConnectionList[sockfd].noEnemy = 0;
   // Arminius 7.2: Ra's amulet
-  Connect[sockfd].eqNoEnemy = 0;
+  gConnectionList[sockfd].eqNoEnemy = 0;
 #ifdef _Item_MoonAct
-  Connect[sockfd].eqRandEnemy = 0;
+  gConnectionList[sockfd].eqRandEnemy = 0;
 #endif
 #ifdef _CHIKULA_STONE
-  Connect[sockfd].chistone = 0;
+  gConnectionList[sockfd].chistone = 0;
 #endif
   // Arminius 7.31: cursed stone
-  Connect[sockfd].stayencount = 0;
+  gConnectionList[sockfd].stayencount = 0;
   // CoolFish: Init Trade 2001/4/18
-  memset(&Connect[sockfd].TradeTmp, 0, sizeof(Connect[sockfd].TradeTmp));
+  memset(&gConnectionList[sockfd].TradeTmp, 0, sizeof(gConnectionList[sockfd].TradeTmp));
 #ifdef _ITEM_PILEFORTRADE
-  Connect[sockfd].tradelist = -1;
+  gConnectionList[sockfd].tradelist = -1;
 #endif
   // Arminius 6.22 Encounter
-  Connect[sockfd].CEP = 0;
+  gConnectionList[sockfd].CEP = 0;
   // Arminius 7.12 login announce
-  Connect[sockfd].announced = 0;
-  Connect[sockfd].confirm_key = FALSE; // shan trade(DoubleCheck)
+  gConnectionList[sockfd].announced = 0;
+  gConnectionList[sockfd].confirm_key = FALSE; // shan trade(DoubleCheck)
 #ifdef _NEW_FUNC_DECRYPT
-  Connect[sockfd].newerrnum = 0;
+  gConnectionList[sockfd].newerrnum = 0;
 #endif
   if (sin != NULL)
-    memcpy(&Connect[sockfd].sin, sin, len);
-  memset(&Connect[sockfd].lastprocesstime, 0,
-         sizeof(Connect[sockfd].lastprocesstime));
-  memcpy(&Connect[sockfd].lastCAsendtime, &NowTime,
-         sizeof(Connect[sockfd].lastCAsendtime));
-  memcpy(&Connect[sockfd].lastCDsendtime, &NowTime,
-         sizeof(Connect[sockfd].lastCDsendtime));
-  memcpy(&Connect[sockfd].lastCharSaveTime, &NowTime,
-         sizeof(Connect[sockfd].lastCharSaveTime));
+    memcpy(&gConnectionList[sockfd].sin, sin, len);
+  memset(&gConnectionList[sockfd].lastprocesstime, 0,
+         sizeof(gConnectionList[sockfd].lastprocesstime));
+  memcpy(&gConnectionList[sockfd].lastCAsendtime, &NowTime,
+         sizeof(gConnectionList[sockfd].lastCAsendtime));
+  memcpy(&gConnectionList[sockfd].lastCDsendtime, &NowTime,
+         sizeof(gConnectionList[sockfd].lastCDsendtime));
+  memcpy(&gConnectionList[sockfd].lastCharSaveTime, &NowTime,
+         sizeof(gConnectionList[sockfd].lastCharSaveTime));
   // Shan Add
-  memcpy(&Connect[sockfd].lastrecvtime, &NowTime,
-         sizeof(Connect[sockfd].lastrecvtime));
-  memcpy(&Connect[sockfd].lastrecvtime_d, &NowTime,
-         sizeof(Connect[sockfd].lastrecvtime_d));
-  memcpy(&Connect[sockfd].battle_recvtime, &NowTime,
-         sizeof(Connect[sockfd].battle_recvtime));
-  memcpy(&Connect[sockfd].lastreadtime, &NowTime,
+  memcpy(&gConnectionList[sockfd].lastrecvtime, &NowTime,
+         sizeof(gConnectionList[sockfd].lastrecvtime));
+  memcpy(&gConnectionList[sockfd].lastrecvtime_d, &NowTime,
+         sizeof(gConnectionList[sockfd].lastrecvtime_d));
+  memcpy(&gConnectionList[sockfd].battle_recvtime, &NowTime,
+         sizeof(gConnectionList[sockfd].battle_recvtime));
+  memcpy(&gConnectionList[sockfd].lastreadtime, &NowTime,
          sizeof(struct timeval));
-  Connect[sockfd].lastreadtime.tv_sec -= DEBUG_ADJUSTTIME;
-  Connect[sockfd].errornum = 0;
-  Connect[sockfd].fdid = SERVSTATE_incrementFdid();
+  gConnectionList[sockfd].lastreadtime.tv_sec -= DEBUG_ADJUSTTIME;
+  gConnectionList[sockfd].errornum = 0;
+  gConnectionList[sockfd].fdid = SERVSTATE_incrementFdid();
   CONNECT_UNLOCK(sockfd);
-  Connect[sockfd].appendwb_overflow_flag = 0;
-  Connect[sockfd].connecttime = time(NULL);
-  memset(Connect[sockfd].mac, 0, sizeof(Connect[sockfd].mac));
+  gConnectionList[sockfd].appendwb_overflow_flag = 0;
+  gConnectionList[sockfd].connecttime = time(NULL);
+  memset(gConnectionList[sockfd].mac, 0, sizeof(gConnectionList[sockfd].mac));
   return TRUE;
 }
 
@@ -843,88 +822,30 @@ ANY_THREAD BOOL _CONNECT_endOne(char *file, int fromline, int sockfd, int line) 
     return TRUE;
   }
   CONNECT_LOCK_ARG2(sockfd, line);
-  if (Connect[sockfd].use == FALSE) {
+  if (gConnectionList[sockfd].use == FALSE) {
     CONNECT_UNLOCK_ARG2(sockfd, line);
-    print("Connect [%d] is not used.!!!\n", sockfd);
+    print("gConnectionList [%d] is not used.!!!\n", sockfd);
     return TRUE;
   }
-  Connect[sockfd].use = FALSE;
-  if (Connect[sockfd].ctype == CLI &&
-      CHAR_CHECKINDEX(Connect[sockfd].char_index) == TRUE) {
+  gConnectionList[sockfd].use = FALSE;
+  if (gConnectionList[sockfd].ctype == CLI &&
+      CHAR_CHECKINDEX(gConnectionList[sockfd].char_index) == TRUE) {
     CONNECT_UNLOCK_ARG2(sockfd, line);
 #ifdef _OFFLINE_SYSTEM
-    if (CHAR_getWorkInt(Connect[sockfd].char_index, CHAR_WORK_OFFLINE) != 0) {
-      CHAR_setWorkInt(Connect[sockfd].char_index, CHAR_WORKFD, -1);
+    if (CHAR_getWorkInt(gConnectionList[sockfd].char_index, CHAR_WORK_OFFLINE) != 0) {
+      CHAR_setWorkInt(gConnectionList[sockfd].char_index, CHAR_WORKFD, -1);
     } else
 #endif
-    if (!CHAR_logout(Connect[sockfd].char_index, TRUE)) {
+    if (!CHAR_logout(gConnectionList[sockfd].char_index, TRUE)) {
     }
-    print("Connect cd key=%s.\n", Connect[sockfd].cdkey);
+    print("gConnectionList cd key=%s.\n", gConnectionList[sockfd].cdkey);
     CONNECT_LOCK_ARG2(sockfd, line);
   }
-#ifdef _NO_ATTACK
-  else {
-    if (strlen(Connect[sockfd].cdkey) < 1) {
-      time_t curtime;
-      struct tm *p;
-      time(&curtime);
-      p = localtime(&curtime);
-      curtime = mktime(p);
-      if (curtime - Connect[sockfd].starttime <= getAttTime()) {
-        unsigned long tmpip = CONNECT_get_userip(sockfd);
-        unsigned long i = 0;
-        int ipa, ipb, ipc, ipd;
-        char ip[32];
-        ipa = (tmpip % 0x100);
-        tmpip = tmpip / 0x100;
-        ipb = (tmpip % 0x100);
-        tmpip = tmpip / 0x100;
-        ipc = (tmpip % 0x100);
-        tmpip = tmpip / 0x100;
-        ipd = (tmpip % 0x100);
-        sprintf(ip, "%d.%d.%d.%d", ipa, ipb, ipc, ipd);
-        for (; i < useripcount; ++i) {
-          if (userip[i] == tmpip) {
-            if (userip_count_data[i] >= getAttCnt()) {
-              Connect[sockfd].wbuse = 0;
-              Connect[sockfd].rbuse = 0;
-              Connect[sockfd].CAbufsiz = 0;
-              Connect[sockfd].CDbufsiz = 0;
-              CONNECT_UNLOCK_ARG2(sockfd, line);
-              print("Connect sockfd=%d, ip=%s \n", sockfd, ip);
-              close(sockfd);
-              userip_count_data[i] = 1;
-              useriptime[i] = curtime;
-              return TRUE;
-            }
-            if (curtime - useriptime[i] <= getAttSafeTime()) {
-              ++userip_count_data[i];
-              break;
-            } else {
-              useriptime[i] = curtime;
-              break;
-            }
-          }
-        }
-        if (strcmp(ip, getNoAttIp(0)) != 0 && strcmp(ip, getNoAttIp(1)) != 0 &&
-            strcmp(ip, getNoAttIp(2)) != 0 && strcmp(ip, getNoAttIp(3)) != 0 &&
-            strcmp(ip, getNoAttIp(4)) != 0) {
-          if (i >= useripcount && useripcount < useripnum) {
-            userip[useripcount] = tmpip;
-            userip_count_data[useripcount] = 1;
-            useriptime[useripcount] = curtime;
-            useripcount++;
-          }
-        }
-      }
-    }
-  }
-#endif
-  Connect[sockfd].char_index = -1;
-  Connect[sockfd].wbuse = 0;
-  Connect[sockfd].rbuse = 0;
-  Connect[sockfd].CAbufsiz = 0;
-  Connect[sockfd].CDbufsiz = 0;
+  gConnectionList[sockfd].char_index = -1;
+  gConnectionList[sockfd].wbuse = 0;
+  gConnectionList[sockfd].rbuse = 0;
+  gConnectionList[sockfd].CAbufsiz = 0;
+  gConnectionList[sockfd].CDbufsiz = 0;
   CONNECT_UNLOCK_ARG2(sockfd, line);
   close(sockfd);
 
@@ -932,44 +853,44 @@ ANY_THREAD BOOL _CONNECT_endOne(char *file, int fromline, int sockfd, int line) 
 }
 SINGLETHREAD BOOL initConnect(int size) {
   int i, j;
-  ConnectLen = size;
-  Connect = calloc(1, sizeof(GmsvSession) * size);
+  gConnectionListLength = size;
+  gConnectionList = calloc(1, sizeof(GmsvSession) * size);
 
-  if (Connect == NULL)
+  if (gConnectionList == NULL)
     return FALSE;
 
   for (i = 0; i < size; i++) {
-    memset(&Connect[i], 0, sizeof(GmsvSession));
-    Connect[i].char_index = -1;
-    Connect[i].rb = calloc(1, RBSIZE);
+    memset(&gConnectionList[i], 0, sizeof(GmsvSession));
+    gConnectionList[i].char_index = -1;
+    gConnectionList[i].rb = calloc(1, RBSIZE);
 
-    if (Connect[i].rb == NULL) {
+    if (gConnectionList[i].rb == NULL) {
       printEx("calloc err\n");
 
       for (j = 0; j < i; j++) {
-        free(Connect[j].rb);
-        free(Connect[j].wb);
+        free(gConnectionList[j].rb);
+        free(gConnectionList[j].wb);
       }
 
       return FALSE;
     }
 
-    memset(Connect[i].rb, 0, RBSIZE);
-    Connect[i].wb = calloc(1, WBSIZE);
+    memset(gConnectionList[i].rb, 0, RBSIZE);
+    gConnectionList[i].wb = calloc(1, WBSIZE);
 
-    if (Connect[i].wb == NULL) {
+    if (gConnectionList[i].wb == NULL) {
       printEx("calloc err\n");
 
       for (j = 0; j < i; j++) {
-        free(Connect[j].rb);
-        free(Connect[j].wb);
+        free(gConnectionList[j].rb);
+        free(gConnectionList[j].wb);
       }
 
-      free(Connect[j].rb);
+      free(gConnectionList[j].rb);
       return FALSE;
     }
 
-    memset(Connect[i].wb, 0, WBSIZE);
+    memset(gConnectionList[i].wb, 0, WBSIZE);
   }
 
   print("预约 %d 接连...分配 %.2f MB 空间...", size,
@@ -980,58 +901,48 @@ SINGLETHREAD BOOL initConnect(int size) {
 
   // ttom for the performance of gmsv
   MAX_item_use = getItemnum() * 0.98;
-
-#ifdef _NO_ATTACK
-  if (userip == 0)
-    userip = malloc(sizeof(unsigned long) * useripnum);
-  if (userip_count_data == 0)
-    userip_count_data = malloc(sizeof(unsigned long) * useripnum);
-  if (useriptime == 0)
-    useriptime = malloc(sizeof(unsigned long) * useripnum);
-#endif
   return TRUE;
 }
 BOOL CONNECT_acfdInitRB(int fd) {
   if (fd != acfd)
     return FALSE;
 
-  Connect[fd].rb = realloc(Connect[acfd].rb, AC_RBSIZE);
+  gConnectionList[fd].rb = realloc(gConnectionList[acfd].rb, AC_RBSIZE);
 
-  if (Connect[acfd].rb == NULL) {
+  if (gConnectionList[acfd].rb == NULL) {
     printEx("realloc err\n");
     return FALSE;
   }
 
-  memset(Connect[acfd].rb, 0, AC_RBSIZE);
+  memset(gConnectionList[acfd].rb, 0, AC_RBSIZE);
   return TRUE;
 }
 
 BOOL CONNECT_acfdInitWB(int fd) {
   if (fd != acfd)
     return FALSE;
-  Connect[fd].wb = realloc(Connect[acfd].wb, AC_WBSIZE);
-  if (Connect[acfd].wb == NULL) {
+  gConnectionList[fd].wb = realloc(gConnectionList[acfd].wb, AC_WBSIZE);
+  if (gConnectionList[acfd].wb == NULL) {
     printEx("realloc err\n");
     return FALSE;
   }
-  memset(Connect[acfd].wb, 0, AC_WBSIZE);
+  memset(gConnectionList[acfd].wb, 0, AC_WBSIZE);
   return TRUE;
 }
 
 ANY_THREAD void endConnect(void) {
   int i;
-  print("连接数量: %d......", ConnectLen);
-  if (Connect == NULL) return;
-  for (i = 0; i < ConnectLen; i++) {
-    int lco;
-    lco = close(i);
+  print("连接数量: %d......", gConnectionListLength);
+  if (gConnectionList == NULL) return;
+  for (i = 0; i < gConnectionListLength; i++) {
+    int lco = close(i);
     if (lco == 0) {
       CONNECT_endOne_debug(i);
     }
-    free(Connect[i].rb);
-    free(Connect[i].wb);
+    free(gConnectionList[i].rb);
+    free(gConnectionList[i].wb);
   }
-  free(Connect);
+  free(gConnectionList);
   print("所有连接已经被释放.\n");
 }
 
@@ -1053,14 +964,14 @@ ANY_THREAD BOOL CONNECT_appendCAbuf(int fd, char *data, int size) {
 #endif
   CONNECT_LOCK(fd);
   /* 为最后一个分隔符 ',' 预留空间。 */
-  if ((Connect[fd].CAbufsiz + size) >= sizeof(Connect[fd].CAbuf)) {
+  if ((gConnectionList[fd].CAbufsiz + size) >= sizeof(gConnectionList[fd].CAbuf)) {
     CONNECT_UNLOCK(fd);
     return FALSE;
   }
 
-  memcpy(Connect[fd].CAbuf + Connect[fd].CAbufsiz, data, size);
-  Connect[fd].CAbuf[Connect[fd].CAbufsiz + size] = ',';
-  Connect[fd].CAbufsiz += (size + 1);
+  memcpy(gConnectionList[fd].CAbuf + gConnectionList[fd].CAbufsiz, data, size);
+  gConnectionList[fd].CAbuf[gConnectionList[fd].CAbufsiz + size] = ',';
+  gConnectionList[fd].CAbufsiz += (size + 1);
   CONNECT_UNLOCK(fd);
 #ifdef _EPOLL
   // ModEpollOut(fd);
@@ -1073,22 +984,22 @@ void CONNECT_getPendingBufferSizes(int fd, int *write_size, int *ca_size) {
     *write_size = -1;
   if (ca_size != NULL)
     *ca_size = -1;
-  if (fd < 0 || fd >= ConnectLen)
+  if (fd < 0 || fd >= gConnectionListLength)
     return;
   CONNECT_LOCK(fd);
   if (write_size != NULL)
-    *write_size = Connect[fd].wbuse;
+    *write_size = gConnectionList[fd].wbuse;
   if (ca_size != NULL)
-    *ca_size = Connect[fd].CAbufsiz;
+    *ca_size = gConnectionList[fd].CAbufsiz;
   CONNECT_UNLOCK(fd);
 }
 
 ANY_THREAD static int CONNECT_getCAbuf(int fd, char *out, int outmax,
                                       int *outlen) {
   CONNECT_LOCK(fd);
-  if (Connect[fd].use == TRUE) {
-    int cplen = min(outmax, Connect[fd].CAbufsiz);
-    memcpy(out, Connect[fd].CAbuf, cplen);
+  if (gConnectionList[fd].use == TRUE) {
+    int cplen = min(outmax, gConnectionList[fd].CAbufsiz);
+    memcpy(out, gConnectionList[fd].CAbuf, cplen);
     *outlen = cplen;
     CONNECT_UNLOCK(fd);
     return 0;
@@ -1101,9 +1012,9 @@ ANY_THREAD static int CONNECT_getCDbuf(int fd, char *out, int outmax,
                                       int *outlen) {
   CONNECT_LOCK(fd);
 
-  if (Connect[fd].use == TRUE) {
-    int cplen = min(outmax, Connect[fd].CDbufsiz);
-    memcpy(out, Connect[fd].CDbuf, cplen);
+  if (gConnectionList[fd].use == TRUE) {
+    int cplen = min(outmax, gConnectionList[fd].CDbufsiz);
+    memcpy(out, gConnectionList[fd].CDbuf, cplen);
     *outlen = cplen;
     CONNECT_UNLOCK(fd);
     return 0;
@@ -1116,8 +1027,8 @@ ANY_THREAD static int CONNECT_getCDbuf(int fd, char *out, int outmax,
 ANY_THREAD static int CONNECT_setCAbufsiz(int fd, int len) {
   CONNECT_LOCK(fd);
 
-  if (Connect[fd].use == TRUE) {
-    Connect[fd].CAbufsiz = len;
+  if (gConnectionList[fd].use == TRUE) {
+    gConnectionList[fd].CAbufsiz = len;
     CONNECT_UNLOCK(fd);
     return 0;
   } else {
@@ -1128,8 +1039,8 @@ ANY_THREAD static int CONNECT_setCAbufsiz(int fd, int len) {
 ANY_THREAD static int CONNECT_setCDbufsiz(int fd, int len) {
   CONNECT_LOCK(fd);
 
-  if (Connect[fd].use == TRUE) {
-    Connect[fd].CDbufsiz = len;
+  if (gConnectionList[fd].use == TRUE) {
+    gConnectionList[fd].CDbufsiz = len;
     CONNECT_UNLOCK(fd);
     return 0;
   } else {
@@ -1140,42 +1051,42 @@ ANY_THREAD static int CONNECT_setCDbufsiz(int fd, int len) {
 
 ANY_THREAD static void CONNECT_setLastCAsendtime(int fd, struct timeval *t) {
   CONNECT_LOCK(fd);
-  Connect[fd].lastCAsendtime = *t;
+  gConnectionList[fd].lastCAsendtime = *t;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD static void CONNECT_getLastCAsendtime(int fd, struct timeval *t) {
   CONNECT_LOCK(fd);
-  *t = Connect[fd].lastCAsendtime;
+  *t = gConnectionList[fd].lastCAsendtime;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD static void CONNECT_setLastCDsendtime(int fd, struct timeval *t) {
   CONNECT_LOCK(fd);
-  Connect[fd].lastCDsendtime = *t;
+  gConnectionList[fd].lastCDsendtime = *t;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD static void CONNECT_getLastCDsendtime(int fd, struct timeval *t) {
   CONNECT_LOCK(fd);
-  *t = Connect[fd].lastCDsendtime;
+  *t = gConnectionList[fd].lastCDsendtime;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD int CONNECT_getUse_debug(int fd, int i) {
   int a;
-  if (0 > fd || fd >= ConnectLen) {
+  if (0 > fd || fd >= gConnectionListLength) {
     return 0;
   }
   CONNECT_LOCK_ARG2(fd, i);
-  a = Connect[fd].use;
+  a = gConnectionList[fd].use;
   CONNECT_UNLOCK_ARG2(fd, i);
   return a;
 }
 
 ANY_THREAD int CONNECT_getUse(int fd) {
   int a;
-  if (0 > fd || fd >= ConnectLen) {
+  if (0 > fd || fd >= gConnectionListLength) {
     return 0;
   }
   CONNECT_LOCK(fd);
-  a = Connect[fd].use;
+  a = gConnectionList[fd].use;
   CONNECT_UNLOCK(fd);
   return a;
 }
@@ -1183,7 +1094,7 @@ void CONNECT_setUse(int fd, int a)
 // ANY_THREAD static void CONNECT_setUse( int fd , int a)
 {
   CONNECT_LOCK(fd);
-  Connect[fd].use = a;
+  gConnectionList[fd].use = a;
   CONNECT_UNLOCK(fd);
 }
 
@@ -1191,14 +1102,14 @@ ANY_THREAD void CONNECT_checkStatecount(int a) {
   int i;
   int count = 0;
 
-  for (i = 0; i < ConnectLen; i++) {
-    if (Connect[i].use == FALSE || Connect[i].state != a)
+  for (i = 0; i < gConnectionListLength; i++) {
+    if (gConnectionList[i].use == FALSE || gConnectionList[i].state != a)
       continue;
 
-    if (Connect[i].nstatecount <= 0) {
-      Connect[i].nstatecount = (int)time(NULL) + 60;
+    if (gConnectionList[i].nstatecount <= 0) {
+      gConnectionList[i].nstatecount = (int)time(NULL) + 60;
     } else {
-      if (Connect[i].nstatecount < (int)time(NULL)) {
+      if (gConnectionList[i].nstatecount < (int)time(NULL)) {
         CONNECT_endOne_debug(i);
         count++;
       }
@@ -1208,16 +1119,16 @@ ANY_THREAD void CONNECT_checkStatecount(int a) {
   {
     memset(StateTable, 0, sizeof(StateTable));
 
-    for (i = 0; i < ConnectLen; i++)
-      if (Connect[i].use == TRUE)
-        StateTable[Connect[i].state]++;
+    for (i = 0; i < gConnectionListLength; i++)
+      if (gConnectionList[i].use == TRUE)
+        StateTable[gConnectionList[i].state]++;
   }
 }
 
 ANY_THREAD void CONNECT_setState(int fd, int a) {
   CONNECT_LOCK(fd);
-  Connect[fd].state = a;
-  Connect[fd].nstatecount = 0;
+  gConnectionList[fd].state = a;
+  gConnectionList[fd].nstatecount = 0;
 
   // Nuke start 0829: For debugging
   {
@@ -1225,11 +1136,11 @@ ANY_THREAD void CONNECT_setState(int fd, int a) {
     int i;
     memset(StateTable, 0, sizeof(StateTable));
 
-    for (i = 0; i < ConnectLen; i++) {
-      if (Connect[i].use == TRUE) {
-        if (Connect[i].state > WHILESAVEWAIT)
+    for (i = 0; i < gConnectionListLength; i++) {
+      if (gConnectionList[i].use == TRUE) {
+        if (gConnectionList[i].state > WHILESAVEWAIT)
           continue;
-        StateTable[Connect[i].state]++;
+        StateTable[gConnectionList[i].state]++;
       }
     }
 
@@ -1248,63 +1159,63 @@ ANY_THREAD void CONNECT_setState(int fd, int a) {
 ANY_THREAD int CONNECT_getState(int fd) {
   int a;
   CONNECT_LOCK(fd);
-  a = Connect[fd].state;
+  a = gConnectionList[fd].state;
   CONNECT_UNLOCK(fd);
   return a;
 }
 
 ANY_THREAD void CONNECT_setCharaindex(int fd, int a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].char_index = a;
+  gConnectionList[fd].char_index = a;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD int CONNECT_getCharaindex(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
   int a;
   CONNECT_LOCK(fd);
-  a = Connect[fd].char_index;
+  a = gConnectionList[fd].char_index;
   CONNECT_UNLOCK(fd);
   return a;
 }
 ANY_THREAD void CONNECT_getCdkey(int fd, char *out, int outlen) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  strncpysafe(out, outlen, Connect[fd].cdkey);
+  strncpysafe(out, outlen, gConnectionList[fd].cdkey);
   CONNECT_UNLOCK(fd);
 }
 
 ANY_THREAD void CONNECT_setCdkey(int fd, char *cd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  snprintf(Connect[fd].cdkey, sizeof(Connect[fd].cdkey), "%s", cd);
+  snprintf(gConnectionList[fd].cdkey, sizeof(gConnectionList[fd].cdkey), "%s", cd);
   CONNECT_UNLOCK(fd);
 }
 
 #ifdef _NEWCLISETSERVID
 ANY_THREAD void CONNECT_setServid(int fd, int a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].servid = a;
+  gConnectionList[fd].servid = a;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD int CONNECT_getServid(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
   int a;
   CONNECT_LOCK(fd);
-  a = Connect[fd].servid;
+  a = gConnectionList[fd].servid;
   CONNECT_UNLOCK(fd);
   return a;
 }
@@ -1312,266 +1223,266 @@ ANY_THREAD int CONNECT_getServid(int fd) {
 
 #ifdef _NEWCLISETMAC
 ANY_THREAD void CONNECT_getMAC(int fd, char *out, int outlen) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  strncpysafe(out, outlen, Connect[fd].mac);
+  strncpysafe(out, outlen, gConnectionList[fd].mac);
   CONNECT_UNLOCK(fd);
 }
 
 ANY_THREAD void CONNECT_setMAC(int fd, char *in) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  strncpysafe(Connect[fd].mac, sizeof(Connect[fd].mac), in);
+  strncpysafe(gConnectionList[fd].mac, sizeof(gConnectionList[fd].mac), in);
   CONNECT_UNLOCK(fd);
 }
 #endif
 
 ANY_THREAD void CONNECT_getPasswd(int fd, char *out, int outlen) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  strncpysafe(out, outlen, Connect[fd].passwd);
+  strncpysafe(out, outlen, gConnectionList[fd].passwd);
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD void CONNECT_setPasswd(int fd, char *in) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  strncpysafe(Connect[fd].passwd, sizeof(Connect[fd].passwd), in);
+  strncpysafe(gConnectionList[fd].passwd, sizeof(gConnectionList[fd].passwd), in);
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD int CONNECT_getCtype(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
   int a;
   CONNECT_LOCK(fd);
-  a = Connect[fd].ctype;
+  a = gConnectionList[fd].ctype;
   CONNECT_UNLOCK(fd);
   return a;
 }
 ANY_THREAD void CONNECT_setCtype(int fd, int a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].ctype = a;
+  gConnectionList[fd].ctype = a;
   CONNECT_UNLOCK(fd);
 }
 
 ANY_THREAD void CONNECT_getCharname(int fd, char *out, int outlen) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  strncpysafe(out, outlen, Connect[fd].charname);
+  strncpysafe(out, outlen, gConnectionList[fd].charname);
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD void CONNECT_setCharname(int fd, char *in) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  strncpysafe(Connect[fd].charname, sizeof(Connect[fd].charname), in);
+  strncpysafe(gConnectionList[fd].charname, sizeof(gConnectionList[fd].charname), in);
   CONNECT_UNLOCK(fd);
 }
 
 ANY_THREAD int CONNECT_getFdid(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
   int a;
   CONNECT_LOCK(fd);
-  a = Connect[fd].fdid;
+  a = gConnectionList[fd].fdid;
   CONNECT_UNLOCK(fd);
   return a;
 }
 ANY_THREAD void CONNECT_setDuelchar_index(int fd, int i, int a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].duelchar_index[i] = a;
+  gConnectionList[fd].duelchar_index[i] = a;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD int CONNECT_getDuelchar_index(int fd, int i) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
   int a;
   CONNECT_LOCK(fd);
-  a = Connect[fd].duelchar_index[i];
+  a = gConnectionList[fd].duelchar_index[i];
   CONNECT_UNLOCK(fd);
   return a;
 }
 ANY_THREAD void CONNECT_setBattlechar_index(int fd, int i, int a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].battlechar_index[i] = a;
+  gConnectionList[fd].battlechar_index[i] = a;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD int CONNECT_getBattlechar_index(int fd, int i) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
   int a;
   CONNECT_LOCK(fd);
-  a = Connect[fd].battlechar_index[i];
+  a = gConnectionList[fd].battlechar_index[i];
   CONNECT_UNLOCK(fd);
   return a;
 }
 ANY_THREAD void CONNECT_setJoinpartychar_index(int fd, int i, int a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].joinpartychar_index[i] = a;
+  gConnectionList[fd].joinpartychar_index[i] = a;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD int CONNECT_getJoinpartychar_index(int fd, int i) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
   int a;
   CONNECT_LOCK(fd);
 
-  a = Connect[fd].joinpartychar_index[i];
+  a = gConnectionList[fd].joinpartychar_index[i];
   CONNECT_UNLOCK(fd);
   return a;
 }
 
 // CoolFish: Trade 2001/4/18
 ANY_THREAD void CONNECT_setTradechar_index(int fd, int i, int a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].tradechar_index[i] = a;
+  gConnectionList[fd].tradechar_index[i] = a;
   CONNECT_UNLOCK(fd);
 }
 
 // Shan Begin
 ANY_THREAD void CONNECT_setLastrecvtime(int fd, struct timeval *a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].lastrecvtime = *a;
+  gConnectionList[fd].lastrecvtime = *a;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD void CONNECT_getLastrecvtime(int fd, struct timeval *a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  *a = Connect[fd].lastrecvtime;
+  *a = gConnectionList[fd].lastrecvtime;
   CONNECT_UNLOCK(fd);
 }
 
 ANY_THREAD void CONNECT_setLastrecvtime_D(int fd, struct timeval *a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].lastrecvtime_d = *a;
+  gConnectionList[fd].lastrecvtime_d = *a;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD void CONNECT_getLastrecvtime_D(int fd, struct timeval *a) {
   CONNECT_LOCK(fd);
-  *a = Connect[fd].lastrecvtime_d;
+  *a = gConnectionList[fd].lastrecvtime_d;
   CONNECT_UNLOCK(fd);
 }
 
 // 2001/12/26
 ANY_THREAD void CONNECT_SetBattleRecvTime(int fd, struct timeval *a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].battle_recvtime = *a;
+  gConnectionList[fd].battle_recvtime = *a;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD void CONNECT_GetBattleRecvTime(int fd, struct timeval *a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  *a = Connect[fd].battle_recvtime;
+  *a = gConnectionList[fd].battle_recvtime;
   CONNECT_UNLOCK(fd);
 }
 // Shan End
 
 #ifdef _ITEM_PILEFORTRADE
 ANY_THREAD void CONNECT_setTradeList(int fd, int num) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].tradelist = num;
+  gConnectionList[fd].tradelist = num;
 }
 ANY_THREAD int CONNECT_getTradeList(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
-  return Connect[fd].tradelist;
+  return gConnectionList[fd].tradelist;
 }
 #endif
 
 ANY_THREAD void CONNECT_setTradeTmp(int fd, char *a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  strncpysafe(Connect[fd].TradeTmp, sizeof(Connect[fd].TradeTmp), a);
+  strncpysafe(gConnectionList[fd].TradeTmp, sizeof(gConnectionList[fd].TradeTmp), a);
 
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD void CONNECT_getTradeTmp(int fd, char *trademsg, int trademsglen) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  strncpysafe(trademsg, trademsglen, Connect[fd].TradeTmp);
+  strncpysafe(trademsg, trademsglen, gConnectionList[fd].TradeTmp);
   CONNECT_UNLOCK(fd);
 }
 
 ANY_THREAD void CONNECT_setTradecardchar_index(int fd, int i, int a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].joinpartychar_index[i] = a;
+  gConnectionList[fd].joinpartychar_index[i] = a;
   CONNECT_UNLOCK(fd);
 }
 ANY_THREAD int CONNECT_getTradecardchar_index(int fd, int i) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
   int a;
   CONNECT_LOCK(fd);
-  a = Connect[fd].joinpartychar_index[i];
+  a = gConnectionList[fd].joinpartychar_index[i];
   CONNECT_UNLOCK(fd);
   return a;
 }
 
 ANY_THREAD void CONNECT_setCloseRequest(int fd, int count) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   CONNECT_LOCK(fd);
-  Connect[fd].close_request = count;
+  gConnectionList[fd].close_request = count;
   CONNECT_UNLOCK(fd);
 }
 
 ANY_THREAD void CAsend(int fd) {
-  char buf[sizeof(Connect[0].CAbuf)];
+  char buf[sizeof(gConnectionList[0].CAbuf)];
   int bufuse = 0;
   if (CONNECT_getCAbuf(fd, buf, sizeof(buf), &bufuse) < 0)
     return;
@@ -1590,7 +1501,7 @@ ANY_THREAD void CAcheck(void) {
 #else
   unsigned int interval_us = getCAsendinterval_ms() * 1000;
 #endif
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     struct timeval t;
     if (!CONNECT_getUse_debug(i, 1008))
       continue;
@@ -1612,13 +1523,13 @@ ANY_THREAD void CAflush(int char_index) {
 ANY_THREAD BOOL CONNECT_appendCDbuf(int fd, char *data, int size) {
   CONNECT_LOCK(fd);
 
-  if ((Connect[fd].CDbufsiz + size) >= sizeof(Connect[fd].CDbuf)) {
+  if ((gConnectionList[fd].CDbufsiz + size) >= sizeof(gConnectionList[fd].CDbuf)) {
     CONNECT_UNLOCK(fd);
     return FALSE;
   }
-  memcpy(Connect[fd].CDbuf + Connect[fd].CDbufsiz, data, size);
-  Connect[fd].CDbuf[Connect[fd].CDbufsiz + size] = ',';
-  Connect[fd].CDbufsiz += (size + 1);
+  memcpy(gConnectionList[fd].CDbuf + gConnectionList[fd].CDbufsiz, data, size);
+  gConnectionList[fd].CDbuf[gConnectionList[fd].CDbufsiz + size] = ',';
+  gConnectionList[fd].CDbufsiz += (size + 1);
   CONNECT_UNLOCK(fd);
 #ifdef _EPOLL
   // ModEpollOut(fd);
@@ -1628,7 +1539,7 @@ ANY_THREAD BOOL CONNECT_appendCDbuf(int fd, char *data, int size) {
 
 /* 发送 CDcheck 等流程累积的数据。fd 为文件描述符。 */
 ANY_THREAD void CDsend(int fd) {
-  char buf[sizeof(Connect[0].CAbuf)];
+  char buf[sizeof(gConnectionList[0].CAbuf)];
   int bufuse = 0;
   if (CONNECT_getCDbuf(fd, buf, sizeof(buf), &bufuse) < 0)
     return;
@@ -1643,7 +1554,7 @@ ANY_THREAD void CDsend(int fd) {
 ANY_THREAD void CDcheck(void) {
   int i;
   unsigned int interval_us = getCDsendinterval_ms() * 1000;
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     struct timeval t;
     if (!CONNECT_getUse_debug(i, 1082))
       continue;
@@ -1685,11 +1596,11 @@ void chardatasavecheck(void) {
       }
     }
 #else
-    for (i = 0; i < ConnectLen; i++) {
+    for (i = 0; i < gConnectionListLength; i++) {
       CONNECT_LOCK(i);
-      if (Connect[i].use == TRUE && Connect[i].state == LOGIN &&
-          NowTime.tv_sec - Connect[i].lastCharSaveTime.tv_sec > interval) {
-        Connect[i].lastCharSaveTime = NowTime;
+      if (gConnectionList[i].use == TRUE && gConnectionList[i].state == LOGIN &&
+          NowTime.tv_sec - gConnectionList[i].lastCharSaveTime.tv_sec > interval) {
+        gConnectionList[i].lastCharSaveTime = NowTime;
         CONNECT_UNLOCK(i);
         CHAR_charSaveFromConnect(CONNECT_getCharaindex(i), FALSE);
       } else {
@@ -1711,11 +1622,11 @@ void chardatasavecheck(void) {
  *  invalid FALSE(0)
  ------------------------------------------------------------*/
 ANY_THREAD INLINE int CONNECT_checkfd(int fd) {
-  if (0 > fd || fd >= ConnectLen) {
+  if (0 > fd || fd >= gConnectionListLength) {
     return FALSE;
   }
   CONNECT_LOCK(fd);
-  if (Connect[fd].use == FALSE) {
+  if (gConnectionList[fd].use == FALSE) {
     CONNECT_UNLOCK(fd);
     return FALSE;
   } else {
@@ -1726,9 +1637,9 @@ ANY_THREAD INLINE int CONNECT_checkfd(int fd) {
 
 ANY_THREAD int getfdFromCdkey(const char *cd) {
   int i;
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     CONNECT_LOCK(i);
-    if (Connect[i].use == TRUE && strcmp(Connect[i].cdkey, cd) == 0) {
+    if (gConnectionList[i].use == TRUE && strcmp(gConnectionList[i].cdkey, cd) == 0) {
       CONNECT_UNLOCK(i);
       return i;
     }
@@ -1743,17 +1654,17 @@ ANY_THREAD int getfdFromCharaIndex(int char_index) {
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)
     return -1;
   int ret = CHAR_getWorkInt(char_index, CHAR_WORKFD);
-  if (ret < 0 || ret >= ConnectLen)
+  if (ret < 0 || ret >= gConnectionListLength)
     return -1;
   return ret;
 }
 
 ANY_THREAD int getcdkeyFromCharaIndex(int char_index, char *out, int outlen) {
   int i;
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     CONNECT_LOCK(i);
-    if (Connect[i].use == TRUE && Connect[i].char_index == char_index) {
-      snprintf(out, outlen, "%s", Connect[i].cdkey);
+    if (gConnectionList[i].use == TRUE && gConnectionList[i].char_index == char_index) {
+      snprintf(out, outlen, "%s", gConnectionList[i].cdkey);
       CONNECT_UNLOCK(i);
       return 0;
     }
@@ -1764,9 +1675,9 @@ ANY_THREAD int getcdkeyFromCharaIndex(int char_index, char *out, int outlen) {
 
 ANY_THREAD int getfdFromFdid(const int fdid) {
   int i;
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     CONNECT_LOCK(i);
-    if (Connect[i].use == TRUE && Connect[i].fdid == fdid) {
+    if (gConnectionList[i].use == TRUE && gConnectionList[i].fdid == fdid) {
       CONNECT_UNLOCK(i);
       return i;
     }
@@ -1777,11 +1688,11 @@ ANY_THREAD int getfdFromFdid(const int fdid) {
 
 ANY_THREAD int getCharindexFromFdid(int fdid) {
   int i;
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     CONNECT_LOCK(i);
-    if (Connect[i].use == TRUE && Connect[i].fdid == fdid &&
-        Connect[i].char_index >= 0) {
-      const int char_index = Connect[i].char_index;
+    if (gConnectionList[i].use == TRUE && gConnectionList[i].fdid == fdid &&
+        gConnectionList[i].char_index >= 0) {
+      const int char_index = gConnectionList[i].char_index;
       CONNECT_UNLOCK(i);
       return char_index;
     }
@@ -1792,10 +1703,10 @@ ANY_THREAD int getCharindexFromFdid(int fdid) {
 
 ANY_THREAD int getFdidFromCharaIndex(int charind) {
   int i;
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     CONNECT_LOCK(i);
-    if (Connect[i].use == TRUE && Connect[i].char_index == charind) {
-      const int fdid = Connect[i].fdid;
+    if (gConnectionList[i].use == TRUE && gConnectionList[i].char_index == charind) {
+      const int fdid = gConnectionList[i].fdid;
       CONNECT_UNLOCK(i);
       return fdid;
     }
@@ -1808,7 +1719,7 @@ ANY_THREAD int getFdidFromCharaIndex(int charind) {
 ANY_THREAD BOOL CONNECT_isCLI(const int fd) {
   int a;
   CONNECT_LOCK(fd);
-  a = (Connect[fd].ctype == CLI ? TRUE : FALSE);
+  a = (gConnectionList[fd].ctype == CLI ? TRUE : FALSE);
   CONNECT_UNLOCK(fd);
   return a;
 }
@@ -1817,7 +1728,7 @@ ANY_THREAD BOOL CONNECT_isCLI(const int fd) {
 ANY_THREAD BOOL CONNECT_isAC(const int fd) {
   int a;
   CONNECT_LOCK(fd);
-  a = (Connect[fd].ctype == AC ? TRUE : FALSE);
+  a = (gConnectionList[fd].ctype == AC ? TRUE : FALSE);
   CONNECT_UNLOCK(fd);
   return a;
 }
@@ -1826,7 +1737,7 @@ ANY_THREAD BOOL CONNECT_isAC(const int fd) {
 ANY_THREAD BOOL CONNECT_isUnderLogin(const int fd) {
   int a;
   CONNECT_LOCK(fd);
-  a = (Connect[fd].state == LOGIN ? TRUE : FALSE);
+  a = (gConnectionList[fd].state == LOGIN ? TRUE : FALSE);
   CONNECT_UNLOCK(fd);
   return a;
 }
@@ -1835,7 +1746,7 @@ ANY_THREAD BOOL CONNECT_isUnderLogin(const int fd) {
 ANY_THREAD BOOL CONNECT_isWhileLogin(const int fd) {
   int a;
   CONNECT_LOCK(fd);
-  a = (Connect[fd].state == WHILELOGIN ? TRUE : FALSE);
+  a = (gConnectionList[fd].state == WHILELOGIN ? TRUE : FALSE);
   CONNECT_UNLOCK(fd);
   return a;
 }
@@ -1844,7 +1755,7 @@ ANY_THREAD BOOL CONNECT_isWhileLogin(const int fd) {
 ANY_THREAD BOOL CONNECT_isNOTLOGIN(const int fd) {
   int a;
   CONNECT_LOCK(fd);
-  a = (Connect[fd].state == NOTLOGIN ? TRUE : FALSE);
+  a = (gConnectionList[fd].state == NOTLOGIN ? TRUE : FALSE);
   CONNECT_UNLOCK(fd);
   return a;
 }
@@ -1852,7 +1763,7 @@ ANY_THREAD BOOL CONNECT_isNOTLOGIN(const int fd) {
 ANY_THREAD BOOL CONNECT_isLOGIN(const int fd) {
   int a;
   CONNECT_LOCK(fd);
-  a = (Connect[fd].state == LOGIN ? TRUE : FALSE);
+  a = (gConnectionList[fd].state == LOGIN ? TRUE : FALSE);
   CONNECT_UNLOCK(fd);
   return a;
 }
@@ -1863,7 +1774,7 @@ void closeAllConnectionandSaveData(void) {
   /* 停止接受新的连接。 */
   SERVSTATE_setCloseallsocketnum(0);
   /* 保存并关闭全部连接。 */
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     if (CONNECT_getUse_debug(i, 1413) == TRUE) {
       BOOL clilogin = FALSE;
       if (CONNECT_isAC(i))
@@ -2136,11 +2047,11 @@ void CONNECT_SysEvent_Loop(void) {
 #endif
     }
 
-    for (i = 0; i < ConnectLen; i++) {
-      if ((Connect[i].use) && (i != acfd))
+    for (i = 0; i < gConnectionListLength; i++) {
+      if ((gConnectionList[i].use) && (i != acfd))
         if (!CONNECT_getUse(i))
           continue;
-      if (!CHAR_CHECKINDEX(Connect[i].char_index))
+      if (!CHAR_CHECKINDEX(gConnectionList[i].char_index))
         continue;
       {
 #ifdef _NEW_AUTO_PK
@@ -2165,13 +2076,13 @@ void CONNECT_SysEvent_Loop(void) {
 
 #ifndef _USER_CHARLOOPS
         //here 原地遇敌
-        if (Connect[i].stayencount) {
-          if (Connect[i].BDTime < time(NULL)) {
-            if (CHAR_getWorkInt(Connect[i].char_index, CHAR_WORKBATTLEMODE) ==
+        if (gConnectionList[i].stayencount) {
+          if (gConnectionList[i].BDTime < time(NULL)) {
+            if (CHAR_getWorkInt(gConnectionList[i].char_index, CHAR_WORKBATTLEMODE) ==
                 BATTLE_CHARMODE_NONE) {
-              GmsvServer_EN_recv(i, CHAR_getInt(Connect[i].char_index, CHAR_X),
-                               CHAR_getInt(Connect[i].char_index, CHAR_Y));
-              Connect[i].BDTime = time(NULL);
+              GmsvServer_EN_recv(i, CHAR_getInt(gConnectionList[i].char_index, CHAR_X),
+                               CHAR_getInt(gConnectionList[i].char_index, CHAR_Y));
+              gConnectionList[i].BDTime = time(NULL);
             }
           }
         }
@@ -2179,18 +2090,18 @@ void CONNECT_SysEvent_Loop(void) {
 #endif
 #ifdef _CHIKULA_STONE
         if (chikulatime % 3 == 0 && getChiStone(i) > 0) { //自动补血
-          CHAR_AutoChikulaStone(Connect[i].char_index, getChiStone(i));
+          CHAR_AutoChikulaStone(gConnectionList[i].char_index, getChiStone(i));
         }
 #endif
 
         if (chikulatime % 6 == 0) { //水世界状态
 #ifdef _STATUS_WATERWORD
-          CHAR_CheckWaterStatus(Connect[i].char_index);
+          CHAR_CheckWaterStatus(gConnectionList[i].char_index);
 #endif
           // Nuke 0626: No enemy
-          if (Connect[i].noEnemy > 0) {
-            Connect[i].noEnemy--;
-            if (Connect[i].noEnemy == 0) {
+          if (gConnectionList[i].noEnemy > 0) {
+            gConnectionList[i].noEnemy--;
+            if (gConnectionList[i].noEnemy == 0) {
               CHAR_talkToCli(CONNECT_getCharaindex(i), -1, "守护消失了。",
                              CHAR_COLORWHITE);
             }
@@ -2198,30 +2109,30 @@ void CONNECT_SysEvent_Loop(void) {
         }
         //每10秒
 #ifdef _TYPE_TOXICATION //中毒
-        if (Connect[i].toxication > 0) {
-          CHAR_ComToxicationHp(Connect[i].char_index);
+        if (gConnectionList[i].toxication > 0) {
+          CHAR_ComToxicationHp(gConnectionList[i].char_index);
         }
 #endif
         // Nuke 0624 Avoid Useless Connection
-        if (Connect[i].state == NOTLOGIN) {
-          Connect[i].cotime++;
-          if (Connect[i].cotime > 30) {
+        if (gConnectionList[i].state == NOTLOGIN) {
+          gConnectionList[i].cotime++;
+          if (gConnectionList[i].cotime > 30) {
             CONNECT_endOne_debug(i);
           }
         } else {
-          Connect[i].cotime = 0;
+          gConnectionList[i].cotime = 0;
         }
-        if ((Connect[i].nu <= 22)) {
-          if (Connect[i].nu <= 0) {
-            Connect[i].nu_decrease++;
-            if (Connect[i].nu_decrease >= 30)
-              Connect[i].nu_decrease = 30;
-            if (Connect[i].nu_decrease > 22)
+        if ((gConnectionList[i].nu <= 22)) {
+          if (gConnectionList[i].nu <= 0) {
+            gConnectionList[i].nu_decrease++;
+            if (gConnectionList[i].nu_decrease >= 30)
+              gConnectionList[i].nu_decrease = 30;
+            if (gConnectionList[i].nu_decrease > 22)
               logSpeed(i);
           } else {
-            Connect[i].nu_decrease -= 1;
-            if (Connect[i].nu_decrease < 0)
-              Connect[i].nu_decrease = 0;
+            gConnectionList[i].nu_decrease -= 1;
+            if (gConnectionList[i].nu_decrease < 0)
+              gConnectionList[i].nu_decrease = 0;
           }
           GmsvServer_NU_send(i, 0);
         }
@@ -2234,14 +2145,14 @@ void CONNECT_SysEvent_Loop(void) {
 int isThereThisIP(unsigned long ip) {
   int i;
   unsigned long ipa;
-  for (i = 0; i < ConnectLen; i++) {
-    if (!Connect[i].use) {
+  for (i = 0; i < gConnectionListLength; i++) {
+    if (!gConnectionList[i].use) {
       continue;
     }
 
-    if (Connect[i].state == NOTLOGIN ||
-        Connect[i].state == WHILEDOWNLOADCHARLIST) {
-      memcpy(&ipa, &Connect[i].sin.sin_addr, 4);
+    if (gConnectionList[i].state == NOTLOGIN ||
+        gConnectionList[i].state == WHILEDOWNLOADCHARLIST) {
+      memcpy(&ipa, &gConnectionList[i].sin.sin_addr, 4);
 
       if (ipa == ip) {
         return 1;
@@ -2268,13 +2179,13 @@ static int netloop_poll_connections(const struct timeval *st,
   int i, timeout_ms = 0;
   long remain = 0;
 
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     memset(&items[i], 0, sizeof(items[i]));
     items[i].fd = -1;
-    if (gmsv_session_is_pollable(&Connect[i])) {
+    if (gmsv_session_is_pollable(&gConnectionList[i])) {
       items[i].fd = i;
       items[i].want_read = 1;
-      items[i].want_write = gmsv_session_wants_write(&Connect[i]);
+      items[i].want_write = gmsv_session_wants_write(&gConnectionList[i]);
     }
   }
 
@@ -2287,7 +2198,7 @@ static int netloop_poll_connections(const struct timeval *st,
       remain = 0;
     timeout_ms = (int)((remain + 999) / 1000);
   }
-  return sa_tcp_poll(items, ConnectLen, timeout_ms);
+  return sa_tcp_poll(items, gConnectionListLength, timeout_ms);
 }
 
 SINGLETHREAD BOOL netloop_faster(void) {
@@ -2304,7 +2215,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
   //    static unsigned int nu_time=0;
   unsigned int casend_interval_us, cdsend_interval_us;
   fd_set rfds, wfds, efds;
-  SaTcpPollItem ready[ConnectLen];
+  SaTcpPollItem ready[gConnectionListLength];
   int allowerrornum = getAllowerrornum();
   int acwritesize = getAcwriteSize();
 
@@ -2379,8 +2290,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
         }
       {
         float fs = 0.0;
-        if ((fs = ((float)Connect[acfd].rbuse / AC_RBSIZE)) > 0.6) {
-          print("andy AC rbuse: %3.2f [%4d]\n", fs, Connect[acfd].rbuse);
+        if ((fs = ((float)gConnectionList[acfd].rbuse / AC_RBSIZE)) > 0.6) {
+          print("andy AC rbuse: %3.2f [%4d]\n", fs, gConnectionList[acfd].rbuse);
           if (fs > 0.78) cono = 0;
         }
       }
@@ -2411,7 +2322,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
         close(sockfd);
       }
 #endif
-      else if (sockfd < ConnectLen) {
+      else if (sockfd < gConnectionListLength) {
         char mess[64] = "A"; // Nuke +2 Errormessage
         mess[0] = 'N'; // 2026.09.07 以后统一用新协议
         if (!from_acsv) {
@@ -2428,7 +2339,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
               char ip[32];
               char systemstr[256];
               unsigned long tmpip;
-              for (j = 12; j < ConnectLen; j++) {
+              for (j = 12; j < gConnectionListLength; j++) {
                 tmpip = CONNECT_get_userip(j);
                 if (j != acfd && j != sockfd && CONNECT_getUse(j) &&
                     CONNECT_getState(j) == NOTLOGIN) {
@@ -2477,12 +2388,12 @@ SINGLETHREAD BOOL netloop_faster(void) {
         }
       } else {
         int i;
-        for (i = 0; i < ConnectLen; i++) {
-          if (Connect[i].use == FALSE)
+        for (i = 0; i < gConnectionListLength; i++) {
+          if (gConnectionList[i].use == FALSE)
             continue;
           if (i == acfd)
             continue;
-          if (Connect[i].char_index != -1)
+          if (gConnectionList[i].char_index != -1)
             continue;
           if (!from_acsv)
             write(i, cszServerBusy, strlen(cszServerBusy) + 1);
@@ -2556,9 +2467,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
           i_counter = 0;
           item_max = ITEM_getITEM_sItemNum();
           total_item_use = ITEM_getITEM_sUseItemNum();
-          for (i = 0; i < ConnectLen; i++) {
-            if ((Connect[i].use) && (i != acfd)) {
-              if (CHAR_CHECKINDEX(Connect[i].char_index))
+          for (i = 0; i < gConnectionListLength; i++) {
+            if ((gConnectionList[i].use) && (i != acfd)) {
+              if (CHAR_CHECKINDEX(gConnectionList[i].char_index))
                 gPlayerOnline++;
             }
           }
@@ -2855,7 +2766,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
     fdremember++;
 #endif
 
-    if (fdremember == ConnectLen) {
+    if (fdremember == gConnectionListLength) {
       NETWATCH_set("connection_poll", -1, NULL);
       ret = netloop_poll_connections(&st, looptime_us, !sweep_did_work, ready);
       nettrace_poll_result(ready, ret);
@@ -2866,19 +2777,19 @@ SINGLETHREAD BOOL netloop_faster(void) {
       fdremember = 0;
     }
 
-    if (Connect[fdremember].use == FALSE)
+    if (gConnectionList[fdremember].use == FALSE)
       continue;
 
-    if (Connect[fdremember].state == WHILECLOSEALLSOCKETSSAVE)
+    if (gConnectionList[fdremember].state == WHILECLOSEALLSOCKETSSAVE)
       continue;
 
-    if (Connect[fdremember].state == NULLCONNECT) {
+    if (gConnectionList[fdremember].state == NULLCONNECT) {
       time_t new_t;
       time(&new_t);
       new_t -= initTime;
       if (new_t > 60) {
         if (fdremember != acfd) {
-          if (Connect[fdremember].connecttime + 15 < time(NULL)) {
+          if (gConnectionList[fdremember].connecttime + 15 < time(NULL)) {
 #ifdef _NETLOG_
             char cdkey[16];
             char charname[32];
@@ -2955,9 +2866,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
           continue;
         } else {
           if (fdremember != acfd) recvspeed += ret;
-          Connect[fdremember].lastreadtime = NowTime;
-          Connect[fdremember].lastreadtime.tv_sec -= DEBUG_ADJUSTTIME;
-          Connect[fdremember].packetin = 30;
+          gConnectionList[fdremember].lastreadtime = NowTime;
+          gConnectionList[fdremember].lastreadtime.tv_sec -= DEBUG_ADJUSTTIME;
+          gConnectionList[fdremember].packetin = 30;
         }
       }
     }
@@ -2983,21 +2894,21 @@ SINGLETHREAD BOOL netloop_faster(void) {
           retval = GmsvServer_ServerDispatchMessage(fdremember, rbmess);
           NETWATCH_set("netloop", -1, NULL);
           if (retval == -1) {
-            if (++Connect[fdremember].errornum > allowerrornum)
+            if (++gConnectionList[fdremember].errornum > allowerrornum)
               break;
           }
 #ifdef _NEW_FUNC_DECRYPT
           else if (retval == -2) {
-            if (++Connect[fdremember].newerrnum > getAllowerrornum2())
+            if (++gConnectionList[fdremember].newerrnum > getAllowerrornum2())
               break;
           }
 #endif
         }
       }
     }
-    if (Connect[fdremember].errornum > allowerrornum) {
+    if (gConnectionList[fdremember].errornum > allowerrornum) {
       print("用户:%s发生太多错误了，所以强制关闭\n",
-            inet_ntoa(Connect[fdremember].sin.sin_addr));
+            inet_ntoa(gConnectionList[fdremember].sin.sin_addr));
 
 #ifdef _NETLOG_
       char cdkey[16];
@@ -3006,7 +2917,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       CONNECT_getCdkey(fdremember, cdkey, 16);
       char token[128];
       sprintf(token, "用户:%s发生太多错误了，所以强制关闭\n",
-              inet_ntoa(Connect[fdremember].sin.sin_addr));
+              inet_ntoa(gConnectionList[fdremember].sin.sin_addr));
       LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
       CONNECT_endOne_debug(fdremember);
@@ -3015,9 +2926,9 @@ SINGLETHREAD BOOL netloop_faster(void) {
     }
 #ifdef _NEW_FUNC_DECRYPT
 
-    if (Connect[fdremember].newerrnum > getAllowerrornum2()) {
+    if (gConnectionList[fdremember].newerrnum > getAllowerrornum2()) {
       print("用户:%s发生太多错误了，所以(封IP)断开连接\n",
-            inet_ntoa(Connect[fdremember].sin.sin_addr));
+            inet_ntoa(gConnectionList[fdremember].sin.sin_addr));
 
 #ifdef _NETLOG_
       char cdkey[16];
@@ -3026,7 +2937,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       CONNECT_getCdkey(fdremember, cdkey, 16);
       char token[128];
       sprintf(token, "用户:%s发生太多错误了，所以(封IP)断开连接\n",
-              inet_ntoa(Connect[fdremember].sin.sin_addr));
+              inet_ntoa(gConnectionList[fdremember].sin.sin_addr));
       LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
 #endif
 
@@ -3034,39 +2945,39 @@ SINGLETHREAD BOOL netloop_faster(void) {
       continue;
     }
 #endif
-    if (Connect[fdremember].CAbufsiz > 0 &&
-        time_diff_us(et, Connect[fdremember].lastCAsendtime) >
+    if (gConnectionList[fdremember].CAbufsiz > 0 &&
+        time_diff_us(et, gConnectionList[fdremember].lastCAsendtime) >
             casend_interval_us) {
       CAsend(fdremember);
-      Connect[fdremember].lastCAsendtime = et;
+      gConnectionList[fdremember].lastCAsendtime = et;
     }
 
-    if (Connect[fdremember].CDbufsiz > 0 &&
-        time_diff_us(et, Connect[fdremember].lastCDsendtime) >
+    if (gConnectionList[fdremember].CDbufsiz > 0 &&
+        time_diff_us(et, gConnectionList[fdremember].lastCDsendtime) >
             cdsend_interval_us) {
       CDsend(fdremember);
-      Connect[fdremember].lastCDsendtime = et;
+      gConnectionList[fdremember].lastCDsendtime = et;
     }
 
-    if (Connect[fdremember].wbuse > 0) {
+    if (gConnectionList[fdremember].wbuse > 0) {
       if (sa_tcp_take_writable(&ready[fdremember])) {
-        int trace_write_before = Connect[fdremember].wbuse;
+        int trace_write_before = gConnectionList[fdremember].wbuse;
         sweep_did_work = 1;
         // Nuke start 0907: Protect gmsv
 
         if (fdremember == acfd)
         {
-          // printf("向SAAC发送内容:%s\n", Connect[fdremember].wb);
+          // printf("向SAAC发送内容:%s\n", gConnectionList[fdremember].wb);
           NETWATCH_set("tcp_write_SAAC", fdremember, NULL);
-          ret = sa_tcp_write(fdremember, Connect[fdremember].wb,
-                             (Connect[fdremember].wbuse < acwritesize)
-                                 ? Connect[fdremember].wbuse
+          ret = sa_tcp_write(fdremember, gConnectionList[fdremember].wb,
+                             (gConnectionList[fdremember].wbuse < acwritesize)
+                                 ? gConnectionList[fdremember].wbuse
                                  : acwritesize);
         } else {
           NETWATCH_set("tcp_write_client", fdremember, NULL);
-          ret = sa_tcp_write(fdremember, Connect[fdremember].wb,
-                             (Connect[fdremember].wbuse < 1024 * 64)
-                                 ? Connect[fdremember].wbuse
+          ret = sa_tcp_write(fdremember, gConnectionList[fdremember].wb,
+                             (gConnectionList[fdremember].wbuse < 1024 * 64)
+                                 ? gConnectionList[fdremember].wbuse
                                  : 1024 * 64);
           if (ret > 0)
             sendspeed += ret;
@@ -3101,8 +3012,8 @@ SINGLETHREAD BOOL netloop_faster(void) {
           shiftWB(fdremember, ret);
           if (fdremember == g_nettrace_write_fd) {
             print("[TCP_WRITE_TRACE] phase=after_shift fd=%d remaining=%d\n",
-                  fdremember, Connect[fdremember].wbuse);
-            if (Connect[fdremember].wbuse == 0)
+                  fdremember, gConnectionList[fdremember].wbuse);
+            if (gConnectionList[fdremember].wbuse == 0)
               g_nettrace_write_fd = -1;
           }
         }
@@ -3113,7 +3024,7 @@ SINGLETHREAD BOOL netloop_faster(void) {
       continue;
 
     // ttom start : because of the second have this
-    if (Connect[fdremember].close_request) {
+    if (gConnectionList[fdremember].close_request) {
       // 历史注释的原始编码已损坏，无法可靠恢复。
       //      ));
       CONNECT_endOne_debug(fdremember);
@@ -3132,13 +3043,13 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
   char buffer2[4096];
 
   strncpysafe(buffer, sizeof(buffer), "Server Status\n");
-  c_max = ConnectLen;
+  c_max = gConnectionListLength;
 
   for (i = 0; i < c_max; i++) {
     CONNECT_LOCK(i);
-    if (Connect[i].use) {
+    if (gConnectionList[i].use) {
       c_use++;
-      switch (Connect[i].ctype) {
+      switch (gConnectionList[i].ctype) {
       case NOTDETECTED:
         c_notdetect++;
         break;
@@ -3153,7 +3064,7 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
         break;
       }
 
-      if (Connect[i].char_index >= 0) {
+      if (gConnectionList[i].char_index >= 0) {
         login++;
       }
     }
@@ -3236,11 +3147,11 @@ ANY_THREAD void outputNetProcLog(int fd, int mode) {
 
 ANY_THREAD int getfdFromCdkeyWithLogin(const char *cdkey) {
   int i;
-  for (i = 0; i < ConnectLen; i++) {
+  for (i = 0; i < gConnectionListLength; i++) {
     CONNECT_LOCK(i);
-    if (Connect[i].use == TRUE
-        && Connect[i].state != NOTLOGIN // Avoid duplicated login.
-        && strcmp(Connect[i].cdkey, cdkey) == 0) {
+    if (gConnectionList[i].use == TRUE
+        && gConnectionList[i].state != NOTLOGIN // Avoid duplicated login.
+        && strcmp(gConnectionList[i].cdkey, cdkey) == 0) {
       CONNECT_UNLOCK(i);
       return i;
     }
@@ -3294,159 +3205,159 @@ void sigusr2(int i) {
 }
 
 unsigned long CONNECT_get_userip(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return 0;
   }
   unsigned long ip;
-  memcpy(&ip, &Connect[fd].sin.sin_addr, sizeof(long));
+  memcpy(&ip, &gConnectionList[fd].sin.sin_addr, sizeof(long));
   return ip;
 }
 void CONNECT_set_pass(int fd, BOOL b_ps) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].b_pass = b_ps;
+  gConnectionList[fd].b_pass = b_ps;
 }
 BOOL CONNECT_get_pass(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return 0;
   }
   BOOL B_ret;
-  B_ret = Connect[fd].b_pass;
+  B_ret = gConnectionList[fd].b_pass;
   return B_ret;
 }
 void CONNECT_set_first_warp(int fd, BOOL b_ps) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].b_first_warp = b_ps;
+  gConnectionList[fd].b_first_warp = b_ps;
 }
 BOOL CONNECT_get_first_warp(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return 0;
   }
   BOOL B_ret;
-  B_ret = Connect[fd].b_first_warp;
+  B_ret = gConnectionList[fd].b_first_warp;
   return B_ret;
 }
 void CONNECT_set_state_trans(int fd, int a) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].state_trans = a;
+  gConnectionList[fd].state_trans = a;
 }
 int CONNECT_get_state_trans(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
   int i_ret;
-  i_ret = Connect[fd].state_trans;
+  i_ret = gConnectionList[fd].state_trans;
   return i_ret;
 }
 // ttom end
 
 // Arminius 6.22 encounter
 int CONNECT_get_CEP(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
-  return Connect[fd].CEP;
+  return gConnectionList[fd].CEP;
 }
 
 void CONNECT_set_CEP(int fd, int cep) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].CEP = cep;
+  gConnectionList[fd].CEP = cep;
 }
 
 int CONNECT_get_confirm(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
-  return Connect[fd].confirm_key;
+  return gConnectionList[fd].confirm_key;
 }
 void CONNECT_set_confirm(int fd, BOOL b) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].confirm_key = b;
+  gConnectionList[fd].confirm_key = b;
 }
 
 int checkNu(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
-  Connect[fd].nu--;
-  // print("NU=%d\n",Connect[fd].nu);
-  if (Connect[fd].nu < 0)
+  gConnectionList[fd].nu--;
+  // print("NU=%d\n",gConnectionList[fd].nu);
+  if (gConnectionList[fd].nu < 0)
     return -1;
   return 0;
 }
 
 // Nuke start 0626: For no enemy function
 void setNoEnemy(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].noEnemy = 6;
+  gConnectionList[fd].noEnemy = 6;
 }
 void clearNoEnemy(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].noEnemy = 0;
+  gConnectionList[fd].noEnemy = 0;
 }
 int getNoEnemy(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return 0;
   }
-  return Connect[fd].noEnemy;
+  return gConnectionList[fd].noEnemy;
 }
 // Nuke end
 
 // Arminius 7/2: Ra's amulet
 void setEqNoenemy(int fd, int level) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].eqNoEnemy = level;
+  gConnectionList[fd].eqNoEnemy = level;
 }
 
 void clearEqNoenemy(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].eqNoEnemy = 0;
+  gConnectionList[fd].eqNoEnemy = 0;
 }
 
 int getEqNoEnemy(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return 0;
   }
-  return Connect[fd].eqNoEnemy;
+  return gConnectionList[fd].eqNoEnemy;
 }
 
 #ifdef _Item_MoonAct
 void setEqRandEnemy(int fd, int level) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].eqRandEnemy = level;
+  gConnectionList[fd].eqRandEnemy = level;
 }
 
 void clearEqRandEnemy(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].eqRandEnemy = 0;
+  gConnectionList[fd].eqRandEnemy = 0;
 }
 
 int getEqRandEnemy(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return 0;
   }
-  return Connect[fd].eqRandEnemy;
+  return gConnectionList[fd].eqRandEnemy;
 }
 
 #endif
@@ -3454,79 +3365,79 @@ int getEqRandEnemy(int fd) {
 #ifdef _CHIKULA_STONE
 //
 void setChiStone(int fd, int nums) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].chistone = nums;
+  gConnectionList[fd].chistone = nums;
 }
 //
 int getChiStone(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
-  return Connect[fd].chistone;
+  return gConnectionList[fd].chistone;
 }
 #endif
 
 // Arminius 7.31 cursed stone
 void setStayEncount(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].stayencount = 1;
+  gConnectionList[fd].stayencount = 1;
 }
 
 void clearStayEncount(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].stayencount = 0;
+  gConnectionList[fd].stayencount = 0;
 }
 
 int getStayEncount(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return 0;
   }
-  return Connect[fd].stayencount;
+  return gConnectionList[fd].stayencount;
 }
 #ifdef _BATTLE_TIMESPEED
 void CONNECT_setBDTime(int fd, int nums) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].BDTime = nums;
+  gConnectionList[fd].BDTime = nums;
 }
 
 int CONNECT_getBDTime(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
-  return Connect[fd].BDTime;
+  return gConnectionList[fd].BDTime;
 }
 #endif
 #ifdef _TYPE_TOXICATION
 void setToxication(int fd, int flg) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
-  Connect[fd].toxication = flg;
+  gConnectionList[fd].toxication = flg;
 }
 int getToxication(int fd) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return -1;
   }
-  return Connect[fd].toxication;
+  return gConnectionList[fd].toxication;
 }
 #endif
 
 #ifdef _BATTLE_TIMESPEED
 void RescueEntryBTime(int char_index, int fd, unsigned int lowTime,
                       unsigned int battletime) {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return;
   }
   int now_time = (int) time(NULL);
-  Connect[fd].CBTime = now_time;
+  gConnectionList[fd].CBTime = now_time;
 }
 
 // 2026.09.20 重新修改战斗延时的计算规则
@@ -3535,13 +3446,13 @@ BOOL CheckDefBTime(int char_index, int fd,
                    unsigned int battle_duration_time,
                    unsigned int extra_time)
 {
-  if (fd < 0 || fd >= ConnectLen) {
+  if (fd < 0 || fd >= gConnectionListLength) {
     return TRUE;
   }
   GmsvServer_NU_send(fd, 0);
   unsigned int now_time = (unsigned int)time(NULL);
   now_time += extra_time + getBattleDelayTime();
-  Connect[fd].BDTime = now_time +
+  gConnectionList[fd].BDTime = now_time +
     ((getBattleDelayTime() > 0) ? rand() % getBattleDelayTime() : 0);
   return TRUE;
 }
@@ -3551,7 +3462,7 @@ BOOL MSBUF_CHECKbuflen(int size, float defp) { return TRUE; }
 
 void saveforsaac() {
   int acwritesize = getAcwriteSize();
-  while (Connect[acfd].wbuse > 0) {
+  while (gConnectionList[acfd].wbuse > 0) {
     struct timeval tmv; /*timeval*/
     fd_set rfds, wfds, efds;
     FD_ZERO(&rfds);
@@ -3566,8 +3477,8 @@ void saveforsaac() {
 
     if (ret > 0 && FD_ISSET(acfd, &wfds)) {
       // Nuke start 0907: Protect gmsv
-      ret = write(acfd, Connect[acfd].wb,
-                  (Connect[acfd].wbuse < acwritesize) ? Connect[acfd].wbuse
+      ret = write(acfd, gConnectionList[acfd].wb,
+                  (gConnectionList[acfd].wbuse < acwritesize) ? gConnectionList[acfd].wbuse
                                                       : acwritesize);
 
       if (ret == -1 && errno != EINTR) {
@@ -3582,11 +3493,6 @@ void saveforsaac() {
         shiftWB(acfd, ret);
       }
     } else if (ret < 0 && errno != EINTR) {
-#ifdef _NETLOG_
-      char log[512];
-      sprintf(log, "saveforsaac 写入连接错误:%d %s", errno, strerror(errno));
-      LogCharOut("", "", __FILE__, __FUNCTION__, __LINE__, log);
-#endif
       CONNECT_endOne_debug(acfd);
     }
   }
@@ -3808,11 +3714,11 @@ void procAcceptEpoll() {
   int addrlen = sizeof(struct sockaddr_in);
   int sockfd;
   if ((sockfd = accept(bindedfd, (struct sockaddr *)&sin, &addrlen)) > 0) {
-    if (Connect[sockfd].use)
+    if (gConnectionList[sockfd].use)
       return;
     if (lianjielog)
-      printf("进入到了连接A    sockfd=%d   Connect[ sockfd ].use=%d\n", sockfd,
-             Connect[sockfd].use);
+      printf("进入到了连接A    sockfd=%d   gConnectionList[ sockfd ].use=%d\n", sockfd,
+             gConnectionList[sockfd].use);
     if (fcntl(sockfd, F_SETFL, O_NONBLOCK) < 0) {
       close(sockfd);
       return;
@@ -3849,8 +3755,8 @@ void procAcceptEpoll() {
       }
     }
     float fs = 0.0;
-    if ((fs = ((float)Connect[acfd].rbuse / AC_RBSIZE)) > 0.6) {
-      print("SAAC缓存区空间危险: %3.2f [%4d]\n", fs, Connect[acfd].rbuse);
+    if ((fs = ((float)gConnectionList[acfd].rbuse / AC_RBSIZE)) > 0.6) {
+      print("SAAC缓存区空间危险: %3.2f [%4d]\n", fs, gConnectionList[acfd].rbuse);
       if (fs > 0.78)
         cono = 0;
     }
@@ -3859,7 +3765,7 @@ void procAcceptEpoll() {
       write(sockfd, mess, strlen(mess) + 1);
       close(sockfd);
       return;
-    } else if (sockfd < ConnectLen) {
+    } else if (sockfd < gConnectionListLength) {
       if (lianjielog)
         printf("成功连接了A    sockfd=%d\n", sockfd);
       char mess[2] = {};
@@ -3867,19 +3773,19 @@ void procAcceptEpoll() {
       send(sockfd, mess, strlen(mess) + 1, 0);
       initConnectOne(sockfd, &sin, addrlen);
       if (lianjielog)
-        printf("成功连接了B    sockfd=%d     %d\n", sockfd, Connect[sockfd].use);
+        printf("成功连接了B    sockfd=%d     %d\n", sockfd, gConnectionList[sockfd].use);
       AddEpoll(sockfd);
       return;
     } else {
       int i;
-      for (i = 0; i < ConnectLen; i++) {
-        if (Connect[i].use == FALSE)
+      for (i = 0; i < gConnectionListLength; i++) {
+        if (gConnectionList[i].use == FALSE)
           continue;
         if (i == acfd)
           continue;
         if (i == bindedfd)
           continue;
-        if (Connect[i].char_index != -1)
+        if (gConnectionList[i].char_index != -1)
           continue;
         char mess[64] = "E伺服器繁忙，请稍候再试。";
         write(i, mess, strlen(mess) + 1);
@@ -3935,9 +3841,9 @@ BOOL procRecvEpoll(int sockfd) {
     return FALSE;
   }
   CONNECT_RecvUNLOCK(sockfd);
-  Connect[sockfd].lastreadtime = NowTime;
-  Connect[sockfd].packetin = 30;
-  Connect[sockfd].lastreadtime.tv_sec = 0;
+  gConnectionList[sockfd].lastreadtime = NowTime;
+  gConnectionList[sockfd].packetin = 30;
+  gConnectionList[sockfd].lastreadtime.tv_sec = 0;
   insertRecvPlayDataLastList(&EpollSendpNode[0], sockfd);
   return TRUE;
 }
@@ -3954,17 +3860,17 @@ void procSendEpoll(int id) {
     if (sockfd != -1) {
       if (CONNECT_getUse(sockfd)) {
         int nwrite;
-        if (Connect[sockfd].wbuse > 0) {
+        if (gConnectionList[sockfd].wbuse > 0) {
           CONNECT_LOCK(sockfd);
           if (sockfd == acfd) {
-            nwrite = write(sockfd, Connect[sockfd].wb,
-                           (Connect[sockfd].wbuse < acwritesize)
-                               ? Connect[sockfd].wbuse
+            nwrite = write(sockfd, gConnectionList[sockfd].wb,
+                           (gConnectionList[sockfd].wbuse < acwritesize)
+                               ? gConnectionList[sockfd].wbuse
                                : acwritesize);
           } else {
-            nwrite = write(sockfd, Connect[sockfd].wb,
-                           (Connect[sockfd].wbuse < 1024 * 64)
-                               ? Connect[sockfd].wbuse
+            nwrite = write(sockfd, gConnectionList[sockfd].wb,
+                           (gConnectionList[sockfd].wbuse < 1024 * 64)
+                               ? gConnectionList[sockfd].wbuse
                                : 1024 * 64);
           }
           if (nwrite == -1) {
@@ -3974,7 +3880,7 @@ void procSendEpoll(int id) {
             shiftWB(sockfd, nwrite);
           CONNECT_UNLOCK(sockfd);
         }
-        if (Connect[sockfd].wbuse > 0)
+        if (gConnectionList[sockfd].wbuse > 0)
           ModEpollOut(sockfd);
         else
           ModEpollIn(sockfd);
@@ -4011,19 +3917,19 @@ void procSelectEpoll() {
         } else if (eventsEpoll[n].events & EPOLLOUT) { //发送消息
           int sockfd = eventsEpoll[n].data.fd;
           if (CONNECT_getUse(sockfd)) {
-            if (Connect[sockfd].CAbufsiz > 0 &&
-                time_diff_us(et, Connect[sockfd].lastCAsendtime) >
+            if (gConnectionList[sockfd].CAbufsiz > 0 &&
+                time_diff_us(et, gConnectionList[sockfd].lastCAsendtime) >
                     casend_interval_us) {
               CAsend(sockfd);
-              Connect[sockfd].lastCAsendtime = et;
+              gConnectionList[sockfd].lastCAsendtime = et;
             }
-            if (Connect[sockfd].CDbufsiz > 0 &&
-                time_diff_us(et, Connect[sockfd].lastCDsendtime) >
+            if (gConnectionList[sockfd].CDbufsiz > 0 &&
+                time_diff_us(et, gConnectionList[sockfd].lastCDsendtime) >
                     cdsend_interval_us) {
               CDsend(sockfd);
-              Connect[sockfd].lastCDsendtime = et;
+              gConnectionList[sockfd].lastCDsendtime = et;
             }
-            if (Connect[sockfd].wbuse > 0)
+            if (gConnectionList[sockfd].wbuse > 0)
               SendPlayDataAddList(sockfd);
             else
               ModEpollIn(sockfd);
@@ -4036,7 +3942,7 @@ void procSelectEpoll() {
         if (eventsEpoll[n].data.fd == acfd)
           continue;
         else if (eventsEpoll[n].data.fd > -1) {
-          if (Connect[eventsEpoll[n].data.fd].close_request) {
+          if (gConnectionList[eventsEpoll[n].data.fd].close_request) {
             CONNECT_endOne_debug(eventsEpoll[n].data.fd);
           }
         }

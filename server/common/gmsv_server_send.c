@@ -2725,28 +2725,9 @@ void GmsvServer_UpShopData_send(int client_fd, char *data, char *md5, int id) {
   int ret = select(client_fd + 1, &rfds, &wfds, &efds, &tmv);
   if (ret > 0 && FD_ISSET(client_fd, &wfds)) {
     ret = send(client_fd, compr, comprLen + 55, 0);
-    if (ret == -1 && errno != EINTR) {
-#ifdef _NETLOG_
-      char cdkey[16];
-      char charname[32];
-      CONNECT_getCharname(CONNECT_getCharaindex(client_fd), charname, 32);
-      CONNECT_getCdkey(CONNECT_getCharaindex(client_fd), cdkey, 16);
-      char token[128];
-      sprintf(token, "商城 send T人 ret=%d  errno=%s", ret, strerror(errno));
-      LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
-#endif
+    if (ret == -1 && errno != EINTR)
       CONNECT_endOne_debug(client_fd);
-    }
   } else if (ret < 0 && errno != EINTR) {
-#ifdef _NETLOG_
-    char cdkey[16];
-    char charname[32];
-    CONNECT_getCharname(CONNECT_getCharaindex(client_fd), charname, 32);
-    CONNECT_getCdkey(CONNECT_getCharaindex(client_fd), cdkey, 16);
-    char token[128];
-    sprintf(token, "商城 select T人 ret=%d  errno=%s", ret, strerror(errno));
-    LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__, token);
-#endif
     CONNECT_endOne_debug(client_fd);
   }
 }

@@ -58,10 +58,10 @@ int epoll_bind(unsigned short port) {
 
 int epoll_init() {
 	if (!(events = (struct epoll_event*) malloc(
-			ConnectLen * sizeof(struct epoll_event)))) {
+			gConnectionListLength * sizeof(struct epoll_event)))) {
 		return -1;
 	}
-	if ((epoll_fd = epoll_create(ConnectLen)) < 0) {
+	if ((epoll_fd = epoll_create(gConnectionListLength)) < 0) {
 		return -1;
 	}
 	return 0;
@@ -163,7 +163,7 @@ void PacketWrap_Thread(int state) {
 	printf("Thread %d Start\n", state);
 	while (1) {
 		int i;
-		for (i = state; i < ConnectLen; i += _EPOLL_POOL_COUNT) {
+		for (i = state; i < gConnectionListLength; i += _EPOLL_POOL_COUNT) {
 			Dispatch_read_buffer(i, state);
 			usleep(1000);
 		}
@@ -186,7 +186,7 @@ void EpollLoop_Thread() {
 	//LOOP
 	while (1) {
 		int n, i;
-		n = epoll_wait(epoll_fd, events, ConnectLen, -1);
+		n = epoll_wait(epoll_fd, events, gConnectionListLength, -1);
 		for (i = 0; i < n; i++) {
 			if ((events[i].events & EPOLLERR)
 					|| (events[i].events & EPOLLHUP)) {

@@ -405,14 +405,6 @@ typedef struct tagServerConfig {
   unsigned int maxmergelevel;
 #endif
 
-#ifdef _NO_ATTACK
-  int atttime;
-  int attsafetime;
-  int attcnt;
-  int latetime;
-  int attdmetime;
-  int attdmecnt;
-#endif
   char noattip[5][18];
 #ifdef _NO_FULLPLAYER_ATT
   int nofullplayer;
@@ -988,14 +980,6 @@ ReadConf gReadConf[] = {
 #ifdef _MAX_MERGE_LEVEL
     {"MAXMERGELEVEL", NULL, 0, (void *)&gServerConfig.maxmergelevel, INT},
 #endif
-#ifdef _NO_ATTACK
-    {"ATTTIME", NULL, 0, (void *)&gServerConfig.atttime, INT},
-    {"ATTSAFETIME", NULL, 0, (void *)&gServerConfig.attsafetime, INT},
-    {"ATTCNT", NULL, 0, (void *)&gServerConfig.attcnt, INT},
-    {"LATETIME", NULL, 0, (void *)&gServerConfig.latetime, INT},
-    {"ATTDMETIME", NULL, 0, (void *)&gServerConfig.attdmetime, INT},
-    {"ATTDMECNT", NULL, 0, (void *)&gServerConfig.attdmecnt, INT},
-#endif
     {"NOATTIP1", gServerConfig.noattip[0], sizeof(gServerConfig.noattip[0]),
      NULL, 0},
     {"NOATTIP2", gServerConfig.noattip[1], sizeof(gServerConfig.noattip[1]),
@@ -1055,10 +1039,9 @@ ReadConf gReadConf[] = {
 };
 
 // Arminius 7.12 login announce
-char announcetext[8192];
 void AnnounceToPlayer(int char_index) {
   char *qtr;
-  char *ptr = announcetext;
+  char *ptr = gAnnounceText;
   while ((qtr = strstr(ptr, "\n")) != NULL) {
     qtr[0] = '\0';
     CHAR_talkToCli(char_index, -1, ptr, CHAR_COLORYELLOW);
@@ -1080,25 +1063,25 @@ void AnnounceToPlayerWN(int fd) {
 
   sprintf(token, "您最后离线时间 %d年%d月%d日 %d:%d:%d\n\n%s", p->tm_year + 1900,
           p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec,
-          announcetext);
+          gAnnounceText);
   GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_LOGINMESSAGE, WINDOW_BUTTONTYPE_OK,
                      -1, -1, makeEscapeString(token, buf, sizeof(buf)));
 #else
   GmsvServer_WN_send(fd, WINDOW_MESSAGETYPE_LOGINMESSAGE, WINDOW_BUTTONTYPE_OK,
-                     -1, -1, makeEscapeString(announcetext, buf, sizeof(buf)));
+                     -1, -1, makeEscapeString(gAnnounceText, buf, sizeof(buf)));
 #endif
 }
 
 void LoadAnnounce(void) {
   FILE *f;
-
-  memset(announcetext, 0, sizeof(announcetext));
+  memset(gAnnounceText, 0, sizeof(gAnnounceText));
   if ((f = fopen("./announce.txt", "r")) != NULL) {
-    fread(announcetext, sizeof(announcetext), 1, f);
-    announcetext[sizeof(announcetext) - 1] = '\0';
+    fread(gAnnounceText, sizeof(gAnnounceText), 1, f);
+    gAnnounceText[sizeof(gAnnounceText) - 1] = '\0';
     fclose(f);
   }
 }
+
 #ifdef _PET_TALKPRO
 PTALK pettalktext[PETTALK_MAXID];
 
@@ -2827,14 +2810,6 @@ unsigned int getNoTransItem(void) { return gServerConfig.notransitem; }
 #endif
 #ifdef _MAX_MERGE_LEVEL
 unsigned int getMaxMergeLevel(void) { return gServerConfig.maxmergelevel; }
-#endif
-#ifdef _NO_ATTACK
-int getAttTime(void) { return gServerConfig.atttime; }
-int getAttSafeTime(void) { return gServerConfig.attsafetime; }
-int getAttCnt(void) { return gServerConfig.attcnt; }
-int getLateTime(void) { return gServerConfig.latetime; }
-int getAttDmeTime(void) { return gServerConfig.attdmetime; }
-int getAttDmeCnt(void) { return gServerConfig.attdmecnt; }
 #endif
 char *getNoAttIp(int num) {
   if (num < 0)

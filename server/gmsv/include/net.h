@@ -63,7 +63,7 @@ EXTERN int nfds;
 EXTERN int bindedfd;
 EXTERN int acfd;
 EXTERN int svfd;
-EXTERN int ConnectLen;
+EXTERN int gConnectionListLength;
 EXTERN char szForbiddenLogin[256];
 #undef EXTERN
 

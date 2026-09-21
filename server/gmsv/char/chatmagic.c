@@ -2559,16 +2559,7 @@ void CHAR_CHAT_DEBUG_kickall(int char_index, char *message) {
       }
     } else
 #endif
-    {
-#ifdef _NETLOG_
-      char charname[32];
-      CONNECT_getCharname(CHAR_getWorkInt(i, CHAR_WORKFD), charname, 32);
-      CONNECT_getCdkey(CHAR_getWorkInt(i, CHAR_WORKFD), cdkey, 16);
-      LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
-                 "CHAR_CHAT_DEBUG_kickall函数处理");
-#endif
       CONNECT_setCloseRequest(getfdFromCharaIndex(i), 1);
-    }
   }
 }
 
@@ -5850,7 +5841,7 @@ void CHAR_CHAT_NoFullPlayer(int char_index, char *message) {
   char ip[32];
   char systemstr[256];
   unsigned long tmpip;
-  for (j = 12; j < ConnectLen; j++) {
+  for (j = 12; j < gConnectionListLength; j++) {
     tmpip = CONNECT_get_userip(j);
     if (j != acfd) {
       ipa = (tmpip % 0x100);

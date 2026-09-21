@@ -53,11 +53,11 @@ void SaacClient_ACGmsvDownRequest_recv(int saac_fd, int min) {
 void SaacClient_ACServerLogin_recv(int saac_fd, char *result, char *data) {
   {
     if (strcmp(result, SUCCESSFUL) != 0) {
-      print("Connect SAAC FAILED. result: %s, data: %s\n", result, data);
+      print("gConnectionList SAAC FAILED. result: %s, data: %s\n", result, data);
       shutdownProgram();
       exit(1);
     }
-    print("Connect SAAC SUCCEED. result: %s, data: %s\n", result, data);
+    print("gConnectionList SAAC SUCCEED. result: %s, data: %s\n", result, data);
     time(&initTime);
 
     print("StoneAge version: Origin.\n");
@@ -923,15 +923,6 @@ void SaacClient_ACKick_recv(int saac_fd, int act, char *data, int retfd) {
 #endif
           {
             CHAR_talkToCli(i, -1, "因重复登陆而掉线!", CHAR_COLORYELLOW);
-
-#ifdef _NETLOG_
-            char cdkey[16];
-            char charname[32];
-            CONNECT_getCharname(CHAR_getWorkInt(i, CHAR_WORKFD), charname, 32);
-            CONNECT_getCdkey(CHAR_getWorkInt(i, CHAR_WORKFD), cdkey, 16);
-            LogCharOut(charname, cdkey, __FILE__, __FUNCTION__, __LINE__,
-                       "封包异常而断线");
-#endif
             CONNECT_setCloseRequest(getfdFromCharaIndex(i), 1);
           }
         }
