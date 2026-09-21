@@ -242,7 +242,7 @@ void NPC_WarpWarpCharacter( int warpnpcindex, int char_index )
 
 		  int of=CHAR_getInt(char_index, CHAR_FLOOR);
 		  int fd=CHAR_getWorkInt( char_index, CHAR_WORKFD);
-		  int eqen=getEqNoenemy(fd);
+		  int eqen=getEqNoEnemy(fd);
 	  		if (eqen<200) {
 			  if (eqen>=120) {
 				if ((ff==100)||(ff==200)||(ff==300)||(ff==400)||(ff==500)) {

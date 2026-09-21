@@ -4,12 +4,12 @@
 #include "common.h"
 
 typedef enum {
-  OBJTYPE_NOUSE,         /* 空, 还没使用 */
-  OBJTYPE_CHARA,         /* 描述一个玩家 */
-  OBJTYPE_ITEM,          /* 描述一个物品 */
-  OBJTYPE_GOLD,          /* 描述一个金币 */
+  OBJTYPE_NOUSE, /* 空, 还没使用 */
+  OBJTYPE_CHARA, /* 描述一个玩家 */
+  OBJTYPE_ITEM,  /* 描述一个物品 */
+  OBJTYPE_GOLD,  /* 描述一个金币 */
 #ifdef __MAP_WARP_POINT
-  OBJTYPE_WARPPOINT,     /* 描述一个传送点 */
+  OBJTYPE_WARPPOINT, /* 描述一个传送点 */
 #endif
   OBJTYPE_NUM
 } OBJTYPE;
@@ -68,9 +68,6 @@ INLINE int OBJECT_getTime(int index);
 #endif
 
 int searchObjectFromCharaIndex(int index);
-#ifdef _MO_LNS_MAPSUOXU
-INLINE int get_mappointindex(int fl, int x, int y);
-#endif
 #endif
 
 /*__OBJECT_H__*/

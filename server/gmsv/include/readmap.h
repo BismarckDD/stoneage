@@ -161,10 +161,5 @@ int MAP_getMapNum();
 int MAP_getfloorId(int index);
 BOOL MAP_IsMapFile( char* filename );
 BOOL MAP_readMapOne( char* filename );
-#ifdef _MO_LNS_MAPSUOXU
-BOOL MAP_SetExWarp(int mapid , int fl, int x, int y, int type);
-BOOL MAP_DelMap(int mapid );
-int MAP_makenew( int mapid ,char* map_name);
-#endif
-#endif  /*__MAP_H__*/
 
+#endif  /*__MAP_H__*/

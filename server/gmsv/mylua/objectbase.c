@@ -20,7 +20,7 @@ static int check (lua_State *L) {
   return 1;
 }
 
-static int getType (lua_State *L) {
+static int GetType (lua_State *L) {
   const int index = luaL_checkint(L, 1);
 	lua_pushinteger(L, OBJECT_getType(index));
   return 1;
@@ -111,7 +111,7 @@ static int DelObjectOne (lua_State *L) {
 
 static const luaL_Reg objectlib[] = {
 	{"check", 					check},
-  {"getType", 				getType},
+  {"GetType", 				GetType},
   {"setType", 				setType},
   {"getFloor", 				getFloor},
   {"setFloor", 				setFloor},

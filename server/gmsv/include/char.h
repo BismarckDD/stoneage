@@ -98,11 +98,6 @@ void CHAR_walk_start(int index, int x, int y, char *dir, BOOL mapsendmode);
 void CHAR_walk_init(int fd, int x, int y, char *direction, BOOL mapsendmode);
 
 CHAR_WALKRET CHAR_walk(int index, int dir, int mode);
-#ifdef _MO_LNS_NLGSUOXU
-CHAR_WALKRET CHAR_walk_jjc(int index, int floor, int ox, int oy, int dir);
-CHAR_WALKRET CHAR_walk_jc(int char_index, int of, int ox, int oy,
-                          int dir); // 检查前方障碍
-#endif
 char *CHAR_makeOptionString(Char *ch);
 char *CHAR_makeStatusString(int index, char *category);
 void CHAR_LoginBesideSetWorkInt(int char_index, int clifd);

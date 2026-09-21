@@ -14,31 +14,6 @@
 #include "util.h"
 
 
-#ifdef _MO_LNS_CHARSUOXU
-int NPC_Lua_Game_FMPOINT_GetData(lua_State *lua) {
-  CheckEx(lua, 2);
-  CheckIndexNull(lua, 1);
-  int GA_Index = (int)lua_tointeger(lua, 1);
-  int GA_Flg = (int)lua_tointeger(lua, 2);
-  if (GA_Flg >= 0)
-  {
-    if (GA_Flg < LUA_DATALINE1)
-    {
-      GA_Flg -= LUA_DATALINE0;
-      char *GA_RetInt = FM_getManorData(GA_Index, GA_Flg);
-      LRetInt(lua, atoi(GA_RetInt));
-    } else if (GA_Flg < LUA_DATALINE2)
-    {
-      GA_Flg -= LUA_DATALINE1;
-      char *GA_RetPoint = FM_getManorData(GA_Index, GA_Flg);
-      LRetMsg(lua, GA_RetPoint);
-    } else
-      LRetErrNull(lua, "传入的标志是错误的。");
-  }
-  LRetErrNull(lua, "传入的索引是无效的。");
-}
-#endif
-
 int NPC_Lua_Game_FMPOINT_ACSetFMPoint(lua_State *lua)
 
 {

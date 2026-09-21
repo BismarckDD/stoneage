@@ -86,11 +86,6 @@ int lsrpcClientWriteFunc(int fd, const char *buf, int size);
 char *GetOneLine(int fd);
 BOOL initConnectOne(int sockfd, struct sockaddr_in *sin, int len);
 
-#ifdef _MO_LNS_NLSUOXU
-void SetTimerLua(void);
-BOOL DelTimer_net(int ID);
-#endif
-
 /* CA: Character Action, CD: Character Data */
 void CAcheck(void);
 void CAflush(int char_index);
@@ -241,17 +236,17 @@ void CONNECT_getTradeTmp(int fd, char *trademsg, int trademsglen);
 int checkNu(int fd);
 
 // Arminius 7.2 Ra's amulet
-void setNoenemy(int fd);
-void clearNoenemy(int fd);
-int getNoenemy(int fd);
+void setNoEnemy(int fd);
+void clearNoEnemy(int fd);
+int getNoEnemy(int fd);
 void setEqNoenemy(int fd, int level);
 void clearEqNoenemy(int fd);
-int getEqNoenemy(int fd);
+int getEqNoEnemy(int fd);
 
 #ifdef _Item_MoonAct
-void setEqRandenemy(int fd, int level);
-void clearEqRandenemy(int fd);
-int getEqRandenemy(int fd);
+void setEqRandEnemy(int fd, int level);
+void clearEqRandEnemy(int fd);
+int getEqRandEnemy(int fd);
 #endif
 
 #ifdef _CHIKULA_STONE

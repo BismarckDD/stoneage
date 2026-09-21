@@ -126,7 +126,7 @@ static CHAR_ChatMagicTable CHAR_cmtbl[] = {
 #ifdef _SendTo
     {"sendto", CHAR_CHAT_DEBUG_Sendto, TRUE, 0, 1, "帐号"},
 #endif
-    {"noenemy", CHAR_CHAT_DEBUG_noenemy, TRUE, 0, 2, "on/off"},
+    {"no_enemy", CHAR_CHAT_DEBUG_NoEnemy, TRUE, 0, 2, "on/off"},
     {"watchevent", CHAR_CHAT_DEBUG_watchevent, TRUE, 0, 2, "无"},
 #ifdef _SEND_EFFECT // WON ADD AC送下雪、下雨等特效
     {"sendeffect", CHAR_CHAT_DEBUG_sendeffect, TRUE, 0, 2, ""},

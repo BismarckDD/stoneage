@@ -2728,14 +2728,13 @@ void CHAR_CHAT_DEBUG_send(int char_index, char *message) {
   }
 }
 // ttom end
-void CHAR_CHAT_DEBUG_noenemy(int char_index, char *message) {
-  char msgbuf[256];
+void CHAR_CHAT_DEBUG_NoEnemy(int char_index, char *message) {
   BOOL flag = isstring1or0(message);
   int fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
   setEqNoenemy(fd, flag == TRUE ? 200 : 0);
-  snprintf(msgbuf, sizeof(msgbuf), "不遇敌模式%s。",
+  snprintf(token, sizeof(token), "不遇敌模式%s。",
            (flag == TRUE) ? "开启" : "关闭");
-  CHAR_talkToCli(char_index, -1, msgbuf, CHAR_COLORWHITE);
+  CHAR_talkToCli(char_index, -1, token, CHAR_COLORWHITE);
 }
 
 // Arminius 7.12 login announce

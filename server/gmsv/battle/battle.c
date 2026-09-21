@@ -10217,20 +10217,15 @@ BOOL CHECK_PET_RELIFE(int battle_index, int petindex) {
 
 #ifdef _OTHER_MAGICSTAUTS
 void BATTLE_MagicStatusSeq(int char_index) {
-  int cnt, i, bid, battle_index;
-
-  battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
-  bid = BATTLE_Index2No(battle_index, char_index);
-
+  int cnt, i;
+  int battle_index = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEINDEX);
+  int bid = BATTLE_Index2No(battle_index, char_index);
   for (i = 1; i < MAXSTATUSTYPE; i++) {
     if ((cnt = CHAR_getWorkInt(char_index, MagicTbl[i])) <= 0)
       continue;
     CHAR_setWorkInt(char_index, MagicTbl[i], --cnt);
     if (cnt <= 0) {
-      // char szBuffer[256];
       CHAR_setWorkInt(char_index, MagicTbl[i], 0);
-      //			sprintf( szBuffer, "Bm|%X|%X|", bid, 0 );
-      //			BATTLESTR_ADD( szBuffer );
       continue;
     }
   }

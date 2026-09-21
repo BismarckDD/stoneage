@@ -213,8 +213,4 @@ void JoinMemberIndex(int char_index, int fmindexi);
 int channelMember[FAMILY_MAXNUM][FAMILY_MAXCHANNEL][FAMILY_MAXMEMBER];
 int familyMemberIndex[FAMILY_MAXNUM][FAMILY_MAXMEMBER];
 
-#ifdef _MO_LNS_CHARSUOXU
-int Char_GetFm(int id, int x);
-char *FM_getManorData(int ManorId, int Flg);
-#endif
 #endif

@@ -23,7 +23,7 @@ int	MAGIC_ResAndDef( int char_index, int toindex, int marray, int mp );
 int	MAGIC_MagicStatusChange( int char_index, int toindex, int marray, int mp );
 #endif
 #ifdef _ATTACK_MAGIC
-int     MAGIC_AttMagic( int char_index , int toindex , int marray , int mp );
+int MAGIC_AttMagic( int char_index , int toindex , int marray , int mp );
 #endif
 #ifdef _ITEM_METAMO
 int MAGIC_Metamo( int char_index, int toindex,int marray, int mp );

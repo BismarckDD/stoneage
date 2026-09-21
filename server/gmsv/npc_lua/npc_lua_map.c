@@ -204,66 +204,6 @@ int NPC_Lua_Map_CheckIndex(lua_State *lua) // 检测某地图号地图是否存�
   LRetBool(lua, tm_ret);
 }
 
-#ifdef _MO_LNS_MAPSUOXU
-
-int NPC_Lua_Map_MakeNewMap(lua_State *lua) // 制造一个副本地图，并返回新地图号
-{
-  CheckEx2(lua, 1, 2);
-  CheckIndexNull(lua, 1);
-  int TM_Top = lua_gettop(lua);
-  int map = (int)lua_tointeger(lua, 1);
-  char *name = "";
-  if (TM_Top == 2) {
-    CheckIndexNull(lua, 2);
-    name = lua_tostring(lua, 2);
-  }
-  int TM_Ret = MAP_makenew(map, name);
-  LRetInt(lua, TM_Ret);
-}
-
-int NPC_Lua_Map_DelNewMap(lua_State *lua) // 删除一个副本地图
-{
-  CheckEx(lua, 1);
-  CheckIndexNull(lua, 1);
-  int map = (int)lua_tointeger(lua, 1);
-  BOOL TM_Ret = MAP_DelMap(map);
-  LRetBool(lua, TM_Ret);
-}
-
-int NPC_Lua_Map_SetExWarp(lua_State *lua) // 设置一个地图的退出传送点
-{
-  CheckEx(lua, 5);
-  CheckIndexNull(lua, 1);
-  int map = (int)lua_tointeger(lua, 1);
-  int exfl = (int)lua_tointeger(lua, 2);
-  int exx = (int)lua_tointeger(lua, 3);
-  int exy = (int)lua_tointeger(lua, 4);
-  int type = (int)lua_tointeger(lua, 4); // 地图类型
-  BOOL TM_Ret = MAP_SetExWarp(map, exfl, exx, exy, type);
-  LRetBool(lua, TM_Ret);
-}
-
-int NPC_Lua_Map_SetMapPoint(
-    lua_State *lua) // 设置一个地图传送点 返回一个传送点索引
-{
-  CheckEx(lua, 1);
-  CheckIndexNull(lua, 1);
-  char *mappoint = lua_tostring(lua, 1);
-  int TM_Ret = SetMapPoint(mappoint);
-  LRetInt(lua, TM_Ret);
-}
-
-int NPC_Lua_Map_DelMapPoint(lua_State *lua) // 删除一个传送点
-{
-  CheckEx(lua, 1);
-  CheckIndexNull(lua, 1);
-  int ps = (int)lua_tointeger(lua, 1);
-  BOOL TM_Ret = DelMapPoint(ps);
-  LRetBool(lua, TM_Ret);
-}
-
-#endif //
-
 int NPC_Lua_Map_getFloorName(lua_State *lua) // 返回一个地图名
 {
   CheckEx(lua, 1);
@@ -272,16 +212,3 @@ int NPC_Lua_Map_getFloorName(lua_State *lua) // 返回一个地图名
   char *map_name = MAP_getFloorName(map_id);
   LRetMsg(lua, map_name);
 }
-
-/*
-int NPC_Lua_Map_Upmap(lua_State *lua) //更新地图
-{
-  CheckEx(lua, 3);
-  CheckIndexNull(lua, 1);
-  int TM_Index = (int)lua_tointeger(lua, 1);
-  int formatmap = (int)lua_tointeger(lua, 2);
-  int tomap = (int)lua_tointeger(lua, 3);
-  GmsvServer_Upmap_send(TM_Index,formatmap,tomap);
-  LRetBool(lua, TRUE);
-}
-*/

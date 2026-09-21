@@ -394,9 +394,6 @@ typedef struct tagServerConfig {
 #ifdef _ITEM_LUA
   char itemluafile[256];
 #endif
-#ifdef _MO_LNS_NLSUOXU
-  int mapstart;
-#endif
 #ifdef _ROOKIE_ITEM
   unsigned int rookieitem[5];
 #endif
@@ -2817,87 +2814,6 @@ BOOL ITEM_LuaInit(const char *_FileName) {
 
 #ifdef _ITEM_LUA
 const char *getitemluafile(void) { return gServerConfig.itemluafile; }
-#endif
-#ifdef _MO_LNS_NLSUOXU
-int GetConfigLineType(char *TM_ConfigName) {
-  int i;
-  for (i = 0; i < arraysizeof(gReadConf); i++) {
-    if (strcmp(gReadConf[i].name, TM_ConfigName) == 0)
-      break;
-  }
-  if (i == arraysizeof(gReadConf))
-    return -1;
-  switch (gReadConf[i].valuetype) {
-  case CHAR:
-    return 0;
-    break;
-  case SHORT:
-    return 1;
-    break;
-  case INT:
-    return 2;
-    break;
-  case DOUBLE:
-    return 3;
-    break;
-  }
-}
-
-char *GetConfigLineVal(char *TM_ConfigName) {
-  const char *filename = getConfigFilename();
-  FILE *f = NULL;
-  char linebuf[256];
-  int linenum = 0;
-  char realopenfilename[256];
-  char secondToken[256];
-  char hostname[128];
-
-  if (f == NULL) {
-    f = fopen(filename, "r");
-    if (f == NULL) {
-      print("Can't open %s\n", filename);
-      return FALSE;
-    }
-  }
-  while (fgets(linebuf, sizeof(linebuf), f)) {
-    char firstToken[256];
-    int i;
-    int ret;
-    linenum++;
-    deleteWhiteSpace(linebuf); /* remove whitespace    */
-    if (linebuf[0] == '#')
-      continue; /* comment */
-    if (linebuf[0] == '\n')
-      continue;     /* none    */
-    chomp(linebuf); /* remove tail newline  */
-    ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
-                                      sizeof(firstToken));
-    if (ret == FALSE) {
-      print("Find error at %s in line %d. Ignore\n", filename, linenum);
-      continue;
-    }
-    if (strcmp(firstToken, TM_ConfigName) != 0)
-      continue;
-    for (i = 0; i < arraysizeof(gReadConf); i++) {
-      if (strcmp(gReadConf[i].name, firstToken) == 0) {
-        ret = getStringFromIndexWithDelim(linebuf, "=", 2, secondToken,
-                                          sizeof(secondToken));
-        if (ret == FALSE) {
-          print("Find error at %s in line %d. Ignore", filename, linenum);
-          break;
-        }
-        return secondToken;
-        break;
-      }
-    }
-    break;
-  }
-  fclose(f);
-  lastConfig();
-  return NULL;
-}
-
-int getCopymapstartingID(void) { return gServerConfig.mapstart; }
 #endif
 #ifdef _ROOKIE_ITEM
 unsigned int getRookieItem(int index) {

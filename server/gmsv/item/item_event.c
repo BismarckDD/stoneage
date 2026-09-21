@@ -2152,7 +2152,7 @@ void ITEM_useSkup(int char_index, int toindex, int haveitem_index) {
   CHAR_DelItem(char_index, haveitem_index);
 }
 // Nuke end
-extern void setNoenemy(int);
+extern void setNoEnemy(int);
 // Nuke start 0626: 龙王的祝福可以使得玩家不遇敌.
 void ITEM_useNoenemy(int char_index, int toindex, int haveitem_index) {
   int item_index, fd;
@@ -2160,7 +2160,7 @@ void ITEM_useNoenemy(int char_index, int toindex, int haveitem_index) {
   if (!ITEM_CHECKINDEX(item_index))
     return;
   fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
-  setNoenemy(fd);
+  setNoEnemy(fd);
   CHAR_talkToCli(char_index, -1, "你感受到周边的杀气消失了。", CHAR_COLORWHITE);
   CHAR_DelItem(char_index, haveitem_index);
 }
@@ -2214,11 +2214,9 @@ void ITEM_equipNoenemy(int char_index, int item_index) {
 void ITEM_randEnemyEquipOne(int char_index, int toindex, int haveitem_index) {
   int item_index, RandNum = 0;
   char buf[256];
-
   item_index = CHAR_getItemIndex(char_index, haveitem_index);
   if (!ITEM_CHECKINDEX(item_index))
     return;
-
   if (ITEM_getArgument(ITEM_getChar(item_index, ITEM_ARGUMENT), "rand", buf,
                        sizeof(buf)) == FALSE) {
     return;
@@ -2226,7 +2224,7 @@ void ITEM_randEnemyEquipOne(int char_index, int toindex, int haveitem_index) {
 
   if ((RandNum = atoi(buf)) > 0) {
     int fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
-    setEqRandenemy(fd, RandNum);
+    setEqRandEnemy(fd, RandNum);
     CHAR_talkToCli(char_index, -1, "遇敌率降低了。", CHAR_COLORWHITE);
     sprintf(buf, "道具 %s消失了。", ITEM_getChar(item_index, ITEM_NAME));
     CHAR_talkToCli(char_index, -1, buf, CHAR_COLORYELLOW);
@@ -2250,7 +2248,7 @@ void ITEM_randEnemyEquip(int char_index, int item_index) {
   RandNum = atoi(buf);
   fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
   if (RandNum > 0) {
-    setEqRandenemy(fd, RandNum);
+    setEqRandEnemy(fd, RandNum);
     CHAR_talkToCli(char_index, -1, "遇敌率降低了。", CHAR_COLORWHITE);
     return;
   }
@@ -2263,10 +2261,10 @@ void ITEM_RerandEnemyEquip(int char_index, int item_index) {
     return;
 
   fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
-  RandNum = getEqRandenemy(fd);
+  RandNum = getEqRandEnemy(fd);
 
   if (RandNum > 0) {
-    clearEqRandenemy(fd);
+    clearEqRandEnemy(fd);
     CHAR_talkToCli(char_index, -1, "遇敌率回复。", CHAR_COLORWHITE);
     return;
   }
@@ -2495,7 +2493,7 @@ void ITEM_ResuitEquip(int char_index, int item_index) {
 
 void ITEM_remNoenemy(int char_index, int item_index) {
   int fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
-  int el = getEqNoenemy(fd);
+  int el = getEqNoEnemy(fd);
   int fl = CHAR_getInt(char_index, CHAR_FLOOR);
 
   if (ITEM_CHECKINDEX(item_index) == FALSE)
@@ -3489,14 +3487,9 @@ void ITEM_Constitution(int char_index, int toindex, int haveitem_index) {
 typedef struct tagNewRideCode {
   char arg[31];
   int Code;
-} tagNewRideCode;
-void ITEM_useLearnRideCode(int char_index, int toindex,
-                           int haveitem_index) { // CHAR_LOWRIDEPETS
-  int item_index, i;
-  char buf1[256];
-  char *itemarg = NULL;
-  int ridetrans;
-  static tagNewRideCode NewRides[] = {
+} NewRideCode;
+
+ static NewRideCode sNewRideCodeList[] = {
       {"RIDE_PET0", RIDE_PET0},   {"RIDE_PET1", RIDE_PET1},
       {"RIDE_PET2", RIDE_PET2},   {"RIDE_PET3", RIDE_PET3},
       {"RIDE_PET4", RIDE_PET4},   {"RIDE_PET5", RIDE_PET5},
@@ -3534,38 +3527,40 @@ void ITEM_useLearnRideCode(int char_index, int toindex,
 #endif
   };
 
-  item_index = CHAR_getItemIndex(char_index, haveitem_index);
+void ITEM_useLearnRideCode(int char_index, int toindex,
+                           int haveitem_index) { // CHAR_LOWRIDEPETS
+  char token[256];
+  char buf[256];
+  int ridetrans, learn_code, i;
+  int item_index = CHAR_getItemIndex(char_index, haveitem_index);
   if (!ITEM_CHECKINDEX(item_index))
     return;
-  itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
-  if (itemarg == "\0")
+  char *item_arg = ITEM_getChar(item_index, ITEM_ARGUMENT);
+  if (item_arg == "\0")
     return;
 
-  if (getStringFromIndexWithDelim(itemarg, "|", 3, buf1, sizeof(buf1)) == FALSE)
+  if (getStringFromIndexWithDelim(item_arg, "|", 3, buf, sizeof(buf)) == FALSE)
     ridetrans = 0;
   else
-    ridetrans = atoi(buf1);
-  if (getStringFromIndexWithDelim(itemarg, "|", 1, buf1, sizeof(buf1)) == FALSE)
+    ridetrans = atoi(buf);
+  if (getStringFromIndexWithDelim(item_arg, "|", 1, buf, sizeof(buf)) == FALSE)
     return;
   for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-    if (!strcmp(NewRides[i].arg, buf1)) {
-      int LRCode;
+    if (!strcmp(sNewRideCodeList[i].arg, buf)) {
       if (CHAR_getInt(char_index, CHAR_TRANSMIGRATION) < ridetrans) {
-        char token[256];
-        if (getStringFromIndexWithDelim(itemarg, "|", 2, buf1, sizeof(buf1)) !=
+        if (getStringFromIndexWithDelim(item_arg, "|", 2, buf, sizeof(buf)) !=
             FALSE) {
-          sprintf(token, "必须%d转人以上才能学习骑%s。", ridetrans, buf1);
+          sprintf(token, "必须%d转人以上才能学习骑%s。", ridetrans, buf);
           CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
           return;
         }
       }
-      LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
-      LRCode = LRCode | NewRides[i].Code;
-      CHAR_setInt(char_index, CHAR_LOWRIDEPETS, LRCode);
-      if (getStringFromIndexWithDelim(itemarg, "|", 2, buf1, sizeof(buf1)) !=
+      learn_code = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
+      learn_code = learn_code | sNewRideCodeList[i].Code;
+      CHAR_setInt(char_index, CHAR_LOWRIDEPETS, learn_code);
+      if (getStringFromIndexWithDelim(item_arg, "|", 2, buf, sizeof(buf)) !=
           FALSE) {
-        char token[256];
-        sprintf(token, "学习了新的骑宠 (%s)。", buf1);
+        sprintf(token, "学习了新的骑宠 (%s)。", buf);
         CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
         CHAR_DelItem(char_index, haveitem_index);
         CHAR_sendStatusString(char_index, "x");

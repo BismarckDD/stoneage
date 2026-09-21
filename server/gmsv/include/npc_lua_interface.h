@@ -113,11 +113,6 @@ void NPC_Lua_ItemDieReLifeCallBack(int _playindex, int _item_index, int _haveite
 
 void NPC_Lua_BattleWinCallBack(int _battleindex, int _createindex);
 void NPC_Lua_BattleEndCallBack(int _battleindex);
-#ifdef _MO_LNS_MYSQLSUOXU
-void NPC_Lua_SQLPushCallBack(char* _result,char* _filename,char* _function,int _npcindex,int _playerindex, char* _msg);
-void NPC_Lua_SQLPushAdvCallBack(int luaresult,int luaflg,int luaerrnono,char* luaerrstr,int luafileCount,int rowCount,int rowAt,char* row,char* _filename,char* _function,int npcindex,int char_index,char* msg);
-#endif
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 #endif //#ifndef __NPC_LUA_INTERFACE__
 #ifdef _CHARSIGNDAY_
 void NPC_Lua_CharSignDay_Recv(char* function,int char_index);

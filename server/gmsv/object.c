@@ -410,16 +410,3 @@ BOOL restoreObjects(char *dirname) {
   return TRUE;
 }
 #endif
-#ifdef _MO_LNS_MAPSUOXU
-INLINE int get_mappointindex(int fl, int x, int y) {
-  int i;
-  for (i = 0; i < objnum; i++) {
-    if (obj[i].type == OBJTYPE_WARPPOINT)
-      if (obj[i].floor == fl)
-        if (obj[i].x == x)
-          if (obj[i].y == y)
-            return i;
-  }
-  return -1;
-}
-#endif

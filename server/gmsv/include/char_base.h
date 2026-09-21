@@ -2225,13 +2225,6 @@ typedef enum {
 } ANGEL_MISSIONFLAG;
 #endif
 
-#ifdef _MO_LNS_CHARSUOXU
-int CHAR_getEmptyItemBoxNum(int char_index);
-int CHAR_getEmptyPetBoxNum(int char_index);
-int CHAR_getPlayerPetNum(int char_index, int petid);
-int CHAR_getPlayerItemNum(int char_index, int itemid, BOOL IsContainEquip,
-                          BOOL IsContainPile);
-#endif
 int CHAR_CheckLearnCode(int charindex, int ridno);
 #ifdef _NEW_TITLE
 void CHAR_SetNewTitleUse(int char_index, int id);

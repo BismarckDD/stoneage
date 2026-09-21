@@ -1579,47 +1579,6 @@ const char *NPC_Lua_popstring(int _ArgNum)
   return lua_tostring(M_Script_Lua, _ArgNum);
 }
 
-#ifdef _MO_LNS_NLSUOXU
-
-const char *NPC_Lua_CallFunc(const char *_FuncName, char *_RetBuff, size_t _n,
-                             int index)
-
-{
-
-  const char *TM_Ret = NULL;
-
-  if (M_Script_Lua == NULL)
-
-  {
-
-    strcpy_s(_RetBuff, _n, "M_Script_Lua Null!");
-
-    return _RetBuff;
-  }
-
-  lua_getglobal(M_Script_Lua, _FuncName);
-
-  if (lua_type(M_Script_Lua, -1) != LUA_TFUNCTION)
-
-  {
-
-    strcpy_s(_RetBuff, _n, "无法执行指定函数。");
-
-    return _RetBuff;
-  }
-
-  lua_pushinteger(M_Script_Lua, (lua_Integer)index);
-
-  lua_pcall(M_Script_Lua, 1, 1, 0);
-
-  strcpy_s(_RetBuff, _n, lua_tostring(M_Script_Lua, -1));
-
-  lua_pop(M_Script_Lua, 1);
-
-  return _RetBuff;
-}
-
-#else
 
 const char *NPC_Lua_CallFunc(const char *_FuncName, char *_RetBuff, size_t _n)
 
@@ -1655,8 +1614,6 @@ const char *NPC_Lua_CallFunc(const char *_FuncName, char *_RetBuff, size_t _n)
 
   return _RetBuff;
 }
-
-#endif
 
 void NPC_Lua_BattleEndCallBack(int _battleindex)
 
@@ -3625,79 +3582,40 @@ int NPC_Lua_CreateVsEnemy(lua_State *_NLL, int _CharaIndex, int _NpcIndex,
   if (CHAR_getWorkInt(_CharaIndex, CHAR_WORKANGELMODE) == TRUE)
     return -3;
 #endif
-
   if (CHAR_getWorkInt(_CharaIndex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
-
   {
-
     CHAR_talkToCli(_CharaIndex, -1, "二重遭遇。", CHAR_COLORYELLOW);
-
     return -4;
   }
-
   // 获取一个战斗索引
-
   TM_BattleIndex = BATTLE_CreateBattle();
-
   if (TM_BattleIndex < 0)
-
-  {
-
     return -5;
-  }
-
   // 获取玩家的地图领域-用于战斗背景的显示
-
   TM_FieldNO = NPC_Lua_getBattleFieldNo
-
       (
-
           CHAR_getInt(_CharaIndex, CHAR_FLOOR),
-
           CHAR_getInt(_CharaIndex, CHAR_X),
-
           CHAR_getInt(_CharaIndex, CHAR_Y)
-
       );
-
   if (TM_FieldNO > BATTLE_MAP_MAX || TM_FieldNO < 0)
-
   {
-
     TM_FieldNO = RAND(0, BATTLE_MAP_MAX);
   }
-
   BattleArray[TM_BattleIndex].Side[0].type = BATTLE_S_TYPE_PLAYER;
-
   BattleArray[TM_BattleIndex].Side[1].type = BATTLE_S_TYPE_ENEMY;
-
   BattleArray[TM_BattleIndex].leaderindex = _CharaIndex;
-
   if (_Flg == 0)
-
-  {
-
     BattleArray[TM_BattleIndex].type = BATTLE_TYPE_P_vs_E;
-
-  } else
-
-  {
-
+  else
     BattleArray[TM_BattleIndex].type = BATTLE_TYPE_BOSS_BATTLE;
-  }
 
   BattleArray[TM_BattleIndex].createindex = _NpcIndex;
-
   BattleArray[TM_BattleIndex].field_no = TM_FieldNO;
-
   BattleArray[TM_BattleIndex].Side[0].flg &= ~BSIDE_FLG_HELP_OK;
-
   if (_ARLen <= 0 || _CreateEnemy == NULL)
-
   {
-
     TM_Ret = -6;
-
     goto BATTLE_CreateVsEnemy_End;
   }
 
@@ -4304,306 +4222,7 @@ int NPC_Lua_getBattleFieldNo(int _Floor, int _X, int _Y)
   return iRet;
 }
 
-#ifdef _MO_LNS_NLGSUOXU
-
-int NPC_PetUp(int char_index, int lv, int petindex)
-
-{
-
-  int i = 0;
-
-  if (!CHAR_CHECKINDEX(petindex))
-    return -1;
-
-  for (i = 0; i < CHAR_MAXPETHAVE; i++)
-
-  {
-
-    if (CHAR_getCharPet(char_index, i) == petindex)
-      break;
-  }
-
-  if (i != CHAR_MAXPETHAVE)
-
-  {
-
-    if (CHAR_CHECKINDEX(petindex) == TRUE)
-
-    {
-
-      CHAR_setMaxExpFromLevel(petindex, CHAR_getInt(petindex, CHAR_LV));
-    }
-
-    if (lv > 0)
-
-    {
-
-      int k = 0;
-
-      for (k = CHAR_getInt(petindex, CHAR_LV); k < lv; k++)
-
-      { // 升级
-
-        // CHAR_PetLevelUp( petindex,1);
-
-        CHAR_PetLevelUp(petindex);
-
-        CHAR_PetAddVariableAi(petindex, AI_FIX_PETLEVELUP);
-
-        CHAR_setInt(petindex, CHAR_LV, k + 1);
-      }
-    }
-
-    CHAR_complianceParameter(petindex);
-
-    {
-
-      char msgbuf[64];
-
-      snprintf(msgbuf, sizeof(msgbuf), "K%d", i);
-
-      CHAR_sendStatusString(char_index, msgbuf);
-
-      snprintf(msgbuf, sizeof(msgbuf), "W%d", i);
-
-      CHAR_sendStatusString(char_index, msgbuf);
-
-#ifdef _PET_SKILL2
-
-      snprintf(msgbuf, sizeof(msgbuf), "Q%d", i);
-
-      CHAR_sendStatusString(char_index, msgbuf);
-
-#endif
-    }
-
-    LogPet
-
-        (
-
-            CHAR_getChar(char_index, CHAR_NAME),
-
-            CHAR_getChar(char_index, CHAR_CDKEY),
-
-            CHAR_getChar(petindex, CHAR_NAME),
-
-            CHAR_getInt(petindex, CHAR_LV),
-
-            "PetUp",
-
-            CHAR_getInt(char_index, CHAR_FLOOR),
-
-            CHAR_getInt(char_index, CHAR_X),
-
-            CHAR_getInt(char_index, CHAR_Y),
-
-            CHAR_getChar(petindex, CHAR_UNIQUECODE)
-
-        );
-
-    return petindex;
-
-  } else
-
-    return -2;
-}
-
-#ifdef _CHAR_PROFESSION
-
-int NPC_AddSk(int char_index, int skindex, int sklv)
-
-{
-
-  char skk[64];
-
-  if (!CHAR_CHECKINDEX(char_index))
-    return -1;
-
-  sprintf(skk, "%d %d", skindex, sklv);
-
-  CHAR_CHAT_DEBUG_addsk(char_index, skk);
-
-  return 1;
-}
-
-int NPC_SetZy(int char_index, int zyin)
-
-{
-
-  char skk[64];
-  if (!CHAR_CHECKINDEX(char_index))
-    return -1;
-  sprintf(skk, "1 0 %d", zyin);
-  CHAR_CHAT_DEBUG_show_profession(char_index, skk);
-  return 1;
-}
-
-#endif
-
-#endif
-
 #endif // #ifdef _JZ_NEWSCRIPT_LUA
-
-#ifdef _MO_LNS_MYSQLSUOXU
-
-void NPC_Lua_SQLPushAdvCallBack(int luaresult, int luaflg, int luaerrno,
-                                char *luaerrstr, int luafieldCount,
-                                int rowCount, int rowAt, char *row,
-                                char *filepath, char *function, int npcindex,
-                                int char_index, char *msg)
-
-{
-
-  if (M_Script_Lua == NULL)
-
-  {
-
-    print("M_Script_Lua Null!");
-
-    return;
-  }
-
-  if (strcmp(filepath, "") != 0 || filepath[0] != '\0') {
-
-    if (NPC_Lua_DoFile(filepath) != 0)
-
-    {
-
-      print("SQL处理脚本加载失败 Lua Err :(%s)[%s]\n",
-            lua_tostring(M_Script_Lua, -1), function);
-
-      lua_pop(M_Script_Lua, 1);
-
-      return;
-    }
-  }
-
-  int TM_Ret = 0;
-
-  lua_getglobal(M_Script_Lua, (const char *)function);
-
-  if (lua_type(M_Script_Lua, -1) != LUA_TFUNCTION)
-
-  {
-
-    print("无法执行指定函数 NPC_Lua_SQLPushAdvCallBack\n");
-
-    return;
-  }
-
-  lua_pushinteger(M_Script_Lua, (lua_Integer)luaresult);
-
-  lua_pushinteger(M_Script_Lua, (lua_Integer)luaflg);
-
-  lua_pushinteger(M_Script_Lua, (lua_Integer)luaerrno);
-
-  lua_pushstring(M_Script_Lua, luaerrstr);
-
-  lua_pushinteger(M_Script_Lua, (lua_Integer)luafieldCount);
-
-  lua_pushinteger(M_Script_Lua, (lua_Integer)rowCount);
-
-  lua_pushinteger(M_Script_Lua, (lua_Integer)rowAt);
-
-  int i;
-
-  char buf[128] = "";
-
-  if (luaflg != 4) { // flg==4时 只释放结果集，不需要放入参数结果的数组了。
-
-    lua_newtable(M_Script_Lua);
-
-    for (i = 0; i < luafieldCount; i++)
-
-    {
-
-      lua_pushnumber(M_Script_Lua, i + 1);
-
-      if (getStringFromIndexWithDelim(row, ";", i + 1, buf, sizeof(buf)) ==
-          FALSE)
-        break;
-
-      lua_pushstring(M_Script_Lua, buf);
-
-      lua_rawset(M_Script_Lua, -3);
-    }
-
-  } else {
-
-    lua_pushstring(M_Script_Lua, row);
-  }
-
-  lua_pushinteger(M_Script_Lua, (lua_Integer)npcindex);
-
-  lua_pushinteger(M_Script_Lua, (lua_Integer)char_index);
-
-  lua_pushstring(M_Script_Lua, msg);
-
-  TM_Ret = lua_pcall(M_Script_Lua, 11, 0, 0);
-
-  if (TM_Ret != 0)
-
-  {
-
-    print("NPC_Lua_SQLPushAdvCallBack Lua Err :%d(%s)\n", TM_Ret,
-          lua_tostring(M_Script_Lua, -1));
-
-    lua_pop(M_Script_Lua, 1);
-
-    return;
-  }
-}
-
-void NPC_Lua_SQLPushCallBack(char *_result, char *_filename, char *_function,
-                             int _npcindex, int _playerindex, char *_msg)
-
-{
-
-  if (M_Script_Lua == NULL)
-
-  {
-
-    print("M_Script_Lua Null!");
-
-    return;
-  }
-
-  if (NPC_Lua_DoFile(_filename) != 0)
-
-  {
-
-    CHAR_talkToCli(_playerindex, -1,
-                   "SQL处理脚本加载失败，原因:", CHAR_COLORRED);
-
-    CHAR_talkToCli(_playerindex, -1, NPC_Lua_popstring(-1), CHAR_COLORRED);
-
-  } 
-  else
-  {
-    int TM_Ret = 0;
-    lua_getglobal(M_Script_Lua, (const char *)_function);
-    lua_pushstring(M_Script_Lua, _result);
-    lua_pushinteger(M_Script_Lua, (lua_Integer)_playerindex);
-    lua_pushinteger(M_Script_Lua, (lua_Integer)_npcindex);
-    lua_pushstring(M_Script_Lua, _msg);
-    TM_Ret = lua_pcall(M_Script_Lua, 4, 0, 0);
-
-    if (TM_Ret != 0)
-
-    {
-
-      // 失败-输出错误信息
-
-      print("NPC_Lua_SQLPushCallBack Lua Err :%d(%s)\n", TM_Ret,
-            lua_tostring(M_Script_Lua, -1));
-      // 出栈
-      lua_pop(M_Script_Lua, 1);
-      return;
-    }
-  }
-}
-
-#endif
 
 #ifdef _CHARSIGNDAY_
 

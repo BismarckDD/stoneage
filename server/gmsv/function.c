@@ -256,7 +256,6 @@ static CorrespondStringAndFunctionTable correspondStringAndFunctionTable[] = {
 
 #ifdef _Item_MoonAct
     {{"ITEM_randEnemyEquipOne"}, ITEM_randEnemyEquipOne, 0},
-
     {{"ITEM_randEnemyEquip"}, ITEM_randEnemyEquip, 0},
     {{"ITEM_RerandEnemyEquip"}, ITEM_RerandEnemyEquip, 0},
 #endif

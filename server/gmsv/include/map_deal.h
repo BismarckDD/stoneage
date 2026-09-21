@@ -8,9 +8,5 @@ void MAP_postovered(int index);
 BOOL MAP_sendArroundCharNeedFD(int fd, int char_index);
 BOOL MAP_sendArroundChar(int char_index);
 
-#ifdef _MO_LNS_NLGSUOXU
-int QuBiao(const int map_id);
-#endif
-
 #endif  // __MAP_DEAL_H__
 

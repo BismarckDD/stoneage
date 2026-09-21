@@ -49,7 +49,7 @@ void CHAR_CHAT_DEBUG_effect(int char_index, char *message);
 void CHAR_CHAT_DEBUG_jail(int charindex, char *message);      // ttom 01/11/2001
 void CHAR_CHAT_DEBUG_shutupall(int charindex, char *message); // ttom 02/01/2001
 void CHAR_CHAT_DEBUG_send(int charindex, char *message);      // ttom 02/01/2001
-void CHAR_CHAT_DEBUG_noenemy(int char_index, char *message);
+void CHAR_CHAT_DEBUG_NoEnemy(int char_index, char *message);
 void CHAR_CHAT_DEBUG_loginannounce(
     int char_index, char *message); // Arminius 7.12 login announce
 void CHAR_CHAT_DEBUG_deletepet(int char_index, char *message);  // Robin 0720

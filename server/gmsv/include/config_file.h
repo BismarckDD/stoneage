@@ -532,11 +532,6 @@ int getReloadNpcType(void);
 #ifdef _JZ_NEWSCRIPT_LUA
 char *getLuaFile(void);
 #endif
-#ifdef _MO_LNS_NLSUOXU
-int GetConfigLineType(char *TM_ConfigName);
-char *GetConfigLineVal(char *TM_ConfigName);
-int getCopymapstartingID(void);
-#endif
 #ifdef _ITEM_LUA
 const char *getitemluafile(void);
 BOOL ITEM_LuaInit(const char *_FileName);

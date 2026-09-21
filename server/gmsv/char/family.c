@@ -2625,8 +2625,13 @@ int FAMILY_RidePet(int fd, int meindex, char *message) {
   printf("[RIDE] reject: no mapping for playerBaseGra=%d petBaseGra=%d\n",
          CHAR_getInt(meindex, CHAR_BASEBASEIMAGENUMBER),
          CHAR_getInt(petindex, CHAR_BASEBASEIMAGENUMBER));
-  CHAR_talkToCli(meindex, -1, "你的角色造型无法骑乘该宠物。",
-                 CHAR_COLORYELLOW);
+  if (rideGraNo == -2) {
+    CHAR_talkToCli(meindex, -1, "你的角色尚未获得骑乘该宠物的资格。",
+                   CHAR_COLORYELLOW);
+  } else if (rideGraNo == -1) {
+    CHAR_talkToCli(meindex, -1, "你的角色造型无法骑乘该宠物。",
+                   CHAR_COLORYELLOW);
+  }
   return 0;
 }
 
@@ -3122,25 +3127,6 @@ void ACFMJob(int fd, int ret, char *data1, char *data2) {
             CHAR_getChar(char_index, CHAR_CDKEY), "LEADERCHANGE(族长让位)",
             buf);
 }
-#ifdef _MO_LNS_CHARSUOXU
-int Char_GetFm(int id, int x) {
-  int fd = getfdFromCharaIndex(id);
-  if (x == 1)
-    return fmdptop.fmMomentum[id];
-  else if (x == 2)
-    return fmdptop.fmtopdp[id];
-  else if (x == 3)
-    return familyTax[CHAR_getWorkInt(id, CHAR_WORKFMINDEXI)];
-}
-
-char *FM_getManorData(int manor_id, const int flag) {
-  char *pointbuf = "";
-  if (getStringFromIndexWithDelim(fmpointlist.pointlistarray[manor_id], "|",
-                                  flag, pointbuf, sizeof(pointbuf)) == FALSE)
-    return -1;
-  return pointbuf;
-}
-#endif
 
 #ifdef _FAMILYBADGE_
 /**

@@ -273,46 +273,6 @@ typedef struct tagServerState {
   int limittime;
 } ServerState;
 
-#ifdef _MO_LNS_NLSUOXU
-typedef struct tagFuncKk {
-  char *FileName; /* file_name */
-  char *FuncName; /*ִ func_name */
-  unsigned int EspTime;
-  unsigned int MespTime;
-  int ID;
-  unsigned int GetTime;
-} FuncKk;
-
-FuncKk TimerLua[50];
-void SetTimerLua(void)
-{
-  int i;
-  for (i = 0; i < arraysizeof(TimerLua); i++) {
-    TimerLua[i].FileName = NULL;
-    TimerLua[i].FuncName = NULL;
-    TimerLua[i].EspTime = -1;
-    TimerLua[i].MespTime = -1;
-    TimerLua[i].ID = -1;
-    TimerLua[i].GetTime = -1;
-  }
-}
-
-int SetTimer_net(char *FileName, char *FuncName, unsigned int EspTime) {
-  int i;
-  for (i = 0; i < arraysizeof(TimerLua); i++) {
-    if (TimerLua[i].ID == -1)
-      break;
-  }
-  TimerLua[i].FileName = FileName;
-  TimerLua[i].FuncName = FuncName;
-  TimerLua[i].EspTime = NowTime.tv_sec;
-  TimerLua[i].MespTime = NowTime.tv_usec;
-  TimerLua[i].ID = i + 1;
-  TimerLua[i].GetTime = EspTime * 1024;
-  return i + 1;
-}
-#endif
-
 /* GMSV session: owns login/gameplay state and references its transport by the
  * legacy socket-fd slot. TCP readiness and platform I/O live in common. */
 typedef struct tagGmsvSession {
@@ -386,23 +346,20 @@ typedef struct tagGmsvSession {
   int nu_decrease;
   // Nuke 1213: Flow Control 2
   int packetin;
-
   // Nuke 0624: Avoid Null Connection
   unsigned int cotime;
   // Nuke 0626: For no enemy
-  int noenemy;
+  int noEnemy; // 物品不遇敌
   // Arminius 7.2: Ra's amulet
-  int eqnoenemy;
+  int eqNoEnemy; // 装备不遇敌/GM不遇敌
 #ifdef _Item_MoonAct
-  int eqrandenemy;
+  int eqRandEnemy;
 #endif
-
 #ifdef _CHIKULA_STONE
   int chistone;
 #endif
   // Arminius 7.31: cursed stone
-  int stayencount;
-
+  int stayencount; // 原地遇敌
   int battlechar_index[CONNECT_WINDOWBUFSIZE];
   int duelchar_index[CONNECT_WINDOWBUFSIZE];
   int tradecardchar_index[CONNECT_WINDOWBUFSIZE];
@@ -822,31 +779,26 @@ ANY_THREAD BOOL initConnectOne(int sockfd, struct sockaddr_in *sin, int len) {
   Connect[sockfd].WLtime.tv_usec = 0; //
   Connect[sockfd].b_first_warp = FALSE;
   Connect[sockfd].state_trans = 0; // avoid the trans
-
   Connect[sockfd].credit = 3;
   Connect[sockfd].fcold = 0;
   // Nuke 0406: New Flow Control
   Connect[sockfd].nu = 30;
-
   // Nuke 1213: Flow Control 2
   Connect[sockfd].packetin = 30; // if 10x10 seconds no packet, drop the line
-
   // Nuke 0624: Avoid Useless Connection
   Connect[sockfd].cotime = 0;
   // Nuke 0626: For no enemy
-  Connect[sockfd].noenemy = 0;
+  Connect[sockfd].noEnemy = 0;
   // Arminius 7.2: Ra's amulet
-  Connect[sockfd].eqnoenemy = 0;
-
+  Connect[sockfd].eqNoEnemy = 0;
 #ifdef _Item_MoonAct
-  Connect[sockfd].eqrandenemy = 0;
+  Connect[sockfd].eqRandEnemy = 0;
 #endif
 #ifdef _CHIKULA_STONE
   Connect[sockfd].chistone = 0;
 #endif
   // Arminius 7.31: cursed stone
   Connect[sockfd].stayencount = 0;
-
   // CoolFish: Init Trade 2001/4/18
   memset(&Connect[sockfd].TradeTmp, 0, sizeof(Connect[sockfd].TradeTmp));
 #ifdef _ITEM_PILEFORTRADE
@@ -882,7 +834,6 @@ ANY_THREAD BOOL initConnectOne(int sockfd, struct sockaddr_in *sin, int len) {
   Connect[sockfd].lastreadtime.tv_sec -= DEBUG_ADJUSTTIME;
   Connect[sockfd].errornum = 0;
   Connect[sockfd].fdid = SERVSTATE_incrementFdid();
-
   CONNECT_UNLOCK(sockfd);
   Connect[sockfd].appendwb_overflow_flag = 0;
   Connect[sockfd].connecttime = time(NULL);
@@ -1954,26 +1905,23 @@ void closeAllConnectionandSaveData(void) {
 }
 
 // andy_add 2003/02/12
+// 用来netloop_faster的循环中
 void CONNECT_SysEvent_Loop(void) {
-  static time_t checkT = 0;
   static int chikulatime = 0;
-
-  int NowTimes = time(NULL);
-
-  if (checkT != NowTimes && (checkT + 10) <= NowTimes) {
-    int i;
-    checkT = time(NULL);
-    chikulatime++; //每10秒
-
+  int now_time = time(NULL); // 返回1970.01.01以来的秒数
+  int last_time = 0;
+  int i;
+  if (last_time != now_time && (last_time + 10) <= now_time) {
+    last_time = now_time;
+    ++chikulatime; // 每10秒+1
     if (chikulatime > 10000)
       chikulatime = 0;
 #ifdef _MO_RELOAD_NPC
-    if (getReloadNpcTime() > 0) {
-      if (chikulatime % getReloadNpcTime() == 0) {
-        NPC_reloadNPC();
-        MAPPOINT_resetMapWarpPoint(1);
-        MAPPOINT_loadMapWarpPoint();
-      }
+    if (getReloadNpcTime() > 0 &&
+        (chikulatime % getReloadNpcTime() == 0)) {
+      NPC_reloadNPC();
+      MAPPOINT_resetMapWarpPoint(1);
+      MAPPOINT_loadMapWarpPoint();
     }
 #endif
     int playernum = CHAR_getPlayerMaxNum();
@@ -2039,7 +1987,7 @@ void CONNECT_SysEvent_Loop(void) {
 #endif
         {
 #ifdef _BOUND_TIME
-          if (CHAR_getInt(char_index, CHAR_BOUNDTIME) <= NowTimes) {
+          if (CHAR_getInt(char_index, CHAR_BOUNDTIME) <= now_time) {
             int fl = 0, x = 0, y = 0;
             CHAR_getElderPosition(CHAR_getInt(char_index, CHAR_LASTTALKELDER),
                                   &fl, &x, &y);
@@ -2213,7 +2161,6 @@ void CONNECT_SysEvent_Loop(void) {
           continue;
       if (!CHAR_CHECKINDEX(Connect[i].char_index))
         continue;
-
       {
 #ifdef _NEW_AUTO_PK
         {
@@ -2253,20 +2200,16 @@ void CONNECT_SysEvent_Loop(void) {
         if (chikulatime % 3 == 0 && getChiStone(i) > 0) { //自动补血
           CHAR_AutoChikulaStone(Connect[i].char_index, getChiStone(i));
         }
-
 #endif
 
         if (chikulatime % 6 == 0) { //水世界状态
-
 #ifdef _STATUS_WATERWORD
           CHAR_CheckWaterStatus(Connect[i].char_index);
 #endif
           // Nuke 0626: No enemy
-
-          if (Connect[i].noenemy > 0) {
-            Connect[i].noenemy--;
-
-            if (Connect[i].noenemy == 0) {
+          if (Connect[i].noEnemy > 0) {
+            Connect[i].noEnemy--;
+            if (Connect[i].noEnemy == 0) {
               CHAR_talkToCli(CONNECT_getCharaindex(i), -1, "守护消失了。",
                              CHAR_COLORWHITE);
             }
@@ -3483,23 +3426,23 @@ int checkNu(int fd) {
 }
 
 // Nuke start 0626: For no enemy function
-void setNoenemy(int fd) {
+void setNoEnemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
-  Connect[fd].noenemy = 6;
+  Connect[fd].noEnemy = 6;
 }
-void clearNoenemy(int fd) {
+void clearNoEnemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
-  Connect[fd].noenemy = 0;
+  Connect[fd].noEnemy = 0;
 }
-int getNoenemy(int fd) {
+int getNoEnemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return 0;
   }
-  return Connect[fd].noenemy;
+  return Connect[fd].noEnemy;
 }
 // Nuke end
 
@@ -3508,43 +3451,43 @@ void setEqNoenemy(int fd, int level) {
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
-  Connect[fd].eqnoenemy = level;
+  Connect[fd].eqNoEnemy = level;
 }
 
 void clearEqNoenemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
-  Connect[fd].eqnoenemy = 0;
+  Connect[fd].eqNoEnemy = 0;
 }
 
-int getEqNoenemy(int fd) {
+int getEqNoEnemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return 0;
   }
-  return Connect[fd].eqnoenemy;
+  return Connect[fd].eqNoEnemy;
 }
 
 #ifdef _Item_MoonAct
-void setEqRandenemy(int fd, int level) {
+void setEqRandEnemy(int fd, int level) {
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
-  Connect[fd].eqrandenemy = level;
+  Connect[fd].eqRandEnemy = level;
 }
 
-void clearEqRandenemy(int fd) {
+void clearEqRandEnemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return;
   }
-  Connect[fd].eqrandenemy = 0;
+  Connect[fd].eqRandEnemy = 0;
 }
 
-int getEqRandenemy(int fd) {
+int getEqRandEnemy(int fd) {
   if (fd < 0 || fd >= ConnectLen) {
     return 0;
   }
-  return Connect[fd].eqrandenemy;
+  return Connect[fd].eqRandEnemy;
 }
 
 #endif
@@ -4140,24 +4083,4 @@ void procSelectEpoll() {
     }
   }
 }
-#endif
-#ifdef _MO_LNS_NLSUOXU
-BOOL DelTimer_net(int ID) {
-  if (ID - 1 < 0 || ID - 1 > arraysizeof(TimerLua))
-    return FALSE;
-  TimerLua[ID - 1].FileName = NULL;
-  TimerLua[ID - 1].FuncName = NULL;
-  TimerLua[ID - 1].EspTime = -1;
-  TimerLua[ID].MespTime = -1;
-  TimerLua[ID - 1].ID = -1;
-  TimerLua[ID - 1].GetTime = -1;
-  return TRUE;
-}
-#endif
-
-#ifdef _MO_LNS_CHARSUOXU
-char *CONNECT_get_userip2(int fd) {
-  return inet_ntoa(Connect[fd].sin.sin_addr);
-}
-int CONNECT_get_userport(int fd) { return Connect[fd].sin.sin_port; }
 #endif

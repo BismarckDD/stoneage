@@ -395,20 +395,22 @@ int RIDEPET_getPetIdx(int petNo,
       print("%d, %d, %d\n", i, learnCode, gRideCodeMode[i].learnCode);
       if (gRideCodeMode[i].learnCode & learnCode) {
         return i;
+      } else {
+        return -2;
       }
     }
   }
   return -1;
 }
 
-// 获取骑宠的GraphNo
+// 2026.09.20 获取骑宠的GraphNo
 int RIDEPET_getRideNo(int char_no_idx, int pet_type) {
   if (char_no_idx < 0 || char_no_idx >= sizeof(RideNoList) / sizeof(CharRideNoList))
     return -1;
+  // pet_type == -2 时，说明pet_type是有的，但是没有资格，要区分一下
   if (pet_type < 0 || pet_type >= MAX_RIDE_PET_NO_NUM)
-    return -1;
-  print("ride_no: %d\n",
-    RideNoList[char_no_idx].rideNo[pet_type]);
+    return pet_type < 0 ? pet_type : -1;
+  print("ride_no: %d\n", RideNoList[char_no_idx].rideNo[pet_type]);
   return RideNoList[char_no_idx].rideNo[pet_type];
 }
 
@@ -4055,84 +4057,6 @@ int CheckCharMaxItemChar(Char *ch) {
 
 #endif
 
-#ifdef _MO_LNS_CHARSUOXU
-int CHAR_getEmptyPetBoxNum(int char_index) {
-  if (!CHAR_CHECKINDEX(char_index))
-    return -1;
-
-  int i = 0;
-  int EmptyNum = 0;
-
-  for (; i < CHAR_MAXPETHAVE; i++) {
-    if (CHAR_getCharPet(char_index, i) == -1)
-      continue;
-    EmptyNum++;
-  }
-
-  return EmptyNum;
-}
-
-int CHAR_getEmptyItemBoxNum(int char_index) {
-  if (!CHAR_CHECKINDEX(char_index))
-    return -1;
-
-  int i = CHAR_STARTITEMARRAY;
-  int EmptyNum = 0;
-  int itemNum = CheckCharMaxItem(char_index);
-  for (; i < itemNum; i++) {
-    if (CHAR_getItemIndex(char_index, i) != -1)
-      continue;
-    EmptyNum++;
-  }
-
-  return EmptyNum;
-}
-int CHAR_getPlayerPetNum(int char_index, int petid) {
-  if (!CHAR_CHECKINDEX(char_index))
-    return -1;
-
-  int i = 0;
-  int EmptyNum = 0;
-
-  for (; i < CHAR_MAXPETHAVE; i++) {
-    if (CHAR_getCharPet(char_index, i) == -1)
-      continue;
-
-    if (CHAR_getInt(CHAR_getCharPet(char_index, i), CHAR_PETID) == petid)
-      EmptyNum++;
-  }
-
-  return EmptyNum;
-}
-
-int CHAR_getPlayerItemNum(int char_index, int itemid, BOOL IsContainEquip,
-                          BOOL IsContainPile) {
-  if (!CHAR_CHECKINDEX(char_index))
-    return -1;
-  int i = 0;
-  int EmptyNum = 0;
-  int item_index = 0;
-  if (IsContainEquip)
-    i = 0;
-  else
-    i = CHAR_STARTITEMARRAY;
-  int itemMax = CheckCharMaxItem(char_index);
-  for (; i < itemMax; i++) {
-    item_index = CHAR_getItemIndex(char_index, i);
-    if (item_index == -1)
-      continue;
-    if (!IsContainPile) {
-      if (ITEM_getInt(item_index, ITEM_ID) == itemid)
-        EmptyNum++;
-    } else {
-      if (ITEM_getInt(item_index, ITEM_ID) == itemid)
-        EmptyNum += ITEM_getInt(item_index, ITEM_USEPILENUMS);
-    }
-  }
-
-  return EmptyNum;
-}
-#endif
 #ifdef _NEW_RIDEPETS
 int CHAR_CheckLearnCode(int char_index, int ride_no) {
   int i;
