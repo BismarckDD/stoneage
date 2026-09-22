@@ -52,7 +52,7 @@
 #include "npc_autopk.h"
 #endif
 #ifdef _ALLBLUES_LUA
-#include "mylua/ablua.h"
+#include "mylua/mylua.h"
 #endif
 // WON ADD 重新读取ITEMSET.TXT
 #include "item.h"

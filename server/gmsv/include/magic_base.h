@@ -1,6 +1,7 @@
 #ifndef __MAGIC_BASE_H__
 #define __MAGIC_BASE_H__
 
+#include "version.h"
 #include "util.h"
 
 typedef enum {

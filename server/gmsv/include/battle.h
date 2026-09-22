@@ -588,7 +588,7 @@ int gItemCrushRate = 400000;
 #else
 #define EXTERN extern
 extern int gItemCrushRate;                        // 破壊デフォルト  (破坏默认值)
-#endif`
+#endif
 EXTERN BATTLE *BattleArray;                       /* 戦タスク  (战斗任务)     */
 EXTERN int BATTLE_battlenum;                      /* 戦闘の数  (战斗数量) */
 EXTERN char szAllBattleString[BATTLE_STRING_MAX]; /* 戦闘に使用する文字列データ  (战斗用字符串数据)   */

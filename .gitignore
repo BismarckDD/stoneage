@@ -24,3 +24,4 @@ docs/
 script/
 dumps/
 .workbuddy
+.build-logs/

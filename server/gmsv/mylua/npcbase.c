@@ -9,6 +9,7 @@
 #include "npcutil.h"
 #include "object.h"
 #include "npc_eventaction.h"
+
 #ifdef _ALLBLUES_LUA
 static int CreateNpc(lua_State *L) {
   Char one;
@@ -582,6 +583,9 @@ static int OnlineBuy(lua_State *L) {
   return 1;
 }
 #endif
+
+
+//
 static const luaL_Reg npclib[] = {{"CreateNpc", CreateNpc},
 #ifdef _DEL_FAME
                                   {"DelFame", DelFame},
@@ -636,6 +640,7 @@ static const luaL_Reg npclib[] = {{"CreateNpc", CreateNpc},
 #endif
                                   {NULL, NULL}};
 
+// 
 LUALIB_API int luaopen_NPC(lua_State *L) {
   luaL_register(L, "npc", npclib);
   return 1;

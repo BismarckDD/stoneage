@@ -1,17 +1,17 @@
-#include "version.h"
+#include "mylua/base.h"
+#include "mylua/mylua.h"
+//
 #include "battle.h"
 #include "char.h"
 #include "config_file.h"
 #include "item.h"
-#include "mylua/base.h"
-#include "mylua/mylua.h"
 
 #ifdef _ALLBLUES_LUA
 
-extern MY_Lua gMyLua;
+extern MyLua gMyLua;
 
 lua_State *FindLua(char *filename) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   char newfilename[256];
   while (mylua->next != NULL) {
     if (strcmptail(mylua->luapath, ".allblues") == 0) {
@@ -1022,7 +1022,7 @@ BOOL EquipChangeFunction(int char_index, int id) {
 }
 
 BOOL WalkFunction(int char_index) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "WalkFunction");
 
@@ -1054,7 +1054,7 @@ BOOL WalkFunction(int char_index) {
 }
 #ifdef _ITEM_OVER_LAP
 BOOL ItemOverlapFunction(int charindex, int fromitem_index, int toitem_index) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "ItemOverlapFunction");
 
@@ -1086,7 +1086,7 @@ BOOL ItemOverlapFunction(int charindex, int fromitem_index, int toitem_index) {
 
 BOOL ItemOverlapedFunction(int charindex, int fromitem_index, int fromid,
                            int toitem_index, int toid) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "ItemOverlapedFunction");
 
@@ -1208,7 +1208,7 @@ BOOL SetBattleEnmeyFunction(int meindex, int enemy_index, int id) {
 
 #ifdef _ALLBLUES_LUA_1_8
 BOOL CaptureOkFunction(int attackindex, int defindex) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "CaptureOkFunction");
 
@@ -1262,7 +1262,7 @@ BOOL CaptureCheckFunction(int attackindex, int defindex) {
 
 #ifdef _ALLBLUES_LUA_1_7
 BOOL CharVsEnemyFunction(int char_index) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "CharVsEnemyFunction");
 
@@ -1362,7 +1362,7 @@ BOOL FamilyRideFunction(int meindex, int petindex, int petid) {
 
 #ifdef _ALLBLUES_LUA_1_5
 BOOL NetLoopFunction(void) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "NetLoopFunction");
 
@@ -1461,7 +1461,7 @@ BOOL FreeVsPlayer(int char_index, int toindex) {
 }
 
 BOOL FreePartyJoin(int char_index, int toindex) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "FreePartyJoin");
 

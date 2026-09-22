@@ -12,11 +12,42 @@ pacman -Syu
 pacman -S --needed mingw-w64-ucrt-x86_64-gcc \
   mingw-w64-ucrt-x86_64-cmake \
   mingw-w64-ucrt-x86_64-ninja \
-  mingw-w64-ucrt-x86_64-libmysqlclient
+  mingw-w64-ucrt-x86_64-pkgconf \
+  mingw-w64-ucrt-x86_64-zlib \
+  mingw-w64-ucrt-x86_64-libmariadbclient
 ```
 
 本项目依赖 GNU C 扩展，因此 Windows 构建必须使用 MinGW-w64，不能使用
-MSVC。SAAC 使用 MySQL C API 直连数据库，需要安装 `libmysqlclient` 开发包。
+MSVC。SAAC 使用 MySQL C API 直连数据库，需要对应的客户端开发包。
+
+> **注意包名**：MSYS2 仓库中已不存在 `mingw-w64-ucrt-x86_64-libmysqlclient`，
+> 该开发包现在叫 `mingw-w64-ucrt-x86_64-libmariadbclient`（MariaDB
+> Connector/C）。它与 MySQL C API 兼容，并且仍然提供本项目所需的两样东西：
+> `ucrt64/lib/pkgconfig/mysqlclient.pc` 和 `ucrt64/lib/libmysqlclient.dll.a`，
+> 因此 `CMakeLists.txt` 里的 `pkg_check_modules(MYSQL ... mysqlclient)` 与
+> 回退分支 `-lmysqlclient` 都能正常工作，无需改动构建脚本。
+>
+> `pkgconf` 与 `zlib` 建议显式安装：`pkgconf` 让 CMake 能通过 `.pc` 文件定位
+> MySQL 客户端，`zlib` 提供 `zlib1.dll`（构建后会复制到 `bin` 目录）。
+
+如果 `pacman` 下载缓慢，可以把国内镜像放到 `/etc/pacman.d/mirrorlist.mingw`
+和 `mirrorlist.msys` 的最前面：
+
+```
+Server = https://mirrors.tuna.tsinghua.edu.cn/msys2/mingw/$repo/
+Server = https://mirrors.tuna.tsinghua.edu.cn/msys2/msys/$arch/
+```
+
+MSYS2 安装完成后，密钥环需要在 MSYS2 终端里初始化一次（安装器通常会做，
+手动安装或安装中断时需要自己补）：
+
+```bash
+pacman-key --init
+pacman-key --populate msys2
+```
+
+未完成这一步时，`/etc/pacman.conf` 中的 `SigLevel = Required` 会导致所有
+`pacman -S` 失败并提示签名无效。
 
 ## 2. 编译
 

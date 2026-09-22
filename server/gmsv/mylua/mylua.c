@@ -1,8 +1,11 @@
 #include "autil.h"
 #include "buf.h"
 #include "util.h"
+//
 #include <dirent.h>
 #include <signal.h>
+#include <sys/stat.h>
+
 #define __MYLUA_MYLUA_C__
 #include "mylua/mylua.h"
 
@@ -71,83 +74,10 @@ int dofile(lua_State *L, const char *name) {
   return report(L, status);
 }
 
-char crypto[] = DEFAULTTABLE;
-
-void DecryptLua(char *buff, int len, int id) {
-
-  int i;
-  int cryptolen = strlen(crypto);
-  for (i = 0; i < len; i++) {
-    buff[i] ^= crypto[(i) % cryptolen];
-    buff[i] += id;
-  }
-}
-
-void doCryptoFile(lua_State *L, char *filename) {
-  FILE *f;
-
-  char *luabuff;
-  char *cfbuff = NULL;
-  char *buff;
-  int luamaxlen = 0;
-  int cfmaxlen = 0;
-  char head[] = "\nfunction init()\n";
-  char end[] = "\nend\n";
-  char filenamecf[256];
-  char loadfilename[256];
-  strcpy(loadfilename, filename);
-
-  if ((f = fopen(loadfilename, "r")) != NULL) {
-    fseek(f, 0, SEEK_END);
-    luamaxlen = ftell(f);
-    luabuff = (char *)malloc(luamaxlen + 1);
-    memset(luabuff, 0, luamaxlen + 1);
-    fseek(f, 0, SEEK_SET);
-    fread(luabuff, luamaxlen, 1, f);
-    fclose(f);
-  } else {
-    return;
-  }
-  DecryptLua(luabuff, luamaxlen, _ATTESTAION_ID);
-  loadfilename[strlen(loadfilename) - 9] = '\0';
-
-  sprintf(filenamecf, "%s.cf", filename);
-  if ((f = fopen(filenamecf, "r")) != NULL) {
-    fseek(f, 0, SEEK_END);
-    cfmaxlen = ftell(f);
-    cfbuff = (char *)malloc(cfmaxlen + 1);
-    memset(cfbuff, 0, cfmaxlen + 1);
-    fseek(f, 0, SEEK_SET);
-    fread(cfbuff, cfmaxlen, 1, f);
-
-    fclose(f);
-  }
-
-  int len = luamaxlen + cfmaxlen + strlen(head) + strlen(end) + 1;
-  buff = (char *)malloc(len);
-  memset(buff, 0, len);
-  len = 0;
-  memcpy(buff + len, head, strlen(head));
-  len += strlen(head);
-  if (cfmaxlen > 0) {
-    memcpy(buff + len, cfbuff, cfmaxlen);
-    free(cfbuff);
-  }
-  len += cfmaxlen;
-  memcpy(buff + len, end, strlen(end));
-  len += strlen(end);
-  memcpy(buff + len, luabuff, luamaxlen);
-
-  luaL_dostring(L, buff);
-
-  free(buff);
-  free(luabuff);
-}
 
 int loadMyLua(const char *filename) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   int status = 0;
-
   print("[Lua] loading: %s\n", filename);
   while (mylua->next != NULL) {
     if (strcmp(mylua->luapath, filename) == 0) {
@@ -159,8 +89,8 @@ int loadMyLua(const char *filename) {
   mylua->luapath = allocateMemory(strlen(filename));
   memset(mylua->luapath, 0, strlen(filename));
   strcpy(mylua->luapath, filename);
-  mylua->next = allocateMemory(sizeof(MY_Lua));
-  memset(mylua->next, 0, sizeof(MY_Lua));
+  mylua->next = allocateMemory(sizeof(MyLua));
+  memset(mylua->next, 0, sizeof(MyLua));
   if (mylua->next == NULL)
     return EXIT_FAILURE;
 
@@ -176,14 +106,10 @@ int loadMyLua(const char *filename) {
   luaAB_openlibs(mylua->lua);
   lua_gc(mylua->lua, LUA_GCRESTART, 0);
 
-  if (strcmptail(filename, ".allblues") == 0) {
-    doCryptoFile(mylua->lua, filename);
-  } else {
-    status = dofile(mylua->lua, filename);
-    if (status != 0) {
-      print("[Lua] load failed: %s (status=%d)\n", filename, status);
-      return FALSE;
-    }
+  status = dofile(mylua->lua, filename);
+  if (status != 0) {
+    print("[Lua] load failed: %s (status=%d)\n", filename, status);
+    return FALSE;
   }
 
   lua_getglobal(mylua->lua, "init");
@@ -210,12 +136,11 @@ int loadMyLua(const char *filename) {
 }
 
 int reLoadMyLua(const char *filename) {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
 
   while (mylua->next != NULL) {
     if (strlen(mylua->luapath) > 0) {
       if (strlen(filename) > 0) {
-        // printf("luapath=%s  filename=%s\n",mylua->luapath,filename);
         if (strstr(mylua->luapath, filename) == 0) {
           mylua = mylua->next;
           continue;
@@ -226,18 +151,10 @@ int reLoadMyLua(const char *filename) {
       luaL_openlibs(mylua->lua);
       luaAB_openlibs(mylua->lua);
       lua_gc(mylua->lua, LUA_GCRESTART, 0);
-      if (strcmptail(mylua->luapath, ".allblues") == 0) {
-        if ((fopen(mylua->luapath, "r")) == NULL) {
-          mylua = mylua->next;
-          continue;
-        }
-        doCryptoFile(mylua->lua, mylua->luapath);
-      } else {
-        dofile(mylua->lua, mylua->luapath);
-      }
+      dofile(mylua->lua, mylua->luapath);
 
+      // 这就是为什么多个lua脚本有data()函数, 这里会调用
       lua_getglobal(mylua->lua, "data");
-
       if (lua_isfunction(mylua->lua, -1)) {
         docall(mylua->lua, 0, 1);
       }
@@ -248,13 +165,100 @@ int reLoadMyLua(const char *filename) {
 }
 
 int closeMyLua() {
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   while (mylua->next != NULL) {
     lua_pop(mylua->lua, 1);
     lua_close(mylua->lua);
     mylua = mylua->next;
   }
   return EXIT_SUCCESS;
+}
+
+static int ablua_is_regular_file(const char *fullpath,
+                                 const struct dirent *ent) {
+#if defined(_WIN32) || defined(_WIN64)
+  struct stat st;
+  (void)ent;
+  return (stat(fullpath, &st) == 0 && S_ISREG(st.st_mode));
+#else
+  (void)fullpath;
+  return (ent->d_type == 8); /* DT_REG */
+#endif
+}
+
+static void LoadAllbluesLUARecursive(const char *path, int *loaded, int *failed) {
+  struct dirent *ent = NULL;
+  char filename[256];
+  DIR *pDir;
+  pDir = opendir(path);
+  if (pDir == NULL) {
+    print("[Lua] cannot open script directory: %s\n", path);
+    (*failed)++;
+    return;
+  }
+
+  while (NULL != (ent = readdir(pDir))) {
+    if (ent->d_name[0] == '.')
+      continue;
+    memset(filename, 0, 256);
+    sprintf(filename, "%s/%s", path, ent->d_name);
+    if (ablua_is_regular_file(filename, ent)) {
+      if (strcmptail(ent->d_name, ".allblues") == 0
+          || strcmptail(ent->d_name, ".lua") == 0) {
+        if (loadMyLua(filename))
+          (*loaded)++;
+        else
+          (*failed)++;
+      }
+    } else {
+      sprintf(filename, "%s/%s", path, ent->d_name);
+      LoadAllbluesLUARecursive(filename, loaded, failed);
+    }
+  }
+  closedir(pDir);
+}
+
+void LoadAllbluesLUA(const char *path) {
+  int loaded = 0;
+  int failed = 0;
+  print("[Lua] scanning script directory: %s\n", path);
+  LoadAllbluesLUARecursive(path, &loaded, &failed);
+  print("[Lua] scan complete: loaded=%d, failed/skipped=%d, path=%s\n", loaded,
+        failed, path);
+}
+
+void ReLoadAllbluesLUA(const char *filename) { reLoadMyLua(filename); }
+
+const int getCharBaseValue(lua_State *L, int narg, CharBase *charbase,
+                           int num) {
+  if (!lua_isnumber(L, narg)) {
+    size_t l;
+    const char *data = luaL_checklstring(L, narg, &l);
+    if (data == NULL || data[0] == '\0') {
+      return -1;
+    }
+    char field[64];
+    int line = 1;
+    int i;
+    int value = 0;
+    while (getStringFromIndexWithDelim(data, "|", line, field, sizeof(field)) ==
+           TRUE) {
+      for (i = 0; i < num; i++) {
+        if (strcmp(charbase[i].field, field) == 0) {
+          value |= charbase[i].element;
+          break;
+        }
+      }
+      if (i == num) {
+        print("\ncharbase缺失字段[%s]\n", field);
+        return -1;
+      }
+      line++;
+    }
+    return value;
+  } else {
+    return luaL_checkint(L, narg);
+  }
 }
 
 #endif

@@ -1,13 +1,15 @@
-#include "char.h"
-#include "char_base.h"
-#include "family.h"
 #include "mylua/base.h"
+#include "mylua/mylua.h"
+//
+#include "family.h"
+#include "char_base.h"
+//
 #include "saac_client.h"
 
 #ifdef _ALLBLUES_LUA
 
 #ifdef _MO_LUA_FMPOINT
-extern struct  FM_POINTLIST fmpointlist;                   // 家族据点
+extern struct FM_POINTLIST fmpointlist; // 家族据点
 #endif
 
 static int ShowFamilyList(lua_State *L) 

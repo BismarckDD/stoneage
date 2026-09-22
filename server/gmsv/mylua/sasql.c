@@ -1,32 +1,26 @@
-#include "lauxlib.h"
-#include "lua.h"
-#include "lualib.h"
-//
-#include "net.h"
-//
-#include "log.h"
+// 暂时没什么用，约等于空文件
 
-#ifdef _ALLBLUES_LUA
-#ifdef _ALLBLUES_LUA_1_4
 #ifdef _SASQL
+
 #include <mysql/mysql.h>
+
 extern MYSQL mysql;
 static MYSQL_RES *mysql_result;
 static MYSQL_ROW mysql_row;
 static MYSQL_FIELD *fields;
+
 int numrow = 0;
 int numfields = 0;
+
 static int setVipPoint(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
   const int point = luaL_checkint(L, 2);
-
   sasql_setVipPoint(char_index, point);
   return 1;
 }
 
 static int getVipPoint(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
-
   lua_pushinteger(L, sasql_getVipPoint(char_index));
   return 1;
 }
@@ -35,7 +29,6 @@ static int setVipPointForCdkey(lua_State *L) {
   size_t l;
   char *id = luaL_checklstring(L, 1, &l);
   const int point = luaL_checkint(L, 2);
-
   sasql_setVipPointForCdkey(id, point);
   return 1;
 }
@@ -94,14 +87,12 @@ static int getTrialPoint(lua_State *L) {
 static int setGloryPoint(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
   const int point = luaL_checkint(L, 2);
-
   sasql_setGloryPoint(char_index, point);
   return 1;
 }
 
 static int getGloryPoint(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
-
   lua_pushinteger(L, sasql_getGloryPoint(char_index));
   return 1;
 }
@@ -111,7 +102,6 @@ static int setPayPointForCdkey(lua_State *L) {
   size_t l;
   char *id = luaL_checklstring(L, 1, &l);
   const int point = luaL_checkint(L, 2);
-
   sasql_setPayPointForCdkey(id, point);
   return 1;
 }
@@ -126,7 +116,6 @@ static int getPayPointForCdkey(lua_State *L) {
 static int query(lua_State *L) {
   size_t l;
   char *data = luaL_checklstring(L, 1, &l);
-
   if (!sasql_mysql_query(data)) {
     lua_pushinteger(L, 1);
   } else {
@@ -177,7 +166,6 @@ static int setSQLPoint(lua_State *L) {
 
 static int getSQLPoint(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
-
   lua_pushinteger(L, sasql_getSQLPoint(char_index));
   return 1;
 }
@@ -185,23 +173,20 @@ static int getSQLPoint(lua_State *L) {
 static int setGoldPoint(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
   const int point = luaL_checkint(L, 2);
-
   sasql_setGoldPoint(char_index, point);
   return 1;
 }
 
 static int getGoldPoint(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
-
   lua_pushinteger(L, sasql_getGoldPoint(char_index));
   return 1;
 }
+
 static int setSQLPointByCdkey(lua_State *L) {
   size_t l;
   char *cdkey = luaL_checklstring(L, 1, &l);
-
   const int point = luaL_checkint(L, 2);
-
   sasql_setSQLPointByCdkey(cdkey, point);
   return 1;
 }
@@ -218,7 +203,6 @@ static int setGoldPointByCdkey(lua_State *L) {
   size_t l;
   char *cdkey = luaL_checklstring(L, 1, &l);
   const int point = luaL_checkint(L, 2);
-
   sasql_setGoldPointByCdkey(cdkey, point);
   return 1;
 }
@@ -226,7 +210,6 @@ static int setGoldPointByCdkey(lua_State *L) {
 static int getGoldPointByCdkey(lua_State *L) {
   size_t l;
   char *cdkey = luaL_checklstring(L, 1, &l);
-
   lua_pushinteger(L, sasql_getGoldPointByCdkey(cdkey));
   return 1;
 }
@@ -277,6 +260,5 @@ LUALIB_API int luaopen_Sasql(lua_State *L) {
   luaL_register(L, "sasql", sasqllib);
   return 1;
 }
-#endif
-#endif
+
 #endif

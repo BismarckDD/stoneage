@@ -1,12 +1,11 @@
-#include "common.h"
-//
-#include "char_base.h"
 #include "mylua/base.h"
-#include "char.h"
-#include "item.h"
-#include "gmsv_server.h"
-#ifdef _ALLBLUES_LUA_1_2   
 #include "mylua/mylua.h"
+//
+#include "item.h"
+//
+#include "gmsv_server.h"
+
+#ifdef _ALLBLUES_LUA_1_2   
 
 static CharBase ItemBaseInt[] = {
 	{{"序号"},						ITEM_ID}
@@ -290,7 +289,7 @@ static int addLUAListFunction(lua_State *L)
 	char *luafunctablepath=luaL_checklstring(L, 3, &l);
 
 	if(strlen(luafunctablepath) > 0){
-		MY_Lua *mylua = &gMyLua;
+		MyLua *mylua = &gMyLua;
 	  while(mylua->next != NULL){
 	  	if(strcmp(mylua->luapath, luafunctablepath) == 0){
 	  		return ITEM_addLUAListFunction( mylua->lua, luafuncname, luafunctable);

@@ -3,6 +3,7 @@
 
 #include "mylua/mylua.h"
 
+// 2026.09.22 以下函数均需要LUA脚本的辅助
 #ifdef _ALLBLUES_LUA_1_2
 BOOL RunItemUseEvent(int item_index, int char_index, int toindex,
                      int haveitem_index);

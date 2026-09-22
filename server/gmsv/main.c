@@ -23,7 +23,7 @@
 #endif
 #include "shop.h"
 #ifdef _ALLBLUES_LUA
-#include "mylua/ablua.h"
+#include "mylua/mylua.h"
 #endif
 
 static void ShutdownProc(void);

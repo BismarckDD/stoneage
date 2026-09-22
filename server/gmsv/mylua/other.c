@@ -48,7 +48,7 @@ static int CallFunction(lua_State *L)
   luaL_checktype(L, 3, LUA_TTABLE);
   int n = luaL_getn(L, 3);
   lua_State *lua = NULL;
-  MY_Lua *mylua = &gMyLua;
+  MyLua *mylua = &gMyLua;
   while(mylua->next != NULL){
   	sprintf(newfilename, "%s", filename);
   	if(strcmp(newfilename, mylua->luapath) == 0){
@@ -220,9 +220,7 @@ static int NumLeftToNum(lua_State *L)
 {
 	const int value = luaL_checkint(L, 1);
 	const int flg = luaL_checkint(L, 2);
-
 	lua_pushinteger(L, (value << flg));
-
 	return 1;
 }
 
@@ -230,9 +228,7 @@ static int NumRightToNum(lua_State *L)
 {
 	const int value = luaL_checkint(L, 1);
 	const int flg = luaL_checkint(L, 2);
-
 	lua_pushinteger(L, ((value >> flg) & 0xFF));
-
 	return 1;
 }
 
@@ -244,7 +240,7 @@ static int Random(lua_State *L)
 	return 1;
 }
 
-static const luaL_Reg otherlib[] = {
+static const luaL_Reg otherLib[] = {
 	{"time", 			    nowtime},
 	{"atoi", 				strtoi},
 	{"getString", 			getString},
@@ -271,7 +267,7 @@ static const luaL_Reg otherlib[] = {
 };
 
 LUALIB_API int luaopen_Other (lua_State *L) {
-  luaL_register(L, "other", otherlib);
+  luaL_register(L, "other", otherLib);
   return 1;
 }
 
