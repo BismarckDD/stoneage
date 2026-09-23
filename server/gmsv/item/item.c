@@ -631,12 +631,10 @@ void ITEM_constructFunctable(int item_index) {
   for (i = ITEM_FIRSTFUNCTION; i < ITEM_LASTFUNCTION; i++) {
     ITEM_gExists[item_index].item.functable[i - ITEM_FIRSTFUNCTION] =
         getFunctionPointerFromName(ITEM_getChar(item_index, i));
-#ifdef _ALLBLUES_LUA_1_2
     if (ITEM_gExists[item_index].item.functable[i - ITEM_FIRSTFUNCTION] ==
         NULL) {
       ITEM_setLUAFunction(item_index, i, ITEM_getChar(item_index, i));
     }
-#endif
   }
 }
 
@@ -652,7 +650,6 @@ void *_ITEM_getFunctionPointer(int item_index, int functype, char *file,
   return ITEM_gExists[item_index].item.functable[functype - ITEM_FIRSTFUNCTION];
 }
 
-#ifdef _ALLBLUES_LUA_1_2
 /* ABLUA 物品回调注册链表的哨兵节点 */
 ITEM_LuaFunc ITEM_luaFunc;
 
@@ -733,8 +730,6 @@ INLINE lua_State *ITEM_getLUAFunction(int item_index, int functype) {
           .item.luafunctable[functype - ITEM_FIRSTFUNCTION]);
   return ITEM_gExists[item_index].item.lua[functype - ITEM_FIRSTFUNCTION];
 }
-
-#endif
 
 int ITEM_getItemMaxIdNum(void) { return ITEM_sIndexLen; }
 
@@ -1876,28 +1871,11 @@ void ITEM_equipEffect(int index) {
   }
 
   {
-    int work;
-#ifdef _BT_ITEM
-    work = CHAR_getWorkInt(index, CHAR_WORKFIXSTR) +
-           itemEffect[0].accumulation * getBtItem();
-#else
-    work = CHAR_getWorkInt(index, CHAR_WORKFIXSTR) + itemEffect[0].accumulation;
-#endif
+    int work = CHAR_getWorkInt(index, CHAR_WORKFIXSTR) + itemEffect[0].accumulation;
     CHAR_setWorkInt(index, CHAR_WORKFIXSTR, max(0, work));
-#ifdef _BT_ITEM
-    work = CHAR_getWorkInt(index, CHAR_WORKFIXTOUGH) +
-           itemEffect[1].accumulation * getBtItem();
-#else
-    work =
-        CHAR_getWorkInt(index, CHAR_WORKFIXTOUGH) + itemEffect[1].accumulation;
-#endif
+    work = CHAR_getWorkInt(index, CHAR_WORKFIXTOUGH) + itemEffect[1].accumulation;
     CHAR_setWorkInt(index, CHAR_WORKFIXTOUGH, max(-100, work));
-#ifdef _BT_ITEM
-    work = CHAR_getWorkInt(index, CHAR_WORKFIXDEX) +
-           itemEffect[2].accumulation * getBtItem();
-#else
     work = CHAR_getWorkInt(index, CHAR_WORKFIXDEX) + itemEffect[2].accumulation;
-#endif
     CHAR_setWorkInt(index, CHAR_WORKFIXDEX, max(-100, work));
   }
 }
@@ -1942,31 +1920,6 @@ void Other_DefcharWorkInt(int index) {
 #endif
 #endif //_SUIT_ITEM
 
-#ifdef _MAGIC_RESIST_EQUIT // WON ADD 职业抗性装备
-                           /*{
-                                   int f_res = -1, i_res = -1, t_res = -1;
-                                   f_res = CHAR_getWorkInt( index, CHAR_WORK_F_RESIST );
-                                   i_res = CHAR_getWorkInt( index, CHAR_WORK_I_RESIST );
-                                   t_res = CHAR_getWorkInt( index, CHAR_WORK_T_RESIST );
-                         
-                                   CHAR_setWorkInt( index, CHAR_WORK_F_RESIST, f_res+CHAR_getWorkInt(
-                           index, CHAR_WORK_F_SUIT ) );                        CHAR_setWorkInt( index,
-                           CHAR_WORK_I_RESIST,                        i_res+CHAR_getWorkInt( index,
-                           CHAR_WORK_I_SUIT ) );                          CHAR_setWorkInt( index,                          CHAR_WORK_T_RESIST,
-                           t_res+CHAR_getWorkInt( index,                          CHAR_WORK_T_SUIT ) );
-                           }*/
-#endif
-
-#ifdef _PETSKILL_SETDUCK
-  // profession fix
-  // 使用回避招式时,会将防值减去30%然後设定成回避值,奇怪的设定,也造成原本设定的回避值跟没设一样,因此我(Change)先把整段拿掉
-  /*if( CHAR_getWorkInt( index, CHAR_MYSKILLDUCK) > 0 ){
-          int mtgh = CHAR_getWorkInt( index, CHAR_WORKFIXTOUGH);
-          mtgh -= (mtgh*30)/100;
-          if( mtgh < 0 ) mtgh=0;
-          CHAR_setWorkInt( index, CHAR_MYSKILLDUCKPOWER, mtgh);
-  }*/
-#endif
 #ifdef _MAGICPET_SKILL
   if (CHAR_getWorkInt(index, CHAR_MYSKILLSTR) > 0) {
     int mpower, mdef;

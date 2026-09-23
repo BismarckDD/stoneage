@@ -62,7 +62,7 @@ int main(int argc, char **argv, char **env) {
   memcpy(&tmOld, localtime((time_t *)&NowTime.tv_sec), sizeof(tmNow));
   EXIT_WITH_CODE_IF_FALSE(init(argc, argv, env), 1);
 #ifdef _ALLBLUES_LUA
-  LoadAllbluesLUA("data/ablua");
+  LoadLua("data/ablua");
 #else
   print("[Lua] support disabled in this GMSV build.\n");
 #endif

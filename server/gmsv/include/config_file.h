@@ -400,13 +400,6 @@ int getAutoDelPet(int index);
 int getAutoDelItem(int index);
 #endif
 
-#ifdef _BT_PET
-int getBtPet();
-#endif
-#ifdef _BT_ITEM
-int getBtItem();
-#endif
-
 #ifdef _LUCK_STAR
 int getLuckStarTime();
 int getLuckStarChances();

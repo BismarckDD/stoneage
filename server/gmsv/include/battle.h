@@ -1,11 +1,13 @@
 #ifndef __BATTLE_H__
 #define __BATTLE_H__
+
+#ifdef _ALLBLUES_LUA
+#include "lua.h"
+#endif
+
 #include "net.h"
 #ifdef _TRADE_PK
 #include "trade.h"
-#endif
-#ifdef _ALLBLUES_LUA_1_4
-#include "lua.h"
 #endif
 #ifdef _MULTIPLAYER_
 #define BATTLE_ENTRY_MAX 12
@@ -107,7 +109,6 @@ typedef enum {
   BATTLE_COM_S_NOGUARD,
   BATTLE_COM_S_CHARGE_OK,
   BATTLE_COM_JYUJYUTU = 2000,
-
   BATTLE_COM_COMPELESCAPE, // 强制离开
 
 #ifdef _ATTACK_MAGIC
@@ -465,13 +466,11 @@ typedef struct {
 #define BSIDE_FLG_SURPRISE (1 << 0)
 #define BSIDE_FLG_HELP_OK (1 << 1)
 
-#ifdef _ALLBLUES_LUA_1_4
 typedef enum {
   BATTLE_FINISH,
   BATTLE_ESCAPE,
   BATTLE_FUNCTABLENUM,
 } BATTLE_FUNCTABLE;
-#endif
 
 typedef struct _Battle {
   BOOL use;         /* 呼び出しているかどうか  (是否正在调用) */
@@ -525,7 +524,7 @@ typedef struct _Battle {
   int iEntryBack2[BATTLE_ENTRY_MAX * 2]; // 前ターンに記録されていたナンバー  (上一回合记录的编号)
   int createindex; /* この戦いを仕掛けたキャラインデックス(NPCなど)  (发起战斗的角色索引(NPC等)) */
   int (*WinFunc)(int battle_index, int char_index);
-#ifdef _ALLBLUES_LUA_1_4
+#ifdef _ALLBLUES_LUA
   lua_State *lua[BATTLE_FUNCTABLENUM];
   char *luafunctable[BATTLE_FUNCTABLENUM];
 #endif
@@ -755,10 +754,11 @@ void BATTLE_ProfessionStatusSeq(int battle_index, int char_index);
 int BATTLE_CreateVsPlayerForTrade(STradeList TradeList1, STradeList TradeList2);
 #endif
 
-#ifdef _ALLBLUES_LUA_1_4
-INLINE BOOL BATTLE_setLUAFunction(int battle_index, int functype, lua_State *L,
-                                  const char *luafunctable);
-INLINE lua_State *BATTLE_getLUAFunction(int battle_index, int functype);
+#ifdef _ALLBLUES_LUA
+INLINE BOOL BATTLE_setLUAFunction(
+  int battle_index, int func_type,
+  lua_State *L, const char *lua_func_table);
+INLINE lua_State *BATTLE_getLUAFunction(int battle_index, int func_type);
 #endif
 
 #ifdef _PETSKILL_NEW_PASSIVE

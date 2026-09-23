@@ -1,12 +1,6 @@
-#include "version.h"
-
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
+#include "mylua/base.h"
 #include "net.h"
 #include "log.h"
-
-#ifdef _ALLBLUES_LUA   
 
 static int endOne(lua_State *L) 
 {
@@ -19,18 +13,13 @@ static int userip(lua_State *L)
 {
 	int char_index = luaL_checkint(L, 1);
 	int sockfd = getfdFromCharaIndex(char_index);
-	unsigned long ip;
-	int a,b,c,d;
 	char strIP[32];
-  ip = CONNECT_get_userip(sockfd);
-  
-  a=(ip % 0x100); ip=ip / 0x100;
-  b=(ip % 0x100); ip=ip / 0x100;
-  c=(ip % 0x100); ip=ip / 0x100;
-  d=(ip % 0x100);
-  
+  unsigned int ip = CONNECT_get_userip(sockfd);
+  int a=(ip % 0x100); ip=ip / 0x100;
+  int b=(ip % 0x100); ip=ip / 0x100;
+  int c=(ip % 0x100); ip=ip / 0x100;
+  int d=(ip % 0x100);
 	sprintf(strIP, "%d.%d.%d.%d", a, b, c, d);
-
 	lua_pushstring(L, strIP);
 	return 1;
 }
@@ -61,19 +50,13 @@ static int getMac(lua_State *L)
 static int getIP(lua_State *L) 
 {
 	int sockfd = luaL_checkint(L, 1);
-	unsigned long ip;
-	int a,b,c,d;
 	char strIP[32];
-	
-  ip = CONNECT_get_userip(sockfd);
-
-  a=(ip % 0x100); ip=ip / 0x100;
-  b=(ip % 0x100); ip=ip / 0x100;
-  c=(ip % 0x100); ip=ip / 0x100;
-  d=(ip % 0x100);
-  
+  unsigned int ip = CONNECT_get_userip(sockfd);
+  int a=(ip % 0x100); ip=ip / 0x100;
+  int b=(ip % 0x100); ip=ip / 0x100;
+  int c=(ip % 0x100); ip=ip / 0x100;
+  int d=(ip % 0x100);
 	sprintf(strIP, "%d.%d.%d.%d", a, b, c, d);
-	
 	lua_pushstring(L, strIP);
 	return 1;
 }
@@ -81,14 +64,12 @@ static int getIP(lua_State *L)
 static int getUse(lua_State *L) 
 {
 	int fd = luaL_checkint(L, 1);
-
 	lua_pushinteger(L, CONNECT_getUse(fd));
 	return 1;
 }
 static int getCharaindex(lua_State *L) 
 {
 	int fd = luaL_checkint(L, 1);
-
 	lua_pushinteger(L, CONNECT_getCharaindex(fd));
 	return 1;
 }
@@ -112,5 +93,3 @@ LUALIB_API int luaopen_Net (lua_State *L) {
   luaL_register(L, "net", netlib);
   return 1;
 }
-
-#endif

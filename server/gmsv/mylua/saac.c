@@ -4,7 +4,6 @@
 //
 #include "saac_client.h"
 
-#ifdef _ALLBLUES_LUA
 static int ACFixFMPoint(lua_State *L)
 {
   size_t l;
@@ -53,5 +52,3 @@ LUALIB_API int luaopen_Saac(lua_State *L)
   luaL_register(L, "saac", SaacLib);
   return 1;
 }
-
-#endif

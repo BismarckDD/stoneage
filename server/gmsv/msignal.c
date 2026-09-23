@@ -73,7 +73,7 @@ static void allDataDump(void) {
   storePetmail();
 #endif
 #ifdef _ALLBLUES_LUA
-  closeMyLua();
+  closeSaLua();
 #endif
 }
 

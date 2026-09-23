@@ -5,8 +5,6 @@
 //
 #include "gmsv_server.h"
 
-#ifdef _ALLBLUES_LUA_1_2   
-
 static CharBase ItemBaseInt[] = {
 	{{"序号"},						ITEM_ID}
 	,{{"图号"},						ITEM_BASEIMAGENUMBER}
@@ -289,7 +287,7 @@ static int addLUAListFunction(lua_State *L)
 	char *luafunctablepath=luaL_checklstring(L, 3, &l);
 
 	if(strlen(luafunctablepath) > 0){
-		MyLua *mylua = &gMyLua;
+		SaLua *mylua = &gSaLua;
 	  while(mylua->next != NULL){
 	  	if(strcmp(mylua->luapath, luafunctablepath) == 0){
 	  		return ITEM_addLUAListFunction( mylua->lua, luafuncname, luafunctable);
@@ -350,6 +348,3 @@ LUALIB_API int luaopen_Item(lua_State *L) {
   luaL_register(L, "item", itemlib);
   return 1;
 }
-
-#endif
-

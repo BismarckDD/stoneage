@@ -460,10 +460,8 @@ static void CHAR_setCharFuncTable(Char *ch) {
       "", //  CHAR_LOOPFUNCTEMP2, = 18
       "", // CHAR_BATTLEPROPERTY, = 19
 #endif
-#ifdef _ALLBLUES_LUA_1_4
+#ifdef _ALLBLUES_LUA
       "", // CHAR_LOGINOUTFUNC = 20,
-#endif
-#ifdef _ALLBLUES_LUA_1_9
       "", // CHAR_BATTLESETFUNC = 21,
 #endif
   };

@@ -1,3 +1,4 @@
+#include "mylua/base.h"
 #include "mylua/mylua.h"
 //
 #include "battle.h"

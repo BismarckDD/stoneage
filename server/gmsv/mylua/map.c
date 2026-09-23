@@ -9,12 +9,10 @@
 //
 #include "gmsv_server.h"
 
-#ifdef _ALLBLUES_LUA
-#ifdef _ALLBLUES_LUA_1_1
 static int RandMap(lua_State *L)
 {
-	lua_pushinteger(L, MAP_getfloorId(rand() % MAP_getMapNum()));
-	return 1;
+  lua_pushinteger(L, MAP_getfloorId(rand() % MAP_getMapNum()));
+  return 1;
 }
 
 static int RandXAndY(lua_State *L)
@@ -308,6 +306,3 @@ LUALIB_API int luaopen_Map(lua_State *L)
 	luaL_register(L, "map", mapLib);
 	return 1;
 }
-#endif
-
-#endif

@@ -1700,6 +1700,11 @@ int NPC_PetTransManCheck(int meindex, int toindex, int select) {
   return -1;
 }
 
+  struct PetTransDelItem {
+    int minItemID;
+    int maxItemID;
+  } DelItem[3] = {{19629, 19632}, {19672, 19687}, {19625, 19628}};
+
 BOOL NPC_PetTransManStatus(int meindex, int toindex, int petNo) {
   int petindex;
   int LevelUpPoint = 0, petrank = 0;
@@ -1710,10 +1715,6 @@ BOOL NPC_PetTransManStatus(int meindex, int toindex, int petNo) {
   int total1, total2, total, petLV, ans;
   int petID, enemynum, ret;
   int work[4] = {0, 0, 0, 0};
-  struct PetTransDelItem {
-    int minItemID;
-    int maxItemID;
-  } DelItem[3] = {{19629, 19632}, {19672, 19687}, {19625, 19628}};
 
 #ifdef _PET_2TRANS
   int tran = CHAR_getInt(petNo, CHAR_TRANSMIGRATION);
@@ -1800,7 +1801,6 @@ BOOL NPC_PetTransManStatus(int meindex, int toindex, int petNo) {
 #endif
 
   total = total1 + (total2 * 4);
-
   work[0] = (ans * (vital1 + (vital2 * 4))) / total;
   work[1] = (ans * (str1 + (str2 * 4))) / total;
   work[2] = (ans * (tgh1 + (tgh2 * 4))) / total;
@@ -1842,7 +1842,7 @@ BOOL NPC_PetTransManStatus(int meindex, int toindex, int petNo) {
 #ifdef _PET_2TRANS
     tpetidx1 = CHAR_getInt(petindex, CHAR_PETID);
 #endif
-    // 删除身上所有玛宠
+    // 删除身上所有玛蕾菲雅
     for (j = 0; j < CHAR_MAXPETHAVE; j++) {
       int pet_index = CHAR_getCharPet(toindex, j);
       if (pet_index == -1)

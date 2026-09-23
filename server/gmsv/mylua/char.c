@@ -16,7 +16,6 @@
 #include "gmsv_server.h"
 #include "saac_client.h"
 #include "shop.h"
-#ifdef _ALLBLUES_LUA
 
 static CharBase CharBaseWorkInt[] = {
     {{"对象"}, CHAR_WORKOBJINDEX}
@@ -557,10 +556,8 @@ static CharBase CharBaseEvent[] = {{{"初始化事件"}, CHAR_INITFUNC}
 #endif
 // ,{{"重叠事件"},     CHAR_OVERLAPEDFUNC}
 // ,{{"战后事件"},     CHAR_BATTLEOVERDFUNC}
-#ifdef _ALLBLUES_LUA_1_4
                                    ,
                                    {{"登出事件"}, CHAR_LOGINOUTFUNC}
-#endif
 #ifdef _ALLBLUES_LUA_1_9
                                    ,
                                    {{"战斗设置事件"}, CHAR_BATTLESETFUNC}
@@ -819,7 +816,7 @@ static int setFunctionPointer(lua_State *L) {
   char *luafunctable = luaL_checklstring(L, 3, &l);
   char *luafunctablepath = luaL_checklstring(L, 4, &l);
   if (strlen(luafunctablepath) > 0) {
-    MyLua *mylua = &gMyLua;
+    SaLua *mylua = &gSaLua;
     while (mylua->next != NULL) {
       if (strcmp(mylua->luapath, luafunctablepath) == 0) {
         return CHAR_setLUAFunction(index, functype, mylua->lua, luafunctable);
@@ -1096,7 +1093,6 @@ static int talkToServerEx(lua_State *L) {
 }
 
 #endif
-#ifdef _ALLBLUES_LUA_1_1
 static int WarpToSpecificPoint(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
   const int floor = luaL_checkint(L, 2);
@@ -1122,13 +1118,10 @@ static int MapAllWarp(lua_State *L) {
   }
   return 1;
 }
-#endif
 
-#ifdef _ALLBLUES_LUA_1_3
 int createPet(lua_State *L) {
   const int enemyid = luaL_checkint(L, 1);
   const int UpLevel = luaL_checkint(L, 2);
-
   int i;
   for (i = 0; i < ENEMY_getEnemyNum(); i++) {
     if (ENEMY_getInt(i, ENEMY_ID) == enemyid) {
@@ -1493,7 +1486,7 @@ static int setPlayerNpc(lua_State *L) {
   return 1;
 }
 #endif
-#endif
+
 #ifdef _PETSKILL_SHOP_LUA
 static int FreePetSkill(lua_State *L) {
   const int petindex = luaL_checkint(L, 1);
@@ -1567,7 +1560,6 @@ static int JoinParty(lua_State *L) {
   return 1;
 }
 
-#ifdef _ALLBLUES_LUA_1_4
 static int getRightTo8(lua_State *L) {
   const int value = luaL_checkint(L, 1);
   const int flg = luaL_checkint(L, 2);
@@ -1824,8 +1816,6 @@ static int DelPet(lua_State *L) {
   }
   return 1;
 }
-
-#endif
 
 #ifdef _ALLBLUES_LUA_1_7
 static int findEmptyItemBox(lua_State *L) {
@@ -2296,14 +2286,11 @@ static const luaL_Reg charLib[] = {
 #endif
     {"BoundRandWalk", BoundRandWalk},
     {"ToAroundChar", ToAroundChar},
-#ifdef _ALLBLUES_LUA_1_1
     {"Walk", Walk},
     {"WalkPoint", WalkPoint},
     {"WarpToSpecificPoint", WarpToSpecificPoint},
     {"MapAllWarp", MapAllWarp},
     {"RandRandWalk", RandRandWalk},
-#endif
-#ifdef _ALLBLUES_LUA_1_3
     {"createPet", createPet},
     {"setCharPet", setCharPet},
     {"getCharPet", getCharPet},
@@ -2327,8 +2314,6 @@ static const luaL_Reg charLib[] = {
     {"getPetSkill", getPetSkill},
     {"PetLevelUp", PetLevelUp},
     {"JoinParty", JoinParty},
-#endif
-#ifdef _ALLBLUES_LUA_1_4
     {"getLiftTo8", getLiftTo8},
     {"getRightTo8", getRightTo8},
     {"complianceParameter", complianceParameter},
@@ -2343,7 +2328,6 @@ static const luaL_Reg charLib[] = {
     {"CharaDeleteHavePet", CharaDeleteHavePet},
     {"FindPetFormEnemyTempID", FindPetFormEnemyTempID},
     {"FindPetFormMatemo", FindPetFormMatemo},
-#endif
 #ifdef _PETSKILL_SHOP_LUA
     {"FreePetSkill", FreePetSkill},
 #endif
@@ -2377,9 +2361,7 @@ static const luaL_Reg charLib[] = {
     {"setCharSkill", setCharSkill},
     {"DelSProfeesionSkill", DelSProfeesionSkill},
 #endif
-#ifdef _ALLBLUES_LUA_1_3
     {"WriteShopData", AB_WriteShopData},
-#endif
     {"GetEmptyItemBoxNum", GetEmptyItemBoxNum},
     {"ClearEncounter", ClearEncounter},
 #ifdef _NEW_TITLE
@@ -2397,5 +2379,3 @@ LUALIB_API int luaopen_Char(lua_State *L) {
   luaL_register(L, "char", charLib);
   return 1;
 }
-
-#endif

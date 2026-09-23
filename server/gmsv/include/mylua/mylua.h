@@ -12,11 +12,11 @@ typedef struct tagCharBase {
 
 const int getCharBaseValue(lua_State *L, int narg, CharBase *charbase, int num);
 
-void LoadAllbluesLUA(const char *filename);
-void ReLoadAllbluesLUA(const char *filename);
-int loadMyLua(const char *filename);
-int reLoadMyLua(const char *filename);
-int closeMyLua();
+void LoadLua(const char *filename);
+void ReLoadLua(const char *filename);
+int loadSaLua(const char *filename);
+int reLoadSaLua(const char *filename);
+int closeSaLua();
 int dofile(lua_State *L, const char *name);
 
 #define docall(L, narg, clear) _docall(L, narg, clear, __func__)
@@ -29,7 +29,7 @@ typedef struct tagMyLua {
   lua_State *lua;
   char *luapath;
   struct tagMyLua *next;
-} MyLua;
+} SaLua;
 
 #ifdef __MYLUA_MYLUA_C__
 #define EXTERN
@@ -37,7 +37,7 @@ typedef struct tagMyLua {
 #define EXTERN extern
 #endif
 
-EXTERN MyLua gMyLua;
+EXTERN SaLua gSaLua;
 
 #undef EXTERN
 

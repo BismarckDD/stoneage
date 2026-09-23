@@ -1,3 +1,7 @@
+#define __MYLUA_MYLUA_C__
+#include "mylua/base.h"
+#include "mylua/mylua.h"
+//
 #include "autil.h"
 #include "buf.h"
 #include "util.h"
@@ -5,11 +9,6 @@
 #include <dirent.h>
 #include <signal.h>
 #include <sys/stat.h>
-
-#define __MYLUA_MYLUA_C__
-#include "mylua/mylua.h"
-
-#ifdef _ALLBLUES_LUA
 
 int getArrayInt(lua_State *L, int idx) {
   int result = 0;
@@ -53,13 +52,10 @@ static int traceback(lua_State *L) {
 }
 
 int _docall(lua_State *L, int narg, int clear, const char *file) {
-  int status;
   int base = lua_gettop(L) - narg; /* function index */
   lua_pushcfunction(L, traceback); /* push traceback function */
   lua_insert(L, base);             /* put it under chunk and args */
-
-  status = lua_pcall(L, narg, (clear ? 0 : LUA_MULTRET), base);
-
+  int status = lua_pcall(L, narg, (clear ? 0 : LUA_MULTRET), base);
   lua_remove(L, base); /* remove traceback function */
   /* force a complete garbage collection in case of errors */
   if (status != 0) {
@@ -74,10 +70,8 @@ int dofile(lua_State *L, const char *name) {
   return report(L, status);
 }
 
-
-int loadMyLua(const char *filename) {
-  MyLua *mylua = &gMyLua;
-  int status = 0;
+int loadSaLua(const char *filename) {
+  SaLua *mylua = &gSaLua;
   print("[Lua] loading: %s\n", filename);
   while (mylua->next != NULL) {
     if (strcmp(mylua->luapath, filename) == 0) {
@@ -86,32 +80,36 @@ int loadMyLua(const char *filename) {
     }
     mylua = mylua->next;
   }
-  mylua->luapath = allocateMemory(strlen(filename));
-  memset(mylua->luapath, 0, strlen(filename));
+  int filename_len = strlen(filename);
+  mylua->luapath = allocateMemory(filename_len + 1);
+  memset(mylua->luapath, 0, filename_len + 1);
   strcpy(mylua->luapath, filename);
-  mylua->next = allocateMemory(sizeof(MyLua));
-  memset(mylua->next, 0, sizeof(MyLua));
+  mylua->next = allocateMemory(sizeof(SaLua));
+  memset(mylua->next, 0, sizeof(SaLua));
   if (mylua->next == NULL)
     return EXIT_FAILURE;
-
-  mylua->lua = lua_open(); /* create state */
+  mylua->lua = lua_open(); /* 2026.09.22 这个函数很关键 如何open? */
 
   if (mylua->lua == NULL) {
     print("[Lua] failed to create state: %s\n", filename);
     return FALSE;
   }
-
-  lua_gc(mylua->lua, LUA_GCSTOP, 0); /* stop collector during initialization */
-  luaL_openlibs(mylua->lua);         /* open libraries */
+  
+  /* stop collector during initialization open libraries */
+  lua_gc(mylua->lua, LUA_GCSTOP, 0);
+  luaL_openlibs(mylua->lua); // 2026.09.22 这两个函数的形式完全相同
   luaAB_openlibs(mylua->lua);
+  // 区别仅在于lualibs的值, 这样lua就有标准库和自定义库
   lua_gc(mylua->lua, LUA_GCRESTART, 0);
 
-  status = dofile(mylua->lua, filename);
+  //
+  int status = dofile(mylua->lua, filename);
   if (status != 0) {
     print("[Lua] load failed: %s (status=%d)\n", filename, status);
     return FALSE;
   }
 
+  // 查找当前lua模块中是否有init函数，如果有，执行init()
   lua_getglobal(mylua->lua, "init");
   if (lua_isfunction(mylua->lua, -1)) {
     status = docall(mylua->lua, 0, 1);
@@ -121,8 +119,8 @@ int loadMyLua(const char *filename) {
     }
   }
 
+  // 查找当前lua模块中是否有main函数，如果有，执行main()
   lua_getglobal(mylua->lua, "main");
-
   if (lua_isfunction(mylua->lua, -1)) {
     status = docall(mylua->lua, 0, 1);
     if (status != 0) {
@@ -130,13 +128,13 @@ int loadMyLua(const char *filename) {
       return FALSE;
     }
   }
-
+  // 执行完main就算加载完毕.
   print("[Lua] loaded: %s\n", filename);
   return TRUE;
 }
 
-int reLoadMyLua(const char *filename) {
-  MyLua *mylua = &gMyLua;
+int reLoadSaLua(const char *filename) {
+  SaLua *mylua = &gSaLua;
 
   while (mylua->next != NULL) {
     if (strlen(mylua->luapath) > 0) {
@@ -146,7 +144,6 @@ int reLoadMyLua(const char *filename) {
           continue;
         }
       }
-
       lua_gc(mylua->lua, LUA_GCSTOP, 0);
       luaL_openlibs(mylua->lua);
       luaAB_openlibs(mylua->lua);
@@ -164,8 +161,8 @@ int reLoadMyLua(const char *filename) {
   return EXIT_SUCCESS;
 }
 
-int closeMyLua() {
-  MyLua *mylua = &gMyLua;
+int closeSaLua() {
+  SaLua *mylua = &gSaLua;
   while (mylua->next != NULL) {
     lua_pop(mylua->lua, 1);
     lua_close(mylua->lua);
@@ -189,8 +186,7 @@ static int ablua_is_regular_file(const char *fullpath,
 static void LoadAllbluesLUARecursive(const char *path, int *loaded, int *failed) {
   struct dirent *ent = NULL;
   char filename[256];
-  DIR *pDir;
-  pDir = opendir(path);
+  DIR *pDir = opendir(path);
   if (pDir == NULL) {
     print("[Lua] cannot open script directory: %s\n", path);
     (*failed)++;
@@ -203,9 +199,8 @@ static void LoadAllbluesLUARecursive(const char *path, int *loaded, int *failed)
     memset(filename, 0, 256);
     sprintf(filename, "%s/%s", path, ent->d_name);
     if (ablua_is_regular_file(filename, ent)) {
-      if (strcmptail(ent->d_name, ".allblues") == 0
-          || strcmptail(ent->d_name, ".lua") == 0) {
-        if (loadMyLua(filename))
+      if (strcmptail(ent->d_name, ".lua") == 0) {
+        if (loadSaLua(filename))
           (*loaded)++;
         else
           (*failed)++;
@@ -218,7 +213,7 @@ static void LoadAllbluesLUARecursive(const char *path, int *loaded, int *failed)
   closedir(pDir);
 }
 
-void LoadAllbluesLUA(const char *path) {
+void LoadLua(const char *path) {
   int loaded = 0;
   int failed = 0;
   print("[Lua] scanning script directory: %s\n", path);
@@ -227,9 +222,11 @@ void LoadAllbluesLUA(const char *path) {
         failed, path);
 }
 
-void ReLoadAllbluesLUA(const char *filename) { reLoadMyLua(filename); }
+void ReLoadLua(const char *filename) { reLoadSaLua(filename); }
 
-const int getCharBaseValue(lua_State *L, int narg, CharBase *charbase,
+const int getCharBaseValue(lua_State *L,
+                           int narg,
+                           CharBase *charbase,
                            int num) {
   if (!lua_isnumber(L, narg)) {
     size_t l;
@@ -260,5 +257,3 @@ const int getCharBaseValue(lua_State *L, int narg, CharBase *charbase,
     return luaL_checkint(L, narg);
   }
 }
-
-#endif

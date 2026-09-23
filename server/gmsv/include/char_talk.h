@@ -4,22 +4,17 @@
 #include "common.h"
 #include "util.h"
 #include "net.h"
-#ifdef _ALLBLUES_LUA
-#include "lua.h"
-#include "lauxlib.h"
-#include "lualib.h"
-#endif
-void CHAR_getMessageBody(char* message, char* kind, int kindlen,
-            char** body);
+void CHAR_getMessageBody(char *message, char *kind, int kindlen,
+						 char **body);
 
-int CHAR_getChatMagicFuncLevel(char* name,BOOL isDebug);
-int CHAR_getChatMagicFuncNameAndString( int ti, char* name, char *usestring, int level, BOOL isDebug);
-int CHAR_getChatMagicFuncMaxNum( void);
+int CHAR_getChatMagicFuncLevel(char *name, BOOL isDebug);
+int CHAR_getChatMagicFuncNameAndString(int ti, char *name, char *usestring, int level, BOOL isDebug);
+int CHAR_getChatMagicFuncMaxNum(void);
 
-void OneByOneTkChannel ( int fd , char *tmp1 , char *tmp2 , int color) ; 
+void OneByOneTkChannel(int fd, char *tmp1, char *tmp2, int color);
 
-typedef void (*CHATMAGICFUNC)(int,char*);
-CHATMAGICFUNC CHAR_getChatMagicFuncPointer(char* name, BOOL isDebug);
+typedef void (*CHATMAGICFUNC)(int, char *);
+CHATMAGICFUNC CHAR_getChatMagicFuncPointer(char *name, BOOL isDebug);
 
 #ifdef _FILTER_TALK
 int ReadFilterTalk();
@@ -27,7 +22,10 @@ char *getFilterTalk(int index);
 int getFilterTalkNum();
 #endif
 
-#ifdef _ALLBLUES_LUA_1_2 
+#ifdef _ALLBLUES_LUA
+
+#include "mylua/base.h"
+
 typedef struct tagMAGIC_LuaFunc
 {
 	lua_State *lua;
@@ -35,12 +33,12 @@ typedef struct tagMAGIC_LuaFunc
 	char *luafunctable;
 	int gmlevel;
 	char *usestring;
-  struct tagMAGIC_LuaFunc	*next;
-}MAGIC_LuaFunc;
+	struct tagMAGIC_LuaFunc *next;
+} MAGIC_LuaFunc;
 
-BOOL MAGIC_addLUAListFunction( lua_State *L, const char *luafuncname, const char *luafunctable, int gmlevel, char *usestring );
-BOOL MAGIC_getLUAListFunction( char *luafuncname, int gmlevel, int char_index, char *data );
+BOOL MAGIC_addLUAListFunction(lua_State *L, const char *luafuncname, const char *luafunctable, int gmlevel, char *usestring);
+BOOL MAGIC_getLUAListFunction(char *luafuncname, int gmlevel, int char_index, char *data);
 
 #endif
 
-#endif 
+#endif

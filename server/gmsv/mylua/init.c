@@ -8,32 +8,24 @@ static const luaL_Reg lualibs[] = {{"char", luaopen_Char},
                                    {"obj", luaopen_Object},    // 调用
                                    {"client", luaopen_Client}, // 访问client
                                    {"saac", luaopen_Saac},     // 访问saac
-#ifdef _ALLBLUES_LUA_1_1
                                    {"map", luaopen_Map},
                                    {"other", luaopen_Other},
                                    {"config", luaopen_Config},
-#endif
-#ifdef _ALLBLUES_LUA_1_2
                                    {"item", luaopen_Item},
                                    {"magic", luaopen_Magic},
-#endif
 #ifdef _OFFLINE_SYSTEM
                                    {"offline", luaopen_Offline},
 #endif
-#ifdef _ALLBLUES_LUA_1_4
-                                   {"enemytemp", luaopen_Enemytemp},
+                                   {"enemytemp", luaopen_EnemyTemp},
 #ifdef _SASQL
                                    {"sasql", luaopen_Sasql},
 #endif
-#endif
                                    {"net", luaopen_Net},
-#ifdef _ALLBLUES_LUA_1_8
 #ifdef _PROFESSION_SKILL
                                    {"Professionskill", luaopen_ProfessionSkill},
 #endif
                                    {"family", luaopen_Family},
                                    {"petskill", luaopen_PetSkill},
-#endif
                                    {NULL, NULL}};
 
 // 2026.09.22 把C++实现的lua适配器函数注册到lua

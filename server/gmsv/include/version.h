@@ -20,11 +20,6 @@
 // #define _SA_80 // 失落的世界: 
 // #define _SA_85 // 魔域大冒险：先不管
 #define _ALLBLUES_LUA
-#define _ALLBLUES_LUA_1_1
-#define _ALLBLUES_LUA_1_2
-#define _ALLBLUES_LUA_1_3
-#define _ALLBLUES_LUA_1_4
-#define _ALLBLUES_LUA_1_5
 #define _ALLBLUES_LUA_1_6
 #define _ALLBLUES_LUA_1_7
 #define _ALLBLUES_LUA_1_8

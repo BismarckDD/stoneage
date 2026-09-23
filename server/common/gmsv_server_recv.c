@@ -1371,8 +1371,6 @@ void GmsvServer_DU_recv(int client_fd, int x, int y) {
       found = TRUE;
       if (CHAR_getWorkInt(toindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
         continue;
-
-#ifdef _ALLBLUES_LUA_1_5
       int flg = FreeVsPlayer(charaindex, toindex);
       if (flg == 1) {
         GmsvServer_EN_send(client_fd, FALSE, 0);
@@ -1380,7 +1378,6 @@ void GmsvServer_DU_recv(int client_fd, int x, int y) {
       } else if (flg == 2) {
         return;
       } else
-#endif
       if (!CHAR_getFlg(toindex, CHAR_ISDUEL)) {
         int floor = CHAR_getInt(charaindex, CHAR_FLOOR);
 #ifdef _AUTO_PK

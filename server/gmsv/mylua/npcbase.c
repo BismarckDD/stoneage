@@ -231,7 +231,6 @@ static int EvClr(lua_State *L) {
   size_t l;
   const int index = luaL_checkint(L, 1);
   char *data = luaL_checklstring(L, 2, &l);
-
   NPC_ActionClearEvent(index, data);
   return 1;
 }
@@ -241,7 +240,6 @@ static int VipItem(lua_State *L) {
   size_t l;
   const int index = luaL_checkint(L, 1);
   char *data = luaL_checklstring(L, 2, &l);
-
   NPC_ActionVipItem(index, data);
   return 1;
 }
@@ -250,7 +248,6 @@ static int VipPet(lua_State *L) {
   size_t l;
   const int index = luaL_checkint(L, 1);
   char *data = luaL_checklstring(L, 2, &l);
-
   NPC_ActionVipPet(index, data);
   return 1;
 }
@@ -261,7 +258,6 @@ static int Vip_Item(lua_State *L) {
   size_t l;
   const int index = luaL_checkint(L, 1);
   char *data = luaL_checklstring(L, 2, &l);
-
   NPC_ActionVipItem(index, data);
   return 1;
 }
@@ -344,7 +340,6 @@ static int ActionPassCheck(lua_State *L) {
   return 1;
 }
 
-#ifdef _ALLBLUES_LUA_1_1
 static int SetPoint(lua_State *L) {
   const int meindex = luaL_checkint(L, 1);
   const int ff = luaL_checkint(L, 2);
@@ -433,8 +428,6 @@ static int DelNpc(lua_State *L) {
   return 1;
 }
 
-#endif
-
 #ifdef _PLAYER_NPC
 static int CreateSpecialNpc(lua_State *L) {
   Char one;
@@ -506,7 +499,6 @@ static int CreateSpecialNpc(lua_State *L) {
 }
 #endif
 
-#ifdef _ALLBLUES_LUA_1_4
 #ifdef _PLAYER_NPC
 static int CreatePlayer(lua_State *L) {
   Char one;
@@ -529,38 +521,32 @@ static int CreatePlayer(lua_State *L) {
   one.data[CHAR_Y] = y;
   one.data[CHAR_DIR] = dir;
 
-  int npcindex = CHAR_initCharOneArray(&one);
-
-  if (npcindex < 0) {
+  int npc_index = CHAR_initCharOneArray(&one);
+  if (npc_index < 0) {
     print("NPC制作失败。\n");
   }
 
   Object object;
-  int objindex;
-
   object.type = OBJTYPE_CHARA;
-  object.index = npcindex;
-  object.x = CHAR_getInt(npcindex, CHAR_X);
-  object.y = CHAR_getInt(npcindex, CHAR_Y);
-  object.floor = CHAR_getInt(npcindex, CHAR_FLOOR);
+  object.index = npc_index;
+  object.x = CHAR_getInt(npc_index, CHAR_X);
+  object.y = CHAR_getInt(npc_index, CHAR_Y);
+  object.floor = CHAR_getInt(npc_index, CHAR_FLOOR);
 
-  objindex = initObjectOne(&object);
-
-  if (objindex == -1) {
-    CHAR_endCharOneArray(npcindex);
+  int obj_index = initObjectOne(&object);
+  if (obj_index == -1) {
+    CHAR_endCharOneArray(npc_index);
     lua_pushinteger(L, -1);
     return 1;
   }
 
-  CHAR_setWorkInt(npcindex, CHAR_WORKOBJINDEX, objindex);
-  CHAR_LoginBesideSetWorkInt(npcindex, -1);
-
-  CHAR_setFlg(npcindex, CHAR_ISDUEL, 0);
-  CHAR_setFlg(npcindex, CHAR_ISTRADECARD, 0);
-  CHAR_setFlg(npcindex, CHAR_ISTRADE, 0);
-  CHAR_setFlg(npcindex, CHAR_ISPARTY, 0);
-
-  lua_pushinteger(L, npcindex);
+  CHAR_setWorkInt(npc_index, CHAR_WORKOBJINDEX, obj_index);
+  CHAR_LoginBesideSetWorkInt(npc_index, -1);
+  CHAR_setFlg(npc_index, CHAR_ISDUEL, 0);
+  CHAR_setFlg(npc_index, CHAR_ISTRADECARD, 0);
+  CHAR_setFlg(npc_index, CHAR_ISTRADE, 0);
+  CHAR_setFlg(npc_index, CHAR_ISPARTY, 0);
+  lua_pushinteger(L, npc_index);
   return 1;
 }
 #endif
@@ -568,16 +554,16 @@ static int CreatePlayer(lua_State *L) {
 
 #ifdef _ONLINE_COST
 static int OnlineCost(lua_State *L) {
+  // 从栈上check一个int
   const int char_index = luaL_checkint(L, 1);
-
   NPC_ActionOnlineCost(char_index);
+  // 向栈上push一个int，即恢复栈
   lua_pushinteger(L, 1);
   return 1;
 }
 
 static int OnlineBuy(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
-
   NPC_ActionOnlineBuy(char_index);
   lua_pushinteger(L, 1);
   return 1;
@@ -623,16 +609,12 @@ static const luaL_Reg npclib[] = {{"CreateNpc", CreateNpc},
 #endif
                                   {"isFaceToFace", isFaceToFace},
                                   {"Free", ActionPassCheck},
-#ifdef _ALLBLUES_LUA_1_1
                                   {"SetPoint", SetPoint},
                                   {"DelItemNum", DelItemNum},
                                   {"DelNpc", DelNpc},
-#endif
 #ifdef _PLAYER_NPC
                                   {"CreateSpecialNpc", CreateSpecialNpc},
-#ifdef _ALLBLUES_LUA_1_4
                                   {"CreatePlayer", CreatePlayer},
-#endif
 #endif
 #ifdef _ONLINE_COST
                                   {"OnlineCost", OnlineCost},
@@ -645,5 +627,3 @@ LUALIB_API int luaopen_NPC(lua_State *L) {
   luaL_register(L, "npc", npclib);
   return 1;
 }
-
-#endif

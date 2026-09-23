@@ -1,10 +1,9 @@
-#include "char.h"
-#include "char_base.h"
 #include "mylua/base.h"
 //
+#include "char.h"
+#include "char_base.h"
+//
 #include "gmsv_server.h"
-
-#ifdef _ALLBLUES_LUA
 
 #define WINDOW_BUTTONTYPE_NONE (0)
 #define WINDOW_BUTTONTYPE_OK (1 << 0)
@@ -389,5 +388,3 @@ LUALIB_API int luaopen_Client(lua_State *L)
 	luaL_register(L, "client", clientLib);
 	return 1;
 }
-
-#endif

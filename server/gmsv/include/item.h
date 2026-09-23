@@ -298,10 +298,8 @@ typedef struct tagItem {
   void *sur_functable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
   STRING32 sur_charfunctable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
 #endif
-#ifdef _ALLBLUES_LUA_1_2
   lua_State *lua[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
   char *luafunctable[ITEM_LASTFUNCTION - ITEM_FIRSTFUNCTION];
-#endif
 } ITEM_Item;
 
 typedef struct ITEM_tagTable {
@@ -430,8 +428,6 @@ char *ITEM_petmakeItemStatusString(int petindex, int item_id);
 
 BOOL ITEM_checksetdata(void);
 
-#ifdef _ALLBLUES_LUA_1_2
-
 #include "mylua/mylua.h"
 
 /* ABLUA 物品回调桥接层：Lua 侧按函数名注册，C 侧按物品索引取回 lua_State */
@@ -449,5 +445,4 @@ INLINE BOOL ITEM_setLUAFunction(int item_index, int functype,
 INLINE lua_State *ITEM_getLUAFunction(int item_index, int functype);
 BOOL ITEM_addLUAListFunction(lua_State *L, const char *luafuncname,
                              const char *luafunctable);
-#endif
 #endif /* __ITEM_H__ */

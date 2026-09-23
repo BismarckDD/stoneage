@@ -258,12 +258,6 @@ typedef struct tagServerConfig {
 #ifdef _AUTO_DEL_ITEM
   char autodelitem[256];
 #endif
-#ifdef _BT_PET
-  int btpet;
-#endif
-#ifdef _BT_ITEM
-  int btitem;
-#endif
 #ifdef _LUCK_STAR
   int luckstartime;
   int luckstarchances;
@@ -811,12 +805,6 @@ ReadConf gReadConf[] = {
 #ifdef _AUTO_DEL_ITEM
     {"AUTODELITEM", gServerConfig.autodelitem,
      sizeof(gServerConfig.autodelitem), NULL, 0},
-#endif
-#ifdef _BT_PET
-    {"BTPET", NULL, 0, (void *)&gServerConfig.btpet, INT},
-#endif
-#ifdef _BT_ITEM
-    {"BTITEM", NULL, 0, (void *)&gServerConfig.btitem, INT},
 #endif
 #ifdef _LUCK_STAR
     {"LUCKSTARTIME", NULL, 0, (void *)&gServerConfig.luckstartime, INT},
@@ -2357,14 +2345,6 @@ int getAutoDelItem(int index) {
                               autodelitem, sizeof(autodelitem));
   return atoi(autodelitem);
 }
-#endif
-
-#ifdef _BT_PET
-int getBtPet() { return gServerConfig.btpet; }
-#endif
-
-#ifdef _BT_ITEM
-int getBtItem() { return gServerConfig.btitem; }
 #endif
 
 #ifdef _LUCK_STAR

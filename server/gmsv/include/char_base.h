@@ -5,9 +5,6 @@
 #ifdef _ALLBLUES_LUA
 #include "lua.h"
 #endif
-#ifdef _ALLBLUES_LUA
-#include "lua.h"
-#endif
 //
 #include "addressbook.h"
 #include "skill.h"
@@ -1617,10 +1614,8 @@ typedef enum {
   CHAR_LOOPFUNCTEMP2,
   CHAR_BATTLEPROPERTY,
 #endif
-#ifdef _ALLBLUES_LUA_1_4
+#ifdef _ALLBLUES_LUA
   CHAR_LOGINOUTFUNC,
-#endif
-#ifdef _ALLBLUES_LUA_1_9
   CHAR_BATTLESETFUNC,
 #endif
   CHAR_LASTFUNCTION,

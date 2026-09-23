@@ -76,11 +76,9 @@ int ITEM_eventDrop(int item_index, int char_index, int itemchar_index) {
   if (dropfunc) {
     dropfunc(char_index, item_index);
   }
-#ifdef _ALLBLUES_LUA_1_2
   else {
     RunItemDropEvent(char_index, item_index);
   }
-#endif
   if (ITEM_getInt(item_index, ITEM_VANISHATDROP) != 1)
     return 0;
   snprintf(szBuffer, sizeof(szBuffer), "%s 消灭了。",
@@ -576,20 +574,20 @@ void ITEM_useMic_Field(int char_index, int to_char_index, int haveitem_index) {
     CHAR_talkToCli(char_index, -1, "将麦克风设定为ON。", CHAR_COLORWHITE);
   }
 }
-#if 1
-char *aszHealStringByOwn[] = {"%s的耐久力回复%d", "%s的气力回复%d",
-                              "%s的魅力上升%d", "%s的忠诚度上升%d", ""};
 
-char *aszDownStringByOwn[] = {"%s的耐久力减低%d", "%s的气力减低%d",
-                              "%s的魅力下降%d", "%s的忠诚度下降%d", ""};
+char *cszUpByMyself[] = {"%s的耐久力回复%d", "%s的气力回复%d",
+                         "%s的魅力上升%d", "%s的忠诚度上升%d", ""};
 
-char *aszHealStringByOther[] = {"藉由%s%s的耐久力回复%d", "藉由%s%s的气力回复%d",
-                                "藉由%s%s的魅力上升%d", "藉由%s%s的忠诚度上升%d",
-                                ""};
+char *cszDownByMyself[] = {"%s的耐久力减低%d", "%s的气力减低%d",
+                           "%s的魅力下降%d", "%s的忠诚度下降%d", ""};
 
-char *aszDownStringByOther[] = {"藉由%s%s的耐久力减低%d", "藉由%s%s的气力减低%d",
-                                "藉由%s%s的魅力减低%d", "藉由%s%s的忠诚度减低%d",
-                                ""};
+char *cszUpByOthers[] = {"藉由%s%s的耐久力回复%d", "藉由%s%s的气力回复%d",
+                         "藉由%s%s的魅力上升%d", "藉由%s%s的忠诚度上升%d",
+                         ""};
+
+char *cszDownByOthers[] = {"藉由%s%s的耐久力减低%d", "藉由%s%s的气力减低%d",
+                           "藉由%s%s的魅力减低%d", "藉由%s%s的忠诚度减低%d",
+                           ""};
 
 char *aszKeyString[] = {"体", "气", "魅", "忠", ""};
 int aHealInt[] = {CHAR_HP, CHAR_MP, CHAR_CHARM, CHAR_VARIABLEAI, -1};
@@ -962,56 +960,53 @@ void ITEM_useRecovery_Field(int char_index, int toindex, int haveitem_index) {
   for (j = 0; j < BD_KIND_END; j++) {
     if ((HealFlg & (1 << j)) == 0)
       continue;
-    if (char_index != toindex) {
+    if (char_index != toindex) { // 施术人和受术人不是一个
       if (power[j] >= 0) {
-        snprintf(msgbuf, sizeof(msgbuf), aszHealStringByOwn[j],
+        snprintf(msgbuf, sizeof(msgbuf), cszUpByMyself[j],
                  CHAR_getUseName(toindex), recovery[j]);
       } else {
-        snprintf(msgbuf, sizeof(msgbuf), aszDownStringByOwn[j],
+        snprintf(msgbuf, sizeof(msgbuf), cszDownByMyself[j],
                  CHAR_getUseName(toindex), -recovery[j]);
       }
       CHAR_talkToCli(char_index, -1, msgbuf, CHAR_COLORWHITE);
       if (CHAR_getInt(toindex, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
         if (power[j] >= 0) {
-          snprintf(msgbuf, sizeof(msgbuf), aszHealStringByOther[j],
+          snprintf(msgbuf, sizeof(msgbuf), cszUpByOthers[j],
                    CHAR_getUseName(char_index), CHAR_getUseName(toindex),
                    recovery[j]);
         } else {
-          snprintf(msgbuf, sizeof(msgbuf), aszDownStringByOther[j],
+          snprintf(msgbuf, sizeof(msgbuf), cszDownByOthers[j],
                    CHAR_getUseName(char_index), CHAR_getUseName(toindex),
                    -recovery[j]);
         }
         CHAR_talkToCli(toindex, -1, msgbuf, CHAR_COLORWHITE);
       }
-    } else {
+    } else { // 施术人和受术人是一个
       if (power[j] >= 0) {
-        snprintf(msgbuf, sizeof(msgbuf), aszHealStringByOwn[j],
+        snprintf(msgbuf, sizeof(msgbuf), cszUpByMyself[j],
                  CHAR_getUseName(char_index), recovery[j]);
       } else {
-        snprintf(msgbuf, sizeof(msgbuf), aszDownStringByOwn[j],
+        snprintf(msgbuf, sizeof(msgbuf), cszDownByMyself[j],
                  CHAR_getUseName(char_index), -recovery[j]);
       }
       CHAR_talkToCli(char_index, -1, msgbuf, CHAR_COLORWHITE);
     }
   }
-  {
-    LogItem(CHAR_getChar(char_index, CHAR_NAME),
-            CHAR_getChar(char_index, CHAR_CDKEY),
+  LogItem(CHAR_getChar(char_index, CHAR_NAME),
+          CHAR_getChar(char_index, CHAR_CDKEY),
 #ifdef _add_item_log_name // WON ADD 在item的log中增加item名称
-            item_index,
+          item_index,
 #else
-            ITEM_getInt(item_index, ITEM_ID),
+          ITEM_getInt(item_index, ITEM_ID),
 #endif
-            "FieldUse", CHAR_getInt(char_index, CHAR_FLOOR),
-            CHAR_getInt(char_index, CHAR_X), CHAR_getInt(char_index, CHAR_Y),
-            ITEM_getChar(item_index, ITEM_UNIQUECODE),
-            ITEM_getChar(item_index, ITEM_NAME),
-            ITEM_getInt(item_index, ITEM_ID));
-  }
+          "FieldUse", CHAR_getInt(char_index, CHAR_FLOOR),
+          CHAR_getInt(char_index, CHAR_X),
+          CHAR_getInt(char_index, CHAR_Y),
+          ITEM_getChar(item_index, ITEM_UNIQUECODE),
+          ITEM_getChar(item_index, ITEM_NAME),
+          ITEM_getInt(item_index, ITEM_ID));
   CHAR_DelItemMess(char_index, haveitem_index, 0);
 }
-
-#endif
 
 void ITEM_useRecovery(int char_index, int toindex, int haveitem_index) {
   int battlemode;
@@ -1043,14 +1038,13 @@ void ITEM_useMRecovery(int char_index, int toindex, int haveitem_index) {
 #endif
 
 #ifdef _ITEM_USEMAGIC
-void ITEM_useMagic(int char_index, int toindex, int haveitem_index) {
-  int battlemode;
+void ITEM_useMagic(int char_index, int target_index, int item_index) {
   if (CHAR_CHECKINDEX(char_index) == FALSE)
     return;
-  battlemode = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE);
-  if (battlemode == BATTLE_CHARMODE_INIT) {
-  } else if (battlemode) {
-    ITEM_useMagic_Battle(char_index, toindex, haveitem_index);
+  int battle_mode = CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE);
+  if (battle_mode == BATTLE_CHARMODE_INIT) {
+  } else if (battle_mode) {
+    ITEM_useMagic_Battle(char_index, target_index, item_index);
   }
 }
 #endif
@@ -1068,8 +1062,6 @@ void ITEM_useOtherEditBase(int char_index, int toindex, int haveitem_index) {
     return;
   if (!CHAR_CHECKINDEX(toindex))
     return;
-#define RAND(x, y)                                                             \
-  ((x - 1) + 1 + (int)((double)(y - (x - 1)) * rand() / (RAND_MAX + 1.0)))
   item_index = CHAR_getItemIndex(char_index, haveitem_index);
   if (!ITEM_CHECKINDEX(item_index))
     return;

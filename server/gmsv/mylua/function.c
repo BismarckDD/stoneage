@@ -8,10 +8,10 @@
 
 #ifdef _ALLBLUES_LUA
 
-extern MyLua gMyLua;
+extern SaLua gSaLua;
 
 lua_State *FindLua(char *filename) {
-  MyLua *mylua = &gMyLua;
+  SaLua *mylua = &gSaLua;
   char newfilename[256];
   while (mylua->next != NULL) {
     if (strcmptail(mylua->luapath, ".allblues") == 0) {
@@ -1022,7 +1022,7 @@ BOOL EquipChangeFunction(int char_index, int id) {
 }
 
 BOOL WalkFunction(int char_index) {
-  MyLua *mylua = &gMyLua;
+  SaLua *mylua = &gSaLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "WalkFunction");
 
@@ -1054,7 +1054,7 @@ BOOL WalkFunction(int char_index) {
 }
 #ifdef _ITEM_OVER_LAP
 BOOL ItemOverlapFunction(int charindex, int fromitem_index, int toitem_index) {
-  MyLua *mylua = &gMyLua;
+  SaLua *mylua = &gSaLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "ItemOverlapFunction");
 
@@ -1086,7 +1086,7 @@ BOOL ItemOverlapFunction(int charindex, int fromitem_index, int toitem_index) {
 
 BOOL ItemOverlapedFunction(int charindex, int fromitem_index, int fromid,
                            int toitem_index, int toid) {
-  MyLua *mylua = &gMyLua;
+  SaLua *mylua = &gSaLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "ItemOverlapedFunction");
 
@@ -1208,7 +1208,7 @@ BOOL SetBattleEnmeyFunction(int meindex, int enemy_index, int id) {
 
 #ifdef _ALLBLUES_LUA_1_8
 BOOL CaptureOkFunction(int attackindex, int defindex) {
-  MyLua *mylua = &gMyLua;
+  SaLua *mylua = &gSaLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "CaptureOkFunction");
 
@@ -1262,7 +1262,7 @@ BOOL CaptureCheckFunction(int attackindex, int defindex) {
 
 #ifdef _ALLBLUES_LUA_1_7
 BOOL CharVsEnemyFunction(int char_index) {
-  MyLua *mylua = &gMyLua;
+  SaLua *mylua = &gSaLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "CharVsEnemyFunction");
 
@@ -1360,12 +1360,10 @@ BOOL FamilyRideFunction(int meindex, int petindex, int petid) {
 }
 #endif
 
-#ifdef _ALLBLUES_LUA_1_5
 BOOL NetLoopFunction(void) {
-  MyLua *mylua = &gMyLua;
+  SaLua *mylua = &gSaLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "NetLoopFunction");
-
     if (!lua_isfunction(mylua->lua, -1)) {
       lua_pop(mylua->lua, 1);
       mylua = mylua->next;
@@ -1461,7 +1459,7 @@ BOOL FreeVsPlayer(int char_index, int toindex) {
 }
 
 BOOL FreePartyJoin(int char_index, int toindex) {
-  MyLua *mylua = &gMyLua;
+  SaLua *mylua = &gSaLua;
   while (mylua->lua != NULL) {
     lua_getglobal(mylua->lua, "FreePartyJoin");
 
@@ -1492,21 +1490,15 @@ BOOL FreePartyJoin(int char_index, int toindex) {
 
   return TRUE;
 }
-#endif
-
-#ifdef _ALLBLUES_LUA_1_4
 
 BOOL RunCharLogOutEvent(int char_index) {
   lua_State *lua = CHAR_getLUAFunction(char_index, CHAR_LOGINOUTFUNC);
   if (lua == NULL) {
     return FALSE;
   }
-
   // 依次放入二个参数
   lua_pushnumber(lua, char_index);
-
   docall(lua, 1, 1);
-
   return TRUE;
 }
 
@@ -1515,12 +1507,9 @@ BOOL BattleFinish(int battleindex, int char_index) {
   if (lua == NULL) {
     return FALSE;
   }
-
   // 依次放入二个参数
   lua_pushnumber(lua, char_index);
-
   docall(lua, 1, 1);
-
   return TRUE;
 }
 
@@ -1529,18 +1518,14 @@ BOOL BattleEscape(int battleindex, int char_index) {
   if (lua == NULL) {
     return FALSE;
   }
-
   // 依次放入二个参数
   lua_pushnumber(lua, char_index);
-
   docall(lua, 1, 1);
-
   return TRUE;
 }
-#endif
 
 #ifdef _OFFLINE_SYSTEM
-BOOL OffLineCommand(int battleindex, int char_index, int side) {
+BOOL OffLineCommand(int battle_index, int char_index, int side) {
   static lua_State *lua;
 
   if (lua == NULL) {
@@ -1548,45 +1533,19 @@ BOOL OffLineCommand(int battleindex, int char_index, int side) {
     if (lua == NULL)
       return FALSE;
   }
-
   lua_getglobal(lua, "OffLineCommand");
-
   if (!lua_isfunction(lua, -1)) {
     lua_pop(lua, 1);
     return TRUE;
   }
   // 依次放入三个参数
-  lua_pushnumber(lua, battleindex);
+  lua_pushnumber(lua, battle_index);
   lua_pushnumber(lua, char_index);
   lua_pushnumber(lua, side);
-
   docall(lua, 3, 1);
-
   return TRUE;
 }
 #endif
-
-/*
-void ABNPC_Lua_NEWSHOP_Recv(int char_index) {
-  static lua_State *lua;
-  if (lua == NULL) {
-    char token[256];
-    snprintf(token, sizeof(token), "data/ablua/newshop.lua");
-    lua = FindLua(token);
-    if (lua == NULL)
-      return;
-  }
-  lua_getglobal(lua, "newshop");
-  if (!lua_isfunction(lua, -1)) {
-    lua_pop(lua, 1);
-    return;
-  }
-  // 依次放入二个参数
-  lua_pushnumber(lua, char_index);
-  docall(lua, 1, 1);
-
-  return;
-}*/
 
 #ifdef _PETSKILL_SHOP_LUA
 BOOL FreePetSkillShop(int talkerindex, int petindex, int oldSkillID,
@@ -1622,17 +1581,13 @@ BOOL FreePetSkillShop(int talkerindex, int petindex, int oldSkillID,
 }
 #endif
 
-#ifdef _ALLBLUES_LUA_1_2
 BOOL RunUseChatMagic(int char_index, char *data, lua_State *lua) {
   if (lua == NULL)
     return FALSE;
-
   // 依次放入二个参数
   lua_pushnumber(lua, char_index);
   lua_pushstring(lua, data);
-
   docall(lua, 2, 1);
-
   return TRUE;
 }
 
@@ -1757,8 +1712,6 @@ BOOL RunItemDropEvent(int char_index, int item_index) {
 
   return TRUE;
 }
-
-#endif
 
 #ifdef _VISUAL_BEATITUDE
 void FreeVisualBeatitude(int char_index, int petindex, int type) {

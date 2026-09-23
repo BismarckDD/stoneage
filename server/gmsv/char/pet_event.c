@@ -122,8 +122,6 @@ void PET_Talkfunc(int meindex, int talkerindex, char *msg, int color) {
   char tempNo[32], buf1[10240];
 #endif
   int fd = getfdFromCharaIndex(talkerindex);
-#define RAND(x, y)                                                             \
-  ((x - 1) + 1 + (int)((double)(y - (x - 1)) * rand() / (RAND_MAX + 1.0)))
   windowtype = WINDOW_MESSAGETYPE_MESSAGE;
   buttontype = WINDOW_BUTTONTYPE_OK;
   if (NPC_Util_isFaceToFace(meindex, talkerindex, 2) == FALSE) {

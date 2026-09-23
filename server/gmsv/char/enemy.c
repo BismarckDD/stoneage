@@ -383,7 +383,7 @@ BOOL ENEMY_reinitEnemy(void) {
 }
 
 /*------------------------------------------------------------------------
- ENEMY_Enemy及骄侬毛襞月
+ * 取得 ENEMY_Enemy 数组的指针
  *-----------------------------------------------------------------------*/
 int ENEMY_getEnemyArrayFromIndex(int groupindex, int index) {
   if (!GROUP_CHECKINDEX(groupindex))
@@ -393,7 +393,7 @@ int ENEMY_getEnemyArrayFromIndex(int groupindex, int index) {
   return GROUP_group[groupindex].enemyarray[index];
 }
 /*------------------------------------------------------------------------
- * ENEMY_ID 井日ENEMY_Enemy及骄侬毛襞月
+ * 由 ENEMY_ID 取得 ENEMY_Enemy 数组的指针
  *-----------------------------------------------------------------------*/
 int ENEMY_getEnemyArrayFromId(int EnemyId) {
   int i;
@@ -491,9 +491,8 @@ BOOL GROUP_initGroup(const char *filename) {
     {
       char buf[256];
       for (i = 0; i < strlen(line); i++) {
-        if (line[i] != ' ') {
+        if (line[i] != ' ')
           break;
-        }
         strcpy(buf, &line[i]);
       }
       if (i != 0) {
@@ -530,39 +529,33 @@ BOOL GROUP_initGroup(const char *filename) {
       }
       if (i < GROUP_DATAINTNUM + GROUP_STARTINTNUM)
         continue;
-
-      {
-        int enemycnt = 0;
-        for (loop = ENEMY_ID1; loop < CREATEPROB1; loop++) {
-          if (GROUP_getInt(group_readlen, loop) != -1) {
-            for (i = 0; i < ENEMY_enemynum; i++) {
-              if (ENEMY_getInt(i, ENEMY_ID) ==
-                  GROUP_getInt(group_readlen, loop)) {
-                break;
-              }
+      int enemycnt = 0;
+      for (loop = ENEMY_ID1; loop < CREATEPROB1; loop++) {
+        if (GROUP_getInt(group_readlen, loop) != -1) {
+          for (i = 0; i < ENEMY_enemynum; i++) {
+            if (ENEMY_getInt(i, ENEMY_ID) ==
+                GROUP_getInt(group_readlen, loop)) {
+              break;
             }
-            if (i == ENEMY_enemynum) {
-              i = -1;
-              GROUP_setInt(group_readlen, loop, -1);
-            } else {
-              enemycnt++;
-            }
-            GROUP_group[group_readlen].enemyarray[loop - ENEMY_ID1] = i;
           }
-        }
-        if (enemycnt == 0) {
-          printEx("团队设定中敌人尚未设定 文件:%s 第%d行\n", filename, linenum);
-          continue;
-          ;
-        }
-        if (checkRedundancy(&GROUP_group[group_readlen].intdata[ENEMY_ID1],
-                            CREATEPROB1 - ENEMY_ID1)) {
-          printEx("团队设定中敌人重复设定 文件:%s 第%d行\n", filename, linenum);
-          continue;
-          ;
+          if (i == ENEMY_enemynum) {
+            i = -1;
+            GROUP_setInt(group_readlen, loop, -1);
+          } else {
+            enemycnt++;
+          }
+          GROUP_group[group_readlen].enemyarray[loop - ENEMY_ID1] = i;
         }
       }
-
+      if (enemycnt == 0) {
+        printEx("团队设定中敌人尚未设定 文件:%s 第%d行\n", filename, linenum);
+        continue;
+      }
+      if (checkRedundancy(&GROUP_group[group_readlen].intdata[ENEMY_ID1],
+                          CREATEPROB1 - ENEMY_ID1)) {
+        printEx("团队设定中敌人重复设定 文件:%s 第%d行\n", filename, linenum);
+        continue;
+      }
       group_readlen++;
     }
   }
@@ -575,14 +568,14 @@ BOOL GROUP_initGroup(const char *filename) {
   return TRUE;
 }
 /*------------------------------------------------------------------------
- * 弘伙□皿及涩烂白央奶伙  心  仄
+ * 重新初始化遇敌组群文件
  *-----------------------------------------------------------------------*/
 BOOL GROUP_reinitGroup(void) {
   freeMemory(GROUP_group);
   return (GROUP_initGroup(getGroupfile()));
 }
 /*------------------------------------------------------------------------
- * GROUP_ID 井日GROUP_Group及骄侬毛襞月
+ * 由 GROUP_ID 取得 GROUP_Group 数组的指针
  *-----------------------------------------------------------------------*/
 int GROUP_getGroupArray(int groupid) {
   int i;
@@ -593,95 +586,83 @@ int GROUP_getGroupArray(int groupid) {
   }
   return -1;
 }
+
+typedef struct {
+  int num;
+  float rank;
+} RankTable;
+
+RankTable expRankTable[] = {
+  {100, 2.5}, {95, 2.0}, {90, 1.5}, {85, 1.0}, {80, 0.5}, {0, 0.0}, };
+
 /*------------------------------------------------------------------------
- * 潸  烦董袄毛综岳允月［
+ * 计算敌人所持有的经验值
  *-----------------------------------------------------------------------*/
 static int ENEMY_getExp(int array, int tarray, int level, int rank) {
-  int ret;
-  int *p;
-  int *tp;
-  float ranknum = 0.0;
-  float alpha;
-  struct {
-    int num;
-    float rank;
-  } ranktbl[] = {
-      {100, 2.5}, {95, 2.0}, {90, 1.5}, {85, 1.0}, {80, 0.5}, {0, 0.0},
-  };
   level--;
   if (level < 0 || level >= arraysizeof(enemybaseexptbl))
     return 0;
-
-  p = ENEMY_enemy[array].intdata;
-  tp = ENEMYTEMP_enemy[tarray].intdata;
-
-  //
+  int *p = ENEMY_enemy[array].intdata;
+  int *tp = ENEMYTEMP_enemy[tarray].intdata;
   if (rank < 0 || rank > 5)
     rank = 0;
-  ranknum = ranktbl[rank].rank;
-
-  alpha = (*(tp + E_T_CRITICAL) + *(tp + E_T_COUNTER) + *(tp + E_T_GET) +
+  float ranknum = expRankTable[rank].rank;
+  float alpha = (*(tp + E_T_CRITICAL) + *(tp + E_T_COUNTER) + *(tp + E_T_GET) +
            *(tp + E_T_POISON) + *(tp + E_T_PARALYSIS) + *(tp + E_T_SLEEP) +
            *(tp + E_T_STONE) + *(tp + E_T_DRUNK) + *(tp + E_T_CONFUSION)) /
-              100.0 +
-          *(tp + E_T_RARE);
-  /* EXP＞湘  EXP≈－  仿件弁≈汐  ←伊矛伙×*/
-  // return enemybaseexptbl[*(p+ENEMY_LV)] + (ranknum + alpha)*(*(tp+ENEMY_LV));
-  ret = enemybaseexptbl[level] + (ranknum + alpha) * (level + 1);
+              100.0 + *(tp + E_T_RARE);
+  /* 经验值 = 基准经验 + 成长系数 × 等级, 并附带能力加成 */
+  int ret = enemybaseexptbl[level] + (ranknum + alpha) * (level + 1);
   return (ret < 1) ? 1 : ret;
 }
 
-struct {
-  int num;
-  float rank;
-} ranktbl[] = {
-  {100, 2.5}, // 总成长率 >= 100 petrank=0
-  {95, 2.0},  // >=95 petrank=2.0
-  {90, 1.5},  // >=90 petrank=1.5
-  {85, 1.0},
-  {80, 0.5},
-  {0, 0.0},
+// 202
+RankTable petRankTable[] = {
+  {100, 2.5}, // >= 100 pet_rank = 2.5
+  {95, 2.0},  // >= 95 pet_rank = 2.0
+  {90, 1.5},  // >= 90 pet_rank = 1.5
+  {85, 1.0},  // >= 85 pet_rank = 1.0
+  {80, 0.5},  // >= 80 pet_rank = 0.5
+  {0, 0.0},   // < 80, pet_rank = 0;
 };
 
-int ENEMY_getRank(int array, int tarray) {
-  int paramsum;
+int ENEMY_getRank(int idx, int t_idx) {
   int i;
-  int ranknum;
-  int *p = ENEMY_enemy[array].intdata;
-  int *tp = ENEMYTEMP_enemy[tarray].intdata;
-  paramsum = *(tp + E_T_BASEVITAL) + *(tp + E_T_BASESTR)
-             + *(tp + E_T_BASETGH) + *(tp + E_T_BASEDEX);
-  ranknum = 0;
-  for (i = 0; i < arraysizeof(ranktbl); i++) {
-    if (paramsum >= ranktbl[i].num) {
-      ranknum = i;
+  int *p = ENEMY_enemy[idx].intdata;
+  int *tp = ENEMYTEMP_enemy[t_idx].intdata;
+  int param_sum = *(tp + E_T_BASESTR) + *(tp + E_T_BASETGH) 
+                + *(tp + E_T_BASEDEX) + *(tp + E_T_BASEVITAL); 
+  int pet_rank = 0;
+  for (i = 0; i < arraysizeof(petRankTable); i++) {
+    if (param_sum >= petRankTable[i].num) {
+      pet_rank = i;
       break;
     }
   }
-  return ranknum;
+  return pet_rank;
 }
 
 static int EnemyGymSkill[] = {
-    PETSKILL_GUARDBREAK,          // ㄢ“布□玉旰仄(3)
+    PETSKILL_GUARDBREAK,          // 破除防御(3)
     PETSKILL_CONTINUATIONATTACK1, // 连续攻击1(10)
     PETSKILL_CONTINUATIONATTACK2, // 连续攻击2(11)
     PETSKILL_CONTINUATIONATTACK3, // 连续攻击3(12)
-    PETSKILL_CHARGE1,             // ㄢㄟ“民乓□斥ㄠ(30)
-    PETSKILL_CHARGE2,             // ㄢㄠ“民乓□斥ㄡ (31)
-    PETSKILL_MIGHTY1,             // ㄣㄟ“域猾  诮(40)
-    PETSKILL_MIGHTY2,             // ㄣㄠ“域猾  诮(41)
+    PETSKILL_CHARGE1,             // 猛冲攻击1(30)
+    PETSKILL_CHARGE2,             // 猛冲攻击2(31)
+    PETSKILL_MIGHTY1,             // 痛恨一击1(40)
+    PETSKILL_MIGHTY2,             // 痛恨一击2(41)
     PETSKILL_POWERBALANCE1,       // 背水之战一(50)
     PETSKILL_POWERBALANCE2,       // 背水之战二(51)
     PETSKILL_POWERBALANCE3,       // 背水之战三(52) 攻击+50%，防御-50%
-    PETSKILL_POISON_ATTACK1,      // ㄥㄟ“    猾(60)
-    PETSKILL_POISON_ATTACK2,      // ㄥㄠ“    猾(61)
+    PETSKILL_POISON_ATTACK1,      // 剧毒攻击1(60)
+    PETSKILL_POISON_ATTACK2,      // 剧毒攻击2(61)
     PETSKILL_STONE,               // 石化攻击(80)
     PETSKILL_CONFUSION_ATTACK,    // 混乱攻击(90)
     PETSKILL_DRUNK_ATTACK,        // 醉酒攻击(100)
     PETSKILL_SLEEP_ATTACK,        // 睡眠攻击(110)
-    PETSKILL_NOGUARD1,            // ㄠㄤㄟ“用□布□玉ㄠ(150)
-    PETSKILL_NOGUARD2,            // ㄠㄤㄠ“用□布□玉ㄡ(151)
-    PETSKILL_NOGUARD3,            // ㄠㄤㄡ“用□布□玉ㄢ(152)
+    PETSKILL_NOGUARD1,            // 无视防御1(150)
+    PETSKILL_NOGUARD2,            // 无视防御2(151)
+    PETSKILL_NOGUARD3,            // 无视防御3(152)
 #ifdef _PSKILL_FALLGROUND
     PETSKILL_FALLGROUND, // 落马术
 #endif
@@ -748,36 +729,33 @@ static int EnemyGymSkill[] = {
 static int gymbody[] = {
     SPR_001em, SPR_011em, SPR_021em, SPR_031em, SPR_041em, SPR_051em,
     SPR_061em, SPR_071em, SPR_081em, SPR_091em, SPR_101em, SPR_111em,
-
     SPR_002em, SPR_012em, SPR_022em, SPR_032em, SPR_042em, SPR_052em,
     SPR_062em, SPR_072em, SPR_082em, SPR_092em, SPR_102em, SPR_112em,
-
     SPR_003em, SPR_013em, SPR_023em, SPR_033em, SPR_043em, SPR_053em,
     SPR_063em, SPR_073em, SPR_083em, SPR_093em, SPR_103em, SPR_113em,
-
     SPR_004em, SPR_014em, SPR_024em, SPR_034em, SPR_044em, SPR_054em,
     SPR_064em, SPR_074em, SPR_084em, SPR_094em, SPR_104em, SPR_114em,
 };
 
 /*------------------------------------------------------------------------
- * ENEMY｛卞仿件母丞卅    毛芨尹月
+ * 依随机值重设敌人外观、属性与技能
  *-----------------------------------------------------------------------*/
 int ENEMY_RandomChange(int enemy_index, int tempno) {
   int work, work2, iRet = 0;
 
-  // 仿件母丞平乓仿井升丹井民尼永弁
+  // 判断该敌人模板属于哪一随机池
   if ((564 <= tempno && tempno <= 580) || (739 <= tempno && tempno <= 750) ||
       (895 <= tempno && tempno <= 906)) {
     //********************************************
-    // 皿伊奶乩□及涌
+    // 竞技场敌人
     //********************************************
     iRet = 1;
   } else
-    // 仿件母丞平乓仿井升丹井民尼永弁
+    // 判断该敌人模板属于哪一随机池
     if ((655 <= tempno && tempno <= 720) || (859 <= tempno && tempno <= 894) ||
         (907 <= tempno && tempno <= 940)) {
       //********************************************
-      // 矢永玄及涌
+      // 野外遇敌
       //********************************************
       iRet = 2;
     } else {
@@ -786,14 +764,14 @@ int ENEMY_RandomChange(int enemy_index, int tempno) {
 
   if (iRet == 1) {
     //********************************************
-    // 皿伊奶乩□及涌仄凶衬卅及匹｝箪岭手仿件母丞
+    // 竞技场敌人随机决定外观与属性后重设敌人
     //********************************************
-    // 铣手仿件母丞
+    // 重设敌人外观
     CHAR_setInt(enemy_index, CHAR_BASEIMAGENUMBER,
                 gymbody[RAND(0, arraysizeof(gymbody) - 1)]);
     CHAR_setInt(enemy_index, CHAR_IMAGENUMBER,
                 CHAR_getInt(enemy_index, CHAR_BASEIMAGENUMBER));
-    // 箪岭反赝癫
+    // 属性随机浮动
     work = (RAND(0, 20) - 10) * 10;
     work2 = 100 - ABS(work);
     CHAR_setInt(enemy_index, CHAR_EARTHAT, work);
@@ -804,7 +782,7 @@ int ENEMY_RandomChange(int enemy_index, int tempno) {
     CHAR_setInt(enemy_index, CHAR_WATERAT, work2);
     CHAR_setInt(enemy_index, CHAR_WINDAT, -work2);
 
-    // 仿件母丞卅  湛毛  凶六月
+    // 随机决定敌人所使用的技能
     if (DoujyouRandomWeponSet(enemy_index)) {
       CHAR_setPetSkill(enemy_index, 0, PETSKILL_NORMALATTACK);
       CHAR_setPetSkill(enemy_index, 1, PETSKILL_NORMALATTACK);
@@ -825,34 +803,51 @@ int ENEMY_RandomChange(int enemy_index, int tempno) {
   return 1;
 }
 
-int ENEMY_createEnemy(int array, int base_level) {
-  Char new_char;
+// 随机给array, array+1, array+2, array+3 增加总共 cnt 点, 主要用于能力值分配
+void _randomAssign(int *array, const int cnt) {
+  int i = 0;
+  for (i = 0; i < cnt; i++) {
+    int rnt = RAND(0, 3);
+    switch (rnt) {
+      case 0: ++array[0]; break;
+      case 1: ++array[1]; break;
+      case 2: ++array[2]; break;
+      case 3: ++array[3]; break;
+      default: break;
+    }
+  }
+}
+
+void randomAssign(int *array) {
+  _randomAssign(array, 10);
+}
+
+#define E_PAR(a) (*(p + (a)))
+#define ET_PAR(a) (*(tp + (a)))
+#define PARAM_CAL(l)\
+  ((level - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) * ET_PAR((l))
+
+int ENEMY_createEnemy(int enemy_index, int base_level) {
   int new_index;
-  int *p;
-  int gp_gear[E_T_DATAINTNUM];
-  int tarray, i;
+  int i, tp[E_T_DATAINTNUM]; // 怪物模板，一共有DATAINTNUM个参数
   int item_index, iloop;
   int level;
   int enemyrank;
 
-  if (!ENEMY_CHECKINDEX(array))
-    return -1;
+  if (!ENEMY_CHECKINDEX(enemy_index)) return -1;
+  int *p = ENEMY_enemy[enemy_index].intdata;
+  int enemy_temp_index = ENEMYTEMP_getEnemyTempArray(enemy_index);
+  if (!ENEMYTEMP_CHECKINDEX(enemy_temp_index)) return -1;
+  for (i = 0; i < E_T_DATAINTNUM; i++)
+    tp[i] = ENEMYTEMP_enemy[enemy_temp_index].intdata[i];
 
-  p = ENEMY_enemy[array].intdata;
-  tarray = ENEMYTEMP_getEnemyTempArray(array);
-
-  if (!ENEMYTEMP_CHECKINDEX(tarray))
-    return -1;
-  for (i = 0; i < E_T_DATAINTNUM; i++) {
-    gp_gear[i] = ENEMYTEMP_enemy[tarray].intdata[i];
-  }
+  Char new_char;
   memset(&new_char, 0, sizeof(Char));
-
-  if (!CHAR_getDefaultChar(&new_char, 31010))
-    return -1;
+  // 31010 是 default 值
+  if (!CHAR_getDefaultChar(&new_char, 31010)) return -1;
 
   new_char.data[CHAR_BASEIMAGENUMBER]
-    = new_char.data[CHAR_IMAGENUMBER] = *(gp_gear + E_T_IMGNUMBER);
+    = new_char.data[CHAR_IMAGENUMBER] = *(tp + E_T_IMGNUMBER);
   new_char.data[CHAR_WHICHTYPE] = CHAR_TYPEENEMY;
   new_char.data[CHAR_DUELPOINT] = 0;
 
@@ -861,86 +856,58 @@ int ENEMY_createEnemy(int array, int base_level) {
   } else {
     level = RAND((*(p + ENEMY_LV_MIN)), (*(p + ENEMY_LV_MAX)));
   }
-#define E_PAR(a) (*(p + (a)))
-#define ET_PAR(a) (*(gp_gear + (a)))
-#if 1
-#define PARAM_CAL(l)\
-  ((level - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) * ET_PAR((l))
-#else
-#define PARAM_CAL(l)\
-  ((E_PAR(ENEMY_LV) - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) * ET_PAR((l))
-#endif
-  gp_gear[E_T_BASEVITAL] += RAND(0, 4) - 2;
-  gp_gear[E_T_BASESTR] += RAND(0, 4) - 2;
-  gp_gear[E_T_BASETGH] += RAND(0, 4) - 2;
-  gp_gear[E_T_BASEDEX] += RAND(0, 4) - 2;
-#ifdef _BT_PET
-  gp_gear[E_T_BASEVITAL] *= getBtPet();
-  gp_gear[E_T_BASESTR] *= getBtPet();
-  gp_gear[E_T_BASETGH] *= getBtPet();
-  gp_gear[E_T_BASEDEX] *= getBtPet();
-#endif
-
+  tp[E_T_BASEVITAL] += RAND(0, 4) - 2;
+  tp[E_T_BASESTR] += RAND(0, 4) - 2;
+  tp[E_T_BASETGH] += RAND(0, 4) - 2;
+  tp[E_T_BASEDEX] += RAND(0, 4) - 2;
   new_char.data[CHAR_ALLOCPOINT] =
-      (gp_gear[E_T_BASEVITAL] << 24) + (gp_gear[E_T_BASESTR] << 16) +
-      (gp_gear[E_T_BASETGH] << 8) + (gp_gear[E_T_BASEDEX] << 0);
-  for (i = 0; i < 10; i++) {
-    int work = RAND(0, 3);
-    if (work == 0)
-      gp_gear[E_T_BASEVITAL]++;
-    if (work == 1)
-      gp_gear[E_T_BASESTR]++;
-    if (work == 2)
-      gp_gear[E_T_BASETGH]++;
-    if (work == 3)
-      gp_gear[E_T_BASEDEX]++;
-  }
+      (tp[E_T_BASEVITAL] << 24) + (tp[E_T_BASESTR] << 16) +
+      (tp[E_T_BASETGH] << 8) + (tp[E_T_BASEDEX] << 0);
+  // 2026.09.23 要求 E_T_BASEVITAL, E_T_BASESTR, E_T_BASETGH, E_T_BASEDEX 连续
+  // 这里正好满足这个条件
+  randomAssign((int *) (tp + E_T_BASEVITAL));
   new_char.data[CHAR_VITAL]   = PARAM_CAL(E_T_BASEVITAL);
   new_char.data[CHAR_STR]     = PARAM_CAL(E_T_BASESTR);
   new_char.data[CHAR_TOUGH]   = PARAM_CAL(E_T_BASETGH);
   new_char.data[CHAR_DEX]     = PARAM_CAL(E_T_BASEDEX);
-  new_char.data[CHAR_FIREAT]  = *(gp_gear + E_T_FIREAT);
-  new_char.data[CHAR_WATERAT] = *(gp_gear + E_T_WATERAT);
-  new_char.data[CHAR_EARTHAT] = *(gp_gear + E_T_EARTHAT);
-  new_char.data[CHAR_WINDAT]  = *(gp_gear + E_T_WINDAT);
-  new_char.data[CHAR_MODAI]   = *(gp_gear + E_T_MODAI);
+  new_char.data[CHAR_FIREAT]  = *(tp + E_T_FIREAT);
+  new_char.data[CHAR_WATERAT] = *(tp + E_T_WATERAT);
+  new_char.data[CHAR_EARTHAT] = *(tp + E_T_EARTHAT);
+  new_char.data[CHAR_WINDAT]  = *(tp + E_T_WINDAT);
+  new_char.data[CHAR_MODAI]   = *(tp + E_T_MODAI);
   new_char.data[CHAR_VARIABLEAI] = 0;
   new_char.data[CHAR_LV] = level;
   // new_char.data[CHAR_LV]      = *(p + ENEMY_LV);
-  new_char.data[CHAR_SLOT]      = *(gp_gear + E_T_SLOT);
-  new_char.data[CHAR_POISON]    = *(gp_gear + E_T_POISON);
-  new_char.data[CHAR_PARALYSIS] = *(gp_gear + E_T_PARALYSIS);
-  new_char.data[CHAR_SLEEP]     = *(gp_gear + E_T_SLEEP);
-  new_char.data[CHAR_STONE]     = *(gp_gear + E_T_STONE);
-  new_char.data[CHAR_DRUNK]     = *(gp_gear + E_T_DRUNK);
-  new_char.data[CHAR_CONFUSION] = *(gp_gear + E_T_CONFUSION);
-  new_char.data[CHAR_RARE]      = *(gp_gear + E_T_RARE);
-  new_char.data[CHAR_PETID]     = *(gp_gear + E_T_TEMPNO);
-  new_char.data[CHAR_CRITIAL]   = *(gp_gear + E_T_CRITICAL);
-  new_char.data[CHAR_COUNTER]   = *(gp_gear + E_T_COUNTER);
-  new_char.data[CHAR_PETENEMYID] = ENEMY_getInt(array, ENEMY_ID);
+  new_char.data[CHAR_SLOT]      = *(tp + E_T_SLOT);
+  new_char.data[CHAR_POISON]    = *(tp + E_T_POISON);
+  new_char.data[CHAR_PARALYSIS] = *(tp + E_T_PARALYSIS);
+  new_char.data[CHAR_SLEEP]     = *(tp + E_T_SLEEP);
+  new_char.data[CHAR_STONE]     = *(tp + E_T_STONE);
+  new_char.data[CHAR_DRUNK]     = *(tp + E_T_DRUNK);
+  new_char.data[CHAR_CONFUSION] = *(tp + E_T_CONFUSION);
+  new_char.data[CHAR_RARE]      = *(tp + E_T_RARE);
+  new_char.data[CHAR_PETID]     = *(tp + E_T_TEMPNO);
+  new_char.data[CHAR_CRITIAL]   = *(tp + E_T_CRITICAL);
+  new_char.data[CHAR_COUNTER]   = *(tp + E_T_COUNTER);
+  new_char.data[CHAR_PETENEMYID] = ENEMY_getInt(enemy_index, ENEMY_ID);
 
-  for (i = 0; i < CHAR_MAXPETSKILLHAVE; i++) {
-    new_char.unionTable.indexOfPetskill[i] = *(gp_gear + E_T_PETSKILL1 + i);
-  }
+  for (i = 0; i < CHAR_MAXPETSKILLHAVE; i++)
+    new_char.unionTable.indexOfPetskill[i] = *(tp + E_T_PETSKILL1 + i);
 
-  enemyrank = ENEMY_getRank(array, tarray);
+  enemyrank = ENEMY_getRank(enemy_index, enemy_temp_index);
   new_char.data[CHAR_PETRANK] = enemyrank;
-#undef E_PAR
-#undef ET_PAR
-#undef PARAM_CAL
   new_char.data[CHAR_DUELPOINT] = *(p + ENEMY_DUELPOINT);
   if (*(p + ENEMY_DUELPOINT) <= 0) {
     if (*(p + ENEMY_EXP) != -1) {
       new_char.data[CHAR_EXP] = *(p + ENEMY_EXP);
     } else {
-      new_char.data[CHAR_EXP] = ENEMY_getExp(array, tarray, level, enemyrank);
+      new_char.data[CHAR_EXP] = ENEMY_getExp(index, enemy_temp_index, level, enemyrank);
     }
   }
   strncpysafe(new_char.string[CHAR_NAME].string,
              sizeof(new_char.string[CHAR_NAME].string),
-             (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
-
+             (char *)ENEMYTEMP_enemy[enemy_temp_index]
+               .chardata[E_T_NAME].string);
   new_index = CHAR_initCharOneArray(&new_char);
 
   if (new_index < 0) {
@@ -967,25 +934,25 @@ int ENEMY_createEnemy(int array, int base_level) {
     switch (style) {
     case 1:
       wepon = 0;
-      break; //
+      break; // 斧
     case 2:
       wepon = 100;
-      break; // 轺徇
+      break; // 棍棒
     case 3:
       wepon = 200;
-      break; // 键
+      break; // 枪
     case 4:
       wepon = 400;
-      break; // 菰
+      break; // 短剑
     case 5:
       wepon = 500;
-      break; // 皮□丢仿件
+      break; // 回旋镖
     case 6:
       wepon = 700;
-      break; // 髑仆檗
+      break; // 投掷武器(破裂投掷)
     case 7:
       wepon = 600;
-      break; // 髑仆
+      break; // 投掷武器(弹跳投掷)
     default:
       break;
     }
@@ -1011,13 +978,13 @@ int ENEMY_createEnemy(int array, int base_level) {
   CHAR_setInt(new_index, CHAR_HP, CHAR_getWorkInt(new_index, CHAR_WORKMAXHP));
   CHAR_setWorkInt(new_index, CHAR_WORKTACTICS, *(p + ENEMY_TACTICS));
   CHAR_setWorkChar(new_index, CHAR_WORKBATTLE_TACTICSOPTION,
-                   ENEMY_enemy[array].chardata[ENEMY_TACTICSOPTION].string);
+                   ENEMY_enemy[enemy_index].chardata[ENEMY_TACTICSOPTION].string);
 #ifdef _BATTLENPC_WARP_PLAYER
   CHAR_setWorkChar(new_index, CHAR_WORKBATTLE_ACT_CONDITION,
-                   ENEMY_enemy[array].chardata[ENEMY_ACT_CONDITION].string);
+                   ENEMY_enemy[enemy_index].chardata[ENEMY_ACT_CONDITION].string);
 #endif
   CHAR_setWorkInt(new_index, CHAR_WORK_PETFLG, *(p + ENEMY_PETFLG));
-  CHAR_setWorkInt(new_index, CHAR_WORKMODCAPTUREDEFAULT, *(gp_gear + E_T_GET));
+  CHAR_setWorkInt(new_index, CHAR_WORKMODCAPTUREDEFAULT, *(tp + E_T_GET));
 #ifdef _ENEMY_FALLGROUND
   {
     int i = 0;
@@ -1101,33 +1068,33 @@ static RANDOMENEMY RandomEnemyTbl[] = {
 };
 
 /*------------------------------------------------------------
- * 衬    涩烂及摹    寞互  溃卅袄卅日仿件母丞卞涩烂允月
+ * 从遇敌组群表中随机取出一个敌人数组
  ------------------------------------------------------------*/
 int ENEMY_RandomEnemyArray(int e_array, int *pNew) {
   int i = 0, randwork, work;
   //  RANDOMENEMY *pRandomEnemy;
   *pNew = -1;
-  // 仇及  区反仿件母丞
+  //  此数组为随机敌人数组
   if ((RANDOMENEMY_TOP <= e_array && e_array <= RANDOMENEMY_END) ||
       (964 <= e_array && e_array <= 969)) {
-    // 升及母立□井譬屯月
+    // 查找对应的组群编号
     for (i = 0; i < arraysizeof(RandomEnemyTbl); i++) {
       if (RandomEnemyTbl[i].num == e_array) {
         break;
       }
     }
-    //   区毛译尹化中凶日巨仿□匹  仃月
+    //  若未找到对应组群则直接返回失败
     if (i >= arraysizeof(RandomEnemyTbl))
       return 0;
 
-    // 仿件母丞涩烂
+    // 随机决定敌人数组
     randwork = RAND(0, RandomEnemyTbl[i].arraysize - 1);
-    //     井日蕙仄中  寞毛潸
+    //     从候选中取出敌人数组
     work = RandomEnemyTbl[i].pTbl[randwork];
     *pNew = ENEMY_getEnemyArrayFromId(work);
     return 1;
   } else {
-    // 窒仪手卅中
+    // 非随机数组
     return 0;
   }
 }
@@ -1349,6 +1316,8 @@ int *ENEMY_getEnemy(int char_index, int x, int y) {
   }
   return found > 0 ? ENEMY_indextable : NULL;
 }
+
+
 int ENEMY_createPetFromEnemyIndex(int char_index, int array) {
   Char CharNew;
   int new_index;
@@ -1376,44 +1345,18 @@ int ENEMY_createPetFromEnemyIndex(int char_index, int array) {
   CharNew.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
   level = RAND((*(p + ENEMY_LV_MIN)), (*(p + ENEMY_LV_MAX)));
 
-#define E_PAR(a) (*(p + (a)))
-#define ET_PAR(a) (*(tp + (a)))
-#if 1
-#define PARAM_CAL(l)                                                           \
-  ((level - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) * ET_PAR((l))
-#else
-#define PARAM_CAL(l)                                                           \
-  ((E_PAR(ENEMY_LV) - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) *      \
-      ET_PAR((l))
-#endif
-
   tp[E_T_BASEVITAL] += RAND(0, 4) - 2;
   tp[E_T_BASESTR] += RAND(0, 4) - 2;
   tp[E_T_BASETGH] += RAND(0, 4) - 2;
   tp[E_T_BASEDEX] += RAND(0, 4) - 2;
 
-#ifdef _BT_PET
-  tp[E_T_BASEVITAL] *= getBtPet();
-  tp[E_T_BASESTR] *= getBtPet();
-  tp[E_T_BASETGH] *= getBtPet();
-  tp[E_T_BASEDEX] *= getBtPet();
-#endif
-
   CharNew.data[CHAR_ALLOCPOINT] =
       (tp[E_T_BASEVITAL] << 24) + (tp[E_T_BASESTR] << 16) +
       (tp[E_T_BASETGH] << 8) + (tp[E_T_BASEDEX] << 0);
 
-  for (i = 0; i < 10; i++) {
-    int work = RAND(0, 3);
-    if (work == 0)
-      tp[E_T_BASEVITAL]++;
-    if (work == 1)
-      tp[E_T_BASESTR]++;
-    if (work == 2)
-      tp[E_T_BASETGH]++;
-    if (work == 3)
-      tp[E_T_BASEDEX]++;
-  }
+  // 2026.09.23
+  randomAssign(tp + E_T_BASEVITAL);
+
   // 初始值
   CharNew.data[CHAR_VITAL] = PARAM_CAL(E_T_BASEVITAL);
   CharNew.data[CHAR_STR] = PARAM_CAL(E_T_BASESTR);
@@ -1455,9 +1398,6 @@ int ENEMY_createPetFromEnemyIndex(int char_index, int array) {
 
   enemyrank = ENEMY_getRank(array, tarray);
   CharNew.data[CHAR_PETRANK] = enemyrank; // 成长区间
-#undef E_PAR
-#undef ET_PAR
-#undef PARAM_CAL
   strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
@@ -1494,16 +1434,13 @@ int ENEMY_createPetFromEnemyIndex(int char_index, int array) {
 int ENEMY_createPet(int array, int vital, int str, int tgh, int dex) {
   Char CharNew;
   int new_index;
-  int *p;
-  int tp[E_T_DATAINTNUM];
-  int tarray, i;
-  int level;
+  int i, tp[E_T_DATAINTNUM];
   int enemyrank;
   if (!ENEMY_CHECKINDEX(array))
     return -1;
 
-  p = ENEMY_enemy[array].intdata;
-  tarray = ENEMYTEMP_getEnemyTempArray(array);
+  int *p = ENEMY_enemy[array].intdata;
+  int tarray = ENEMYTEMP_getEnemyTempArray(array);
   if (!ENEMYTEMP_CHECKINDEX(tarray))
     return -1;
   //    tp = ENEMYTEMP_enemy[tarray].intdata;
@@ -1516,29 +1453,11 @@ int ENEMY_createPet(int array, int vital, int str, int tgh, int dex) {
   CharNew.data[CHAR_BASEIMAGENUMBER] = CharNew.data[CHAR_IMAGENUMBER] =
       *(tp + E_T_IMGNUMBER);
   CharNew.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
-  level = RAND((*(p + ENEMY_LV_MIN)), (*(p + ENEMY_LV_MAX)));
-
-#define E_PAR(a) (*(p + (a)))
-#define ET_PAR(a) (*(tp + (a)))
-#if 1
-#define PARAM_CAL(l)                                                           \
-  ((level - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) * ET_PAR((l))
-#else
-#define PARAM_CAL(l)                                                           \
-  ((E_PAR(ENEMY_LV) - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) *      \
-      ET_PAR((l))
-#endif
+  int level = RAND((*(p + ENEMY_LV_MIN)), (*(p + ENEMY_LV_MAX)));
   tp[E_T_BASEVITAL] += RAND(0, 4) - 2;
   tp[E_T_BASESTR] += RAND(0, 4) - 2;
   tp[E_T_BASETGH] += RAND(0, 4) - 2;
   tp[E_T_BASEDEX] += RAND(0, 4) - 2;
-
-#ifdef _BT_PET
-  tp[E_T_BASEVITAL] *= getBtPet();
-  tp[E_T_BASESTR] *= getBtPet();
-  tp[E_T_BASETGH] *= getBtPet();
-  tp[E_T_BASEDEX] *= getBtPet();
-#endif
 
   if (vital > -1) {
     tp[E_T_BASEVITAL] = vital;
@@ -1557,18 +1476,9 @@ int ENEMY_createPet(int array, int vital, int str, int tgh, int dex) {
       (tp[E_T_BASEVITAL] << 24) + (tp[E_T_BASESTR] << 16) +
       (tp[E_T_BASETGH] << 8) + (tp[E_T_BASEDEX] << 0);
 
-  for (i = 0; i < 10; i++) {
-    int work = RAND(0, 3);
-    if (work == 0)
-      tp[E_T_BASEVITAL]++;
-    if (work == 1)
-      tp[E_T_BASESTR]++;
-    if (work == 2)
-      tp[E_T_BASETGH]++;
-    if (work == 3)
-      tp[E_T_BASEDEX]++;
-  }
-  /* 由仿丢□正本永玄 */
+  // 2026.09.23 
+  randomAssign(tp + E_T_BASEVITAL);
+  /* 计算初始能力值 */
   CharNew.data[CHAR_VITAL] = PARAM_CAL(E_T_BASEVITAL);
   CharNew.data[CHAR_STR] = PARAM_CAL(E_T_BASESTR);
   CharNew.data[CHAR_TOUGH] = PARAM_CAL(E_T_BASETGH);
@@ -1605,9 +1515,6 @@ int ENEMY_createPet(int array, int vital, int str, int tgh, int dex) {
   }
   enemyrank = ENEMY_getRank(array, tarray);
   CharNew.data[CHAR_PETRANK] = enemyrank;
-#undef E_PAR
-#undef ET_PAR
-#undef PARAM_CAL
   strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
@@ -1662,43 +1569,16 @@ int ENEMY_TEST_createPetIndex(int array) {
   CharNew.data[CHAR_WHICHTYPE] = CHAR_TYPEPET;
   level = RAND((*(p + ENEMY_LV_MIN)), (*(p + ENEMY_LV_MAX)));
 
-#define E_PAR(a) (*(p + (a)))
-#define ET_PAR(a) (*(tp + (a)))
-
-#if 1
-#define PARAM_CAL(l)                                                           \
-  ((level - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) * ET_PAR((l))
-#else
-#define PARAM_CAL(l)                                                           \
-  ((E_PAR(ENEMY_LV) - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) *      \
-      ET_PAR((l))
-#endif
   tp[E_T_BASEVITAL] += RAND(0, 4) - 2;
   tp[E_T_BASESTR] += RAND(0, 4) - 2;
   tp[E_T_BASETGH] += RAND(0, 4) - 2;
   tp[E_T_BASEDEX] += RAND(0, 4) - 2;
 
-#ifdef _BT_PET
-  tp[E_T_BASEVITAL] *= getBtPet();
-  tp[E_T_BASESTR] *= getBtPet();
-  tp[E_T_BASETGH] *= getBtPet();
-  tp[E_T_BASEDEX] *= getBtPet();
-#endif
-
   CharNew.data[CHAR_ALLOCPOINT] =
       (tp[E_T_BASEVITAL] << 24) + (tp[E_T_BASESTR] << 16) +
       (tp[E_T_BASETGH] << 8) + (tp[E_T_BASEDEX] << 0);
-  for (i = 0; i < 10; i++) {
-    int work = RAND(0, 3);
-    if (work == 0)
-      tp[E_T_BASEVITAL]++;
-    if (work == 1)
-      tp[E_T_BASESTR]++;
-    if (work == 2)
-      tp[E_T_BASETGH]++;
-    if (work == 3)
-      tp[E_T_BASEDEX]++;
-  }
+  // 2026.09.23 
+  randomAssign(tp + E_T_BASEVITAL);
   CharNew.data[CHAR_VITAL] = PARAM_CAL(E_T_BASEVITAL);
   CharNew.data[CHAR_STR] = PARAM_CAL(E_T_BASESTR);
   CharNew.data[CHAR_TOUGH] = PARAM_CAL(E_T_BASETGH);
@@ -1735,9 +1615,6 @@ int ENEMY_TEST_createPetIndex(int array) {
   }
   enemyrank = ENEMY_getRank(array, tarray);
   CharNew.data[CHAR_PETRANK] = enemyrank;
-#undef E_PAR
-#undef ET_PAR
-#undef PARAM_CAL
   strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
@@ -1924,10 +1801,6 @@ int EVOLUTION_createPetFromEnemyIndex(int char_index, int baseindex, int flg) {
   int illegalpetskill[15] = {
       41,  52,  600, 601, 602, 603, 604, 614,
       617, 628, 630, 631, 635, 638, 641}; // 不可遗传的宠技
-#define E_PAR(a) (*(p + (a)))
-#define ET_PAR(a) (*(tp + (a)))
-#define PARAM_CAL(l)                                                           \
-  ((level - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM)) * ET_PAR((l))
   havepetelement = -1;
   petID = CHAR_getInt(baseindex, CHAR_FUSIONINDEX);
   enemynum = ENEMY_getEnemyNum();
@@ -2003,27 +1876,10 @@ int EVOLUTION_createPetFromEnemyIndex(int char_index, int baseindex, int flg) {
   tp[E_T_BASETGH] = base[2];
   tp[E_T_BASEDEX] = base[3];
 
-#ifdef _BT_PET
-  tp[E_T_BASEVITAL] *= getBtPet();
-  tp[E_T_BASESTR] *= getBtPet();
-  tp[E_T_BASETGH] *= getBtPet();
-  tp[E_T_BASEDEX] *= getBtPet();
-#endif
-
   CharNew.data[CHAR_ALLOCPOINT] =
       (base[0] << 24) + (base[1] << 16) + (base[2] << 8) + (base[3] << 0);
 
-  for (i = 0; i < 10; i++) {
-    int work = RAND(0, 3);
-    if (work == 0)
-      tp[E_T_BASEVITAL]++;
-    if (work == 1)
-      tp[E_T_BASESTR]++;
-    if (work == 2)
-      tp[E_T_BASETGH]++;
-    if (work == 3)
-      tp[E_T_BASEDEX]++;
-  }
+  randomAssign(tp + E_T_BASEVITAL);
   //------------------------------------------------------
   CharNew.data[CHAR_VITAL] = PARAM_CAL(E_T_BASEVITAL);
   CharNew.data[CHAR_STR] = PARAM_CAL(E_T_BASESTR);
@@ -2054,9 +1910,6 @@ int EVOLUTION_createPetFromEnemyIndex(int char_index, int baseindex, int flg) {
 
   enemyrank = ENEMY_getRank(array, tarray);
   CharNew.data[CHAR_PETRANK] = enemyrank;
-#undef E_PAR
-#undef ET_PAR
-#undef PARAM_CAL
   strncpysafe(CharNew.string[CHAR_NAME].string,
              sizeof(CharNew.string[CHAR_NAME].string),
              (char *)ENEMYTEMP_enemy[tarray].chardata[E_T_NAME].string);
@@ -2285,22 +2138,10 @@ int PETFUSION_SetNewEgg(int toindex, int petindex, int array, int *work,
     tp[i] = ENEMYTEMP_getInt(tarray, i);
   }
   level = 1;
-#define RAND(x, y)                                                             \
-  ((x - 1) + 1 + (int)((double)(y - (x - 1)) * rand() / (RAND_MAX + 1.0)))
-#define E_PAR(a) (*(p + (a)))
-#define ET_PAR(a) (*(tp + (a)))
-#define PARAM_CAL(l) ((level - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM))
   work[0] += (RAND(0, 4) - 2);
   work[1] += (RAND(0, 4) - 2);
   work[2] += (RAND(0, 4) - 2);
   work[3] += (RAND(0, 4) - 2);
-
-#ifdef _BT_PET
-  tp[E_T_BASEVITAL] *= getBtPet();
-  tp[E_T_BASESTR] *= getBtPet();
-  tp[E_T_BASETGH] *= getBtPet();
-  tp[E_T_BASEDEX] *= getBtPet();
-#endif
 
   LevelUpPoint =
       (work[0] << 24) + (work[1] << 16) + (work[2] << 8) + (work[3] << 0);
@@ -2315,19 +2156,9 @@ int PETFUSION_SetNewEgg(int toindex, int petindex, int array, int *work,
   }
   if (i >= arraysizeof(ranktbl))
     i = arraysizeof(ranktbl);
-  CHAR_setInt(petindex, CHAR_PETRANK, petrank);
-  for (i = 0; i < 10; i++) {
-    int rnt = RAND(0, 3);
-    if (rnt == 0)
-      work[0]++;
-    if (rnt == 1)
-      work[1]++;
-    if (rnt == 2)
-      work[2]++;
-    if (rnt == 3)
-      work[3]++;
+    CHAR_setInt(petindex, CHAR_PETRANK, petrank);
+    randomAssign(work)
   }
-
   CHAR_setInt(petindex, CHAR_VITAL, (PARAM_CAL(E_T_BASEVITAL) * work[0]));
   CHAR_setInt(petindex, CHAR_STR, (PARAM_CAL(E_T_BASESTR) * work[1]));
   CHAR_setInt(petindex, CHAR_TOUGH, (PARAM_CAL(E_T_BASETGH) * work[2]));
@@ -2362,9 +2193,6 @@ int PETFUSION_SetNewEgg(int toindex, int petindex, int array, int *work,
   for (i = 0; i < CHAR_MAXPETSKILLHAVE; i++) {
     CHAR_setPetSkill(petindex, i, skill1[i]);
   }
-#undef E_PAR
-#undef ET_PAR
-#undef PARAM_CAL
   CHAR_complianceParameter(petindex);
   CHAR_setInt(petindex, CHAR_HP, CHAR_getWorkInt(petindex, CHAR_WORKMAXHP));
   if (CHAR_CHECKINDEX(toindex)) {
@@ -2487,40 +2315,27 @@ BOOL PETFUSION_AddEgg(int toindex, int petID, int PetCode) {
 }
 #endif
 
+RankTable transPetRankTable[] = {
+    {130, 2.5}, {100, 2.0}, {95, 1.5}, {85, 1.0}, {80, 0.5}, {0, 0.0},
+};
+
 #ifdef _PET_TRANS
-int GetNewPet(int toindex, int petindex, int array, int *work) {
-  int *p;
-  int tp[E_T_DATAINTNUM];
-  int tarray, i;
-  int level, workrank, petrank = 0;
-  int LevelUpPoint;
-
-  struct {
-    int num;
-    float rank;
-  } ranktbl[] = {
-      {130, 2.5}, {100, 2.0}, {95, 1.5}, {85, 1.0}, {80, 0.5}, {0, 0.0},
-  };
-
-  if (!ENEMY_CHECKINDEX(array))
+int GetNewPet(int char_index,
+              int pet_index,
+              int enemy_index,
+              int *work) {
+  int i, tp[E_T_DATAINTNUM]; // E_T: EnemyTemplate.
+  if (!ENEMY_CHECKINDEX(enemy_index)) return -1;
+  int *p = ENEMY_getIntdata(enemy_index);
+  if (p == NULL)
     return -1;
-  p = ENEMY_getIntdata(array);
-  if (p == NULL) {
-    print("\n p = NULL");
-    return -1;
-  }
-  tarray = ENEMYTEMP_getEnemyTempArray(array);
-  if (!ENEMYTEMP_CHECKINDEX(tarray))
+  int enemy_temp_index = ENEMYTEMP_getEnemyTempArray(enemy_temp_index);
+  if (!ENEMYTEMP_CHECKINDEX(enemy_temp_index))
     return -1;
   for (i = 0; i < E_T_DATAINTNUM; i++) {
-    tp[i] = ENEMYTEMP_getInt(tarray, i);
+    tp[i] = ENEMYTEMP_getInt(enemy_temp_index, i);
   }
-  level = 1;
-#define RAND(x, y)                                                             \
-  ((x - 1) + 1 + (int)((double)(y - (x - 1)) * rand() / (RAND_MAX + 1.0)))
-#define E_PAR(a) (*(p + (a)))
-#define ET_PAR(a) (*(tp + (a)))
-#define PARAM_CAL(l) ((level - 1) * ET_PAR(E_T_LVUPPOINT) + ET_PAR(E_T_INITNUM))
+  int level = 1;
 #ifdef _CTRL_TRANS_DEVELOP
   if (getCtrlTrans() == 1) {
     work[0] += FreeCtrlTransDevelop(petindex, 0) - 2;
@@ -2539,72 +2354,49 @@ int GetNewPet(int toindex, int petindex, int array, int *work) {
   work[2] += (RAND(0, 4) - 2);
   work[3] += (RAND(0, 4) - 2);
 #endif
-
-  LevelUpPoint =
+  // 四维增加一个 -2， 2 的随机值
+  int levelUpPoint =
       (work[0] << 24) + (work[1] << 16) + (work[2] << 8) + (work[3] << 0);
-
-  CHAR_setInt(petindex, CHAR_ALLOCPOINT, LevelUpPoint);
-  workrank = work[0] + work[1] + work[2] + work[3];
-  for (i = 0; i < arraysizeof(ranktbl); i++) {
-    if (workrank >= ranktbl[i].num) {
-      petrank = i;
+  CHAR_setInt(pet_index, CHAR_ALLOCPOINT, levelUpPoint);
+  int work_rank = work[0] + work[1] + work[2] + work[3];
+  int pet_rank;
+  for (i = 0; i < arraysizeof(transPetRankTable); i++) {
+    if (work_rank >= transPetRankTable[i].num) {
+      pet_rank = i;
       break;
     }
   }
 
-  if (i >= arraysizeof(ranktbl))
-    i = arraysizeof(ranktbl);
-  CHAR_setInt(petindex, CHAR_PETRANK, petrank);
+  if (i >= arraysizeof(transPetRankTable))
+      i = arraysizeof(transPetRankTable);
+  CHAR_setInt(pet_index, CHAR_PETRANK, pet_rank);
 
-  for (i = 0; i < 10; i++) {
-    int rnt = RAND(0, 3);
-    if (rnt == 0)
-      work[0]++;
-    if (rnt == 1)
-      work[1]++;
-    if (rnt == 2)
-      work[2]++;
-    if (rnt == 3)
-      work[3]++;
+  // 2026.09.23 给宠物分配10点基础属性
+  randomAssign(work);
+  CHAR_setInt(pet_index, CHAR_VITAL, (PARAM_CAL(E_T_BASEVITAL) * work[0]));
+  CHAR_setInt(pet_index, CHAR_STR, (PARAM_CAL(E_T_BASESTR) * work[1]));
+  CHAR_setInt(pet_index, CHAR_TOUGH, (PARAM_CAL(E_T_BASETGH) * work[2]));
+  CHAR_setInt(pet_index, CHAR_DEX, (PARAM_CAL(E_T_BASEDEX) * work[3]));
+  CHAR_setMaxExp(pet_index, 0);
+  CHAR_setInt(pet_index, CHAR_LV, level);
+  // 转生宠物默认技能槽为7.
+  CHAR_setInt(pet_index, CHAR_SLOT, 7);
+  CHAR_complianceParameter(pet_index);
+  CHAR_setInt(pet_index, CHAR_HP, CHAR_getWorkInt(pet_index, CHAR_WORKMAXHP));
+  if (CHAR_CHECKINDEX(char_index)) {
+    CHAR_setWorkInt(pet_index, CHAR_WORKPLAYERINDEX, char_index);
+    CHAR_setChar(pet_index, CHAR_OWNERCDKEY, CHAR_getChar(char_index, CHAR_CDKEY));
+    CHAR_setChar(pet_index, CHAR_OWNERCHARANAME, CHAR_getChar(char_index, CHAR_NAME));
   }
-
-  CHAR_setInt(petindex, CHAR_VITAL, (PARAM_CAL(E_T_BASEVITAL) * work[0]));
-  CHAR_setInt(petindex, CHAR_STR, (PARAM_CAL(E_T_BASESTR) * work[1]));
-  CHAR_setInt(petindex, CHAR_TOUGH, (PARAM_CAL(E_T_BASETGH) * work[2]));
-  CHAR_setInt(petindex, CHAR_DEX, (PARAM_CAL(E_T_BASEDEX) * work[3]));
-  CHAR_setMaxExp(petindex, 0);
-  CHAR_setInt(petindex, CHAR_LV, level);
-  // 宠物技能设为七技
-  CHAR_setInt(petindex, CHAR_SLOT, 7);
-/*
-  for( i=0; i<CHAR_MAXPETSKILLHAVE; i++)  {
-    petskill = CHAR_getPetSkill( petindex, i);
-    print("\n petskill = %d ", petskill);
-    if( petskill == -1)  {
-
-    }
-  }
-*/
-#undef E_PAR
-#undef ET_PAR
-#undef PARAM_CAL
-  CHAR_complianceParameter(petindex);
-  CHAR_setInt(petindex, CHAR_HP, CHAR_getWorkInt(petindex, CHAR_WORKMAXHP));
-  if (CHAR_CHECKINDEX(toindex)) {
-    CHAR_setWorkInt(petindex, CHAR_WORKPLAYERINDEX, toindex);
-    CHAR_setChar(petindex, CHAR_OWNERCDKEY, CHAR_getChar(toindex, CHAR_CDKEY));
-    CHAR_setChar(petindex, CHAR_OWNERCHARANAME,
-                 CHAR_getChar(toindex, CHAR_NAME));
-  }
-  CHAR_setInt(petindex, CHAR_WHICHTYPE, CHAR_TYPEPET);
+  CHAR_setInt(pet_index, CHAR_WHICHTYPE, CHAR_TYPEPET);
 #ifdef _PET_2TRANS
-  CHAR_setInt(petindex, CHAR_TRANSMIGRATION,
-              CHAR_getInt(petindex, CHAR_TRANSMIGRATION) + 1);
+  CHAR_setInt(pet_index, CHAR_TRANSMIGRATION,
+              CHAR_getInt(pet_index, CHAR_TRANSMIGRATION) + 1);
 #else
   CHAR_setInt(petindex, CHAR_TRANSMIGRATION, 1);
 #endif
 #ifdef _PETCOM_
-  CHAR_setInt(petindex, CHAR_YHP, CHAR_getWorkInt(petindex, CHAR_WORKMAXHP));
+  CHAR_setInt(petigggex, CHAR_YHP, CHAR_getWorkInt(petindex, CHAR_WORKMAXHP));
   CHAR_setInt(petindex, CHAR_YATK, CHAR_getWorkInt(petindex, CHAR_WORKFIXSTR));
   CHAR_setInt(petindex, CHAR_YDEF,
               CHAR_getWorkInt(petindex, CHAR_WORKFIXTOUGH));
@@ -2613,6 +2405,10 @@ int GetNewPet(int toindex, int petindex, int array, int *work) {
   CHAR_setInt(petindex, CHAR_YLV, CHAR_getInt(petindex, CHAR_LV));
 #endif
 
-  return petindex;
+  return pet_index;
 }
 #endif
+
+#undef E_PAR
+#undef ET_PAR
+#undef PARAM_CAL

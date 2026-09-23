@@ -1278,9 +1278,6 @@ void CHAR_CheckPetDoLimitlevel(int petindex, int toindex, int level) {
   int LevelUpPoint, vital, str, tgh, dex;
   int j, k;
   char token[56];
-#define RAND(x, y)                                                             \
-  ((x - 1) + 1 + (int)((double)(y - (x - 1)) * rand() / (RAND_MAX + 1.0)))
-
   if (CHAR_getInt(petindex, CHAR_PETID) == 718
 #ifdef _PET_2LIMITLEVEL
       || CHAR_getInt(petindex, CHAR_PETID) == 401
@@ -1830,8 +1827,6 @@ int PETTRANS_PetTransManStatus(int toindex, int petindex1, int petindex2) {
   int work[4] = {0, 0, 0, 0};
   int base[4] = {0, 0, 0, 0};
 
-#define RAND(x, y)                                                             \
-  ((x - 1) + 1 + (int)((double)(y - (x - 1)) * rand() / (RAND_MAX + 1.0)))
   total1 = PETTRANS_getPetBase(petindex1, work, &petrank);
   total2 = PETTRANS_getPetBase(petindex2, base, &petrank);
   petLV = CHAR_getInt(petindex2, CHAR_LV);

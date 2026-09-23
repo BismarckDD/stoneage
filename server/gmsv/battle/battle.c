@@ -10593,7 +10593,6 @@ void BATTLE_ProfessionStatusSeq(int battle_index, int char_index) {
 
 #endif
 
-#ifdef _ALLBLUES_LUA_1_4
 INLINE BOOL BATTLE_setLUAFunction(int battle_index, int functype, lua_State *L,
                                   const char *luafunctable) {
   if (!BATTLE_CHECKINDEX(battle_index) || functype < 0 ||
@@ -10624,7 +10623,6 @@ INLINE lua_State *BATTLE_getLUAFunction(int battle_index, int functype) {
                 BattleArray[battle_index].luafunctable[functype]);
   return BattleArray[battle_index].lua[functype];
 }
-#endif
 
 int BATTLE_getType(int battle_index) {
   if (battle_index >= BATTLE_battlenum || battle_index < 0)

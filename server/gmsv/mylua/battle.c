@@ -5,9 +5,6 @@
 #include "battle_command.h"
 #include "char_base.h"
 #include "enemy.h"
-//
-
-#ifdef _ALLBLUES_LUA
 
 static int CreateVsEnemy(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
@@ -99,22 +96,17 @@ static int getCharOne(lua_State *L) {
   const int battle = luaL_checkint(L, 1);
   const int num = luaL_checkint(L, 2);
   const int side = luaL_checkint(L, 3);
-
   lua_pushinteger(L, BattleArray[battle].Side[side].Entry[num].char_index);
-
   return 1;
 }
 
 static int Exit(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
   const int battleindex = luaL_checkint(L, 2);
-
   BATTLE_Exit(char_index, battleindex);
-
   return 1;
 }
 
-#ifdef _ALLBLUES_LUA_1_4
 static CharBase BattleBaseEvent[] = {{{"结束事件"}, BATTLE_FINISH},
                                      {{"逃跑事件"}, BATTLE_ESCAPE}};
 
@@ -225,9 +217,7 @@ static int NewEntry(lua_State *L) {
 
   return 1;
 }
-#endif
 
-#ifdef _ALLBLUES_LUA_1_9
 static int CreateForWatcher(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
   const int battle_index = luaL_checkint(L, 2);
@@ -257,24 +247,19 @@ static int getCreateTime(lua_State *L) {
 
 static int getBattleFloor(lua_State *L) {
   const int battleindex = luaL_checkint(L, 1);
-
   lua_pushinteger(L, BATTLE_getBattleFloor(battleindex));
-
   return 1;
 }
-#endif
+
 static const luaL_Reg battlelib[] = {
     {"CreateVsEnemy", CreateVsEnemy},
     {"CreateVsEnemyLv", CreateVsEnemyLv},
     {"getCharOne", getCharOne},
-#ifdef _ALLBLUES_LUA_1_4
     {"CreateRandVsPlayer", CreateRandVsPlayer},
     {"CreateVsPlayer", CreateVsPlayer},
     {"setLUAFunctionPointer", setLUAFunctionPointer},
     {"WatchEntry", WatchEntry},
     {"NewEntry", NewEntry},
-#endif
-#ifdef _ALLBLUES_LUA_1_9
     {"CreateForWatcher", CreateForWatcher},
     {"CheckIndex", CheckIndex},
     {"GetType", GetType},
@@ -282,7 +267,6 @@ static const luaL_Reg battlelib[] = {
     {"getCreateTime", getCreateTime},
 #endif
     {"getBattleFloor", getBattleFloor},
-#endif
     {"Exit", Exit},
     {NULL, NULL}};
 
@@ -290,5 +274,3 @@ LUALIB_API int luaopen_Battle(lua_State *L) {
   luaL_register(L, "battle", battlelib);
   return 1;
 }
-
-#endif

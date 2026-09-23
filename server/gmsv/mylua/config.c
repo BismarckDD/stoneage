@@ -1,11 +1,9 @@
+#include "mylua/base.h"
+//
 #include "char.h"
 #include "char_base.h"
-#include "mylua/base.h"
 #include "config_file.h"
 
-#ifdef _ALLBLUES_LUA
-
-#ifdef _ALLBLUES_LUA_1_1
 static int set(lua_State *L)
 {
 	size_t l;
@@ -93,6 +91,3 @@ LUALIB_API int luaopen_Config(lua_State *L)
 	luaL_register(L, "config", configlib);
 	return 1;
 }
-#endif
-
-#endif

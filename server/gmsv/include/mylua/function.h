@@ -4,7 +4,6 @@
 #include "mylua/mylua.h"
 
 // 2026.09.22 以下函数均需要LUA脚本的辅助
-#ifdef _ALLBLUES_LUA_1_2
 BOOL RunItemUseEvent(int item_index, int char_index, int toindex,
                      int haveitem_index);
 BOOL RunItemDieReLifeEvent(int toindex, int item_index, int haveitem_index);
@@ -15,7 +14,7 @@ BOOL RunItemPostOverEvent(int item_index, int char_index);
 BOOL RunItemPreOverEvent(int item_index, int char_index);
 BOOL RunItemDropEvent(int char_index, int item_index);
 BOOL RunUseChatMagic(int char_index, char *data, lua_State *lua);
-#endif
+
 #ifdef _PETSKILL_SHOP_LUA
 BOOL FreePetSkillShop(int talkerindex, int petindex, int oldSkillID,
                       int newSkillID);
@@ -23,18 +22,14 @@ BOOL FreePetSkillShop(int talkerindex, int petindex, int oldSkillID,
 #ifdef _PETSKILL_SHOP_LUA
 BOOL OffLineCommand(int battleindex, int charindex, int side);
 #endif
-#ifdef _ALLBLUES_LUA_1_4
-BOOL BattleFinish(int battleindex, int char_index);
-BOOL BattleEscape(int battleindex, int char_index);
+BOOL BattleFinish(int battle_index, int char_index);
+BOOL BattleEscape(int battle_index, int char_index);
 BOOL RunCharLogOutEvent(int char_index);
-#endif
-#ifdef _ALLBLUES_LUA_1_5
 BOOL FreePartyJoin(int char_index, int toindex);
 BOOL FreeVsPlayer(int char_index, int toindex);
 BOOL FreeCharLogin(int char_index);
 BOOL FreeCharCreate(int char_index);
 BOOL NetLoopFunction(void);
-#endif
 #ifdef _ALLBLUES_LUA_1_6
 BOOL FamilyRideCheck(int meindex, int petindex, int petid);
 BOOL FamilyRideFunction(int meindex, int petindex, int petid);
