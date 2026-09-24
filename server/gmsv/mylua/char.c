@@ -271,7 +271,7 @@ static CharBase CharBaseInt[] = {
     {{"家族类型"}, CHAR_FMSPRITE}
 #ifdef _NEW_RIDEPETS
     ,
-    {{"证书骑宠"}, CHAR_LOWRIDEPETS}
+    {{"证书骑宠"}, CHAR_NEWRIDEPETS}
 #endif
     ,
     {{"个人银行"}, CHAR_BANKGOLD},
@@ -472,24 +472,18 @@ static CharBase CharBaseInt[] = {
     {{"预测敏捷"}, CHAR_YQUICK},
     {{"预测等级"}, CHAR_YLV}
 #endif
-#ifdef _MO_NO_WALK
-    ,
-    {{"禁足"}, CHAR_NO_WALK}
-#endif
 #ifdef _NEW_TITLE
-    ,
-    {{"默认称号"}, CHAR_TITLE_DEFAULT},
-    {{"称号状态1"}, CHAR_TITLE1},
-    {{"称号状态2"}, CHAR_TITLE2},
-    {{"称号状态3"}, CHAR_TITLE3}
+    , {{"默认称号"}, CHAR_TITLE_DEFAULT}
+    , {{"称号状态1"}, CHAR_TITLE1}
+    , {{"称号状态2"}, CHAR_TITLE2}
+    , {{"称号状态3"}, CHAR_TITLE3}
 #endif
 #ifdef _TRUMP_EQUIPMENT
     ,
     {{"法宝状态"}, CHAR_TRUMPFLG}
 #endif
 #ifdef _CHAR_TITLE_STR_
-    ,
-    {{"文字称号"}, CHAR_TITLE_}
+    , {{"文字称号"}, CHAR_TITLE_}
 #endif
 };
 
@@ -504,64 +498,50 @@ static CharBase CharBaseChar[] = {{{"名字"}, CHAR_NAME},
                                   {{"导师名字"}, CHAR_TEACHER_NAME}
 #endif
 #ifdef _ITEM_SETLOVER
-                                  ,
-                                  {{"爱人账号"}, CHAR_LOVERID},
-                                  {{"爱人名字"}, CHAR_LOVERNAME}
+                                  , {{"爱人账号"}, CHAR_LOVERID}
+                                  , {{"爱人名字"}, CHAR_LOVERNAME}
 #endif
 #ifdef _NEW_NAME
-                                  ,
-                                  {{"称号"}, CHAR_NEWNAME}
+                                  , {{"称号"}, CHAR_NEWNAME}
 #endif
 #ifdef _LOTTERY_SYSTEM
-                                  ,
-                                  {{"彩票"}, CHAR_LOTTERY_VALUE}
+                                  , {{"彩票"}, CHAR_LOTTERY_VALUE}
 #endif
-                                  ,
-                                  {{"主人账号"}, CHAR_OWNERCDKEY},
-                                  {{"主人名字"}, CHAR_OWNERCHARANAME}
+                                  , {{"主人账号"}, CHAR_OWNERCDKEY}
+                                  , {{"主人名字"}, CHAR_OWNERCHARANAME}
 #ifdef _POWER_UP
-                                  ,
-                                  {{"能力提升"}, CHAR_POWER_UP}
+                                  , {{"能力提升"}, CHAR_POWER_UP}
 #endif
 #ifdef _VISUAL_BEATITUDE
-                                  ,
-                                  {{"祝福状态"}, CHAR_VB}
+                                  , {{"祝福状态"}, CHAR_VB}
 #endif
-                                  ,
-                                  {{"Unicode"}, CHAR_UNIQUECODE}};
+                                  , {{"Unicode"}, CHAR_UNIQUECODE}};
 
 static CharBase CharBaseEvent[] = {{{"初始化事件"}, CHAR_INITFUNC}
-                                   //,{{"行走事件"},     CHAR_WALKPREFUNC}
-                                   //,{{"行走后事件"},    CHAR_WALKPOSTFUNC}
-                                   //,{{"未知事件"},     CHAR_PREOVERFUNC}
-                                   //,{{"未知事件"},     CHAR_POSTOVERFUNC}
-                                   //,{{"观看事件"},     CHAR_WATCHFUNC}
-                                   ,
-                                   {{"循环事件"}, CHAR_LOOPFUNC}
-                                   //,{{"死亡事件"},     CHAR_DYINGFUNC}
-                                   ,
-                                   {{"对话事件"}, CHAR_TALKEDFUNC}
-                                   //,{{"攻击事件"},      CHAR_PREATTACKEDFUNC}
-                                   //,{{"攻击后事件"},   CHAR_POSTATTACKEDFUNC}
-                                   //,{{"离开事件"},     CHAR_OFFFUNC}
-                                   //,{{"看事件"},       CHAR_LOOKEDFUNC}
-                                   //,{{"丢弃事件"},      CHAR_ITEMPUTFUNC}
-                                   //,{{"特殊对话事件"}, CHAR_SPECIALTALKEDFUNC}
-                                   ,
-                                   {{"窗口事件"}, CHAR_WINDOWTALKEDFUNC}
+                                   // , {{"行走事件"},     CHAR_WALKPREFUNC}
+                                   // , {{"行走后事件"},   CHAR_WALKPOSTFUNC}
+                                   // , {{"未知事件"},     CHAR_PREOVERFUNC}
+                                   // , {{"未知事件"},     CHAR_POSTOVERFUNC}
+                                   // , {{"观看事件"},     CHAR_WATCHFUNC}
+                                   , {{"循环事件"},     CHAR_LOOPFUNC}
+                                   // , {{"死亡事件"},     CHAR_DYINGFUNC}
+                                   , {{"对话事件"},     CHAR_TALKEDFUNC}
+                                   // , {{"攻击事件"},     CHAR_PREATTACKEDFUNC}
+                                   // , {{"攻击后事件"},   CHAR_POSTATTACKEDFUNC}
+                                   // , {{"离开事件"},     CHAR_OFFFUNC}
+                                   // , {{"看事件"},       CHAR_LOOKEDFUNC}
+                                   // , {{"丢弃事件"},     CHAR_ITEMPUTFUNC}
+                                   // , {{"特殊对话事件"}, CHAR_SPECIALTALKEDFUNC}
+                                   , {{"窗口事件"}, CHAR_WINDOWTALKEDFUNC}
 #ifdef _USER_CHARLOOPS
-//,{{"循环事件1"},     CHAR_LOOPFUNCTEMP1}
-//,{{"循环事件2"},     CHAR_LOOPFUNCTEMP2}
-//,{{"未知事件"},     CHAR_BATTLEPROPERTY}
+                                   // ,{{"循环事件1"},     CHAR_LOOPFUNCTEMP1}
+                                   // ,{{"循环事件2"},     CHAR_LOOPFUNCTEMP2}
+                                   // ,{{"未知事件"},      CHAR_BATTLEPROPERTY}
 #endif
 // ,{{"重叠事件"},     CHAR_OVERLAPEDFUNC}
 // ,{{"战后事件"},     CHAR_BATTLEOVERDFUNC}
-                                   ,
-                                   {{"登出事件"}, CHAR_LOGINOUTFUNC}
-#ifdef _ALLBLUES_LUA_1_9
-                                   ,
-                                   {{"战斗设置事件"}, CHAR_BATTLESETFUNC}
-#endif
+                                   , {{"登出事件"}, CHAR_LOGINOUTFUNC}
+                                   , {{"战斗设置事件"}, CHAR_BATTLESETFUNC}
 };
 
 static CharBase CharBaseColor[] = {
@@ -1817,18 +1797,15 @@ static int DelPet(lua_State *L) {
   return 1;
 }
 
-#ifdef _ALLBLUES_LUA_1_7
 static int findEmptyItemBox(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
-
   lua_pushinteger(L, CHAR_findEmptyItemBox(char_index));
   return 1;
 }
 
 static int findEmptyPetBox(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
-  int num = 0;
-  int i;
+  int num = 0, i;
   for (i = 0; i < CHAR_MAXPETHAVE; i++) {
     int petindex = CHAR_getCharPet(char_index, i);
     if (!CHAR_CHECKINDEX(petindex)) {
@@ -1984,15 +1961,13 @@ static int Skillupsend(lua_State *L) {
   CHAR_Skillupsend(char_index);
   return 1;
 }
-#endif
 
-#ifdef _ALLBLUES_LUA_1_9
 static int logou(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
-
   CHAR_logout(char_index, TRUE);
   return 1;
 }
+
 int copyChar(lua_State *L) {
   const int fromindex = luaL_checkint(L, 1);
   const int toindex = luaL_checkint(L, 2);
@@ -2038,15 +2013,12 @@ static int talkToAllServer(lua_State *L) {
 }
 #endif
 
-#endif
-
 static int earnFame(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
   const int num = luaL_checkint(L, 2);
   CHAR_earnFame(char_index, num);
   return 1;
 }
-
 
 // 2026.09.19 原地遇敌
 static int Encounter(lua_State *L) {
@@ -2056,17 +2028,14 @@ static int Encounter(lua_State *L) {
   int fd = CHAR_getWorkInt(char_index, CHAR_WORKFD);
   setStayEncount(fd);
 #ifdef _USER_CHARLOOPS
-  {
-    Char *ch;
-    ch = CHAR_getCharPointer(char_index);
-    if (ch == NULL)
-      return 0;
-    strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
-                sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]),
-                "CHAR_BattleStayLoop"); // 战斗
-    CHAR_setInt(char_index, CHAR_LOOPINTERVAL, 500); // 500ms检测一次战斗
-    CHAR_constructFunctable(char_index);
-  }
+  Char *ch = CHAR_getCharPointer(char_index);
+  if (ch == NULL)
+    return 0;
+  strncpysafe(ch->charfunctable[CHAR_LOOPFUNCTEMP1].string,
+              sizeof(ch->charfunctable[CHAR_LOOPFUNCTEMP1]),
+              "CHAR_BattleStayLoop"); // 战斗
+  CHAR_setInt(char_index, CHAR_LOOPINTERVAL, 500); // 500ms检测一次战斗
+  CHAR_constructFunctable(char_index);
 #endif
 }
 
@@ -2082,48 +2051,51 @@ static int ClearEncounter(lua_State *L) {
 
 static int getDX(lua_State *L) {
   size_t l;
-  // const char *diy = luaL_checklstring(L, 1, &l);
-  // lua_pushinteger(L, CHAR_getDX(diy));
+  const char *diy = luaL_checklstring(L, 1, &l);
+  lua_pushinteger(L, CHAR_getDX(diy));
   return 1;
 }
 
 static int getDY(lua_State *L) {
   size_t l;
-  // const char *dir = luaL_checklstring(L, 1, &l);
-  // lua_pushinteger(L, CHAR_getDY(dir));
+  const char *dir = luaL_checklstring(L, 1, &l);
+  lua_pushinteger(L, CHAR_getDY(dir));
   return 1;
 }
 
+// 2026.09.24 让某个角色执行某个action?
 static int sendAction(lua_State *L) {
   const int char_index = luaL_checkint(L, 1);
-  const int actionno = luaL_checkint(L, 2);
+  const int action_no = luaL_checkint(L, 2);
   const int flg = luaL_checkint(L, 3);
-  CHAR_sendAction(char_index, actionno, flg);
+  CHAR_sendAction(char_index, action_no, flg);
   return 1;
 }
 
-static int GetEmptyItemBoxNum(lua_State *_NLL)
+// 2026.09.24 lua脚本获取空的物品栏
+static int GetEmptyItemBoxNum(lua_State *L)
 {
-  const int TM_CharIndex = luaL_checkint(_NLL, 1);
-  if (!CHAR_CHECKINDEX(TM_CharIndex))
+  const int L_char_index = luaL_checkint(L, 1);
+  if (!CHAR_CHECKINDEX(L_char_index))
   {
-    lua_pushinteger(_NLL, -1);
+    lua_pushinteger(L, -1);
     return 0;
   }
   int i = CHAR_EQUIPPLACENUM;
-  int EmptyNum = 0;
+  int empty_num = 0;
 #ifdef _NEW_ITEM_
-  int itemMax = CheckCharMaxItem(TM_CharIndex);
+  int itemMax = CheckCharMaxItem(L_char_index);
   for (; i < itemMax; i++) {
 #else
   for (; i < CHAR_MAXITEMHAVE; i++) {
 #endif
-    if (CHAR_getItemIndex(TM_CharIndex, i) == -1)
-      EmptyNum++;
+    if (CHAR_getItemIndex(L_char_index, i) == -1)
+      ++empty_num;
   }
-  lua_pushinteger(_NLL, EmptyNum);
+  lua_pushinteger(L, empty_num);
 }
 
+// 
 static int GetOldLevelExp(lua_State *L) {
   const int level = luaL_checkint(L, 1);
   lua_pushinteger(L, CHAR_GetOldLevelExp(level));
@@ -2331,7 +2303,6 @@ static const luaL_Reg charLib[] = {
 #ifdef _PETSKILL_SHOP_LUA
     {"FreePetSkill", FreePetSkill},
 #endif
-#ifdef _ALLBLUES_LUA_1_7
     {"findEmptyPetBox", findEmptyPetBox},
     {"findEmptyItemBox", findEmptyItemBox},
     {"dropPetFollow", dropPetFollow},
@@ -2342,13 +2313,10 @@ static const luaL_Reg charLib[] = {
 #ifdef _RECORD_IP
     {"userip", userip},
 #endif
-#endif
-#ifdef _ALLBLUES_LUA_1_9
     {"logou", logou},
     {"copyChar", copyChar},
 #ifdef _ALL_SERV_SEND
     {"talkToAllServer", talkToAllServer},
-#endif
 #endif
     {"earnFame", earnFame},
     {"Encounter", Encounter},

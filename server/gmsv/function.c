@@ -137,13 +137,14 @@
 #ifdef _JZ_NEWSCRIPT_LUA
 #include "npc_lua_interface.h"
 #endif
-typedef struct tagCorrespondStringAndFunctionTable {
+
+typedef struct tagFunctionMapEntry {
   STRING32 functionName;
   void *functionPointer;
   int hashcode;
-} CorrespondStringAndFunctionTable;
+} FunctionMapEntry;
 
-static CorrespondStringAndFunctionTable correspondStringAndFunctionTable[] = {
+static FunctionMapEntry sFunctionMap[] = {
     {{"core_PreWalk"}, CHAR_allprewalk, 0},
     {{"core_PostWalk"}, CHAR_allpostwalk, 0},
     {{"core_Loop"}, CHAR_loopFunc, 0},
@@ -159,8 +160,7 @@ static CorrespondStringAndFunctionTable correspondStringAndFunctionTable[] = {
     {{"ITEM_DeleteByWatched"}, ITEM_DeleteByWatched, 0},
     {{"ITEM_DeleteTimeWatched"}, ITEM_DeleteTimeWatched, 0},
     {{"ITEM_useEffectTohelos"}, ITEM_useEffectTohelos, 0},
-
-    //    { {"ITEM_useHpRecovery"}, 	ITEM_useHpRecovery, 	0 },
+    // {{"ITEM_useHpRecovery"}, ITEM_useHpRecovery, 0},
     {{"ITEM_useRecovery"}, ITEM_useRecovery, 0},
 #ifdef _ITEM_MAGICRECOVERY
     {{"ITEM_useMRecovery"}, ITEM_useMRecovery, 0},
@@ -203,11 +203,9 @@ static CorrespondStringAndFunctionTable correspondStringAndFunctionTable[] = {
     {{"ITEM_CharaMetamo"}, ITEM_CharaMetamo, 0},
     {{"ITEM_SexMetamo"}, ITEM_SexMetamo, 0},
 #endif
-
 #ifdef _USEWARP_FORNUM
     {{"ITEM_useWarpForNum"}, ITEM_useWarpForNum, 0},
 #endif
-
 #ifdef _IMPRECATE_ITEM
     {{"ITEM_useImprecate"}, ITEM_useImprecate, 0},
 #endif
@@ -833,37 +831,32 @@ static CorrespondStringAndFunctionTable correspondStringAndFunctionTable[] = {
 BOOL initFunctionTable(void) {
 
   int i;
-  {
-    char *strings[arraysizeof(correspondStringAndFunctionTable)];
-    int stringnum = 0;
-    for (i = 0; i < arraysizeof(correspondStringAndFunctionTable); i++)
-      strings[stringnum++] =
-          correspondStringAndFunctionTable[i].functionName.string;
-    if (!checkStringsUnique(strings, stringnum, 1)) {
-      printEx("函数表已经覆盖了，这不被允许!\n");
-      return FALSE;
-    }
+  char *strings[arraysizeof(sFunctionMap)];
+  for (i = 0; i < arraysizeof(sFunctionMap); i++)
+    strings[i] = sFunctionMap[i].functionName.string;
+  if (!checkStringsUnique(strings, i, 1)) {
+    printEx("函数表已经覆盖了，这不被允许!\n");
+    return FALSE;
   }
-
-  for (i = 0; i < arraysizeof(correspondStringAndFunctionTable); i++) {
-    correspondStringAndFunctionTable[i].hashcode =
-        hashpjw(correspondStringAndFunctionTable[i].functionName.string);
+  for (i = 0; i < arraysizeof(sFunctionMap); i++) {
+    sFunctionMap[i].hashcode =
+        hashpjw(sFunctionMap[i].functionName.string);
   }
   return TRUE;
 }
 
-void *getFunctionPointerFromName(char *funcname) {
-  int i;
-  int hashcode;
-  if (funcname == NULL || funcname[0] == '\0') {
+// 2026.09.24 从sFunctionMap中根据名称取出函数指针
+void *getFunctionPointerFromName(char *function_name) {
+  if (function_name == NULL || function_name[0] == '\0') {
     return NULL;
   }
-  hashcode = hashpjw(funcname);
-  for (i = 0; i < arraysizeof(correspondStringAndFunctionTable); i++)
-    if (correspondStringAndFunctionTable[i].hashcode == hashcode)
-      if (strcmp(correspondStringAndFunctionTable[i].functionName.string,
-                 funcname) == 0) {
-        return correspondStringAndFunctionTable[i].functionPointer;
+  int hashcode = hashpjw(function_name);
+  int i;
+  for (i = 0; i < arraysizeof(sFunctionMap); ++i)
+    if (sFunctionMap[i].hashcode == hashcode)
+      if (strcmp(sFunctionMap[i].functionName.string,
+                 function_name) == 0) {
+        return sFunctionMap[i].functionPointer;
       }
   return NULL;
 }

@@ -11,6 +11,7 @@ typedef struct tagMemory {
   BOOL used;
   unsigned int nsize;
 } Memory;
+
 static Memory *mem;
 
 void memEnd(void) {

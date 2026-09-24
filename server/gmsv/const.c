@@ -6,9 +6,7 @@
 #include "battle.h"
 #include "object.h"
 #include "magic_base.h"
-#ifdef _MO_ADD_LUADX
-#include "enemy.h"
-#endif
+
 //   0-1999 CHAR_getInt
 //2000-3999 CHAR_getChar
 //4000-5999 CHAR_getWorkInt
@@ -86,66 +84,6 @@ lua_const M_Lua_RegConstList[] = {
   {"对像_经验%", sizeof("对像_经验%"), LUA_DATALINE0 + CHAR_EXP},
 #else
   {"对像_经验%", sizeof("对像_经验%"), LUA_DATALINE0 + CHAR_EXP},
-#endif
-
-#ifdef _MO_ADD_LUADX
-  {"对像_血MAX%", sizeof("对像_血MAX%"), LUA_DATALINE2 + CHAR_WORKMAXHP},
-  {"对像_气MAX%", sizeof("对像_气MAX%"), LUA_DATALINE2 + CHAR_WORKMAXMP},
-  {"对像_成长%", sizeof("对像_成长%"), LUA_DATALINE0 + CHAR_ALLOCPOINT},
-  {"对像_PETRANK%", sizeof("对像_PETRANK%"), LUA_DATALINE0 + CHAR_PETRANK},
-  {"对像_ENEMYBASE编号%", sizeof("对像_ENEMYBASE编号%"), LUA_DATALINE0 + CHAR_PETID},
-  {"对像_摆摊%", sizeof("对像_摆摊%"), LUA_DATALINE2 + CHAR_WORKSTREETVENDOR},
-  {"对像_看摊者%", sizeof("对像_看摊者%"), LUA_DATALINE2 + CHAR_WORKSTREETVENDOR_WHO},
-  {"对像_摊名%", sizeof("对像_摊名%"), LUA_DATALINE0 + CHAR_STREETVENDOR_NAME},
-  {"对像_婚否%", sizeof("对像_婚否%"), LUA_DATALINE0 + CHAR_LOVE},
-  {"对像_配偶帐%", sizeof("对像_配偶帐%"), LUA_DATALINE0 + CHAR_LOVERID},
-  {"对像_配偶名%", sizeof("对像_配偶名%"), LUA_DATALINE0 + CHAR_LOVERNAME},
-  {"成长_速度%", sizeof("成长_速度%"), 0},
-  {"成长_耐力%", sizeof("成长_耐力%"), 1},
-  {"成长_腕力%", sizeof("成长_腕力%"), 2},
-  {"成长_体力%", sizeof("成长_体力%"), 3},
-  {"对像_速度成长%", sizeof("对像_速度成长%"), 0},
-  {"对像_耐力成长%", sizeof("对像_耐力成长%"), 1},
-  {"对像_腕力成长%", sizeof("对像_腕力成长%"), 2},
-  {"对像_体力成长%", sizeof("对像_体力成长%"), 3},
-  {"宠模_编号%", sizeof("宠模_编号%"), LUA_DATALINE0 + E_T_TEMPNO},
-  {"宠模_初始%", sizeof("宠模_初始%"), LUA_DATALINE0 + E_T_INITNUM},
-  {"宠模_升级点%", sizeof("宠模_升级点%"), E_T_LVUPPOINT},
-  {"宠模_体力%", sizeof("宠模_体力%"), LUA_DATALINE0 + E_T_BASEVITAL},
-  {"宠模_腕力%", sizeof("宠模_腕力%"), LUA_DATALINE0 + E_T_BASESTR},
-  {"宠模_耐力%", sizeof("宠模_耐力%"), LUA_DATALINE0 + E_T_BASETGH},
-  {"宠模_速度%", sizeof("宠模_速度%"), LUA_DATALINE0 + E_T_BASEDEX},
-  {"宠模_AI%", sizeof("宠模_AI%"), LUA_DATALINE0 + E_T_MODAI},
-  {"宠模_GET%", sizeof("宠模_GET%"), LUA_DATALINE0 + E_T_GET},
-  {"宠模_地%", sizeof("宠模_地%"), LUA_DATALINE0 + E_T_EARTHAT},
-  {"宠模_水%", sizeof("宠模_水%"), LUA_DATALINE0 + E_T_WATERAT},
-  {"宠模_火%", sizeof("宠模_火%"), LUA_DATALINE0 + E_T_FIREAT},
-  {"宠模_风%", sizeof("宠模_风%"), LUA_DATALINE0 + E_T_WINDAT},
-  {"宠模_毒抗%", sizeof("宠模_毒抗%"), LUA_DATALINE0 + E_T_POISON},
-  {"宠模_麻抗%", sizeof("宠模_麻抗%"), LUA_DATALINE0 + E_T_PARALYSIS},
-  {"宠模_默抗%", sizeof("宠模_默抗%"), LUA_DATALINE0 + E_T_SLEEP},
-  {"宠模_石抗%", sizeof("宠模_石抗%"), LUA_DATALINE0 + E_T_STONE},
-  {"宠模_醉抗%", sizeof("宠模_醉抗%"), LUA_DATALINE0 + E_T_DRUNK},
-  {"宠模_乱抗%", sizeof("宠模_乱抗%"), LUA_DATALINE0 + E_T_CONFUSION},
-  {"宠模_宠技1%", sizeof("宠模_宠技1%"), LUA_DATALINE0 + E_T_PETSKILL1},
-  {"宠模_宠技2%", sizeof("宠模_宠技2%"), LUA_DATALINE0 + E_T_PETSKILL2},
-  {"宠模_宠技3%", sizeof("宠模_宠技3%"), LUA_DATALINE0 + E_T_PETSKILL3},
-  {"宠模_宠技4%", sizeof("宠模_宠技4%"), LUA_DATALINE0 + E_T_PETSKILL4},
-  {"宠模_宠技5%", sizeof("宠模_宠技5%"), LUA_DATALINE0 + E_T_PETSKILL5},
-  {"宠模_宠技6%", sizeof("宠模_宠技6%"), LUA_DATALINE0 + E_T_PETSKILL6},
-  {"宠模_宠技7%", sizeof("宠模_宠技7%"), LUA_DATALINE0 + E_T_PETSKILL7},
-  {"宠模_珍稀%", sizeof("宠模_珍稀%"), LUA_DATALINE0 + E_T_RARE},
-  {"宠模_会心%", sizeof("宠模_会心%"), LUA_DATALINE0 + E_T_CRITICAL},
-  {"宠模_反击%", sizeof("宠模_反击%"), LUA_DATALINE0 + E_T_COUNTER},
-  {"宠模_技格%", sizeof("宠模_技格%"), LUA_DATALINE0 + E_T_SLOT},
-  {"宠模_图档%", sizeof("宠模_图档%"), LUA_DATALINE0 + E_T_IMGNUMBER},
-  {"宠模_FLG%", sizeof("宠模_FLG%"), LUA_DATALINE0 + E_T_PETFLG},
-  {"宠模_尺寸%", sizeof("宠模_尺寸%"), LUA_DATALINE0 + E_T_SIZE},
-  {"宠模_级限%", sizeof("宠模_级限%"), LUA_DATALINE0 + E_T_LIMITLEVEL},
-#ifdef _PET_FUSION  
-  {"宠模_融合码%", sizeof("宠模_融合码%"), LUA_DATALINE0 + E_T_FUSIONCODE},
-#endif  
-  {"宠模_原名%", sizeof("宠模_原名%"), LUA_DATALINE1 + E_T_NAME},
 #endif
 
   {"对像_出生%", sizeof("对像_出生%"), LUA_DATALINE0 + CHAR_LASTTALKELDER},

@@ -800,7 +800,7 @@ BOOL NPC_EventFreeIfCheck(int meindex, int talker, char *buf, int kosuu,
   {
     int i;
     for (i = 0; i < CHAR_DATAINTNUM; i++) {
-      if (strcmp(buf, CHAR_setintdata[i]) == 0) {
+      if (strcmp(buf, CHAR_IntDataName[i]) == 0) {
         if (NPC_ActionBigSmallLastCheck(kosuu, CHAR_getInt(talker, i), flg) ==
             TRUE) {
           return TRUE;

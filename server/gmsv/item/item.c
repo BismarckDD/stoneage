@@ -1623,13 +1623,11 @@ void ITEM_equipEffect(int index) {
 #endif
 
   for (i = 0; i < CHAR_EQUIPPLACENUM; i++) {
-#ifdef _ALLBLUES_LUA_1_9
     if (CHAR_getInt(index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
       if (EquipEffectFunction(index, i) == FALSE) {
         continue;
       }
     }
-#endif
     int id = CHAR_getItemIndex(index, i);
     if (ITEM_CHECKINDEX(id)) {
       int j;

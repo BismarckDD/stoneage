@@ -325,14 +325,13 @@ static int CharTitleSend(lua_State *L)
 	size_t l;
 	const int fd = luaL_checkint(L, 1);
 	char *data = luaL_checklstring(L, 2, &l);
-
 	GmsvServer_CharTitle_send(fd, data);
 	return 1;
 }
+
 static int CharTitleCancel(lua_State *L)
 {
 	const int char_index = luaL_checkint(L, 1);
-
 	CHAR_CancelNewTitle(char_index);
 	return 1;
 }

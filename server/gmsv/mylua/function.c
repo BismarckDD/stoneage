@@ -199,7 +199,6 @@ BOOL LoadFamilyBadge(int fd) {
 }
 #endif
 
-#ifdef _ALLBLUES_LUA_1_9
 int FreeCharDelete(int fd, const char *cdkey, const char *passwd) {
   static lua_State *lua;
 
@@ -1204,9 +1203,6 @@ BOOL SetBattleEnmeyFunction(int meindex, int enemy_index, int id) {
   return TRUE;
 }
 
-#endif
-
-#ifdef _ALLBLUES_LUA_1_8
 BOOL CaptureOkFunction(int attackindex, int defindex) {
   SaLua *mylua = &gSaLua;
   while (mylua->lua != NULL) {
@@ -1220,11 +1216,9 @@ BOOL CaptureOkFunction(int attackindex, int defindex) {
     // 依次放入二个参数
     lua_pushnumber(mylua->lua, attackindex);
     lua_pushnumber(mylua->lua, defindex);
-
     docall(mylua->lua, 2, 1);
     mylua = mylua->next;
   }
-
   return TRUE;
 }
 
@@ -1258,9 +1252,7 @@ BOOL CaptureCheckFunction(int attackindex, int defindex) {
   lua_pop(lua, 1);
   return ret;
 }
-#endif
 
-#ifdef _ALLBLUES_LUA_1_7
 BOOL CharVsEnemyFunction(int char_index) {
   SaLua *mylua = &gSaLua;
   while (mylua->lua != NULL) {
@@ -1292,9 +1284,7 @@ BOOL CharVsEnemyFunction(int char_index) {
 
   return FALSE;
 }
-#endif
 
-#ifdef _ALLBLUES_LUA_1_6
 BOOL CharTalkFunction(int char_index, char *message, int color) {
   static lua_State *lua;
 
@@ -1358,7 +1348,6 @@ BOOL FamilyRideFunction(int meindex, int petindex, int petid) {
   lua_pop(lua, 1);
   return ret;
 }
-#endif
 
 BOOL NetLoopFunction(void) {
   SaLua *mylua = &gSaLua;
@@ -1762,25 +1751,6 @@ char *BeatitudeCheck(int meindex, int petindex, int havepetindex) {
   int ret = lua_tostring(lua, -1);
   lua_pop(lua, 1);
   return ret;
-}
-#endif
-
-#ifdef _RIDEQUERY_
-void FreeRideQuery(int char_index) {
-  static lua_State *lua;
-  if (lua == NULL) {
-    lua = FindLua("data/ablua/familyridefunction.lua");
-    if (lua == NULL)
-      return;
-  }
-  lua_getglobal(lua, "FreeRideQuery");
-  if (!lua_isfunction(lua, -1)) {
-    return;
-  }
-  // 依次放入二个参数
-  lua_pushnumber(lua, char_index);
-  docall(lua, 1, 1);
-  return;
 }
 #endif
 

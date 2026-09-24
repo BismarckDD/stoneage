@@ -179,9 +179,6 @@ typedef struct tagServerConfig {
   int ridelevel;
   int ridetrans;
 #endif
-#ifdef _REVLEVEL
-  int revlevel;
-#endif
 #ifdef _NEW_PLAYER_RIDE
   int npride;
 #endif
@@ -717,10 +714,6 @@ ReadConf gReadConf[] = {
 #ifdef _RIDELEVEL
     {"RIDELEVEL", NULL, 0, (void *)&gServerConfig.ridelevel, INT},
     {"RIDETRANS", NULL, 0, (void *)&gServerConfig.ridetrans, INT},
-#endif
-
-#ifdef _REVLEVEL
-    {"REVLEVEL", NULL, 0, (void *)&gServerConfig.revlevel, INT},
 #endif
 #ifdef _NEW_PLAYER_RIDE
     {"NPRIDE", NULL, 0, (void *)&gServerConfig.npride, INT},
@@ -2085,6 +2078,7 @@ int getTransPoint(int index) { return gServerConfig.transpoint[index]; }
 char *getPetup(void) { return (gServerConfig.petup > 0) ? "是" : "否"; }
 char *getItemup(void) { return (gServerConfig.itemup > 0) ? "是" : "否"; }
 #endif
+
 #ifdef _LOOP_ANNOUNCE
 char *getLoopAnnouncePath(void) { return gServerConfig.loopannouncepath; }
 int loadLoopAnnounce(void) {
@@ -2110,7 +2104,6 @@ int loadLoopAnnounce(void) {
         break;
       }
     }
-    //*************************************
     strcpy(gServerConfig.loopannounce[gServerConfig.loopannouncemax], line);
     gServerConfig.loopannouncemax++;
   }
@@ -2136,9 +2129,6 @@ int getRideLevel(void) { return gServerConfig.ridelevel; }
 int getRideTrans(void) { return gServerConfig.ridetrans; }
 #else
 int getRideTrans(void) { return 0; }
-#endif
-#ifdef _REVLEVEL
-char *getRevLevel(void) { return (gServerConfig.revlevel > 0) ? "是" : "否"; }
 #endif
 #ifdef _NEW_PLAYER_RIDE
 char *getPlayerRide(void) {

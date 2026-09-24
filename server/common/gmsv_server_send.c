@@ -1574,23 +1574,6 @@ int GmsvServer_ServerDispatchMessage(int client_fd, char *encoded) {
     return 0;
   }
 #endif
-#ifdef _RIDEQUERY_
-  if (func == LSSPROTO_RIDEQUERY_RECV) {
-    int check_sum_recv;
-    int check_sum_calc = 0;
-    int id = 0;
-    check_sum_calc += util_deint(2, &id);
-    util_deint(3, &check_sum_recv);
-    if (check_sum_calc != check_sum_recv || id != 1458) {
-      util_DiscardMessage();
-      DME();
-      return -1;
-    }
-    FreeRideQuery(CONNECT_getCharaindex(client_fd));
-    util_DiscardMessage();
-    return 0;
-  }
-#endif
 #ifdef _RED_MEMOY_
   if (func == LSSPROTO_REDMEMOY_RECV) {
     int check_sum_recv;

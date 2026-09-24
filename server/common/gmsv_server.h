@@ -237,10 +237,6 @@
 #define LSSPROTO_VB_SEND 219
 #endif
 
-#ifdef _RIDEQUERY_
-#define LSSPROTO_RIDEQUERY_RECV 220
-#endif
-
 void GmsvServer_W_recv(int client_fd, int x, int y, char *direction);
 void GmsvServer_UpShopData_send(int client_fd, char *data, char *md5, int id);
 void GmsvServer_ShopOK_send(int client_fd);

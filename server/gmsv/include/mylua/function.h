@@ -18,8 +18,6 @@ BOOL RunUseChatMagic(int char_index, char *data, lua_State *lua);
 #ifdef _PETSKILL_SHOP_LUA
 BOOL FreePetSkillShop(int talkerindex, int petindex, int oldSkillID,
                       int newSkillID);
-#endif
-#ifdef _PETSKILL_SHOP_LUA
 BOOL OffLineCommand(int battleindex, int charindex, int side);
 #endif
 BOOL BattleFinish(int battle_index, int char_index);
@@ -30,19 +28,12 @@ BOOL FreeVsPlayer(int char_index, int toindex);
 BOOL FreeCharLogin(int char_index);
 BOOL FreeCharCreate(int char_index);
 BOOL NetLoopFunction(void);
-#ifdef _ALLBLUES_LUA_1_6
 BOOL FamilyRideCheck(int meindex, int petindex, int petid);
 BOOL FamilyRideFunction(int meindex, int petindex, int petid);
 BOOL CharTalkFunction(int char_index, char *message, int color);
-#endif
-#ifdef _ALLBLUES_LUA_1_7
 BOOL CharVsEnemyFunction(int char_index);
-#endif
-#ifdef _ALLBLUES_LUA_1_8
 BOOL CaptureOkFunction(int attackindex, int defindex);
 BOOL CaptureCheckFunction(int attackindex, int defindex);
-#endif
-#ifdef _ALLBLUES_LUA_1_9
 BOOL SetBattleEnmeyFunction(int meindex, int enemy_index, int id);
 BOOL BattleFinishFunction(int char_index, int battletime, int battleturn,
                           int battletype);
@@ -51,11 +42,7 @@ BOOL BattleCommand(int char_index, int battleindex);
 BOOL FreeAction(int char_index, int x, int y, int action_no);
 int FreeCharDelete(int char_index, const char *cdkey, const char *passwd);
 void FreeAddFMAdv(int char_index, int point);
-#endif
-#endif
-
+// 2026.09.24 适配客户端ESC_Menu中的各种命令
 BOOL FreeSaMenu(int char_index, int index);
 
-#ifdef _RIDEQUERY_
-void FreeRideQuery(int char_index);
-#endif
+#endif //

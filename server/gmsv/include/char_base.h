@@ -582,7 +582,7 @@ typedef enum {
   CHAR_RIDEPET,
   CHAR_LEARNRIDE,
 #ifdef _NEW_RIDEPETS
-  CHAR_LOWRIDEPETS,
+  CHAR_NEWRIDEPETS,
 #endif
   CHAR_LIMITLEVEL,
 #ifdef _PET_FUSION
@@ -808,9 +808,6 @@ typedef enum {
 #endif
 #ifdef _ATTACK_EFFECT
   CHAR_ATTACK_EFFECT,
-#endif
-#ifdef _MO_NO_WALK
-  CHAR_NO_WALK,
 #endif
 #ifdef _TENSE_FIELD
   CHAR_TENSE_FIELD,
@@ -2231,7 +2228,7 @@ void CHAR_CancelNewTitle(int char_index);
 // Forward declaration (defined later in this file)
 extern int CheckCharMaxItem(int char_index);
 extern int CheckCharMaxItemChar(Char *ch);
-extern char *CHAR_setintdata[CHAR_DATAINTNUM];
-extern char *CHAR_setchardata[CHAR_DATACHARNUM];
+extern char *CHAR_IntDataName[CHAR_DATAINTNUM];
+extern char *CHAR_CHARDATA_NAME[CHAR_DATACHARNUM];
 
 #endif //

@@ -1,3 +1,0 @@
-#*****GM Account*****
-admin 9
-franklin 9

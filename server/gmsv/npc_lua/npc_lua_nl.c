@@ -979,49 +979,27 @@ static void addintlen (char *form) {
 static void addquoted (lua_State *L, luaL_Buffer *b, int arg) {
 
   size_t l;
-
   const char *s = luaL_checklstring(L, arg, &l);
-
   luaL_addchar(b, '"');
-
   while (l--) {
-
     switch (*s) {
-
       case '"': case '\\': case '\n': {
-
         luaL_addchar(b, '\\');
-
         luaL_addchar(b, *s);
-
         break;
-
       }
-
       case '\r': {
-
         luaL_addlstring(b, "\\r", 2);
-
         break;
-
       }
-
       case '\0': {
-
         luaL_addlstring(b, "\\000", 4);
-
         break;
-
       }
-
       default: {
-
         luaL_addchar(b, *s);
-
         break;
-
       }
-
     }
 
     s++;
@@ -1121,47 +1099,24 @@ int NPC_Lua_NL_Print(lua_State *L)
         }
 
         case 's': {
-
           size_t l;
-
           const char *s = luaL_checklstring(L, arg, &l);
-
           if (!strchr(form, '.') && l >= 100) {
-
-
-
             lua_pushvalue(L, arg);
-
             luaL_addvalue(&b);
-
             continue;
-
-          }
-
-          else {
-
+          } else {
             mj_sprintf(buff, form, s);
-
             break;
-
           }
-
         }
-
         default: {
-
           return luaL_error(L, "invalid option " LUA_QL("%%%c") " to "
-
                                LUA_QL("format"), *(strfrmt - 1));
-
         }
-
       }
-
       luaL_addlstring(&b, buff, strlen(buff));
-
     }
-
   }
 
   print(b.buffer);
@@ -1171,154 +1126,73 @@ int NPC_Lua_NL_Print(lua_State *L)
 }
 
 int NPC_Lua_NL_CreateSpecialNpc(lua_State *L)
-
 {
-
 	Char one;
-
 	size_t l;
-
 	CHAR_getDefaultChar( &one, 0);
-
 	one.data[CHAR_WHICHTYPE] = CHAR_TYPELUANPC;
-
 	char *Name = luaL_checklstring(L, 1, &l);
-
 	const int Image = luaL_checkinteger(L, 2);
-
 	const int Floor = luaL_checkinteger(L, 3);
-
 	const int x = luaL_checkinteger(L, 4);
-
 	const int y = luaL_checkinteger(L, 5);
-
 	const int dir = luaL_checkinteger(L, 6);
-
 	const int enemyid = luaL_checkint(L, 7);
-
 	const int UpLevel = luaL_checkinteger(L, 8);
-
 	int i;
-
 	for( i = 0; i < ENEMY_getEnemyNum(); i ++ ) {
-
 		if( ENEMY_getInt( i, ENEMY_ID) == enemyid) {
-
 			break;
-
 		}
-
 	}
 
 	if( i == ENEMY_getEnemyNum() ){
-
 		lua_pushinteger(L, -1);
-
 		return 1;
-
 	}
-
-
 
 	int npcindex = ENEMY_createEnemy( i, 0);
-
 	if( npcindex < 0 ) {
-
 		print( "NPC制作失败。\n");
-
 	}
-
 	CHAR_setInt(npcindex, CHAR_WHICHTYPE, CHAR_TYPEPLAYERNPC);
-
 	CHAR_setChar(npcindex, CHAR_NAME, Name);
-
+	CHAR_setInt(npcindex, CHAR_IMAGENUMBER, Image);
 	CHAR_setInt(npcindex, CHAR_BASEIMAGENUMBER, Image);
-
-	CHAR_setInt(npcindex, CHAR_BASEIMAGENUMBER, Image);
-
 	CHAR_setInt(npcindex, CHAR_FLOOR, Floor);
-
 	CHAR_setInt(npcindex, CHAR_X, x);
-
 	CHAR_setInt(npcindex, CHAR_Y, y);
-
 	CHAR_setInt(npcindex, CHAR_DIR, dir);
-
-
-
 	CHAR_setInt(npcindex, CHAR_MODAI, 10000);
-
 	CHAR_setInt(npcindex, CHAR_VARIABLEAI,10000);
-
-
-
 	for( i = 0; i < UpLevel; i ++ ){
-
 		CHAR_PetLevelUp( npcindex );
-
 		CHAR_PetAddVariableAi( npcindex, AI_FIX_PETLEVELUP );
-
 	}
-
 	CHAR_complianceParameter( npcindex );
-
 	CHAR_setInt( npcindex, CHAR_HP, CHAR_getWorkInt( npcindex, CHAR_WORKMAXHP ));
-
 	Object object;
-
 	int objindex;
-
-
-
 	object.type = OBJTYPE_CHARA;
-
 	object.index = npcindex;
-
 	object.x =CHAR_getInt(npcindex, CHAR_X);
-
 	object.y = CHAR_getInt(npcindex, CHAR_Y);
-
 	object.floor = CHAR_getInt(npcindex, CHAR_FLOOR);
-
-
-
 	objindex = initObjectOne( &object );
-
-
-
 	if( objindex == -1 ) {
-
 		CHAR_endCharOneArray( npcindex );
-
 	}else {
-
 		CHAR_setWorkInt( npcindex,CHAR_WORKOBJINDEX, objindex );
-
 		CHAR_LoginBesideSetWorkInt( npcindex, -1 );
-
 	}
-
-
-
 	lua_pushinteger(L, npcindex);
-
 	return 1;
-
 }
 
 int NPC_Lua_NL_getGameservername(lua_State *_NLL)
-
 {
-
 	char* name = getGameservername();
-
 	LRetMsg(_NLL, name);
-
 }
 
-
-
 #endif //#ifdef _JZ_NEWSCRIPT_LUA
-
-
-

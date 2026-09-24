@@ -3443,7 +3443,7 @@ void CHAR_CHAT_DEBUG_engineer(int char_index, char *message) {
   CHAR_setInt(char_index, CHAR_SKILLUPPOINT, 600);
   CHAR_setInt(char_index, CHAR_LEARNRIDE, 200);
   CHAR_setInt(char_index, CHAR_GOLD, MaxGold);
-  CHAR_setInt(char_index, CHAR_LOWRIDEPETS, -1);
+  CHAR_setInt(char_index, CHAR_NEWRIDEPETS, -1);
 
   CHAR_talkToCli(char_index, -1, message, CHAR_COLORYELLOW);
   {
@@ -5071,10 +5071,10 @@ void CHAR_CHAT_DEBUG_SETRIDE(int char_index, char *message) {
       CHAR_talkToCli(char_index, -1, "此账号不在线~", CHAR_COLORYELLOW);
       return;
     }
-    int LRCode = CHAR_getInt(i, CHAR_LOWRIDEPETS);
+    int LRCode = CHAR_getInt(i, CHAR_NEWRIDEPETS);
 
     LRCode = LRCode | NewRides[rideindex - 1].Code;
-    CHAR_setInt(i, CHAR_LOWRIDEPETS, LRCode);
+    CHAR_setInt(i, CHAR_NEWRIDEPETS, LRCode);
 
     sprintf(token, "[GM]%s给你骑乘骑宠%s的资格!",
             CHAR_getChar(char_index, CHAR_NAME), NewRides[rideindex - 1].name);
@@ -5083,9 +5083,9 @@ void CHAR_CHAT_DEBUG_SETRIDE(int char_index, char *message) {
             NewRides[rideindex - 1].name);
     CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
   } else {
-    int LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
+    int LRCode = CHAR_getInt(char_index, CHAR_NEWRIDEPETS);
     LRCode = LRCode | NewRides[rideindex - 1].Code;
-    CHAR_setInt(char_index, CHAR_LOWRIDEPETS, LRCode);
+    CHAR_setInt(char_index, CHAR_NEWRIDEPETS, LRCode);
 
     sprintf(token, "设置骑乘骑宠%s的资格!", NewRides[rideindex - 1].name);
     CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
@@ -5127,10 +5127,10 @@ void CHAR_CHAT_DEBUG_MVRIDE(int char_index, char *message) {
       CHAR_talkToCli(char_index, -1, "此账号不在线~", CHAR_COLORYELLOW);
       return;
     }
-    int LRCode = CHAR_getInt(i, CHAR_LOWRIDEPETS);
+    int LRCode = CHAR_getInt(i, CHAR_NEWRIDEPETS);
 
     LRCode = LRCode ^ NewRides[rideindex - 1].Code;
-    CHAR_setInt(i, CHAR_LOWRIDEPETS, LRCode);
+    CHAR_setInt(i, CHAR_NEWRIDEPETS, LRCode);
 
     sprintf(token, "[GM]%s移除你骑乘骑宠%s的资格!",
             CHAR_getChar(char_index, CHAR_NAME), NewRides[rideindex - 1].name);
@@ -5139,9 +5139,9 @@ void CHAR_CHAT_DEBUG_MVRIDE(int char_index, char *message) {
             NewRides[rideindex - 1].name);
     CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
   } else {
-    int LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
+    int LRCode = CHAR_getInt(char_index, CHAR_NEWRIDEPETS);
     LRCode = LRCode ^ NewRides[rideindex - 1].Code;
-    CHAR_setInt(char_index, CHAR_LOWRIDEPETS, LRCode);
+    CHAR_setInt(char_index, CHAR_NEWRIDEPETS, LRCode);
 
     sprintf(token, "移除骑乘骑宠%s的资格!", NewRides[rideindex - 1].name);
     CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);

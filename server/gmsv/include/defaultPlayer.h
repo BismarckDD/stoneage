@@ -179,7 +179,7 @@ static Char player = {
         0, //    CHAR_RIDEPET,
         0, //    CHAR_LEARNRIDE,
 #ifdef _NEW_RIDEPETS
-        0, //  CHAR_LOWRIDEPETS,
+        0, //  CHAR_NEWRIDEPETS,
 #endif
         0, //   CHAR_LIMITLEVEL,
 #ifdef _PET_FUSION

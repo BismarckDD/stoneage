@@ -636,10 +636,6 @@ CHAR_WALKRET CHAR_walk(int index, int dir, int mode) {
   if (CHAR_getFlg(index, CHAR_ISDIE))
     return CHAR_WALKDIE;
 
-#ifdef _MO_NO_WALK
-  if (CHAR_getInt(index, CHAR_NO_WALK) > 0)
-    return CHAR_WALKSYSTEMERROR;
-#endif
   VALIDATEDIR(dir);
   prewalk = (BOOL(*)(int, int *, int *))CHAR_getFunctionPointer(
       index, CHAR_WALKPREFUNC);

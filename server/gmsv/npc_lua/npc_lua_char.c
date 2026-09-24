@@ -3718,7 +3718,7 @@ int NPC_Lua_Char_RidNo(lua_State *_NLL)
 
 	else{
 
-		int LRCode = CHAR_getInt( TM_Index, CHAR_LOWRIDEPETS);
+		int LRCode = CHAR_getInt( TM_Index, CHAR_NEWRIDEPETS);
 
 		if(LRCode & TM_RidNo){
 

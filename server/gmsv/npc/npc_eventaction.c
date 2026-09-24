@@ -807,7 +807,7 @@ BOOL NPC_ActionIntSet( int talker,char *buf)
 	getStringFromIndexWithDelim(buf,",",1,key,sizeof(key));
 	int i;
 	for(i=0;i<CHAR_DATAINTNUM;i++){
-		if(strcmp(key, CHAR_setintdata[i]) == 0){
+		if(strcmp(key, CHAR_IntDataName[i]) == 0){
 			getStringFromIndexWithDelim(buf,",",2,value,sizeof(value));
 		  CHAR_setInt( talker, i, atoi(value));
 		  char token[128];
@@ -827,7 +827,7 @@ BOOL NPC_ActionIntChange( int talker,char *buf)
 	getStringFromIndexWithDelim(buf,",",1,key,sizeof(key));
 	int i;
 	for(i=0;i<CHAR_DATAINTNUM;i++){
-		if(strcmp(key, CHAR_setintdata[i]) == 0){
+		if(strcmp(key, CHAR_IntDataName[i]) == 0){
 			getStringFromIndexWithDelim(buf,",",2,value,sizeof(value));
 		  CHAR_setInt( talker, i, CHAR_getInt( talker, i) + atoi(value));
 		  char token[128];
@@ -844,7 +844,7 @@ BOOL NPC_ActionIntShow( int talker,char *buf)
 {
 	int i;
 	for(i=0;i<CHAR_DATAINTNUM;i++){
-		if(strcmp(buf, CHAR_setintdata[i]) == 0){
+		if(strcmp(buf, CHAR_IntDataName[i]) == 0){
 			char token[128];
 			sprintf(token, "你当前值为%d", CHAR_getInt( talker, i));
 			CHAR_talkToCli( talker, -1, token,  CHAR_COLORYELLOW);
@@ -3303,7 +3303,7 @@ BOOL NPC_ActionFreeIfCheck(int meindex,int talker, char* buf, char *opt, int kos
 {
 	int i;
 	for(i=0;i<CHAR_DATAINTNUM;i++){
-		if(strcmp(buf, CHAR_setintdata[i]) == 0){
+		if(strcmp(buf, CHAR_IntDataName[i]) == 0){
 			if(NPC_ActionBigSmallLastCheck( kosuu, CHAR_getInt(talker, i), flg) == TRUE){
 				return TRUE;
 			}

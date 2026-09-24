@@ -106,7 +106,6 @@ static BOOL CHAR_makeCharFromOptionAtCreate(Char *ch, int vital, int str,
 #define PKMAXPARAMETER 300
   parasum = 0;
   /* 所有能力值必须非负且不超过上限。 */
-
   for (i = 0; i < arraysizeof(para); i++) {
     if (para[i] < 0 || para[i] > MAXPARAMETER)
       return FALSE;
@@ -285,7 +284,7 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
   ch.data[CHAR_LEARNRIDE] = getRidePetLevel();
 #endif
 #ifdef _NEW_RIDEPETS
-  ch.data[CHAR_LOWRIDEPETS] = 0;
+  ch.data[CHAR_NEWRIDEPETS] = 0;
 #endif
 
 #ifdef _PERSONAL_FAME // Arminius: 家族个人声望
@@ -434,40 +433,37 @@ void CHAR_createNewChar(int clifd, int dataplacenum, char *charname, int imgno,
 static void CHAR_setCharFuncTable(Char *ch) {
   int i;
   static char *func_table[CHAR_FUNCTABLENUM] = {
-      "",                 /*  CHAR_INITFUNC  = 0*/
-      "core_PreWalk",     /*  CHAR_WALKPREFUNC = 1  */
-      "core_PostWalk",    /*  CHAR_WALKPOSTFUNC = 2  */
-      "",                 /*  CHAR_PREOVERFUNC = 3  */
-      "",                 /*  CHAR_PREOVERFUNC = 4  */
-      "core_PlayerWatch", /*  CHAR_WATCHFUNC = 5 */
-#ifdef _FIX_CORE_LOOP
-      "", /*  CHAR_LOOPFUNC */
-#else
-      "core_Loop", /*  CHAR_LOOPFUNC = 6 */
-#endif
+      "",                  /*  CHAR_INITFUNC = 0 */
+      "core_PreWalk",      /*  CHAR_WALKPREFUNC = 1 */
+      "core_PostWalk",     /*  CHAR_WALKPOSTFUNC = 2 */
+      "",                  /*  CHAR_PREOVERFUNC = 3 */
+      "",                  /*  CHAR_PREOVERFUNC = 4 */
+      "core_PlayerWatch",  /*  CHAR_WATCHFUNC = 5 */
+      "core_Loop",         /*  CHAR_LOOPFUNC = 6 */
       "core_Dying",        /*  CHAR_DYINGFUNC */
       "core_PlayerTalked", /*  CHAR_TALKEDFUNC */
       "",                  /*  CHAR_PREATTACKEDFUNC    */
       "",                  /*  CHAR_POSTATTACKEDFUNC    */
-      "",                  /*  CHAR_OFFFUNC    */
-      "",                  /*  CHAR_LOOKEDFUNC */
-      "",                  /*  CHAR_ITEMPUTFUNC    */
-      "",                  /*  CHAR_SPECIALTALKEDFUNC    */
-      "",                  /*  CHAR_WINDOWTALKEDFUNC  = 15 */
-      "",                  /*  CHAR_TYPELUANPC  = 16 */
+      "",                  /*  CHAR_OFFFUNC = 11*/
+      "",                  /*  CHAR_LOOKEDFUNC = 12 */
+      "",                  /*  CHAR_ITEMPUTFUNC = 13 */
+      "",                  /*  CHAR_SPECIALTALKEDFUNC = 14 */
+      "",                  /*  CHAR_WINDOWTALKEDFUNC = 15 */
+      "",                  /*  CHAR_TYPELUANPC = 16 */
 #ifdef _USER_CHARLOOPS
-      "", //  CHAR_LOOPFUNCTEMP1, = 17
-      "", //  CHAR_LOOPFUNCTEMP2, = 18
-      "", // CHAR_BATTLEPROPERTY, = 19
+      "",                  //  CHAR_LOOPFUNCTEMP1 = 17
+      "",                  //  CHAR_LOOPFUNCTEMP2 = 18
+      "",                  //  CHAR_BATTLEPROPERTY = 19
 #endif
 #ifdef _ALLBLUES_LUA
-      "", // CHAR_LOGINOUTFUNC = 20,
-      "", // CHAR_BATTLESETFUNC = 21,
+      "",                  // CHAR_LOGINOUTFUNC = 20
+      "",                  // CHAR_BATTLESETFUNC = 21
 #endif
   };
   for (i = 0; i < CHAR_FUNCTABLENUM; i++) {
-    if (ch->charfunctable[i].string == NULL)
+    if (ch->charfunctable[i].string == NULL) {
       print("strncpysafe!!!");
+    }
     strncpysafe(ch->charfunctable[i].string, sizeof(ch->charfunctable[i]),
                func_table[i]);
   }
@@ -1122,24 +1118,6 @@ void CHAR_login(int clifd, char *data, int save_index) {
     level = teq & 0xFFF;
     total = (vi + str + tou + dx) / 100 + skup;
 
-#ifdef _REVLEVEL
-    if (strcmp(getRevLevel(), "是") == 0) {
-      if (trn >= getChartrans()) {
-        if (lv > getMaxLevel()) {
-          lv = getMaxLevel();
-          print("[%s:%s]lv:%d->%d", CHAR_getChar(char_index, CHAR_CDKEY),
-                CHAR_getChar(char_index, CHAR_NAME),
-                CHAR_getInt(char_index, CHAR_LV), getMaxLevel());
-        }
-      } else if (lv > getYBLevel()) {
-        lv = getYBLevel();
-        print("[%s:%s]lv:%d->%d", CHAR_getChar(char_index, CHAR_CDKEY),
-              CHAR_getChar(char_index, CHAR_NAME),
-              CHAR_getInt(char_index, CHAR_LV), getMaxLevel());
-      }
-      CHAR_setInt(char_index, CHAR_LV, lv);
-    }
-#endif
     float jxds = (level - trn * 85) / 4.0;
     if (jxds < 0)
       jxds = 0;
@@ -1161,13 +1139,9 @@ void CHAR_login(int clifd, char *data, int save_index) {
               (lv - 1) * 3 + table[trn - 1] / 12.0 + quest / 4.0 +
                   (level - trn * 85) / 4.0 + 10 + 1 + 10 + trn * 10;
 #endif
-/* 1转以上=升级点数+继承点术+历史任务+历史等级+转前祝福+误差1点+转後祝福+转生红利 */
+/*  1转以上 = 升级点数+继承点术+历史任务+历史等级+转前祝福+误差1点+转後祝福+转生红利 */
 //  if (trn==6) max=max-20; /* 六转时没有转前祝福与转後祝福 */
-#ifdef _REVLEVEL
-    if (total > max && strcmp(getPoint(), "否") == 0)
-#else
     if (total > max)
-#endif
 #ifdef _SUPER
       if (CHAR_getInt(char_index, CHAR_SUPER) < 1)
 #endif
@@ -2792,7 +2766,7 @@ char *CHAR_makeStatusString(int index, char *category) {
         attr[i] = 0;
     }
 #ifdef _NEW_RIDEPETS
-    int playerlowsride = CHAR_getInt(index, CHAR_LOWRIDEPETS);
+    int playerlowsride = CHAR_getInt(index, CHAR_NEWRIDEPETS);
 #endif
     snprintf(
         CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer),
@@ -2822,7 +2796,7 @@ char *CHAR_makeStatusString(int index, char *category) {
         CHAR_getInt(index, CHAR_RIDEPET), CHAR_getInt(index, CHAR_LEARNRIDE),
         CHAR_getInt(index, CHAR_BASEIMAGENUMBER)
 #ifdef _NEW_RIDEPETS
-        , CHAR_getInt(index, CHAR_LOWRIDEPETS)
+        , CHAR_getInt(index, CHAR_NEWRIDEPETS)
 #endif
 
     );
@@ -2886,7 +2860,7 @@ char *CHAR_makeStatusString(int index, char *category) {
   }
 #ifdef _NEW_RIDEPETS
   case 'x': {
-    int playerlowsride = CHAR_getInt(index, CHAR_LOWRIDEPETS);
+    int playerlowsride = CHAR_getInt(index, CHAR_NEWRIDEPETS);
     snprintf(CHAR_statusSendBuffer, sizeof(CHAR_statusSendBuffer), "X0|%d",
              playerlowsride);
     return CHAR_statusSendBuffer;
@@ -4725,12 +4699,10 @@ BOOL _CHAR_makeObjectCStringNew(char *file, int line, int objindex,
              0, CHAR_getInt(char_index, CHAR_TITLE_LV), 0,
              CHAR_getInt(char_index, CHAR_TITLE_LV)
 #ifdef _CHAR_TITLE_STR_
-                 ,
-             CHAR_getInt(char_index, CHAR_TITLE_)
+             , CHAR_getInt(char_index, CHAR_TITLE_)
 #endif
 #else
-        ,
-        0, 0, 0, 0
+        , 0, 0, 0, 0
 #endif
 
 #else
@@ -6234,7 +6206,7 @@ void CHAR_JoinBattle_WindowResult(int char_index, int select, char *data) {
   int ret = FALSE;
   int fd = getfdFromCharaIndex(char_index);
 
-#if 1 // 修正利用参战重复加入战斗  Robin
+  // 修正利用参战重复加入战斗  Robin
   if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) !=
       BATTLE_CHARMODE_NONE) {
     CHAR_talkToCli(char_index, -1, " 重复加入战斗! ", CHAR_COLORRED);
@@ -6242,7 +6214,6 @@ void CHAR_JoinBattle_WindowResult(int char_index, int select, char *data) {
     // GmsvServer_EN_send( fd, FALSE, 0 );
     return;
   }
-#endif
   if (select != WINDOW_BUTTONTYPE_CANCEL &&
       CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) == CHAR_PARTY_NONE) {
     while (1) {
@@ -6359,33 +6330,22 @@ void CHAR_JoinDuel_WindowResult(int char_index, int select, char *data) {
 }
 void CHAR_SelectCard_WindowResult(int char_index, int select, char *data) {
   if (select != WINDOW_BUTTONTYPE_CANCEL) {
-    while (1) {
-      int selected;
-      int fd;
-      fd = getfdFromCharaIndex(char_index);
-      if (fd == -1)
-        break;
-      selected = atoi(data) - 1;
-
-      if (!CHAR_CHECKINDEX(CONNECT_getTradecardchar_index(fd, selected))) {
-        break;
-      }
-      if (CHAR_getWorkInt(CONNECT_getTradecardchar_index(fd, selected),
-                          CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE) {
-        break;
-      }
-      if (!CHAR_getFlg(CONNECT_getTradecardchar_index(fd, selected),
-                       CHAR_ISTRADECARD)) {
-        break;
-      }
-      if (NPC_Util_CharDistance(
-              char_index, CONNECT_getTradecardchar_index(fd, selected)) > 1) {
-        break;
-      }
-      ADDRESSBOOK_addAddressBook(char_index,
-                                 CONNECT_getTradecardchar_index(fd, selected));
-      break;
-    }
+    int fd = getfdFromCharaIndex(char_index);
+    if (fd == -1) return;
+    int selected = atoi(data) - 1;
+    if (!CHAR_CHECKINDEX(CONNECT_getTradecardchar_index(fd, selected)))
+      return;
+    if (CHAR_getWorkInt(CONNECT_getTradecardchar_index(fd, selected),
+                        CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
+      return;
+    if (!CHAR_getFlg(CONNECT_getTradecardchar_index(fd, selected),
+                     CHAR_ISTRADECARD))
+      return;
+    if (NPC_Util_CharDistance(
+            char_index, CONNECT_getTradecardchar_index(fd, selected)) > 1)
+      return;
+    ADDRESSBOOK_addAddressBook(char_index,
+                               CONNECT_getTradecardchar_index(fd, selected));
   }
 }
 

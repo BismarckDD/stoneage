@@ -78,12 +78,10 @@ void SaacClient_ACCharList_recv(int saac_fd, char *result, char *data, int retfd
   int client_fd = getfdFromFdid(retfd);
   if (CONNECT_checkfd(client_fd) == FALSE)
     return;
-#ifdef _ALLBLUES_LUA_1_9
 #ifdef _NEWCLISETMAC
   if (FreeLoginCheck(client_fd) == 0) {
     return;
   }
-#endif
 #endif
   GmsvServer_CharList_send(client_fd, result, data);
   CONNECT_setState(client_fd, NOTLOGIN);

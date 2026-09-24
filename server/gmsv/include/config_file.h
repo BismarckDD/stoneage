@@ -299,9 +299,6 @@ int getSkup(void);
 int getRideLevel(void);
 #endif
 int getRideTrans(void);
-#ifdef _REVLEVEL
-char *getRevLevel(void);
-#endif
 #ifdef _NEW_PLAYER_RIDE
 char *getPlayerRide(void);
 #endif

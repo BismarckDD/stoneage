@@ -314,9 +314,6 @@ BOOL init(int argc, char **argv, char **env) {
 #ifdef _RIDELEVEL
     print("RIDE LEVEL: %d\n", getRideLevel());
 #endif
-#ifdef _REVLEVEL
-    print("REV LEVEL: %s\n", getRevLevel());
-#endif
 #ifdef _TRANS_LEVEL_CF
     print("Player YB Level: %d\n", getYBLevel());
     print("Player Max Level: %d\n", getMaxLevel());

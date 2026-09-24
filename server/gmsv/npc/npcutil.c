@@ -1411,9 +1411,7 @@ void AddFMAdv(int talker, int shiftbit) {
     fmadv = FMAdvTbl[shiftbit];
   if (fmadv <= 0)
     return;
-#ifdef _ALLBLUES_LUA_1_9
   FreeAddFMAdv(talker, shiftbit);
-#endif
   sprintf(buf, "%d", fmadv);
 #ifdef _PERSONAL_FAME // Arminius 8.30: 家族个人声望
   CHAR_earnFame(talker, fmadv);

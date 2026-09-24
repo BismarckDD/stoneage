@@ -432,7 +432,7 @@ int RIDEPET_getRideImage(int char_index, int pet_index) {
     return -1;
   int petType = RIDEPET_getPetIdx(
       petNo,
-      CHAR_getInt(char_index, CHAR_LOWRIDEPETS)
+      CHAR_getInt(char_index, CHAR_NEWRIDEPETS)
   );
   print("pet_type: %d\n", petType);
   // 从RideNoList中找到对应的骑宠
@@ -629,74 +629,62 @@ int EVOLUTION_getFusionTable(int char_index, int px, int py) {
 }
 #endif
 
-#ifdef _CHAR_FIXDATADEF
-/*
-typedef struct _tagPetSetIntData{
-  char com[256];
-  int type;
-}PetSetIntData;
-
-PetSetIntData PET_SetIntData[ ]={
-};
-*/
-#endif
-
-char *CHAR_setintdata[CHAR_DATAINTNUM] = {
+char *CHAR_IntDataName[CHAR_DATAINTNUM] = {
     /* dci  , PLAYER,  */
-    "pn",  /* CHAR_DATAPLACENUMBER */
-    "bi",  /* CHAR_IMAGENUMBER */
-    "bbi", /* CHAR_BASEIMAGENUMBER */
-    "fb",  /* CHAR_FACEIMAGENUMBER */
-    "fl",  /* CHAR_FLOOR */
-    "x",   /* CHAR_X */
-    "y",   /* CHAR_Y */
-    "dir", /* CHAR_DIR */
-    "lv",  /* CHAR_LV */
-    "gld", /* CHAR_GOLD */
-    "hp",  /* CHAR_HP */
-    "mp",  /* CHAR_MP */
-    "mmp", /* CHAR_MAXMP */
-    "vi",  /* CHAR_VITAL */
-    "str", /* CHAR_STR */
-    "tou", /* CHAR_TOUGH */
-    "dx",  /* CHAR_DEX   */
-    "chr", /* CHAR_CHARM  */
-    "luc", /* CHAR_LUCK  */
-    "aea", /* CHAR_EARTH */
-    "awa", /* CHAR_EATER */
-    "afi", /* CHAR_FIRE */
-    "awi", /* CHAR_WIND */
-    "slt", /* CHAR_SLOT */
-    "cr",  /* CHAR_CRITIAL */
-    "cou", /* CHAR_COUNTER */
-    "rar", /* CHAR_RARE */
-    "rst", /* CHAR_RADARSTRLENGTH */
-    "cvo", /* CHAR_CHATVOLUME */
-    "ml",  /* CHAR_MERCHANTLEVEL */
-    "hl",  /* CHAR_HEALERLEVEL */
-    "di",  /* CHAR_DETERMINEITEM */
-    "ieqt",/* CHAR_INDEXOFEQTITLE */
-    "poi", /* CHAR_POISON */
-    "par", /* CHAR_PARALYSIS */
-    "sil", /* CHAR_SILENCE */
-    "sto", /* CHAR_STONE */
-    "dar", /* CHAR_DARKNESS */
-    "con", /* CHAR_CONFUSION */
-    "loc", /* CHAR_LOGINCOUNT */
-    "dc",  /* CHAR_DEADCOUNT */
-    "wc",  /* CHAR_WALKCOUNT */
-    "tc",  /* CHAR_TALKCOUNT */
-    "dmc", /* CHAR_DAMAGECOUNT */
-    "gpc", /* CHAR_GETPETCOUNT */
-    "kpc", /* CHAR_KILLPETCOUNT */
-    "dpc", /* CHAR_DEADPETCOUNT */
-    "smc", /* CHAR_SENDMAILCOUNT */
-    "mic", /* CHAR_MERGEITEMCOUNT */
-    "dbc", /* CHAR_DUELBATTLECOUNT */
-    "dwc", /* CHAR_DUELWINCOUNT */
-    "dlc", /* CHAR_DUELLOSECOUNT */
-    "dswc",/* CHAR_DUELSTWINCOUNT */
-    "dslc",/* CHAR_DUELSTLOSECOUNT */
+    "pn",    /* CHAR_DATAPLACENUMBER */
+    "bi",    /* CHAR_IMAGENUMBER */
+    "bbi",   /* CHAR_BASEIMAGENUMBER */
+    "fb",    /* CHAR_FACEIMAGENUMBER */
+    "fl",    /* CHAR_FLOOR */
+    "x",     /* CHAR_X */
+    "y",     /* CHAR_Y */
+    "dir",   /* CHAR_DIR */
+    "lv",    /* CHAR_LV */
+    "gld",   /* CHAR_GOLD */
+    "hp",    /* CHAR_HP */
+    "mp",    /* CHAR_MP */
+    "mmp",   /* CHAR_MAXMP */
+    "vi",    /* CHAR_VITAL */
+    "str",   /* CHAR_STR */
+    "tou",   /* CHAR_TOUGH */
+    "dx",    /* CHAR_DEX   */
+    "chr",   /* CHAR_CHARM  */
+    "luc",   /* CHAR_LUCK  */
+    "aea",   /* CHAR_EARTH */
+    "awa",   /* CHAR_EATER */
+    "afi",   /* CHAR_FIRE */
+    "awi",   /* CHAR_WIND */
+    "slt",   /* CHAR_SLOT */
+    "cr",    /* CHAR_CRITIAL */
+    "cou",   /* CHAR_COUNTER */
+    "rar",   /* CHAR_RARE */
+    "rst",   /* CHAR_RADARSTRLENGTH */
+    "cvo",   /* CHAR_CHATVOLUME */
+    "ml",    /* CHAR_MERCHANTLEVEL */
+    "hl",    /* CHAR_HEALERLEVEL */
+    "di",    /* CHAR_DETERMINEITEM */
+    "ieqt",  /* CHAR_INDEXOFEQTITLE */
+    "poi",   /* CHAR_POISON */
+    "par",   /* CHAR_PARALYSIS */
+    "sil",   /* CHAR_SILENCE */
+    "sto",   /* CHAR_STONE */
+    "dar",   /* CHAR_DARKNESS */
+    "con",   /* CHAR_CONFUSION */
+    "loc",   /* CHAR_LOGINCOUNT */
+    "dc",    /* CHAR_DEADCOUNT */
+    "wc",    /* CHAR_WALKCOUNT */
+    "tc",    /* CHAR_TALKCOUNT */
+    "dmc",   /* CHAR_DAMAGECOUNT */
+    "gpc",   /* CHAR_GETPETCOUNT */
+    "kpc",   /* CHAR_KILLPETCOUNT */
+    "dpc",   /* CHAR_DEADPETCOUNT */
+    "smc",   /* CHAR_SENDMAILCOUNT */
+    "mic",   /* CHAR_MERGEITEMCOUNT */
+    "dbc",   /* CHAR_DUELBATTLECOUNT */
+    "dwc",   /* CHAR_DUELWINCOUNT */
+    "dlc",   /* CHAR_DUELLOSECOUNT */
+    "dswc",  /* CHAR_DUELSTWINCOUNT */
+    "dslc",  /* CHAR_DUELSTLOSECOUNT */
     "dmswc",  /* CHAR_DUELMAXSTWINCOUNT */
     "wht",    /* CHAR_WHICHTYPE */
     "wint",   /* CHAR_WALKNTERVAL */
@@ -792,18 +780,18 @@ char *CHAR_setintdata[CHAR_DATAINTNUM] = {
     "nev31",              /*  CHAR_NOWEVENT31 */
     "nev32",              /*  CHAR_NOWEVENT32 */
 #endif
-    "trn", /*  CHAR_TRANSMIGRATION */
-    "teq", /*  CHAR_TRANSEQUATION */
-    "ini",    /*  CHAR_INITDATA   */
-    "silent", /*  CHAR_SILENT   */
-    "fmi",    // CoolFish: Family 2001/5/24 家族 index
-    "fmlf",   // CoolFish: Family 2001/5/24 是否为家族族长
-    "fmspr",  // CoolFish: Family 2001/7/13 家族守护精灵
+    "trn",       /*  CHAR_TRANSMIGRATION */
+    "teq",       /*  CHAR_TRANSEQUATION */
+    "ini",       /*  CHAR_INITDATA   */
+    "silent",    /*  CHAR_SILENT   */
+    "fmi",       // CoolFish: Family 2001/5/24 家族 index
+    "fmlf",      // CoolFish: Family 2001/5/24 是否为家族族长
+    "fmspr",     // CoolFish: Family 2001/7/13 家族守护精灵
     "bankgld",   /* CHAR_BANKGOLD */
     "ridepet",   /* CHAR_RIDEPET */
     "learnride", /* CHAR_LEARNRIDE */
 #ifdef _NEW_RIDEPETS
-    "lowridepet", // CHAR_LOWRIDEPETS
+    "newridepet", // CHAR_NEWRIDEPETS
 #endif
     "limitlv", // Arminius 7.30 pet limit level
 #ifdef _PET_FUSION
@@ -1023,9 +1011,6 @@ char *CHAR_setintdata[CHAR_DATAINTNUM] = {
 #ifdef _ATTACK_EFFECT
     "attckeffect",
 #endif
-#ifdef _MO_NO_WALK
-    "nowalk",
-#endif
 #ifdef _TENSE_FIELD
     "tensefield",
 #endif
@@ -1045,13 +1030,11 @@ char *CHAR_setintdata[CHAR_DATAINTNUM] = {
     "tpeffect",
 #endif
 #ifdef _CHAR_TITLE_STR_
-
     "titleindex",
-
 #endif
 };
 
-char *CHAR_setchardata[CHAR_DATACHARNUM] = {
+char *CHAR_CHARDATA_NAME[CHAR_DATACHARNUM] = {
     /* dcc ,    PLAYER  */
     "name",   /*  CHAR_NAME    */
     "ownt",   /*  CHAR_OWNTITLE*/
@@ -1073,14 +1056,12 @@ char *CHAR_setchardata[CHAR_DATACHARNUM] = {
     "lovrrid",   // 爱人帐号
     "lovrrneme", // 爱人名字
 #endif
-
 #ifdef _GM_ITEM
     "gmfunction", // 玩家GM命令
 #endif
 #ifdef _NEW_NAME
     "newname", // 自定义称号
 #endif
-
 #ifdef _LOTTERY_SYSTEM
     "lotteryvalue",
 #endif
@@ -1914,23 +1895,16 @@ BOOL CHAR_endCharArray(void) {
 }
 
 BOOL CHAR_getCharOnArrayPercentage(int mode, int *max, int *min, int *cnt) {
-  int po = 0, Dnums = 0;
-  po = initCharCounter[0].endcnt;
+  int nums = 0;
+  int po = initCharCounter[0].endcnt;
   *cnt = -1;
   while (1) {
-    if (!CHAR_chara[po].use) {
-    } else {
-      Dnums++;
-    }
-    po++;
-    if (po >= initCharCounter[mode].endcnt) {
-      break;
-    }
+    if (CHAR_chara[po].use) nums++;
+    if (++po >= initCharCounter[mode].endcnt) break;
   }
-  *cnt = Dnums;
+  *cnt = nums;
   *max = initCharCounter[mode].endcnt - initCharCounter[mode].startcnt;
   *min = 0;
-
   return TRUE;
 }
 
@@ -2068,12 +2042,12 @@ BOOL CHAR_checksetdata(void) {
   char *strings[CHAR_DATAINTNUM + CHAR_DATACHARNUM];
   int stringnum = 0;
   for (i = 0; i < CHAR_DATAINTNUM; i++) {
-    if (CHAR_setintdata[i][0] != '#')
-      strings[stringnum++] = CHAR_setintdata[i];
+    if (CHAR_IntDataName[i][0] != '#')
+      strings[stringnum++] = CHAR_IntDataName[i];
   }
   for (i = 0; i < CHAR_DATACHARNUM; i++) {
-    if (CHAR_setchardata[i][0] != '#')
-      strings[stringnum++] = CHAR_setchardata[i];
+    if (CHAR_CHARDATA_NAME[i][0] != '#')
+      strings[stringnum++] = CHAR_CHARDATA_NAME[i];
   }
   if (!checkStringsUnique(strings, stringnum, 1)) {
     printEx("set????data is overlapped.\nIt is not allowed\n");
@@ -2115,7 +2089,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
   for (i = 0; i < CHAR_DATAINTNUM; i++) {
     char linedata[512];
     snprintf(linedata, sizeof(linedata), "%s=%d" CHAR_DELIMITER,
-             CHAR_setintdata[i], one->data[i]);
+             CHAR_IntDataName[i], one->data[i]);
     strncpysafe(&CHAR_dataString[strlength], sizeof(CHAR_dataString) - strlength,
                linedata);
     strlength += strlen(linedata);
@@ -2128,7 +2102,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     char linedata[512];
     char escapebuffer[512];
     snprintf(linedata, sizeof(linedata), "%s=%s" CHAR_DELIMITER,
-             CHAR_setchardata[i],
+             CHAR_CHARDATA_NAME[i],
              makeEscapeString(one->string[i].string, escapebuffer,
                               sizeof(escapebuffer)));
 
@@ -2386,13 +2360,13 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
     strncpysafe(secondToken, sizeof(secondToken),
                linebuf + strlen(firstToken) + strlen("="));
     for (i = 0; i < CHAR_DATAINTNUM; i++) {
-      if (strcmp(firstToken, CHAR_setintdata[i]) == 0) {
+      if (strcmp(firstToken, CHAR_IntDataName[i]) == 0) {
         one->data[i] = atoi(secondToken);
         goto NEXT;
       }
     }
     for (i = 0; i < CHAR_DATACHARNUM; i++) {
-      if (strcmp(firstToken, CHAR_setchardata[i]) == 0) {
+      if (strcmp(firstToken, CHAR_CHARDATA_NAME[i]) == 0) {
         strncpysafe(one->string[i].string, sizeof(one->string[i].string),
                    makeStringFromEscaped(secondToken));
         if (strlen(one->string[i].string) > 128) {
@@ -2597,7 +2571,7 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
       continue;
 #endif
     snprintf(linedata, sizeof(linedata), "%s:%d" NONCHAR_DELIMITER,
-             CHAR_setintdata[i], CHAR_getInt(petindex, i));
+             CHAR_IntDataName[i], CHAR_getInt(petindex, i));
     strncpysafe(&CHAR_petdataString[strlength],
                sizeof(CHAR_petdataString) - strlength, linedata);
     strlength += strlen(linedata);
@@ -2612,12 +2586,12 @@ char *CHAR_makePetStringFromPetIndex(int petindex) {
     char escapebuffer[1024];
 #ifdef _SIMPLIFY_PETSTRING
     if (CHAR_getChar(petindex, i) == "\0" &&
-        strcmp(CHAR_setchardata[i], "name") &&
-        strcmp(CHAR_setchardata[i], "ownt"))
+        strcmp(CHAR_CHARDATA_NAME[i], "name") &&
+        strcmp(CHAR_CHARDATA_NAME[i], "ownt"))
       continue;
 #endif
     snprintf(linedata, sizeof(linedata), "%s:%s" NONCHAR_DELIMITER,
-             CHAR_setchardata[i],
+             CHAR_CHARDATA_NAME[i],
              makeEscapeString(CHAR_getChar(petindex, i), escapebuffer,
                               sizeof(escapebuffer)));
 
@@ -2720,7 +2694,7 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
                  buff + strlen(petfirstToken) + strlen(":"));
       found = FALSE;
       for (i = 0; i < CHAR_DATAINTNUM; i++) {
-        if (strcmp(petfirstToken, CHAR_setintdata[i]) == 0) {
+        if (strcmp(petfirstToken, CHAR_IntDataName[i]) == 0) {
           ch->data[i] = atoi(petsecondToken);
           found = TRUE;
           break;
@@ -2728,7 +2702,7 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
       }
       if (!found) {
         for (i = 0; i < CHAR_DATACHARNUM; i++) {
-          if (strcmp(petfirstToken, CHAR_setchardata[i]) == 0) {
+          if (strcmp(petfirstToken, CHAR_CHARDATA_NAME[i]) == 0) {
             strncpysafe(ch->string[i].string, sizeof(ch->string[i].string),
                        makeStringFromEscaped(petsecondToken));
             found = TRUE;
@@ -4054,7 +4028,7 @@ int CheckCharMaxItemChar(Char *ch) {
 int CHAR_CheckLearnCode(int char_index, int ride_no) {
   int i;
   int gRideCodeModeLen = sizeof(gRideCodeMode) / sizeof(RideCodeMode);
-  unsigned int learnCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
+  unsigned int learnCode = CHAR_getInt(char_index, CHAR_NEWRIDEPETS);
   for (i = 0; i < gRideCodeModeLen; i++) {
     if (gRideCodeMode[i].petNo == ride_no
         && (gRideCodeMode[i].learnCode & learnCode)) {

@@ -3505,7 +3505,7 @@ typedef struct tagNewRideCode {
   };
 
 void ITEM_useLearnRideCode(int char_index, int toindex,
-                           int haveitem_index) { // CHAR_LOWRIDEPETS
+                           int haveitem_index) { // CHAR_NEWRIDEPETS
   char token[256];
   char buf[256];
   int ridetrans, learn_code, i;
@@ -3532,9 +3532,9 @@ void ITEM_useLearnRideCode(int char_index, int toindex,
           return;
         }
       }
-      learn_code = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
+      learn_code = CHAR_getInt(char_index, CHAR_NEWRIDEPETS);
       learn_code = learn_code | sNewRideCodeList[i].Code;
-      CHAR_setInt(char_index, CHAR_LOWRIDEPETS, learn_code);
+      CHAR_setInt(char_index, CHAR_NEWRIDEPETS, learn_code);
       if (getStringFromIndexWithDelim(item_arg, "|", 2, buf, sizeof(buf)) !=
           FALSE) {
         sprintf(token, "学习了新的骑宠 (%s)。", buf);
@@ -4890,9 +4890,9 @@ void ITEM_VipRide(int char_index, int toindex, int haveitem_index) {
     CHAR_talkToCli(char_index, -1, "您的会员有效使用期为永久！", CHAR_COLORYELLOW);
   }
 #ifdef _NEW_RIDEPETS
-  int LRCode = CHAR_getInt(char_index, CHAR_LOWRIDEPETS);
+  int LRCode = CHAR_getInt(char_index, CHAR_NEWRIDEPETS);
   LRCode = LRCode | RIDE_PET14;
-  CHAR_setInt(char_index, CHAR_LOWRIDEPETS, LRCode);
+  CHAR_setInt(char_index, CHAR_NEWRIDEPETS, LRCode);
   CHAR_sendStatusString(char_index, "x");
 #endif
   CHAR_setInt(char_index, CHAR_VIPRIDE, viplevel);

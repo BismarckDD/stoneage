@@ -480,12 +480,10 @@ void GmsvServer_CharDelete_recv(int client_fd, char *charname, char *passwd) {
   }
   CONNECT_getCdkey(client_fd, cdkey, sizeof(cdkey));
   int fdid = CONNECT_getFdid(client_fd);
-// 增加了删除角色前的LUA校验
-#ifdef _ALLBLUES_LUA_1_9
+  // 增加了删除角色前的LUA校验
   if (FreeCharDelete(client_fd, cdkey, passwd) == 0) {
     return;
   }
-#endif
   SaacClient_ACCharDelete_send(acfd, cdkey, passwd, charname, "", fdid);
   char buff1[512];
   char buff2[1024];
@@ -1985,9 +1983,7 @@ void GmsvServer_AC_recv(int client_fd, int x, int y, int actionno) {
       return;
     }
   }
-#ifdef _ALLBLUES_LUA_1_9
   FreeAction(char_index, x, y, actionno);
-#endif
   CHAR_setMyPosition(char_index, x, y, TRUE);
   CHAR_sendAction(char_index, actionno, FALSE);
   return;
