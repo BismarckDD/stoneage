@@ -342,6 +342,7 @@ BOOL MAP_IsMapFile(char *filename) {
   FILE *f;
   char buf[16];
   int ret;
+  BOOL valid;
 
   f = fopen(filename, "rb");
   if (f == NULL) {
@@ -350,21 +351,10 @@ BOOL MAP_IsMapFile(char *filename) {
   }
 
   ret = fread(buf, sizeof(char), 6, f);
-  if (ret != 6)
-    goto FCLOSERETURNFALSE;
   buf[ret] = '\0';
-
-  if (strcmp(buf, MAP_MAGIC) != 0)
-    goto FCLOSERETURNFALSE;
-  else
-    goto FCLOSERETURNTRUE;
-
-FCLOSERETURNFALSE:
+  valid = ret == 6 && strcmp(buf, MAP_MAGIC) == 0;
   fclose(f);
-  return FALSE;
-FCLOSERETURNTRUE:
-  fclose(f);
-  return TRUE;
+  return valid;
 }
 
 BOOL MAP_readMapOne(char *filename) {
@@ -529,9 +519,6 @@ BOOL MAP_readMapOne(char *filename) {
     }
   }
 #endif
-  goto FCLOSERETURNTRUE;
-
-FCLOSERETURNTRUE:
   MAP_idjumptbl[MAP_map[mapindex].id] = mapindex;
 
   if (MAP_idtblsize <= MAP_map[mapindex].id) {

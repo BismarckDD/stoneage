@@ -2282,7 +2282,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     if (strlength > sizeof(CHAR_dataString)) {
       LodBadPetString("DATAENDCHECKPOINT", "err chardata buffer over", -1);
       printEx("err chardata buffer over:DATAENDCHECKPOINT !\n");
-      goto MAKESTRINGERR;
+      return "\0";
     }
   }
 #endif
@@ -2293,8 +2293,6 @@ RETURN:
   }
 
   return CHAR_dataString;
-MAKESTRINGERR:
-  return "\0";
 }
 
 char *CHAR_makeStringFromCharIndex(int index) {
@@ -2398,10 +2396,7 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
         ;
       } else {
         ITEM_Item itmone;
-        BOOL ret;
-
-        ret = ITEM_makeExistItemsFromStringToArg(secondToken, &itmone, 0);
-
+        BOOL ret = ITEM_makeExistItemsFromStringToArg(secondToken, &itmone, 0);
         if (ret == TRUE) {
           int existitem_index;
           existitem_index = ITEM_initExistItemsOne(&itmone);

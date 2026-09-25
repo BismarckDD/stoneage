@@ -3968,13 +3968,12 @@ int NPC_Lua_CreateVsPlayer(int *_OutBattleIndex, int char_index0,
 
     if (iRet) {
 
-      goto BATTLE_CreateVsPlayer_End;
+      break;
     }
 
     BattleArray[battleindex].Side[j].flg &= ~BSIDE_FLG_HELP_OK;
   }
 
-BATTLE_CreateVsPlayer_End:;
 
   if (iRet) {
 

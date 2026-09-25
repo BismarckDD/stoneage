@@ -2927,11 +2927,10 @@ int BATTLE_CreateVsPlayer(int char_index0, int char_index1) {
   for (j = 0; j < 2; j++) {
     iRet = BATTLE_PartyNewEntry(char_index[j], battle_index, j);
     if (iRet) {
-      goto BATTLE_CreateVsPlayer_End;
+      break;
     }
     BattleArray[battle_index].Side[j].flg &= ~BSIDE_FLG_HELP_OK;
   }
-BATTLE_CreateVsPlayer_End:;
   if (iRet) {
     BATTLE_ExitAll(battle_index);
     BATTLE_DeleteBattle(battle_index);
@@ -3044,11 +3043,10 @@ int BATTLE_CreateVsPlayerForTrade(STradeList TradeList1,
   for (j = 0; j < 2; j++) {
     iRet = BATTLE_PartyNewEntry(char_index[j], battle_index, j);
     if (iRet) {
-      goto BATTLE_CreateVsPlayer_End;
+      break;
     }
     BattleArray[battle_index].Side[j].flg &= ~BSIDE_FLG_HELP_OK;
   }
-BATTLE_CreateVsPlayer_End:;
   if (iRet) {
     BATTLE_ExitAll(battle_index);
     BATTLE_DeleteBattle(battle_index);
@@ -3215,9 +3213,6 @@ int BATTLE_CreateForWatcher(int char_index, int topbattleindex) {
   }
 
   iRet = BATTLE_WatchPartyNewEntry(char_index, battle_index, 0);
-  if (iRet) {
-    goto BATTLE_CreateForWatcher_End;
-  }
 
 BATTLE_CreateForWatcher_End:;
 

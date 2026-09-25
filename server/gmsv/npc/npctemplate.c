@@ -489,25 +489,18 @@ void NPC_setDefaultNPCTemplate(NPC_Template *temp) {
 BOOL NPC_IsNPCTemplateFile(char *filename) {
   char line1[128];
   char *ret;
+  BOOL valid;
   if (filename == NULL || strlen(filename) < 1 ||
       filename[strlen(filename) - 1] == '~' || filename[0] == '#' ||
       strcmptail(filename, ".bak") == 0)
     return FALSE;
   FILE *f = fopen(filename, "r");
   if (f == NULL)
-    goto RETURNFALSE;
+    return FALSE;
   ret = fgets(line1, sizeof(line1), f);
-  if (ret == NULL)
-    goto FCLOSERETURNFALSE;
-  if (strcmp(NPC_TEMPLATEFILEMAGIC, line1) == 0) {
-    fclose(f);
-    return TRUE;
-  }
-
-FCLOSERETURNFALSE:
+  valid = ret != NULL && strcmp(NPC_TEMPLATEFILEMAGIC, line1) == 0;
   fclose(f);
-RETURNFALSE:
-  return FALSE;
+  return valid;
 }
 
 void NPC_templateallocitemdata(NPC_Template *one) {

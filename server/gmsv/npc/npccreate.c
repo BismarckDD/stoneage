@@ -103,25 +103,18 @@ BOOL NPC_IsNPCCreateFile(char *filename) {
   FILE *f;
   char line1[128];
   char *ret;
+  BOOL valid;
   if (filename == NULL || strlen(filename) < 1 ||
       filename[strlen(filename) - 1] == '~' || filename[0] == '#' ||
       strcmptail(filename, ".bak") == 0)
     return FALSE;
   f = fopen(filename, "r");
   if (f == NULL)
-    goto RETURNFALSE;
+    return FALSE;
   ret = fgets(line1, sizeof(line1), f);
-  if (ret == NULL)
-    goto FCLOSERETURNFALSE;
-  if (strcasecmp(NPC_CREATEFILEMAGIC, line1) == 0) {
-    fclose(f);
-    return TRUE;
-  }
-
-FCLOSERETURNFALSE:
+  valid = ret != NULL && strcasecmp(NPC_CREATEFILEMAGIC, line1) == 0;
   fclose(f);
-RETURNFALSE:
-  return FALSE;
+  return valid;
 }
 
 int NPC_readCreateFile(char *filename) {
