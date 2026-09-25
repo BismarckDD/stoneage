@@ -276,18 +276,6 @@ typedef struct tagServerConfig {
 #ifdef _TRANS_POINT_UP
   char transpointup[256];
 #endif
-#ifdef _OPEN_STW_SEND
-  int stwsendtype;
-  int stwsendpoint;
-#endif
-#ifdef _POOL_ITEM_BUG
-  int poolitembug;
-  char poolitem[256];
-#endif
-#ifdef _NO_STW_ENEMY
-  int nostwenemy;
-  int nostwenemypoint;
-#endif
 #ifdef _NEW_STREET_VENDOR
   char streetvendorpoint[256];
 #endif
@@ -816,19 +804,6 @@ ReadConf gReadConf[] = {
 #ifdef _TRANS_POINT_UP
     {"TRANSPOINTUP", gServerConfig.transpointup,
      sizeof(gServerConfig.transpointup), NULL, 0},
-#endif
-#ifdef _OPEN_STW_SEND
-    {"STWSENDTYPE", NULL, 0, (void *)&gServerConfig.stwsendtype, INT},
-    {"STWSENDPOINT", NULL, 0, (void *)&gServerConfig.stwsendpoint, INT},
-#endif
-#ifdef _POOL_ITEM_BUG
-    {"POOLITEMBUG", NULL, 0, (void *)&gServerConfig.poolitembug, INT},
-    {"POOLITEM", gServerConfig.poolitem, sizeof(gServerConfig.poolitem), NULL,
-     0},
-#endif
-#ifdef _NO_STW_ENEMY
-    {"NOSTWENEMY", NULL, 0, (void *)&gServerConfig.nostwenemy, INT},
-    {"NOSTWENEMYGOLD", NULL, 0, (void *)&gServerConfig.nostwenemypoint, INT},
 #endif
 #ifdef _NEW_STREET_VENDOR
     {"STREETVENDORPOINT", gServerConfig.streetvendorpoint,
@@ -2372,41 +2347,6 @@ int getTransPoinUP(int index) {
                               transpointup, sizeof(transpointup));
   return atoi(transpointup);
 }
-#endif
-
-#ifdef _OPEN_STW_SEND
-int getOpenStwSendType(void) {
-  if (gServerConfig.stwsendtype < -1) {
-    gServerConfig.stwsendtype = -1;
-  } else if (gServerConfig.stwsendtype > 5) {
-    gServerConfig.stwsendtype = 5;
-  }
-  return gServerConfig.stwsendtype;
-}
-int getOpenStwSendPoint(void) { return max(1, gServerConfig.stwsendpoint); }
-
-#endif
-
-#ifdef _POOL_ITEM_BUG
-int getPoolItemBug(void) { return gServerConfig.poolitembug; }
-int getPoolItem(int id) {
-  if (id < 0)
-    id = 0;
-  char poolitem[256];
-  if (getStringFromIndexWithDelim(gServerConfig.poolitem, ",", id + 1, poolitem,
-                                  sizeof(poolitem)) == TRUE) {
-    return atoi(poolitem);
-  } else {
-    return -1;
-  }
-}
-
-#endif
-
-#ifdef _NO_STW_ENEMY
-int getNoSTWNenemy(void) { return gServerConfig.nostwenemy; }
-
-int getNoSTWNenemyPoint(void) { return gServerConfig.nostwenemypoint; }
 #endif
 
 #ifdef _NEW_STREET_VENDOR

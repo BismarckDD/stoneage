@@ -411,18 +411,6 @@ int getUnlawThisLogout(int index);
 #ifdef _TRANS_POINT_UP
 int getTransPoinUP(int index);
 #endif
-#ifdef _OPEN_STW_SEND
-int getOpenStwSendType(void);
-int getOpenStwSendPoint(void);
-#endif
-#ifdef _POOL_ITEM_BUG
-int getPoolItemBug(void);
-int getPoolItem(int id);
-#endif
-#ifdef _NO_STW_ENEMY
-int getNoSTWNenemy(void);
-int getNoSTWNenemyPoint(void);
-#endif
 #ifdef _NEW_STREET_VENDOR
 int getStreetVendor(int id);
 #endif

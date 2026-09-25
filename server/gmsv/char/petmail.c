@@ -261,9 +261,7 @@ if (getPetMailFlg()==1){
 				ITEM_getChar( item_index, ITEM_UNIQUECODE),
 						ITEM_getChar( item_index, ITEM_NAME),
 						ITEM_getInt( item_index, ITEM_ID)
-
 			);
-
 #ifdef _SAMETHING_SAVEPOINT
 			if(CHAR_charSaveFromConnect(cindex, FALSE)){
 				CHAR_talkToCli(cindex, -1, "系统自动为您存档!", CHAR_COLORRED);

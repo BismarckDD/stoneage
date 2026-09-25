@@ -677,68 +677,16 @@ void GmsvServer_W2_recv(int client_fd, int x, int y, char *direction) {
   CHAR_setWorkInt(char_index, CHAR_WORK_X, x);
   CHAR_setWorkInt(char_index, CHAR_WORK_Y, x);
 
-#ifdef _FIX_STW_SPEED_ENEMY
-  if (strstr(direction, "gcgc") != NULL) {
-    if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) != CHAR_PARTY_CLIENT) {
-      if (CONNECT_getBDTime(client_fd) < time(NULL)) {
-        GmsvServer_EN_recv(client_fd, CHAR_getInt(char_index, CHAR_X),
-                           CHAR_getInt(char_index, CHAR_Y));
-        CONNECT_setBDTime(client_fd, (int)time(NULL) + 3);
-      }
-    }
-    return;
-  }
-#else
-#ifdef _NO_STW_ENEMY
-  if (strstr(direction, "gcgc") != NULL) {
-    switch (getNoSTWNenemy()) {
-    case 0:
-      break;
-    case 1:
-      return;
-    case 2:
-      if (CHAR_getWorkInt(char_index, CHAR_WORKPARTYMODE) !=
-          CHAR_PARTY_CLIENT) {
-        if (CHAR_getWorkInt(char_index, CHAR_WORKBATTLEMODE) !=
-            BATTLE_CHARMODE_NONE) {
-          return;
-        }
-        if (getNoSTWNenemyPoint() > 0) {
-          if (CHAR_getInt(char_index, CHAR_GOLD) < getNoSTWNenemyPoint()) {
-            char token[256];
-            sprintf(token,
-                    "你身上的石币不够%"
-                    "d，无法进行挑战！",
-                    getNoSTWNenemyPoint());
-            CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
-            return;
-          }
-        }
-        if (BATTLE_CreateVsEnemy(char_index, 0, -1) != BATTLE_ERR_CHARAINDEX) {
-          if (getNoSTWNenemyPoint() > 0) {
-            CHAR_setInt(char_index, CHAR_GOLD,
-                        CHAR_getInt(char_index, CHAR_GOLD) -
-                            getNoSTWNenemyPoint());
-            CHAR_send_P_StatusString(char_index, CHAR_P_STRING_GOLD);
-          }
-        }
-      }
-      return;
-    }
-  }
-#endif
-#endif
   ix = CHAR_getInt(char_index, CHAR_X);
   iy = CHAR_getInt(char_index, CHAR_Y);
   i_fl = CHAR_getInt(char_index, CHAR_FLOOR);
   // ttom avoid the warp at will 11/6
   {
-    int i_diff_x, i_diff_y;
     // ix=CHAR_getInt(char_index, CHAR_X);
     // iy=CHAR_getInt(char_index, CHAR_Y);
     // i_fl=CHAR_getInt(char_index, CHAR_FLOOR);
-    i_diff_x = abs(ix - x);
-    i_diff_y = abs(iy - y);
+    int i_diff_x = abs(ix - x);
+    int i_diff_y = abs(iy - y);
     if ((i_diff_x > 1) || (i_diff_y > 1)) { // 2
       x = ix;
       y = iy;

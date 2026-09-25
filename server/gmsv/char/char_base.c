@@ -1201,30 +1201,30 @@ INLINE int CHAR_setIntStrict(int index, CHAR_DATAINT element, int data,
   return buf;
 }
 
-INLINE int _CHAR_setInt(char *file, int line, int index, CHAR_DATAINT element,
-                        int data) {
-  int buf;
-  if (!CHAR_CHECKINDEX(index)) {
-    print(" err CHAR_setInt index:%d. !:%s-%d\n", index, file, line);
+// 设置CHAR的INT类型数据
+INLINE int _CHAR_setInt(const char *file, const int line,
+                        const int char_index,
+                        const CHAR_DATAINT key,
+                        const int value) {
+  if (!CHAR_CHECKINDEX(char_index)) {
+    print("ERROR CHAR_setInt char_index:%d, %s-%d.\n", char_index, file, line);
     return -1;
   }
-  if (CHAR_DATAPLACENUMBER > element || element >= CHAR_DATAINTNUM) {
-    print(" err CHAR_setInt element:%d.%s :%s-%d\n", element,
-          CHAR_getChar(index, CHAR_CDKEY), file, line);
+  if (CHAR_DATAPLACENUMBER > key || key >= CHAR_DATAINTNUM) {
+    print("ERROR CHAR_setInt key:%d.%s :%s-%d\n", key,
+          CHAR_getChar(char_index, CHAR_CDKEY), file, line);
     return -1;
   }
-  buf = CHAR_chara[index].data[element];
-  CHAR_chara[index].data[element] = data;
-
+  int old_value = CHAR_chara[char_index].data[key];
+  CHAR_chara[char_index].data[key] = value;
 #ifdef _SAMETHING_SAVEPOINT
-  if (element == CHAR_AMPOINT) {
-    if (CHAR_charSaveFromConnect(index, FALSE)) {
-      CHAR_talkToCli(index, -1, "系统自动为您存档!", CHAR_COLORRED);
+  if (key == CHAR_AMPOINT) {
+    if (CHAR_charSaveFromConnect(char_index, FALSE)) {
+      CHAR_talkToCli(char_index, -1, "系统自动为您存档!", CHAR_COLORRED);
     }
   }
 #endif
-
-  return buf;
+  return old_value;
 }
 
 #ifdef _FIX_SETWORKINT

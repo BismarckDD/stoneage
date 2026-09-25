@@ -1803,8 +1803,9 @@ INLINE BOOL _CHAR_CHECKPETSKILLINDEX(char *file, int line,
 INLINE int _CHAR_getInt(char *file, int line, int index, CHAR_DATAINT element);
 #define CHAR_setInt(index, element, data)                                      \
   _CHAR_setInt(__FILE__, __LINE__, index, element, data)
-INLINE int _CHAR_setInt(char *file, int line, int index, CHAR_DATAINT element,
-                        int data);
+INLINE int _CHAR_setInt(const char *file, const int line,
+                        const int index, const CHAR_DATAINT element,
+                        const int data);
 #ifdef _FIX_SETWORKINT
 #define CHAR_getWorkInt(index, element)                                        \
   _CHAR_getWorkInt(__FILE__, __LINE__, index, element)

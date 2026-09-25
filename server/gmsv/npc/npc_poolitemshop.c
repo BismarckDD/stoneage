@@ -497,17 +497,12 @@ BOOL NPC_DepotItem_InsertItem(int meindex, int talkerindex, int num) {
   item_index = CHAR_getItemIndex(talkerindex, num);
   if (!ITEM_CHECKINDEX(item_index))
     return FALSE;
-#if 1                                               // 共同仓库不可存的物品
   if (ITEM_getInt(item_index, ITEM_DROPATLOGOUT) || // 登出後消失
       ITEM_getInt(item_index, ITEM_VANISHATDROP) || // 丢弃後消失
       !ITEM_getInt(item_index, ITEM_CANPETMAIL)) {  // 不可宠邮寄
     print("\n 改封包!!非法存放道具:%s ", CHAR_getChar(talkerindex, CHAR_CDKEY));
-#ifdef _POOL_ITEM_BUG
-    if (getPoolItemBug() == 1 || getPoolItemBug() == 3)
-#endif
-      return FALSE;
+    return FALSE;
   }
-#endif
   if (CHAR_DelGold(talkerindex, cost) == 0)
     return FALSE;
 
@@ -534,18 +529,13 @@ BOOL NPC_DepotItem_InsertItem(int meindex, int talkerindex, int num) {
   NPC_DepotItem_CheckRepeat(talkerindex);
 
 #ifdef _SAMETHING_SAVEPOINT
-  {
-    if (CHAR_charSaveFromConnect(talkerindex, FALSE)) {
-      CHAR_talkToCli(talkerindex, -1, "系统自动为您存档!", CHAR_COLORRED);
-    }
-
-    if (!CHAR_CheckDepotItem(talkerindex)) {
-      CHAR_GetDepotItem(meindex, talkerindex);
-      //		CHAR_talkToCli( talkerindex, -1, "取得道具，请稍後！",
-      //CHAR_COLORYELLOW);
-    } else {
-      NPC_PoolItemShop_DepotItem_Menu(meindex, talkerindex);
-    }
+  if (CHAR_charSaveFromConnect(talkerindex, FALSE)) {
+    CHAR_talkToCli(talkerindex, -1, "系统自动为您存档!", CHAR_COLORRED);
+  }
+  if (!CHAR_CheckDepotItem(talkerindex)) {
+    CHAR_GetDepotItem(meindex, talkerindex);
+  } else {
+    NPC_PoolItemShop_DepotItem_Menu(meindex, talkerindex);
   }
 #endif
 
@@ -631,21 +621,15 @@ BOOL NPC_DepotItem_gettItem(int meindex, int talkerindex, int num) {
   }
 
 #ifdef _SAMETHING_SAVEPOINT
-  {
-    if (CHAR_charSaveFromConnect(talkerindex, FALSE)) {
-      CHAR_talkToCli(talkerindex, -1, "系统自动为您存档!", CHAR_COLORRED);
-    }
-
-    if (!CHAR_CheckDepotItem(talkerindex)) {
-      CHAR_GetDepotItem(meindex, talkerindex);
-      //	CHAR_talkToCli( talkerindex, -1, "取得道具，请稍後！",
-      //CHAR_COLORYELLOW);
-    } else {
-      NPC_PoolItemShop_DepotItem_Menu(meindex, talkerindex);
-    }
+  if (CHAR_charSaveFromConnect(talkerindex, FALSE)) {
+    CHAR_talkToCli(talkerindex, -1, "系统自动为您存档!", CHAR_COLORRED);
+  }
+  if (!CHAR_CheckDepotItem(talkerindex)) {
+    CHAR_GetDepotItem(meindex, talkerindex);
+  } else {
+    NPC_PoolItemShop_DepotItem_Menu(meindex, talkerindex);
   }
 #endif
-
   return TRUE;
 }
 #endif
@@ -874,37 +858,14 @@ static BOOL NPC_PoolItemShop_PoolItem(int meindex, int talkerindex, int num) {
     return FALSE;
   }
 
-#if 1                                               // 共同仓库不可存的物品
   if (ITEM_getInt(item_index, ITEM_DROPATLOGOUT) || // 登出後消失
       ITEM_getInt(item_index, ITEM_VANISHATDROP) || // 丢弃後消失
       !ITEM_getInt(item_index, ITEM_CANPETMAIL)) {  // 不可宠邮寄
     print("\n 改封包!!非法存放道具:%s ", CHAR_getChar(talkerindex, CHAR_CDKEY));
-#ifdef _POOL_ITEM_BUG
-    if (getPoolItemBug() == 2 || getPoolItemBug() == 3) {
-      if (getPoolItemBug() == 3) {
-        int i;
-        for (i = 0; i < 32; i++) {
-          if (getPoolItem(i) == ITEM_getInt(item_index, ITEM_ID)) {
-            break;
-          }
-        }
-        if (i == 32) {
-          return FALSE;
-        }
-      } else {
-        return FALSE;
-      }
-    }
-#else
-
-#endif
   }
-#endif
 
   CHAR_DelGold(talkerindex, cost);
-
   CHAR_setPoolItemIndex(talkerindex, emptyindex, item_index);
-
   CHAR_setItemIndex(talkerindex, num, -1);
   CHAR_sendItemDataOne(talkerindex, num);
 
