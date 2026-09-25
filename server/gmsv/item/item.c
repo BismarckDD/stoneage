@@ -866,6 +866,43 @@ char *ITEM_makeStringFromItemData(ITEM_Item *one, int mode) {
   return ITEM_dataString;
 }
 
+static void ITEM_readField(ITEM_Item *item, char *firstToken, char *secondToken) {
+  int i;
+#ifdef _SIMPLIFY_ITEMSTRING
+  for (i = 0; i < arraysizeof(ITEM_setIntData); i++) {
+    if (strcmp(firstToken, ITEM_setIntData[i].dumpchar))
+      continue;
+    item->data[ITEM_setIntData[i].table] = atoi(secondToken);
+    return;
+  }
+
+  for (i = 0; i < arraysizeof(ITEM_setCharData); i++) {
+    if (strcmp(firstToken, ITEM_setCharData[i].dumpchar))
+      continue;
+    strncpysafe(item->string[ITEM_setCharData[i].table].string,
+               sizeof(item->string[ITEM_setCharData[i].table].string),
+               makeStringFromEscaped(secondToken));
+    return;
+  }
+#else
+  for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
+    if (strcmp(firstToken, ITEM_setIntData[i].dumpchar) == 0) {
+      item->data[i] = atoi(secondToken);
+      return;
+    }
+  }
+
+  for (i = 0; i < ITEM_CHAR_DATA_ENUM_MAX; i++) {
+    if (strcmp(firstToken, ITEM_setCharData[i].dumpchar) == 0) {
+      strncpysafe(item->string[i].string, sizeof(item->string[i].string),
+                 makeStringFromEscaped(secondToken));
+      return;
+    }
+  }
+#endif
+
+}
+
 BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
   int readindex = 1;
   char delim1[2];
@@ -910,12 +947,11 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
   ITEM_getDefaultItemSetting(item);
 #endif
 
-  while (1) {
+  for (; ; ++readindex) {
     BOOL ret;
     char linebuf[512];
     char firstToken[256];
     char secondToken[256];
-    int i;
 
     ret = getDelimitedField(src, delim2, readindex, linebuf,
                                       sizeof(linebuf));
@@ -927,41 +963,7 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
       return FALSE;
     strncpysafe(secondToken, sizeof(secondToken),
                linebuf + strlen(firstToken) + strlen(delim1));
-#ifdef _SIMPLIFY_ITEMSTRING
-    for (i = 0; i < arraysizeof(ITEM_setIntData); i++) {
-      if (strcmp(firstToken, ITEM_setIntData[i].dumpchar))
-        continue;
-      item->data[ITEM_setIntData[i].table] = atoi(secondToken);
-      goto NEXT;
-    }
-
-    for (i = 0; i < arraysizeof(ITEM_setCharData); i++) {
-      if (strcmp(firstToken, ITEM_setCharData[i].dumpchar))
-        continue;
-      strncpysafe(item->string[ITEM_setCharData[i].table].string,
-                 sizeof(item->string[ITEM_setCharData[i].table].string),
-                 makeStringFromEscaped(secondToken));
-      goto NEXT;
-    }
-#else
-    for (i = 0; i < ITEM_DATA_ENUM_MAX; i++) {
-      if (strcmp(firstToken, ITEM_setIntData[i].dumpchar) == 0) {
-        item->data[i] = atoi(secondToken);
-        goto NEXT;
-      }
-    }
-
-    for (i = 0; i < ITEM_CHAR_DATA_ENUM_MAX; i++) {
-      if (strcmp(firstToken, ITEM_setCharData[i].dumpchar) == 0) {
-        strncpysafe(item->string[i].string, sizeof(item->string[i].string),
-                   makeStringFromEscaped(secondToken));
-        goto NEXT;
-      }
-    }
-#endif
-
-  NEXT:
-    readindex++;
+    ITEM_readField(item, firstToken, secondToken);
   }
 
   if (item->data[ITEM_CANBEPILE] == 0) {

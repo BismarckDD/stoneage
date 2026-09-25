@@ -831,7 +831,7 @@ BOOL NPC_readTemplateFile(char *filename) {
           print("rate or amount is odd setting. rate=%d "
                 "amount=%d  %s:%d\n",
                 rate, amount, filename, linenum);
-        goto NEXT;
+        break;
       } else {
         for (i = 0; i < arraysizeof(NPC_readtemplate); i++) {
           if (strcasecmp(NPC_readtemplate[i].keyword, firstToken) == 0) {
@@ -872,13 +872,13 @@ BOOL NPC_readTemplateFile(char *filename) {
             default:
               break;
             }
-            goto NEXT;
+            break;
           }
         }
+        if (i == arraysizeof(NPC_readtemplate))
+          printEx("%s:%d There is no such entry %s\n", filename, linenum,
+                  firstToken);
       }
-      printEx("%s:%d There is no such entry %s\n", filename, linenum,
-              firstToken);
-    NEXT:
       break;
     } break;
     }

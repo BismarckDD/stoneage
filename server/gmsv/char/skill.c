@@ -20,6 +20,12 @@ static SKILL_charDataSetting SKILL_setchar[SKILL_DATACHARNUM] = {};
 
 static char SKILL_dataString[STRINGBUFSIZ];
 
+static char *SKILL_finishDataString(void) {
+  dchop(SKILL_dataString, NONCHAR_DELIMITER);
+
+  return SKILL_dataString;
+}
+
 char *SKILL_makeStringFromSkillData(Skill *sk) {
   int i;
   int strlength = 0;
@@ -33,7 +39,7 @@ char *SKILL_makeStringFromSkillData(Skill *sk) {
                sizeof(SKILL_dataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(SKILL_dataString))
-      goto RETURN;
+      return SKILL_finishDataString();
   }
 
   for (i = 0; i < SKILL_DATACHARNUM; i++) {
@@ -48,23 +54,38 @@ char *SKILL_makeStringFromSkillData(Skill *sk) {
                sizeof(SKILL_dataString) - strlength, linedata);
     strlength += strlen(linedata);
     if (strlength > sizeof(SKILL_dataString))
-      goto RETURN;
+      return SKILL_finishDataString();
   }
 
-RETURN:
-  dchop(SKILL_dataString, NONCHAR_DELIMITER);
+  return SKILL_finishDataString();
+}
 
-  return SKILL_dataString;
+static BOOL SKILL_readField(Skill *sk, char *first, char *second) {
+  int i;
+  for (i = 0; i < SKILL_DATAINTNUM; i++) {
+    if (strcmp(first, SKILL_setint[i].dumpskill) == 0) {
+      sk->data[i] = atoi(second);
+      return TRUE;
+    }
+  }
+
+  for (i = 0; i < SKILL_DATACHARNUM; i++) {
+    if (strcmp(first, SKILL_setchar[i].dumpskill) == 0) {
+      strncpysafe(sk->string[i].string, sizeof(sk->string[i].string),
+                 makeStringFromEscaped(second));
+      return TRUE;
+    }
+  }
+  return FALSE;
 }
 
 BOOL SKILL_makeSkillFromStringToArg(char *src, Skill *sk) {
   int readindex = 1;
-  while (1) {
+  for (; ; ++readindex) {
     BOOL ret;
     char linebuf[512];
     char first[256];
     char second[256];
-    int i;
 
     ret = getDelimitedField(src, NONCHAR_DELIMITER, readindex,
                                       linebuf, sizeof(linebuf));
@@ -76,24 +97,8 @@ BOOL SKILL_makeSkillFromStringToArg(char *src, Skill *sk) {
       return FALSE;
     strncpysafe(second, sizeof(second), linebuf + strlen(first) + strlen("="));
 
-    for (i = 0; i < SKILL_DATAINTNUM; i++) {
-      if (strcmp(first, SKILL_setint[i].dumpskill) == 0) {
-        sk->data[i] = atoi(second);
-        goto NEXT;
-      }
-    }
-
-    for (i = 0; i < SKILL_DATACHARNUM; i++) {
-      if (strcmp(first, SKILL_setchar[i].dumpskill) == 0) {
-        strncpysafe(sk->string[i].string, sizeof(sk->string[i].string),
-                   makeStringFromEscaped(second));
-        goto NEXT;
-      }
-    }
-    printEx(": %s[%s]\n", linebuf, first);
-
-  NEXT:
-    readindex++;
+    if (!SKILL_readField(sk, first, second))
+      printEx(": %s[%s]\n", linebuf, first);
   }
 
   return TRUE;

@@ -156,20 +156,13 @@ static const POINT scOffset[5] = {
  * 戻り値  (返回值)
  *  CHAR_WALKRET
  ------------------------------------------------------------*/
-static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
+static CHAR_WALKRET CHAR_tryWalkMove(int char_index, int dir, int of,
+                                      int ox, int oy, int ff, int fx, int fy) {
   int i;
-  int fx, fy, ff;
   int objbuf[128];
   int objbufindex = 0;
   int notover = FALSE;
   int retvalue = CHAR_WALKSUCCESSED;
-  if (!CHAR_CHECKINDEX(char_index))
-    return CHAR_WALKSYSTEMERROR;
-  int ox = CHAR_getInt(char_index, CHAR_X);
-  int oy = CHAR_getInt(char_index, CHAR_Y);
-  int of = CHAR_getInt(char_index, CHAR_FLOOR);
-  CHAR_getCoordinationDir(dir, ox, oy, 1, &fx, &fy);
-  ff = of;
   if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEENEMY) {
     RECT walkr;
     POINT nextp;
@@ -177,7 +170,7 @@ static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
     if (CHAR_isInvincibleArea(ff, fx, fy)) {
       CHAR_setInt(char_index, CHAR_DIR, dir);
       retvalue = CHAR_WALKEXTEND;
-      goto CHAR_AFTERWALK;
+      return retvalue;
     }
     if (NPC_isBoundarySet(npccreateindex) &&
         NPC_createGetRECT(npccreateindex, &walkr) == TRUE) {
@@ -186,7 +179,7 @@ static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
       if (PointInRect(&walkr, &nextp) == FALSE) {
         CHAR_setInt(char_index, CHAR_DIR, dir);
         retvalue = CHAR_WALKEXTEND;
-        goto CHAR_AFTERWALK;
+        return retvalue;
       }
     }
   }
@@ -198,7 +191,7 @@ static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
       if (!MAP_walkAble(char_index, ff, fx + scOffset[k].x, fy + scOffset[k].y)) {
         CHAR_setInt(char_index, CHAR_DIR, dir);
         retvalue = CHAR_WALK1357;
-        goto CHAR_AFTERWALK;
+        return retvalue;
       }
     }
 
@@ -207,14 +200,14 @@ static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
       if (!MAP_walkAble(char_index, ff, fx, fy)) {
         CHAR_setInt(char_index, CHAR_DIR, dir);
         retvalue = CHAR_WALK1357;
-        goto CHAR_AFTERWALK;
+        return retvalue;
       }
     } else {
       int xflg, yflg;
       if (!MAP_walkAble(char_index, ff, fx, fy)) {
         CHAR_setInt(char_index, CHAR_DIR, dir);
         retvalue = CHAR_WALK1357;
-        goto CHAR_AFTERWALK;
+        return retvalue;
       }
 
       xflg = MAP_walkAble(char_index, of, ox + CHAR_getDX(dir), oy);
@@ -223,7 +216,7 @@ static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
       if (!xflg || !yflg) {
         CHAR_setInt(char_index, CHAR_DIR, dir);
         retvalue = CHAR_WALK1357;
-        goto CHAR_AFTERWALK;
+        return retvalue;
       }
     }
   }
@@ -376,7 +369,21 @@ static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
         ofunc(OBJECT_getIndex(obj_index), char_index);
     }
   }
-CHAR_AFTERWALK:
+  return retvalue;
+}
+
+static CHAR_WALKRET CHAR_walk_move(int char_index, int dir) {
+  int i;
+  int fx, fy, ff;
+  int retvalue = CHAR_WALKSUCCESSED;
+  if (!CHAR_CHECKINDEX(char_index))
+    return CHAR_WALKSYSTEMERROR;
+  int ox = CHAR_getInt(char_index, CHAR_X);
+  int oy = CHAR_getInt(char_index, CHAR_Y);
+  int of = CHAR_getInt(char_index, CHAR_FLOOR);
+  CHAR_getCoordinationDir(dir, ox, oy, 1, &fx, &fy);
+  ff = of;
+  retvalue = CHAR_tryWalkMove(char_index, dir, of, ox, oy, ff, fx, fy);
   if (retvalue == CHAR_WALK1357 || retvalue == CHAR_WALKHITOBJECT) {
     {
       int opt[2] = {ox, oy};

@@ -2077,6 +2077,14 @@ BOOL CHAR_checksetdata(void) {
 #define DEPOTPETRESERVESTRING "Depotpet"
 #endif
 
+static char *CHAR_finishCharacterString(void) {
+  if (strstr(CHAR_dataString, DATAENDCHECKPOINT) == NULL) {
+    LodBadPetString(CHAR_dataString, "err mk dataString no end", -1);
+  }
+
+  return CHAR_dataString;
+}
+
 char *CHAR_makeStringFromCharData(Char *one) {
   int i;
   int petnum;
@@ -2095,7 +2103,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
   for (i = 0; i < CHAR_DATACHARNUM; i++) {
@@ -2111,7 +2119,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
   for (i = 0; i < arraysizeof(one->flg); i++) {
@@ -2124,7 +2132,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
 
@@ -2142,7 +2150,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
   int itemMax = CheckCharMaxItemChar(one);
@@ -2161,7 +2169,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
 
@@ -2180,7 +2188,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
 
@@ -2198,7 +2206,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
   for (i = 0; i < ADDRESSBOOK_MAX; i++) {
@@ -2215,7 +2223,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
   for (petnum = 0; petnum < CHAR_MAXPETHAVE; petnum++) {
@@ -2235,7 +2243,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
 
@@ -2255,7 +2263,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
         strstr(petstring, "ownt:") == NULL) {
       LodBadPetString("petstring", "poolpet string buffer err:", petnum);
       printEx("ANDY err poolpet string buffer err:\n%s\n", petstring);
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
 
     snprintf(linedata, sizeof(linedata),
@@ -2266,7 +2274,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
     strlength += strlen(linedata);
     if (strlength > sizeof(CHAR_dataString)) {
       printEx("err chardata buffer over\n");
-      goto RETURN;
+      return CHAR_finishCharacterString();
     }
   }
 #ifdef _CHAR_FIXDATADEF
@@ -2287,12 +2295,7 @@ char *CHAR_makeStringFromCharData(Char *one) {
   }
 #endif
 
-RETURN:
-  if (strstr(CHAR_dataString, DATAENDCHECKPOINT) == NULL) {
-    LodBadPetString(CHAR_dataString, "err mk dataString no end", -1);
-  }
-
-  return CHAR_dataString;
+  return CHAR_finishCharacterString();
 }
 
 char *CHAR_makeStringFromCharIndex(int index) {
@@ -2304,8 +2307,183 @@ char *CHAR_makeStringFromCharIndex(int index) {
   return CHAR_makeStringFromCharData(&CHAR_chara[index]);
 }
 
-BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
+/* Apply one record; returning leaves all nested field searches at once. */
+static BOOL CHAR_readCharacterField(Char *one, char *data, char *firstToken,
+                                     char *secondToken, int *rightData) {
   int i;
+  BOOL ret;
+  for (i = 0; i < CHAR_DATAINTNUM; i++) {
+    if (strcmp(firstToken, CHAR_IntDataName[i]) == 0) {
+      one->data[i] = atoi(secondToken);
+      return TRUE;
+    }
+  }
+  for (i = 0; i < CHAR_DATACHARNUM; i++) {
+    if (strcmp(firstToken, CHAR_CHARDATA_NAME[i]) == 0) {
+      strncpysafe(one->string[i].string, sizeof(one->string[i].string),
+                 makeStringFromEscaped(secondToken));
+      if (strlen(one->string[i].string) > 128) {
+        // print(" CHARDATA_to_long!!:%s:%d ", one->string[i].string, strlen(
+        // one->string[i].string ) );
+        one->string[i].string[0] = 0;
+      }
+      return TRUE;
+    }
+  }
+  if (strncmp(firstToken, FLGRESERVESTRING, strlen(FLGRESERVESTRING)) == 0) {
+    int flgindex;
+    flgindex = atoi(firstToken + strlen(FLGRESERVESTRING));
+    if (flgindex < 0 || arraysizeof(one->flg) <= flgindex)
+      ;
+    else
+      one->flg[flgindex] = atoi(secondToken);
+    return TRUE;
+  }
+  if (strncmp(firstToken, ITEMRESERVESTRING, strlen(ITEMRESERVESTRING)) ==
+      0) {
+    int item_index;
+    if (strcmp(secondToken, "0") == 0)
+      return TRUE;
+    item_index = atoi(firstToken + strlen(ITEMRESERVESTRING));
+    int itemMax = CheckCharMaxItemChar(one);
+    if (item_index < 0 || itemMax <= item_index ||
+        one->indexOfExistItems[item_index] != -1) {
+      ;
+    } else {
+      ITEM_Item itmone;
+      BOOL ret = ITEM_makeExistItemsFromStringToArg(secondToken, &itmone, 0);
+      if (ret == TRUE) {
+        int existitem_index;
+        existitem_index = ITEM_initExistItemsOne(&itmone);
+        one->indexOfExistItems[item_index] = existitem_index;
+#ifdef _ITEM_USE_TIME
+        if (ITEM_getInt(existitem_index, ITEM_USETIME) > 0) {
+          if (ITEM_getInt(existitem_index, ITEM_USETIME) < (int)time(NULL)) {
+            ITEM_endExistItemsOne(existitem_index);
+            one->indexOfExistItems[item_index] = -1;
+          }
+        }
+#endif
+      }
+    }
+    return TRUE;
+  }
+  if (strncmp(firstToken, POOLITEMRESERVESTRING,
+              strlen(POOLITEMRESERVESTRING)) == 0) {
+    int item_index;
+    if (strcmp(secondToken, "0") == 0)
+      return TRUE;
+    item_index = atoi(firstToken + strlen(POOLITEMRESERVESTRING));
+    if (item_index < 0 || CHAR_MAXPOOLITEMHAVE <= item_index ||
+        one->indexOfExistPoolItems[item_index] != -1) {
+      ;
+    } else {
+      ITEM_Item itmone;
+      BOOL ret;
+      ret = ITEM_makeExistItemsFromStringToArg(secondToken, &itmone, 0);
+
+      if (ret == TRUE) {
+        int existitem_index;
+        existitem_index = ITEM_initExistItemsOne(&itmone);
+        one->indexOfExistPoolItems[item_index] = existitem_index;
+      }
+    }
+    return TRUE;
+  }
+  if (strncmp(firstToken, SKILLRESERVESTRING, strlen(SKILLRESERVESTRING)) ==
+      0) {
+    int skillindex;
+    if (strcmp(secondToken, NULLSKILL) == 0)
+      return TRUE;
+    skillindex = atoi(firstToken + strlen(SKILLRESERVESTRING));
+    if (skillindex < 0 || CHAR_SKILLMAXHAVE <= skillindex ||
+        one->haveSkill[skillindex].use == TRUE) {
+    } else {
+      BOOL ret;
+      Skill skillone;
+      ret = SKILL_makeSkillFromStringToArg(secondToken, &skillone);
+
+      if (ret == TRUE) {
+        memcpy(&one->haveSkill[skillindex].skill, &skillone, sizeof(Skill));
+        one->haveSkill[skillindex].use = TRUE;
+      }
+    }
+    return TRUE;
+  }
+  if (strncmp(firstToken, TITLERESERVESTRING, strlen(TITLERESERVESTRING)) ==
+      0) {
+    int titlenumber = atoi(firstToken + strlen(TITLERESERVESTRING));
+    if (titlenumber < 0 || CHAR_TITLEMAXHAVE <= titlenumber) {
+    } else {
+      int titleindex = atoi(secondToken);
+      if (TITLE_getTitleIndex(titleindex) != -1)
+        one->indexOfHaveTitle[titlenumber] = titleindex;
+    }
+    return TRUE;
+  }
+  if (strncmp(firstToken, ADDRESSBOOKRESERVESTRING,
+              strlen(ADDRESSBOOKRESERVESTRING)) == 0) {
+    int addressnumber = atoi(firstToken + strlen(ADDRESSBOOKRESERVESTRING));
+    if (addressnumber < 0 || ADDRESSBOOK_MAX <= addressnumber) {
+    } else {
+      ADDRESSBOOK_makeAddressbookEntry(secondToken,
+                                       &one->addressBook[addressnumber]);
+    }
+    return TRUE;
+  }
+  if (strncmp(firstToken, PETSERVERSTRING, strlen(PETSERVERSTRING)) == 0) {
+    Char ch;
+    int ret;
+    int petnumber = atoi(firstToken + strlen(PETSERVERSTRING));
+    if (!CHAR_CHECKPETINDEX(petnumber))
+      return TRUE;
+    ret = CHAR_makePetFromStringToArg(secondToken, &ch, petnumber);
+    if (ret == TRUE) {
+      int petindex = PET_initCharOneArray(&ch);
+      if (petindex < 0) {
+        print("宠物制作失败。\n");
+      }
+      one->unionTable.indexOfPet[petnumber] = petindex;
+      return TRUE;
+    } else {
+      LodBadPetString(data, "错误总计", petnumber);
+      printEx("错误[宠物字符串]无法作成\n");
+      return FALSE;
+    }
+  }
+  if (strncmp(firstToken, POOLPETSERVERSTRING, strlen(POOLPETSERVERSTRING)) ==
+      0) {
+
+    Char ch;
+    int ret;
+    int petnumber = atoi(firstToken + strlen(POOLPETSERVERSTRING));
+    if (!CHAR_CHECKPOOLPETINDEX(petnumber))
+      return TRUE;
+    ret = CHAR_makePetFromStringToArg(secondToken, &ch, petnumber);
+    if (ret == TRUE) {
+      int petindex = PET_initCharOneArray(&ch);
+      if (petindex < 0) {
+        printEx("错误 宠物 无法作成\n");
+      }
+      one->indexOfPoolPet[petnumber] = petindex;
+      return TRUE;
+    } else {
+      LodBadPetString(data, "err *total", petnumber);
+      printEx("错误 合成宠物字符串 无法作成\n");
+      return FALSE;
+    }
+  }
+
+  if (strncmp(firstToken, DATAENDCHECKPOINT, strlen(DATAENDCHECKPOINT)) ==
+      0) {
+    *rightData = 1;
+    return TRUE;
+  }
+
+  return TRUE;
+}
+
+BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
   int rightData = 0;
   const char *read_cursor;
 
@@ -2357,176 +2535,8 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
       return FALSE;
     strncpysafe(secondToken, sizeof(secondToken),
                linebuf + strlen(firstToken) + strlen("="));
-    for (i = 0; i < CHAR_DATAINTNUM; i++) {
-      if (strcmp(firstToken, CHAR_IntDataName[i]) == 0) {
-        one->data[i] = atoi(secondToken);
-        goto NEXT;
-      }
-    }
-    for (i = 0; i < CHAR_DATACHARNUM; i++) {
-      if (strcmp(firstToken, CHAR_CHARDATA_NAME[i]) == 0) {
-        strncpysafe(one->string[i].string, sizeof(one->string[i].string),
-                   makeStringFromEscaped(secondToken));
-        if (strlen(one->string[i].string) > 128) {
-          // print(" CHARDATA_to_long!!:%s:%d ", one->string[i].string, strlen(
-          // one->string[i].string ) );
-          one->string[i].string[0] = 0;
-        }
-        goto NEXT;
-      }
-    }
-    if (strncmp(firstToken, FLGRESERVESTRING, strlen(FLGRESERVESTRING)) == 0) {
-      int flgindex;
-      flgindex = atoi(firstToken + strlen(FLGRESERVESTRING));
-      if (flgindex < 0 || arraysizeof(one->flg) <= flgindex)
-        ;
-      else
-        one->flg[flgindex] = atoi(secondToken);
-      goto NEXT;
-    }
-    if (strncmp(firstToken, ITEMRESERVESTRING, strlen(ITEMRESERVESTRING)) ==
-        0) {
-      int item_index;
-      if (strcmp(secondToken, "0") == 0)
-        goto NEXT;
-      item_index = atoi(firstToken + strlen(ITEMRESERVESTRING));
-      int itemMax = CheckCharMaxItemChar(one);
-      if (item_index < 0 || itemMax <= item_index ||
-          one->indexOfExistItems[item_index] != -1) {
-        ;
-      } else {
-        ITEM_Item itmone;
-        BOOL ret = ITEM_makeExistItemsFromStringToArg(secondToken, &itmone, 0);
-        if (ret == TRUE) {
-          int existitem_index;
-          existitem_index = ITEM_initExistItemsOne(&itmone);
-          one->indexOfExistItems[item_index] = existitem_index;
-#ifdef _ITEM_USE_TIME
-          if (ITEM_getInt(existitem_index, ITEM_USETIME) > 0) {
-            if (ITEM_getInt(existitem_index, ITEM_USETIME) < (int)time(NULL)) {
-              ITEM_endExistItemsOne(existitem_index);
-              one->indexOfExistItems[item_index] = -1;
-            }
-          }
-#endif
-        }
-      }
-      goto NEXT;
-    }
-    if (strncmp(firstToken, POOLITEMRESERVESTRING,
-                strlen(POOLITEMRESERVESTRING)) == 0) {
-      int item_index;
-      if (strcmp(secondToken, "0") == 0)
-        goto NEXT;
-      item_index = atoi(firstToken + strlen(POOLITEMRESERVESTRING));
-      if (item_index < 0 || CHAR_MAXPOOLITEMHAVE <= item_index ||
-          one->indexOfExistPoolItems[item_index] != -1) {
-        ;
-      } else {
-        ITEM_Item itmone;
-        BOOL ret;
-        ret = ITEM_makeExistItemsFromStringToArg(secondToken, &itmone, 0);
-
-        if (ret == TRUE) {
-          int existitem_index;
-          existitem_index = ITEM_initExistItemsOne(&itmone);
-          one->indexOfExistPoolItems[item_index] = existitem_index;
-        }
-      }
-      goto NEXT;
-    }
-    if (strncmp(firstToken, SKILLRESERVESTRING, strlen(SKILLRESERVESTRING)) ==
-        0) {
-      int skillindex;
-      if (strcmp(secondToken, NULLSKILL) == 0)
-        goto NEXT;
-      skillindex = atoi(firstToken + strlen(SKILLRESERVESTRING));
-      if (skillindex < 0 || CHAR_SKILLMAXHAVE <= skillindex ||
-          one->haveSkill[skillindex].use == TRUE) {
-      } else {
-        BOOL ret;
-        Skill skillone;
-        ret = SKILL_makeSkillFromStringToArg(secondToken, &skillone);
-
-        if (ret == TRUE) {
-          memcpy(&one->haveSkill[skillindex].skill, &skillone, sizeof(Skill));
-          one->haveSkill[skillindex].use = TRUE;
-        }
-      }
-      goto NEXT;
-    }
-    if (strncmp(firstToken, TITLERESERVESTRING, strlen(TITLERESERVESTRING)) ==
-        0) {
-      int titlenumber = atoi(firstToken + strlen(TITLERESERVESTRING));
-      if (titlenumber < 0 || CHAR_TITLEMAXHAVE <= titlenumber) {
-      } else {
-        int titleindex = atoi(secondToken);
-        if (TITLE_getTitleIndex(titleindex) != -1)
-          one->indexOfHaveTitle[titlenumber] = titleindex;
-      }
-      goto NEXT;
-    }
-    if (strncmp(firstToken, ADDRESSBOOKRESERVESTRING,
-                strlen(ADDRESSBOOKRESERVESTRING)) == 0) {
-      int addressnumber = atoi(firstToken + strlen(ADDRESSBOOKRESERVESTRING));
-      if (addressnumber < 0 || ADDRESSBOOK_MAX <= addressnumber) {
-      } else {
-        ADDRESSBOOK_makeAddressbookEntry(secondToken,
-                                         &one->addressBook[addressnumber]);
-      }
-      goto NEXT;
-    }
-    if (strncmp(firstToken, PETSERVERSTRING, strlen(PETSERVERSTRING)) == 0) {
-      Char ch;
-      int ret;
-      int petnumber = atoi(firstToken + strlen(PETSERVERSTRING));
-      if (!CHAR_CHECKPETINDEX(petnumber))
-        goto NEXT;
-      ret = CHAR_makePetFromStringToArg(secondToken, &ch, petnumber);
-      if (ret == TRUE) {
-        int petindex = PET_initCharOneArray(&ch);
-        if (petindex < 0) {
-          print("宠物制作失败。\n");
-        }
-        one->unionTable.indexOfPet[petnumber] = petindex;
-        goto NEXT;
-      } else {
-        LodBadPetString(data, "错误总计", petnumber);
-        printEx("错误[宠物字符串]无法作成\n");
-        return FALSE;
-      }
-    }
-    if (strncmp(firstToken, POOLPETSERVERSTRING, strlen(POOLPETSERVERSTRING)) ==
-        0) {
-
-      Char ch;
-      int ret;
-      int petnumber = atoi(firstToken + strlen(POOLPETSERVERSTRING));
-      if (!CHAR_CHECKPOOLPETINDEX(petnumber))
-        goto NEXT;
-      ret = CHAR_makePetFromStringToArg(secondToken, &ch, petnumber);
-      if (ret == TRUE) {
-        int petindex = PET_initCharOneArray(&ch);
-        if (petindex < 0) {
-          printEx("错误 宠物 无法作成\n");
-        }
-        one->indexOfPoolPet[petnumber] = petindex;
-        goto NEXT;
-      } else {
-        LodBadPetString(data, "err *total", petnumber);
-        printEx("错误 合成宠物字符串 无法作成\n");
-        return FALSE;
-      }
-    }
-
-    if (strncmp(firstToken, DATAENDCHECKPOINT, strlen(DATAENDCHECKPOINT)) ==
-        0) {
-      rightData = 1;
-      goto NEXT;
-    }
-
-  NEXT:
-    ;
+    if (!CHAR_readCharacterField(one, data, firstToken, secondToken, &rightData))
+      return FALSE;
   }
   // Robin 0913  bad_chardata
   {
@@ -3345,7 +3355,7 @@ BOOL CHAR_makeDepotItemStringToChar(int char_index, char *data) {
     return FALSE;
   }
 
-  while (TRUE) {
+  for (; ; ++readindex) {
     memset(linebuf, 0, sizeof(linebuf));
     memset(firstToken, 0, sizeof(firstToken));
     memset(secondToken, 0, sizeof(secondToken));
@@ -3354,7 +3364,7 @@ BOOL CHAR_makeDepotItemStringToChar(int char_index, char *data) {
     if (ret == FALSE)
       break;
     if (linebuf[0] == '#' || linebuf[0] == '\n' || linebuf[0] == '\0') {
-      goto NEXT;
+      continue;
     }
     if ((ret = getDelimitedField(linebuf, "=", 1, firstToken,
                                            sizeof(firstToken))) == FALSE)
@@ -3365,7 +3375,7 @@ BOOL CHAR_makeDepotItemStringToChar(int char_index, char *data) {
     if (strncmp(firstToken, DEPOTITEMRESERVESTRING,
                 strlen(DEPOTITEMRESERVESTRING)) == 0) {
       if (strcmp(secondToken, "0") == 0)
-        goto NEXT;
+        continue;
       item_index = atoi(firstToken + strlen(DEPOTITEMRESERVESTRING));
       if (item_index < 0 || CHAR_MAXDEPOTITEMHAVE <= item_index ||
           ch->indexOfExistDepotItems[item_index] != -1) {
@@ -3379,11 +3389,9 @@ BOOL CHAR_makeDepotItemStringToChar(int char_index, char *data) {
           ch->indexOfExistDepotItems[item_index] = existitem_index;
         }
       }
-      goto NEXT;
+      continue;
     }
     print("2??? : %s[%s]\n", linebuf, firstToken);
-  NEXT:
-    readindex++;
   }
   return TRUE;
 }
@@ -3602,7 +3610,7 @@ BOOL CHAR_makeDepotPetStringToChar(int char_index, char *data) {
     return FALSE;
   }
 
-  while (1) {
+  for (; ; ++readindex) {
     memset(linebuf, 0, sizeof(linebuf));
     memset(firstToken, 0, sizeof(firstToken));
     memset(secondToken, 0, sizeof(secondToken));
@@ -3611,7 +3619,7 @@ BOOL CHAR_makeDepotPetStringToChar(int char_index, char *data) {
     if (ret == FALSE)
       break;
     if (linebuf[0] == '#' || linebuf[0] == '\n' || linebuf[0] == '\0') {
-      goto NEXT;
+      continue;
     }
     if ((ret = getDelimitedField(linebuf, "=", 1, firstToken,
                                            sizeof(firstToken))) == FALSE)
@@ -3622,7 +3630,7 @@ BOOL CHAR_makeDepotPetStringToChar(int char_index, char *data) {
     if (strncmp(firstToken, DEPOTPETRESERVESTRING,
                 strlen(DEPOTPETRESERVESTRING)) == 0) {
       if (strcmp(secondToken, "0") == 0)
-        goto NEXT;
+        continue;
       petindex = atoi(firstToken + strlen(DEPOTPETRESERVESTRING));
       if (petindex < 0 || CHAR_MAXDEPOTPETHAVE <= petindex ||
           ch->indexOfExistDepotPets[petindex] != -1) {
@@ -3638,11 +3646,9 @@ BOOL CHAR_makeDepotPetStringToChar(int char_index, char *data) {
           CHAR_complianceParameter(existpetindex);
         }
       }
-      goto NEXT;
+      continue;
     }
     print("1??? : %s[%s]\n", linebuf, firstToken);
-  NEXT:
-    readindex++;
   }
   return TRUE;
 }

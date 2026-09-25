@@ -1262,6 +1262,31 @@ void CHAR_DropItem(int char_index, int itemchar_index) {
   CHAR_SendDropItem_Stats(char_index, item_index, itemchar_index, beDropOne);
 }
 #else
+static void CHAR_finishItemDrop(int char_index, int itemchar_index, int objindex) {
+  CHAR_sendWatchEvent(objindex, CHAR_ACTSTAND, NULL, 0, TRUE);
+  CHAR_setItemIndex(char_index, itemchar_index, -1);
+  {
+    char category[3];
+    snprintf(category, sizeof(category), "J%d", itemchar_index);
+    CHAR_sendStatusString(char_index, category);
+  }
+  if (CHAR_complianceParameter(char_index)) {
+    CHAR_sendCToArroundCharacter(
+        CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
+  }
+  if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
+    CHAR_send_P_StatusString(
+        char_index, CHAR_P_STRING_HP | CHAR_P_STRING_MAXHP | CHAR_P_STRING_MP |
+                        CHAR_P_STRING_MAXMP | CHAR_P_STRING_ATK |
+                        CHAR_P_STRING_DEF | CHAR_P_STRING_QUICK |
+                        CHAR_P_STRING_CHARM | CHAR_P_STRING_LUCK |
+                        CHAR_P_STRING_EARTH | CHAR_P_STRING_WATER |
+                        CHAR_P_STRING_FIRE | CHAR_P_STRING_WIND);
+    CHAR_sendItemDataOne(char_index, itemchar_index);
+  }
+  return;
+}
+
 void CHAR_DropItem(int char_index, int itemchar_index) {
   int dirx[9], diry[9];
   int i, j;
@@ -1363,7 +1388,8 @@ void CHAR_DropItem(int char_index, int itemchar_index) {
     ret = ITEM_eventDrop(item_index, char_index, itemchar_index);
     if (ret == 1) { //-1 物品不存在 1 消失 0 一般物品
       item_index = -1;
-      goto END;
+      CHAR_finishItemDrop(char_index, itemchar_index, objindex);
+      return;
     } else if (ret == -1) {
       print("%s:%d err\n", __FILE__, __LINE__);
       return;
@@ -1478,8 +1504,8 @@ void CHAR_DropItem(int char_index, int itemchar_index) {
 #else
         ITEM_setInt(item_index, ITEM_PUTTIME, NowTime.tv_sec);
 #endif
-        goto END;
-        break;
+        CHAR_finishItemDrop(char_index, itemchar_index, objindex);
+        return;
       case -1:
       case -2:
         break;
@@ -1498,29 +1524,7 @@ void CHAR_DropItem(int char_index, int itemchar_index) {
     return;
   }
 #endif
-END:
-  CHAR_sendWatchEvent(objindex, CHAR_ACTSTAND, NULL, 0, TRUE);
-  CHAR_setItemIndex(char_index, itemchar_index, -1);
-  {
-    char category[3];
-    snprintf(category, sizeof(category), "J%d", itemchar_index);
-    CHAR_sendStatusString(char_index, category);
-  }
-  if (CHAR_complianceParameter(char_index)) {
-    CHAR_sendCToArroundCharacter(
-        CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX));
-  }
-  if (CHAR_getInt(char_index, CHAR_WHICHTYPE) == CHAR_TYPEPLAYER) {
-    CHAR_send_P_StatusString(
-        char_index, CHAR_P_STRING_HP | CHAR_P_STRING_MAXHP | CHAR_P_STRING_MP |
-                        CHAR_P_STRING_MAXMP | CHAR_P_STRING_ATK |
-                        CHAR_P_STRING_DEF | CHAR_P_STRING_QUICK |
-                        CHAR_P_STRING_CHARM | CHAR_P_STRING_LUCK |
-                        CHAR_P_STRING_EARTH | CHAR_P_STRING_WATER |
-                        CHAR_P_STRING_FIRE | CHAR_P_STRING_WIND);
-    CHAR_sendItemDataOne(char_index, itemchar_index);
-  }
-  return;
+  CHAR_finishItemDrop(char_index, itemchar_index, objindex);
 }
 #endif
 
@@ -2117,6 +2121,12 @@ static BOOL CHAR_DropMoneyFXY(int char_index, int amount, int fl, int x, int y,
 }
 
 /* 历史注释或停用代码的原始编码已损坏，无法可靠恢复。 */
+static void CHAR_finishMoneyDrop(int char_index, int objindex) {
+  CHAR_sendWatchEvent(objindex, CHAR_ACTSTAND, NULL, 0, TRUE);
+  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_GOLD);
+  return;
+}
+
 void CHAR_DropMoney(int char_index, int amount) {
   int dirx[9], diry[9];
   int ret;
@@ -2194,8 +2204,8 @@ void CHAR_DropMoney(int char_index, int amount) {
                             &objindex);
     switch (ret) {
     case 0:
-      goto END;
-      break;
+      CHAR_finishMoneyDrop(char_index, objindex);
+      return;
     case -1:
       return;
       break;
@@ -2221,8 +2231,8 @@ void CHAR_DropMoney(int char_index, int amount) {
                             &objindex);
     switch (ret) {
     case 0:
-      goto END;
-      break;
+      CHAR_finishMoneyDrop(char_index, objindex);
+      return;
     case -1:
       break;
     case -3:
@@ -2238,10 +2248,6 @@ void CHAR_DropMoney(int char_index, int amount) {
     return;
   }
 
-END:
-  CHAR_sendWatchEvent(objindex, CHAR_ACTSTAND, NULL, 0, TRUE);
-  CHAR_send_P_StatusString(char_index, CHAR_P_STRING_GOLD);
-  return;
 }
 
 static int CHAR_findEmptyItemBoxNoFromChar(Char *ch) {

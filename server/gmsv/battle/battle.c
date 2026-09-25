@@ -3237,7 +3237,6 @@ BATTLE_CreateForWatcher_End:;
     }
     /* 戦闘アイコン表示送信 (发送战斗图标显示) */
     CHAR_sendBattleWatch(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX), ON);
-
     // 仲間にも送る (也发给队友)
     for (i = 1; i < getPartyNum(char_index); i++) {
       pindex = CHAR_getWorkInt(char_index, i + CHAR_WORKPARTYINDEX1);
@@ -3247,7 +3246,6 @@ BATTLE_CreateForWatcher_End:;
       // FINAL だったら前の戦闘を している (若为FINAL状态则跳过)
       if (CHAR_getWorkInt(pindex, CHAR_WORKBATTLEMODE) == BATTLE_CHARMODE_FINAL)
         continue;
-
       fd = getfdFromchar_index(pindex);
       /* エンカウントを 送る (发送遭遇)   */
       if (fd != -1)
@@ -3261,10 +3259,7 @@ BATTLE_CreateForWatcher_End:;
       /* 戦闘アイコン表示送信 (发送战斗图标显示) */
       CHAR_sendBattleWatch(CHAR_getWorkInt(char_index, CHAR_WORKOBJINDEX), ON);
     }
-    /*
-                    print( "以(%s)为领队与敌军交手。",
-                            CHAR_getChar( char_index, CHAR_NAME ) );
-    */
+    /* print("以(%s)为领队与敌军交手。", CHAR_getChar(char_index, CHAR_NAME)); */
   }
 
   return iRet;

@@ -358,6 +358,25 @@ static BOOL CHAR_clairvoyance_enemy(int objindex, char *buf)
 
 static char CHAR_clairvoyanceString[STRINGBUFSIZ];
 
+static void CHAR_sendClairvoyanceResult(int char_index, int stringlen,
+                                        BOOL sendclairvoyance) {
+  if (stringlen >= 1)
+  {
+    int fd;
+    fd = getfdFromCharaIndex(char_index);
+    dchop(CHAR_clairvoyanceString, "|");
+    if (fd != -1)
+      GmsvServer_R_send(fd, CHAR_clairvoyanceString);
+  }
+  else if (!sendclairvoyance)
+  {
+    int fd;
+    fd = getfdFromCharaIndex(char_index);
+    if (fd != -1)
+      GmsvServer_R_send(fd, "");
+  }
+}
+
 static void CHAR_clairvoyance(int char_index)
 {
   char onebuf[128];
@@ -418,30 +437,17 @@ static void CHAR_clairvoyance(int char_index)
             strncpysafe(CHAR_clairvoyanceString + stringlen,
                         sizeof(CHAR_clairvoyanceString) - stringlen, onebuf);
             stringlen += strlen(onebuf);
-            if (stringlen > sizeof(CHAR_clairvoyanceString))
-              goto RETURN;
+            if (stringlen > sizeof(CHAR_clairvoyanceString)) {
+              CHAR_sendClairvoyanceResult(char_index, stringlen, sendclairvoyance);
+              return;
+            }
           }
         }
       }
     }
   }
 
-RETURN:
-  if (stringlen >= 1)
-  {
-    int fd;
-    fd = getfdFromCharaIndex(char_index);
-    dchop(CHAR_clairvoyanceString, "|");
-    if (fd != -1)
-      GmsvServer_R_send(fd, CHAR_clairvoyanceString);
-  }
-  else if (!sendclairvoyance)
-  {
-    int fd;
-    fd = getfdFromCharaIndex(char_index);
-    if (fd != -1)
-      GmsvServer_R_send(fd, "");
-  }
+  CHAR_sendClairvoyanceResult(char_index, stringlen, sendclairvoyance);
 }
 
 // 2026.09.25 每个角色都会执行 loopFunc
