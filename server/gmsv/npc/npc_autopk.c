@@ -463,34 +463,34 @@ BOOL AutoPk_GetHistoryStr(char *token, int page) {
       break;
     chop(line);
   }
-  getStringFromIndexWithDelim(line, "|", 1, hstime, sizeof(hstime));
-  getStringFromIndexWithDelim(line, "|", 2, history[0].winnum,
+  getDelimitedField(line, "|", 1, hstime, sizeof(hstime));
+  getDelimitedField(line, "|", 2, history[0].winnum,
                               sizeof(history[0].winnum));
-  getStringFromIndexWithDelim(line, "|", 3, history[0].name,
+  getDelimitedField(line, "|", 3, history[0].name,
                               sizeof(history[0].name));
   if (strlen(history[0].name) == 0)
     strcpy(history[0].name, "无");
-  getStringFromIndexWithDelim(line, "|", 4, history[1].winnum,
+  getDelimitedField(line, "|", 4, history[1].winnum,
                               sizeof(history[1].winnum));
-  getStringFromIndexWithDelim(line, "|", 5, history[1].name,
+  getDelimitedField(line, "|", 5, history[1].name,
                               sizeof(history[1].name));
   if (strlen(history[1].name) == 0)
     strcpy(history[1].name, "无");
-  getStringFromIndexWithDelim(line, "|", 6, history[2].winnum,
+  getDelimitedField(line, "|", 6, history[2].winnum,
                               sizeof(history[2].winnum));
-  getStringFromIndexWithDelim(line, "|", 7, history[2].name,
+  getDelimitedField(line, "|", 7, history[2].name,
                               sizeof(history[2].name));
   if (strlen(history[2].name) == 0)
     strcpy(history[2].name, "无");
-  getStringFromIndexWithDelim(line, "|", 8, history[3].winnum,
+  getDelimitedField(line, "|", 8, history[3].winnum,
                               sizeof(history[3].winnum));
-  getStringFromIndexWithDelim(line, "|", 9, history[3].name,
+  getDelimitedField(line, "|", 9, history[3].name,
                               sizeof(history[3].name));
   if (strlen(history[3].name) == 0)
     strcpy(history[3].name, "无");
-  getStringFromIndexWithDelim(line, "|", 10, history[4].winnum,
+  getDelimitedField(line, "|", 10, history[4].winnum,
                               sizeof(history[4].winnum));
-  getStringFromIndexWithDelim(line, "|", 11, history[4].name,
+  getDelimitedField(line, "|", 11, history[4].name,
                               sizeof(history[4].name));
   if (strlen(history[4].name) == 0)
     strcpy(history[4].name, "无");
@@ -528,7 +528,7 @@ void AutoPk_SetHistoryStr(void) {
   if (fgets(line, sizeof(line), fp) == NULL)
     strcpy(time, "1");
   else
-    getStringFromIndexWithDelim(line, "|", 1, time, sizeof(time));
+    getDelimitedField(line, "|", 1, time, sizeof(time));
   sprintf(token, "%d|%d|%s|%d|%s|%d|%s|%d|%s|%d|%s|\n", atoi(time) + 1,
           ship[0].winnum, ship[0].name, ship[1].winnum, ship[1].name,
           ship[2].winnum, ship[2].name, ship[3].winnum, ship[3].name,
@@ -854,7 +854,7 @@ BOOL AutoPk_GetAwardStr(void) {
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
     chop(line);
-    getStringFromIndexWithDelim(line, "|", 1, buf, sizeof(buf));
+    getDelimitedField(line, "|", 1, buf, sizeof(buf));
     award[i].awardpetid = atoi(buf);
     if (award[i].awardpetid != -1) {
       for (j = 0; j < enemynum; j++)
@@ -867,7 +867,7 @@ BOOL AutoPk_GetAwardStr(void) {
         strcpy(award[i].awardpet, "\0");
       }
     }
-    getStringFromIndexWithDelim(line, "|", 2, buf, sizeof(buf));
+    getDelimitedField(line, "|", 2, buf, sizeof(buf));
     award[i].awarditemid = atoi(buf);
     if (award[i].awarditemid > 0 && award[i].awarditemid <= getItemnum())
       strcpy(award[i].awarditem, ITEM_getNameFromNumber(award[i].awarditemid));

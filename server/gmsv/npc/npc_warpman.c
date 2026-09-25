@@ -123,11 +123,11 @@ BOOL NPC_WarpManInit(int npc_index) {
         print("NPC WARPMAN Error! file:%s\n", filename);
       return FALSE;
     }
-    getStringFromIndexWithDelim(buf, ",", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, ",", 1, buff2, sizeof(buff2));
     fl = atoi(buff2);
-    getStringFromIndexWithDelim(buf, ",", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, ",", 2, buff2, sizeof(buff2));
     x = atoi(buff2);
-    getStringFromIndexWithDelim(buf, ",", 3, buff2, sizeof(buff2));
+    getDelimitedField(buf, ",", 3, buff2, sizeof(buff2));
     y = atoi(buff2);
     if (MAP_IsValidCoordinate(fl, x, y) == FALSE) {
       char filename[256];
@@ -248,7 +248,7 @@ static void NPC_WarpMan_selectWindow(int npc_index, int toindex, int num,
     int flwork = 0;
     int work;
     NPC_Util_GetStrFromStrWithDelim(npcarg, "WARP", buf, sizeof(buf));
-    getStringFromIndexWithDelim(buf, ",", 1, buf3, sizeof(buf3));
+    getDelimitedField(buf, ",", 1, buf3, sizeof(buf3));
     work = atoi(buf3);
     fl = NPC_FloorUse(toindex, atoi(buf3));
 
@@ -287,7 +287,7 @@ static void NPC_WarpMan_selectWindow(int npc_index, int toindex, int num,
           char buff2[32];
 
           level = CHAR_getInt(toindex, CHAR_LV);
-          getStringFromIndexWithDelim(tmp, "*", 2, buff2, sizeof(buff2));
+          getDelimitedField(tmp, "*", 2, buff2, sizeof(buff2));
           money = level * atoi(buff2);
         } else {
           money = atoi(tmp);
@@ -383,7 +383,7 @@ void NPC_WarpManWindowTalked(int npc_index, int talkerindex, int seqno,
       sprintf(buf1, "TALKEVENT%d", eqnum);
     }
     CHAR_setWorkInt(talkerindex, CHAR_WORKSHOPRELEVANT, 0);
-    while (getStringFromIndexWithDelim(npcarg, "OVER", talkNo, buf,
+    while (getDelimitedField(npcarg, "OVER", talkNo, buf,
                                        sizeof(buf)) != FALSE) {
       if (strstr(buf, buf1) != NULL) {
         strcpy(npcarg, buf);
@@ -639,7 +639,7 @@ int NPC_FloorUseOtherFloor(int warp, char *buf) {
     if (CHAR_getCharUse(i) == FALSE)
       continue;
     j = 1;
-    while (getStringFromIndexWithDelim(buf, ",", j, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buf, ",", j, buf2, sizeof(buf2)) !=
            FALSE) {
       j++;
       floor = atoi(buf2);
@@ -764,7 +764,7 @@ static void NPC_NewWarpMan_selectWindow(int npc_index, int toindex, int num,
   windowtype = WINDOW_MESSAGETYPE_MESSAGE;
   sprintf(buf1, "TALKEVENT");
   // 寻找多种条件 FREE
-  while (getStringFromIndexWithDelim(npcarg, "OVER", talkNo, buf,
+  while (getDelimitedField(npcarg, "OVER", talkNo, buf,
                                      sizeof(buf)) != FALSE) {
     if (strstr(buf, buf1) != NULL) {
       // 检查对话  暗语
@@ -804,7 +804,7 @@ static void NPC_NewWarpMan_selectWindow(int npc_index, int toindex, int num,
 
   // 无任何条件成立
   if (tenflg == FALSE) {
-    if (getStringFromIndexWithDelim(npcarg, "OVER", 1, buf, sizeof(buf)) ==
+    if (getDelimitedField(npcarg, "OVER", 1, buf, sizeof(buf)) ==
         FALSE)
       return;
     if (strstr(buf, "NOFREE") == NULL) {
@@ -1018,7 +1018,7 @@ BOOL NPC_TreasureRandItemGet(int meidex, int talker, int rand_j, char *buf) {
   if (randitem == 0)
     randitem = rand_j;
 
-  getStringFromIndexWithDelim(buf, ",", randitem, buff2, sizeof(buff2));
+  getDelimitedField(buf, ",", randitem, buff2, sizeof(buff2));
 
   item_index = ITEM_makeItemAndRegist(atoi(buff2));
   if (item_index == -1)

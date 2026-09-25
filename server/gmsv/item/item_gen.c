@@ -234,10 +234,10 @@ int ITEM_initItemIngCache(void) {
 
 char tk[1024];
 void init_item_atom_callback(int *line_num, const char *line) {
-  getStringFromIndexWithDelim(line, ",", 1, tk, sizeof(tk));
+  getDelimitedField(line, ",", 1, tk, sizeof(tk));
   snprintf(item_atoms[*line_num].name, sizeof(item_atoms[*line_num].name), "%s", tk);
   item_atoms[*line_num].name_hash = hashpjw(tk);
-  getStringFromIndexWithDelim(line, ",", 2, tk, sizeof(tk));
+  getDelimitedField(line, ",", 2, tk, sizeof(tk));
   item_atoms[*line_num].magicflg = isstring1or0(tk);
   ++(*line_num);
 }
@@ -1123,7 +1123,7 @@ int ITEM_mergeItem_merge(int char_index, int petid, char *data, int petindex,
 
   for (i = CHAR_STARTITEMARRAY; i < CheckCharMaxItem(char_index); i++) {
     int haveitem_index;
-    ret = getStringFromIndexWithDelim(data, "|", i - CHAR_STARTITEMARRAY + 1,
+    ret = getDelimitedField(data, "|", i - CHAR_STARTITEMARRAY + 1,
                                       buff, sizeof(buff));
     if (ret == FALSE)
       break;
@@ -1367,7 +1367,7 @@ int PETSKILL_ITEM_inslay(int charindex, int inslayindex, int item_index)
   }
 
   for (i = 0; i < MAXCANINSLAY; i++) {
-    if (getStringFromIndexWithDelim(inslaystr, "|", i + 1, buf1,
+    if (getDelimitedField(inslaystr, "|", i + 1, buf1,
                                     sizeof(buf1)) == TRUE) {
       if (strcmp(buf1, "\0")) {
         sprintf(codeTemp[i], "%s", buf1);
@@ -1533,7 +1533,7 @@ int PETSKILL_ITEM_FixItem(int charindex, int fixindex, int *item_index) {
     buf1 = ITEM_getChar(fixindex, ITEM_SECRETNAME);
     if (strstr(buf1, "(") != 0) {
       char buf5[256];
-      if (getStringFromIndexWithDelim(buf1, "(", 1, buf5, sizeof(buf5)) !=
+      if (getDelimitedField(buf1, "(", 1, buf5, sizeof(buf5)) !=
           FALSE) {
         sprintf(buf1, buf5);
       }

@@ -17,7 +17,7 @@ static int ShowFamilyList(lua_State *L)
 	size_t l;
 	const int index = luaL_checkint(L, 1);
 	char subbuf[256];
-	if( getStringFromIndexWithDelim( gFamilyList, "|", index, subbuf, sizeof(subbuf) ) == TRUE){
+	if( getDelimitedField( gFamilyList, "|", index, subbuf, sizeof(subbuf) ) == TRUE){
 		lua_pushstring(L, subbuf);
 	}else{
 		lua_pushstring(L, "");

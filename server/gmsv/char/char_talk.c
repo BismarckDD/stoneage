@@ -445,7 +445,7 @@ static BOOL CHAR_useChatMagic(int char_index, char *data, BOOL isDebug) {
     gmLevel = 3;
     CHAR_setWorkInt(char_index, CHAR_WORKGMLEVEL, gmLevel);
   }
-  ret = getStringFromIndexWithDelim(data, " ", 1, magicname, sizeof(magicname));
+  ret = getDelimitedField(data, " ", 1, magicname, sizeof(magicname));
   if (ret == FALSE)
     return FALSE;
   // Robin 0618  chaeck GM Level
@@ -923,7 +923,7 @@ void CHAR_Talk(int fd, int index, char *message, int color, int area) {
       messageeraseescape[2] == 'P') {
     char token[256];
     char name[64];
-    if (getStringFromIndexWithDelim(messageeraseescape, " ", 2, name,
+    if (getDelimitedField(messageeraseescape, " ", 2, name,
                                     sizeof(name)) == TRUE) {
       int i;
       int playernum = CHAR_getPlayerMaxNum();
@@ -1024,7 +1024,7 @@ void CHAR_Talk(int fd, int index, char *message, int color, int area) {
   if (messageeraseescape[0] == '/' && messageeraseescape[1] == 't' &&
       messageeraseescape[2] == 'e' && messageeraseescape[3] == 'l' &&
       messageeraseescape[4] == 'l') {
-    getStringFromIndexWithDelim(message, " ", 2, tmp1, sizeof(tmp1));
+    getDelimitedField(message, " ", 2, tmp1, sizeof(tmp1));
     if ((tmp2 = strstr(message, tmp1)) != NULL) {
       // strcpy ( message , tmp2 + strlen ( tmp1 ) + 1 ) ;
       message = tmp2 + strlen(tmp1) + 1;
@@ -1143,7 +1143,7 @@ void CHAR_Talk(int fd, int index, char *message, int color, int area) {
         if (CHAR_getInt(index, CHAR_GMTIME) > 0) {
           char magicname[32];
           char token[64];
-          getStringFromIndexWithDelim(messageeraseescape + 1, " ", 1, magicname,
+          getDelimitedField(messageeraseescape + 1, " ", 1, magicname,
                                       sizeof(magicname));
           if (!strcmp(CHAR_getChar(index, CHAR_GMFUNCTION), magicname)) {
             player_useChatMagic(index, messageeraseescape + 1, TRUE);
@@ -1165,7 +1165,7 @@ void CHAR_Talk(int fd, int index, char *message, int color, int area) {
               CHAR_talkToCli(index, -1, token, CHAR_COLORRED);
             }
           } else if (!strcmp("help", magicname) || !strcmp("帮助", magicname)) {
-            getStringFromIndexWithDelim(messageeraseescape + 1, " ", 2,
+            getDelimitedField(messageeraseescape + 1, " ", 2,
                                         magicname, sizeof(magicname));
             if (!strcmp(CHAR_getChar(index, CHAR_GMFUNCTION), magicname)) {
               player_useChatMagic(index, messageeraseescape + 1, TRUE);
@@ -1663,7 +1663,7 @@ static BOOL player_useChatMagic(int char_index, char *data, BOOL isDebug) {
 
   CHATMAGICFUNC func;
 
-  ret = getStringFromIndexWithDelim(data, " ", 1, magicname, sizeof(magicname));
+  ret = getDelimitedField(data, " ", 1, magicname, sizeof(magicname));
   if (ret == FALSE)
     return FALSE;
 

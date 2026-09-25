@@ -168,7 +168,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
 #endif
 
       /*  夫午勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 1, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -176,7 +176,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       ENCOUNT_table[encount_readlen].index = atoi(token);
 
       /*  2勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 2, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 2, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -184,7 +184,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       ENCOUNT_table[encount_readlen].floor = atoi(token);
 
       /*  3勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 3, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 3, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -192,7 +192,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       x1 = atoi(token);
 
       /*  4勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 4, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 4, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -200,7 +200,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       y1 = atoi(token);
 
       /*  5勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 5, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 5, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -209,7 +209,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       x2 = atoi(token);
 
       /*  6勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 6, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 6, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -222,7 +222,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       ENCOUNT_table[encount_readlen].rect.height = max(y1, y2) - min(y1, y2);
 
       /*  7户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 7, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 7, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -230,7 +230,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
       ENCOUNT_table[encount_readlen].encountprob_min = atoi(token);
 
       /*  8户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 8, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 8, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -246,7 +246,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
         ENCOUNT_table[encount_readlen].encountprob_max = max(a, b);
       }
       /*  9勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 9, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 9, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -261,7 +261,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
         ENCOUNT_table[encount_readlen].enemymaxnum = maxnum;
       }
       /*  10户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 10, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 10, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -275,7 +275,7 @@ BOOL ENCOUNT_initEncount(char *filename) {
 
         for (i = CREATEPROB_TOKEN;
              i < CREATEPROB_TOKEN + ENCOUNT_GROUPMAXNUM * 2; i++) {
-          ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
+          ret = getDelimitedField(line, ",", i, token, sizeof(token));
           if (ret == FALSE) {
             printEx("文件语法错误:%s 第%d行\n", filename, linenum);
             continue;
@@ -302,21 +302,21 @@ BOOL ENCOUNT_initEncount(char *filename) {
       }
 
 #ifdef _ADD_ENCOUNT // WON ADD 增加敌遭遇触发修件
-      ret = getStringFromIndexWithDelim(line, ",", 31, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 31, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].event_now = atoi(token);
 
-      ret = getStringFromIndexWithDelim(line, ",", 32, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 32, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       ENCOUNT_table[encount_readlen].event_end = atoi(token);
 
-      ret = getStringFromIndexWithDelim(line, ",", 33, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 33, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;

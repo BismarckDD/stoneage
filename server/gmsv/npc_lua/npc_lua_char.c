@@ -2458,21 +2458,21 @@ int NPC_Lua_Char_RandMsg(lua_State *_NLL)
 
 	if(strlen(randtypetime)>2){
 
-		if(getStringFromIndexWithDelim(randtypetime,"-", 3, tempbuff, sizeof(tempbuff)) != FALSE){
+		if(getDelimitedField(randtypetime,"-", 3, tempbuff, sizeof(tempbuff)) != FALSE){
 
-			if(getStringFromIndexWithDelim(randtypetime,"-", 1, tempbuff, sizeof(tempbuff))== FALSE)
+			if(getDelimitedField(randtypetime,"-", 1, tempbuff, sizeof(tempbuff))== FALSE)
 
 				LRetInt(_NLL, 0);
 
 			randwrong = atoi(tempbuff);
 
-			if(getStringFromIndexWithDelim(randtypetime,"-", 2, tempbuff, sizeof(tempbuff))== FALSE)
+			if(getDelimitedField(randtypetime,"-", 2, tempbuff, sizeof(tempbuff))== FALSE)
 
 				LRetInt(_NLL, 0);
 
 			randtype = atoi(tempbuff);
 
-			if(getStringFromIndexWithDelim(randtypetime,"-", 3, tempbuff, sizeof(tempbuff))== FALSE)
+			if(getDelimitedField(randtypetime,"-", 3, tempbuff, sizeof(tempbuff))== FALSE)
 
 				LRetInt(_NLL, 0);
 
@@ -2504,7 +2504,7 @@ int NPC_Lua_Char_RandMsg(lua_State *_NLL)
 
 		char buftest[255];
 
-		if(getStringFromIndexWithDelim(arg,"|", 1, buftest, sizeof(buftest)) == FALSE){
+		if(getDelimitedField(arg,"|", 1, buftest, sizeof(buftest)) == FALSE){
 
 			CHAR_setWorkChar(TM_TalkIndex,CHAR_WORKRANDMSG,"");
 
@@ -2514,7 +2514,7 @@ int NPC_Lua_Char_RandMsg(lua_State *_NLL)
 
 		ret = atoi(buftest);
 
-		if(getStringFromIndexWithDelim(arg,"|", 2, buftest, sizeof(buftest)) == FALSE){
+		if(getDelimitedField(arg,"|", 2, buftest, sizeof(buftest)) == FALSE){
 
 			CHAR_setWorkChar(TM_TalkIndex,CHAR_WORKRANDMSG,"");
 
@@ -2524,7 +2524,7 @@ int NPC_Lua_Char_RandMsg(lua_State *_NLL)
 
 		MyNpcIndex = atoi(buftest);
 
-		if(getStringFromIndexWithDelim(arg,"|", 3, buftest, sizeof(buftest)) == FALSE){
+		if(getDelimitedField(arg,"|", 3, buftest, sizeof(buftest)) == FALSE){
 
 			CHAR_setWorkChar(TM_TalkIndex,CHAR_WORKRANDMSG,"");
 
@@ -2534,7 +2534,7 @@ int NPC_Lua_Char_RandMsg(lua_State *_NLL)
 
 		MyTalkIndex = atoi(buftest);
 
-		if(getStringFromIndexWithDelim(arg,"|", 4, buftest, sizeof(buftest)) == FALSE){
+		if(getDelimitedField(arg,"|", 4, buftest, sizeof(buftest)) == FALSE){
 
 			CHAR_setWorkChar(TM_TalkIndex,CHAR_WORKRANDMSG,"");
 

@@ -182,17 +182,17 @@ static void NPC_Pauction_selectWindow( int meindex, int toindex, int seqno, int 
 			makeStringFromEscaped(data);
 			
 			
-			getStringFromIndexWithDelim( data, "|", 1, tmp, sizeof( tmp));
+			getDelimitedField( data, "|", 1, tmp, sizeof( tmp));
 			int type = atoi(tmp);
-			getStringFromIndexWithDelim( data, "|", 2, tmp, sizeof( tmp));
+			getDelimitedField( data, "|", 2, tmp, sizeof( tmp));
 			int id = atoi(tmp);
-			getStringFromIndexWithDelim( data, "|", 3, effect, sizeof( effect));
+			getDelimitedField( data, "|", 3, effect, sizeof( effect));
 			if(strlen(effect)==0){
 				sprintf(token, "委托失败,请填写委托叙述~");
 				break;
 			}
 			
-			getStringFromIndexWithDelim( data, "|", 4, tmp, sizeof( tmp));
+			getDelimitedField( data, "|", 4, tmp, sizeof( tmp));
 			int cost = atoi(tmp);
 			if(cost<=0){
 				sprintf(token, "委托价格不能为0~");

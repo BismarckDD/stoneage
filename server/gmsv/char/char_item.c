@@ -253,7 +253,7 @@ static void CHAR_sendItemDetachEvent(int char_index, int item_index) {
     if (!strcmp(ITEM_getChar(item_index, ITEM_USEFUNC), "ITEM_RIDE")) {
       char ridemetamo[12];
       char *itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
-      getStringFromIndexWithDelim(itemarg, "|", 2, ridemetamo,
+      getDelimitedField(itemarg, "|", 2, ridemetamo,
                                   sizeof(ridemetamo));
       if (CHAR_getInt(char_index, CHAR_IMAGENUMBER) == atoi(ridemetamo)) {
         CHAR_setInt(char_index, CHAR_RIDEPET, -1);

@@ -81,7 +81,7 @@ int BATTLE_ai_all(int battleindex, int side, int turn) {
                                        CHAR_WORKBATTLE_ACT_CONDITION),
                       "wp", sBuff, sizeof(sBuff)) != NULL) {
                 for (sii = 1; sii <= 3; sii++) {
-                  if (getStringFromIndexWithDelim(sBuff, ";", sii, sBuff1,
+                  if (getDelimitedField(sBuff, ";", sii, sBuff1,
                                                   sizeof(sBuff1))) {
                     ss[sii - 1] = atoi(sBuff1);
                   } else {
@@ -228,7 +228,7 @@ static int BATTLE_ai_normal(int turn, int char_index, BATTLE_ENTRY *pEntry,
           CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION),
           B_AI_NORMAL_ATTACKOPTION, buff, sizeof(buff)) != NULL) {
     for (i = 1; i < B_AI_NORMAL_ATTACKSUBOPTIONNUM + 1; i++) {
-      rc = getStringFromIndexWithDelim(buff, ";", i, buff2, sizeof(buff2));
+      rc = getDelimitedField(buff, ";", i, buff2, sizeof(buff2));
       if (rc != TRUE) {
         print("battle_ai.c:Invarid Param [%s]\n",
               CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION));
@@ -242,7 +242,7 @@ static int BATTLE_ai_normal(int turn, int char_index, BATTLE_ENTRY *pEntry,
           CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION),
           B_AI_NORMAL_GUARDOPTION, buff, sizeof(buff)) != NULL) {
     for (i = 1; i < B_AI_NORMAL_GUARDSUBOPTIONNUM + 1; i++) {
-      rc = getStringFromIndexWithDelim(buff, ";", i, buff2, sizeof(buff2));
+      rc = getDelimitedField(buff, ";", i, buff2, sizeof(buff2));
       if (rc != TRUE) {
         print("battle_ai.c:Invarid Param [%s]\n",
               CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION));
@@ -255,7 +255,7 @@ static int BATTLE_ai_normal(int turn, int char_index, BATTLE_ENTRY *pEntry,
           CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION),
           B_AI_NORMAL_MAGICOPTION, buff, sizeof(buff)) != NULL) {
     for (i = 1; i < B_AI_NORMAL_MAGICSUBOPTIONNUM + 1; i++) {
-      rc = getStringFromIndexWithDelim(buff, ";", i, buff2, sizeof(buff2));
+      rc = getDelimitedField(buff, ";", i, buff2, sizeof(buff2));
       if (rc != TRUE) {
         print("battle_ai.c:Invarid Param [%s]\n",
               CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION));
@@ -268,7 +268,7 @@ static int BATTLE_ai_normal(int turn, int char_index, BATTLE_ENTRY *pEntry,
           CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION),
           B_AI_NORMAL_ESCAPEOPTION, buff, sizeof(buff)) != NULL) {
     for (i = 1; i < B_AI_NORMAL_ESCAPESUBOPTIONNUM + 1; i++) {
-      rc = getStringFromIndexWithDelim(buff, ";", i, buff2, sizeof(buff2));
+      rc = getDelimitedField(buff, ";", i, buff2, sizeof(buff2));
 
       if (rc != TRUE) {
         print("battle_ai.c:Invarid Param [%s]\n",
@@ -282,7 +282,7 @@ static int BATTLE_ai_normal(int turn, int char_index, BATTLE_ENTRY *pEntry,
           CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION),
           B_AI_NORMAL_WAZAOPTION, buff, sizeof(buff)) != NULL) {
     for (i = 1; i < B_AI_NORMAL_WAZASUBOPTIONNUM + 1; i++) {
-      rc = getStringFromIndexWithDelim(buff, ";", i, buff2, sizeof(buff2));
+      rc = getDelimitedField(buff, ";", i, buff2, sizeof(buff2));
       if (rc != TRUE) {
       } else {
         wa[i - 1] = atoi(buff2);
@@ -294,7 +294,7 @@ static int BATTLE_ai_normal(int turn, int char_index, BATTLE_ENTRY *pEntry,
           CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION),
           B_AI_NORMAL_RANDAOPTION, buff, sizeof(buff)) != NULL) {
     for (i = 1; i < B_AI_NORMAL_RANDOMOPTIONNUM + 1; i++) {
-      rc = getStringFromIndexWithDelim(buff, ";", i, buff2, sizeof(buff2));
+      rc = getDelimitedField(buff, ";", i, buff2, sizeof(buff2));
       if (rc != TRUE) {
         print("battle_ai.c:Invarid Param [%s]\n",
               CHAR_getWorkChar(char_index, CHAR_WORKBATTLE_TACTICSOPTION));

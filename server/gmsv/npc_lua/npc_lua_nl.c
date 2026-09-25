@@ -120,19 +120,19 @@ BOOL NPC_Lua_CheckNpcEventFree(lua_State *_NLL)
 
 	while (TRUE) {
 
-		 ret = getStringFromIndexWithDelim( TM_NpcStr, "|", i, magicname,  sizeof( magicname));
+		 ret = getDelimitedField( TM_NpcStr, "|", i, magicname,  sizeof( magicname));
 
 		 if (!ret) 
 
 		 {
 
-		 	ret = getStringFromIndexWithDelim( TM_NpcStr, "/", i, magicname,  sizeof( magicname));
+		 	ret = getDelimitedField( TM_NpcStr, "/", i, magicname,  sizeof( magicname));
 
 		 	if (!ret) 
 
 		 	{
 
-		 		ret = getStringFromIndexWithDelim( TM_NpcStr, "\\", i, magicname,  sizeof( magicname));
+		 		ret = getDelimitedField( TM_NpcStr, "\\", i, magicname,  sizeof( magicname));
 
 		 		if (!ret)
 
@@ -188,19 +188,19 @@ BOOL NPC_Lua_DoNpcEventAction(lua_State *_NLL)
 
 	while (TRUE) {
 
-		 ret = getStringFromIndexWithDelim( TM_NpcStr, "|", i, magicname,  sizeof( magicname));
+		 ret = getDelimitedField( TM_NpcStr, "|", i, magicname,  sizeof( magicname));
 
 		 if (!ret) 
 
 		 {
 
-		 	ret = getStringFromIndexWithDelim( TM_NpcStr, "/", i, magicname,  sizeof( magicname));
+		 	ret = getDelimitedField( TM_NpcStr, "/", i, magicname,  sizeof( magicname));
 
 		 	if (!ret) 
 
 		 	{
 
-		 		ret = getStringFromIndexWithDelim( TM_NpcStr, "\\", i, magicname,  sizeof( magicname));
+		 		ret = getDelimitedField( TM_NpcStr, "\\", i, magicname,  sizeof( magicname));
 
 		 		if (!ret)
 
@@ -314,7 +314,7 @@ int NPC_Lua_NL_GetStringFromIndexWithDelim(lua_State *_NLL)
 
 	char token[128];
 
-	getStringFromIndexWithDelim( string,delim,index,token,sizeof(token));
+	getDelimitedField( string,delim,index,token,sizeof(token));
 
 	LRetMsg(_NLL,token);
 

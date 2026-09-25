@@ -145,7 +145,7 @@ void NPC_LuckyManWindowTalked( int meindex, int talkerindex,
 				if(strstr(buf,"LV") != NULL) {
 					char buff2[32];
 					level = CHAR_getInt( talkerindex, CHAR_LV);
-					getStringFromIndexWithDelim( buf, "*", 2, buff2,sizeof( buff2));
+					getDelimitedField( buf, "*", 2, buff2,sizeof( buff2));
 					money = level * atoi( buff2);
 
 					if(NPC_LuckyCostCheck(meindex,talkerindex,money) == FALSE) {
@@ -194,7 +194,7 @@ void NPC_LuckyDisp(int meindex,int talker)
 	sprintf( buf, "luck%d", CHAR_getInt( talker, CHAR_LUCK));
 	NPC_Util_GetStrFromStrWithDelim( argstr, buf, buf2, sizeof( buf2));
 
-	while(getStringFromIndexWithDelim( buf2, ",", i, token, sizeof( token))
+	while(getDelimitedField( buf2, ",", i, token, sizeof( token))
 	!= FALSE)
 	{
 		i++;
@@ -203,7 +203,7 @@ void NPC_LuckyDisp(int meindex,int talker)
 	i = rand()%i + 1;
 
 	/*--仿件母丞匹丢永本□斥毛  憎今六月--*/
-	getStringFromIndexWithDelim( buf2,",", i, token, sizeof( token));
+	getDelimitedField( buf2,",", i, token, sizeof( token));
 	NPC_LuckyMan_selectWindow( meindex, talker, 1, token);
 }
 
@@ -229,7 +229,7 @@ int NPC_GetMoney(int meindex,int talker,char *buf)
 	if(strstr(buf,"LV") != NULL) {
 		char buff2[32];
 		level = CHAR_getInt(talker,CHAR_LV);
-		getStringFromIndexWithDelim( buf, "*" ,2, buff2,sizeof( buff2));
+		getDelimitedField( buf, "*" ,2, buff2,sizeof( buff2));
 		money = level * atoi( buff2);
 	}else{
 		money = atoi( buf);

@@ -51,7 +51,7 @@ BOOL NPC_ExChangeManInit(int meindex) {
   i = 1;
   /*--奶矛件玄NPC互健丹失奶  丞毛民尼永弁允月--*/
   /*--民尼永弁嫩  ｝  午仄化壅尹月井＂｝矢永玄丢□伙匹霜木月井＂--*/
-  while (getStringFromIndexWithDelim(argstr, "EventEnd", i, buf, sizeof(buf)) !=
+  while (getDelimitedField(argstr, "EventEnd", i, buf, sizeof(buf)) !=
          FALSE) {
     i++;
     /*--仇仇匹踏井木化中月及反｝伐□瓦件弘毛请允-*/
@@ -109,7 +109,7 @@ BOOL NPC_EventWarpNpc(int meindex, char *buf) {
 
   /*--蜇箕及伐□皿及赐  --*/
   cnt = CHAR_getWorkInt(meindex, CHAR_WORK_EVENTWARP);
-  while (getStringFromIndexWithDelim(buf, ",", dcnt, buf2, sizeof(buf2)) !=
+  while (getDelimitedField(buf, ",", dcnt, buf2, sizeof(buf2)) !=
          FALSE) {
     dcnt++;
   }
@@ -117,22 +117,22 @@ BOOL NPC_EventWarpNpc(int meindex, char *buf) {
   if (dcnt <= cnt)
     cnt = 1;
 
-  while (getStringFromIndexWithDelim(buf, ",", cnt, buf2, sizeof(buf2)) !=
+  while (getDelimitedField(buf, ",", cnt, buf2, sizeof(buf2)) !=
          FALSE) {
     cnt++;
-    ret = getStringFromIndexWithDelim(buf2, ".", 1, token, sizeof(token));
+    ret = getDelimitedField(buf2, ".", 1, token, sizeof(token));
     if (ret == FALSE) {
       continue;
     }
     floor = atoi(token);
 
-    ret = getStringFromIndexWithDelim(buf2, ".", 2, token, sizeof(token));
+    ret = getDelimitedField(buf2, ".", 2, token, sizeof(token));
     if (ret == FALSE) {
       continue;
     }
     x = atoi(token);
 
-    ret = getStringFromIndexWithDelim(buf2, ".", 3, token, sizeof(token));
+    ret = getDelimitedField(buf2, ".", 3, token, sizeof(token));
     if (ret == FALSE) {
       continue;
     }
@@ -207,7 +207,7 @@ BOOL NPC_TypeCheck(int meindex, int talker, char *szMes) {
 #endif
 
   /*-- 涩烂白央奶伙毛坌喃允月 --*/
-  while (getStringFromIndexWithDelim(argstr, "EventEnd", i, buf, sizeof(buf)) !=
+  while (getDelimitedField(argstr, "EventEnd", i, buf, sizeof(buf)) !=
          FALSE) {
     i++;
     CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANT, 0);
@@ -276,7 +276,7 @@ BOOL NPC_TypeCheck(int meindex, int talker, char *szMes) {
               int k = 1;
               if (EvNo != -1)
                 NPC_NowEventSetFlgCls(talker, EvNo);
-              while (getStringFromIndexWithDelim(buf2, ",", k, buf3,
+              while (getDelimitedField(buf2, ",", k, buf3,
                                                  sizeof(buf3)) != FALSE) {
                 k++;
                 NPC_EventSetFlg(talker, atoi(buf3));
@@ -287,7 +287,7 @@ BOOL NPC_TypeCheck(int meindex, int talker, char *szMes) {
               char buf3[16];
               int k = 1;
               k = 1;
-              while (getStringFromIndexWithDelim(buf2, ",", k, buf3,
+              while (getDelimitedField(buf2, ",", k, buf3,
                                                  sizeof(buf3)) != FALSE) {
                 NPC_NowEndEventSetFlgCls(talker, atoi(buf3));
                 k++;
@@ -374,7 +374,7 @@ BOOL NPC_TypeCheck(int meindex, int talker, char *szMes) {
                 int k = 1;
                 if (EvNo != -1)
                   NPC_NowEventSetFlgCls(talker, EvNo);
-                while (getStringFromIndexWithDelim(buf2, ",", k, buf3,
+                while (getDelimitedField(buf2, ",", k, buf3,
                                                    sizeof(buf3)) != FALSE) {
                   k++;
                   NPC_EventSetFlg(talker, atoi(buf3));
@@ -387,7 +387,7 @@ BOOL NPC_TypeCheck(int meindex, int talker, char *szMes) {
                 int k = 1;
 
                 k = 1;
-                while (getStringFromIndexWithDelim(buf2, ",", k, buf3,
+                while (getDelimitedField(buf2, ",", k, buf3,
                                                    sizeof(buf3)) != FALSE) {
                   NPC_NowEndEventSetFlgCls(talker, atoi(buf3));
                   k++;
@@ -465,13 +465,13 @@ BOOL NPC_TypeCheck(int meindex, int talker, char *szMes) {
   }
 
   i = 1;
-  while (getStringFromIndexWithDelim(buf, ",", i, buf2, sizeof(buf2)) !=
+  while (getDelimitedField(buf, ",", i, buf2, sizeof(buf2)) !=
          FALSE) {
     i++;
   }
   i--;
   i = rand() % i + 1;
-  getStringFromIndexWithDelim(buf, ",", i, buf2, sizeof(buf2));
+  getDelimitedField(buf, ",", i, buf2, sizeof(buf2));
   CHAR_talkToCli(talker, meindex, buf2, CHAR_COLORWHITE);
   return TRUE;
 }
@@ -697,14 +697,14 @@ int NPC_ExChangeManEventCheck(int meindex, int talker, char *buff1) {
   NPC_Util_GetStrFromStrWithDelim(buff1, "EVENT", buf, sizeof(buf));
 
   /*-- EVENt及椭瘀毛赐  卞苇化中仁 --*/
-  while (getStringFromIndexWithDelim(buf, ",", i, buff2, sizeof(buff2)) !=
+  while (getDelimitedField(buf, ",", i, buff2, sizeof(buff2)) !=
          FALSE) {
     i++;
     /*-- "&"互丐月及匹  醒椭瘀 --*/
     if (strstr(buff2, "&") != NULL) {
       j = 1;
       loop = 0;
-      while (getStringFromIndexWithDelim(buff2, "&", j, buff3, sizeof(buff3)) !=
+      while (getDelimitedField(buff2, "&", j, buff3, sizeof(buff3)) !=
              FALSE) {
         j++;
         if (NPC_EventBigSmallCheck(meindex, talker, buff3) == FALSE) {
@@ -748,35 +748,35 @@ BOOL NPC_EventBigSmallCheck(int meindex, int talker, char *buf) {
   }
 
   if (strstr(buf, "<") != NULL) {
-    getStringFromIndexWithDelim(buf, "<", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, "<", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, "<", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "<", 1, buff2, sizeof(buff2));
 
     if (NPC_EventFreeIfCheck(meindex, talker, buff2, kosuu, 1) == TRUE) {
       return TRUE;
     }
 
   } else if (strstr(buf, ">") != NULL) {
-    getStringFromIndexWithDelim(buf, ">", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, ">", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, ">", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, ">", 1, buff2, sizeof(buff2));
 
     if (NPC_EventFreeIfCheck(meindex, talker, buff2, kosuu, 2) == TRUE) {
       return TRUE;
     }
 
   } else if (strstr(buf, "!=") != NULL) {
-    getStringFromIndexWithDelim(buf, "!=", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, "!=", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, "!=", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "!=", 1, buff2, sizeof(buff2));
     if (NPC_EventFreeIfCheck(meindex, talker, buff2, kosuu, 3) == TRUE) {
       return TRUE;
     }
 
   } else if (strstr(buf, "=") != NULL) {
-    getStringFromIndexWithDelim(buf, "=", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, "=", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, "=", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "=", 1, buff2, sizeof(buff2));
 
     if (strstr(buf, "*") != NULL) {
       if (NPC_EventReduce(meindex, talker, buf) == TRUE) {
@@ -1021,11 +1021,11 @@ BOOL NPC_PetLvCheck(int meindex, int talker, char *buf, int mode) {
   int loop;
 
   /*--隙烂今木凶矢永玄及瓜件田□  ID)毛潸  --*/
-  getStringFromIndexWithDelim(buf, "-", 2, buff2, sizeof(buff2));
+  getDelimitedField(buf, "-", 2, buff2, sizeof(buff2));
   if (strstr(buff2, "*") != NULL) {
-    getStringFromIndexWithDelim(buff2, "*", 1, buf3, sizeof(buf3));
+    getDelimitedField(buff2, "*", 1, buf3, sizeof(buf3));
     petno = atoi(buf3);
-    getStringFromIndexWithDelim(buff2, "*", 2, buf3, sizeof(buf3));
+    getDelimitedField(buff2, "*", 2, buf3, sizeof(buf3));
     loop = atoi(buf3);
 
   } else {
@@ -1049,16 +1049,16 @@ BOOL NPC_PetLvCheck(int meindex, int talker, char *buf, int mode) {
     if ((baseno == petno) && (CHAR_getInt(petindex, CHAR_ENDEVENT) == mode)) {
       /*--伊矛伙毛民尼永弁允月--*/
       mypetlevel = CHAR_getInt(petindex, CHAR_LV);
-      getStringFromIndexWithDelim(buf, "-", 1, buff2, sizeof(buff2));
+      getDelimitedField(buf, "-", 1, buff2, sizeof(buff2));
 
       if (strstr(buf, "<") != NULL) {
         flg = 1;
-        getStringFromIndexWithDelim(buff2, "<", 2, buf3, sizeof(buf3));
+        getDelimitedField(buff2, "<", 2, buf3, sizeof(buf3));
       } else if (strstr(buf, ">") != NULL) {
-        getStringFromIndexWithDelim(buff2, ">", 2, buf3, sizeof(buf3));
+        getDelimitedField(buff2, ">", 2, buf3, sizeof(buf3));
         flg = 2;
       } else if (strstr(buf, "=") != NULL) {
-        getStringFromIndexWithDelim(buff2, "=", 2, buf3, sizeof(buf3));
+        getDelimitedField(buff2, "=", 2, buf3, sizeof(buf3));
         flg = 0;
       }
 
@@ -1116,9 +1116,9 @@ int NPC_PetLvCheckType2(int petindex, int meindex, int talker, char *buf,
   char name[512];
 
   /*--隙烂今木凶矢永玄及瓜件田□  ID)毛潸  --*/
-  getStringFromIndexWithDelim(buf, "-", 2, buff2, sizeof(buff2));
+  getDelimitedField(buf, "-", 2, buff2, sizeof(buff2));
   if (strstr(buff2, "*") != NULL) {
-    getStringFromIndexWithDelim(buff2, "*", 1, buf3, sizeof(buf3));
+    getDelimitedField(buff2, "*", 1, buf3, sizeof(buf3));
     petno = atoi(buf3);
   } else {
     petno = atoi(buff2);
@@ -1131,16 +1131,16 @@ int NPC_PetLvCheckType2(int petindex, int meindex, int talker, char *buf,
   if ((baseno == petno) && (CHAR_getInt(petindex, CHAR_ENDEVENT) == mode)) {
     /*--伊矛伙毛民尼永弁允月--*/
     mypetlevel = CHAR_getInt(petindex, CHAR_LV);
-    getStringFromIndexWithDelim(buf, "-", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "-", 1, buff2, sizeof(buff2));
 
     if (strstr(buf, "<") != NULL) {
       flg = 1;
-      getStringFromIndexWithDelim(buff2, "<", 2, buf3, sizeof(buf3));
+      getDelimitedField(buff2, "<", 2, buf3, sizeof(buf3));
     } else if (strstr(buf, ">") != NULL) {
-      getStringFromIndexWithDelim(buff2, ">", 2, buf3, sizeof(buf3));
+      getDelimitedField(buff2, ">", 2, buf3, sizeof(buf3));
       flg = 2;
     } else if (strstr(buf, "=") != NULL) {
-      getStringFromIndexWithDelim(buff2, "=", 2, buf3, sizeof(buf3));
+      getDelimitedField(buff2, "=", 2, buf3, sizeof(buf3));
       flg = 0;
     }
 
@@ -1364,11 +1364,11 @@ void NPC_MsgDisp(int meindex, int talker, int num) {
     pwork = CHAR_getWorkInt(talker, CHAR_WORKSHOPRELEVANTTRD);
     pwork = (pwork / 100) - 1;
 
-    getStringFromIndexWithDelim(argstr, "EventEnd", pwork, buf, sizeof(buf));
+    getDelimitedField(argstr, "EventEnd", pwork, buf, sizeof(buf));
 
   } else {
     /*涩烂白央奶伙毛坌喃允月*/
-    while (getStringFromIndexWithDelim(argstr, "EventEnd", i, buf,
+    while (getDelimitedField(argstr, "EventEnd", i, buf,
                                        sizeof(buf)) != FALSE) {
       i++;
       CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, 0);
@@ -1472,7 +1472,7 @@ void NPC_MsgDisp(int meindex, int talker, int num) {
         if (EvNo != -1)
           NPC_NowEventSetFlgCls(talker, EvNo);
 
-        while (getStringFromIndexWithDelim(buf2, ",", k, buf3, sizeof(buf3)) !=
+        while (getDelimitedField(buf2, ",", k, buf3, sizeof(buf3)) !=
                FALSE) {
           k++;
           NPC_EventSetFlg(talker, atoi(buf3));
@@ -1485,7 +1485,7 @@ void NPC_MsgDisp(int meindex, int talker, int num) {
         int k = 1;
 
         k = 1;
-        while (getStringFromIndexWithDelim(buf2, ",", k, buf3, sizeof(buf3)) !=
+        while (getDelimitedField(buf2, ",", k, buf3, sizeof(buf3)) !=
                FALSE) {
           NPC_NowEndEventSetFlgCls(talker, atoi(buf3));
           k++;
@@ -1777,7 +1777,7 @@ void NPC_MsgDisp(int meindex, int talker, int num) {
         if (EvNo != -1)
           NPC_NowEventSetFlgCls(talker, EvNo);
 
-        while (getStringFromIndexWithDelim(buf2, ",", k, buf3, sizeof(buf3)) !=
+        while (getDelimitedField(buf2, ",", k, buf3, sizeof(buf3)) !=
                FALSE) {
           k++;
           NPC_EventSetFlg(talker, atoi(buf3));
@@ -1808,7 +1808,7 @@ void NPC_MsgDisp(int meindex, int talker, int num) {
         int k = 1;
 
         k = 1;
-        while (getStringFromIndexWithDelim(buf2, ",", k, buf3, sizeof(buf3)) !=
+        while (getDelimitedField(buf2, ",", k, buf3, sizeof(buf3)) !=
                FALSE) {
           NPC_NowEndEventSetFlgCls(talker, atoi(buf3));
           k++;
@@ -2069,7 +2069,7 @@ void NPC_MsgDisp(int meindex, int talker, int num) {
         if (EvNo != -1)
           NPC_NowEventSetFlgCls(talker, EvNo);
 
-        while (getStringFromIndexWithDelim(buf2, ",", k, buf3, sizeof(buf3)) !=
+        while (getDelimitedField(buf2, ",", k, buf3, sizeof(buf3)) !=
                FALSE) {
           k++;
           NPC_EventSetFlg(talker, atoi(buf3));
@@ -2182,7 +2182,7 @@ void NPC_MsgDisp(int meindex, int talker, int num) {
           if (EvNo != -1)
             NPC_NowEventSetFlgCls(talker, EvNo);
 
-          while (getStringFromIndexWithDelim(buf2, ",", k, buf3,
+          while (getDelimitedField(buf2, ",", k, buf3,
                                              sizeof(buf3)) != FALSE) {
             k++;
             NPC_EventSetFlg(talker, atoi(buf3));
@@ -2195,7 +2195,7 @@ void NPC_MsgDisp(int meindex, int talker, int num) {
           int k = 1;
 
           k = 1;
-          while (getStringFromIndexWithDelim(buf2, ",", k, buf3,
+          while (getDelimitedField(buf2, ",", k, buf3,
                                              sizeof(buf3)) != FALSE) {
             NPC_NowEndEventSetFlgCls(talker, atoi(buf3));
             k++;
@@ -2240,7 +2240,7 @@ void NPC_MsgDisp(int meindex, int talker, int num) {
 
       strncpysafe(token, sizeof(token), buf2);
       NPC_Util_GetStrFromStrWithDelim(buf, "CleanFlg", buf2, sizeof(buf2));
-      while (getStringFromIndexWithDelim(buf2, ",", loop, buf3, sizeof(buf3)) !=
+      while (getDelimitedField(buf2, ",", loop, buf3, sizeof(buf3)) !=
              FALSE) {
         NPC_NowEndEventSetFlgCls(talker, atoi(buf3));
         loop++;
@@ -2371,7 +2371,7 @@ BOOL NPC_EventAdd(int meindex, int talker, int mode) {
       char nbuf[256];
 
       NPC_Util_GetStrFromStrWithDelim(buf, "EVENT", buff2, sizeof(buff2));
-      getStringFromIndexWithDelim(buff2, ",", evcnt, work, sizeof(work));
+      getDelimitedField(buff2, ",", evcnt, work, sizeof(work));
 
       if (strstr(buff, "Break") != NULL) {
         b_flg = 1;
@@ -2417,7 +2417,7 @@ BOOL NPC_EventAdd(int meindex, int talker, int mode) {
   if (NPC_Util_GetStrFromStrWithDelim(buff, "GetRandItem", buf, sizeof(buf)) !=
       NULL) {
     j = 1;
-    while (getStringFromIndexWithDelim(buf, ",", j, buff2, sizeof(buff2)) !=
+    while (getDelimitedField(buf, ",", j, buff2, sizeof(buff2)) !=
            FALSE) {
       j++;
       rand_j++;
@@ -2431,7 +2431,7 @@ BOOL NPC_EventAdd(int meindex, int talker, int mode) {
     if (mode == 0) {
       j = 1;
       /*--窒蜊及失奶  丞毛  允井＂--*/
-      while (getStringFromIndexWithDelim(buf, ",", j, buff2, sizeof(buff2)) !=
+      while (getDelimitedField(buf, ",", j, buff2, sizeof(buff2)) !=
              FALSE) {
         j++;
       }
@@ -2498,8 +2498,8 @@ BOOL NPC_EventAdd(int meindex, int talker, int mode) {
 
     if (strstr(buff2, "EVDEL") != NULL) {
       NPC_Util_GetStrFromStrWithDelim(buf, "EVENT", buf5, sizeof(buf5));
-      getStringFromIndexWithDelim(buf5, ",", evcnt, buff2, sizeof(buff2));
-      while (getStringFromIndexWithDelim(buff2, "&", j, work, sizeof(work)) !=
+      getDelimitedField(buf5, ",", evcnt, buff2, sizeof(buff2));
+      while (getDelimitedField(buff2, "&", j, work, sizeof(work)) !=
              FALSE) {
         j++;
         if (strstr(work, "PET") != NULL) {
@@ -2513,7 +2513,7 @@ BOOL NPC_EventAdd(int meindex, int talker, int mode) {
         }
       }
       j = 1;
-      while (getStringFromIndexWithDelim(buff2, "&", j, work, sizeof(work)) !=
+      while (getDelimitedField(buff2, "&", j, work, sizeof(work)) !=
              FALSE) {
         j++;
         if (strstr(work, "PET") == NULL)
@@ -2524,7 +2524,7 @@ BOOL NPC_EventAdd(int meindex, int talker, int mode) {
           int petcnt = 0;
           int petindex;
 
-          getStringFromIndexWithDelim(work, "*", 2, buf4, sizeof(buf4));
+          getDelimitedField(work, "*", 2, buf4, sizeof(buf4));
           cnt = atoi(buf4);
 
           for (i = 0; i < CHAR_MAXPETHAVE; i++) {
@@ -2584,7 +2584,7 @@ BOOL NPC_EventAdd(int meindex, int talker, int mode) {
 
     } else {
       /*--手丹1蘸｝矢永玄毛  匀化中月井及民尼永弁毛垫丹--*/
-      while (getStringFromIndexWithDelim(buff2, ",", j, work, sizeof(work)) !=
+      while (getDelimitedField(buff2, ",", j, work, sizeof(work)) !=
              FALSE) {
         j++;
         /*--矢永玄及民尼永弁互反中匀化中月桦宁反域绎PET椭瘀毛民尼永弁允月 --*/
@@ -2600,7 +2600,7 @@ BOOL NPC_EventAdd(int meindex, int talker, int mode) {
       }
       j = 1;
 
-      while (getStringFromIndexWithDelim(buff2, ",", j, work, sizeof(work)) !=
+      while (getDelimitedField(buff2, ",", j, work, sizeof(work)) !=
              FALSE) {
         j++;
         if (strstr(work, "*") != NULL) {
@@ -2608,7 +2608,7 @@ BOOL NPC_EventAdd(int meindex, int talker, int mode) {
           int petcnt = 0;
           int petindex;
 
-          getStringFromIndexWithDelim(work, "*", 2, buf4, sizeof(buf4));
+          getDelimitedField(work, "*", 2, buf4, sizeof(buf4));
           cnt = atoi(buf4);
 
           for (i = 0; i < CHAR_MAXPETHAVE; i++) {
@@ -2689,7 +2689,7 @@ BOOL NPC_RandItemGet(int meidex, int talker, int rand_j, char *buf) {
   if (randitem == 0)
     randitem = rand_j;
 
-  getStringFromIndexWithDelim(buf, ",", randitem, buff2, sizeof(buff2));
+  getDelimitedField(buf, ",", randitem, buff2, sizeof(buff2));
 
   item_index = ITEM_makeItemAndRegist(atoi(buff2));
 
@@ -2796,10 +2796,10 @@ BOOL NPC_AcceptDel(int meindex, int talker, int mode) {
 
     if (strstr(buff2, "EVDEL") != NULL) {
       NPC_Util_GetStrFromStrWithDelim(buf, "EVENT", buf5, sizeof(buf5));
-      getStringFromIndexWithDelim(buf5, ",", evcnt, buff2, sizeof(buff2));
+      getDelimitedField(buf5, ",", evcnt, buff2, sizeof(buff2));
 
       /*--手丹1蘸｝矢永玄毛  匀化中月井及民尼永弁毛垫丹--*/
-      while (getStringFromIndexWithDelim(buff2, "&", j, work, sizeof(work)) !=
+      while (getDelimitedField(buff2, "&", j, work, sizeof(work)) !=
              FALSE) {
         j++;
 
@@ -2816,7 +2816,7 @@ BOOL NPC_AcceptDel(int meindex, int talker, int mode) {
       }
       j = 1;
 
-      while (getStringFromIndexWithDelim(buff2, "&", j, work, sizeof(work)) !=
+      while (getDelimitedField(buff2, "&", j, work, sizeof(work)) !=
              FALSE) {
         j++;
         if (strstr(work, "PET") == NULL)
@@ -2827,7 +2827,7 @@ BOOL NPC_AcceptDel(int meindex, int talker, int mode) {
           int petcnt = 0;
           int petindex;
 
-          getStringFromIndexWithDelim(work, "*", 2, buf4, sizeof(buf4));
+          getDelimitedField(work, "*", 2, buf4, sizeof(buf4));
           cnt = atoi(buf4);
 
           for (i = 0; i < CHAR_MAXPETHAVE; i++) {
@@ -2888,7 +2888,7 @@ BOOL NPC_AcceptDel(int meindex, int talker, int mode) {
     } else {
 
       /*--手丹1蘸｝矢永玄毛  匀化中月井及民尼永弁毛垫丹--*/
-      while (getStringFromIndexWithDelim(buff2, ",", j, work, sizeof(work)) !=
+      while (getDelimitedField(buff2, ",", j, work, sizeof(work)) !=
              FALSE) {
         j++;
         /*--矢永玄及民尼永弁互反中匀化中月桦宁反域绎PET椭瘀毛民尼永弁允月 --*/
@@ -2904,7 +2904,7 @@ BOOL NPC_AcceptDel(int meindex, int talker, int mode) {
       }
       j = 1;
 
-      while (getStringFromIndexWithDelim(buff2, ",", j, work, sizeof(work)) !=
+      while (getDelimitedField(buff2, ",", j, work, sizeof(work)) !=
              FALSE) {
         j++;
         if (strstr(work, "*") != NULL) {
@@ -2912,7 +2912,7 @@ BOOL NPC_AcceptDel(int meindex, int talker, int mode) {
           int petcnt = 0;
           int petindex;
 
-          getStringFromIndexWithDelim(work, "*", 2, buf4, sizeof(buf4));
+          getDelimitedField(work, "*", 2, buf4, sizeof(buf4));
           cnt = atoi(buf4);
 
           for (i = 0; i < CHAR_MAXPETHAVE; i++) {
@@ -3024,7 +3024,7 @@ BOOL NPC_AcceptDel(int meindex, int talker, int mode) {
       char nbuf[256];
 
       NPC_Util_GetStrFromStrWithDelim(buf, "EVENT", buff2, sizeof(buff2));
-      getStringFromIndexWithDelim(buff2, ",", evcnt, work, sizeof(work));
+      getDelimitedField(buff2, ",", evcnt, work, sizeof(work));
 
       if (strstr(buf, "Break") != NULL) {
         b_flg = 1;
@@ -3068,7 +3068,7 @@ BOOL NPC_AcceptDel(int meindex, int talker, int mode) {
                                       sizeof(buff2)) != NULL) {
     char buf3[32];
     j = 1;
-    while (getStringFromIndexWithDelim(buff2, ",", j, buf3, sizeof(buf3)) !=
+    while (getDelimitedField(buff2, ",", j, buf3, sizeof(buf3)) !=
            FALSE) {
       j++;
       rand_j++;
@@ -3189,13 +3189,13 @@ BOOL NPC_EventAddPet(int meindex, int talker, char *buff2, int mode) {
   /* 娄醒及ID井日index毛潸   */
   if (strstr(buff2, ",") != NULL) {
     char buf2[16];
-    while (getStringFromIndexWithDelim(buff2, ",", i, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buff2, ",", i, buf2, sizeof(buf2)) !=
            FALSE) {
       i++;
     }
     i--;
     i = rand() % i + 1;
-    getStringFromIndexWithDelim(buff2, ",", i, buf2, sizeof(buf2));
+    getDelimitedField(buff2, ",", i, buf2, sizeof(buf2));
     enemyid = atoi(buf2);
   } else {
     enemyid = atoi(buff2);
@@ -3327,23 +3327,23 @@ BOOL NPC_EventAddEgg(int meindex, int talker, char *buff2, int mode) {
 
   /* 娄醒及ID井日index毛潸   */
   if (strstr(buff2, ",") != NULL) { // 是否为随机给与
-    while (getStringFromIndexWithDelim(buff2, ",", i, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buff2, ",", i, buf2, sizeof(buf2)) !=
            FALSE) {
       i++;
     }
     i--;
     i = rand() % i + 1;
-    getStringFromIndexWithDelim(buff2, ",", i, buf2, sizeof(buf2));
+    getDelimitedField(buff2, ",", i, buf2, sizeof(buf2));
 
   } else {
     strcpy(buf2, buff2);
   }
 
-  getStringFromIndexWithDelim(buf2, ";", 1, buf3, sizeof(buf3));
+  getDelimitedField(buf2, ";", 1, buf3, sizeof(buf3));
   enemyid = atoi(buf3); // 宠物蛋ID
-  getStringFromIndexWithDelim(buf2, ";", 2, buf3, sizeof(buf3));
+  getDelimitedField(buf2, ";", 2, buf3, sizeof(buf3));
   petid = atoi(buf3); // 孵出的宠物ID
-  getStringFromIndexWithDelim(buf2, ";", 3, buf3, sizeof(buf3));
+  getDelimitedField(buf2, ";", 3, buf3, sizeof(buf3));
   raise = atoi(buf3); //   养次数
 
   // 将enemyid转成enemybaseid
@@ -3434,7 +3434,7 @@ BOOL NPC_EventDelItem(int meindex, int talker, char *buf, int breakflg) {
   int item_index;
   char token[256];
 
-  while (getStringFromIndexWithDelim(buf, ",", k, buff3, sizeof(buff3)) !=
+  while (getDelimitedField(buf, ",", k, buff3, sizeof(buff3)) !=
          FALSE) {
     k++;
     if (strstr(buff3, "*") != NULL) {
@@ -3443,9 +3443,9 @@ BOOL NPC_EventDelItem(int meindex, int talker, char *buf, int breakflg) {
       int id;
       int cnt = 0;
 
-      getStringFromIndexWithDelim(buff3, "*", 1, buf2, sizeof(buf2));
+      getDelimitedField(buff3, "*", 1, buf2, sizeof(buf2));
       itemno = atoi(buf2);
-      getStringFromIndexWithDelim(buff3, "*", 2, buf2, sizeof(buf2));
+      getDelimitedField(buff3, "*", 2, buf2, sizeof(buf2));
       kosuu = atoi(buf2);
 
 #ifdef _ITEM_PILENUMS
@@ -3544,13 +3544,13 @@ BOOL NPC_EventDelItemEVDEL(int meindex, int talker, char *buf, char *nbuf,
   char buf2[32];
   char buf4[32];
 
-  while (getStringFromIndexWithDelim(buf, "&", k, buf4, sizeof(buf4)) !=
+  while (getDelimitedField(buf, "&", k, buf4, sizeof(buf4)) !=
          FALSE) {
     int itemno;
     k++;
     if (strstr(buf4, "ITEM") == NULL)
       continue;
-    getStringFromIndexWithDelim(buf4, "=", 2, buff3, sizeof(buff3));
+    getDelimitedField(buf4, "=", 2, buff3, sizeof(buff3));
 
     if (strstr(buff3, "*") != NULL) {
       int kosuu;
@@ -3558,13 +3558,13 @@ BOOL NPC_EventDelItemEVDEL(int meindex, int talker, char *buf, char *nbuf,
       char token[256];
       int i, item_index, id, cnt;
 #endif
-      getStringFromIndexWithDelim(buff3, "*", 1, buf2, sizeof(buf2));
+      getDelimitedField(buff3, "*", 1, buf2, sizeof(buf2));
       itemno = atoi(buf2);
-      getStringFromIndexWithDelim(buff3, "*", 2, buf2, sizeof(buf2));
+      getDelimitedField(buff3, "*", 2, buf2, sizeof(buf2));
       kosuu = atoi(buf2);
       if (strstr(nbuf, "-1") == NULL) {
         l = 1;
-        while (getStringFromIndexWithDelim(nbuf, ",", l, buf2, sizeof(buf2))) {
+        while (getDelimitedField(nbuf, ",", l, buf2, sizeof(buf2))) {
           l++;
           if (itemno == atoi(buf2)) {
             l = -1;
@@ -3621,7 +3621,7 @@ BOOL NPC_EventDelItemEVDEL(int meindex, int talker, char *buf, char *nbuf,
 #endif
       if (strstr(nbuf, "-1") == NULL) {
         l = 1;
-        while (getStringFromIndexWithDelim(nbuf, ",", l, buf2, sizeof(buf2))) {
+        while (getDelimitedField(nbuf, ",", l, buf2, sizeof(buf2))) {
           l++;
           if (atoi(buff3) == atoi(buf2)) {
             l = -1;
@@ -3679,7 +3679,7 @@ BOOL NPC_EventAddShowItem(int meindex, int talker, char *buf) {
   char buff3[256], msgbuf[64], token[256];
   int ret;
 
-  if (getStringFromIndexWithDelim(buf, ";", 1, buff3, sizeof(buff3)) != FALSE) {
+  if (getDelimitedField(buf, ";", 1, buff3, sizeof(buff3)) != FALSE) {
 
     if (CHAR_findEmptyItemBox(talker) < 0) {
       sprintf(msgbuf, "物品栏位不足。");
@@ -3697,7 +3697,7 @@ BOOL NPC_EventAddShowItem(int meindex, int talker, char *buf) {
       print("\n ret error!!");
       return FALSE;
     }
-    if (getStringFromIndexWithDelim(buf, ";", 2, buff3, sizeof(buff3)) !=
+    if (getDelimitedField(buf, ";", 2, buff3, sizeof(buff3)) !=
         FALSE) {
       sprintf(token, buff3, CHAR_getChar(talker, CHAR_NAME));
       ITEM_setChar(item_index, ITEM_EFFECTSTRING, token);
@@ -3722,7 +3722,7 @@ BOOL NPC_EventAddItem(int meindex, int talker, char *buf) {
   int ret;
   char token[256];
 
-  while (getStringFromIndexWithDelim(buf, ",", i, buff3, sizeof(buff3)) !=
+  while (getDelimitedField(buf, ",", i, buff3, sizeof(buff3)) !=
          FALSE) {
     i++;
     if (strstr(buff3, "*") != NULL) {
@@ -3731,9 +3731,9 @@ BOOL NPC_EventAddItem(int meindex, int talker, char *buf) {
       int kosuu;
       int loop = 0;
 
-      getStringFromIndexWithDelim(buff3, "*", 1, buf3, sizeof(buf3));
+      getDelimitedField(buff3, "*", 1, buf3, sizeof(buf3));
       itemno = atoi(buf3);
-      getStringFromIndexWithDelim(buff3, "*", 2, buf3, sizeof(buf3));
+      getDelimitedField(buff3, "*", 2, buf3, sizeof(buf3));
       kosuu = atoi(buf3);
 
       for (loop = 0; loop < kosuu; loop++) {
@@ -3830,7 +3830,7 @@ int NPC_EventFile(int meindex, int talker, char *arg, int arg_size) {
   }
 
   /*涩烂白央奶伙毛坌喃允月*/
-  while (getStringFromIndexWithDelim(argstr, "EventEnd", i, buf, sizeof(buf)) !=
+  while (getDelimitedField(argstr, "EventEnd", i, buf, sizeof(buf)) !=
          FALSE) {
     CHAR_setWorkInt(talker, CHAR_WORKSHOPRELEVANTSEC, 0);
     i++;
@@ -3882,10 +3882,10 @@ BOOL NPC_EventReduce(int meindex, int talker, char *buf) {
   int kosuu;
   int cnt = 0;
 
-  getStringFromIndexWithDelim(buf, "=", 2, buf2, sizeof(buf2));
-  getStringFromIndexWithDelim(buf2, "*", 1, buf3, sizeof(buf3));
+  getDelimitedField(buf, "=", 2, buf2, sizeof(buf2));
+  getDelimitedField(buf2, "*", 1, buf3, sizeof(buf3));
   itemno = atoi(buf3);
-  getStringFromIndexWithDelim(buf2, "*", 2, buf3, sizeof(buf3));
+  getDelimitedField(buf2, "*", 2, buf3, sizeof(buf3));
   kosuu = atoi(buf3);
 
   for (i = 0; i < CheckCharMaxItem(talker); i++) {
@@ -3948,19 +3948,19 @@ void NPC_EventPetSkill(int meindex, int talker, char *data) {
   makeStringFromEscaped(data);
 
   /*--犯□正及蕊曰坌仃--*/
-  getStringFromIndexWithDelim(data, "|", 1, buf, sizeof(buf));
+  getDelimitedField(data, "|", 1, buf, sizeof(buf));
   skill = atoi(buf);
-  getStringFromIndexWithDelim(data, "|", 2, buf, sizeof(buf));
+  getDelimitedField(data, "|", 2, buf, sizeof(buf));
   pet = atoi(buf);
-  getStringFromIndexWithDelim(data, "|", 3, buf, sizeof(buf));
+  getDelimitedField(data, "|", 3, buf, sizeof(buf));
   slot = atoi(buf);
-  getStringFromIndexWithDelim(data, "|", 4, buf, sizeof(buf));
+  getDelimitedField(data, "|", 4, buf, sizeof(buf));
   cost = atoi(buf);
 
   /*--旦平伙    毛必永玄允月--*/
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "pet_skill", msg, sizeof(msg)) !=
       NULL) {
-    getStringFromIndexWithDelim(msg, ",", skill, buf, sizeof(buf));
+    getDelimitedField(msg, ",", skill, buf, sizeof(buf));
     skillID = atoi(buf);
   }
   slot--;
@@ -4016,22 +4016,22 @@ BOOL NPC_ItemFullCheck(int meindex, int talker, char *buf, int mode,
 
       i = 1;
       NPC_Util_GetStrFromStrWithDelim(buf, "EVENT", buff2, sizeof(buff2));
-      getStringFromIndexWithDelim(buff2, ",", evcnt, buf3, sizeof(buf3));
+      getDelimitedField(buff2, ",", evcnt, buf3, sizeof(buf3));
 
-      while (getStringFromIndexWithDelim(buf3, "&", j, buff4, sizeof(buff4))) {
+      while (getDelimitedField(buf3, "&", j, buff4, sizeof(buff4))) {
         j++;
         if (strstr(buff4, "ITEM") != NULL) {
           if (strstr(buff4, "*") != NULL) {
             int itemno;
 
             l = 1;
-            getStringFromIndexWithDelim(buff4, "=", 2, buff5, sizeof(buff5));
-            getStringFromIndexWithDelim(buff5, "*", 1, buff6, sizeof(buff6));
+            getDelimitedField(buff4, "=", 2, buff5, sizeof(buff5));
+            getDelimitedField(buff5, "*", 1, buff6, sizeof(buff6));
             itemno = atoi(buff6);
 
             if (NPC_Util_GetStrFromStrWithDelim(buf, "NotDel", nbuf,
                                                 sizeof(nbuf)) != NULL) {
-              while (getStringFromIndexWithDelim(nbuf, ",", l, buff6,
+              while (getDelimitedField(nbuf, ",", l, buff6,
                                                  sizeof(buff6))) {
                 l++;
                 if (itemno == atoi(buff6)) {
@@ -4042,15 +4042,15 @@ BOOL NPC_ItemFullCheck(int meindex, int talker, char *buf, int mode,
             }
             if (l == -1)
               continue;
-            getStringFromIndexWithDelim(buff5, "*", 2, buff6, sizeof(buff6));
+            getDelimitedField(buff5, "*", 2, buff6, sizeof(buff6));
             maxitem -= atoi(buff6);
           } else {
-            getStringFromIndexWithDelim(buff4, "=", 2, buff5, sizeof(buff5));
+            getDelimitedField(buff4, "=", 2, buff5, sizeof(buff5));
             l = 1;
 
             if (NPC_Util_GetStrFromStrWithDelim(buf, "NotDel", nbuf,
                                                 sizeof(nbuf)) != NULL) {
-              while (getStringFromIndexWithDelim(nbuf, ",", l, buff6,
+              while (getDelimitedField(nbuf, ",", l, buff6,
                                                  sizeof(buff6))) {
                 l++;
                 if (atoi(buff5) == atoi(buff6)) {
@@ -4075,11 +4075,11 @@ BOOL NPC_ItemFullCheck(int meindex, int talker, char *buf, int mode,
     } else {
       char buff3[128];
       i = 1;
-      while (getStringFromIndexWithDelim(buff2, ",", i, buff3, sizeof(buff3)) !=
+      while (getDelimitedField(buff2, ",", i, buff3, sizeof(buff3)) !=
              FALSE) {
         i++;
         if (strstr(buff3, "*") != NULL) {
-          getStringFromIndexWithDelim(buff3, "*", 2, buf3, sizeof(buf3));
+          getDelimitedField(buff3, "*", 2, buf3, sizeof(buf3));
           maxitem -= atoi(buf3);
         } else {
           for (i = CHAR_STARTITEMARRAY; i < CheckCharMaxItem(talker); i++) {
@@ -4099,7 +4099,7 @@ BOOL NPC_ItemFullCheck(int meindex, int talker, char *buf, int mode,
                                       sizeof(buff2)) != NULL &&
       mode == 0) {
     j = 1;
-    while (getStringFromIndexWithDelim(buff2, ",", j, buf3, sizeof(buf3)) !=
+    while (getDelimitedField(buff2, ",", j, buf3, sizeof(buf3)) !=
            FALSE) {
       j++;
       rand_j++;
@@ -4121,11 +4121,11 @@ BOOL NPC_ItemFullCheck(int meindex, int talker, char *buf, int mode,
       mode == 0) {
     char buff3[256];
     j = 1;
-    while (getStringFromIndexWithDelim(buff2, ",", j, buff3, sizeof(buff3)) !=
+    while (getDelimitedField(buff2, ",", j, buff3, sizeof(buff3)) !=
            FALSE) {
       j++;
       if (strstr(buff3, "*") != NULL) {
-        getStringFromIndexWithDelim(buff3, "*", 2, buf3, sizeof(buf3));
+        getDelimitedField(buff3, "*", 2, buf3, sizeof(buf3));
         maxitem += atoi(buf3);
       } else {
         maxitem++;
@@ -4170,7 +4170,7 @@ int NPC_EventGetCost(int meindex, int talker, char *arg) {
   char buf[32];
   if (strstr(arg, "LV") != NULL) {
     level = CHAR_getInt(talker, CHAR_LV);
-    getStringFromIndexWithDelim(arg, "*", 2, buf, sizeof(buf));
+    getDelimitedField(arg, "*", 2, buf, sizeof(buf));
     cost = level * atoi(buf);
   } else {
     cost = atoi(arg);

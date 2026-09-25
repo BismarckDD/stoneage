@@ -135,7 +135,7 @@ BOOL MAGIC_initMagic(char *filename) {
       continue; /* none    */
     chomp(line);
 #ifdef _MAGIC_OPTIMUM // Robin 取出最大MAGIC ID
-    if (getStringFromIndexWithDelim(line, ",", MAGIC_DATACHARNUM + MAGIC_ID + 1,
+    if (getDelimitedField(line, ",", MAGIC_DATACHARNUM + MAGIC_ID + 1,
                                     token, sizeof(token)) == FALSE)
       continue;
     max_magic_id = max(atoi(token), max_magic_id);
@@ -195,14 +195,14 @@ BOOL MAGIC_initMagic(char *filename) {
       char token[256];
       int ret;
 #ifdef _MAGIC_OPTIMUM
-      if (getStringFromIndexWithDelim(line, ",",
+      if (getDelimitedField(line, ",",
                                       MAGIC_DATACHARNUM + MAGIC_ID + 1, token,
                                       sizeof(token)) == FALSE)
         continue;
       magic_readlen = atoi(token);
 #endif
       for (i = 0; i < MAGIC_DATACHARNUM; i++) {
-        ret = getStringFromIndexWithDelim(line, ",", i + 1, token, sizeof(token));
+        ret = getDelimitedField(line, ",", i + 1, token, sizeof(token));
         if (ret == FALSE) {
           logErr("文件语法错误:%s 第%d行\n", filename, linenum);
           break;
@@ -212,7 +212,7 @@ BOOL MAGIC_initMagic(char *filename) {
 #define MAGIC_STARTINTNUM 5
       for (i = MAGIC_STARTINTNUM; i < MAGIC_DATAINTNUM + MAGIC_STARTINTNUM;
            i++) {
-        ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
+        ret = getDelimitedField(line, ",", i, token, sizeof(token));
 #ifdef _ATTACK_MAGIC
         if (FALSE == ret)
           break;

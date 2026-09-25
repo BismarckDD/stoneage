@@ -141,7 +141,7 @@ void NPC_ItemShopTalked(int meindex, int talker, char *szMes, int color) {
   // buff为一串买东西指令的字串,例如:买,购买,感谢您,kau,buy,menu,谢谢,买东西,当玩家打出这些字句时,就可以买东西了
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "buy_msg", buff, sizeof(buff)) !=
       NULL) {
-    while (getStringFromIndexWithDelim(buff, ",", i, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buff, ",", i, buf2, sizeof(buf2)) !=
            FALSE) {
       i++; // 若买东西的指令有8个,i就会加到8
       if (strstr(szMes, buf2) != NULL) {
@@ -176,7 +176,7 @@ void NPC_ItemShopTalked(int meindex, int talker, char *szMes, int color) {
   // 当玩家打出这些字句时,就可以卖东西了
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "sell_msg", buff, sizeof(buff)) !=
       NULL) {
-    while (getStringFromIndexWithDelim(buff, ",", i, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buff, ",", i, buf2, sizeof(buf2)) !=
            FALSE) {
       i++;
       if (strstr(szMes, buf2) != NULL) {
@@ -190,7 +190,7 @@ void NPC_ItemShopTalked(int meindex, int talker, char *szMes, int color) {
   // 其它讯息
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "other_msg", buff,
                                       sizeof(buff)) != NULL) {
-    while (getStringFromIndexWithDelim(buff, ",", i, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buff, ",", i, buf2, sizeof(buf2)) !=
            FALSE) {
       i++;
       if (strstr(szMes, buf2) != NULL) {
@@ -411,15 +411,15 @@ void NPC_GetItemList(char *argstr, char *argtoken) {
     iChangeItemCost = -1;
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "ItemList", buff, sizeof(buff)) !=
       NULL) {
-    while (getStringFromIndexWithDelim(buff, ",", i, buff2, sizeof(buff2)) !=
+    while (getDelimitedField(buff, ",", i, buff2, sizeof(buff2)) !=
            FALSE) {
       if (iCostFame > -1) {
-        if (getStringFromIndexWithDelim(buff3, ",", i, buff4, sizeof(buff4)) !=
+        if (getDelimitedField(buff3, ",", i, buff4, sizeof(buff4)) !=
             FALSE)
           iCostFame = atoi(buff4);
       }
       if (iChangeItemCost > -1) {
-        if (getStringFromIndexWithDelim(buff5, ",", i, buff6, sizeof(buff6)) !=
+        if (getDelimitedField(buff5, ",", i, buff6, sizeof(buff6)) !=
             FALSE)
           iChangeItemCost = atoi(buff6);
       }
@@ -437,9 +437,9 @@ void NPC_GetItemList(char *argstr, char *argtoken) {
       } else {
         int start;
         int end;
-        getStringFromIndexWithDelim(buff2, "-", 1, token2, sizeof(token2));
+        getDelimitedField(buff2, "-", 1, token2, sizeof(token2));
         start = atoi(token2);
-        getStringFromIndexWithDelim(buff2, "-", 2, token2, sizeof(token2));
+        getDelimitedField(buff2, "-", 2, token2, sizeof(token2));
         end = atoi(token2);
         if (start > end) {
           tmp = start;
@@ -518,11 +518,11 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
   int kosuucnt = 0;
   int item_index;
 
-  getStringFromIndexWithDelim(data, "|", 1, buf, sizeof(buf));
+  getDelimitedField(data, "|", 1, buf, sizeof(buf));
   select = atoi(buf);
   if (select == 0)
     return FALSE;
-  getStringFromIndexWithDelim(data, "|", 2, buf, sizeof(buf));
+  getDelimitedField(data, "|", 2, buf, sizeof(buf));
   kosuu = atoi(buf);
   if (kosuu <= 0)
     return FALSE;
@@ -563,15 +563,15 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
 
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "ItemList", buf, sizeof(buf)) !=
       NULL) {
-    while (getStringFromIndexWithDelim(buf, ",", j, buff2, sizeof(buff2)) !=
+    while (getDelimitedField(buf, ",", j, buff2, sizeof(buff2)) !=
            FALSE) {
       if (iCostFame > -1) {
-        if (getStringFromIndexWithDelim(buff3, ",", j, buff4, sizeof(buff4)) !=
+        if (getDelimitedField(buff3, ",", j, buff4, sizeof(buff4)) !=
             FALSE)
           iCostFame = atoi(buff4);
       }
       if (iChangeItemCost > -1) {
-        if (getStringFromIndexWithDelim(buff5, ",", j, buff6, sizeof(buff6)) !=
+        if (getDelimitedField(buff5, ",", j, buff6, sizeof(buff6)) !=
             FALSE)
           iChangeItemCost = atoi(buff6);
       }
@@ -588,9 +588,9 @@ BOOL NPC_SetNewItem(int meindex, int talker, char *data) {
           i++;
         }
       } else {
-        getStringFromIndexWithDelim(buff2, "-", 1, argstr, sizeof(argstr));
+        getDelimitedField(buff2, "-", 1, argstr, sizeof(argstr));
         int start = atoi(argstr);
-        getStringFromIndexWithDelim(buff2, "-", 2, argstr, sizeof(argstr));
+        getDelimitedField(buff2, "-", 2, argstr, sizeof(argstr));
         int end = atoi(argstr);
         end++;
 
@@ -836,7 +836,7 @@ int NPC_GetLimtItemList(int talker, char *argstr, char *token2, int sell) {
       if (NPC_Util_GetStrFromStrWithDelim(argstr, "LimitItemType", buff,
                                           sizeof(buff)) != NULL) {
         k = 1;
-        while (getStringFromIndexWithDelim(buff, ",", k, token,
+        while (getDelimitedField(buff, ",", k, token,
                                            sizeof(token)) != FALSE) {
 #ifdef _ITEM_TYPETABLE
           int cmpmaxitem = sizeof(TypeTable) / sizeof(TypeTable[0]);
@@ -901,7 +901,7 @@ int NPC_GetLimtItemList(int talker, char *argstr, char *token2, int sell) {
                                            sizeof(buff)) != NULL) &&
           okflg == 0) {
         k = 1;
-        while (getStringFromIndexWithDelim(buff, ",", k, token,
+        while (getDelimitedField(buff, ",", k, token,
                                            sizeof(token)) != FALSE) {
           k++;
           if (strstr(token, "-") == NULL && strcmp(token, "") != 0) {
@@ -917,11 +917,11 @@ int NPC_GetLimtItemList(int talker, char *argstr, char *token2, int sell) {
             int start, end;
             int work;
 
-            if (getStringFromIndexWithDelim(token, "-", 1, buf, sizeof(buf)) ==
+            if (getDelimitedField(token, "-", 1, buf, sizeof(buf)) ==
                 FALSE)
               return -1;
             start = atoi(buf);
-            if (getStringFromIndexWithDelim(token, "-", 2, buf, sizeof(buf)) ==
+            if (getDelimitedField(token, "-", 2, buf, sizeof(buf)) ==
                 FALSE)
               return -1;
             end = atoi(buf);
@@ -977,7 +977,7 @@ int NPC_GetSellItemList(int item_index, int flg, char *argstr, char *argtoken,
       rate = 1.2;
     }
 
-    while (getStringFromIndexWithDelim(buff, ",", k, buff2, sizeof(buff2)) !=
+    while (getDelimitedField(buff, ",", k, buff2, sizeof(buff2)) !=
            FALSE) {
       k++;
       if (strstr(buff2, "-") == NULL && strcmp(buff2, "") != 0) {
@@ -990,9 +990,9 @@ int NPC_GetSellItemList(int item_index, int flg, char *argstr, char *argtoken,
         int start;
         int end;
         int work;
-        getStringFromIndexWithDelim(buff2, "-", 1, buff3, sizeof(buff3));
+        getDelimitedField(buff2, "-", 1, buff3, sizeof(buff3));
         start = atoi(buff3);
-        getStringFromIndexWithDelim(buff2, "-", 2, buff3, sizeof(buff3));
+        getDelimitedField(buff2, "-", 2, buff3, sizeof(buff3));
         end = atoi(buff3);
 
         if (start > end) {
@@ -1068,10 +1068,10 @@ BOOL NPC_SellNewItem(int meindex, int talker, char *data) {
     print("GetArgStrErr");
     return FALSE;
   }
-  getStringFromIndexWithDelim(data, "|", 1, token, sizeof(token));
+  getDelimitedField(data, "|", 1, token, sizeof(token));
   select = atoi(token);
 #ifdef _ITEM_PILENUMS
-  getStringFromIndexWithDelim(data, "|", 2, token, sizeof(token));
+  getDelimitedField(data, "|", 2, token, sizeof(token));
   sellnum = atoi(token);
 #endif
 

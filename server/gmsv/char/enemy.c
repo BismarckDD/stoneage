@@ -187,7 +187,7 @@ void enemytemp_callback(int *line_num, const char* line) {
   char token[256];
   int i, ret;
   for (i = 0; i < E_T_DATACHARNUM; i++) {
-    ret = getStringFromIndexWithDelim(line, ",", i + 1, token, sizeof(token));
+    ret = getDelimitedField(line, ",", i + 1, token, sizeof(token));
     if (ret == FALSE) {
       printEx("文件语法错误:%s 第%d行\n", line, i);
       continue;
@@ -197,7 +197,7 @@ void enemytemp_callback(int *line_num, const char* line) {
 #define ENEMYTEMP_STARTINTNUM (E_T_DATACHARNUM + 1)
   for (i = ENEMYTEMP_STARTINTNUM;
        i < E_T_DATAINTNUM + ENEMYTEMP_STARTINTNUM; i++) {
-    ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
+    ret = getDelimitedField(line, ",", i, token, sizeof(token));
     if (ret == FALSE) {
       printEx("文件语法错误:%s 第%d行\n", line, i);
       break;
@@ -293,20 +293,20 @@ int ENEMYTEMP_getEnemyTempArrayFromInitnum(int EnemyTempNo) {
 void enemy_callback(int *line_num, const char *line) {
   char token[256];
   int ret;
-  ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
+  ret = getDelimitedField(line, ",", 1, token, sizeof(token));
   if (ret == FALSE) {
     printEx("文件语法错误:%s 第%d行\n", line, *line_num);
     return;
   }
   ENEMY_setChar(*line_num, ENEMY_NAME, token);
-  ret = getStringFromIndexWithDelim(line, ",", 2, token, sizeof(token));
+  ret = getDelimitedField(line, ",", 2, token, sizeof(token));
   if (ret == FALSE) {
     printEx("文件语法错误:%s 第%d行\n", line, *line_num);
     return;
   }
   ENEMY_setChar(*line_num, ENEMY_TACTICSOPTION, token);
 #ifdef _BATTLENPC_WARP_PLAYER
-  ret = getStringFromIndexWithDelim(line, ",", 3, token, sizeof(token));
+  ret = getDelimitedField(line, ",", 3, token, sizeof(token));
   if (ret == FALSE) {
     printEx("文件语法错误:%s 第%d行\n", line, *line_num);
     return;
@@ -321,7 +321,7 @@ void enemy_callback(int *line_num, const char *line) {
 #endif
   int i;
   for (i = ENEMY_STARTINTNUM; i < ENEMY_DATAINTNUM + ENEMY_STARTINTNUM; i++) {
-    ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
+    ret = getDelimitedField(line, ",", i, token, sizeof(token));
     if (ret == FALSE) {
       printEx("文件语法错误:%s 第%d行\n", line, i);
       break;
@@ -509,7 +509,7 @@ BOOL GROUP_initGroup(const char *filename) {
       for (j = 0; j < CREATEPROB1 - ENEMY_ID1; j++) {
         GROUP_group[group_readlen].enemyarray[j] = -1;
       }
-      ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 1, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -518,7 +518,7 @@ BOOL GROUP_initGroup(const char *filename) {
 #define GROUP_STARTINTNUM 2
       for (i = GROUP_STARTINTNUM; i < GROUP_DATAINTNUM + GROUP_STARTINTNUM;
            i++) {
-        ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
+        ret = getDelimitedField(line, ",", i, token, sizeof(token));
         if (ret == FALSE) {
           printEx("文件语法错误:%s 第%d行\n", filename, linenum);
           break;
@@ -1652,13 +1652,13 @@ BOOL PETFUSION_getIndexForChar(int toindex, int *MainIndex, int *Subindex1,
   int i;
   int ridepet = CHAR_getInt(toindex, CHAR_RIDEPET);
   int rideindex = CHAR_getCharPet(toindex, ridepet);
-  if (getStringFromIndexWithDelim(data, "|", 1, buf1, sizeof(buf1)) == FALSE)
+  if (getDelimitedField(data, "|", 1, buf1, sizeof(buf1)) == FALSE)
     return FALSE;
   pindex[0] = atoi(buf1) - 1;
-  if (getStringFromIndexWithDelim(data, "|", 2, buf1, sizeof(buf1)) == FALSE)
+  if (getDelimitedField(data, "|", 2, buf1, sizeof(buf1)) == FALSE)
     return FALSE;
   pindex[1] = atoi(buf1) - 1;
-  if (getStringFromIndexWithDelim(data, "|", 3, buf1, sizeof(buf1)) == FALSE)
+  if (getDelimitedField(data, "|", 3, buf1, sizeof(buf1)) == FALSE)
     return FALSE;
   pindex[2] = atoi(buf1) - 1;
   for (i = 0; i < 3; i++) {

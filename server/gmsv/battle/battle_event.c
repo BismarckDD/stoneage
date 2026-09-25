@@ -2739,9 +2739,9 @@ int BATTLE_Attack(int battleindex, int attackNo, int defNo) {
       char item[8][32] = {"头盔",    "铠甲", "武器", "首饰左",
                           "首饰右", "腰带", "盾",   "鞋子"};
 
-      getStringFromIndexWithDelim(skillarg, "|", 1, buf, sizeof(buf));
+      getDelimitedField(skillarg, "|", 1, buf, sizeof(buf));
       fromid = min(atoi(buf), 7);
-      getStringFromIndexWithDelim(skillarg, "|", 2, buf, sizeof(buf));
+      getDelimitedField(skillarg, "|", 2, buf, sizeof(buf));
       lj = atoi(buf);
       toid = CHAR_findEmptyItemBox(defindex);
 
@@ -3782,10 +3782,10 @@ int need_item_eneny_init() {
     if (line[0] == '#')
       continue;
 
-    getStringFromIndexWithDelim(line, "|", 1, buf, sizeof(buf));
+    getDelimitedField(line, "|", 1, buf, sizeof(buf));
     NeedEnemy[num].EnemyId = atoi(buf);
     for (i = 0; i < MAXCAPTRUEFREE; i++) {
-      getStringFromIndexWithDelim(line, "|", i + 2, buf, sizeof(buf));
+      getDelimitedField(line, "|", i + 2, buf, sizeof(buf));
       NeedEnemy[num].ItemId[i] = atoi(buf);
     }
     num++;
@@ -4734,7 +4734,7 @@ int BATTLE_S_Roar(int battleindex, int attackNo, int defNo, int marray) {
   }
 
   magicarg = PETSKILL_getChar(marray, PETSKILL_OPTION);
-  while (getStringFromIndexWithDelim(magicarg, "|", i, buf1, sizeof(buf1)) !=
+  while (getDelimitedField(magicarg, "|", i, buf1, sizeof(buf1)) !=
          FALSE) {
     if (petid == atoi(buf1)) { // 年兽判别
       FINDPET = TRUE;
@@ -6376,7 +6376,7 @@ int BATTLE_S_DamageToHp(int battleindex, int attackindex, int defindex,
   if (pszOption == "\0")
     return A_HP;
   memset(buf1, 0, sizeof(buf1));
-  if (getStringFromIndexWithDelim(pszOption, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(pszOption, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return A_HP;
 
@@ -6414,7 +6414,7 @@ int BATTLE_S_DamageToHp2(int battleindex, int attackindex, int defindex,
     return A_HP;
   memset(buf1, 0, sizeof(buf1));
   sprintf(buf1, "%s", pszOption);
-  // if( getStringFromIndexWithDelim( pszOption, "|",2, buf1,sizeof( buf1)) ==
+  // if( getDelimitedField( pszOption, "|",2, buf1,sizeof( buf1)) ==
   // FALSE ) 	return A_HP;
 
   defi = atoi(buf1);
@@ -6455,7 +6455,7 @@ int BATTLE_S_MpDamage(int battleindex, int attackindex, int defindex,
   if (pszOption == "\0")
     return D_MP;
   memset(buf1, 0, sizeof(buf1));
-  if (getStringFromIndexWithDelim(pszOption, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(pszOption, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return D_MP;
   defi = atoi(buf1);
@@ -6537,7 +6537,7 @@ void BATTLE_S_ToothCrushe(int battleindex, int attackindex, int defindex,
       //			buf1 = ITEM_getChar( item_index,
       // ITEM_SECRETNAME); 			if( strstr( buf1, "(") != 0 )
       // { 				char buf5[256];
-      // if( getStringFromIndexWithDelim( buf1,"(",1, buf5, sizeof( buf5)) !=
+      // if( getDelimitedField( buf1,"(",1, buf5, sizeof( buf5)) !=
       // FALSE )	{ 					sprintf( buf1,
       // buf5);
       //				}
@@ -6577,11 +6577,11 @@ void BATTLE_S_Modifyattack(int battleindex, int attackindex, int defindex,
   pszOption = PETSKILL_getChar(array, PETSKILL_OPTION);
   if (pszOption == "\0")
     return;
-  if (getStringFromIndexWithDelim(pszOption, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(pszOption, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return;
 
-  if (getStringFromIndexWithDelim(pszOption, "|", 2, buf2, sizeof(buf1)) ==
+  if (getDelimitedField(pszOption, "|", 2, buf2, sizeof(buf1)) ==
       FALSE)
     return;
   def = ((float)(atoi(buf2)) / 100);
@@ -7062,7 +7062,7 @@ int PETSKILL_MagicStatusChange_Battle(int battleindex, int attackNo, int toNo,
   if (!CHAR_CHECKINDEX(char_index))
     return FALSE;
   magicarg = PETSKILL_getChar(marray, PETSKILL_OPTION);
-  if (getStringFromIndexWithDelim(magicarg, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   for (i = 0; i < MAXSTATUSTYPE; i++) {
@@ -7073,15 +7073,15 @@ int PETSKILL_MagicStatusChange_Battle(int battleindex, int attackNo, int toNo,
   }
   if (i == MAXSTATUSTYPE)
     return FALSE;
-  if (getStringFromIndexWithDelim(magicarg, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   turn = atoi(buf1);
-  if (getStringFromIndexWithDelim(magicarg, "|", 3, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 3, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   nums = atoi(buf1);
-  if (getStringFromIndexWithDelim(magicarg, "|", 4, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 4, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   if (strstr(buf1, "单") != 0) {
@@ -7122,11 +7122,11 @@ int PETSKILL_SetDuckChange_Battle(int battleindex, int attackNo, int toNo,
   skillarg = PETSKILL_getChar(marray, PETSKILL_OPTION);
   if (skillarg == "\0")
     return FALSE;
-  if (getStringFromIndexWithDelim(skillarg, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(skillarg, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   turn = atoi(buf1);
-  if (getStringFromIndexWithDelim(skillarg, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(skillarg, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   nums = atoi(buf1);
@@ -7168,15 +7168,15 @@ int PETSKILL_SetMagicPet_Battle(int battleindex, int attackNo, int toNo,
   skillarg = PETSKILL_getChar(marray, PETSKILL_OPTION);
   if (skillarg == "\0")
     return FALSE;
-  if (getStringFromIndexWithDelim(skillarg, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(skillarg, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   turn = atoi(buf1);
-  if (getStringFromIndexWithDelim(skillarg, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(skillarg, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   nums = atoi(buf1);
-  if (getStringFromIndexWithDelim(skillarg, "|", 3, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(skillarg, "|", 3, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   if (strstr(buf1, "HP") != 0) {
@@ -7242,7 +7242,7 @@ int PETSKILL_SetStrength_Battle(int battleindex, int attackNo, int toNo,
 
   skillarg = PETSKILL_getChar(marray, PETSKILL_OPTION);
 
-  if (getStringFromIndexWithDelim(skillarg, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(skillarg, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
 
@@ -10181,7 +10181,7 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
   }
 
   // 取得效果
-  if (getStringFromIndexWithDelim(pszOption, "|", 3, szData, sizeof(szData)) !=
+  if (getDelimitedField(pszOption, "|", 3, szData, sizeof(szData)) !=
       FALSE) {
     for (i = 1; i < BATTLE_ST_END; i++) {
       if (strncmp(szData, aszStatus[i], 2) == 0) {
@@ -10193,7 +10193,7 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
   // 有效果
   if (iEffect != -1) {
     // 取得回合数
-    if (getStringFromIndexWithDelim(pszOption, "|", 4, szData,
+    if (getDelimitedField(pszOption, "|", 4, szData,
                                     sizeof(szData)) == FALSE)
       // 回合数取得失败
       printf("BATTLE_BattleModel: has setting effect but no turn "
@@ -10204,7 +10204,7 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
     // 有回合数
     if (iTurn != -1) {
       // 取得命中机率
-      if (getStringFromIndexWithDelim(pszOption, "|", 5, szData,
+      if (getDelimitedField(pszOption, "|", 5, szData,
                                       sizeof(szData)) == FALSE)
         // 命中机率取得失败
         printf("BATTLE_BattleModel: has setting turn number but no hit "
@@ -10216,7 +10216,7 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
   }
 
   // 取得图号(至少要有一个)
-  if (getStringFromIndexWithDelim(pszOption, "|", 7, szData, sizeof(szData)) ==
+  if (getDelimitedField(pszOption, "|", 7, szData, sizeof(szData)) ==
       FALSE) {
     // 图号取得失败,不动作
     printf("BATTLE_BattleModel: no picture number!!(file:%s,line:%d)\n",
@@ -10226,7 +10226,7 @@ void BATTLE_BattleModel(int battleindex, int attackNo, int myside) {
   } else {
     for (i = 0; i < 4; i++) {
       // 取得图号
-      if (getStringFromIndexWithDelim(szData, " ", i + 1, szData2,
+      if (getDelimitedField(szData, " ", i + 1, szData2,
                                       sizeof(szData2)) != FALSE)
         iActionNumber[i] = atoi(szData2);
       else

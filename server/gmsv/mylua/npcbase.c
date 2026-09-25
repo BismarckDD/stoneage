@@ -131,38 +131,38 @@ static int AddRandItem(lua_State *L) {
   int TM_ItemIdStart = -1;
   int TM_ItemIdEnd = -1;
   char ItemIdBuf[32];
-  if (getStringFromIndexWithDelim(TM_ItemIdData, ",", 2, ItemIdBuf,
+  if (getDelimitedField(TM_ItemIdData, ",", 2, ItemIdBuf,
                                   sizeof(ItemIdBuf)) != FALSE) {
     int TM_ItemNum = 0;
     while (1) {
-      if (getStringFromIndexWithDelim(TM_ItemIdData, ",", TM_ItemNum + 1,
+      if (getDelimitedField(TM_ItemIdData, ",", TM_ItemNum + 1,
                                       ItemIdBuf, sizeof(ItemIdBuf)) == FALSE)
         break;
       TM_ItemNum++;
     }
     TM_ItemNum = RAND(1, TM_ItemNum);
-    getStringFromIndexWithDelim(TM_ItemIdData, ",", TM_ItemNum, ItemIdBuf,
+    getDelimitedField(TM_ItemIdData, ",", TM_ItemNum, ItemIdBuf,
                                 sizeof(ItemIdBuf));
     char ItemIdBuf2[16];
-    if (getStringFromIndexWithDelim(ItemIdBuf, "-", 2, ItemIdBuf2,
+    if (getDelimitedField(ItemIdBuf, "-", 2, ItemIdBuf2,
                                     sizeof(ItemIdBuf2)) != FALSE) {
       int TM_ItemIdStart, TM_ItemIdEnd;
-      getStringFromIndexWithDelim(ItemIdBuf, "-", 1, ItemIdBuf2,
+      getDelimitedField(ItemIdBuf, "-", 1, ItemIdBuf2,
                                   sizeof(ItemIdBuf2));
       TM_ItemIdStart = atoi(ItemIdBuf2);
-      getStringFromIndexWithDelim(ItemIdBuf, "-", 2, ItemIdBuf2,
+      getDelimitedField(ItemIdBuf, "-", 2, ItemIdBuf2,
                                   sizeof(ItemIdBuf2));
       TM_ItemIdEnd = atoi(ItemIdBuf2);
       TM_ItemId = RAND(TM_ItemIdStart, TM_ItemIdEnd);
     } else {
       TM_ItemId = atoi(ItemIdBuf);
     }
-  } else if (getStringFromIndexWithDelim(TM_ItemIdData, "-", 2, ItemIdBuf,
+  } else if (getDelimitedField(TM_ItemIdData, "-", 2, ItemIdBuf,
                                          sizeof(ItemIdBuf)) != FALSE) {
-    if (getStringFromIndexWithDelim(TM_ItemIdData, "-", 1, ItemIdBuf,
+    if (getDelimitedField(TM_ItemIdData, "-", 1, ItemIdBuf,
                                     sizeof(ItemIdBuf)) != FALSE)
       TM_ItemIdStart = atoi(ItemIdBuf);
-    if (getStringFromIndexWithDelim(TM_ItemIdData, "-", 2, ItemIdBuf,
+    if (getDelimitedField(TM_ItemIdData, "-", 2, ItemIdBuf,
                                     sizeof(ItemIdBuf)) != FALSE)
       TM_ItemIdEnd = atoi(ItemIdBuf);
     if (TM_ItemIdStart <= TM_ItemIdEnd) {
@@ -365,11 +365,11 @@ static int DelItemNum(lua_State *L) {
   int itemID = 0;
   int itemNUM = 0;
 
-  if (getStringFromIndexWithDelim(data, ",", 1, tmp, sizeof(tmp)) != FALSE) {
+  if (getDelimitedField(data, ",", 1, tmp, sizeof(tmp)) != FALSE) {
     itemID = atoi(tmp);
   }
 
-  if (getStringFromIndexWithDelim(data, ",", 2, tmp, sizeof(tmp)) != FALSE) {
+  if (getDelimitedField(data, ",", 2, tmp, sizeof(tmp)) != FALSE) {
     itemNUM = atoi(tmp);
   }
 

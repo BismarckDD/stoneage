@@ -5,13 +5,16 @@
 
 void easyGetTokenFromString(const char *src, const int count, char *output,
                             const int len);
-BOOL GeneralSplitImpl(const char *src, const char *delim, const int index,
-                      char *buf, const int buflen, const char *file,
-                      const int line);
-BOOL getStringFromCursorWithDelim(const char **cursor, const char *delim,
-                                  char *buf, const int buflen);
-#define getStringFromIndexWithDelim(src, delim, index, buf, buflen)            \
-  GeneralSplitImpl(src, delim, index, buf, buflen, __FILE__, __LINE__)
+/* 1-based fields, split on an exact delimiter string. Empty fields are kept.
+ * Truncation succeeds; out-of-range indices copy the last field and fail.
+ * Invalid arguments fail without modifying buf. */
+BOOL getDelimitedField(const char *src, const char *delim, int index,
+                       char *buf, int buflen);
+/* Initialize *cursor to the source; NULL marks exhaustion. Keeps trailing
+ * empty fields. Rejects empty delimiters. Do not modify source storage or
+ * overlap buf with it during iteration. Linear traversal for fixed delim. */
+BOOL nextDelimitedField(const char **cursor, const char *delim,
+                        char *buf, int buflen);
 
 char *makeStringFromEscaped(char *src);
 char *makeEscapeString(const char *src, char *dst, const int dst_len);

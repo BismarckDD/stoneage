@@ -305,7 +305,7 @@ BOOL PETMAIL_initOffmsgBuffer( int count )
 	while(  fgets( line, sizeof( line ), fp ) != NULL ){
 		char	buf[1024];
 		int		index;
-		if( !getStringFromIndexWithDelim( line, "|", 1, buf, sizeof( buf))) {
+		if( !getDelimitedField( line, "|", 1, buf, sizeof( buf))) {
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
@@ -319,19 +319,19 @@ BOOL PETMAIL_initOffmsgBuffer( int count )
 			continue;
 		}
 		
-		if( !getStringFromIndexWithDelim( line, "|", 2, buf, sizeof( buf))) {
+		if( !getDelimitedField( line, "|", 2, buf, sizeof( buf))) {
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
 		PETMAIL_offmsgbuf[index].send_tm = atoi( buf);
 		
-		if( !getStringFromIndexWithDelim( line, "|", 3, buf, sizeof( buf))) {
+		if( !getDelimitedField( line, "|", 3, buf, sizeof( buf))) {
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
 		PETMAIL_offmsgbuf[index].color = atoi( buf);
 		
-		if( !getStringFromIndexWithDelim( line, "|", 4, buf, sizeof( buf))) {
+		if( !getDelimitedField( line, "|", 4, buf, sizeof( buf))) {
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
@@ -339,7 +339,7 @@ BOOL PETMAIL_initOffmsgBuffer( int count )
 					sizeof( PETMAIL_offmsgbuf[index].text),
 					buf);
 		
-		if( !getStringFromIndexWithDelim( line, "|", 5, buf, sizeof( buf))) {
+		if( !getDelimitedField( line, "|", 5, buf, sizeof( buf))) {
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
@@ -347,7 +347,7 @@ BOOL PETMAIL_initOffmsgBuffer( int count )
 					sizeof( PETMAIL_offmsgbuf[index].destcd),
 					buf);
 		
-		if( !getStringFromIndexWithDelim( line, "|", 6, buf, sizeof( buf))) {
+		if( !getDelimitedField( line, "|", 6, buf, sizeof( buf))) {
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
@@ -355,14 +355,14 @@ BOOL PETMAIL_initOffmsgBuffer( int count )
 		strncpysafe( PETMAIL_offmsgbuf[index].destcharname, 
 					sizeof( PETMAIL_offmsgbuf[index].destcharname),
 					buf);
-		if( !getStringFromIndexWithDelim( line, "|", 7, buf, sizeof( buf))) {
+		if( !getDelimitedField( line, "|", 7, buf, sizeof( buf))) {
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}
 		strncpysafe( PETMAIL_offmsgbuf[index].srccd, 
 					sizeof( PETMAIL_offmsgbuf[index].srccd),
 					buf);
-		if( !getStringFromIndexWithDelim( line, "|", 8, buf, sizeof( buf))) {
+		if( !getDelimitedField( line, "|", 8, buf, sizeof( buf))) {
 			print( "read error line[%d]\n", linenum);
 			continue;
 		}

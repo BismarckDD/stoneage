@@ -569,13 +569,13 @@ BOOL ADDRESSBOOK_makeAddressbookEntry(char *in, ADDRESSBOOK_entry *a) {
     return TRUE;
   }
 
-  getStringFromIndexWithDelim(in, "|", 1, work1, sizeof(work1));
-  getStringFromIndexWithDelim(in, "|", 2, work2, sizeof(work2));
-  getStringFromIndexWithDelim(in, "|", 3, work3, sizeof(work3));
-  getStringFromIndexWithDelim(in, "|", 4, work4, sizeof(work4));
-  getStringFromIndexWithDelim(in, "|", 5, work5, sizeof(work5));
+  getDelimitedField(in, "|", 1, work1, sizeof(work1));
+  getDelimitedField(in, "|", 2, work2, sizeof(work2));
+  getDelimitedField(in, "|", 3, work3, sizeof(work3));
+  getDelimitedField(in, "|", 4, work4, sizeof(work4));
+  getDelimitedField(in, "|", 5, work5, sizeof(work5));
   work6[0] = '\0';
-  ret = getStringFromIndexWithDelim(in, "|", 6, work6, sizeof(work6));
+  ret = getDelimitedField(in, "|", 6, work6, sizeof(work6));
   if (ret == FALSE) {
     a->transmigration = 0;
   } else {
@@ -681,15 +681,15 @@ void ADDRESSBOOK_DispatchMessage(char *cd, char *nm, char *value, int mode) {
   int playernum = CHAR_getPlayerMaxNum();
   int ret;
 
-  getStringFromIndexWithDelim(value, "|", 1, work, sizeof(work));
+  getDelimitedField(value, "|", 1, work, sizeof(work));
   online = atoi(work);
-  getStringFromIndexWithDelim(value, "|", 2, work, sizeof(work));
+  getDelimitedField(value, "|", 2, work, sizeof(work));
   level = atoi(work);
-  getStringFromIndexWithDelim(value, "|", 3, work, sizeof(work));
+  getDelimitedField(value, "|", 3, work, sizeof(work));
   duelpoint = atoi(work);
-  getStringFromIndexWithDelim(value, "|", 4, work, sizeof(work));
+  getDelimitedField(value, "|", 4, work, sizeof(work));
   faceimagenumber = atoi(work);
-  ret = getStringFromIndexWithDelim(value, "|", 5, work, sizeof(work));
+  ret = getDelimitedField(value, "|", 5, work, sizeof(work));
   if (ret) {
     transmigration = atoi(work);
   } else {

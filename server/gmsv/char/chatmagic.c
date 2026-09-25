@@ -382,23 +382,23 @@ void CHAR_CHAT_DEBUG_dropmypet(int char_index, char *message) {
   int petID, x, y, floor, objindex, petindex, count = 0;
   int i, j, k, petarray, cLeve = 1;
 
-  if (getStringFromIndexWithDelim(message, " ", 1, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, " ", 1, buf, sizeof(buf)) == FALSE)
     return;
   petID = atoi(buf);
-  if (getStringFromIndexWithDelim(message, " ", 2, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(message, " ", 2, buf, sizeof(buf)) != FALSE) {
     cLeve = atoi(buf);
   }
 
   floor = CHAR_getInt(char_index, CHAR_FLOOR);
   x = CHAR_getInt(char_index, CHAR_X);
   y = CHAR_getInt(char_index, CHAR_Y);
-  if (getStringFromIndexWithDelim(message, " ", 3, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(message, " ", 3, buf, sizeof(buf)) != FALSE) {
     floor = atoi(buf);
   }
-  if (getStringFromIndexWithDelim(message, " ", 4, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(message, " ", 4, buf, sizeof(buf)) != FALSE) {
     x = atoi(buf);
   }
-  if (getStringFromIndexWithDelim(message, " ", 5, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(message, " ", 5, buf, sizeof(buf)) != FALSE) {
     y = atoi(buf);
   }
   for (i = (x - 3); i < (x + 3); i++) {
@@ -443,22 +443,22 @@ void CHAR_CHAT_DEBUG_dropmyitem(int char_index, char *message) {
   int itemID, SitemID, maxflg = 0, emptyitem_indexinchara, i, j;
   int floor, x, y, objindex;
 
-  if (getStringFromIndexWithDelim(message, " ", 1, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, " ", 1, buf, sizeof(buf)) == FALSE)
     return;
   SitemID = atoi(buf);
-  if (getStringFromIndexWithDelim(message, " ", 2, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(message, " ", 2, buf, sizeof(buf)) != FALSE) {
     maxflg = atoi(buf);
   }
   floor = CHAR_getInt(char_index, CHAR_FLOOR);
   x = CHAR_getInt(char_index, CHAR_X);
   y = CHAR_getInt(char_index, CHAR_Y);
-  if (getStringFromIndexWithDelim(message, " ", 3, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(message, " ", 3, buf, sizeof(buf)) != FALSE) {
     floor = atoi(buf);
   }
-  if (getStringFromIndexWithDelim(message, " ", 4, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(message, " ", 4, buf, sizeof(buf)) != FALSE) {
     x = atoi(buf);
   }
-  if (getStringFromIndexWithDelim(message, " ", 5, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(message, " ", 5, buf, sizeof(buf)) != FALSE) {
     y = atoi(buf);
   }
   itemID = SitemID;
@@ -1058,8 +1058,8 @@ void CHAR_CHAT_DEBUG_addsk(int char_index, char *message) {
 
   char msg1[20], msg2[20];
 
-  getStringFromIndexWithDelim(message, " ", 1, msg1, sizeof(msg1));
-  getStringFromIndexWithDelim(message, " ", 2, msg2, sizeof(msg2));
+  getDelimitedField(message, " ", 1, msg1, sizeof(msg1));
+  getDelimitedField(message, " ", 2, msg2, sizeof(msg2));
 
   skill = atoi(msg1);
   level = atoi(msg2);
@@ -1200,9 +1200,9 @@ void CHAR_CHAT_Map(int char_index, char *message) {
   int fixtile, fixobj;
   char buf[16];
 
-  getStringFromIndexWithDelim(message, " ", 1, buf, sizeof(buf));
+  getDelimitedField(message, " ", 1, buf, sizeof(buf));
   fixobj = atoi(buf);
-  getStringFromIndexWithDelim(message, " ", 2, buf, sizeof(buf));
+  getDelimitedField(message, " ", 2, buf, sizeof(buf));
   fixtile = atoi(buf);
   ff = CHAR_getInt(char_index, CHAR_FLOOR);
   fx = CHAR_getInt(char_index, CHAR_X);
@@ -1796,10 +1796,10 @@ void CHAR_CHAT_DEBUG_eventclean(int char_index, char *message) {
   int char_index_tmp = 0;
   int i;
 
-  getStringFromIndexWithDelim(message, " ", 1, token_flag, sizeof(token));
-  ret1 = getStringFromIndexWithDelim(message, " ", 2, token_cdkey,
+  getDelimitedField(message, " ", 1, token_flag, sizeof(token));
+  ret1 = getDelimitedField(message, " ", 2, token_cdkey,
                                      sizeof(token_cdkey));
-  ret2 = getStringFromIndexWithDelim(message, " ", 3, token_name,
+  ret2 = getDelimitedField(message, " ", 3, token_name,
                                      sizeof(token_name));
   shiftbit = atoi(token_flag);
   eventno = atoi(token_flag);
@@ -1969,10 +1969,10 @@ void CHAR_CHAT_DEBUG_eventsetnow(int char_index, char *message) {
   int char_index_tmp = 0;
   int i;
 
-  getStringFromIndexWithDelim(message, " ", 1, token, sizeof(token));
-  ret1 = getStringFromIndexWithDelim(message, " ", 2, token_cdkey,
+  getDelimitedField(message, " ", 1, token, sizeof(token));
+  ret1 = getDelimitedField(message, " ", 2, token_cdkey,
                                      sizeof(token_cdkey));
-  ret2 = getStringFromIndexWithDelim(message, " ", 3, token_name,
+  ret2 = getDelimitedField(message, " ", 3, token_name,
                                      sizeof(token_name));
   shiftbit = atoi(token);
   eventno = atoi(token);
@@ -2121,10 +2121,10 @@ void CHAR_CHAT_DEBUG_eventsetend(int char_index, char *message) {
   int char_index_tmp = 0;
   int i;
 
-  getStringFromIndexWithDelim(message, " ", 1, token, sizeof(token));
-  ret1 = getStringFromIndexWithDelim(message, " ", 2, token_cdkey,
+  getDelimitedField(message, " ", 1, token, sizeof(token));
+  ret1 = getDelimitedField(message, " ", 2, token_cdkey,
                                      sizeof(token_cdkey));
-  ret2 = getStringFromIndexWithDelim(message, " ", 3, token_name,
+  ret2 = getDelimitedField(message, " ", 3, token_name,
                                      sizeof(token_name));
   shiftbit = atoi(token);
   eventno = atoi(token);
@@ -2333,16 +2333,16 @@ void CHAR_CHAT_DEBUG_effect(int char_index, char *message) {
   int playernum = CHAR_getPlayerMaxNum();
   BOOL flg = FALSE;
 
-  getStringFromIndexWithDelim(message, " ", 1, buf, sizeof(buf));
+  getDelimitedField(message, " ", 1, buf, sizeof(buf));
   if (strcmp(buf, "alloff") == 0) {
     flg = TRUE;
   } else {
     floorid = atoi(buf);
-    if (!getStringFromIndexWithDelim(message, " ", 2, buf, sizeof(buf))) {
+    if (!getDelimitedField(message, " ", 2, buf, sizeof(buf))) {
       return;
     }
     effectid = atoi(buf);
-    if (!getStringFromIndexWithDelim(message, " ", 3, buf, sizeof(buf))) {
+    if (!getDelimitedField(message, " ", 3, buf, sizeof(buf))) {
       return;
     }
     level = atoi(buf);
@@ -2423,13 +2423,13 @@ void CHAR_CHAT_DEBUG_getuser(int char_index, char *message) // ttom 14/11/2000
 
   memset(name, 0, sizeof(name));
   MAXCHARA = CHAR_getPlayerMaxNum();
-  if (getStringFromIndexWithDelim(message, " ", 1, name, sizeof(name)) == FALSE)
+  if (getDelimitedField(message, " ", 1, name, sizeof(name)) == FALSE)
     return;
-  if (getStringFromIndexWithDelim(message, " ", 2, buf1, sizeof(buf1)) !=
+  if (getDelimitedField(message, " ", 2, buf1, sizeof(buf1)) !=
       FALSE) {
     MyFloor = atoi(buf1);
   }
-  if (getStringFromIndexWithDelim(message, " ", 3, buf1, sizeof(buf1)) !=
+  if (getDelimitedField(message, " ", 3, buf1, sizeof(buf1)) !=
       FALSE) {
     if (strstr(buf1, "npc") != NULL) {
       FINDNPC = TRUE;
@@ -2810,22 +2810,22 @@ void CHAR_CHAT_DEBUG_fixfmdata(int char_index, char *message) {
     CHAR_talkToCli(char_index, -1, szFixFmCmdErr, CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 1, szFamilyID,
+  if (getDelimitedField(message, " ", 1, szFamilyID,
                                   sizeof(szFamilyID)) == FALSE) {
     CHAR_talkToCli(char_index, -1, szFixFmCmdErr, CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 2, szID,
+  if (getDelimitedField(message, " ", 2, szID,
                                   sizeof(szID)) == FALSE) {
     CHAR_talkToCli(char_index, -1, szFixFmCmdErr, CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 3, szCmd,
+  if (getDelimitedField(message, " ", 3, szCmd,
                                   sizeof(szCmd)) == FALSE) {
     CHAR_talkToCli(char_index, -1, szFixFmCmdErr, CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 4, szData,
+  if (getDelimitedField(message, " ", 4, szData,
                                   sizeof(szData)) == FALSE) {
     CHAR_talkToCli(char_index, -1, szFixFmCmdErr, CHAR_COLORRED);
     return;
@@ -3062,9 +3062,9 @@ void CHAR_CHAT_DEBUG_watchevent(int char_index, char *message) {
     char_index_tmp = char_index;
     find = TRUE;
   } else {
-    getStringFromIndexWithDelim(message, " ", 1, token_cdkey,
+    getDelimitedField(message, " ", 1, token_cdkey,
                                 sizeof(token_cdkey));
-    getStringFromIndexWithDelim(message, " ", 2, token_name,
+    getDelimitedField(message, " ", 2, token_name,
                                 sizeof(token_name));
     if (strlen(token_cdkey) == 0 || strlen(token_name) == 0) {
       sprintf(buf, "%s", "参数不正确。正确格式：[wahctevent 帐号 人物名称]");
@@ -3512,13 +3512,13 @@ void CHAR_CHAT_DEBUG_gmkick(int char_index, char *message) {
                       "LOCK",   "TYPE", "UNLOCK"};
   int act = 1;
 
-  if (getStringFromIndexWithDelim(message, " ", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(message, " ", 1, buf1, sizeof(buf1)) ==
       FALSE) {
     CHAR_talkToCli(char_index, -1, "参数不正确", CHAR_COLORYELLOW);
     return;
   }
   sprintf(cdkey, "%s", buf1);
-  if (getStringFromIndexWithDelim(message, " ", 2, buf1, sizeof(buf1))) {
+  if (getDelimitedField(message, " ", 2, buf1, sizeof(buf1))) {
     int i;
     for (i = 0; i < arraysizeof(gmset); i++) {
       if (!strcmp(buf1, gmset[i])) {
@@ -3721,11 +3721,11 @@ void CHAR_CHAT_DEBUG_sendeffect(int char_index, char *message) {
 
   memset(buf, 0, sizeof(buf));
 
-  if (getStringFromIndexWithDelim(message, " ", 1, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, " ", 1, buf, sizeof(buf)) == FALSE)
     return;
   effect = atoi(buf);
 
-  if (getStringFromIndexWithDelim(message, " ", 2, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, " ", 2, buf, sizeof(buf)) == FALSE)
     return;
   level = atoi(buf);
 
@@ -3820,30 +3820,30 @@ void CHAR_CHAT_DEBUG_checktime(int char_index, char *message) {
   CHAR_talkToCli(char_index, -1, buf, CHAR_COLORRED);
   // p = (struct tm *)calloc( 1, sizeof( struct tm) );
   // if( p == NULL ) return;
-  if (getStringFromIndexWithDelim(message, "/", 1, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, "/", 1, buf, sizeof(buf)) == FALSE)
     return;
   print("ANDY 1.buf:%s\n", buf);
   p->tm_year = atoi(buf) - 1900;
-  if (getStringFromIndexWithDelim(message, "/", 2, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, "/", 2, buf, sizeof(buf)) == FALSE)
     return;
   print("ANDY 2.buf:%s\n", buf);
   p->tm_mon = atoi(buf) - 1;
-  if (getStringFromIndexWithDelim(message, "/", 3, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, "/", 3, buf, sizeof(buf)) == FALSE)
     return;
   print("ANDY 3.buf:%s\n", buf);
   p->tm_mday = atoi(buf);
-  if (getStringFromIndexWithDelim(message, "/", 4, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, "/", 4, buf, sizeof(buf)) == FALSE)
     return;
   p->tm_wday = atoi(buf);
   if (p->tm_wday < 0 || p->tm_wday >= 7)
     p->tm_wday = 0;
-  if (getStringFromIndexWithDelim(message, "/", 5, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, "/", 5, buf, sizeof(buf)) == FALSE)
     return;
   p->tm_hour = atoi(buf);
-  if (getStringFromIndexWithDelim(message, "/", 6, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, "/", 6, buf, sizeof(buf)) == FALSE)
     return;
   p->tm_min = atoi(buf);
-  if (getStringFromIndexWithDelim(message, "/", 7, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(message, "/", 7, buf, sizeof(buf)) == FALSE)
     return;
   p->tm_sec = atoi(buf);
 
@@ -3913,11 +3913,11 @@ void CHAR_CHAT_DEBUG_set_regist(int char_index, char *message) {
   char temp[128] = {0}, msg[128] = {0};
   int f = 0, i = 0, t = 0;
 
-  getStringFromIndexWithDelim(message, " ", 1, temp, sizeof(temp));
+  getDelimitedField(message, " ", 1, temp, sizeof(temp));
   f = atoi(temp);
-  getStringFromIndexWithDelim(message, " ", 2, temp, sizeof(temp));
+  getDelimitedField(message, " ", 2, temp, sizeof(temp));
   i = atoi(temp);
-  getStringFromIndexWithDelim(message, " ", 3, temp, sizeof(temp));
+  getDelimitedField(message, " ", 3, temp, sizeof(temp));
   t = atoi(temp);
 
   CHAR_setWorkInt(char_index, CHAR_WORK_F_SUIT, f);
@@ -3941,9 +3941,9 @@ void CHAR_CHAT_DEBUG_show_profession(int char_index, char *message) {
   char worker[10], value[10], type[10];
   char msg[512];
   int i, skillid, array;
-  getStringFromIndexWithDelim(message, " ", 1, type, sizeof(type));
-  getStringFromIndexWithDelim(message, " ", 2, worker, sizeof(worker));
-  getStringFromIndexWithDelim(message, " ", 3, value, sizeof(value));
+  getDelimitedField(message, " ", 1, type, sizeof(type));
+  getDelimitedField(message, " ", 2, worker, sizeof(worker));
+  getDelimitedField(message, " ", 3, value, sizeof(value));
   if (strcmp(type, "restart") == 0) { // 重读 profession.txt
     CHAR_talkToCli(char_index, -1, "重读 profession.txt", CHAR_COLORRED);
     rePROFESSION_initSkill();
@@ -4007,7 +4007,7 @@ void CHAR_CHAT_DEBUG_samecode(int char_index, char *message) {
   int MAXITEM = ITEM_getITEM_sItemNum();
   int MAXPET = CHAR_getPetMaxNum();
 
-  if (getStringFromIndexWithDelim(message, " ", 1, buf1, sizeof(buf1)) == FALSE)
+  if (getDelimitedField(message, " ", 1, buf1, sizeof(buf1)) == FALSE)
     return;
   for (j = 0; j < 3; j++) {
     if (strstr(buf1, cmd[j]) != NULL) {
@@ -4022,7 +4022,7 @@ void CHAR_CHAT_DEBUG_samecode(int char_index, char *message) {
 
   switch (type) {
   case 0:
-    if (getStringFromIndexWithDelim(message, " ", 2, buf1, sizeof(buf1)) ==
+    if (getDelimitedField(message, " ", 2, buf1, sizeof(buf1)) ==
         TRUE) {
       checkn = TRUE;
     }
@@ -4058,7 +4058,7 @@ void CHAR_CHAT_DEBUG_samecode(int char_index, char *message) {
     CHAR_talkToCli(char_index, -1, buf2, CHAR_COLORYELLOW);
     break;
   case 2:
-    if (getStringFromIndexWithDelim(message, " ", 2, buf1, sizeof(buf1)) ==
+    if (getDelimitedField(message, " ", 2, buf1, sizeof(buf1)) ==
         TRUE) {
       for (j = 0; j <= CheckCharMaxItem(char_index); j++) {
         int item_index = CHAR_getItemIndex(char_index, j);
@@ -4115,7 +4115,7 @@ void CHAR_CHAT_DEBUG_help(int char_index, char *message) {
   char buf[256], buf1[256], buf2[256];
   int i, GmLevel = 0, type = 0;
   int MaxMagicNum = CHAR_getChatMagicFuncMaxNum();
-  getStringFromIndexWithDelim(message, " ", 1, buf, sizeof(buf));
+  getDelimitedField(message, " ", 1, buf, sizeof(buf));
   if ((strlen(message) == 0) || (strlen(buf) == 0)) {
     strcpy(buf, "[help 指令/all]");
     CHAR_talkToCli(char_index, -1, buf, CHAR_COLORYELLOW);
@@ -4162,8 +4162,8 @@ void CHAR_CHAT_DEBUG_set_momentum(int char_index, char *message) {
   char szMsg[32], szBuf[16], buf[128], szName[32];
   int i, id, fd, iPlayerNum = CHAR_getPlayerMaxNum();
 
-  getStringFromIndexWithDelim(message, " ", 1, szName, sizeof(szName));
-  getStringFromIndexWithDelim(message, " ", 2, szBuf, sizeof(szBuf));
+  getDelimitedField(message, " ", 1, szName, sizeof(szName));
+  getDelimitedField(message, " ", 2, szBuf, sizeof(szBuf));
   id = atoi(szBuf);
   for (i = 0; i < iPlayerNum; i++) {
     if (CHAR_getCharUse(i) != FALSE) {
@@ -4193,7 +4193,7 @@ void CHAR_CHAT_DEBUG_set_manor_owner(int char_index, char *message) {
   char szId[8], szUseFlag[2], szFamilyNameOrID[64], szToken[4096],
       szFamilyIndex[8], szGetFamilyName[64];
 
-  if (message == NULL || getStringFromIndexWithDelim(message, " ", 1, szId,
+  if (message == NULL || getDelimitedField(message, " ", 1, szId,
                                                      sizeof(szId)) == FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [set_manor_owner 庄园id(1~10) 使用旗标(0:名称 "
@@ -4205,7 +4205,7 @@ void CHAR_CHAT_DEBUG_set_manor_owner(int char_index, char *message) {
     CHAR_talkToCli(char_index, -1, "庄园ID值不正确(1~10)", CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 2, szUseFlag,
+  if (getDelimitedField(message, " ", 2, szUseFlag,
                                   sizeof(szUseFlag)) == FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [set_manor_owner 庄园id(1~10) 使用旗标(0:名称 "
@@ -4219,7 +4219,7 @@ void CHAR_CHAT_DEBUG_set_manor_owner(int char_index, char *message) {
                    CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 3, szFamilyNameOrID,
+  if (getDelimitedField(message, " ", 3, szFamilyNameOrID,
                                   sizeof(szFamilyNameOrID)) == FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [set_manor_owner 庄园id(1~10) 使用旗标(0:名称 "
@@ -4238,11 +4238,11 @@ void CHAR_CHAT_DEBUG_set_manor_owner(int char_index, char *message) {
       }
     }
     for (i = 0;; i++) {
-      if (getStringFromIndexWithDelim(gFamilyList, "|", i, szToken,
+      if (getDelimitedField(gFamilyList, "|", i, szToken,
                                       sizeof(szToken))) {
-        if ((getStringFromIndexWithDelim(szToken, " ", 1, szFamilyIndex,
+        if ((getDelimitedField(szToken, " ", 1, szFamilyIndex,
                                          sizeof(szFamilyIndex))) &&
-            (getStringFromIndexWithDelim(szToken, " ", 2, szGetFamilyName,
+            (getDelimitedField(szToken, " ", 2, szGetFamilyName,
                                          sizeof(szGetFamilyName)))) {
           if (strcmp(szFamilyNameOrID, szFamilyIndex) == 0) {
             index = atoi(szFamilyIndex) - 1;
@@ -4261,11 +4261,11 @@ void CHAR_CHAT_DEBUG_set_manor_owner(int char_index, char *message) {
                                 szGetFamilyName, index + 1, index, atoi(szId));
   } else {
     for (i = 0;; i++) {
-      if (getStringFromIndexWithDelim(gFamilyList, "|", i, szToken,
+      if (getDelimitedField(gFamilyList, "|", i, szToken,
                                       sizeof(szToken))) {
-        if ((getStringFromIndexWithDelim(szToken, " ", 1, szFamilyIndex,
+        if ((getDelimitedField(szToken, " ", 1, szFamilyIndex,
                                          sizeof(szFamilyIndex))) &&
-            (getStringFromIndexWithDelim(szToken, " ", 2, szGetFamilyName,
+            (getDelimitedField(szToken, " ", 2, szGetFamilyName,
                                          sizeof(szGetFamilyName)))) {
           if (strcmp(szFamilyNameOrID, szGetFamilyName) == 0) {
             index = atoi(szFamilyIndex) - 1;
@@ -4292,7 +4292,7 @@ void CHAR_CHAT_DEBUG_set_schedule_time(int char_index, char *message) {
   int i, char_max = CHAR_getCharNum();
   char szId[8], szTime[12], szMsg[128];
 
-  if (message == NULL || getStringFromIndexWithDelim(message, " ", 1, szId,
+  if (message == NULL || getDelimitedField(message, " ", 1, szId,
                                                      sizeof(szId)) == FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [set_schedule_time 庄园id(1~9) 时间(分)]",
@@ -4303,7 +4303,7 @@ void CHAR_CHAT_DEBUG_set_schedule_time(int char_index, char *message) {
     CHAR_talkToCli(char_index, -1, "庄园ID值不正确", CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 2, szTime, sizeof(szTime)) ==
+  if (getDelimitedField(message, " ", 2, szTime, sizeof(szTime)) ==
       FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [set_schedule_time 庄园id(1~9) 时间(分)]",
@@ -4336,13 +4336,13 @@ void CHAR_CHAT_DEBUG_angelinfo(int char_index, char *message) // 显示Mission�
   char herokey[256];
 
   if (message[0] == '\0' ||
-      getStringFromIndexWithDelim(message, " ", 1, cdkey, sizeof(cdkey)) ==
+      getDelimitedField(message, " ", 1, cdkey, sizeof(cdkey)) ==
           FALSE) {
     CHAR_talkToCli(char_index, -1, "参数不正确 [angelinfo 帐号(all) (clean)]",
                    CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 2, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(message, " ", 2, buf, sizeof(buf)) != FALSE) {
     // if( !strcmp( buf, "clean") )	clean =TRUE;
   }
 
@@ -4365,9 +4365,9 @@ void CHAR_CHAT_DEBUG_angelinfo(int char_index, char *message) // 显示Mission�
     for (i = 0; i < MAXMISSIONTABLE; i++) {
       if (missiontable[i].angelinfo[0] == '\0')
         continue;
-      getStringFromIndexWithDelim(missiontable[i].angelinfo, ":", 1, angelkey,
+      getDelimitedField(missiontable[i].angelinfo, ":", 1, angelkey,
                                   sizeof(angelkey));
-      getStringFromIndexWithDelim(missiontable[i].heroinfo, ":", 1, herokey,
+      getDelimitedField(missiontable[i].heroinfo, ":", 1, herokey,
                                   sizeof(herokey));
 
       if (!strcmp(angelkey, cdkey) || !strcmp(herokey, cdkey)) {
@@ -4421,21 +4421,21 @@ void CHAR_CHAT_DEBUG_angelcreate(int char_index,
   int MAXCHARA = 0;
   int angelindex = -1, heroindex = -1, mission = -1;
 
-  if (getStringFromIndexWithDelim(message, " ", 1, angelid, sizeof(angelid)) ==
+  if (getDelimitedField(message, " ", 1, angelid, sizeof(angelid)) ==
       FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [angelcreate 使者帐号 勇者帐号 任务编号]",
                    CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 2, heroid, sizeof(heroid)) ==
+  if (getDelimitedField(message, " ", 2, heroid, sizeof(heroid)) ==
       FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [angelcreate 使者帐号 勇者帐号 任务编号]",
                    CHAR_COLORRED);
     return;
   }
-  if (getStringFromIndexWithDelim(message, " ", 3, buf, sizeof(buf)) == FALSE) {
+  if (getDelimitedField(message, " ", 3, buf, sizeof(buf)) == FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [angelcreate 使者帐号 勇者帐号 任务编号]",
                    CHAR_COLORRED);
@@ -4568,7 +4568,7 @@ void CHAR_CHAT_DEBUG_getyou(int char_index, char *message) {
   int o, chara_index;
   int getnum = 0;
 
-  getStringFromIndexWithDelim(message, " ", 1, areabuf, sizeof(areabuf));
+  getDelimitedField(message, " ", 1, areabuf, sizeof(areabuf));
   area = atoi(areabuf);
   if (area <= 0 || area > 3) {
     sprintf(buf, "%s", "没有输入  围或  围超出限制，请输入1~3");
@@ -5226,8 +5226,8 @@ void CHAR_CHAT_DEBUG_SET_FAME(int char_index, char *message) {
   char szMsg[32], szBuf[16], buf[128];
   int i, id, fd, iPlayerNum = CHAR_getPlayerMaxNum();
 
-  getStringFromIndexWithDelim(message, " ", 1, cdkey, sizeof(cdkey));
-  getStringFromIndexWithDelim(message, " ", 2, szBuf, sizeof(szBuf));
+  getDelimitedField(message, " ", 1, cdkey, sizeof(cdkey));
+  getDelimitedField(message, " ", 2, szBuf, sizeof(szBuf));
   id = atoi(szBuf);
   for (i = 0; i < iPlayerNum; i++) {
     if (CHAR_getCharUse(i) != FALSE) {
@@ -5424,12 +5424,12 @@ void CHAR_CHAT_DEBUG_petmakecf(int char_index, char *message) {
   easyGetTokenFromString(message, 1, buf, sizeof(buf));
   enemyid = atoi(buf);
   easyGetTokenFromString(message, 2, buf, sizeof(buf));
-  getStringFromIndexWithDelim(buf, "/", 1, buf1, sizeof(buf1));
+  getDelimitedField(buf, "/", 1, buf1, sizeof(buf1));
   chengzhang = atof(buf1) - 1.0;
   // if(chengzhang>9.0)chengzhang=9.0;
-  getStringFromIndexWithDelim(buf, "/", 2, buf1, sizeof(buf1));
+  getDelimitedField(buf, "/", 2, buf1, sizeof(buf1));
   level = atoi(buf1);
-  getStringFromIndexWithDelim(buf, "/", 3, buf1, sizeof(buf1));
+  getDelimitedField(buf, "/", 3, buf1, sizeof(buf1));
   trans = atoi(buf1);
   easyGetTokenFromString(message, 3, cdkey, sizeof(cdkey));
 
@@ -5740,15 +5740,15 @@ extern PlayerQuestion_t PlayerQuestion;
 void CHAR_CHAT_DEBUG_PlayerQuestion(int char_index, char *message) {
   char tmp[64];
   char type[5][32] = {"石币", "道具", "宠物", "声望", "积分"};
-  if (getStringFromIndexWithDelim(message, " ", 1, PlayerQuestion.question,
+  if (getDelimitedField(message, " ", 1, PlayerQuestion.question,
                                   sizeof(PlayerQuestion.question)) == FALSE) {
     CHAR_talkToCli(char_index, -1, "请输入你的问题!", CHAR_COLORRED);
   }
-  if (getStringFromIndexWithDelim(message, " ", 2, PlayerQuestion.result,
+  if (getDelimitedField(message, " ", 2, PlayerQuestion.result,
                                   sizeof(PlayerQuestion.result)) == FALSE) {
     CHAR_talkToCli(char_index, -1, "请输入你的问题答案!", CHAR_COLORRED);
   }
-  if (getStringFromIndexWithDelim(message, " ", 3, tmp, sizeof(tmp)) == FALSE) {
+  if (getDelimitedField(message, " ", 3, tmp, sizeof(tmp)) == FALSE) {
     CHAR_talkToCli(
         char_index, -1,
         "请输入你的奖品类型(0为石币,1为道具,2为宠物,3为声望,4为积分!",
@@ -5756,7 +5756,7 @@ void CHAR_CHAT_DEBUG_PlayerQuestion(int char_index, char *message) {
   } else {
     PlayerQuestion.type = min(max(0, atoi(tmp)), 4);
   }
-  if (getStringFromIndexWithDelim(message, " ", 4, tmp, sizeof(tmp)) == FALSE) {
+  if (getDelimitedField(message, " ", 4, tmp, sizeof(tmp)) == FALSE) {
     sprintf(token, "请输入你的奖品%s数量!", type[PlayerQuestion.type]);
     CHAR_talkToCli(char_index, -1, token, CHAR_COLORRED);
   } else {
@@ -5871,7 +5871,7 @@ void CHAR_CHAT_DEBUG_petmake2(int char_index, char *message) {
                                              nPetNo = -1, nMakeNum, nEnemyID;
   char szMsgbuf[64], szBuf1[256];
 
-  if (getStringFromIndexWithDelim(message, " ", 1, szBuf1, sizeof(szBuf1)) ==
+  if (getDelimitedField(message, " ", 1, szBuf1, sizeof(szBuf1)) ==
       FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [petmaketrans 转生数 宠物ID 等级 数量]",
@@ -5882,7 +5882,7 @@ void CHAR_CHAT_DEBUG_petmake2(int char_index, char *message) {
   if (nTrans < 0 || nTrans > MAX_TRANS)
     nTrans = 0;
 
-  if (getStringFromIndexWithDelim(message, " ", 2, szBuf1, sizeof(szBuf1)) ==
+  if (getDelimitedField(message, " ", 2, szBuf1, sizeof(szBuf1)) ==
       FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [petmaketrans 转生数 宠物ID 等级 数量]",
@@ -5890,7 +5890,7 @@ void CHAR_CHAT_DEBUG_petmake2(int char_index, char *message) {
     return;
   }
   nEnemyid = atoi(szBuf1);
-  if (getStringFromIndexWithDelim(message, " ", 3, szBuf1, sizeof(szBuf1)) ==
+  if (getDelimitedField(message, " ", 3, szBuf1, sizeof(szBuf1)) ==
       FALSE) {
     CHAR_talkToCli(char_index, -1,
                    "参数不正确 [petmaketrans 转生数 宠物ID 等级 数量]",
@@ -5898,7 +5898,7 @@ void CHAR_CHAT_DEBUG_petmake2(int char_index, char *message) {
     return;
   }
   nLevel = atoi(szBuf1);
-  if (getStringFromIndexWithDelim(message, " ", 4, szBuf1, sizeof(szBuf1)) !=
+  if (getDelimitedField(message, " ", 4, szBuf1, sizeof(szBuf1)) !=
       FALSE)
     nMakeNum = atoi(szBuf1);
   else

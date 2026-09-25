@@ -96,7 +96,7 @@ BOOL NPC_NPCEnemyInit(int meindex) {
     int i;
     for (i = 0; i < NPC_ENEMY_ENEMYNUMBER; i++) {
       int ret;
-      ret = getStringFromIndexWithDelim(buf, ",", i + 1, data, sizeof(data));
+      ret = getDelimitedField(buf, ",", i + 1, data, sizeof(data));
       if (ret == FALSE)
         break;
       curEnemy = ENEMY_getEnemyArrayFromId(atoi(data));
@@ -278,7 +278,7 @@ int NPC_NPCEnemy_Encount(int meindex, int char_index, int mode) {
         int j;
         int itemid;
         int ret =
-            getStringFromIndexWithDelim(buf, ",", i + 1, data, sizeof(data));
+            getDelimitedField(buf, ",", i + 1, data, sizeof(data));
         if (ret == FALSE)
           break;
         found = FALSE;
@@ -316,7 +316,7 @@ int NPC_NPCEnemy_Encount(int meindex, int char_index, int mode) {
         int j;
         int itemid;
         int ret =
-            getStringFromIndexWithDelim(buf, ",", i + 1, data, sizeof(data));
+            getDelimitedField(buf, ",", i + 1, data, sizeof(data));
         if (ret == FALSE)
           break;
         found = TRUE;
@@ -353,7 +353,7 @@ int NPC_NPCEnemy_Encount(int meindex, int char_index, int mode) {
                                           sizeof(buf)) != NULL) {
         int i = 1, event = -1;
         ;
-        while (getStringFromIndexWithDelim(buf, ",", i, data, sizeof(data))) {
+        while (getDelimitedField(buf, ",", i, data, sizeof(data))) {
           i++;
           event = atoi(data);
           if (NPC_EventCheckFlg(char_index, event) == FALSE) {
@@ -369,7 +369,7 @@ int NPC_NPCEnemy_Encount(int meindex, int char_index, int mode) {
                                           sizeof(buf)) != NULL) {
         int i = 1, event = -1;
         ;
-        while (getStringFromIndexWithDelim(buf, ",", i, data, sizeof(data))) {
+        while (getDelimitedField(buf, ",", i, data, sizeof(data))) {
           i++;
           event = atoi(data);
           if (NPC_NowEventCheckFlg(char_index, event) == FALSE) {
@@ -741,7 +741,7 @@ static int NPC_NPCEnemy_StealItem(char *argstr, int meindex, int char_index) {
       int j;
       int itemid;
       int ret =
-          getStringFromIndexWithDelim(itembuf, ",", i + 1, data, sizeof(data));
+          getDelimitedField(itembuf, ",", i + 1, data, sizeof(data));
       if (ret == FALSE) {
         break;
       }
@@ -804,7 +804,7 @@ static BOOL NPC_NPCEnemy_CheckFree(int meindex, int toindex, BOOL *Party) {
   } else {
   }
 
-  while (getStringFromIndexWithDelim(npcarg, "OVER", talkNo, buf1,
+  while (getDelimitedField(npcarg, "OVER", talkNo, buf1,
                                      sizeof(buf1)) != FALSE) {
 
     talkNo++;
@@ -835,14 +835,14 @@ static BOOL NPC_NPCEnemy_CheckFree(int meindex, int toindex, BOOL *Party) {
           FALSE) {
         continue;
       } else { // RAND	arraysizeof	AllWarPoint
-        while (getStringFromIndexWithDelim(buf2, ";", point, buf3,
+        while (getDelimitedField(buf2, ";", point, buf3,
                                            sizeof(buf3)) != FALSE) {
           point++;
-          getStringFromIndexWithDelim(buf3, ",", 1, buf4, sizeof(buf4));
+          getDelimitedField(buf3, ",", 1, buf4, sizeof(buf4));
           AllWarPoint[i].floor = atoi(buf4);
-          getStringFromIndexWithDelim(buf3, ",", 2, buf4, sizeof(buf4));
+          getDelimitedField(buf3, ",", 2, buf4, sizeof(buf4));
           AllWarPoint[i].x = atoi(buf4);
-          getStringFromIndexWithDelim(buf3, ",", 3, buf4, sizeof(buf4));
+          getDelimitedField(buf3, ",", 3, buf4, sizeof(buf4));
           AllWarPoint[i].y = atoi(buf4);
           i++;
           if (i >= arraysizeof(AllWarPoint))
@@ -877,13 +877,13 @@ BOOL NPCEnemy_CheckFree(int meindex, int talker, char *buf) {
   char buff3[128];
   int i = 1, j = 1;
   int loop = 0;
-  while (getStringFromIndexWithDelim(buf, ",", i, buff2, sizeof(buff2)) !=
+  while (getDelimitedField(buf, ",", i, buff2, sizeof(buff2)) !=
          FALSE) {
     i++;
     if (strstr(buff2, "&") != NULL) {
       j = 1;
       loop = 0;
-      while (getStringFromIndexWithDelim(buff2, "&", j, buff3, sizeof(buff3)) !=
+      while (getDelimitedField(buff2, "&", j, buff3, sizeof(buff3)) !=
              FALSE) {
         j++;
         if (NPCEnemy_BSCheck(meindex, talker, buff3) == FALSE) {
@@ -912,33 +912,33 @@ BOOL NPCEnemy_BSCheck(int meindex, int talker, char *buf) {
   char buff1[128], buff3[128];
   if (strstr(buf, "-") != NULL) {
     // buff3为抓宠物ID
-    getStringFromIndexWithDelim(buf, "-", 2, buff3, sizeof(buff3));
+    getDelimitedField(buf, "-", 2, buff3, sizeof(buff3));
     temp = atoi(buff3);
-    getStringFromIndexWithDelim(buf, "-", 1, buff1, sizeof(buff1));
+    getDelimitedField(buf, "-", 1, buff1, sizeof(buff1));
     strcpy(buf, buff1);
   }
 
   if (strstr(buf, "<") != NULL) {
-    getStringFromIndexWithDelim(buf, "<", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, "<", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, "<", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "<", 1, buff2, sizeof(buff2));
 
     if (NPCEnemy_FreeIfCheck(meindex, talker, buff2, kosuu, 1, temp) == TRUE) {
       return TRUE;
     }
   } else if (strstr(buf, ">") != NULL) {
-    getStringFromIndexWithDelim(buf, ">", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, ">", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, ">", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, ">", 1, buff2, sizeof(buff2));
 
     if (NPCEnemy_FreeIfCheck(meindex, talker, buff2, kosuu, 2, temp) == TRUE) {
       return TRUE;
     }
 
   } else if (strstr(buf, "!") != NULL) {
-    getStringFromIndexWithDelim(buf, "!=", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, "!=", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, "!=", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "!=", 1, buff2, sizeof(buff2));
     if (NPCEnemy_FreeIfCheck(meindex, talker, buff2, kosuu, 0, temp) == TRUE) {
       return FALSE;
     } else {
@@ -947,9 +947,9 @@ BOOL NPCEnemy_BSCheck(int meindex, int talker, char *buf) {
 
   } else if (strstr(buf, "=") != NULL) {
 
-    getStringFromIndexWithDelim(buf, "=", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, "=", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, "=", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "=", 1, buff2, sizeof(buff2));
 
     if (strstr(buf, "PET")) {
       flg = 3;
@@ -1020,10 +1020,10 @@ BOOL NPCEnemy_WarpManReduce(int meindex, int talker, char *buf) {
   int kosuu;
   int cnt = 0;
 
-  getStringFromIndexWithDelim(buf, "=", 2, buf2, sizeof(buf2));
-  getStringFromIndexWithDelim(buf2, "*", 1, buf3, sizeof(buf3));
+  getDelimitedField(buf, "=", 2, buf2, sizeof(buf2));
+  getDelimitedField(buf2, "*", 1, buf3, sizeof(buf3));
   itemno = atoi(buf3);
-  getStringFromIndexWithDelim(buf2, "*", 2, buf3, sizeof(buf3));
+  getDelimitedField(buf2, "*", 2, buf3, sizeof(buf3));
   kosuu = atoi(buf3);
 
 #ifdef _NEW_ITEM_

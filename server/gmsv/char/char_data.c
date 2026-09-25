@@ -676,7 +676,7 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
       int ret;
       int lx, ly, rx, ry;
       CHAR_AREAKIND kind = -1;
-      ret = getStringFromIndexWithDelim(line, " ", 1, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 1, token, sizeof(token));
       if (ret == FALSE) {
         printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         continue;
@@ -711,7 +711,7 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
       }
 
       CHAR_invarea[invreadlen].kind = kind;
-      ret = getStringFromIndexWithDelim(line, " ", 2, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 2, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename,
                linenum);
@@ -719,7 +719,7 @@ BOOL CHAR_initInvinciblePlace(char *filename) {
       } else
         CHAR_invarea[invreadlen].floor = atoi(token);
 
-      ret = getStringFromIndexWithDelim(line, " ", 3, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 3, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename,
                linenum);
@@ -839,20 +839,20 @@ BOOL CHAR_initAppearPosition(char *filename) {
     {
       char token[256];
       int ret;
-      ret = getStringFromIndexWithDelim(line, " ", 1, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 1, token, sizeof(token));
       if (ret == FALSE) {
         printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         continue;
       }
       CHAR_appear[appearreadlen].floor = atoi(token);
-      ret = getStringFromIndexWithDelim(line, " ", 2, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 2, token, sizeof(token));
       if (ret == FALSE) {
         printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         continue;
       }
 
       CHAR_appear[appearreadlen].x = atoi(token);
-      ret = getStringFromIndexWithDelim(line, " ", 3, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 3, token, sizeof(token));
       if (ret == FALSE) {
         printEx("Syntax Error file:%s line:%d\n", filename, linenum);
         continue;

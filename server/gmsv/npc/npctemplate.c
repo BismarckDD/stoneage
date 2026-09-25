@@ -785,7 +785,7 @@ BOOL NPC_readTemplateFile(char *filename) {
 
       char firstToken[256];
       int ret, i;
-      ret = getStringFromIndexWithDelim(line, "=", 1, firstToken,
+      ret = getDelimitedField(line, "=", 1, firstToken,
                                         sizeof(firstToken));
       if (ret == FALSE) {
         print("Find error at %s in line %d. Ignore\n", filename, linenum);
@@ -803,21 +803,21 @@ BOOL NPC_readTemplateFile(char *filename) {
           ;
         else
           continue;
-        ret = getStringFromIndexWithDelim(line, "=", 2, secondToken,
+        ret = getDelimitedField(line, "=", 2, secondToken,
                                           sizeof(secondToken));
         if (ret == FALSE) {
           print("Find error at %s in line %d. Ignore\n", filename, linenum);
           secondToken[0] = '\0';
         }
         ret =
-            getStringFromIndexWithDelim(secondToken, "|", 1, one, sizeof(one));
+            getDelimitedField(secondToken, "|", 1, one, sizeof(one));
         if (ret != FALSE)
           itemnumber = atoi(one);
         ret =
-            getStringFromIndexWithDelim(secondToken, "|", 2, two, sizeof(two));
+            getDelimitedField(secondToken, "|", 2, two, sizeof(two));
         if (ret != FALSE)
           rate = atoi(two);
-        ret = getStringFromIndexWithDelim(secondToken, "|", 3, three,
+        ret = getDelimitedField(secondToken, "|", 3, three,
                                           sizeof(three));
         if (ret != FALSE)
           amount = atoi(three);
@@ -843,7 +843,7 @@ BOOL NPC_readTemplateFile(char *filename) {
         for (i = 0; i < arraysizeof(NPC_readtemplate); i++) {
           if (strcasecmp(NPC_readtemplate[i].keyword, firstToken) == 0) {
             char secondToken[256] = {""};
-            ret = getStringFromIndexWithDelim(line, "=", 2, secondToken,
+            ret = getDelimitedField(line, "=", 2, secondToken,
                                               sizeof(secondToken));
             if (ret == FALSE)
               print("Find error at %s in line %d. Ignore\n", filename, linenum);

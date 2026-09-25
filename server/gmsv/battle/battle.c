@@ -2064,6 +2064,7 @@ int *Doujyou_GetEnemy(int meindex, int char_index) {
   char buf[1024];
   int ret;
   int insert;
+  const char *cursor;
   int WorkEnemyTbl[MAX_DOUJYOUENEMY];
 
   NPC_Util_GetArgStr(meindex, argstr, sizeof(argstr));
@@ -2079,12 +2080,13 @@ int *Doujyou_GetEnemy(int meindex, int char_index) {
   }
 
   insert = 0;
+  cursor = buf;
   /* 引数に書いてある敵をエントリさせる (将参数中的敌人加入列表) */
   for (i = 0; i < MAX_DOUJYOUENEMY; i++) {
     int curEnemy;
     char data[128];
 
-    ret = getStringFromIndexWithDelim(buf, ",", i + 1, data, sizeof(data));
+    ret = nextDelimitedField(&cursor, ",", data, sizeof(data));
     if (ret == FALSE) {
       break;
     }
@@ -2108,12 +2110,13 @@ int *Doujyou_GetEnemy(int meindex, int char_index) {
     DoujyouEnemyTbl[1] = -1;
   } else {
     insert = 0;
+    cursor = buf;
     /* 引数に書いてある敵をエントリさせる (将参数中的敌人加入列表) */
     for (i = 0; i < MAX_DOUJYOUENEMY; i++) {
       int curEnemy;
       char data[128];
 
-      ret = getStringFromIndexWithDelim(buf, ",", i + 1, data, sizeof(data));
+      ret = nextDelimitedField(&cursor, ",", data, sizeof(data));
       if (ret == FALSE) {
         break;
       }
@@ -8507,8 +8510,8 @@ static int BATTLE_Battling(int battle_index) {
           char *skillarg = PETSKILL_getChar(array, PETSKILL_OPTION);
           char key[32];
           char jl[32];
-          getStringFromIndexWithDelim(skillarg, "|", 1, key, sizeof(key));
-          getStringFromIndexWithDelim(skillarg, "|", 2, jl, sizeof(jl));
+          getDelimitedField(skillarg, "|", 1, key, sizeof(key));
+          getDelimitedField(skillarg, "|", 2, jl, sizeof(jl));
 
           char token[256];
           if ((rand() % 100) > atoi(jl)) {

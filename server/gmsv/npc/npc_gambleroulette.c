@@ -443,15 +443,15 @@ BOOL ReadPointData(int meindex)
     return FALSE;
   }
   k = 1;
-  while (getStringFromIndexWithDelim(buf1, ";", k, buf2, sizeof(buf2)) != FALSE)
+  while (getDelimitedField(buf1, ";", k, buf2, sizeof(buf2)) != FALSE)
   {
     k++;
     if (strstr(buf2, ",") == NULL)
       continue;
-    if (getStringFromIndexWithDelim(buf2, ",", 1, buf3, sizeof(buf3)) == FALSE)
+    if (getDelimitedField(buf2, ",", 1, buf3, sizeof(buf3)) == FALSE)
       return FALSE;
     PointData[i].x = atoi(buf3);
-    if (getStringFromIndexWithDelim(buf2, ",", 2, buf3, sizeof(buf3)) == FALSE)
+    if (getDelimitedField(buf2, ",", 2, buf3, sizeof(buf3)) == FALSE)
       return FALSE;
     PointData[i].y = atoi(buf3);
     if (i > 9) break;

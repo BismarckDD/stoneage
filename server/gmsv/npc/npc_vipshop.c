@@ -195,7 +195,7 @@ static void NPC_VipShop_selectWindow( int meindex, int toindex, int num,int sele
 			print("VipShop Get START_MSG ERROR !");
 			return;
 		}
-		if(getStringFromIndexWithDelim( npcarg,"}",select1, buf2, sizeof( buf2)) != FALSE)
+		if(getDelimitedField( npcarg,"}",select1, buf2, sizeof( buf2)) != FALSE)
 			NPC_Util_GetStrFromStrWithDelim( buf2, "MenuStr", buf3, sizeof( buf3));
 		sprintf( token, "\n%s\n\n        %s\n",buf1, buf3);
 		
@@ -221,7 +221,7 @@ BOOL VipShop_GetMenuStr( int meindex, int toindex, char *npcarg, char *token,int
 	if( npcarg == NULL ) return FALSE;
 	
 	sprintf( token, "你当前的积分点数是:%d        %d/%d页\n",CHAR_getInt( toindex , CHAR_AMPOINT), index+1, CHAR_getWorkInt( meindex, NPC_WORK_MAXPAGE));
-	while( getStringFromIndexWithDelim( npcarg,"}",talkNo, buf1, sizeof( buf1)) != FALSE )	{
+	while( getDelimitedField( npcarg,"}",talkNo, buf1, sizeof( buf1)) != FALSE )	{
 		talkNo++;
 		memset( buf2, 0, sizeof( buf2));
 		if( NPC_Util_GetStrFromStrWithDelim( buf1, "MenuStr", buf2, sizeof( buf2)) == NULL  )
@@ -243,7 +243,7 @@ int VipShop_ShowMenulist( char *npcarg )
 {
 	char buf1[1024];
 	int talkNo=1;
-	while( getStringFromIndexWithDelim( npcarg,"}",talkNo, buf1, sizeof( buf1)) != FALSE )	{
+	while( getDelimitedField( npcarg,"}",talkNo, buf1, sizeof( buf1)) != FALSE )	{
 		talkNo++;
 	}
 	return (talkNo-3)/7+1;

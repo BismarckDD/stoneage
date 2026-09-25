@@ -382,7 +382,7 @@ BOOL NPC_FlgCheckMain(int meindex, int talker, int nowindex,
   for (; i < max; i++) {
     sprintf(work, "#%d:", now[i]);
     j = 1;
-    while (getStringFromIndexWithDelim(argstr, "|", j, buf, sizeof(buf)) !=
+    while (getDelimitedField(argstr, "|", j, buf, sizeof(buf)) !=
            FALSE) {
       j++;
       if (strstr(buf, work) != NULL) {

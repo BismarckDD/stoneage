@@ -45,15 +45,15 @@ int GetObjType(const char *segment) {
 int GetPoint(const char *line, int *floor, int *x, int *y) {
   char segment[256];
   memset(segment, 0, sizeof(segment));
-  if (getStringFromIndexWithDelim(line, ",", 1, segment, sizeof(segment)) == FALSE) {
+  if (getDelimitedField(line, ",", 1, segment, sizeof(segment)) == FALSE) {
     return -1;
   }
   *floor = atoi(segment);
-  if (getStringFromIndexWithDelim(line, ",", 2, segment, sizeof(segment)) == FALSE) {
+  if (getDelimitedField(line, ",", 2, segment, sizeof(segment)) == FALSE) {
     return -1;
   }
   *x = atoi(segment);
-  if (getStringFromIndexWithDelim(line, ",", 3, segment, sizeof(segment)) == FALSE) {
+  if (getDelimitedField(line, ",", 3, segment, sizeof(segment)) == FALSE) {
     return -1;
   }
   *y = atoi(segment);
@@ -179,7 +179,7 @@ int MAPPOINT_getMapWarpGoal(int warp_point_idx, int ofl, int ox, int oy,
 void callbackReadMapWarpPoint(int *warp_point_idx, const char *line) {
   char segment[256];
   int i;
-  if (getStringFromIndexWithDelim(line, ":", 1, segment, sizeof(segment)) ==
+  if (getDelimitedField(line, ":", 1, segment, sizeof(segment)) ==
       FALSE) {
     print("1.map 传送点错误 %s [%s] \n", line, segment);
     return;
@@ -193,14 +193,14 @@ void callbackReadMapWarpPoint(int *warp_point_idx, const char *line) {
     return;
   }
   map_warp_point[*warp_point_idx].type = i;
-  if (getStringFromIndexWithDelim(line, ":", 2, segment, sizeof(segment)) ==
+  if (getDelimitedField(line, ":", 2, segment, sizeof(segment)) ==
       FALSE) {
     print("2.map 传送点错误 %s [%s] \n", line, segment);
     return;
   }
   int objtype = GetObjType(segment);
   memset(segment, 0, sizeof(segment));
-  if (getStringFromIndexWithDelim(line, ":", 3, segment, sizeof(segment)) ==
+  if (getDelimitedField(line, ":", 3, segment, sizeof(segment)) ==
       FALSE) {
     print("3.map 传送点错误 %s [%s] \n", line, segment);
     return;
@@ -214,7 +214,7 @@ void callbackReadMapWarpPoint(int *warp_point_idx, const char *line) {
     return;
   }
   memset(segment, 0, sizeof(segment));
-  if (getStringFromIndexWithDelim(line, ":", 4, segment, sizeof(segment)) ==
+  if (getDelimitedField(line, ":", 4, segment, sizeof(segment)) ==
       FALSE) {
     print("4.map 传送点错误 %s [%s] \n", line, segment);
     return;
@@ -225,7 +225,7 @@ void callbackReadMapWarpPoint(int *warp_point_idx, const char *line) {
   }
   memset(segment, 0, sizeof(segment));
   // 这一段好像没啥用？
-  if (getStringFromIndexWithDelim(line, ":", 5, segment, sizeof(segment)) ==
+  if (getDelimitedField(line, ":", 5, segment, sizeof(segment)) ==
       FALSE) {
     print("5.map 传送点错误 %s [%s] \n", line, segment);
     return;

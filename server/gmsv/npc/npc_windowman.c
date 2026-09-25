@@ -285,13 +285,13 @@ BOOL NPC_Windowman_readData(int meindex, int windowno, BOOL chkflg) {
       if (i != 0)
         strcpy(line, buf);
 
-      ret = getStringFromIndexWithDelim(line, "=", 1, firstToken,
+      ret = getDelimitedField(line, "=", 1, firstToken,
                                         sizeof(firstToken));
       if (ret == FALSE) {
         print("Find error at %s in line %d. Ignore\n", filename, linenum);
         continue;
       }
-      ret = getStringFromIndexWithDelim(line, "=", 2, secondToken,
+      ret = getDelimitedField(line, "=", 2, secondToken,
                                         sizeof(secondToken));
       if (ret == FALSE) {
         print("Find error at %s in line %d. Ignore\n", filename, linenum);
@@ -489,7 +489,7 @@ BOOL NPC_Windowman_readData(int meindex, int windowno, BOOL chkflg) {
   char buff[1024];
 
   for (i = 1;; i++) {
-    rc = getStringFromIndexWithDelim(data, "|", i, buff, sizeof(buff));
+    rc = getDelimitedField(data, "|", i, buff, sizeof(buff));
     if (rc == FALSE)
       break;
     if (strcasecmp(buff, "ok") == 0) {

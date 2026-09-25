@@ -81,10 +81,10 @@ void ITEM_useImprecate(int char_index, int toNo, int haveitem_index) {
                                           sizeof(buf)) == NULL)
         continue;
       kind = ImList[i].intfun;
-      if (getStringFromIndexWithDelim(buf, "x", 1, buf1, sizeof(buf1)) == FALSE)
+      if (getDelimitedField(buf, "x", 1, buf1, sizeof(buf1)) == FALSE)
         continue;
       powers = atoi(buf1);
-      if (getStringFromIndexWithDelim(buf, "x", 2, buf1, sizeof(buf1)) == FALSE)
+      if (getDelimitedField(buf, "x", 2, buf1, sizeof(buf1)) == FALSE)
         continue;
       rounds = atoi(buf1);
       HealedEffect = SPR_hoshi;
@@ -117,10 +117,10 @@ void ITEM_useMRecovery_Battle(int char_index, int toNo, int haveitem_index) {
     return;
   arg = ITEM_getChar(item_index, ITEM_ARGUMENT);
 
-  if (getStringFromIndexWithDelim(arg, ":", 2, buf1, sizeof(buf1)) == FALSE)
+  if (getDelimitedField(arg, ":", 2, buf1, sizeof(buf1)) == FALSE)
     return;
   turn = atoi(buf1);
-  if (getStringFromIndexWithDelim(arg, ":", 1, buf1, sizeof(buf1)) == FALSE)
+  if (getDelimitedField(arg, ":", 1, buf1, sizeof(buf1)) == FALSE)
     return;
 
   if (strstr(buf1, "全") != NULL) {
@@ -831,9 +831,9 @@ void ITEM_useFirecracker_Battle(int char_index, int toindex,
   }
 
   // won fix
-  while (getStringFromIndexWithDelim(token, "_", i, buf1, sizeof(buf1)) !=
+  while (getDelimitedField(token, "_", i, buf1, sizeof(buf1)) !=
          FALSE) {
-    // while( getStringFromIndexWithDelim( token,"|", i, buf1, sizeof( buf1)) !=
+    // while( getDelimitedField( token,"|", i, buf1, sizeof( buf1)) !=
     // FALSE )	{
     i++;
     if (petid == atoi(buf1)) { // 年兽判别

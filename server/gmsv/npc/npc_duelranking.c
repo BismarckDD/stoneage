@@ -142,29 +142,29 @@ void NPC_Duelranking_PrintRanking(char *data, int count_start, int fdid,
     char lv[16];
     char hosi[6];
 
-    if (!getStringFromIndexWithDelim(data, "|", i, rankdata,
+    if (!getDelimitedField(data, "|", i, rankdata,
                                      sizeof(rankdata))) {
       break;
     }
-    if (!getStringFromIndexWithDelim(rankdata, ",", 2, rank, sizeof(rank))) {
+    if (!getDelimitedField(rankdata, ",", 2, rank, sizeof(rank))) {
       continue;
     }
-    if (!getStringFromIndexWithDelim(rankdata, ",", 3, cdandname,
+    if (!getDelimitedField(rankdata, ",", 3, cdandname,
                                      sizeof(cdandname))) {
       continue;
     }
     makeStringFromEscaped(cdandname);
-    if (!getStringFromIndexWithDelim(cdandname, "_", 1, cdkey, sizeof(cdkey))) {
+    if (!getDelimitedField(cdandname, "_", 1, cdkey, sizeof(cdkey))) {
       continue;
     }
-    if (!getStringFromIndexWithDelim(cdandname, "_", 2, charaname,
+    if (!getDelimitedField(cdandname, "_", 2, charaname,
                                      sizeof(charaname))) {
       continue;
     }
-    if (!getStringFromIndexWithDelim(rankdata, ",", 4, score, sizeof(score))) {
+    if (!getDelimitedField(rankdata, ",", 4, score, sizeof(score))) {
       continue;
     }
-    if (!getStringFromIndexWithDelim(rankdata, ",", 5, lv, sizeof(lv))) {
+    if (!getDelimitedField(rankdata, ",", 5, lv, sizeof(lv))) {
       lv[0] = '\0';
     }
     {

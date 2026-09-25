@@ -54,7 +54,7 @@ void NPC_HealerTalked( int meindex , int talker , char *msg ,int color )
 
 	npcarg = CHAR_getChar(meindex,CHAR_NPCARGUMENT);
 
-    getStringFromIndexWithDelim( npcarg, "|", 1, token,sizeof( token));
+    getDelimitedField( npcarg, "|", 1, token,sizeof( token));
     msgNo  = atoi( token );
 
     /*---皿伊奶乩□卞覆仄化分仃  杀允月---*/

@@ -444,18 +444,18 @@ static int NPC_BusSetPoint( int meindex, char *argstr)
 		print( "npcbus:nothing route \n");
 		return FALSE;
 	}
-	ret = getStringFromIndexWithDelim( buf, ";", 
+	ret = getDelimitedField( buf, ";", 
 								CHAR_getWorkInt( meindex, NPC_WORK_ROUTEPOINT),
 								buf2, sizeof(buf2));
 		
 	if( ret == FALSE ) return FALSE;
 
-	ret = getStringFromIndexWithDelim( buf2, ",", 1,
+	ret = getDelimitedField( buf2, ",", 1,
 								buf3, sizeof(buf3));
 	if( ret == FALSE) return FALSE;
 	CHAR_setWorkInt( meindex, NPC_WORK_ROUTETOX, atoi( buf3));
 	
-	ret = getStringFromIndexWithDelim( buf2, ",", 2,
+	ret = getDelimitedField( buf2, ",", 2,
 								buf3, sizeof(buf3));
 	if( ret == FALSE) return FALSE;
 	CHAR_setWorkInt( meindex, NPC_WORK_ROUTETOY, atoi( buf3));
@@ -498,7 +498,7 @@ static BOOL NPC_BusCheckDeniedItem( int meindex, int char_index, char *argstr)
 			int itemid;
 			char buf2[64];
 			int j;
-			ret = getStringFromIndexWithDelim( buf, ",", i, buf2, sizeof(buf2));
+			ret = getDelimitedField( buf, ",", i, buf2, sizeof(buf2));
 			if( ret == FALSE ) break;
 			itemid = atoi( buf2);
 			for( j = 0; j < CheckCharMaxItem(char_index); j ++) {
@@ -538,7 +538,7 @@ BOOL NPC_BusCheckAllowItem( int meindex, int char_index, BOOL pickupmode)
 			char buf2[64];
 			int j;
 			BOOL	getflg;
-			ret = getStringFromIndexWithDelim( buf, ",", i, buf2, sizeof(buf2));
+			ret = getDelimitedField( buf, ",", i, buf2, sizeof(buf2));
 			if( ret == FALSE ) break;
 			itemid = atoi( buf2);
 			getflg = FALSE;
@@ -640,7 +640,7 @@ static int NPC_BusGetRoutePointNum( int meindex, char *argstr )
 		return -1;
 	}
 	for( i = 1; ; i ++ ) {
-		ret = getStringFromIndexWithDelim( buf, ";", i, buf2, sizeof(buf2));
+		ret = getDelimitedField( buf, ";", i, buf2, sizeof(buf2));
 		if( ret == FALSE) break;
 	}
 	return( i -1);

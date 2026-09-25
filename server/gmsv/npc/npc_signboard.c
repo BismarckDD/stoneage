@@ -82,9 +82,9 @@ static void NPC_SignBoard_Window( int meindex, int toindex, int num,int select)
 #else
 	      if ((a>=1) && (a<=4)) {
 #endif
-                getStringFromIndexWithDelim(fmpointlist.pointlistarray[a-1], "|", 5, token, sizeof(token));
+                getDelimitedField(fmpointlist.pointlistarray[a-1], "|", 5, token, sizeof(token));
                 if (atoi(token)>=0) {
-                  getStringFromIndexWithDelim(fmpointlist.pointlistarray[a-1], "|", 6, token, sizeof(token));
+                  getDelimitedField(fmpointlist.pointlistarray[a-1], "|", 6, token, sizeof(token));
   	          sprintf(tmp,"%s%s%s",npcarg,token,q+1);
 	          strcpy(npcarg, tmp);
 	        } else {

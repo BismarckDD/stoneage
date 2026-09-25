@@ -431,11 +431,11 @@ void NPC_PairUserAndWarp( int meindex, int toindex, int forindex, char *arg)
 
 	if( NPC_Util_GetStrFromStrWithDelim( arg, "PAIRTOPOINT", buf1, sizeof( buf1) ) != NULL){
 		char buf2[256];
-		if( getStringFromIndexWithDelim( buf1,",",1,buf2,sizeof( buf2)) != FALSE )
+		if( getDelimitedField( buf1,",",1,buf2,sizeof( buf2)) != FALSE )
 			fl = atoi( buf2);
-		if( getStringFromIndexWithDelim( buf1,",",2,buf2,sizeof( buf2)) != FALSE )
+		if( getDelimitedField( buf1,",",2,buf2,sizeof( buf2)) != FALSE )
 			x = atoi( buf2);
-		if( getStringFromIndexWithDelim( buf1,",",3,buf2,sizeof( buf2)) != FALSE )
+		if( getDelimitedField( buf1,",",3,buf2,sizeof( buf2)) != FALSE )
 			y = atoi( buf2);
 	}
 	CHAR_DischargePartyNoMsg( toindex);//解散团队
@@ -491,9 +491,9 @@ int NPC_getNextTitle( int meindex, int toindex, char *arg, int title, int select
 	char buf[NPC_UTIL_GETARGSTR_BUFSIZE], buf1[1024], buf2[256];
 	int toID=0;
 	memset( buf, 0, sizeof( buf));
-	if( getStringFromIndexWithDelim( arg, "PSYCHOMETRICS", 2, buf, sizeof( buf)) == FALSE )
+	if( getDelimitedField( arg, "PSYCHOMETRICS", 2, buf, sizeof( buf)) == FALSE )
 		return -1;
-	if( getStringFromIndexWithDelim( buf , "}", title, buf1, sizeof( buf1)) == FALSE )
+	if( getDelimitedField( buf , "}", title, buf1, sizeof( buf1)) == FALSE )
 		return -1;
 	if( select == WINDOW_BUTTONTYPE_YES ) {
 		if( NPC_Util_GetStrFromStrWithDelim( buf1, "YESFOR", buf2, sizeof( buf2 )) == NULL)
@@ -511,10 +511,10 @@ int NPC_getTitleMsg( int meindex, int toindex, char *arg, char *token, int title
 	char buf[NPC_UTIL_GETARGSTR_BUFSIZE], buf1[1024], buf2[256];
 	memset( buf, 0, sizeof( buf));
 
-	if( getStringFromIndexWithDelim( arg, "PSYCHOMETRICS", 2, buf, sizeof( buf)) == FALSE )
+	if( getDelimitedField( arg, "PSYCHOMETRICS", 2, buf, sizeof( buf)) == FALSE )
 		return -1;
 	//取得下一题
-	if( getStringFromIndexWithDelim( buf , "}", title, buf1, sizeof( buf1)) == FALSE )
+	if( getDelimitedField( buf , "}", title, buf1, sizeof( buf1)) == FALSE )
 		return FALSE;
 	if( NPC_Util_GetStrFromStrWithDelim( buf1, "TITLEMSG", buf2, sizeof( buf2 )) == NULL){
 		if( NPC_Util_GetStrFromStrWithDelim( buf1, "FREE", buf2, sizeof( buf2 )) == NULL){

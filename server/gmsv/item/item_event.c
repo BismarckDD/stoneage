@@ -338,10 +338,10 @@ BOOL ITEM_getArgument(const char *argument, const char *entry, char *val,
   BOOL ret;
   for (i = 1;; i++) {
     ret =
-        getStringFromIndexWithDelim(argument, "|", i, segment, sizeof(segment));
+        getDelimitedField(argument, "|", i, segment, sizeof(segment));
     if (ret == TRUE) {
-      ret &= getStringFromIndexWithDelim(segment, ":", 1, key, key_len);
-      ret &= getStringFromIndexWithDelim(segment, ":", 2, val, val_len);
+      ret &= getDelimitedField(segment, ":", 1, key, key_len);
+      ret &= getDelimitedField(segment, ":", 2, val, val_len);
       if (ret == TRUE)
         if (strcasecmp(key, entry) == 0)
           return TRUE;
@@ -460,7 +460,7 @@ void ITEM_useEffectTohelos(int char_index, int to_char_index,
 
   CHAR_setItemIndex(char_index, haveitem_index, -1);
   CHAR_sendItemDataOne(char_index, haveitem_index);
-  ret = getStringFromIndexWithDelim(ITEM_getChar(item_index, ITEM_ARGUMENT),
+  ret = getDelimitedField(ITEM_getChar(item_index, ITEM_ARGUMENT),
                                     "|", 1, buf, sizeof(buf));
   if (ret != TRUE) {
     {
@@ -483,7 +483,7 @@ void ITEM_useEffectTohelos(int char_index, int to_char_index,
   cutrate = atoi(buf);
   if (cutrate < 0)
     cutrate = 0;
-  ret = getStringFromIndexWithDelim(ITEM_getChar(item_index, ITEM_ARGUMENT),
+  ret = getDelimitedField(ITEM_getChar(item_index, ITEM_ARGUMENT),
                                     "|", 2, buf, sizeof(buf));
   if (ret != TRUE) {
     {
@@ -799,12 +799,12 @@ void ITEM_useRecovery_Field(int char_index, int toindex, int haveitem_index) {
 #ifdef _ITEM_ADDPETEXP
   if ((p = strstr(arg, "GETEXP")) != NULL) {
     if (CHAR_getInt(toindex, CHAR_WHICHTYPE) == CHAR_TYPEPET) {
-      getStringFromIndexWithDelim(arg, "|", 2, msgbuf, sizeof(msgbuf));
+      getDelimitedField(arg, "|", 2, msgbuf, sizeof(msgbuf));
       if (atoi(msgbuf) == CHAR_getInt(toindex, CHAR_PETID)) {
-        getStringFromIndexWithDelim(arg, "|", 3, msgbuf,
+        getDelimitedField(arg, "|", 3, msgbuf,
                                     sizeof(msgbuf));
         if (CHAR_getInt(toindex, CHAR_LV) >= atoi(msgbuf)) {
-          getStringFromIndexWithDelim(arg, "|", 4, msgbuf,
+          getDelimitedField(arg, "|", 4, msgbuf,
                                       sizeof(msgbuf));
           if (CHAR_getInt(toindex, CHAR_LV) < CHAR_MAXUPLEVEL) {
             int UpLevel = 0;
@@ -2550,7 +2550,7 @@ void ITEM_UseDeathCounter(int char_index, int toindex, int haveitem_index) {
 #ifdef _ITEM_STONE
   itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
   while (1) {
-    if (getStringFromIndexWithDelim(itemarg, "|", i, itemnumstr,
+    if (getDelimitedField(itemarg, "|", i, itemnumstr,
                                     sizeof(itemnumstr)) == FALSE)
       break;
     okfloor = atoi(itemnumstr);
@@ -2742,14 +2742,14 @@ void ITEM_useMaxRedSocksNew(int char_index, int toindex, int haveitem_index) {
   }
 
   // 道具数量
-  if (getStringFromIndexWithDelim(itemarg, "|", 1, itemnumstr,
+  if (getDelimitedField(itemarg, "|", 1, itemnumstr,
                                   sizeof(itemnumstr)) == FALSE)
     return;
   itemnum = atoi(itemnumstr);
   if (itemnum > 20)
     itemnum = 20;
   for (i = 0; i < itemnum; i++) {
-    if (getStringFromIndexWithDelim(itemarg, "|", 2 + i, itemnumstr,
+    if (getDelimitedField(itemarg, "|", 2 + i, itemnumstr,
                                     sizeof(itemnumstr)))
       present[i] = atoi(itemnumstr);
   }
@@ -3516,16 +3516,16 @@ void ITEM_useLearnRideCode(int char_index, int toindex,
   if (item_arg == "\0")
     return;
 
-  if (getStringFromIndexWithDelim(item_arg, "|", 3, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(item_arg, "|", 3, buf, sizeof(buf)) == FALSE)
     ridetrans = 0;
   else
     ridetrans = atoi(buf);
-  if (getStringFromIndexWithDelim(item_arg, "|", 1, buf, sizeof(buf)) == FALSE)
+  if (getDelimitedField(item_arg, "|", 1, buf, sizeof(buf)) == FALSE)
     return;
   for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
     if (!strcmp(sNewRideCodeList[i].arg, buf)) {
       if (CHAR_getInt(char_index, CHAR_TRANSMIGRATION) < ridetrans) {
-        if (getStringFromIndexWithDelim(item_arg, "|", 2, buf, sizeof(buf)) !=
+        if (getDelimitedField(item_arg, "|", 2, buf, sizeof(buf)) !=
             FALSE) {
           sprintf(token, "必须%d转人以上才能学习骑%s。", ridetrans, buf);
           CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
@@ -3535,7 +3535,7 @@ void ITEM_useLearnRideCode(int char_index, int toindex,
       learn_code = CHAR_getInt(char_index, CHAR_NEWRIDEPETS);
       learn_code = learn_code | sNewRideCodeList[i].Code;
       CHAR_setInt(char_index, CHAR_NEWRIDEPETS, learn_code);
-      if (getStringFromIndexWithDelim(item_arg, "|", 2, buf, sizeof(buf)) !=
+      if (getDelimitedField(item_arg, "|", 2, buf, sizeof(buf)) !=
           FALSE) {
         sprintf(token, "学习了新的骑宠 (%s)。", buf);
         CHAR_talkToCli(char_index, -1, token, CHAR_COLORYELLOW);
@@ -3580,7 +3580,7 @@ void ITEM_useFusionEditBase(int char_index, int toindex, int haveitem_index) {
       arg = ITEM_getChar(item_index, ITEM_ARGUMENT);
       if (arg != "\0" && !strncmp(arg, "消", 2)) {
         //        sscanf( arg, "消 %d", &deltime);
-        getStringFromIndexWithDelim(arg, "|", 2, deltime, sizeof(deltime));
+        getDelimitedField(arg, "|", 2, deltime, sizeof(deltime));
         time_l -= (atoi(deltime) * 60);
         CHAR_setInt(toindex, CHAR_FUSIONTIMELIMIT, time_l);
         CHAR_DelItem(char_index, haveitem_index);
@@ -4792,8 +4792,8 @@ void ITEM_GMFUNCTION(int char_index, int toindex, int haveitem_index) {
   if (itemarg == "\0")
     return;
 
-  getStringFromIndexWithDelim(itemarg, "|", 1, gmfunction, sizeof(gmfunction));
-  getStringFromIndexWithDelim(itemarg, "|", 2, gmtime, sizeof(gmtime));
+  getDelimitedField(itemarg, "|", 1, gmfunction, sizeof(gmfunction));
+  getDelimitedField(itemarg, "|", 2, gmtime, sizeof(gmtime));
   CHAR_setChar(char_index, CHAR_GMFUNCTION, gmfunction);
   CHAR_setInt(char_index, CHAR_GMTIME, atoi(gmtime));
   sprintf(token, "获得使用%s权限%d!", gmfunction, atoi(gmtime));
@@ -4863,9 +4863,9 @@ void ITEM_VipRide(int char_index, int toindex, int haveitem_index) {
   char *itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
   char token[256];
   int viplevel, viptime;
-  getStringFromIndexWithDelim(itemarg, "|", 1, token, sizeof(token));
+  getDelimitedField(itemarg, "|", 1, token, sizeof(token));
   viplevel = atoi(token);
-  getStringFromIndexWithDelim(itemarg, "|", 2, token, sizeof(token));
+  getDelimitedField(itemarg, "|", 2, token, sizeof(token));
 
   int myviptime = CHAR_getInt(char_index, CHAR_VIPTIME);
 
@@ -5018,11 +5018,11 @@ void ITEM_MetamoTime(int char_index, int toindex, int haveitem_index) {
   itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
   if (itemarg == "\0")
     return;
-  if (getStringFromIndexWithDelim(itemarg, "|", 1, buff, sizeof(buff)))
+  if (getDelimitedField(itemarg, "|", 1, buff, sizeof(buff)))
     metamoNo = atoi(buff);
-  if (getStringFromIndexWithDelim(itemarg, "|", 2, buff, sizeof(buff)))
+  if (getDelimitedField(itemarg, "|", 2, buff, sizeof(buff)))
     metamoTime = atoi(buff);
-  getStringFromIndexWithDelim(itemarg, "|", 3, buff, sizeof(buff));
+  getDelimitedField(itemarg, "|", 3, buff, sizeof(buff));
 
   CHAR_setWorkInt(char_index, CHAR_WORKITEMMETAMO, NowTime.tv_sec + metamoTime);
   if (metamoTime > 60)
@@ -5078,14 +5078,14 @@ void ITEM_MysteriousGift(int char_index, int toindex, int haveitem_index) {
     return;
   }
 
-  if (getStringFromIndexWithDelim(itemarg, "|", 1, petnumstr,
+  if (getDelimitedField(itemarg, "|", 1, petnumstr,
                                   sizeof(petnumstr)) == FALSE)
     return;
   petnum = atoi(petnumstr);
   if (petnum > 20)
     petnum = 20;
   for (i = 0; i < petnum; i++) {
-    if (getStringFromIndexWithDelim(itemarg, "|", 2 + i, petnumstr,
+    if (getDelimitedField(itemarg, "|", 2 + i, petnumstr,
                                     sizeof(petnumstr)))
       present[i] = atoi(petnumstr);
   }
@@ -5192,8 +5192,8 @@ void ITEM_PetLevelItem(int char_index, int toindex, int haveitem_index) {
     return;
   char *itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
   char low[12], hight[12];
-  getStringFromIndexWithDelim(itemarg, "|", 1, low, sizeof(low));
-  getStringFromIndexWithDelim(itemarg, "|", 2, hight, sizeof(hight));
+  getDelimitedField(itemarg, "|", 1, low, sizeof(low));
+  getDelimitedField(itemarg, "|", 2, hight, sizeof(hight));
   if (CHAR_getInt(toindex, CHAR_LV) < atoi(low) &&
       (CHAR_getInt(toindex, CHAR_LIMITLEVEL) > 0 &&
        CHAR_getInt(toindex, CHAR_LIMITLEVEL) < atoi(low))) {
@@ -5261,8 +5261,8 @@ void PET_BEATITUDE(int char_index, int toindex, int haveitem_index) {
     return;
   char *itemarg = ITEM_getChar(item_index, ITEM_ARGUMENT);
   char beatitude[12], mun[12];
-  getStringFromIndexWithDelim(itemarg, "|", 1, beatitude, sizeof(beatitude));
-  getStringFromIndexWithDelim(itemarg, "|", 2, mun, sizeof(mun));
+  getDelimitedField(itemarg, "|", 1, beatitude, sizeof(beatitude));
+  getDelimitedField(itemarg, "|", 2, mun, sizeof(mun));
   char token[256];
   int beat = CHAR_getInt(toindex, CHAR_BEATITUDE);
   if (strcmp(beatitude, "体") == 0) {
@@ -5364,7 +5364,7 @@ void ITEM_GetMultiItem(int char_index, int toindex, int haveitem_index) {
     return;
   }
 
-  if (getStringFromIndexWithDelim(itemarg, "|", 1, buf, sizeof(buf)) == FALSE) {
+  if (getDelimitedField(itemarg, "|", 1, buf, sizeof(buf)) == FALSE) {
     CHAR_talkToCli(char_index, -1, "不明东西!", CHAR_COLORYELLOW);
     return;
   }
@@ -5384,7 +5384,7 @@ void ITEM_GetMultiItem(int char_index, int toindex, int haveitem_index) {
   }
 
   for (i = 0; i < itemnum; i++) {
-    if (getStringFromIndexWithDelim(itemarg, "|", 2 + i, buf, sizeof(buf)) ==
+    if (getDelimitedField(itemarg, "|", 2 + i, buf, sizeof(buf)) ==
         FALSE) {
       CHAR_talkToCli(char_index, -1, "不明东西!", CHAR_COLORYELLOW);
       return;
@@ -5577,11 +5577,11 @@ void ITEM_SuperManItem(int char_index, int toindex, int haveitem_index) {
   float table[] = {437, 490, 521, 550, 578, 620, 700}; // 各转最高点数(减10)
   int trans, lv, point;
 
-  getStringFromIndexWithDelim(itemarg, "|", 1, token, sizeof(token));
+  getDelimitedField(itemarg, "|", 1, token, sizeof(token));
   trans = atoi(token);
-  getStringFromIndexWithDelim(itemarg, "|", 2, token, sizeof(token));
+  getDelimitedField(itemarg, "|", 2, token, sizeof(token));
   lv = atoi(token);
-  getStringFromIndexWithDelim(itemarg, "|", 3, token, sizeof(token));
+  getDelimitedField(itemarg, "|", 3, token, sizeof(token));
   point = atoi(token);
 
   int quest = (0xFFFF0000 >> 16) & 0xFF;
@@ -5742,7 +5742,7 @@ void ITEM_WarpItem(int char_index, int toindex, int haveitem_index) {
     char escapeshowstring[64];
     char *showstr = MAP_getfloorShowstring(CHAR_getInt(char_index, CHAR_FLOOR));
 
-    getStringFromIndexWithDelim(showstr, "|", 1, escapeshowstring,
+    getDelimitedField(showstr, "|", 1, escapeshowstring,
                                 sizeof(escapeshowstring));
 
     if (sscanf(arg, "%d %d", &usenum, &flg) != 2) {
@@ -5844,7 +5844,7 @@ void ITEM_SpecialSuitEquip(int char_index, int item_index) {
                    CHAR_COLORYELLOW);
     return;
   }
-  getStringFromIndexWithDelim(showstr, "|", 1, escapeshowstring,
+  getDelimitedField(showstr, "|", 1, escapeshowstring,
                               sizeof(escapeshowstring));
   sprintf(buf, "此装备坐标记录点位于(%s,%d,%d)", escapeshowstring, fx, fy);
   CHAR_talkToCli(char_index, -1, buf, CHAR_COLORYELLOW);
@@ -5915,7 +5915,7 @@ void ITEM_FindTreasures(int char_index, int toindex, int haveitem_index) {
     char escapeshowstring[64];
     char *showstr = MAP_getfloorShowstring(Mf);
 
-    getStringFromIndexWithDelim(showstr, "|", 1, escapeshowstring,
+    getDelimitedField(showstr, "|", 1, escapeshowstring,
                                 sizeof(escapeshowstring));
 
     sprintf(buf, "%d %d %d", Mf, Mx, My);
@@ -6067,7 +6067,7 @@ void ITEM_NewGMItem(int char_index, int toindex, int haveitem_index) {
 
   CHATMAGICFUNC func;
 
-  ret = getStringFromIndexWithDelim(arg, " ", 1, magicname, sizeof(magicname));
+  ret = getDelimitedField(arg, " ", 1, magicname, sizeof(magicname));
   if (ret == FALSE)
     return;
 
@@ -6129,7 +6129,7 @@ void ITEM_NeweventItem(int char_index, int toindex, int haveitem_index) {
   char *arg = ITEM_getChar(item_index, ITEM_ARGUMENT);
   char token[128];
   int i = 0;
-  while (getStringFromIndexWithDelim(arg, "|", i, token, sizeof(token))) {
+  while (getDelimitedField(arg, "|", i, token, sizeof(token))) {
     NPC_NowEndEventSetFlgCls(char_index, atoi(token));
     NPC_EventSetFlg(char_index, atoi(token));
     i++;
@@ -6161,7 +6161,7 @@ void ITEM_NewPetBeatitude(int char_index, int toindex, int haveitem_index) {
   int work[4];
   int LevelUpPoint;
   char buf[][32] = {"腕力成长率", "耐久力成长率", "速度成长率", "体力成长率"};
-  if (getStringFromIndexWithDelim(arg, "|", 1, token, sizeof(token)) == TRUE) {
+  if (getDelimitedField(arg, "|", 1, token, sizeof(token)) == TRUE) {
     if (CHAR_getInt(toindex, CHAR_PETID) != atoi(token)) {
       CHAR_talkToCli(char_index, -1, "您选择的宠物不对!", CHAR_COLORRED);
       return;
@@ -6170,7 +6170,7 @@ void ITEM_NewPetBeatitude(int char_index, int toindex, int haveitem_index) {
     return;
   }
 
-  if (getStringFromIndexWithDelim(arg, "|", 2, token, sizeof(token)) == TRUE) {
+  if (getDelimitedField(arg, "|", 2, token, sizeof(token)) == TRUE) {
     flg = atoi(token);
     if (NPC_EventCheckFlg(toindex, flg) == TRUE) {
       CHAR_talkToCli(
@@ -6183,24 +6183,24 @@ void ITEM_NewPetBeatitude(int char_index, int toindex, int haveitem_index) {
     return;
   }
 
-  if (getStringFromIndexWithDelim(arg, "|", 3, token, sizeof(token)) == TRUE) {
+  if (getDelimitedField(arg, "|", 3, token, sizeof(token)) == TRUE) {
     char tmp[16];
-    if (getStringFromIndexWithDelim(token, ":", 1, tmp, sizeof(tmp)) == TRUE) {
+    if (getDelimitedField(token, ":", 1, tmp, sizeof(tmp)) == TRUE) {
       abi[3] = atoi(tmp);
     } else {
       abi[3] = 0;
     }
-    if (getStringFromIndexWithDelim(token, ":", 2, tmp, sizeof(tmp)) == TRUE) {
+    if (getDelimitedField(token, ":", 2, tmp, sizeof(tmp)) == TRUE) {
       abi[0] = atoi(tmp);
     } else {
       abi[0] = 0;
     }
-    if (getStringFromIndexWithDelim(token, ":", 3, tmp, sizeof(tmp)) == TRUE) {
+    if (getDelimitedField(token, ":", 3, tmp, sizeof(tmp)) == TRUE) {
       abi[1] = atoi(tmp);
     } else {
       abi[1] = 0;
     }
-    if (getStringFromIndexWithDelim(token, ":", 4, tmp, sizeof(tmp)) == TRUE) {
+    if (getDelimitedField(token, ":", 4, tmp, sizeof(tmp)) == TRUE) {
       abi[2] = atoi(tmp);
     } else {
       abi[2] = 0;
@@ -6492,9 +6492,9 @@ void ITEM_Lua(int char_index, int toindex, int haveitem_index) {
   char *voidname = ITEM_getChar(item_index, ITEM_USEFUNC);
   char itemname1[64];
   char itemname2[64];
-  if (getStringFromIndexWithDelim(voidname, "(", 2, itemname1,
+  if (getDelimitedField(voidname, "(", 2, itemname1,
                                   sizeof(itemname1))) {
-    getStringFromIndexWithDelim(itemname1, ")", 1, itemname2,
+    getDelimitedField(itemname1, ")", 1, itemname2,
                                 sizeof(itemname2));
   }
   if (TM_Item->functable[LUAITEM_USEFUNC] != (void *)NPC_Lua_ItemUseCallBack) {

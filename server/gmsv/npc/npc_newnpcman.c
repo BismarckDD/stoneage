@@ -283,16 +283,16 @@ static void NPC_NewNpcMan_selectWindow( int meindex, int toindex, int num, int f
 				return;
 			}
 
-			if( getStringFromIndexWithDelim( petstring[ti-1], "#", 2, petstring1, sizeof( petstring1)) == FALSE ){
+			if( getDelimitedField( petstring[ti-1], "#", 2, petstring1, sizeof( petstring1)) == FALSE ){
 				CHAR_talkToCli( toindex, -1, "领取宠物失败！", CHAR_COLORYELLOW);
 				return;	
 			}else{
 				char buf1[256];
-				if( getStringFromIndexWithDelim( petstring[ti-1], "|", 6, buf1, sizeof( buf1)) == FALSE ) return;
+				if( getDelimitedField( petstring[ti-1], "|", 6, buf1, sizeof( buf1)) == FALSE ) return;
 					ltime = atoi(buf1);
 					ltime = time( NULL) - ltime;
 					ltime = ltime/(60*60*24);
-				if( getStringFromIndexWithDelim( petstring[ti-1], "|", 4, buf1, sizeof( buf1)) == FALSE ) return;
+				if( getDelimitedField( petstring[ti-1], "|", 4, buf1, sizeof( buf1)) == FALSE ) return;
 					cost = atoi( buf1);
 
 				cost = cost + (ltime*10000);
@@ -769,21 +769,21 @@ BOOL NPC_reFindMyLostPet( int meindex, int toindex, char *buf)
 
 	while( fgets( line , sizeof( line ) , fp ) && count < 7){
 		if( line == NULL ) continue;
-		if( getStringFromIndexWithDelim( line, "|", 1, buf1, sizeof( buf1)) == FALSE ) continue;
+		if( getDelimitedField( line, "|", 1, buf1, sizeof( buf1)) == FALSE ) continue;
 		if( strcmp( CHAR_getChar( toindex, CHAR_CDKEY ), buf1 )) continue;
-		if( getStringFromIndexWithDelim( line, "|", 6, buf1, sizeof( buf1)) == FALSE ) continue;
+		if( getDelimitedField( line, "|", 6, buf1, sizeof( buf1)) == FALSE ) continue;
 			ltime = atoi(buf1);
 			ltime = time( NULL) - ltime;
 			ltime = ltime/(60*60*24);
 			if( ltime > 14 ) continue;//续放14天
 
-		if( getStringFromIndexWithDelim( line, "|", 2, petname, sizeof( petname)) == FALSE ) continue;
-		if( getStringFromIndexWithDelim( line, "|", 3, buf1, sizeof( buf1)) == FALSE ) continue;
+		if( getDelimitedField( line, "|", 2, petname, sizeof( petname)) == FALSE ) continue;
+		if( getDelimitedField( line, "|", 3, buf1, sizeof( buf1)) == FALSE ) continue;
 		lv = atoi( buf1);
-		if( getStringFromIndexWithDelim( line, "|", 4, buf1, sizeof( buf1)) == FALSE ) continue;
+		if( getDelimitedField( line, "|", 4, buf1, sizeof( buf1)) == FALSE ) continue;
 		cost = atoi( buf1);
 
-		if( getStringFromIndexWithDelim( line, "#", 3, buf1, sizeof( buf1)) == FALSE ) continue;
+		if( getDelimitedField( line, "#", 3, buf1, sizeof( buf1)) == FALSE ) continue;
 		type = atoi( buf1);
 		if( type == 1 ){
 			strcpy( typebuf, "溜宠");
@@ -820,9 +820,9 @@ BOOL NPC_getLostPetString( int meindex, int toindex)
 
 	while( fgets( line , sizeof( line ) , fp ) && count < 7){
 		if(strlen( line) <= 0 ) continue;
-//		if( getStringFromIndexWithDelim( line, "#", 2, buf1, sizeof( buf1)) == FALSE ) return FALSE;
+//		if( getDelimitedField( line, "#", 2, buf1, sizeof( buf1)) == FALSE ) return FALSE;
 // Terry fix 读取时没有判断时间 2004/09/22
-		if(getStringFromIndexWithDelim(line,"|",6,buf1,sizeof(buf1)) == FALSE) continue;
+		if(getDelimitedField(line,"|",6,buf1,sizeof(buf1)) == FALSE) continue;
 		ltime = atoi(buf1);
 		ltime = time( NULL) - ltime;
 		ltime = ltime/(60*60*24);
@@ -911,7 +911,7 @@ BOOL NPC_NewNpcManInit( int meindex )
 		return FALSE;
 	}
 
-	while( getStringFromIndexWithDelim(buf1, ",", k, buf2, sizeof(buf2)) != FALSE )	{
+	while( getDelimitedField(buf1, ",", k, buf2, sizeof(buf2)) != FALSE )	{
 		Re_Pet[k-1] = atoi( buf2);
 		if( Re_Pet[k-1] < 0 )
 			return FALSE;
@@ -950,7 +950,7 @@ void NPC_NewNpcManLoop( int meindex)
 		return;
 	}
 
-	while( getStringFromIndexWithDelim(buf1, ",", k, buf2, sizeof(buf2)) != FALSE )	{
+	while( getDelimitedField(buf1, ",", k, buf2, sizeof(buf2)) != FALSE )	{
 		Re_Pet[k-1] = atoi( buf2);
 		if( Re_Pet[k-1] < 0 )
 			return;

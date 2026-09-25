@@ -57,11 +57,11 @@ BOOL NPC_WarpInit( int char_index )
 #ifdef _RECORD_NPCMAN_ //纪录
 		sprintf( evtype, "NONE");
 #endif
-		ret=getStringFromIndexWithDelim(arg,"|", 1,token,sizeof(token));
+		ret=getDelimitedField(arg,"|", 1,token,sizeof(token));
 		if( ret ) floor = atoi( token );
-		ret=getStringFromIndexWithDelim(arg,"|", 2,token,sizeof(token));
+		ret=getDelimitedField(arg,"|", 2,token,sizeof(token));
 		if( ret ) x = atoi( token );
-		ret=getStringFromIndexWithDelim(arg,"|", 3,token,sizeof(token));
+		ret=getDelimitedField(arg,"|", 3,token,sizeof(token));
 		if( ret ) y = atoi( token );
 		if( MAP_IsValidCoordinate( floor,x,y )== FALSE ){
 			NPC_WarpsetNeverMake( char_index );
@@ -73,7 +73,7 @@ BOOL NPC_WarpInit( int char_index )
         		arg );
 			return FALSE;
 		}
-		ret=getStringFromIndexWithDelim(arg,"|",4,token,sizeof(token));
+		ret=getDelimitedField(arg,"|",4,token,sizeof(token));
 		if(ret==TRUE){
 			int day;
 			day=NPC_TimeWarpCheck(char_index,token,0);
@@ -166,7 +166,7 @@ void NPC_WarpWarpCharacter( int warpnpcindex, int char_index )
 	i=1;
 	if( strstr( arg, "FREEMORE") != NULL )	{
 		int k=1, pw=-1;
-		while( getStringFromIndexWithDelim( arg, "OVER", i, buf1, sizeof( buf1)) != FALSE )	{
+		while( getDelimitedField( arg, "OVER", i, buf1, sizeof( buf1)) != FALSE )	{
 			i++;
 			if( NPC_Util_GetStrFromStrWithDelim( buf1, "FREE", buf2, sizeof( buf2)) == NULL )
 				continue;
@@ -176,15 +176,15 @@ void NPC_WarpWarpCharacter( int warpnpcindex, int char_index )
 				iRand=0;
 				if( NPC_Util_GetStrFromStrWithDelim( buf1, "TO", buf2, sizeof( buf2)) != FALSE )	{
 					k=1;
-					while( getStringFromIndexWithDelim(  buf2, "&", k, freemsg, sizeof( freemsg)) != FALSE ){
+					while( getDelimitedField(  buf2, "&", k, freemsg, sizeof( freemsg)) != FALSE ){
 						k++;
-						if( getStringFromIndexWithDelim( freemsg, ",", 1, buf3, sizeof( buf3)) == FALSE )
+						if( getDelimitedField( freemsg, ",", 1, buf3, sizeof( buf3)) == FALSE )
 							break;
 						Wpoint[iRand].m_floor = atoi( buf3);
-						if( getStringFromIndexWithDelim( freemsg, ",", 2, buf3, sizeof( buf3)) == FALSE )
+						if( getDelimitedField( freemsg, ",", 2, buf3, sizeof( buf3)) == FALSE )
 							break;
 						Wpoint[iRand].m_x = atoi( buf3);
-						if( getStringFromIndexWithDelim( freemsg, ",", 3, buf3, sizeof( buf3)) == FALSE )
+						if( getDelimitedField( freemsg, ",", 3, buf3, sizeof( buf3)) == FALSE )
 							break;
 						Wpoint[iRand].m_y = atoi( buf3);
 						iRand++;
@@ -223,15 +223,15 @@ void NPC_WarpWarpCharacter( int warpnpcindex, int char_index )
 		}
 	}else	{
 #endif
-        ret=getStringFromIndexWithDelim(arg,"|", 1,token,sizeof(token));
+        ret=getDelimitedField(arg,"|", 1,token,sizeof(token));
         if( ret == FALSE )return;
         floor = atoi( token );
 
-        ret=getStringFromIndexWithDelim(arg,"|", 2,token,sizeof(token));
+        ret=getDelimitedField(arg,"|", 2,token,sizeof(token));
         if( ret == FALSE )return;
         x = atoi( token );
 
-        ret=getStringFromIndexWithDelim(arg,"|", 3,token,sizeof(token));
+        ret=getDelimitedField(arg,"|", 3,token,sizeof(token));
         if( ret == FALSE )return;
         y = atoi( token );
 #ifdef _NEW_WARPPOINT

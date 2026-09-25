@@ -333,12 +333,12 @@ void NPC_SchedulemanWindowTalked(int meindex, int talkerindex,
             print("host_index: %d %d\n",fmpks[fmpks_pos+i].host_index,CHAR_getWorkInt(talkerindex, CHAR_WORKFMINDEXI));
             if (fmpks[fmpks_pos+i].host_index==CHAR_getWorkInt(talkerindex, CHAR_WORKFMINDEXI)) {
               print("data:%s\n",data);
-              if (getStringFromIndexWithDelim(data,"|",1,token,sizeof(token))) {
+              if (getDelimitedField(data,"|",1,token,sizeof(token))) {
                 a=atoi(token);
                 if (a!=fmpks[fmpks_pos+i].host_index) {
                   fmpks[fmpks_pos+i].guest_index=a;
                   // 必须要再检查是否有这个客队家族 /**/
-                  if (getStringFromIndexWithDelim(data,"|",2,token,sizeof(token))) {
+                  if (getDelimitedField(data,"|",2,token,sizeof(token))) {
                     strcpy(fmpks[fmpks_pos+i].guest_name, makeStringFromEscaped(token));
                     // 送出 detail 编辑窗
                     NPC_DETAIL_gendata(meindex, buf, sizeof(buf), dt);
@@ -374,17 +374,17 @@ void NPC_SchedulemanWindowTalked(int meindex, int talkerindex,
             case WINDOW_BUTTONTYPE_OK:
               {
                 // 准备时间
-                if (getStringFromIndexWithDelim(data,"|",4,token,sizeof(token))) {
+                if (getDelimitedField(data,"|",4,token,sizeof(token))) {
                   a=atoi(token);
                   if ((a>0) && (a<=40)) fmpks[fmpks_pos+i].prepare_time=a;
                 }
                 // 最大人数
-                if (getStringFromIndexWithDelim(data,"|",5,token,sizeof(token))) {
+                if (getDelimitedField(data,"|",5,token,sizeof(token))) {
                   a=atoi(token);
                   if ((a>0) && (a<=50)) fmpks[fmpks_pos+i].max_player=a;
                 }
                 // 胜利条件
-                if (getStringFromIndexWithDelim(data,"|",6,token,sizeof(token))) {
+                if (getDelimitedField(data,"|",6,token,sizeof(token))) {
                   a=atoi(token);
                   if ((a>=0) && (a<=1)) fmpks[fmpks_pos+i].win = a;
                 }
@@ -599,42 +599,42 @@ void NPC_LoadPKSchedule(int meindex)
     fmpks[fmpks_pos+i].flag=-1;
 
     // 时间
-    if (getStringFromIndexWithDelim(tmp,"|",1,token,sizeof(token))) {
+    if (getDelimitedField(tmp,"|",1,token,sizeof(token))) {
       fmpks[fmpks_pos+i].dueltime=atoi(token);
     } else continue;
     // 主队 familyindex
-    if (getStringFromIndexWithDelim(tmp,"|",2,token,sizeof(token))) {
+    if (getDelimitedField(tmp,"|",2,token,sizeof(token))) {
       fmpks[fmpks_pos+i].host_index=atoi(token);
     } else continue;
     // 主队 家族名
-    if (getStringFromIndexWithDelim(tmp,"|",3,token,sizeof(token))) {
+    if (getDelimitedField(tmp,"|",3,token,sizeof(token))) {
       strcpy(fmpks[fmpks_pos+i].host_name,makeStringFromEscaped(token));
     } else continue;
     // 客队 familyindex
-    if (getStringFromIndexWithDelim(tmp,"|",4,token,sizeof(token))) {
+    if (getDelimitedField(tmp,"|",4,token,sizeof(token))) {
       fmpks[fmpks_pos+i].guest_index=atoi(token);
     } else continue;
     // 客队 家族名
-    if (getStringFromIndexWithDelim(tmp,"|",5,token,sizeof(token))) {
+    if (getDelimitedField(tmp,"|",5,token,sizeof(token))) {
       strcpy(fmpks[fmpks_pos+i].guest_name,makeStringFromEscaped(token));
     } else continue;
     // 准备时间
-    if (getStringFromIndexWithDelim(tmp,"|",6,token,sizeof(token))) {
+    if (getDelimitedField(tmp,"|",6,token,sizeof(token))) {
       fmpks[fmpks_pos+i].prepare_time=atoi(token);
     } else continue;
     // 最大人数
-    if (getStringFromIndexWithDelim(tmp,"|",7,token,sizeof(token))) {
+    if (getDelimitedField(tmp,"|",7,token,sizeof(token))) {
 		//andy_reEdit 2003/06/17
 		int maxnum = atoi(token);
 		if( maxnum < 50 ) maxnum = 50;
 		fmpks[fmpks_pos+i].max_player = maxnum;
     } else continue;
     // 旗标
-    if (getStringFromIndexWithDelim(tmp,"|",8,token,sizeof(token))) {
+    if (getDelimitedField(tmp,"|",8,token,sizeof(token))) {
       fmpks[fmpks_pos+i].flag=atoi(token);
     } else continue;
     // 胜利条件
-    if (getStringFromIndexWithDelim(tmp,"|",9,token,sizeof(token))) {
+    if (getDelimitedField(tmp,"|",9,token,sizeof(token))) {
       fmpks[fmpks_pos+i].win=atoi(token);
     } else continue;
   }
@@ -770,9 +770,9 @@ void NPC_SELECT_gendata(int meindex, int talkerindex, int page, char *buf, int s
   memset(buf, 0, size);		// clear buffer
   strcpy(buf,"8");
   for (i=0,j=0; i<MAXFAMILYINONEWINDOW; i++,j++) {
-    if (getStringFromIndexWithDelim(gFamilyList,"|",page+j,token,sizeof(token))) {
-      if ( (getStringFromIndexWithDelim(token," ",1,fmindex,sizeof(fmindex))) &&
-           (getStringFromIndexWithDelim(token," ",2,fmname,sizeof(fmname))) ) {
+    if (getDelimitedField(gFamilyList,"|",page+j,token,sizeof(token))) {
+      if ( (getDelimitedField(token," ",1,fmindex,sizeof(fmindex))) &&
+           (getDelimitedField(token," ",2,fmname,sizeof(fmname))) ) {
         if (tkfmindex!=atoi(fmindex)-1) {
           sprintf(token,"|%d|%s",(atoi(fmindex)-1),fmname);
           if (strlen(buf)+strlen(token)<size) {

@@ -243,7 +243,7 @@ void NPC_AlldomanWriteStele ( char *token )
 	if( token == NULL || (lens = strlen( token)) <= 0 ) return;
 	while( linenum < 100 ){
 		for ( i = 0 ; i < MAX_HERO_COLUMN ; i ++ ) {
-			if( getStringFromIndexWithDelim( token, "|", i + 1 , Herolist[ linenum ][ i ] , sizeof( Herolist[ linenum ][ i ] ) ) == FALSE ){
+			if( getDelimitedField( token, "|", i + 1 , Herolist[ linenum ][ i ] , sizeof( Herolist[ linenum ][ i ] ) ) == FALSE ){
 #ifdef _ALLDOMAN_DEBUG
 				countnum = 0 ; 
 	            for ( i = 0 ; i < MAX_HERO_LIST ; i ++ ) {

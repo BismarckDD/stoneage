@@ -98,7 +98,7 @@ BOOL MAP_readMapConfFile(char *filename) {
     if (line[0] == '#' || line[0] == '\n')
       continue;
     chomp(line);
-    ret = getStringFromIndexWithDelim(line, " ", 1, imgnum, sizeof(imgnum));
+    ret = getDelimitedField(line, " ", 1, imgnum, sizeof(imgnum));
     if (ret == FALSE)
       continue;
     imgnumber = atoi(imgnum);
@@ -136,7 +136,7 @@ BOOL MAP_readMapConfFile(char *filename) {
       continue;
     chomp(line);
 
-    ret = getStringFromIndexWithDelim(line, " ", 1, token, sizeof(token));
+    ret = getDelimitedField(line, " ", 1, token, sizeof(token));
     if (ret == FALSE)
       continue;
     imagenumber = atoi(token);
@@ -148,7 +148,7 @@ BOOL MAP_readMapConfFile(char *filename) {
     offset = 4;
     for (i = 0; i < MAP_DATAINT_NUM + MAP_DATACHAR_NUM; i++) {
       BOOL ret;
-      ret = getStringFromIndexWithDelim(line, " ", i + offset, token,
+      ret = getDelimitedField(line, " ", i + offset, token,
                                         sizeof(token));
       if (ret == FALSE)
         continue;

@@ -130,7 +130,7 @@ static BOOL readLogConfFile(const char *filename) {
     if (line[0] == '#' || line[0] == '\n')
       continue; /* comment */
     chomp(line); /* remove tail newline  */
-    ret = getStringFromIndexWithDelim(line, "=", 1, firstToken,
+    ret = getDelimitedField(line, "=", 1, firstToken,
                                       sizeof(firstToken));
     if (ret == FALSE) {
       print("Find error at %s in line %d. Ignore\n", filename, linenum);
@@ -139,7 +139,7 @@ static BOOL readLogConfFile(const char *filename) {
     for (i = 0; i < arraysizeof(LogConf); i++) {
       if (strcmp(LogConf[i].entry, firstToken) == 0) {
         char secondToken[256];
-        ret = getStringFromIndexWithDelim(line, "=", 2, secondToken,
+        ret = getDelimitedField(line, "=", 2, secondToken,
                                           sizeof(secondToken));
         if (ret == FALSE) {
           print("Find error at %s in line %d. Ignore\n", filename, linenum);

@@ -339,11 +339,11 @@ void NPC_WarpPointGet(int meindex,int talker,int *fl,int *x,int *y,int judge)
 
 	/*--伐□皿燮毛潸  --*/
 	NPC_Util_GetStrFromStrWithDelim( argstr, strbuf[judge], buf, sizeof( buf));
-	getStringFromIndexWithDelim(buf,",",1,buf2,sizeof(buf2));
+	getDelimitedField(buf,",",1,buf2,sizeof(buf2));
 	*fl=atoi(buf2);
-	getStringFromIndexWithDelim(buf,",",2,buf2,sizeof(buf2));
+	getDelimitedField(buf,",",2,buf2,sizeof(buf2));
 	*x=atoi(buf2);
-	getStringFromIndexWithDelim(buf,",",3,buf2,sizeof(buf2));
+	getDelimitedField(buf,",",3,buf2,sizeof(buf2));
 	*y=atoi(buf2);
 	
 	
@@ -366,7 +366,7 @@ BOOL NPC_JankenEntryItemCheck(int talker,char *buf)
 	int cnt=0;
 	int k=1;
 	
-	while(getStringFromIndexWithDelim(buf , "," , k, buf2, sizeof(buf2))
+	while(getDelimitedField(buf , "," , k, buf2, sizeof(buf2))
 	 !=FALSE )
 	{
 		flg = FALSE;
@@ -374,9 +374,9 @@ BOOL NPC_JankenEntryItemCheck(int talker,char *buf)
 		
 		if(strstr(buf2,"*") != NULL){
 			cnt = 0;
-			getStringFromIndexWithDelim(buf2,"*",1,buf3,sizeof(buf3));
+			getDelimitedField(buf2,"*",1,buf3,sizeof(buf3));
 			itemno = atoi(buf3);
-			getStringFromIndexWithDelim(buf2,"*",2,buf3,sizeof(buf3));
+			getDelimitedField(buf2,"*",2,buf3,sizeof(buf3));
 			kosuu = atoi(buf3);
 		
 			for( i=0 ; i < CheckCharMaxItem(talker);i++ ){
@@ -433,16 +433,16 @@ BOOL NPC_JankenEntryItemDel(int talker,char *buf)
 	char buf2[32];
 	int item_index;
 
-	while(getStringFromIndexWithDelim(buf , "," , k, buff3, sizeof(buff3)) !=FALSE ){
+	while(getDelimitedField(buf , "," , k, buff3, sizeof(buff3)) !=FALSE ){
 		k++;
 		if(strstr(buff3, "*") !=NULL){
 			int itemno;
 			int kosuu;
 			int id;
 			int cnt=0;
-			getStringFromIndexWithDelim(buff3,"*",1,buf2,sizeof(buf2));
+			getDelimitedField(buff3,"*",1,buf2,sizeof(buf2));
 			itemno = atoi(buf2);
-			getStringFromIndexWithDelim(buff3,"*",2,buf2,sizeof(buf2));
+			getDelimitedField(buff3,"*",2,buf2,sizeof(buf2));
 			kosuu = atoi(buf2);
 				for( i =0 ; i < CheckCharMaxItem(talker) ; i++ ){
 				item_index = CHAR_getItemIndex( talker , i );

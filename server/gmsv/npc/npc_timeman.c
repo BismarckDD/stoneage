@@ -141,7 +141,7 @@ void NPC_TimeManTalked( int meindex , int talkerindex , char *msg ,int color )
           if( buf[i] == ',' ) tokennum++;
      }
  
-    getStringFromIndexWithDelim( buf,",", rand()%tokennum+1,token, sizeof(token));
+    getDelimitedField( buf,",", rand()%tokennum+1,token, sizeof(token));
 	/*--仄扎屯月--*/
 	CHAR_talkToCli( talkerindex, meindex, token, CHAR_COLORWHITE );
 

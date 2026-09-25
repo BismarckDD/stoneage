@@ -40,7 +40,7 @@ void NPC_FmHealerTalked( int meindex , int talker , char *msg ,int color )
 
     npcarg = CHAR_getChar(meindex,CHAR_NPCARGUMENT);
 
-    getStringFromIndexWithDelim( npcarg, "|", 1, token,sizeof( token));
+    getDelimitedField( npcarg, "|", 1, token,sizeof( token));
     msgNo  = atoi( token );
 
     if( CHAR_getInt( talker , CHAR_WHICHTYPE ) != CHAR_TYPEPLAYER )	

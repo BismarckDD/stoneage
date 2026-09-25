@@ -306,14 +306,14 @@ static BOOL NPC_Bankman_readData(int meindex, int windowno, BOOL chkflg) {
         strcpy(line, buf);
 
       /* delim "=" で最初(1)のトークンを得る  (按 = 取得第1个token) */
-      ret = getStringFromIndexWithDelim(line, "=", 1, firstToken,
+      ret = getDelimitedField(line, "=", 1, firstToken,
                                         sizeof(firstToken));
       if (ret == FALSE) {
         print("Find error at %s in line %d. Ignore\n", filename, linenum);
         continue;
       }
       /* delim "=" で2番目のトークンを得る  (按 = 取得第2个token) */
-      ret = getStringFromIndexWithDelim(line, "=", 2, secondToken,
+      ret = getDelimitedField(line, "=", 2, secondToken,
                                         sizeof(secondToken));
       if (ret == FALSE) {
         print("Find error at %s in line %d. Ignore\n", filename, linenum);
@@ -514,7 +514,7 @@ static int NPC_Bankman_restoreButtontype(char *data) {
   char buff[1024];
 
   for (i = 1;; i++) {
-    rc = getStringFromIndexWithDelim(data, "|", i, buff, sizeof(buff));
+    rc = getDelimitedField(data, "|", i, buff, sizeof(buff));
     if (rc == FALSE)
       break;
     if (strcasecmp(buff, "ok") == 0) {

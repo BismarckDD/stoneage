@@ -886,12 +886,12 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
       char linebuf[512];
       char firstToken[256];
       char secondToken[256];
-      if (getStringFromIndexWithDelim(src, delim2, readindex, linebuf,
+      if (getDelimitedField(src, delim2, readindex, linebuf,
                                       sizeof(linebuf)) == FALSE)
         break;
 
       readindex++;
-      if (getStringFromIndexWithDelim(linebuf, delim1, 1, firstToken,
+      if (getDelimitedField(linebuf, delim1, 1, firstToken,
                                       sizeof(firstToken)) == FALSE)
         return FALSE;
       if (strcmp(firstToken, "id"))
@@ -917,11 +917,11 @@ BOOL ITEM_makeExistItemsFromStringToArg(char *src, ITEM_Item *item, int mode) {
     char secondToken[256];
     int i;
 
-    ret = getStringFromIndexWithDelim(src, delim2, readindex, linebuf,
+    ret = getDelimitedField(src, delim2, readindex, linebuf,
                                       sizeof(linebuf));
     if (ret == FALSE)
       break;
-    ret = getStringFromIndexWithDelim(linebuf, delim1, 1, firstToken,
+    ret = getDelimitedField(linebuf, delim1, 1, firstToken,
                                       sizeof(firstToken));
     if (ret == FALSE)
       return FALSE;
@@ -1024,12 +1024,12 @@ static int ITEM_getRandomValue(const char *string, int *randomwidth, int num) {
   char token[64];
   int ret;
   *randomwidth = 0;
-  ret = getStringFromIndexWithDelim(string, ",", num - 1, token, sizeof(token));
+  ret = getDelimitedField(string, ",", num - 1, token, sizeof(token));
   if (ret == FALSE) {
     return 0;
   }
   minvalue = atoi(token);
-  ret = getStringFromIndexWithDelim(string, ",", num, token, sizeof(token));
+  ret = getDelimitedField(string, ",", num, token, sizeof(token));
   if (ret == FALSE) {
     return minvalue;
   }
@@ -1041,7 +1041,7 @@ static int ITEM_isstring1or0(const char *string, int *randomwidth, int num) {
   char token[64];
   int ret;
 
-  ret = getStringFromIndexWithDelim(string, ",", num - 1, token, sizeof(token));
+  ret = getDelimitedField(string, ",", num - 1, token, sizeof(token));
   if (ret == FALSE) {
     return FALSE;
   }
@@ -1073,7 +1073,7 @@ void callbackReadItemConfigFile(int *line_num, const char *line) {
 #endif
 #endif
   char token[64];
-  int ret = getStringFromIndexWithDelim(line, ",", ITEM_ID_TOKEN_INDEX, token,
+  int ret = getDelimitedField(line, ",", ITEM_ID_TOKEN_INDEX, token,
                                         sizeof(token));
   if (ret != TRUE) {
     print("Failed to parse %s, %d\n", line, ITEM_ID_TOKEN_INDEX);
@@ -1097,7 +1097,7 @@ void callbackReadItemConfigFile2(int *line_num, const char *line) {
   ITEM_getDefaultItemSetting(&item);
   for (i = 0; i < arraysizeof(ITEM_itemDescriptors); i++) {
     ret =
-        getStringFromIndexWithDelim(line, ",", read_pos, token, sizeof(token));
+        getDelimitedField(line, ",", read_pos, token, sizeof(token));
     if (ret == FALSE) {
       data_error = TRUE;
       return;

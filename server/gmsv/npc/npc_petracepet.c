@@ -274,13 +274,13 @@ static int NPC_PetRacePetSetPoint(int meindex, char *argstr)
 		print("SetPoint_npcracepet: Didn't set route %s\n", routetostring);
 		return FALSE;
 	}
-	ret = getStringFromIndexWithDelim(buf, ";", 
+	ret = getDelimitedField(buf, ";", 
 		CHAR_getWorkInt(meindex, NPC_WORK_ROUTEPOINT), buf2, sizeof(buf2));
 	if (ret == FALSE)	return FALSE;
-	ret = getStringFromIndexWithDelim(buf2, ",", 1, buf3, sizeof(buf3));
+	ret = getDelimitedField(buf2, ",", 1, buf3, sizeof(buf3));
 	if (ret == FALSE)	return FALSE;
 	CHAR_setWorkInt(meindex, NPC_WORK_ROUTETOX, atoi(buf3));
-	ret = getStringFromIndexWithDelim(buf2, ",", 2, buf3, sizeof(buf3));
+	ret = getDelimitedField(buf2, ",", 2, buf3, sizeof(buf3));
 	if (ret == FALSE)	return FALSE;
 	CHAR_setWorkInt(meindex, NPC_WORK_ROUTETOY, atoi(buf3));
 	return TRUE;

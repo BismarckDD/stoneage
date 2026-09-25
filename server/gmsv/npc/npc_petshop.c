@@ -680,7 +680,7 @@ int NPC_GetCost(int npc_index, int talker, int petindex) {
   NPC_Util_GetStrFromStrWithDelim(npcarg, "special_pet", buf, sizeof(buf));
 
   i = 1;
-  while (getStringFromIndexWithDelim(buf, ",", i, buff2, sizeof(buff2)) !=
+  while (getDelimitedField(buf, ",", i, buff2, sizeof(buff2)) !=
          FALSE) {
     if (strstr(buff2, "-") == NULL) {
       if (graNo == atoi(buff2)) {
@@ -694,9 +694,9 @@ int NPC_GetCost(int npc_index, int talker, int petindex) {
       int tmp;
       int graflg = 0;
       char token2[128];
-      getStringFromIndexWithDelim(buff2, "-", 1, token2, sizeof(token2));
+      getDelimitedField(buff2, "-", 1, token2, sizeof(token2));
       start = atoi(token2);
-      getStringFromIndexWithDelim(buff2, "-", 2, token2, sizeof(token2));
+      getDelimitedField(buff2, "-", 2, token2, sizeof(token2));
       end = atoi(token2);
       if (start > end) {
         tmp = start;

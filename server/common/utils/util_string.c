@@ -252,52 +252,59 @@ int easyGetTokenFromBuf(const char *src, const char *delim, const int count,
 }
 
 
-BOOL GeneralSplitImpl(const char *src, const char *delim, const int index,
-                      char *buf, const int buflen, const char *file,
-                      const int line) {
-  int i, length = 0, offset = 0;
-  const int delim_len = strlen(delim);
-  char *last; // delim开始字节所在的位置
-  for (i = 0; i < index; i++) {
-    src += offset;
-    if (delim_len == 1) {
-      last = strstr_onebyte(src, delim[0]);
-    } else {
-      last = strstr(src, delim);
-    }
-    if (last == NULL) {
-      strncpysafe(buf, buflen, src);
-      // printf("%s,%s,%d\n", buf, src, buflen);
-      return i == index - 1 ? TRUE : FALSE;
-    }
-    length = last - src;
-    offset = length + delim_len;
+static const char *findFieldDelimiter(const char *src, const char *delim,
+                                      size_t delim_len) {
+  return delim_len == 1 ? strchr(src, delim[0]) : strstr(src, delim);
+}
+
+BOOL getDelimitedField(const char *src, const char *delim, int index,
+                       char *buf, int buflen) {
+  const char *end;
+  size_t delim_len;
+
+  if (src == NULL || delim == NULL || buf == NULL || buflen <= 0 || index <= 0)
+    return FALSE;
+  delim_len = strlen(delim);
+  /* Preserve legacy behavior for an empty delimiter and a positive index. */
+  if (delim_len == 0) {
+    buf[0] = '\0';
+    return TRUE;
   }
-  // 2026.08.20 有修改
-  strncpysafe2(buf, buflen, src, last);
-  // printf("%s,%s,%d\n", buf, src, buflen);
+  while (index > 1) {
+    end = findFieldDelimiter(src, delim, delim_len);
+    if (end == NULL) {
+      strncpysafe(buf, buflen, src);
+      return FALSE;
+    }
+    src = end + delim_len;
+    --index;
+  }
+  end = findFieldDelimiter(src, delim, delim_len);
+  if (end == NULL)
+    strncpysafe(buf, buflen, src);
+  else
+    strncpysafe2(buf, buflen, src, end);
   return TRUE;
 }
 
-BOOL getStringFromCursorWithDelim(const char **cursor, const char *delim,
-                                  char *buf, const int buflen) {
+BOOL nextDelimitedField(const char **cursor, const char *delim,
+                        char *buf, int buflen) {
   const char *start;
-  const char *last;
+  const char *end;
   size_t delim_len;
 
   if (cursor == NULL || *cursor == NULL || delim == NULL || buf == NULL ||
-      buflen <= 0 || **cursor == '\0')
+      buflen <= 0 || *delim == '\0')
     return FALSE;
-
   start = *cursor;
   delim_len = strlen(delim);
-  last = delim_len > 0 ? strstr(start, delim) : NULL;
-  if (last == NULL) {
+  end = findFieldDelimiter(start, delim, delim_len);
+  if (end == NULL) {
     strncpysafe(buf, buflen, start);
-    *cursor = start + strlen(start);
+    *cursor = NULL;
   } else {
-    strncpysafe2(buf, buflen, start, last);
-    *cursor = last + delim_len;
+    strncpysafe2(buf, buflen, start, end);
+    *cursor = end + delim_len;
   }
   return TRUE;
 }

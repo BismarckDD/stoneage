@@ -385,8 +385,8 @@ void ChatRoom_recvall ( int fd , char *data )
 
 	myindex = CONNECT_getCharaindex(fd);
 	if ( !CHAR_CHECKINDEX ( myindex ) )return ;
-	getStringFromIndexWithDelim( data , "|", 1, Head, sizeof(Head));
-	getStringFromIndexWithDelim( data , "|", 2, message, sizeof(message));
+	getDelimitedField( data , "|", 1, Head, sizeof(Head));
+	getDelimitedField( data , "|", 2, message, sizeof(message));
 
 	if ( strcmp ( Head , "C" ) == 0 ) { // 成立频道
 		if ( !ChatRoom_Create ( myindex , message ) )
@@ -395,22 +395,22 @@ void ChatRoom_recvall ( int fd , char *data )
 		if ( !ChatRoom_Destroy ( myindex ) )
 			print("\nSyu log Destroy Channel Error" ) ; 
 	}else if ( strcmp ( Head , "A" ) == 0 ) {// 同意加入频道
-		getStringFromIndexWithDelim( data , "|", 2, message, sizeof(message));
-		getStringFromIndexWithDelim( data , "|", 3, buf, sizeof(buf));
+		getDelimitedField( data , "|", 2, message, sizeof(message));
+		getDelimitedField( data , "|", 3, buf, sizeof(buf));
 		ChatRoom_Agree ( myindex , atoi( message ) , atoi( buf ) ) ; 
 	}else if ( strcmp ( Head , "J" ) == 0 ) {// 申请频道
-		getStringFromIndexWithDelim( data , "|", 2, message, sizeof(message));
+		getDelimitedField( data , "|", 2, message, sizeof(message));
 		ChatRoom_Join ( myindex , atoi( message ) ) ; 
 	}else if ( strcmp ( Head , "L" ) == 0 ) {// 离开频道
 		ChatRoom_Leave ( myindex ) ; 
 	}else if ( strcmp ( Head , "K" ) == 0 ) {//踢出频道
-		getStringFromIndexWithDelim( data , "|", 2, message, sizeof(message));
+		getDelimitedField( data , "|", 2, message, sizeof(message));
 		ChatRoom_Kick ( myindex , atoi( message ) ); 
 	}else if ( strcmp ( Head , "M" ) == 0 ) { // 更换室长
-		getStringFromIndexWithDelim( data , "|", 2, message, sizeof(message));
+		getDelimitedField( data , "|", 2, message, sizeof(message));
 		ChatRoom_Make ( myindex , atoi( message ) ); 
 	}else if ( strcmp ( Head , "T" ) == 0 ) {// 频道讯息
-		getStringFromIndexWithDelim( data , "|", 2, message, sizeof(message));
+		getDelimitedField( data , "|", 2, message, sizeof(message));
 		ChatRoom_Message ( myindex , message ) ; 
 	}else if ( strcmp ( Head , "B" ) == 0 ) {// 聊天室清单
 		ChatRoom_List ( fd );

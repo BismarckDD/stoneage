@@ -281,13 +281,13 @@ int NPC_readCreateFile(char *filename) {
       char firstToken[256];
       char secondToken[256];
       int ret;
-      ret = getStringFromIndexWithDelim(line, "=", 1, firstToken,
+      ret = getDelimitedField(line, "=", 1, firstToken,
                                         sizeof(firstToken));
       if (ret == FALSE) {
         print("Find error at %s in line %d. Ignore\n", filename, linenum);
         break;
       }
-      ret = getStringFromIndexWithDelim(line, "=", 2, secondToken,
+      ret = getDelimitedField(line, "=", 2, secondToken,
                                         sizeof(secondToken));
       if (ret == FALSE) {
         print("Find error at %s in line %d. Ignore\n", filename, linenum);
@@ -374,7 +374,7 @@ int NPC_readCreateFile(char *filename) {
           goto FCLOSERETURNFALSE;
         }
 
-        getStringFromIndexWithDelim(secondToken, "|", 1, enemyname,
+        getDelimitedField(secondToken, "|", 1, enemyname,
                                     sizeof(enemyname));
         templateindex = NPC_templateGetTemplateIndex(enemyname);
         if (templateindex != -1) {
@@ -382,7 +382,7 @@ int NPC_readCreateFile(char *filename) {
           {
             char tmp[2];
             int ret;
-            ret = getStringFromIndexWithDelim(secondToken, "|", 2, tmp,
+            ret = getDelimitedField(secondToken, "|", 2, tmp,
                                               sizeof(tmp));
             if (ret == FALSE)
               cr.arg[enemyreadindex].string[0] = '\0';

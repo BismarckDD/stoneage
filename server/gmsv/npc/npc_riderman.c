@@ -201,17 +201,17 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
         sprintf(buf2, "%d", w.takegold / 5);
         for (i = 0; i < FMPOINTNUM; i++) {
-          getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 9,
+          getDelimitedField(fmpointlist.pointlistarray[i], "|", 9,
                                       token, sizeof(token));
           village = atoi(token);
           if (village == CHAR_getInt(meindex, CHAR_FMINDEX)) {
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 5,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 5,
                                         token, sizeof(token));
             fmindex = atoi(token);
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 6,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 6,
                                         token, sizeof(token));
             strcpy(fmname, token);
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 8,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 8,
                                         token, sizeof(token));
             fmindexi = atoi(token);
             SaacClient_ACFixFMData_send(
@@ -269,17 +269,17 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
         sprintf(buf2, "%d", w.takegold / 5);
         for (i = 0; i < FMPOINTNUM; i++) {
-          getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 9,
+          getDelimitedField(fmpointlist.pointlistarray[i], "|", 9,
                                       token, sizeof(token));
           village = atoi(token);
           if (village == CHAR_getInt(meindex, CHAR_FMINDEX)) {
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 5,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 5,
                                         token, sizeof(token));
             fmindex = atoi(token);
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 6,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 6,
                                         token, sizeof(token));
             strcpy(fmname, token);
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 8,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 8,
                                         token, sizeof(token));
             fmindexi = atoi(token);
             SaacClient_ACFixFMData_send(
@@ -339,17 +339,17 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
         sprintf(buf2, "%d", w.takegold / 5);
         for (i = 0; i < FMPOINTNUM; i++) {
-          getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 9,
+          getDelimitedField(fmpointlist.pointlistarray[i], "|", 9,
                                       token, sizeof(token));
           village = atoi(token);
           if (village == CHAR_getInt(meindex, CHAR_FMINDEX)) {
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 5,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 5,
                                         token, sizeof(token));
             fmindex = atoi(token);
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 6,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 6,
                                         token, sizeof(token));
             strcpy(fmname, token);
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 8,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 8,
                                         token, sizeof(token));
             fmindexi = atoi(token);
             SaacClient_ACFixFMData_send(
@@ -409,17 +409,17 @@ void NPC_RidermanWindowTalked(int meindex, int talkerindex, int seqno,
 
         sprintf(buf2, "%d", w.takegold / 5);
         for (i = 0; i < FMPOINTNUM; i++) {
-          getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 9,
+          getDelimitedField(fmpointlist.pointlistarray[i], "|", 9,
                                       token, sizeof(token));
           village = atoi(token);
           if (village == CHAR_getInt(meindex, CHAR_FMINDEX)) {
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 5,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 5,
                                         token, sizeof(token));
             fmindex = atoi(token);
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 6,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 6,
                                         token, sizeof(token));
             strcpy(fmname, token);
-            getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 8,
+            getDelimitedField(fmpointlist.pointlistarray[i], "|", 8,
                                         token, sizeof(token));
             fmindexi = atoi(token);
             SaacClient_ACFixFMData_send(
@@ -547,13 +547,13 @@ static BOOL NPC_Riderman_readData(int meindex, int windowno, BOOL chkflg) {
       if (i != 0)
         strcpy(line, buf);
 
-      ret = getStringFromIndexWithDelim(line, "=", 1, firstToken,
+      ret = getDelimitedField(line, "=", 1, firstToken,
                                         sizeof(firstToken));
       if (ret == FALSE) {
         print("Find error at %s in line %d. Ignore\n", filename, linenum);
         continue;
       }
-      ret = getStringFromIndexWithDelim(line, "=", 2, secondToken,
+      ret = getDelimitedField(line, "=", 2, secondToken,
                                         sizeof(secondToken));
       if (ret == FALSE) {
         print("Find error at %s in line %d. Ignore\n", filename, linenum);
@@ -767,7 +767,7 @@ static int NPC_Riderman_restoreButtontype(char *data) {
   char buff[1024];
 
   for (i = 1;; i++) {
-    rc = getStringFromIndexWithDelim(data, "|", i, buff, sizeof(buff));
+    rc = getDelimitedField(data, "|", i, buff, sizeof(buff));
     if (rc == FALSE)
       break;
     if (strcasecmp(buff, "ok") == 0) {

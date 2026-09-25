@@ -31,41 +31,41 @@ BOOL NPC_DoorInit(int meindex) {
   NPC_Util_GetArgStr(meindex, arg, sizeof(arg));
   CHAR_setWorkInt(meindex, CHAR_WORKEVENTTYPE, CHAR_EVENT_NPC);
 
-  getStringFromIndexWithDelim(arg, "|", 1, buf, sizeof(buf));
+  getDelimitedField(arg, "|", 1, buf, sizeof(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOOROPENG, atoi(buf));
-  getStringFromIndexWithDelim(arg, "|", 2, buf, sizeof(buf));
+  getDelimitedField(arg, "|", 2, buf, sizeof(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOORCLOSEG, atoi(buf));
-  getStringFromIndexWithDelim(arg, "|", 3, buf, sizeof(buf));
+  getDelimitedField(arg, "|", 3, buf, sizeof(buf));
   CHAR_setWorkChar(meindex, CHAR_WORKDOORNAME, buf);
   strncpysafe(settingdir, sizeof(settingdir), buf);
-  getStringFromIndexWithDelim(arg, "|", 4, buf, sizeof(buf));
+  getDelimitedField(arg, "|", 4, buf, sizeof(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOORSWITCHCOUNT, atoi(buf));
-  getStringFromIndexWithDelim(arg, "|", 5, buf, sizeof(buf));
+  getDelimitedField(arg, "|", 5, buf, sizeof(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOORCLOSETIME, atoi(buf));
 
   CHAR_setInt(meindex, CHAR_MERCHANTLEVEL, atoi(buf));
-  getStringFromIndexWithDelim(arg, "|", 6, buf, sizeof(buf));
+  getDelimitedField(arg, "|", 6, buf, sizeof(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOORSOONFLG, atoi(buf));
 
-  getStringFromIndexWithDelim(arg, "|", 7, buf, sizeof(buf));
+  getDelimitedField(arg, "|", 7, buf, sizeof(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOORPASSFLG, atoi(buf));
   CHAR_setWorkInt(meindex, CHAR_WORKDOORORIGINALGRAPHIC,
                   CHAR_getInt(meindex, CHAR_IMAGENUMBER));
   CHAR_setInt(meindex, CHAR_LV, 0);
-  if (getStringFromIndexWithDelim(arg, "|", 8, buf, sizeof(buf))) {
+  if (getDelimitedField(arg, "|", 8, buf, sizeof(buf))) {
     if (strncmp(buf, "title", 5) == 0) {
       print("This is a title door:'%s'\n", buf);
       CHAR_setWorkInt(meindex, CHAR_WORKDOORPASSFLG, 0);
       CHAR_setWorkChar(meindex, CHAR_WORKDOORTITLE, buf);
       CHAR_setInt(meindex, CHAR_LV, 1);
     } else if (isdigit(buf[0])) {
-      if (getStringFromIndexWithDelim(arg, "|", 8, buf, sizeof(buf)))
+      if (getDelimitedField(arg, "|", 8, buf, sizeof(buf)))
         CHAR_setWorkChar(meindex, CHAR_WORKDOORGOLDLIMIT, buf);
-      if (getStringFromIndexWithDelim(arg, "|", 10, buf, sizeof(buf)))
+      if (getDelimitedField(arg, "|", 10, buf, sizeof(buf)))
         CHAR_setWorkChar(meindex, CHAR_WORKDOORWEEK, buf);
-      if (getStringFromIndexWithDelim(arg, "|", 11, buf, sizeof(buf)))
+      if (getDelimitedField(arg, "|", 11, buf, sizeof(buf)))
         CHAR_setWorkChar(meindex, CHAR_WORKDOORHOUR, buf);
-      if (getStringFromIndexWithDelim(arg, "|", 12, buf, sizeof(buf)))
+      if (getDelimitedField(arg, "|", 12, buf, sizeof(buf)))
         CHAR_setWorkChar(meindex, CHAR_WORKDOORMINUTE, buf);
     }
   }
@@ -188,7 +188,7 @@ BOOL NPC_DoorInit(int meindex) {
       CHAR_setWorkInt(meindex, CHAR_WORKDOOREXPIRETIME, roominfo.expire);
     } else {
       NPC_DoorSetPasswd(meindex, "8hda8iauia90494jasd9asodfasdf89");
-      if (getStringFromIndexWithDelim(arg, "|", 13, buf, sizeof(buf)))
+      if (getDelimitedField(arg, "|", 13, buf, sizeof(buf)))
         if (strlen(buf) != 0)
           NPC_DoorSetPasswd(meindex, buf);
     }
@@ -293,7 +293,7 @@ void NPC_DoorLooked(int meindex, int lookedindex) {
     int i, j, ok = FALSE;
     for (i = 0; !ok; ++i) {
       int r;
-      r = getStringFromIndexWithDelim(p, ":", 2 + i, token, sizeof(token));
+      r = getDelimitedField(p, ":", 2 + i, token, sizeof(token));
       if (r) {
         int titleind = atoi(token);
         for (j = 0; j < CHAR_TITLEMAXHAVE && !ok; j++) {
@@ -311,7 +311,7 @@ void NPC_DoorLooked(int meindex, int lookedindex) {
       char arg[512];
       char buf[512];
       NPC_Util_GetArgStr(meindex, arg, sizeof(arg));
-      getStringFromIndexWithDelim(arg, "|", 9, buf, sizeof(buf));
+      getDelimitedField(arg, "|", 9, buf, sizeof(buf));
       CHAR_talkToCli(lookedindex, -1, buf, CHAR_COLORWHITE);
     }
     return;

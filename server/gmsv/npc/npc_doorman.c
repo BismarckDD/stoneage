@@ -72,7 +72,7 @@ BOOL NPC_DoormanInit( int meindex )
 
 	NPC_Util_GetArgStr( meindex, arg, sizeof( arg));
 
-    if(!getStringFromIndexWithDelim( arg, "|", 3, dname, sizeof(dname ))){
+    if(!getDelimitedField( arg, "|", 3, dname, sizeof(dname ))){
         print("RINGO: 设定看门者时需要门的名字唷！:%s:\n",
               arg );
         return FALSE;
@@ -95,10 +95,10 @@ void NPC_DoormanTalked( int meindex , int talkerindex , char *msg ,
 
 	NPC_Util_GetArgStr( meindex, arg, sizeof( arg));
 
-    if( !getStringFromIndexWithDelim( arg, "|", 1, mode, sizeof( mode )))
+    if( !getDelimitedField( arg, "|", 1, mode, sizeof( mode )))
         return;
 
-    if( !getStringFromIndexWithDelim( arg, "|", 2, opt, sizeof( opt ) ))
+    if( !getDelimitedField( arg, "|", 2, opt, sizeof( opt ) ))
         return;
 
     if( strcmp( mode , "gold" ) == 0 ){
@@ -160,7 +160,7 @@ void NPC_DoormanTalked( int meindex , int talkerindex , char *msg ,
 		int checkfloor;
 		int maxnum, i, iNum;
 
-	    if( !getStringFromIndexWithDelim( arg, "|", 2, szBuf, sizeof( szBuf ) ))
+	    if( !getDelimitedField( arg, "|", 2, szBuf, sizeof( szBuf ) ))
     	    return;
 
 		/* 譬屯月白夫失午    谛醒 */
@@ -176,10 +176,10 @@ void NPC_DoormanTalked( int meindex , int talkerindex , char *msg ,
 			if( CHAR_getInt( i, CHAR_FLOOR ) != checkfloor )continue;
 			iNum++;
 		}
-	    if( !getStringFromIndexWithDelim( arg, "|", 5, szNg, sizeof( szNg ))){
+	    if( !getDelimitedField( arg, "|", 5, szNg, sizeof( szNg ))){
    			strcpy( szNg, "。。。。" );	/* 凤伞卅仄及本伉白 */
 		}
-    	if( !getStringFromIndexWithDelim( arg, "|", 4, szOk, sizeof( szOk ))){
+    	if( !getDelimitedField( arg, "|", 4, szOk, sizeof( szOk ))){
    			strcpy( szOk, "开门吧。。。" );	/* 凤伞丐曰及本伉白 */
    		}
 

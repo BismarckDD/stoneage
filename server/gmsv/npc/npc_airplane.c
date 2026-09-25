@@ -408,7 +408,7 @@ static int NPC_AirSetPoint(int meindex, char *argstr) {
     return FALSE;
   }
 
-  ret = getStringFromIndexWithDelim(
+  ret = getDelimitedField(
       buf, ";", CHAR_getWorkInt(meindex, NPC_WORK_ROUTEPOINT), buf2,
       sizeof(buf2));
   if (ret == FALSE)
@@ -416,18 +416,18 @@ static int NPC_AirSetPoint(int meindex, char *argstr) {
 
   // Arminius: add floor
 
-  ret = getStringFromIndexWithDelim(buf2, ",", 1, buf3, sizeof(buf3));
+  ret = getDelimitedField(buf2, ",", 1, buf3, sizeof(buf3));
   if (ret == FALSE)
     return FALSE;
   floor = atoi(buf3);
 
-  ret = getStringFromIndexWithDelim(buf2, ",", 2, buf3, sizeof(buf3));
+  ret = getDelimitedField(buf2, ",", 2, buf3, sizeof(buf3));
   if (ret == FALSE)
     return FALSE;
   CHAR_setWorkInt(meindex, NPC_WORK_ROUTETOX, atoi(buf3));
   warpx = atoi(buf3);
 
-  ret = getStringFromIndexWithDelim(buf2, ",", 3, buf3, sizeof(buf3));
+  ret = getDelimitedField(buf2, ",", 3, buf3, sizeof(buf3));
   if (ret == FALSE)
     return FALSE;
   CHAR_setWorkInt(meindex, NPC_WORK_ROUTETOY, atoi(buf3));
@@ -482,7 +482,7 @@ static BOOL NPC_AirCheckDeniedItem(int meindex, int char_index, char *argstr) {
       int itemid;
       char buf2[64];
       int j;
-      ret = getStringFromIndexWithDelim(buf, ",", i, buf2, sizeof(buf2));
+      ret = getDelimitedField(buf, ",", i, buf2, sizeof(buf2));
       if (ret == FALSE)
         break;
       itemid = atoi(buf2);
@@ -524,7 +524,7 @@ BOOL NPC_AirCheckAllowItem(int meindex, int char_index, BOOL pickupmode) {
       char buf2[64];
       int j;
       BOOL getflg;
-      ret = getStringFromIndexWithDelim(buf, ",", i, buf2, sizeof(buf2));
+      ret = getDelimitedField(buf, ",", i, buf2, sizeof(buf2));
       if (ret == FALSE)
         break;
       itemid = atoi(buf2);
@@ -625,7 +625,7 @@ static int NPC_AirGetRoutePointNum(int meindex, char *argstr) {
     return -1;
   }
   for (i = 1;; i++) {
-    ret = getStringFromIndexWithDelim(buf, ";", i, buf2, sizeof(buf2));
+    ret = getDelimitedField(buf, ";", i, buf2, sizeof(buf2));
     if (ret == FALSE)
       break;
   }

@@ -58,7 +58,7 @@ BOOL NPC_FreePetSkillShopInit(int meindex) {
       NULL) {
     char buf[256], filename[256];
     int k = 1, skillID, skillarray;
-    while (getStringFromIndexWithDelim(msg, ",", k, buf, sizeof(buf))) {
+    while (getDelimitedField(msg, ",", k, buf, sizeof(buf))) {
       k++;
       skillID = atoi(buf);
       skillarray = PETSKILL_getPetskillArray(skillID);
@@ -191,18 +191,18 @@ void NPC_FreePetSkillShopWindowTalked(int meindex, int talkerindex, int seqno,
       return;
     }
     makeStringFromEscaped(data);
-    getStringFromIndexWithDelim(data, "|", 1, buf, sizeof(buf));
+    getDelimitedField(data, "|", 1, buf, sizeof(buf));
     skill = atoi(buf);
-    getStringFromIndexWithDelim(data, "|", 2, buf, sizeof(buf));
+    getDelimitedField(data, "|", 2, buf, sizeof(buf));
     pet = atoi(buf);
-    getStringFromIndexWithDelim(data, "|", 3, buf, sizeof(buf));
+    getDelimitedField(data, "|", 3, buf, sizeof(buf));
     slot = atoi(buf);
-    getStringFromIndexWithDelim(data, "|", 4, buf, sizeof(buf));
+    getDelimitedField(data, "|", 4, buf, sizeof(buf));
     cost = atoi(buf);
 
     if (NPC_Util_GetStrFromStrWithDelim(argstr, "pet_skill", msg,
                                         sizeof(msg)) != NULL) {
-      getStringFromIndexWithDelim(msg, ",", skill, buf, sizeof(buf));
+      getDelimitedField(msg, ",", skill, buf, sizeof(buf));
       skillID = atoi(buf);
     }
     slot--;
@@ -358,7 +358,7 @@ BOOL NPC_FreePetSkillMakeStr(int meindex, int toindex, int select) {
     char token2[265];
     char buf[64];
     i = 1;
-    while (getStringFromIndexWithDelim(msg, ",", i, buf, sizeof(buf)) !=
+    while (getDelimitedField(msg, ",", i, buf, sizeof(buf)) !=
            FALSE) {
       i++;
       skillID = atoi(buf);
@@ -412,12 +412,12 @@ BOOL NPC_SkillShopDelItems(int meindex, int talker, char *buf) {
   char item[256], cout[256];
   int i = 1;
   BOOL Evflg = TRUE;
-  while (getStringFromIndexWithDelim(buf, ",", i, buf1, sizeof(buf1)) !=
+  while (getDelimitedField(buf, ",", i, buf1, sizeof(buf1)) !=
          FALSE) {
     i++;
     if (strstr(buf1, "*") != NULL) {
-      getStringFromIndexWithDelim(buf1, "*", 1, item, sizeof(item));
-      getStringFromIndexWithDelim(buf1, "*", 2, cout, sizeof(cout));
+      getDelimitedField(buf1, "*", 1, item, sizeof(item));
+      getDelimitedField(buf1, "*", 2, cout, sizeof(cout));
     } else {
       strcpy(item, buf1);
       strcpy(cout, "1");
@@ -451,21 +451,21 @@ BOOL NPC_SkillShopPetCheck(int toindex, int petindex, int skillID) {
       NULL) {
     BOOL EvFlg = TRUE;
     i = 1;
-    while (getStringFromIndexWithDelim(data, "|", i, msg, sizeof(msg)) !=
+    while (getDelimitedField(data, "|", i, msg, sizeof(msg)) !=
            FALSE) {
       i++;
       if (strstr(msg, "LV") != NULL) {
         char LvStr[256];
         int LV = 0;
         if (strstr(msg, ">") != NULL) {
-          if (getStringFromIndexWithDelim(msg, ">", 2, LvStr, sizeof(LvStr)) !=
+          if (getDelimitedField(msg, ">", 2, LvStr, sizeof(LvStr)) !=
               FALSE) {
             LV = atoi(LvStr);
             if (CHAR_getInt(petindex, CHAR_LV) <= LV)
               EvFlg = FALSE;
           }
         } else if (strstr(msg, "<")) {
-          if (getStringFromIndexWithDelim(msg, "<", 2, LvStr, sizeof(LvStr)) !=
+          if (getDelimitedField(msg, "<", 2, LvStr, sizeof(LvStr)) !=
               FALSE) {
             LV = atoi(LvStr);
             if (CHAR_getInt(petindex, CHAR_LV) >= LV)
@@ -477,7 +477,7 @@ BOOL NPC_SkillShopPetCheck(int toindex, int petindex, int skillID) {
         char strSK[256];
         int petskillindex;
 
-        getStringFromIndexWithDelim(msg, "=", 2, strSK, sizeof(strSK));
+        getDelimitedField(msg, "=", 2, strSK, sizeof(strSK));
         ID = atoi(strSK);
         for (j = 0; j < CHAR_MAXPETSKILLHAVE; j++) {
           PskId = CHAR_getPetSkill(petindex, j);
@@ -535,14 +535,14 @@ BOOL NPC_SkillShopWarp(int meindex, int talkindex) {
     int where = 0;
     i = 1;
     j = 0;
-    while (getStringFromIndexWithDelim(data, ";", i, buf1, sizeof(buf1)) !=
+    while (getDelimitedField(data, ";", i, buf1, sizeof(buf1)) !=
            FALSE) {
       i++;
-      getStringFromIndexWithDelim(buf1, ",", 1, buf2, sizeof(buf2));
+      getDelimitedField(buf1, ",", 1, buf2, sizeof(buf2));
       Points[j].FLOOR = atoi(buf2);
-      getStringFromIndexWithDelim(buf1, ",", 2, buf2, sizeof(buf2));
+      getDelimitedField(buf1, ",", 2, buf2, sizeof(buf2));
       Points[j].X = atoi(buf2);
-      getStringFromIndexWithDelim(buf1, ",", 3, buf2, sizeof(buf2));
+      getDelimitedField(buf1, ",", 3, buf2, sizeof(buf2));
       Points[j].Y = atoi(buf2);
       j++;
       if (j >= MAXNPCPOINT)
@@ -557,11 +557,11 @@ BOOL NPC_SkillShopWarp(int meindex, int talkindex) {
   if (NPC_Util_GetStrFromStrWithDelim(npcarg, "WARP", data, sizeof(data)) !=
       NULL) {
     int P_Floor, P_X, P_Y;
-    getStringFromIndexWithDelim(data, ",", 1, buf2, sizeof(buf2));
+    getDelimitedField(data, ",", 1, buf2, sizeof(buf2));
     P_Floor = atoi(buf2);
-    getStringFromIndexWithDelim(data, ",", 2, buf2, sizeof(buf2));
+    getDelimitedField(data, ",", 2, buf2, sizeof(buf2));
     P_X = atoi(buf2);
-    getStringFromIndexWithDelim(data, ",", 3, buf2, sizeof(buf2));
+    getDelimitedField(data, ",", 3, buf2, sizeof(buf2));
     P_Y = atoi(buf2);
     CHAR_warpToSpecificPoint(talkindex, P_Floor, P_X, P_Y);
     EvFlg = TRUE;

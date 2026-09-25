@@ -238,7 +238,7 @@ const int getCharBaseValue(lua_State *L,
     int line = 1;
     int i;
     int value = 0;
-    while (getStringFromIndexWithDelim(data, "|", line, field, sizeof(field)) ==
+    while (getDelimitedField(data, "|", line, field, sizeof(field)) ==
            TRUE) {
       for (i = 0; i < num; i++) {
         if (strcmp(charbase[i].field, field) == 0) {

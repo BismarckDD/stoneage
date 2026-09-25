@@ -342,7 +342,7 @@ BOOL PETSKILL_initPetskill(char *filename) {
     chomp(line);
     PETSKILL_petskillnum++;
 #ifdef _PETSKILL_OPTIMUM // Robin 取出最大宠技ID
-    if (getStringFromIndexWithDelim(line, ",", PETSKILL_STARTINTNUM, token,
+    if (getDelimitedField(line, ",", PETSKILL_STARTINTNUM, token,
                                     sizeof(token)) == FALSE)
       continue;
     // print("\n 宠技ID:%d %s ", atoi( token), line);
@@ -406,7 +406,7 @@ BOOL PETSKILL_initPetskill(char *filename) {
       int ret;
 
 #ifdef _PETSKILL_OPTIMUM // 读取本行宠技的ID, 直接以宠技ID当Table index
-      ret = getStringFromIndexWithDelim(line, ",", PETSKILL_STARTINTNUM, token,
+      ret = getDelimitedField(line, ",", PETSKILL_STARTINTNUM, token,
                                         sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
@@ -418,7 +418,7 @@ BOOL PETSKILL_initPetskill(char *filename) {
       for (i = 0; i < PETSKILL_DATACHARNUM; i++) {
         /*    侬  迕玄□弁件毛苇月    */
         ret =
-            getStringFromIndexWithDelim(line, ",", i + 1, token, sizeof(token));
+            getDelimitedField(line, ",", i + 1, token, sizeof(token));
         if (ret == FALSE) {
           printEx("文件语法错误:%s 第%d行\n", filename, linenum);
           break;
@@ -429,7 +429,7 @@ BOOL PETSKILL_initPetskill(char *filename) {
       /* 4勾  动嫦反醒袄犯□正 */
       for (i = PETSKILL_STARTINTNUM;
            i < PETSKILL_DATAINTNUM + PETSKILL_STARTINTNUM; i++) {
-        ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
+        ret = getDelimitedField(line, ",", i, token, sizeof(token));
         if (ret == FALSE) {
           printEx("文件语法错误:%s 第%d行\n", filename, linenum);
           break;
@@ -785,17 +785,17 @@ int PETSKILL_PowerBalance(int char_index, int toindex, int array, char *data) {
   char *buff = CHAR_getChar(char_index, CHAR_POWER_UP);
   char token[256];
   int type = 0;
-  if (getStringFromIndexWithDelim(buff, "|", 1, token, sizeof(token))) {
+  if (getDelimitedField(buff, "|", 1, token, sizeof(token))) {
     type = atoi(token);
   }
   int value = 0;
-  if (getStringFromIndexWithDelim(buff, "|", 2, token, sizeof(token))) {
+  if (getDelimitedField(buff, "|", 2, token, sizeof(token))) {
     value += atoi(token);
   }
-  if (getStringFromIndexWithDelim(buff, "|", 3, token, sizeof(token))) {
+  if (getDelimitedField(buff, "|", 3, token, sizeof(token))) {
     value += atoi(token);
   }
-  if (getStringFromIndexWithDelim(buff, "|", 4, token, sizeof(token))) {
+  if (getDelimitedField(buff, "|", 4, token, sizeof(token))) {
     value += atoi(token);
   }
 #endif
@@ -1200,7 +1200,7 @@ int PETSKILL_Strength(int char_index, int toNo, int array, char *data) {
   nums = CHAR_getWorkInt(char_index, CHAR_WORK_STRENGTH);
   char *skillarg = PETSKILL_getChar(array, PETSKILL_OPTION);
   char buf1[256];
-  if (getStringFromIndexWithDelim(skillarg, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(skillarg, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   if (nums >= max(1, atoi(buf1))) {
@@ -1561,7 +1561,7 @@ int PETSKILL_DamageToHp(int char_index, int toNo, int array, char *data) {
 
   if (pszOption == "\0")
     return FALSE;
-  if (getStringFromIndexWithDelim(pszOption, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(pszOption, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
 
@@ -1589,7 +1589,7 @@ int PETSKILL_MpDamage(int char_index, int toNo, int array, char *data) {
   pszOption = PETSKILL_getChar(array, PETSKILL_OPTION);
   if (pszOption == "\0")
     return FALSE;
-  if (getStringFromIndexWithDelim(pszOption, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(pszOption, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
 
@@ -1616,7 +1616,7 @@ int PETSKILL_ToothCrushe(int char_index, int toNo, int array, char *data) {
   /*
           pszOption = PETSKILL_getChar( array, PETSKILL_OPTION );
           if( pszOption == "\0" ) return FALSE;
-          if( getStringFromIndexWithDelim( pszOption, "|", 1, buf1, sizeof(
+          if( getDelimitedField( pszOption, "|", 1, buf1, sizeof(
      buf1)) == FALSE ) return FALSE;
 
           def = (float)(atoi( buf1)/100);
@@ -1641,7 +1641,7 @@ int PETSKILL_Modifyattack(int char_index, int toNo, int array, char *data) {
   /*
           pszOption = PETSKILL_getChar( array, PETSKILL_OPTION );
           if( pszOption == "\0" ) return FALSE;
-          if( getStringFromIndexWithDelim( pszOption, "|", 1, buf1, sizeof(
+          if( getDelimitedField( pszOption, "|", 1, buf1, sizeof(
      buf1)) == FALSE ) return FALSE;
 
           def = (float)(atoi( buf1)/100);
@@ -1668,7 +1668,7 @@ int PETSKILL_Mdfyattack(int char_index, int toNo, int array, char *data) {
   pszOption = PETSKILL_getChar(array, PETSKILL_OPTION);
   if (pszOption == "\0")
     return FALSE;
-  if (getStringFromIndexWithDelim(pszOption, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(pszOption, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   for (i = 0; i < 4; i++) {
@@ -1679,7 +1679,7 @@ int PETSKILL_Mdfyattack(int char_index, int toNo, int array, char *data) {
   if (i == 4)
     return FALSE;
   CHAR_SETWORKINT_LOW(char_index, CHAR_WORKBATTLECOM4, i); // 记录属性
-  if (getStringFromIndexWithDelim(pszOption, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(pszOption, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   nums = atoi(buf1);
@@ -1715,7 +1715,7 @@ int PETSKILL_Inslay(int index, int toNo, int array, char *data) {
     char buf[256];
     char *buf1;
     int item_index;
-    if (getStringFromIndexWithDelim(data, "|", i + 1, buf, sizeof(buf)) ==
+    if (getDelimitedField(data, "|", i + 1, buf, sizeof(buf)) ==
         FALSE)
       break;
     itemno = atoi(buf);
@@ -1887,7 +1887,7 @@ int PETSKILL_Fixitem(int index, int toNo, int array, char *data) {
     char buf[256];
     int itemtype = -1;
     int item_index;
-    if (getStringFromIndexWithDelim(data, "|", i + 1, buf, sizeof(buf)) ==
+    if (getDelimitedField(data, "|", i + 1, buf, sizeof(buf)) ==
         FALSE)
       break;
     itemno = atoi(buf);
@@ -2237,8 +2237,8 @@ int PETSKILL_AttackShoot(int char_index, int toNo, int array, char *data) {
   buf = PETSKILL_getChar(array, PETSKILL_OPTION);
   if (buf == "\0")
     return FALSE;
-  getStringFromIndexWithDelim(buf, "|", 1, bb1, sizeof(bb1));
-  getStringFromIndexWithDelim(buf, "|", 2, bb2, sizeof(bb2));
+  getDelimitedField(buf, "|", 1, bb1, sizeof(bb1));
+  getDelimitedField(buf, "|", 2, bb2, sizeof(bb2));
   n = RAND(atoi(bb1), atoi(bb2));
   if (loyal >= 100) {
     if (RAND(1, 300) > 299)
@@ -2521,7 +2521,7 @@ int PETSKILL_BattleModel(int char_index, int toindex, int array, char *data) {
   }
 
   // 取得攻击类型
-  if (getStringFromIndexWithDelim(pszOption, "|", 1, szData, sizeof(szData)) ==
+  if (getDelimitedField(pszOption, "|", 1, szData, sizeof(szData)) ==
       FALSE) {
     printf("PETSKILL_BattleModel: no type data!!(文件:%s,第%d行)\n", __FILE__,
            __LINE__);
@@ -2529,7 +2529,7 @@ int PETSKILL_BattleModel(int char_index, int toindex, int array, char *data) {
   }
   iType = atoi(szData);
   // 取得攻击物件数量
-  if (getStringFromIndexWithDelim(pszOption, "|", 2, szData, sizeof(szData)) ==
+  if (getDelimitedField(pszOption, "|", 2, szData, sizeof(szData)) ==
       FALSE) {
     printf("PETSKILL_BattleModel: no object number data!!(文件:%s,第%d行)\n",
            __FILE__, __LINE__);
@@ -2541,10 +2541,10 @@ int PETSKILL_BattleModel(int char_index, int toindex, int array, char *data) {
   else if (iObjectNum > 10)
     iObjectNum = 10;
   // 取得能力增减
-  if (getStringFromIndexWithDelim(pszOption, "|", 6, szData, sizeof(szData)) !=
+  if (getDelimitedField(pszOption, "|", 6, szData, sizeof(szData)) !=
       FALSE) {
     for (i = 0; i < 3; i++) {
-      if (getStringFromIndexWithDelim(szData, " ", i + 1, szData2,
+      if (getDelimitedField(szData, " ", i + 1, szData2,
                                       sizeof(szData2)) != FALSE) {
         // 检查设定
         if (strstr(szData2, szWord[i]) != NULL) {
@@ -2599,16 +2599,16 @@ int PETSKILL_Combined(int char_index, int toNo, int array, char *data) {
     return FALSE;
 
   strcpy(combined, " ");
-  getStringFromIndexWithDelim(pszOption, "|", 1, combined, sizeof(combined));
+  getDelimitedField(pszOption, "|", 1, combined, sizeof(combined));
   if (strcmp(combined, "综合法") == 0) {
-    if (getStringFromIndexWithDelim(pszOption, "|", 2, countstr,
+    if (getDelimitedField(pszOption, "|", 2, countstr,
                                     sizeof(countstr)) == FALSE)
       return FALSE;
     count = atoi(countstr);
     if (count > 10)
       count = 10;
     for (i = 0; i < count; i++) {
-      if (getStringFromIndexWithDelim(pszOption, "|", 3 + i, killstr,
+      if (getDelimitedField(pszOption, "|", 3 + i, killstr,
                                       sizeof(killstr)))
         kill[i] = atoi(killstr);
     }

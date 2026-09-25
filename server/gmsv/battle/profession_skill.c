@@ -125,7 +125,7 @@ BOOL PROFESSION_initSkill(char *filename) {
     chomp(line);
     profession_skill_num++;
 #ifdef _PROSKILL_OPTIMUM
-    if (getStringFromIndexWithDelim(
+    if (getDelimitedField(
             line, ",", PROFESSION_SKILL_DATACHARNUM + PROFESSION_SKILL_ID + 1,
             token, sizeof(token)) == FALSE)
       continue;
@@ -193,7 +193,7 @@ BOOL PROFESSION_initSkill(char *filename) {
       int ret;
 
 #ifdef _PROSKILL_OPTIMUM // 读取本行职技的ID, 直接以职技ID当Table index
-      ret = getStringFromIndexWithDelim(
+      ret = getDelimitedField(
           line, ",", PROFESSION_SKILL_DATACHARNUM + PROFESSION_SKILL_ID + 1,
           token, sizeof(token));
       if (ret == FALSE) {
@@ -205,7 +205,7 @@ BOOL PROFESSION_initSkill(char *filename) {
       for (i = 0; i < PROFESSION_SKILL_DATACHARNUM; i++) {
 
         ret =
-            getStringFromIndexWithDelim(line, ",", i + 1, token, sizeof(token));
+            getDelimitedField(line, ",", i + 1, token, sizeof(token));
         if (ret == FALSE) {
           printEx("Syntax Error file:%s line:%d\n", filename, linenum);
           break;
@@ -214,7 +214,7 @@ BOOL PROFESSION_initSkill(char *filename) {
       }
 
       for (i = 0; i < PROFESSION_SKILL_DATAINTNUM; i++) {
-        ret = getStringFromIndexWithDelim(line, ",",
+        ret = getDelimitedField(line, ",",
                                           i + PROFESSION_SKILL_DATACHARNUM + 1,
                                           token, sizeof(token));
 

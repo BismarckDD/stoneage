@@ -233,7 +233,7 @@ void CHAR_Family(int fd, int index, char *message) {
         char ridePetSlot[32];
          /* R|P|-1 是明确的骑宠指令, 只有接受到这条指令才取消骑宠.
          * 不能因为改变其他宠物的状态, 而取消骑宠. */
-        if (getStringFromIndexWithDelim(message, "|", 3, ridePetSlot,
+        if (getDelimitedField(message, "|", 3, ridePetSlot,
                                         sizeof(ridePetSlot)) &&
             atoi(ridePetSlot) == -1) {
           printf("[RIDE] dismount: char=%d currentSlot=%d\n", index,
@@ -378,7 +378,7 @@ void FAMILY_Add(int fd, int meindex, char *message) {
     CHAR_send_P_StatusString(meindex, CHAR_P_STRING_GOLD);
   }
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
   sprintf(fmname, "%s", token);
@@ -389,7 +389,7 @@ void FAMILY_Add(int fd, int meindex, char *message) {
         makeEscapeString("\n家族的名称请勿输入空格！", buf, sizeof(buf)));
     return;
   }
-  if (getStringFromIndexWithDelim(message, "|", 3, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 3, token, sizeof(token)) ==
       FALSE)
     return;
   havepetindex = atoi(token);
@@ -400,11 +400,11 @@ void FAMILY_Add(int fd, int meindex, char *message) {
         makeEscapeString("\n请选择一只宠物作为家族守护兽！", buf, sizeof(buf)));
     return;
   }
-  if (getStringFromIndexWithDelim(message, "|", 4, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 4, token, sizeof(token)) ==
       FALSE)
     return;
   fmsprite = atoi(token);
-  if (getStringFromIndexWithDelim(message, "|", 5, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 5, token, sizeof(token)) ==
       FALSE)
     return;
   if (strcmp(token, "") == 0)
@@ -413,7 +413,7 @@ void FAMILY_Add(int fd, int meindex, char *message) {
     sprintf(fmrule, "%s", token);
 
 #ifdef _FAMILYBADGE_
-  if (getStringFromIndexWithDelim(message, "|", 6, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 6, token, sizeof(token)) ==
       FALSE) {
     GmsvServer_WN_send(
         fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
@@ -583,19 +583,19 @@ void FAMILY_Join(int fd, int meindex, char *message) {
   }
 #endif
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
   index = atoi(token);
-  if (getStringFromIndexWithDelim(message, "|", 3, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 3, token, sizeof(token)) ==
       FALSE)
     return;
   fmindex = atoi(token);
-  if (getStringFromIndexWithDelim(message, "|", 4, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 4, token, sizeof(token)) ==
       FALSE)
     return;
   sprintf(fmname, "%s", token);
-  if (getStringFromIndexWithDelim(message, "|", 5, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 5, token, sizeof(token)) ==
       FALSE)
     return;
   fmsprite = atoi(token);
@@ -737,7 +737,7 @@ void FAMILY_Leave(int fd, int meindex, char *message) {
     }
   }
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
   result = atoi(token);
@@ -889,11 +889,11 @@ void ACShowMemberList(int result, int index, int fmnum, int fmacceptflag,
     for (j = 1; j <= fmnum; j++) {
       if (j > FAMILY_MAXMEMBER)
         break;
-      if (getStringFromIndexWithDelim(data, " ", j, tmpbuf, sizeof(tmpbuf)) ==
+      if (getDelimitedField(data, " ", j, tmpbuf, sizeof(tmpbuf)) ==
           FALSE)
         return;
       strcpy(memberlist[index].numberlistarray[j - 1], tmpbuf);
-      getStringFromIndexWithDelim(tmpbuf, "|", 1, numberid, sizeof(numberid));
+      getDelimitedField(tmpbuf, "|", 1, numberid, sizeof(numberid));
       memberlist[index].memberindex[j - 1] = atoi(numberid);
     }
     memberlist[index].fmnum = fmnum;
@@ -928,20 +928,20 @@ void ACShowDpTop(int result, int num, char *data, int kindflag) {
       }
       fmdptop.num = num;
       for (i = 0; i < fmdptop.num; i++) {
-        if (getStringFromIndexWithDelim(data, " ", i + 1, tmpbuf,
+        if (getDelimitedField(data, " ", i + 1, tmpbuf,
                                         sizeof(tmpbuf)) == FALSE)
           return;
         strcpy(fmdptop.topmemo[i], tmpbuf);
         // family index
-        getStringFromIndexWithDelim(tmpbuf, "|", 1, tmpbuf1, sizeof(tmpbuf1));
+        getDelimitedField(tmpbuf, "|", 1, tmpbuf1, sizeof(tmpbuf1));
         fmdptop.fmtopid[i] = atoi(tmpbuf1);
 #ifdef _FMVER21
         // family popularity
-        getStringFromIndexWithDelim(tmpbuf, "|", 6, tmpbuf1, sizeof(tmpbuf1));
+        getDelimitedField(tmpbuf, "|", 6, tmpbuf1, sizeof(tmpbuf1));
         fmdptop.fmtopdp[i] = atoi(tmpbuf1);
 #endif
 #ifdef _NEW_MANOR_LAW
-        getStringFromIndexWithDelim(tmpbuf, "|", 7, tmpbuf1, sizeof(tmpbuf1));
+        getDelimitedField(tmpbuf, "|", 7, tmpbuf1, sizeof(tmpbuf1));
         fmdptop.fmMomentum[i] = atoi(tmpbuf1);
 #endif
       }
@@ -951,7 +951,7 @@ void ACShowDpTop(int result, int num, char *data, int kindflag) {
         strcpy(fmdptop.adv_topmemo[i], "");
       fmdptop.adv_num = num;
       for (i = 0; i < fmdptop.adv_num; i++) {
-        if (getStringFromIndexWithDelim(data, " ", i + 1, tmpbuf,
+        if (getDelimitedField(data, " ", i + 1, tmpbuf,
                                         sizeof(tmpbuf)) == FALSE)
           return;
         strcpy(fmdptop.adv_topmemo[i], tmpbuf);
@@ -962,7 +962,7 @@ void ACShowDpTop(int result, int num, char *data, int kindflag) {
         strcpy(fmdptop.feed_topmemo[i], "");
       fmdptop.feed_num = num;
       for (i = 0; i < fmdptop.feed_num; i++) {
-        if (getStringFromIndexWithDelim(data, " ", i + 1, tmpbuf,
+        if (getDelimitedField(data, " ", i + 1, tmpbuf,
                                         sizeof(tmpbuf)) == FALSE)
           return;
         strcpy(fmdptop.feed_topmemo[i], tmpbuf);
@@ -973,7 +973,7 @@ void ACShowDpTop(int result, int num, char *data, int kindflag) {
         strcpy(fmdptop.syn_topmemo[i], "");
       fmdptop.syn_num = num;
       for (i = 0; i < fmdptop.syn_num; i++) {
-        if (getStringFromIndexWithDelim(data, " ", i + 1, tmpbuf,
+        if (getDelimitedField(data, " ", i + 1, tmpbuf,
                                         sizeof(tmpbuf)) == FALSE)
           return;
         strcpy(fmdptop.syn_topmemo[i], tmpbuf);
@@ -984,7 +984,7 @@ void ACShowDpTop(int result, int num, char *data, int kindflag) {
         strcpy(fmdptop.food_topmemo[i], "");
       fmdptop.food_num = num;
       for (i = 0; i < fmdptop.food_num; i++) {
-        if (getStringFromIndexWithDelim(data, " ", i + 1, tmpbuf,
+        if (getDelimitedField(data, " ", i + 1, tmpbuf,
                                         sizeof(tmpbuf)) == FALSE)
           return;
         strcpy(fmdptop.food_topmemo[i], tmpbuf);
@@ -995,7 +995,7 @@ void ACShowDpTop(int result, int num, char *data, int kindflag) {
         strcpy(fmdptop.pk_topmemo[i], "");
       fmdptop.pk_num = num;
       for (i = 0; i < fmdptop.pk_num; i++) {
-        if (getStringFromIndexWithDelim(data, " ", i + 1, tmpbuf,
+        if (getDelimitedField(data, " ", i + 1, tmpbuf,
                                         sizeof(tmpbuf)) == FALSE)
           return;
         strcpy(fmdptop.pk_topmemo[i], tmpbuf);
@@ -1005,16 +1005,16 @@ void ACShowDpTop(int result, int num, char *data, int kindflag) {
     case FM_TOP_MOMENTUM: {
       for (i = 0; i < FAMILY_MAXNUM; i++) {
         strcpy(fmdptop.momentum_topmemo[i], "");
-        if (getStringFromIndexWithDelim(data, " ", i + 1, tmpbuf,
+        if (getDelimitedField(data, " ", i + 1, tmpbuf,
                                         sizeof(tmpbuf)) == FALSE)
           break;
         strcpy(fmdptop.momentum_topmemo[i], tmpbuf);
       }
       for (i = 0; i < num; i++) {
-        if (getStringFromIndexWithDelim(data, " ", i + 1, tmpbuf,
+        if (getDelimitedField(data, " ", i + 1, tmpbuf,
                                         sizeof(tmpbuf)) == FALSE)
           return;
-        getStringFromIndexWithDelim(tmpbuf, "|", 1, tmpbuf1, sizeof(tmpbuf1));
+        getDelimitedField(tmpbuf, "|", 1, tmpbuf1, sizeof(tmpbuf1));
         // get top id
         fmdptop.momentum_topid[i] = atoi(tmpbuf1);
       }
@@ -1034,10 +1034,10 @@ void ACShowPointList(int result, char *data) {
     return;
   } else {
     for (i = 0; i < FAMILY_MAXHOME; i++) {
-      if (getStringFromIndexWithDelim(data, " ", i + 1, tmpbuf,
+      if (getDelimitedField(data, " ", i + 1, tmpbuf,
                                       sizeof(tmpbuf)) == FALSE)
         return;
-      getStringFromIndexWithDelim(tmpbuf, "|", 2, tmp, sizeof(tmp));
+      getDelimitedField(tmpbuf, "|", 2, tmp, sizeof(tmp));
 
       if (atoi(tmp) == 0) {
         strcpy(fmpointlist.pointlistarray[i], "");
@@ -1060,7 +1060,7 @@ void ACShowFMMemo(int result, int index, int num, int dataindex, char *data) {
         strcpy(fmsmemo.memo[j - 1], "");
       }
       for (j = 1; j <= num; j++) {
-        if (getStringFromIndexWithDelim(data, "|", j, tmpbuf, sizeof(tmpbuf)) ==
+        if (getDelimitedField(data, "|", j, tmpbuf, sizeof(tmpbuf)) ==
             FALSE)
           return;
         makeStringFromEscaped(tmpbuf);
@@ -1082,7 +1082,7 @@ void ACShowFMMemo(int result, int index, int num, int dataindex, char *data) {
         strcpy(memberlist[index].memo[j - 1], "");
       }
       for (j = 1; j <= num; j++) {
-        if (getStringFromIndexWithDelim(data, "|", j, tmpbuf, sizeof(tmpbuf)) ==
+        if (getDelimitedField(data, "|", j, tmpbuf, sizeof(tmpbuf)) ==
             FALSE)
           return;
         makeStringFromEscaped(tmpbuf);
@@ -1223,12 +1223,12 @@ void FAMILY_Detail(int fd, int meindex, char *message) {
   if (CHAR_getWorkInt(meindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE)
     return;
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
 
   if (strcmp(token, "F") == 0) {
-    if (getStringFromIndexWithDelim(message, "|", 3, token2, sizeof(token)) ==
+    if (getDelimitedField(message, "|", 3, token2, sizeof(token)) ==
         FALSE)
       return;
 
@@ -1240,7 +1240,7 @@ void FAMILY_Detail(int fd, int meindex, char *message) {
     for (i = pindex1; i < pindex1 + 10; i++) {
       if (i > gFamilyNumTotal)
         break;
-      if (getStringFromIndexWithDelim(gFamilyList, "|", i, subbuf,
+      if (getDelimitedField(gFamilyList, "|", i, subbuf,
                                       sizeof(subbuf)) == FALSE)
         break;
       strcat(buf, "|");
@@ -1388,14 +1388,14 @@ void FAMILY_Detail(int fd, int meindex, char *message) {
   }
 
   if (strcmp(token, "D") == 0) {
-    if (getStringFromIndexWithDelim(message, "|", 3, fmname, sizeof(fmname)) ==
+    if (getDelimitedField(message, "|", 3, fmname, sizeof(fmname)) ==
         FALSE)
       return;
-    if (getStringFromIndexWithDelim(message, "|", 4, token2, sizeof(token2)) ==
+    if (getDelimitedField(message, "|", 4, token2, sizeof(token2)) ==
         FALSE)
       return;
     fmindex = atoi(token2);
-    if (getStringFromIndexWithDelim(message, "|", 5, token2, sizeof(token2)) ==
+    if (getDelimitedField(message, "|", 5, token2, sizeof(token2)) ==
         FALSE)
       return;
     tempindex = atoi(token2);
@@ -1443,7 +1443,7 @@ void FAMILY_Detail(int fd, int meindex, char *message) {
     if (strcmp(tmpbuf, "") == 0)
       sprintf(tmpbuf, "无挑战排程");
 
-    getStringFromIndexWithDelim(memberlist[fmindex_wk].numberlistarray[0], "|",
+    getDelimitedField(memberlist[fmindex_wk].numberlistarray[0], "|",
                                 2, leadernamebuf, sizeof(leadernamebuf));
     // sendbuf ->
     // 家族名称|人数|族长名称|家族排行|家族声望|个人声望|个人职位|家族精灵|PK
@@ -1510,7 +1510,7 @@ void ACFMDetail(int ret, char *data, int clifd) {
           if( data[i] == ' ' )    buf[i] = '|';
   }
   */
-  // if (getStringFromIndexWithDelim(message, "|", 10, fmname,
+  // if (getDelimitedField(message, "|", 10, fmname,
   //	sizeof(fmname)) == FALSE)	return;
 
   // makeStringFromEscaped( buf );
@@ -1568,15 +1568,15 @@ void FAMILY_CheckMember(int fd, int meindex, char *message) {
                                         buf, sizeof(buf)));
     return;
   }
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
   sprintf(charname, "%s", token);
-  if (getStringFromIndexWithDelim(message, "|", 3, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 3, token, sizeof(token)) ==
       FALSE)
     return;
   charindex = atoi(token);
-  if (getStringFromIndexWithDelim(message, "|", 4, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 4, token, sizeof(token)) ==
       FALSE)
     return;
   result = atoi(token);
@@ -1718,11 +1718,11 @@ void FAMILY_Channel(int fd, int meindex, char *message) {
     return;
   }
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
 
-  if (getStringFromIndexWithDelim(message, "|", 3, token2, sizeof(token2)) ==
+  if (getDelimitedField(message, "|", 3, token2, sizeof(token2)) ==
       FALSE)
     return;
 
@@ -1909,12 +1909,12 @@ void FAMILY_Bank(int fd, int meindex, char *message) {
     return;
   }
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
 
   if (strcmp(token, "G") == 0) {
-    if (getStringFromIndexWithDelim(message, "|", 3, token2, sizeof(token)) ==
+    if (getDelimitedField(message, "|", 3, token2, sizeof(token)) ==
         FALSE)
       return;
 
@@ -1982,7 +1982,7 @@ void FAMILY_Bank(int fd, int meindex, char *message) {
     int mygold;
     int FMindex;
 
-    if (getStringFromIndexWithDelim(message, "|", 3, token2, sizeof(token)) ==
+    if (getDelimitedField(message, "|", 3, token2, sizeof(token)) ==
         FALSE)
       return;
     toTax = atoi(token2);
@@ -2075,19 +2075,19 @@ void FAMILY_SetPoint(int fd, int meindex, char *message) {
       return;
     }
   }
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
   fmpointindex = atoi(token);
-  if (getStringFromIndexWithDelim(message, "|", 3, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 3, token, sizeof(token)) ==
       FALSE)
     return;
   fl = atoi(token);
-  if (getStringFromIndexWithDelim(message, "|", 4, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 4, token, sizeof(token)) ==
       FALSE)
     return;
   x = atoi(token);
-  if (getStringFromIndexWithDelim(message, "|", 5, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 5, token, sizeof(token)) ==
       FALSE)
     return;
   y = atoi(token);
@@ -2239,7 +2239,7 @@ void FAMILY_SetAcceptFlag(int fd, int meindex, char *message) {
     return;
   }
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
   result = atoi(token);
@@ -2274,12 +2274,12 @@ void FAMILY_FixRule(int fd, int meindex, char *message) {
     return;
   }
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
 
   if (strcmp(token, "R") == 0) {
-    if (getStringFromIndexWithDelim(message, "|", 3, buf, sizeof(buf)) == FALSE)
+    if (getDelimitedField(message, "|", 3, buf, sizeof(buf)) == FALSE)
       return;
 
     if (strcmp(buf, "") == 0) {
@@ -2300,7 +2300,7 @@ void FAMILY_FixRule(int fd, int meindex, char *message) {
 
 #ifdef _FAMILYBADGE_
   if (strcmp(token, "B") == 0) {
-    if (getStringFromIndexWithDelim(message, "|", 3, buf, sizeof(buf)) ==
+    if (getDelimitedField(message, "|", 3, buf, sizeof(buf)) ==
         FALSE) {
       GmsvServer_WN_send(
           fd, WINDOW_MESSAGETYPE_MESSAGE, WINDOW_BUTTONTYPE_OK, -1, -1,
@@ -2371,7 +2371,7 @@ void FAMILY_FixRule(int fd, int meindex, char *message) {
       }
     }
 
-    if (getStringFromIndexWithDelim(message, "|", 3, buf, sizeof(buf)) == FALSE)
+    if (getDelimitedField(message, "|", 3, buf, sizeof(buf)) == FALSE)
       return;
     havepetindex = atoi(buf);
 
@@ -2500,12 +2500,12 @@ int FAMILY_RidePet(int fd, int meindex, char *message) {
     return 0;
   }
 #endif
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE || strcmp(token, "P") != 0) {
     printf("[RIDE] reject: missing protocol token 2\n");
     return 0;
   }
-  if (getStringFromIndexWithDelim(message, "|", 3, token2, sizeof(token2)) ==
+  if (getDelimitedField(message, "|", 3, token2, sizeof(token2)) ==
       FALSE) {
     printf("[RIDE] reject: missing pet-slot token\n");
     return 0;
@@ -2690,7 +2690,7 @@ void FAMILY_LeaderFunc(int fd, int meindex, char *message) {
     return;
   }
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) ==
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) ==
       FALSE)
     return;
   if (strcmp(token, "F") == 0) {
@@ -2739,16 +2739,16 @@ void FAMILY_LeaderFunc(int fd, int meindex, char *message) {
       return;
 #endif
 
-    if (getStringFromIndexWithDelim(message, "|", 3, token2, sizeof(token2)) ==
+    if (getDelimitedField(message, "|", 3, token2, sizeof(token2)) ==
         FALSE)
       return;
     kind = atoi(token2);
 
     for (i = 0; i < FMPOINTNUM; i++) {
-      getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 5,
+      getDelimitedField(fmpointlist.pointlistarray[i], "|", 5,
                                   subtoken, sizeof(subtoken));
       if (CHAR_getInt(meindex, CHAR_FMINDEX) == atoi(subtoken)) {
-        getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 9,
+        getDelimitedField(fmpointlist.pointlistarray[i], "|", 9,
                                     subtoken, sizeof(subtoken));
 #ifdef _FAME_REG_TIME
         FreeFameFeatures(meindex, kind, atoi(subtoken));
@@ -2868,7 +2868,7 @@ void FAMILY_LeaderFunc(int fd, int meindex, char *message) {
     int fmindexi, j, num = 0;
     char subbuf[2048], sendbuf[2048];
 
-    if (getStringFromIndexWithDelim(message, "|", 3, token2, sizeof(token2)) ==
+    if (getDelimitedField(message, "|", 3, token2, sizeof(token2)) ==
         FALSE)
       return;
 
@@ -2921,10 +2921,10 @@ void FAMILY_LeaderFunc(int fd, int meindex, char *message) {
       if (CHAR_getInt(meindex, CHAR_FMLEADERFLAG) != 1)
         return;
 #endif
-      if (getStringFromIndexWithDelim(message, "|", 4, token3,
+      if (getDelimitedField(message, "|", 4, token3,
                                       sizeof(token3)) == FALSE)
         return;
-      if (getStringFromIndexWithDelim(message, "|", 5, token4,
+      if (getDelimitedField(message, "|", 5, token4,
                                       sizeof(token4)) == FALSE)
         return;
       makeStringFromEscaped(token4);
@@ -2960,17 +2960,17 @@ void FAMILY_LeaderFunc(int fd, int meindex, char *message) {
 
       //		print( "%s", message );
 
-      if (getStringFromIndexWithDelim(message, "|", 4, token3,
+      if (getDelimitedField(message, "|", 4, token3,
                                       sizeof(token3)) == FALSE)
         return;
       answerflag = atoi(token3);
 
-      if (getStringFromIndexWithDelim(message, "|", 5, leadername,
+      if (getDelimitedField(message, "|", 5, leadername,
                                       sizeof(leadername)) == FALSE)
         return;
       makeStringFromEscaped(leadername);
 
-      if (getStringFromIndexWithDelim(message, "|", 6, token4,
+      if (getDelimitedField(message, "|", 6, token4,
                                       sizeof(token4)) == FALSE)
         return;
 

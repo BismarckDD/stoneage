@@ -171,7 +171,7 @@ BOOL ItemchangeMan_GetMenuStr( int meindex, int toindex, char *npcarg, char *tok
 
 	sprintf( token, "%s\n", buf1);
 
-	while( getStringFromIndexWithDelim( npcarg,"}", talkNo, buf1, sizeof( buf1)) != FALSE )	{
+	while( getDelimitedField( npcarg,"}", talkNo, buf1, sizeof( buf1)) != FALSE )	{
 		char *ItemName;
 		talkNo++;
 
@@ -208,13 +208,13 @@ BOOL ItemchangeMan_GetNeedStr( int meindex, int toindex, char *npcarg, char *tok
 		return FALSE;
 	}
 	sprintf( token, "%s\n", buf1);
-	if( getStringFromIndexWithDelim( npcarg,"}", num, buf1, sizeof( buf1)) == FALSE )	{
+	if( getDelimitedField( npcarg,"}", num, buf1, sizeof( buf1)) == FALSE )	{
 		printf("Get NeedMess error !!\n");
 		return FALSE;
 	}
 
 	if( NPC_Util_GetStrFromStrWithDelim( buf1, "NeedItem", buf2, sizeof( buf2) ) != NULL){
-		while( getStringFromIndexWithDelim( buf2, ",", talkNo, buf1, sizeof( buf1)) != FALSE )	{
+		while( getDelimitedField( buf2, ",", talkNo, buf1, sizeof( buf1)) != FALSE )	{
 			char *ItemName=NULL;
 			talkNo++;
 

@@ -327,7 +327,7 @@ void NPC_ManorSmanTalked(int meindex, int talkerindex, char *msg, int color)
 			int hadfmindex,index;
 			char token[256];
 
-			getStringFromIndexWithDelim(fmpointlist.pointlistarray[manorid-1],"|",5,token,sizeof(token));
+			getDelimitedField(fmpointlist.pointlistarray[manorid-1],"|",5,token,sizeof(token));
 			hadfmindex = atoi(token);
 			if(hadfmindex != -1){
 				for(index=0;index<FAMILY_MAXNUM;index++){
@@ -335,7 +335,7 @@ void NPC_ManorSmanTalked(int meindex, int talkerindex, char *msg, int color)
 					if(fmdptop.fmtopid[index] == (hadfmindex - 1)) break;
 				}
 				if(index >= FAMILY_MAXNUM){
-					getStringFromIndexWithDelim(fmpointlist.pointlistarray[manorid-1],"|",6,token,sizeof(token));
+					getDelimitedField(fmpointlist.pointlistarray[manorid-1],"|",6,token,sizeof(token));
 					printf("\nNPC_ManorSmanTalked():save fm_momentum error(%d:%s)",hadfmindex,token);
 					break;
 				}
@@ -442,11 +442,11 @@ void NPC_ManorSmanWindowTalked(int meindex, int talkerindex, int seqno, int sele
   manorid = CHAR_getWorkInt(meindex, NPC_WORK_MANORID);
   tkfmindex = CHAR_getWorkInt(talkerindex, CHAR_WORKFMINDEXI);
   tkfmdp = CHAR_getWorkInt(talkerindex, CHAR_WORKFMDP);
-  getStringFromIndexWithDelim(fmpointlist.pointlistarray[manorid-1], "|", 5, token, sizeof(token));
+  getDelimitedField(fmpointlist.pointlistarray[manorid-1], "|", 5, token, sizeof(token));
   hadfmindex = atoi(token);
-  getStringFromIndexWithDelim(fmpointlist.pointlistarray[manorid-1], "|", 6, token, sizeof(token));
+  getDelimitedField(fmpointlist.pointlistarray[manorid-1], "|", 6, token, sizeof(token));
   strcpy(hadfmname, token);
-  getStringFromIndexWithDelim(fmpointlist.pointlistarray[manorid-1], "|", 7, token, sizeof(token));
+  getDelimitedField(fmpointlist.pointlistarray[manorid-1], "|", 7, token, sizeof(token));
   hadfmpopular = atoi(token);
   
   switch (seqno){
@@ -464,7 +464,7 @@ void NPC_ManorSmanWindowTalked(int meindex, int talkerindex, int seqno, int sele
 #ifdef _SUPER_FMPOINT
 						if(CHAR_getWorkInt(meindex, NPC_WORK_SUPERFMPOINT) == 1){	// 记录开打时的日期)
 							 for (i=0; i<MANORNUM; i++) {	// 9个庄园
-		              getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 5, token, sizeof(token));
+		              getDelimitedField(fmpointlist.pointlistarray[i], "|", 5, token, sizeof(token));
 		              if (tkfmindex==atoi(token)-1)break;
 		           }
 		           if(i==MANORNUM){
@@ -477,14 +477,14 @@ void NPC_ManorSmanWindowTalked(int meindex, int talkerindex, int seqno, int sele
 						if(strcmp(getFmPointPK(),"是")){
 		          // Arminius 2.25 fix: fmpks 中第 1~"MANORNUM" 组一定要给 manorsman
 	            for (i=0; i<MANORNUM; i++) {	// 9个庄园
-	              getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 5, token, sizeof(token));
+	              getDelimitedField(fmpointlist.pointlistarray[i], "|", 5, token, sizeof(token));
 	              if (tkfmindex==atoi(token)-1) check=1;
 	            }
 	          }
 #else 
   					// Arminius 2.25 fix: fmpks 中第 1~"MANORNUM" 组一定要给 manorsman
             for (i=0; i<MANORNUM; i++) {	// 9个庄园
-              getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 5, token, sizeof(token));
+              getDelimitedField(fmpointlist.pointlistarray[i], "|", 5, token, sizeof(token));
               if (tkfmindex==atoi(token)-1) check=1;
             }
 #endif
@@ -519,7 +519,7 @@ void NPC_ManorSmanWindowTalked(int meindex, int talkerindex, int seqno, int sele
 		#else
 							for(i=0; i<10; i++){
 		#endif
-								if( getStringFromIndexWithDelim( fmdptop.topmemo[i], "|", 3, won2, sizeof(won2)) == FALSE )	{
+								if( getDelimitedField( fmdptop.topmemo[i], "|", 3, won2, sizeof(won2)) == FALSE )	{
 									print("err Get fmdptop.topmemo[%d] if FALSE !!\n", i);
 									break;
 								}
@@ -908,11 +908,11 @@ void NPC_ManorSmanWindowTalked(int meindex, int talkerindex, int seqno, int sele
   	NPC_ManorAddToSchedule(meindex,talkerindex, dueltime);
 #else
 		//				|-------------取整点-------------|  |--------加到0000时-------|  |挑战时的时间(算整点)|
-		getStringFromIndexWithDelim( fmpointlist.pointlistarray[manorid-1], "|", 5, token, sizeof(token));
+		getDelimitedField( fmpointlist.pointlistarray[manorid-1], "|", 5, token, sizeof(token));
 		hadfmindex = atoi( token);
-		getStringFromIndexWithDelim( fmpointlist.pointlistarray[manorid-1], "|", 7, token, sizeof(token));
+		getDelimitedField( fmpointlist.pointlistarray[manorid-1], "|", 7, token, sizeof(token));
 		hadfmpopular = atoi( token);
-		getStringFromIndexWithDelim( fmpointlist.pointlistarray[manorid-1], "|", 6, token, sizeof(token));
+		getDelimitedField( fmpointlist.pointlistarray[manorid-1], "|", 6, token, sizeof(token));
 		strcpy( hadfmname, token);
 		makeEscapeString( hadfmname, n1, sizeof(n1));
 #ifndef _NEW_MANOR_LAW
@@ -994,7 +994,7 @@ void NPC_ManorSmanLoop(int meindex)
 			char token[256];
 			//此时可以开始挑战
 			manorid = CHAR_getWorkInt(meindex,NPC_WORK_MANORID);
-			getStringFromIndexWithDelim(fmpointlist.pointlistarray[manorid-1],"|",5,token,sizeof(token));
+			getDelimitedField(fmpointlist.pointlistarray[manorid-1],"|",5,token,sizeof(token));
 			hadfmindex = atoi(token);
 			if(hadfmindex != -1){
 				for(index=0;index<FAMILY_MAXNUM;index++){
@@ -1002,7 +1002,7 @@ void NPC_ManorSmanLoop(int meindex)
 					if(fmdptop.fmtopid[index] == (hadfmindex - 1)) break;
 				}
 				if(index >= FAMILY_MAXNUM){
-					getStringFromIndexWithDelim(fmpointlist.pointlistarray[manorid-1],"|",6,token,sizeof(token));
+					getDelimitedField(fmpointlist.pointlistarray[manorid-1],"|",6,token,sizeof(token));
 					//printf("\nNPC_ManorSmanLoop():save fm_momentum error(%d:%s)",hadfmindex,token);
 					break;
 				}
@@ -1046,10 +1046,10 @@ void NPC_ManorSmanLoop(int meindex)
 							CHAR_talkToCli(i,-1,"由於无家族挑战庄园，庄园进入休战时期",CHAR_COLORBLUE2);
 						}
 					}
-					getStringFromIndexWithDelim(fmpointlist.pointlistarray[manorid-1],"|",5,token,sizeof(token));
+					getDelimitedField(fmpointlist.pointlistarray[manorid-1],"|",5,token,sizeof(token));
 					iFmIndex1 = atoi(token) - 1;
 					if(iFmIndex1 != -1){
-						getStringFromIndexWithDelim(fmpointlist.pointlistarray[manorid-1],"|",6,fmname,sizeof(token));
+						getDelimitedField(fmpointlist.pointlistarray[manorid-1],"|",6,fmname,sizeof(token));
 						SaacClient_ACFixFMPoint_send(acfd,fmname,iFmIndex1 + 1,iFmIndex1,
 							fmname,iFmIndex1 + 1,iFmIndex1,CHAR_getWorkInt(meindex,NPC_WORK_ID));
 						// 增加庄园战胜负Log
@@ -1240,39 +1240,39 @@ void NPC_ManorLoadPKSchedule(int meindex)
 	fmpks[fmpks_pos].flag=-1;
 
 	// 时间
-	if (getStringFromIndexWithDelim(tmp,"|",1,token,sizeof(token))) {
+	if (getDelimitedField(tmp,"|",1,token,sizeof(token))) {
 		fmpks[fmpks_pos+1].dueltime=atoi(token);
 	}
 	// 主队 familyindex
-	if (getStringFromIndexWithDelim(tmp,"|",2,token,sizeof(token))) {
+	if (getDelimitedField(tmp,"|",2,token,sizeof(token))) {
 	    fmpks[fmpks_pos+1].host_index=atoi(token);
 	}
 	// 主队 家族名
-	if (getStringFromIndexWithDelim(tmp,"|",3,token,sizeof(token))) {
+	if (getDelimitedField(tmp,"|",3,token,sizeof(token))) {
 		strcpy(fmpks[fmpks_pos+1].host_name,makeStringFromEscaped(token));
 	}
 	// 客队 familyindex
-	if (getStringFromIndexWithDelim(tmp,"|",4,token,sizeof(token))) {
+	if (getDelimitedField(tmp,"|",4,token,sizeof(token))) {
 	    fmpks[fmpks_pos+1].guest_index=atoi(token);
 	}
 	// 客队 家族名
-	if (getStringFromIndexWithDelim(tmp,"|",5,token,sizeof(token))) {
+	if (getDelimitedField(tmp,"|",5,token,sizeof(token))) {
 	    strcpy(fmpks[fmpks_pos+1].guest_name,makeStringFromEscaped(token));
 	}
 	// 准备时间
-	if (getStringFromIndexWithDelim(tmp,"|",6,token,sizeof(token))) {
+	if (getDelimitedField(tmp,"|",6,token,sizeof(token))) {
 		fmpks[fmpks_pos+1].prepare_time=atoi(token);
 	}
 	// 最大人数
-	if (getStringFromIndexWithDelim(tmp,"|",7,token,sizeof(token))) {
+	if (getDelimitedField(tmp,"|",7,token,sizeof(token))) {
 		fmpks[fmpks_pos+1].max_player=atoi(token);
 	}
 	// 旗标
-	if (getStringFromIndexWithDelim(tmp,"|",8,token,sizeof(token))) {
+	if (getDelimitedField(tmp,"|",8,token,sizeof(token))) {
 		fmpks[fmpks_pos+1].flag=atoi(token);
 	}
 	// 对战星球
-	if (getStringFromIndexWithDelim(tmp,"|",9,token,sizeof(token))) {
+	if (getDelimitedField(tmp,"|",9,token,sizeof(token))) {
 		strcpy(fmpks[fmpks_pos+2].host_name,makeStringFromEscaped(token));
 	}
   
@@ -1357,11 +1357,11 @@ void NPC_ManorSavePKSchedule(int meindex, int toindex, int flg,int setTime,struc
 #endif
 */
 		//				|-------------取整点-------------|  |--------加到0000时-------|  |挑战时的时间(算整点)|
-		getStringFromIndexWithDelim( fmpointlist.pointlistarray[manorid-1], "|", 5, token, sizeof(token));
+		getDelimitedField( fmpointlist.pointlistarray[manorid-1], "|", 5, token, sizeof(token));
 		hadfmindex = atoi( token);
-		getStringFromIndexWithDelim( fmpointlist.pointlistarray[manorid-1], "|", 7, token, sizeof(token));
+		getDelimitedField( fmpointlist.pointlistarray[manorid-1], "|", 7, token, sizeof(token));
 		hadfmpopular = atoi( token);
-		getStringFromIndexWithDelim( fmpointlist.pointlistarray[manorid-1], "|", 6, token, sizeof(token));
+		getDelimitedField( fmpointlist.pointlistarray[manorid-1], "|", 6, token, sizeof(token));
 		strcpy( hadfmname, token);
 		makeEscapeString( hadfmname, n1, sizeof(n1));
 #ifndef _NEW_MANOR_LAW

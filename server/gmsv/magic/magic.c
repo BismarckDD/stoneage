@@ -175,7 +175,7 @@ int MAGIC_Feathers(int from_char_index, int to_char_index, int marray, int mp) {
     My = CHAR_getInt(from_char_index, CHAR_Y);
     char escapeshowstring[64];
     char *showstr = MAP_getfloorShowstring(Mf);
-    getStringFromIndexWithDelim(showstr, "|", 1, escapeshowstring,
+    getDelimitedField(showstr, "|", 1, escapeshowstring,
                                 sizeof(escapeshowstring));
     sprintf(buf, "%d %d %d %d", flg, Mf, Mx, My);
     MAGIC_setChar(marray, MAGIC_OPTION, buf);
@@ -649,11 +649,11 @@ int MAGIC_AttSkill(int from_char_index, int to_char_index, int marray, int mp) {
     return FALSE;
   if (strstr(magicarg, ";") != NULL) {
     char buff1[256];
-    if (getStringFromIndexWithDelim(magicarg, ";", 1, buff1, sizeof(buff1)) ==
+    if (getDelimitedField(magicarg, ";", 1, buff1, sizeof(buff1)) ==
         FALSE)
       return FALSE;
     snprintf(funName, sizeof(funName), buff1);
-    if (getStringFromIndexWithDelim(magicarg, ";", 2, buff1, sizeof(buff1)) ==
+    if (getDelimitedField(magicarg, ";", 2, buff1, sizeof(buff1)) ==
         FALSE)
       return FALSE;
     skillID = atoi(buff1);

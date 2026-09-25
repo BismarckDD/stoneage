@@ -222,7 +222,7 @@ static BOOL checkObjectStoreFile(char *line, Object *one, char **stringstart) {
   char token[16];
   int ret;
   int i;
-  ret = getStringFromIndexWithDelim(line, "|", 1, token, sizeof(token));
+  ret = getDelimitedField(line, "|", 1, token, sizeof(token));
   if (ret == FALSE)
     return FALSE;
   if (strcmp(token, STOREITEMID) == 0)
@@ -234,14 +234,14 @@ static BOOL checkObjectStoreFile(char *line, Object *one, char **stringstart) {
   for (i = 2; i < 5; i++) {
     char first[64];
     char second[64];
-    ret = getStringFromIndexWithDelim(line, "|", i, token, sizeof(token));
+    ret = getDelimitedField(line, "|", i, token, sizeof(token));
     if (ret == FALSE)
       return FALSE;
 
-    ret = getStringFromIndexWithDelim(token, "=", 1, first, sizeof(first));
+    ret = getDelimitedField(token, "=", 1, first, sizeof(first));
     if (ret == FALSE)
       return FALSE;
-    ret = getStringFromIndexWithDelim(token, "=", 2, second, sizeof(second));
+    ret = getDelimitedField(token, "=", 2, second, sizeof(second));
     if (ret == FALSE)
       return FALSE;
 

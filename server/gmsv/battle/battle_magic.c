@@ -2019,7 +2019,7 @@ int MAGIC_MagicStatusChange_Battle(int char_index, int toNo, int magic_index,
 
   magicarg = MAGIC_getChar(magic_index, MAGIC_OPTION);
 
-  if (getStringFromIndexWithDelim(magicarg, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   for (i = 0; i < MAXSTATUSTYPE; i++) {
@@ -2030,16 +2030,16 @@ int MAGIC_MagicStatusChange_Battle(int char_index, int toNo, int magic_index,
   }
   if (i == MAXSTATUSTYPE)
     return FALSE;
-  if (getStringFromIndexWithDelim(magicarg, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   turn = atoi(buf1);
   // CHAR_OTHERSTATUSNUMS
-  if (getStringFromIndexWithDelim(magicarg, "|", 3, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 3, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   nums = atoi(buf1);
-  if (getStringFromIndexWithDelim(magicarg, "|", 4, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 4, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   if (strstr(buf1, "单") != 0) {
@@ -2277,12 +2277,12 @@ int MAGIC_AttMagic_Battle(int char_index, int toNo, int magic_index, int mp) {
     return FALSE;
   }
   memset(buf1, 0, sizeof(buf1));
-  if (getStringFromIndexWithDelim(magicarg, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   power = atoi(buf1);
 
-  if (getStringFromIndexWithDelim(magicarg, "|", 3, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 3, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   magiclv = atoi(buf1);
@@ -2314,11 +2314,11 @@ int MAGIC_ToCallDragon_Battle(int char_index, int toNo, int magic_index, int mp)
     return FALSE;
   }
   memset(buf1, 0, sizeof(buf1));
-  if (getStringFromIndexWithDelim(magicarg, "|", 1, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 1, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   imageno = atoi(buf1);
-  if (getStringFromIndexWithDelim(magicarg, "|", 2, buf1, sizeof(buf1)) ==
+  if (getDelimitedField(magicarg, "|", 2, buf1, sizeof(buf1)) ==
       FALSE)
     return FALSE;
   power = atoi(buf1);
@@ -2953,7 +2953,7 @@ int analysis_profession_parameter(int attIdx, int skill, int toNo,
 
   // 魔法属性
   memset(temp, 0, sizeof(temp));
-  if (!getStringFromIndexWithDelim(pszOption, "|", 1, temp, sizeof(temp)))
+  if (!getDelimitedField(pszOption, "|", 1, temp, sizeof(temp)))
     return -1;
 
   for (i = 0; i < 3; i++) {
@@ -2974,39 +2974,39 @@ int analysis_profession_parameter(int attIdx, int skill, int toNo,
   }
 
   memset(temp, 0, sizeof(temp));
-  if (!getStringFromIndexWithDelim(pszOption, "|", 2, temp, sizeof(temp)))
+  if (!getDelimitedField(pszOption, "|", 2, temp, sizeof(temp)))
     return -1;
   place = atoi(temp);
   PROFESSION_magic[attIdx].uiShowType = place;
 
   memset(temp, 0, sizeof(temp));
-  if (!getStringFromIndexWithDelim(pszOption, "|", 3, temp, sizeof(temp)))
+  if (!getDelimitedField(pszOption, "|", 3, temp, sizeof(temp)))
     return -1;
   place2 = atoi(temp);
   PROFESSION_magic[attIdx].uiShowBehindChar = place2;
 
   memset(temp, 0, sizeof(temp));
-  if (!getStringFromIndexWithDelim(pszOption, "|", 4, temp, sizeof(temp)))
+  if (!getDelimitedField(pszOption, "|", 4, temp, sizeof(temp)))
     return -1;
   x = atoi(temp);
 
   memset(temp, 0, sizeof(temp));
-  if (!getStringFromIndexWithDelim(pszOption, "|", 5, temp, sizeof(temp)))
+  if (!getDelimitedField(pszOption, "|", 5, temp, sizeof(temp)))
     return -1;
   y = atoi(temp);
 
   memset(temp, 0, sizeof(temp));
-  if (!getStringFromIndexWithDelim(pszOption, "|", 6, temp, sizeof(temp)))
+  if (!getDelimitedField(pszOption, "|", 6, temp, sizeof(temp)))
     return -1;
   shake_s_time = atoi(temp);
 
   memset(temp, 0, sizeof(temp));
-  if (!getStringFromIndexWithDelim(pszOption, "|", 7, temp, sizeof(temp)))
+  if (!getDelimitedField(pszOption, "|", 7, temp, sizeof(temp)))
     return -1;
   shake_e_time = atoi(temp);
 
   memset(temp, 0, sizeof(temp));
-  if (!getStringFromIndexWithDelim(pszOption, "|", 8, temp, sizeof(temp)))
+  if (!getDelimitedField(pszOption, "|", 8, temp, sizeof(temp)))
     return -1;
   disappear = atoi(temp);
 
@@ -3585,11 +3585,11 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
       char temp[128];
 
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 11, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 11, temp, sizeof(temp)))
         x = atoi(temp);
 
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 12, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 12, temp, sizeof(temp)))
         y = atoi(temp);
 
       // 後置动画
@@ -3619,11 +3619,11 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
       char temp[128];
 
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 11, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 11, temp, sizeof(temp)))
         x = atoi(temp);
 
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 12, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 12, temp, sizeof(temp)))
         y = atoi(temp);
 
       // 後置动画
@@ -3686,7 +3686,7 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
   {
     // 右方
     if (toNo == 20 || toNo == 25 || toNo == 26) {
-      if (getStringFromIndexWithDelim(pszOption, "|", 1, temp, sizeof(temp))) {
+      if (getDelimitedField(pszOption, "|", 1, temp, sizeof(temp))) {
         if (strcmp("地结界", temp) == 0)
           PROFESSION_MAGIC_CHANG_IMG2(101786, pszOption, attIdx);
         else if (strcmp("水结界", temp) == 0)
@@ -3707,31 +3707,31 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
     img2 = 101656;
     if (toNo == 25) { // 右 1
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 9, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 9, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 10, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 10, temp, sizeof(temp)))
         y = atoi(temp);
     } else if (toNo == 26) { // 右 2
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 11, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 11, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 12, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 12, temp, sizeof(temp)))
         y = atoi(temp);
     } else if (toNo == 23) { // 左 1
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 13, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 13, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 14, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 14, temp, sizeof(temp)))
         y = atoi(temp);
     } else if (toNo == 24) { // 左 2
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 15, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 15, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 16, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 16, temp, sizeof(temp)))
         y = atoi(temp);
     } else
       return;
@@ -3770,42 +3770,42 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
     } else if ((toNo == 3) || (toNo == 8)) { // 右 1
       img2 = 101665;
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 9, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 9, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 10, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 10, temp, sizeof(temp)))
         y = atoi(temp);
     } else if ((toNo == 1) || (toNo == 6)) { // 右 2
       img2 = 101664;
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 11, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 11, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 12, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 12, temp, sizeof(temp)))
         y = atoi(temp);
     } else if ((toNo == 0) || (toNo == 5)) { // 右 3
       img2 = 101663;
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 13, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 13, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 14, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 14, temp, sizeof(temp)))
         y = atoi(temp);
     } else if ((toNo == 2) || (toNo == 7)) { // 右 4
       img2 = 101662;
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 15, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 15, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 16, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 16, temp, sizeof(temp)))
         y = atoi(temp);
     } else if ((toNo == 4) || (toNo == 9)) { // 右 5
       img2 = 101661;
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 17, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 17, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 18, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 18, temp, sizeof(temp)))
         y = atoi(temp);
     } else
       return;
@@ -3829,34 +3829,34 @@ void PROFESSION_MAGIC_GET_IMG2(int toNo, int char_index, int attIdx,
     if (toNo == 25) {
       img2 = 101694;
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 9, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 9, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 10, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 10, temp, sizeof(temp)))
         y = atoi(temp);
     } else if (toNo == 26) {
       img2 = 101694;
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 11, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 11, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 12, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 12, temp, sizeof(temp)))
         y = atoi(temp);
     } else if (toNo == 23) {
       img2 = 101693;
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 13, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 13, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 14, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 14, temp, sizeof(temp)))
         y = atoi(temp);
     } else if (toNo == 24) {
       img2 = 101693;
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 15, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 15, temp, sizeof(temp)))
         x = atoi(temp);
       memset(temp, 0, sizeof(temp));
-      if (getStringFromIndexWithDelim(pszOption, "|", 16, temp, sizeof(temp)))
+      if (getDelimitedField(pszOption, "|", 16, temp, sizeof(temp)))
         y = atoi(temp);
     } else
       return;
@@ -4150,11 +4150,11 @@ void PROFESSION_MAGIC_CHANG_IMG2(int img2, char *pszOption, int attIdx) {
   char temp[128];
 
   memset(temp, 0, sizeof(temp));
-  if (getStringFromIndexWithDelim(pszOption, "|", 9, temp, sizeof(temp)))
+  if (getDelimitedField(pszOption, "|", 9, temp, sizeof(temp)))
     x = atoi(temp);
 
   memset(temp, 0, sizeof(temp));
-  if (getStringFromIndexWithDelim(pszOption, "|", 10, temp, sizeof(temp)))
+  if (getDelimitedField(pszOption, "|", 10, temp, sizeof(temp)))
     y = atoi(temp);
 
   PROFESSION_magic[attIdx].uiSpriteNum = img2;

@@ -45,7 +45,7 @@ BOOL NPC_MicInit( int meindex )
 
 	if( strstr( argstr , "|" ) != NULL){
 		for( i = 1; i < 9; i ++ ) {
-		    if( getStringFromIndexWithDelim(argstr, "|" , i , buf,sizeof(buf) )
+		    if( getDelimitedField(argstr, "|" , i , buf,sizeof(buf) )
 	    		== FALSE ) 
 	    	    {
 	    		printf( "NPC_MIC:省略参数\n");

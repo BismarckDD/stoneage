@@ -2345,15 +2345,15 @@ BOOL CHAR_makeCharFromStringToArg(char *data, Char *one) {
 #endif
 
   read_cursor = data;
-  while (getStringFromCursorWithDelim(&read_cursor, CHAR_DELIMITER, linebuf,
-                                      sizeof(linebuf))) {
+  while (nextDelimitedField(&read_cursor, CHAR_DELIMITER, linebuf,
+                            sizeof(linebuf))) {
     BOOL ret;
     memset(firstToken, 0, sizeof(firstToken));
     memset(secondToken, 0, sizeof(secondToken));
     if (linebuf[0] == '#' || linebuf[0] == '\n' || linebuf[0] == '\0') {
       continue;
     }
-    ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
+    ret = getDelimitedField(linebuf, "=", 1, firstToken,
                                       sizeof(firstToken));
     if (ret == FALSE)
       return FALSE;
@@ -2678,15 +2678,15 @@ int CHAR_makePetFromStringToArg(char *src, Char *ch, int ti) {
   }
 
   while (1) {
-    rc = getStringFromCursorWithDelim(&read_cursor, NONCHAR_DELIMITER, buff,
-                                      sizeof(buff));
+    rc = nextDelimitedField(&read_cursor, NONCHAR_DELIMITER, buff,
+                            sizeof(buff));
     if (rc == TRUE) {
       if (buff[0] == '#' || buff[0] == '\n' || buff[0] == '\0') {
         continue;
       }
     }
     if (rc == TRUE) {
-      rc = getStringFromIndexWithDelim(buff, ":", 1, petfirstToken,
+      rc = getDelimitedField(buff, ":", 1, petfirstToken,
                                        sizeof(petfirstToken));
       if (rc == FALSE)
         break;
@@ -3354,14 +3354,14 @@ BOOL CHAR_makeDepotItemStringToChar(int char_index, char *data) {
     memset(linebuf, 0, sizeof(linebuf));
     memset(firstToken, 0, sizeof(firstToken));
     memset(secondToken, 0, sizeof(secondToken));
-    ret = getStringFromIndexWithDelim(data, CHAR_DELIMITER, readindex, linebuf,
+    ret = getDelimitedField(data, CHAR_DELIMITER, readindex, linebuf,
                                       sizeof(linebuf));
     if (ret == FALSE)
       break;
     if (linebuf[0] == '#' || linebuf[0] == '\n' || linebuf[0] == '\0') {
       goto NEXT;
     }
-    if ((ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
+    if ((ret = getDelimitedField(linebuf, "=", 1, firstToken,
                                            sizeof(firstToken))) == FALSE)
       return FALSE;
     strncpysafe(secondToken, sizeof(secondToken),
@@ -3611,14 +3611,14 @@ BOOL CHAR_makeDepotPetStringToChar(int char_index, char *data) {
     memset(linebuf, 0, sizeof(linebuf));
     memset(firstToken, 0, sizeof(firstToken));
     memset(secondToken, 0, sizeof(secondToken));
-    ret = getStringFromIndexWithDelim(data, CHAR_DELIMITER, readindex, linebuf,
+    ret = getDelimitedField(data, CHAR_DELIMITER, readindex, linebuf,
                                       sizeof(linebuf));
     if (ret == FALSE)
       break;
     if (linebuf[0] == '#' || linebuf[0] == '\n' || linebuf[0] == '\0') {
       goto NEXT;
     }
-    if ((ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
+    if ((ret = getDelimitedField(linebuf, "=", 1, firstToken,
                                            sizeof(firstToken))) == FALSE)
       return FALSE;
     strncpysafe(secondToken, sizeof(secondToken),
@@ -3834,70 +3834,70 @@ int CHAR_RideInit() {
     chop(line);
     if (line[0] == '#')
       continue;
-    getStringFromIndexWithDelim(line, ",", 1, buf, sizeof(buf));
+    getDelimitedField(line, ",", 1, buf, sizeof(buf));
     if (!strcmp(buf, "骑    宠")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         gRideCodeMode[i].petNo = atoi(buf);
       }
     } else if (!strcmp(buf, "豆    丁")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[0].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "赛 亚 人")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[1].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "辫子男孩")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[2].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "酷    哥")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[3].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "熊 皮 男")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[4].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "大    个")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[5].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "豆 丁 妹")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[6].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "熊 皮 妹")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[7].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "帽 子 妹")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[8].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "短发夹妹")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[9].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "手 套 女")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[10].rideNo[i] = atoi(buf);
       }
     } else if (!strcmp(buf, "辣    妹")) {
       for (i = 0; i < MAX_RIDE_PET_NO_NUM; i++) {
-        getStringFromIndexWithDelim(line, ",", i + 2, buf, sizeof(buf));
+        getDelimitedField(line, ",", i + 2, buf, sizeof(buf));
         RideNoList[11].rideNo[i] = atoi(buf);
       }
     }
@@ -3920,13 +3920,13 @@ int CHAR_FmLeaderRide_init() {
     if (fgets(line, sizeof(line), fp) == NULL)
       break;
     chop(line);
-    getStringFromIndexWithDelim(line, "|", 2, buf, sizeof(buf));
+    getDelimitedField(line, "|", 2, buf, sizeof(buf));
     FmLeaderRide[i].fmfloor = atoi(buf);
-    getStringFromIndexWithDelim(line, "|", 3, buf, sizeof(buf));
+    getDelimitedField(line, "|", 3, buf, sizeof(buf));
     FmLeaderRide[i].ride[0] = atoi(buf);
-    getStringFromIndexWithDelim(line, "|", 4, buf, sizeof(buf));
+    getDelimitedField(line, "|", 4, buf, sizeof(buf));
     FmLeaderRide[i].ride[1] = atoi(buf);
-    getStringFromIndexWithDelim(line, "|", 5, buf, sizeof(buf));
+    getDelimitedField(line, "|", 5, buf, sizeof(buf));
     FmLeaderRide[i].ride[2] = atoi(buf);
   }
   fclose(fp);

@@ -3123,19 +3123,19 @@ char *CHAR_makeStatusString(int index, char *category) {
         int value = 0;
         int type = 0;
 
-        if (getStringFromIndexWithDelim(CHAR_getChar(pindex, CHAR_POWER_UP),
+        if (getDelimitedField(CHAR_getChar(pindex, CHAR_POWER_UP),
                                         "|", 1, buff, sizeof(buff)) == TRUE) {
           type = atoi(buff);
         }
-        if (getStringFromIndexWithDelim(CHAR_getChar(pindex, CHAR_POWER_UP),
+        if (getDelimitedField(CHAR_getChar(pindex, CHAR_POWER_UP),
                                         "|", 2, buff, sizeof(buff)) == TRUE) {
           value += atoi(buff);
         }
-        if (getStringFromIndexWithDelim(CHAR_getChar(pindex, CHAR_POWER_UP),
+        if (getDelimitedField(CHAR_getChar(pindex, CHAR_POWER_UP),
                                         "|", 3, buff, sizeof(buff)) == TRUE) {
           value += atoi(buff);
         }
-        if (getStringFromIndexWithDelim(CHAR_getChar(pindex, CHAR_POWER_UP),
+        if (getDelimitedField(CHAR_getChar(pindex, CHAR_POWER_UP),
                                         "|", 4, buff, sizeof(buff)) == TRUE) {
           value += atoi(buff);
         }
@@ -8132,21 +8132,21 @@ BOOL CHAR_initEffectSetting(char *filename) {
     {
       char token[256];
       int ret;
-      ret = getStringFromIndexWithDelim(line, " ", 1, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 1, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       CHAR_effect[effectreadlen].floor = atoi(token);
       /*  2勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, " ", 2, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 2, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
       }
       CHAR_effect[effectreadlen].effect = atoi(token);
       /*  3勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, " ", 3, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 3, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -8155,7 +8155,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
       CHAR_effect[effectreadlen].level = atoi(token);
 
       /*  4勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, " ", 4, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 4, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -8164,7 +8164,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
                  sizeof(CHAR_effect[effectreadlen].month), token);
 
       /*  5勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, " ", 5, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 5, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -8173,7 +8173,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
                  sizeof(CHAR_effect[effectreadlen].day), token);
 
       /*  6勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, " ", 6, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 6, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -8182,7 +8182,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
                  sizeof(CHAR_effect[effectreadlen].hour), token);
 
       /*  7勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, " ", 7, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 7, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -8191,7 +8191,7 @@ BOOL CHAR_initEffectSetting(char *filename) {
                  sizeof(CHAR_effect[effectreadlen].min), token);
 
       /*  8勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, " ", 8, token, sizeof(token));
+      ret = getDelimitedField(line, " ", 8, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件秩序错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -8220,7 +8220,7 @@ static BOOL CHAR_checkEffectTime(int num) {
     if (strcmp(CHAR_effect[num].month, "*") != 0) {
       BOOL flg = FALSE;
       for (i = 1;; i++) {
-        ret = getStringFromIndexWithDelim(CHAR_effect[num].month, ",", i, token,
+        ret = getDelimitedField(CHAR_effect[num].month, ",", i, token,
                                           sizeof(token));
         if (ret == FALSE)
           break;
@@ -8238,7 +8238,7 @@ static BOOL CHAR_checkEffectTime(int num) {
     if (strcmp(CHAR_effect[num].day, "*") != 0) {
       BOOL flg = FALSE;
       for (i = 1;; i++) {
-        ret = getStringFromIndexWithDelim(CHAR_effect[num].day, ",", i, token,
+        ret = getDelimitedField(CHAR_effect[num].day, ",", i, token,
                                           sizeof(token));
         if (ret == FALSE)
           break;
@@ -8255,7 +8255,7 @@ static BOOL CHAR_checkEffectTime(int num) {
     if (strcmp(CHAR_effect[num].hour, "*") != 0) {
       BOOL flg = FALSE;
       for (i = 1;; i++) {
-        ret = getStringFromIndexWithDelim(CHAR_effect[num].hour, ",", i, token,
+        ret = getDelimitedField(CHAR_effect[num].hour, ",", i, token,
                                           sizeof(token));
         if (ret == FALSE)
           break;
@@ -8277,7 +8277,7 @@ static BOOL CHAR_checkEffectTime(int num) {
         for (i = 1;; i++) {
           struct tm tm_work;
           time_t tim;
-          ret = getStringFromIndexWithDelim(CHAR_effect[num].min, ",", i, token,
+          ret = getDelimitedField(CHAR_effect[num].min, ",", i, token,
                                             sizeof(token));
           if (ret == FALSE)
             break;
@@ -8801,7 +8801,7 @@ void CHAR_sendStreetVendor(int char_index, char *message) {
       iMaxPileNum = 0;
   int ix, iy, iPlayerNum = 0, objbuf[16];
 
-  if (!getStringFromIndexWithDelim(message, "|", 1, szAction, sizeof(szAction)))
+  if (!getDelimitedField(message, "|", 1, szAction, sizeof(szAction)))
     return;
   // 开启摆摊介面
   if (szAction[0] == 'O') {
@@ -9185,7 +9185,7 @@ char_index, -1, "此家店铺以贝壳方式交易!", CHAR_COLORRED);
     for (i = 0; i < MAX_SELL_ITEM; i++)
       CHAR_clearStreetVendor(char_index, i);
 
-    if (!getStringFromIndexWithDelim(message, "|", 2, szTemp, sizeof(szTemp)))
+    if (!getDelimitedField(message, "|", 2, szTemp, sizeof(szTemp)))
       return;
     count = atoi(szTemp);
 #ifdef _MO_FIX_STREET_VENDOR
@@ -9195,15 +9195,15 @@ char_index, -1, "此家店铺以贝壳方式交易!", CHAR_COLORRED);
     }
 #endif
     for (i = 0; i < count; i++) {
-      if (!getStringFromIndexWithDelim(message, "|", 3 + i * 3, szTemp,
+      if (!getDelimitedField(message, "|", 3 + i * 3, szTemp,
                                        sizeof(szTemp)))
         continue;
       CHAR_setStreetVendor(char_index, i, SV_KIND, atoi(szTemp));
-      if (!getStringFromIndexWithDelim(message, "|", 4 + i * 3, szTemp,
+      if (!getDelimitedField(message, "|", 4 + i * 3, szTemp,
                                        sizeof(szTemp)))
         continue;
       CHAR_setStreetVendor(char_index, i, SV_INDEX, atoi(szTemp));
-      if (!getStringFromIndexWithDelim(message, "|", 5 + i * 3, szTemp,
+      if (!getDelimitedField(message, "|", 5 + i * 3, szTemp,
                                        sizeof(szTemp)))
         continue;
       price = atoi(szTemp);
@@ -9213,7 +9213,7 @@ char_index, -1, "此家店铺以贝壳方式交易!", CHAR_COLORRED);
         price = 0;
       CHAR_setStreetVendor(char_index, i, SV_PRICE, price);
     }
-    if (!getStringFromIndexWithDelim(message, "|", 6 + (i - 1) * 3, szTemp,
+    if (!getDelimitedField(message, "|", 6 + (i - 1) * 3, szTemp,
                                      sizeof(szTemp)))
       return;
 #ifdef _STREET_VENDOR_CHECK
@@ -9406,7 +9406,7 @@ char_index, -1, "此家店铺以贝壳方式交易!", CHAR_COLORRED);
 
     if (toindex != -1 && CHAR_CHECKINDEX(toindex)) {
       int index;
-      if (!getStringFromIndexWithDelim(message, "|", 2, szTemp, sizeof(szTemp)))
+      if (!getDelimitedField(message, "|", 2, szTemp, sizeof(szTemp)))
         return;
       index = atoi(szTemp);
       CHAR_sendStreetVendorOneDataToCli(char_index, toindex, index);
@@ -9423,7 +9423,7 @@ char_index, -1, "此家店铺以贝壳方式交易!", CHAR_COLORRED);
       char szMsg[64];
       BOOL bPutToBank = FALSE;
 
-      if (!getStringFromIndexWithDelim(message, "|", 2, szTemp, sizeof(szTemp)))
+      if (!getDelimitedField(message, "|", 2, szTemp, sizeof(szTemp)))
         return;
       count = atoi(szTemp);
 #ifdef _MO_FIX_STREET_VENDOR
@@ -9431,7 +9431,7 @@ char_index, -1, "此家店铺以贝壳方式交易!", CHAR_COLORRED);
         return;
 #endif
       for (i = 0; i < count; i++) {
-        if (!getStringFromIndexWithDelim(message, "|", 3 + i, szTemp,
+        if (!getDelimitedField(message, "|", 3 + i, szTemp,
                                          sizeof(szTemp)))
           return;
         iBuyIndex = atoi(szTemp);
@@ -10189,22 +10189,22 @@ void CHAR_sendStreetVendorDataToCli(int char_index, int toindex) {
             int value = 0;
             int type = 0;
 
-            if (getStringFromIndexWithDelim(
+            if (getDelimitedField(
                     CHAR_getChar(itempetindex, CHAR_POWER_UP), "|", 1, buff,
                     sizeof(buff)) == TRUE) {
               type = atoi(buff);
             }
-            if (getStringFromIndexWithDelim(
+            if (getDelimitedField(
                     CHAR_getChar(itempetindex, CHAR_POWER_UP), "|", 2, buff,
                     sizeof(buff)) == TRUE) {
               value += atoi(buff);
             }
-            if (getStringFromIndexWithDelim(
+            if (getDelimitedField(
                     CHAR_getChar(itempetindex, CHAR_POWER_UP), "|", 3, buff,
                     sizeof(buff)) == TRUE) {
               value += atoi(buff);
             }
-            if (getStringFromIndexWithDelim(
+            if (getDelimitedField(
                     CHAR_getChar(itempetindex, CHAR_POWER_UP), "|", 4, buff,
                     sizeof(buff)) == TRUE) {
               value += atoi(buff);
@@ -10408,19 +10408,19 @@ void CHAR_sendStreetVendorOneDataToCli(int char_index, int toindex,
         workdef = CHAR_getWorkInt(itempetindex, CHAR_WORKDEFENCEPOWER);
         workdex = CHAR_getWorkInt(itempetindex, CHAR_WORKQUICK);
         if (CHAR_getChar(itempetindex, CHAR_VB) != NULL) {
-          getStringFromIndexWithDelim(CHAR_getChar(itempetindex, CHAR_VB), "|",
+          getDelimitedField(CHAR_getChar(itempetindex, CHAR_VB), "|",
                                       1, buff2, sizeof(buff2));
           if (atoi(buff2) > 0)
             workhp = -1 * (workhp);
-          getStringFromIndexWithDelim(CHAR_getChar(itempetindex, CHAR_VB), "|",
+          getDelimitedField(CHAR_getChar(itempetindex, CHAR_VB), "|",
                                       2, buff2, sizeof(buff2));
           if (atoi(buff2) > 0)
             workatt = -1 * (workatt);
-          getStringFromIndexWithDelim(CHAR_getChar(itempetindex, CHAR_VB), "|",
+          getDelimitedField(CHAR_getChar(itempetindex, CHAR_VB), "|",
                                       3, buff2, sizeof(buff2));
           if (atoi(buff2) > 0)
             workdef = -1 * (workdef);
-          getStringFromIndexWithDelim(CHAR_getChar(itempetindex, CHAR_VB), "|",
+          getDelimitedField(CHAR_getChar(itempetindex, CHAR_VB), "|",
                                       4, buff2, sizeof(buff2));
           if (atoi(buff2) > 0)
             workdex = -1 * (workdex);
@@ -10626,13 +10626,13 @@ int JobDailyEventCheck(int meindex, int talker, char *buff1) {
   int i = 1, j = 1;
   BOOL endcheck = TRUE;
 
-  while (getStringFromIndexWithDelim(buff1, ",", i, buff2, sizeof(buff2)) !=
+  while (getDelimitedField(buff1, ",", i, buff2, sizeof(buff2)) !=
          FALSE) {
     i++;
     if (strstr(buff2, "&") != NULL) {
       j = 1;
       endcheck = TRUE;
-      while (getStringFromIndexWithDelim(buff2, "&", j, buff3, sizeof(buff3)) !=
+      while (getDelimitedField(buff2, "&", j, buff3, sizeof(buff3)) !=
              FALSE) {
         j++;
         if (JobDailyRuleCheck(talker, buff3) == FALSE) {
@@ -10660,13 +10660,13 @@ BOOL JobDailyRuleCheck(int talker, char *buf) {
   char buf2[20] = "";
   int eventNo;
 
-  getStringFromIndexWithDelim(buf, "=", 2, buf1, sizeof(buf1));
+  getDelimitedField(buf, "=", 2, buf1, sizeof(buf1));
   eventNo = atoi(buf1);
   if (eventNo >= 256) {
     print("任务日志的任务旗标设定有误%d\n", eventNo);
     return FALSE;
   }
-  getStringFromIndexWithDelim(buf, "=", 1, buf2, sizeof(buf2));
+  getDelimitedField(buf, "=", 1, buf2, sizeof(buf2));
 
   if (strcmp(buf2, "ENDEV") == 0) {
     if (NPC_EventCheckFlg(talker, eventNo) == TRUE) {
@@ -10691,7 +10691,7 @@ void CHAR_Teacher_system(int char_index, char *data) {
   BOOL bHasTeacher = FALSE;
   char szMsg[1024];
 
-  if (!getStringFromIndexWithDelim(data, "|", 1, szAction, sizeof(szAction)))
+  if (!getDelimitedField(data, "|", 1, szAction, sizeof(szAction)))
     return;
   switch (szAction[0]) {
   case 'P': {
@@ -10788,7 +10788,7 @@ void CHAR_Teacher_system(int char_index, char *data) {
     char szBuf[16];
     int index;
 
-    getStringFromIndexWithDelim(data, "|", 2, szBuf, sizeof(szBuf));
+    getDelimitedField(data, "|", 2, szBuf, sizeof(szBuf));
     index = atoi(szBuf);
     if (!CHAR_CHECKINDEX(index)) {
       printf("\nCHAR_Teacher_system:error index (%s:%d)\n",
@@ -11127,22 +11127,22 @@ void CHAR_RedMemoy_WindowResult(int char_index, char *data) {
   }
   char szTemp[1024];
   int objtype, givtype, num, total, familyindex, poin;
-  if (!getStringFromIndexWithDelim(data, "|", 1, szTemp, sizeof(szTemp)))
+  if (!getDelimitedField(data, "|", 1, szTemp, sizeof(szTemp)))
     return;
   objtype = atoi(szTemp);
   if (objtype < 0 || objtype > 2)
     return;
-  if (!getStringFromIndexWithDelim(data, "|", 2, szTemp, sizeof(szTemp)))
+  if (!getDelimitedField(data, "|", 2, szTemp, sizeof(szTemp)))
     return;
   givtype = atoi(szTemp);
   if (givtype < 0 || givtype > 1)
     return;
-  if (!getStringFromIndexWithDelim(data, "|", 3, szTemp, sizeof(szTemp)))
+  if (!getDelimitedField(data, "|", 3, szTemp, sizeof(szTemp)))
     return;
   num = atoi(szTemp);
   if (num < 1 || num > 99)
     return;
-  if (!getStringFromIndexWithDelim(data, "|", 4, szTemp, sizeof(szTemp)))
+  if (!getDelimitedField(data, "|", 4, szTemp, sizeof(szTemp)))
     return;
   total = atoi(szTemp);
   if (total < num * 10)

@@ -787,7 +787,7 @@ int NPC_Util_GetNumFromArg(int meindex, char *in) {
   char *a = CHAR_getChar(meindex, CHAR_NPCARGUMENT);
 
   for (i = 1;; i++) {
-    rc = getStringFromIndexWithDelim(a, "|", i, outstr, sizeof(outstr));
+    rc = getDelimitedField(a, "|", i, outstr, sizeof(outstr));
     if (rc == FALSE)
       break;
     if (strstr(outstr, in) != NULL) {
@@ -928,7 +928,7 @@ char *NPC_Util_CheckAssignArgFile(int index, char *filename) {
   }
 
   for (i = 1;; i++) {
-    rc = getStringFromIndexWithDelim(a, "|", i, outstr, sizeof(outstr));
+    rc = getDelimitedField(a, "|", i, outstr, sizeof(outstr));
     if (rc == FALSE)
       break;
     // print("[CheckAssignArgFile] index:%d token[%d]:%s\n", index, i, outstr);
@@ -936,7 +936,7 @@ char *NPC_Util_CheckAssignArgFile(int index, char *filename) {
       // print("[CheckAssignArgFile] matched 'file' substring in token:%s\n",
       //      outstr);
       rc =
-          getStringFromIndexWithDelim(outstr, ":", 2, outstr2, sizeof(outstr2));
+          getDelimitedField(outstr, ":", 2, outstr2, sizeof(outstr2));
       if (rc != FALSE) {
         strcpy(filename, outstr2);
         cret = filename;
@@ -1014,7 +1014,7 @@ int NPC_Util_GetNumFromStrWithDelim(char *srcstr, char *in) {
   char outstr[32];
   int out = -1;
   for (i = 1;;++i) {
-    rc = getStringFromIndexWithDelim(srcstr, "|", i, outstr, sizeof(outstr));
+    rc = getDelimitedField(srcstr, "|", i, outstr, sizeof(outstr));
     if (rc == FALSE)
       break;
     if (strstr(outstr, in) != NULL) {
@@ -1036,12 +1036,12 @@ char *NPC_Util_GetStrFromStrWithDelim(char *srcstr, char *srhstr, char *buf,
   memset(outstr2, 0, sizeof(outstr2));
   buf[0] = '\0';
   for (i = 1;;++i) {
-    rc = getStringFromIndexWithDelim(srcstr, "|", i, outstr, sizeof(outstr));
+    rc = getDelimitedField(srcstr, "|", i, outstr, sizeof(outstr));
     if (rc == FALSE)
       break;
     if (strstr(outstr, srhstr) != NULL) {
       rc =
-          getStringFromIndexWithDelim(outstr, ":", 2, outstr2, sizeof(outstr2));
+          getDelimitedField(outstr, ":", 2, outstr2, sizeof(outstr2));
       if (rc != FALSE) {
         strncpysafe(buf, buflen, outstr2);
         cret = buf;
@@ -1105,7 +1105,7 @@ void NPC_Util_RandomToken(char *in, char *out, int outbufsize) {
     if (in[i] == ',')
       tokennum++;
   }
-  getStringFromIndexWithDelim(in, ",", rand() % tokennum + 1, out, outbufsize);
+  getDelimitedField(in, ",", rand() % tokennum + 1, out, outbufsize);
 }
 
 void cutDotsTail(char *s) {
@@ -1187,7 +1187,7 @@ int *NPC_Util_getEnemy(int meindex, int char_index) {
     int et_array;
     char data[128];
 
-    ret = getStringFromIndexWithDelim(buf, ",", i + 1, data, sizeof(data));
+    ret = getDelimitedField(buf, ",", i + 1, data, sizeof(data));
     if (ret == FALSE) {
       break;
     }
@@ -1526,12 +1526,12 @@ int addNpcFamilyTax(int meindex, int talkerindex, int income) {
   }
   sprintf(buf2, "%d", income);
   for (i = 0; i < FMPOINTNUM; i++) {
-    if (getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 9,
+    if (getDelimitedField(fmpointlist.pointlistarray[i], "|", 9,
                                     token, sizeof(token)) == FALSE)
       continue;
     village = atoi(token);
     if (village == npc_village) {
-      if (getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 5,
+      if (getDelimitedField(fmpointlist.pointlistarray[i], "|", 5,
                                       token, sizeof(token)) == FALSE)
         return 0;
       fmindex = atoi(token);
@@ -1540,12 +1540,12 @@ int addNpcFamilyTax(int meindex, int talkerindex, int income) {
         return 0;
       // end
       memset(token, 0, sizeof(token));
-      if (getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 6,
+      if (getDelimitedField(fmpointlist.pointlistarray[i], "|", 6,
                                       token, sizeof(token)) == FALSE)
         return 0;
       memset(fmname, 0, sizeof(fmname));
       sprintf(fmname, "%s", token);
-      if (getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 8,
+      if (getDelimitedField(fmpointlist.pointlistarray[i], "|", 8,
                                       token, sizeof(token)) == FALSE)
         return 0;
       fmindexi = atoi(token);
@@ -1616,7 +1616,7 @@ int getPlayerEventNoticeNo(int meindex, int talker) {
     return FALSE;
   }
   //	print("\nNPC ARGS=%s",argstr);
-  while (getStringFromIndexWithDelim(argstr, "EventEnd", i, buf, sizeof(buf)) !=
+  while (getDelimitedField(argstr, "EventEnd", i, buf, sizeof(buf)) !=
          FALSE) {
     i++;
 

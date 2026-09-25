@@ -538,14 +538,14 @@ int NPC_Lua_NLG_GiveRandItem(lua_State *_NLL)
 
   char ItemIdBuf[32];
 
-  if (getStringFromIndexWithDelim(TM_ItemIdData, ",", 2, ItemIdBuf,
+  if (getDelimitedField(TM_ItemIdData, ",", 2, ItemIdBuf,
                                   sizeof(ItemIdBuf)) != FALSE) {
 
     int TM_ItemNum = 0;
 
     while (1) {
 
-      if (getStringFromIndexWithDelim(TM_ItemIdData, ",", TM_ItemNum + 1,
+      if (getDelimitedField(TM_ItemIdData, ",", TM_ItemNum + 1,
                                       ItemIdBuf, sizeof(ItemIdBuf)) == FALSE)
 
         break;
@@ -555,22 +555,22 @@ int NPC_Lua_NLG_GiveRandItem(lua_State *_NLL)
 
     TM_ItemNum = RAND(1, TM_ItemNum);
 
-    getStringFromIndexWithDelim(TM_ItemIdData, ",", TM_ItemNum, ItemIdBuf,
+    getDelimitedField(TM_ItemIdData, ",", TM_ItemNum, ItemIdBuf,
                                 sizeof(ItemIdBuf));
 
     char ItemIdBuf2[16];
 
-    if (getStringFromIndexWithDelim(ItemIdBuf, "-", 2, ItemIdBuf2,
+    if (getDelimitedField(ItemIdBuf, "-", 2, ItemIdBuf2,
                                     sizeof(ItemIdBuf2)) != FALSE) {
 
       int TM_ItemIdStart, TM_ItemIdEnd;
 
-      getStringFromIndexWithDelim(ItemIdBuf, "-", 1, ItemIdBuf2,
+      getDelimitedField(ItemIdBuf, "-", 1, ItemIdBuf2,
                                   sizeof(ItemIdBuf2));
 
       TM_ItemIdStart = atoi(ItemIdBuf2);
 
-      getStringFromIndexWithDelim(ItemIdBuf, "-", 2, ItemIdBuf2,
+      getDelimitedField(ItemIdBuf, "-", 2, ItemIdBuf2,
                                   sizeof(ItemIdBuf2));
 
       TM_ItemIdEnd = atoi(ItemIdBuf2);
@@ -582,15 +582,15 @@ int NPC_Lua_NLG_GiveRandItem(lua_State *_NLL)
       TM_ItemId = atoi(ItemIdBuf);
     }
 
-  } else if (getStringFromIndexWithDelim(TM_ItemIdData, "-", 2, ItemIdBuf,
+  } else if (getDelimitedField(TM_ItemIdData, "-", 2, ItemIdBuf,
                                          sizeof(ItemIdBuf)) != FALSE) {
 
-    if (getStringFromIndexWithDelim(TM_ItemIdData, "-", 1, ItemIdBuf,
+    if (getDelimitedField(TM_ItemIdData, "-", 1, ItemIdBuf,
                                     sizeof(ItemIdBuf)) != FALSE)
 
       TM_ItemIdStart = atoi(ItemIdBuf);
 
-    if (getStringFromIndexWithDelim(TM_ItemIdData, "-", 2, ItemIdBuf,
+    if (getDelimitedField(TM_ItemIdData, "-", 2, ItemIdBuf,
                                     sizeof(ItemIdBuf)) != FALSE)
 
       TM_ItemIdEnd = atoi(ItemIdBuf);

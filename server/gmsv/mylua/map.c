@@ -102,7 +102,7 @@ static int getFloorName(lua_State *L)
 	char escapeshowstring[256];
 	char *showstr = MAP_getfloorShowstring(floorid);
 
-	getStringFromIndexWithDelim(showstr, "|", 1, escapeshowstring, sizeof(escapeshowstring));
+	getDelimitedField(showstr, "|", 1, escapeshowstring, sizeof(escapeshowstring));
 
 	lua_pushstring(L, escapeshowstring);
 	return 1;

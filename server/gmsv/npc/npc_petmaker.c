@@ -30,7 +30,7 @@ void NPC_PetMakerTalked(int meindex, int talker, char *msg, int color)
     int ckpoint = CHAR_getInt(talker, CHAR_ENDEVENT + offset);
     // 好像没啥用.
     const char *npcarg = CHAR_getChar(meindex, CHAR_NPCARGUMENT);
-    getStringFromIndexWithDelim(npcarg, "|", 1, token, sizeof(token));
+    getDelimitedField(npcarg, "|", 1, token, sizeof(token));
     const int msg_no = atoi(token);
 
     if (CHAR_getInt(talker, CHAR_WHICHTYPE) != CHAR_TYPEPLAYER)  

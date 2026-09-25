@@ -43,11 +43,11 @@ BOOL NPC_FMPKCallManInit(int meindex) {
   }
 
   /*--伐□皿互涩烂今木化中化手伐□皿燮互卅仃木壬手切欠氏NPC毛综日卅中--*/
-  getStringFromIndexWithDelim(buf, ",", 1, buff2, sizeof(buff2));
+  getDelimitedField(buf, ",", 1, buff2, sizeof(buff2));
   fl = atoi(buff2);
-  getStringFromIndexWithDelim(buf, ",", 2, buff2, sizeof(buff2));
+  getDelimitedField(buf, ",", 2, buff2, sizeof(buff2));
   x = atoi(buff2);
-  getStringFromIndexWithDelim(buf, ",", 3, buff2, sizeof(buff2));
+  getDelimitedField(buf, ",", 3, buff2, sizeof(buff2));
   y = atoi(buff2);
 
   if (MAP_IsValidCoordinate(fl, x, y) == FALSE) {
@@ -102,7 +102,7 @@ static void NPC_FMPKCallMan_selectWindow(int meindex, int toindex, int num,
   if (strstr(npcarg, "%4d") != NULL) {
     int work;
     NPC_Util_GetStrFromStrWithDelim(npcarg, "WARP", buf, sizeof(buf));
-    getStringFromIndexWithDelim(buf, ",", 1, buf2, sizeof(buf2));
+    getDelimitedField(buf, ",", 1, buf2, sizeof(buf2));
     work = atoi(buf2);
   }
 
@@ -250,11 +250,11 @@ void NPC_FMPKCallManWindowTalked(int meindex, int talkerindex, int seqno,
     return;
   }
   NPC_Util_GetStrFromStrWithDelim(npcarg, "WARP", buf, sizeof(buf));
-  getStringFromIndexWithDelim(buf, ",", 1, buff2, sizeof(buff2));
+  getDelimitedField(buf, ",", 1, buff2, sizeof(buff2));
   fl = atoi(buff2);
-  getStringFromIndexWithDelim(buf, ",", 2, buff2, sizeof(buff2));
+  getDelimitedField(buf, ",", 2, buff2, sizeof(buff2));
   x = atoi(buff2);
-  getStringFromIndexWithDelim(buf, ",", 3, buff2, sizeof(buff2));
+  getDelimitedField(buf, ",", 3, buff2, sizeof(buff2));
   y = atoi(buff2);
 
   makeStringFromEscaped(data);

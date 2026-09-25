@@ -35,7 +35,7 @@ void NPC_TownPeopleTalked( int index, int talker, char *msg, int color )
             if( arg[i] == ',' ) tokennum++;
         }
 
-        getStringFromIndexWithDelim( arg,",",
+        getDelimitedField( arg,",",
                                      rand()%tokennum+1,token, sizeof(token));
 
         CHAR_talkToCli( talker, index, token, CHAR_COLORWHITE );

@@ -1076,7 +1076,7 @@ void LoadPetTalk(void) {
   }
 
   talkNO = 1;
-  while (getStringFromIndexWithDelim(talkmem, "END", talkNO, buf1,
+  while (getDelimitedField(talkmem, "END", talkNO, buf1,
                                      sizeof(buf1)) != FALSE) {
     talkNO++;
     if (NPC_Util_GetStrFromStrWithDelim(buf1, "PETTEMPNO", buf2,
@@ -1085,10 +1085,10 @@ void LoadPetTalk(void) {
     mark = 1;
     strcpy(fn, "\0");
 
-    if (getStringFromIndexWithDelim(buf2, ",", mark + 1, buf3, sizeof(buf3)) !=
+    if (getDelimitedField(buf2, ",", mark + 1, buf3, sizeof(buf3)) !=
         FALSE) {
       pettalktext[maxid].ID = atoi(buf3);
-      if (getStringFromIndexWithDelim(buf2, ",", mark, buf3, sizeof(buf3)) !=
+      if (getDelimitedField(buf2, ",", mark, buf3, sizeof(buf3)) !=
           FALSE) {
         sprintf(fn, "%s/pettalk/%s", getNpcdir(), buf3);
         fp = fopen(fn, "r");
@@ -1545,7 +1545,7 @@ void substitutePointerFromType(void *to, CTYPE type, double value) {
 BOOL luareadgServerConfigfile(char *data) {
   char firstToken[256];
   int ret =
-      getStringFromIndexWithDelim(data, "=", 1, firstToken, sizeof(firstToken));
+      getDelimitedField(data, "=", 1, firstToken, sizeof(firstToken));
   if (ret == FALSE) {
     return FALSE;
   }
@@ -1553,7 +1553,7 @@ BOOL luareadgServerConfigfile(char *data) {
   for (i = 0; i < arraysizeof(gReadConf); i++) {
     if (strcmp(gReadConf[i].name, firstToken) == 0) {
       char secondToken[256]; /*2    及  侬  */
-      ret = getStringFromIndexWithDelim(data, "=", 2, secondToken,
+      ret = getDelimitedField(data, "=", 2, secondToken,
                                         sizeof(secondToken));
       if (ret == FALSE) {
         break;
@@ -1604,7 +1604,7 @@ BOOL readgServerConfigfile(char *filename) {
       continue;     /* comment or blank line. */
     }
     chomp(linebuf); /* remove tail newline */
-    ret = getStringFromIndexWithDelim(linebuf, "=", 1, firstToken,
+    ret = getDelimitedField(linebuf, "=", 1, firstToken,
                                       sizeof(firstToken));
     // print("First Token: %s,%s\n", linebuf, firstToken);
     if (ret == FALSE) {
@@ -1614,7 +1614,7 @@ BOOL readgServerConfigfile(char *filename) {
     for (i = 0; i < arraysizeof(gReadConf); i++) {
       if (strcmp(gReadConf[i].name, firstToken) == 0) {
         char secondToken[256];
-        ret = getStringFromIndexWithDelim(linebuf, "=", 2, secondToken,
+        ret = getDelimitedField(linebuf, "=", 2, secondToken,
                                           sizeof(secondToken));
         // print("Second Token: %s,%s\n", linebuf, secondToken);
         if (ret == FALSE) {
@@ -1737,7 +1737,7 @@ int getNewplayergivevip(void) {
 #ifdef _UNLAW_WARP_FLOOR
 int getUnlawwarpfloor(unsigned int index) {
   char unlawwarpfloor[256];
-  getStringFromIndexWithDelim(gServerConfig.unlawwarpfloor, ",", index + 1,
+  getDelimitedField(gServerConfig.unlawwarpfloor, ",", index + 1,
                               unlawwarpfloor, sizeof(unlawwarpfloor));
   return atoi(unlawwarpfloor);
 }
@@ -1746,7 +1746,7 @@ int getUnlawwarpfloor(unsigned int index) {
 #ifdef _NO_JOIN_FLOOR
 int getNoJoinFloor(unsigned int index) {
   char nojoinfloor[256];
-  getStringFromIndexWithDelim(gServerConfig.nojoinfloor, ",", index + 1,
+  getDelimitedField(gServerConfig.nojoinfloor, ",", index + 1,
                               nojoinfloor, sizeof(nojoinfloor));
   return atoi(nojoinfloor);
 }
@@ -1768,7 +1768,7 @@ char *getWatchFloorCF(void) {
 int getBattleFloor(unsigned int index) {
 
   char battlefloor[256];
-  if (getStringFromIndexWithDelim(gServerConfig.battlefloorcf, ",", index + 1,
+  if (getDelimitedField(gServerConfig.battlefloorcf, ",", index + 1,
                                   battlefloor, sizeof(battlefloor)) == TRUE)
     return atoi(battlefloor);
   else
@@ -1814,7 +1814,7 @@ BOOL LoadMissionList(void) {
 
     // 格式 #任务编号,必要等级,任务说明,奖品ID,限制时间(小时)
 
-    getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
+    getDelimitedField(line, ",", 1, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     mindex = atoi(token);
@@ -1824,21 +1824,21 @@ BOOL LoadMissionList(void) {
 
     missionlist[mindex].id = mindex;
 
-    getStringFromIndexWithDelim(line, ",", 2, token, sizeof(token));
+    getDelimitedField(line, ",", 2, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     missionlist[mindex].level = atoi(token);
 
-    getStringFromIndexWithDelim(line, ",", 3, token, sizeof(token));
+    getDelimitedField(line, ",", 3, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     strcpy(missionlist[mindex].eventflag, token);
 
-    getStringFromIndexWithDelim(line, ",", 4, token, sizeof(token));
+    getDelimitedField(line, ",", 4, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     strcpy(missionlist[mindex].detail, token);
-    getStringFromIndexWithDelim(line, ",", 5, token, sizeof(token));
+    getDelimitedField(line, ",", 5, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     missionlist[mindex].limittime = atoi(token);
@@ -1874,26 +1874,26 @@ BOOL LoadMissionCleanList() {
         break;
       }
     }
-    getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
+    getDelimitedField(line, ",", 1, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     strcpy(missiontable[listindex].angelinfo, token);
 
-    getStringFromIndexWithDelim(line, ",", 2, token, sizeof(token));
+    getDelimitedField(line, ",", 2, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     strcpy(missiontable[listindex].heroinfo, token);
 
-    getStringFromIndexWithDelim(line, ",", 3, token, sizeof(token));
+    getDelimitedField(line, ",", 3, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     missiontable[listindex].mission = atoi(token);
 
-    getStringFromIndexWithDelim(line, ",", 4, token, sizeof(token));
+    getDelimitedField(line, ",", 4, token, sizeof(token));
     // if (strcmp(token, "") == 0)  break;
     missiontable[listindex].flag = atoi(token);
 
-    getStringFromIndexWithDelim(line, ",", 5, token, sizeof(token));
+    getDelimitedField(line, ",", 5, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     missiontable[listindex].time = atoi(token);
@@ -1945,17 +1945,17 @@ BOOL LoadJobdailyfile(void) {
       }
     }
 
-    getStringFromIndexWithDelim(line, "|", 1, token, sizeof(token));
+    getDelimitedField(line, "|", 1, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     dailyfile[listindex].jobid = atoi(token);
 
-    getStringFromIndexWithDelim(line, "|", 2, token, sizeof(token));
+    getDelimitedField(line, "|", 2, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     strcpy(dailyfile[listindex].rule, token);
 
-    getStringFromIndexWithDelim(line, "|", 3, token, sizeof(token));
+    getDelimitedField(line, "|", 3, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     if (strlen(token) > 64) {
@@ -1964,7 +1964,7 @@ BOOL LoadJobdailyfile(void) {
     }
     strcpy(dailyfile[listindex].explain, token);
 
-    getStringFromIndexWithDelim(line, "|", 4, token, sizeof(token));
+    getDelimitedField(line, "|", 4, token, sizeof(token));
     if (strcmp(token, "") == 0)
       break;
     strcpy(dailyfile[listindex].state, token);
@@ -2236,7 +2236,7 @@ int getJoinFamilyTime(void) { return gServerConfig.joinfamilytime; }
 #ifdef _MAP_HEALERALLHEAL
 int getMapHeal(int index) {
   char mapheal[256];
-  getStringFromIndexWithDelim(gServerConfig.mapheal, ",", index + 1, mapheal,
+  getDelimitedField(gServerConfig.mapheal, ",", index + 1, mapheal,
                               sizeof(mapheal));
   return atoi(mapheal);
 }
@@ -2255,7 +2255,7 @@ int getLoginDisplay() { return gServerConfig.logindisplay; }
 #ifdef _VIP_POINT_PK
 int getVipPointPK(int index) {
   char vippointpk[256];
-  if (getStringFromIndexWithDelim(gServerConfig.vippointpk, ",", index + 1,
+  if (getDelimitedField(gServerConfig.vippointpk, ",", index + 1,
                                   vippointpk, sizeof(vippointpk)) == TRUE) {
     return atoi(vippointpk);
   } else {
@@ -2268,7 +2268,7 @@ float getVipPointPKCost(void) { return gServerConfig.vippointpkcost / 100.00; }
 #ifdef _SPECIAL_MAP
 int getSpecialMap(int index) {
   char specialmap[256];
-  if (getStringFromIndexWithDelim(gServerConfig.specialmap, ",", index + 1,
+  if (getDelimitedField(gServerConfig.specialmap, ",", index + 1,
                                   specialmap, sizeof(specialmap)) == TRUE) {
     return atoi(specialmap);
   } else {
@@ -2297,7 +2297,7 @@ int getKillPoint() { return gServerConfig.killpoint; }
 #ifdef _AUTO_DEL_PET
 int getAutoDelPet(int index) {
   char autodelpet[256];
-  getStringFromIndexWithDelim(gServerConfig.autodelpet, ",", index + 1,
+  getDelimitedField(gServerConfig.autodelpet, ",", index + 1,
                               autodelpet, sizeof(autodelpet));
   return atoi(autodelpet);
 }
@@ -2306,7 +2306,7 @@ int getAutoDelPet(int index) {
 #ifdef _AUTO_DEL_ITEM
 int getAutoDelItem(int index) {
   char autodelitem[256];
-  getStringFromIndexWithDelim(gServerConfig.autodelitem, ",", index + 1,
+  getDelimitedField(gServerConfig.autodelitem, ",", index + 1,
                               autodelitem, sizeof(autodelitem));
   return atoi(autodelitem);
 }
@@ -2324,7 +2324,7 @@ int getLuckStarChances() { return gServerConfig.luckstarchances; }
 #ifdef _BATTLE_GETITEM_RATE
 int getBattleGetItemRate(int index) {
   char battlegetitemrate[256];
-  getStringFromIndexWithDelim(gServerConfig.battlegetitemrate, ",", index + 1,
+  getDelimitedField(gServerConfig.battlegetitemrate, ",", index + 1,
                               battlegetitemrate, sizeof(battlegetitemrate));
   return atoi(battlegetitemrate);
 }
@@ -2334,7 +2334,7 @@ int getBattleGetItemRateMap() { return gServerConfig.battlegetitemratemap; }
 #ifdef _UNLAW_THIS_LOGOUT
 int getUnlawThisLogout(int index) {
   char unlawthislogout[256];
-  getStringFromIndexWithDelim(gServerConfig.unlawthislogout, ",", index + 1,
+  getDelimitedField(gServerConfig.unlawthislogout, ",", index + 1,
                               unlawthislogout, sizeof(unlawthislogout));
   return atoi(unlawthislogout);
 }
@@ -2343,7 +2343,7 @@ int getUnlawThisLogout(int index) {
 #ifdef _TRANS_POINT_UP
 int getTransPoinUP(int index) {
   char transpointup[256];
-  getStringFromIndexWithDelim(gServerConfig.transpointup, ",", index + 1,
+  getDelimitedField(gServerConfig.transpointup, ",", index + 1,
                               transpointup, sizeof(transpointup));
   return atoi(transpointup);
 }
@@ -2354,7 +2354,7 @@ int getStreetVendor(int id) {
   if (id < 0)
     id = 0;
   char streetvendorpoint[256];
-  if (getStringFromIndexWithDelim(gServerConfig.streetvendorpoint, ",", id + 1,
+  if (getDelimitedField(gServerConfig.streetvendorpoint, ",", id + 1,
                                   streetvendorpoint,
                                   sizeof(streetvendorpoint)) == TRUE) {
     return atoi(streetvendorpoint);
@@ -2384,7 +2384,7 @@ int getTalkCheck(void) {
 BOOL getDisableProfessionSkill(int floor) {
   int i = 1;
   char buff[64];
-  while (getStringFromIndexWithDelim(gServerConfig.disableprofessionskill, ",",
+  while (getDelimitedField(gServerConfig.disableprofessionskill, ",",
                                      i, buff, sizeof(buff))) {
     if (atoi(buff) == floor)
       return TRUE;
@@ -2423,7 +2423,7 @@ int getDelNeedItem() { return gServerConfig.delneeditem; }
 #ifdef _NOT_ESCAPE
 int getNotEscape(int index) {
   char notescape[256];
-  if (getStringFromIndexWithDelim(gServerConfig.notescape, ",", index + 1,
+  if (getDelimitedField(gServerConfig.notescape, ",", index + 1,
                                   notescape, sizeof(notescape)) == TRUE) {
     return atoi(notescape);
   } else {
@@ -2435,7 +2435,7 @@ int getNotEscape(int index) {
 #ifdef _PLAYER_OVERLAP_PK
 int getPlayerOverlapPk(int index) {
   char playeroverlappk[256];
-  if (getStringFromIndexWithDelim(gServerConfig.playeroverlappk, ",", index + 1,
+  if (getDelimitedField(gServerConfig.playeroverlappk, ",", index + 1,
                                   playeroverlappk,
                                   sizeof(playeroverlappk)) == TRUE) {
     return atoi(playeroverlappk);
@@ -2464,7 +2464,7 @@ int getVipBattleexp() { return gServerConfig.vipbattleexp; }
 #ifdef _NO_HELP_MAP
 int getNoHelpMap(int index) {
   char nohelpmap[256];
-  if (getStringFromIndexWithDelim(gServerConfig.nohelpmap, ",", index + 1,
+  if (getDelimitedField(gServerConfig.nohelpmap, ",", index + 1,
                                   nohelpmap, sizeof(nohelpmap)) == TRUE) {
     return atoi(nohelpmap);
   } else {
@@ -2503,7 +2503,7 @@ int checkServerIp(unsigned int ip) {
 
   sprintf(cliip, "%d.%d.%d.%d", a, b, c, d);
 
-  while (getStringFromIndexWithDelim(gServerConfig.serverip, ",", i++, serverip,
+  while (getDelimitedField(gServerConfig.serverip, ",", i++, serverip,
                                      sizeof(serverip)) == TRUE) {
     if (strcmp(cliip, serverip) == 0) {
       return TRUE;
@@ -2531,7 +2531,7 @@ int getPetEnemyDevelopUp() { return gServerConfig.PetEnemyDevelopUp; }
 #ifdef _FIRST_LOCK_ITEM
 int getFirstLockItem(int index) {
   char FirstLockItem[256];
-  if (getStringFromIndexWithDelim(gServerConfig.FirstLockItem, ",", index + 1,
+  if (getDelimitedField(gServerConfig.FirstLockItem, ",", index + 1,
                                   FirstLockItem,
                                   sizeof(FirstLockItem)) == TRUE) {
     return atoi(FirstLockItem);
@@ -2567,7 +2567,7 @@ int getSkillPos(void) {
 
 int getSkillProb(int skillLevel) {
   char prob[20];
-  if (getStringFromIndexWithDelim(gServerConfig.skillinfolv[skillLevel - 1],
+  if (getDelimitedField(gServerConfig.skillinfolv[skillLevel - 1],
                                   "|", 1, prob, sizeof(prob)) == FALSE)
     return 0;
   return atoi(prob);
@@ -2575,7 +2575,7 @@ int getSkillProb(int skillLevel) {
 
 int getSkillRange(int skillLevel, int start) {
   char index[20];
-  if (getStringFromIndexWithDelim(gServerConfig.skillinfolv[skillLevel - 1],
+  if (getDelimitedField(gServerConfig.skillinfolv[skillLevel - 1],
                                   "|", start + 1, index,
                                   sizeof(index)) == FALSE)
     return -1;
@@ -2584,7 +2584,7 @@ int getSkillRange(int skillLevel, int start) {
 
 int getFusionRange(int start) {
   char index[20];
-  if (getStringFromIndexWithDelim(gServerConfig.fusionrange, "|", start, index,
+  if (getDelimitedField(gServerConfig.fusionrange, "|", start, index,
                                   sizeof(index)) == FALSE)
     return -1;
   return atoi(index);
@@ -2604,10 +2604,10 @@ int isPassiveSkill(int skillId) {
   char end[20];
   int i;
   for (i = 0; i < 5; i++) {
-    if (getStringFromIndexWithDelim(gServerConfig.skillinfolv[i], "|", 2, start,
+    if (getDelimitedField(gServerConfig.skillinfolv[i], "|", 2, start,
                                     sizeof(start)) == FALSE)
       return -1;
-    if (getStringFromIndexWithDelim(gServerConfig.skillinfolv[i], "|", 3, end,
+    if (getDelimitedField(gServerConfig.skillinfolv[i], "|", 3, end,
                                     sizeof(end)) == FALSE)
       return -1;
     if (skillId >= atoi(start) && skillId <= atoi(end))
@@ -2623,10 +2623,10 @@ int getSkillLevel(int skillId) {
   char end[20];
   int i;
   for (i = 0; i < 5; i++) {
-    if (getStringFromIndexWithDelim(gServerConfig.skillinfolv[i], "|", 2, start,
+    if (getDelimitedField(gServerConfig.skillinfolv[i], "|", 2, start,
                                     sizeof(start)) == FALSE)
       return -1;
-    if (getStringFromIndexWithDelim(gServerConfig.skillinfolv[i], "|", 3, end,
+    if (getDelimitedField(gServerConfig.skillinfolv[i], "|", 3, end,
                                     sizeof(end)) == FALSE)
       return -1;
     if (skillId >= atoi(start) && skillId <= atoi(end))
@@ -2773,7 +2773,7 @@ int getLoginNoKick(void) {
 #ifdef _MO_ILLEGAL_NAME
 char *getIllegalName(int index) {
   char illegalname[256];
-  if (getStringFromIndexWithDelim(gServerConfig.illegalname, ",", index + 1,
+  if (getDelimitedField(gServerConfig.illegalname, ",", index + 1,
                                   illegalname, sizeof(illegalname)) == TRUE) {
     return illegalname;
   } else {
@@ -2785,7 +2785,7 @@ char *getIllegalName(int index) {
 #ifdef _NO_USE_PACKET_MAP
 int getNoPacketMap(int index) {
   char NoPacketMap[256];
-  if (getStringFromIndexWithDelim(gServerConfig.nousepacketmap, ",", index + 1,
+  if (getDelimitedField(gServerConfig.nousepacketmap, ",", index + 1,
                                   NoPacketMap, sizeof(NoPacketMap)) == TRUE) {
     return atoi(NoPacketMap);
   } else {
@@ -2796,7 +2796,7 @@ int getNoPacketMap(int index) {
 #ifdef _NO_USE_MAGIC_MAP
 int getNoMagicMap(int index) {
   char NoMagicMap[256];
-  if (getStringFromIndexWithDelim(gServerConfig.nousemagicmap, ",", index + 1,
+  if (getDelimitedField(gServerConfig.nousemagicmap, ",", index + 1,
                                   NoMagicMap, sizeof(NoMagicMap)) == TRUE) {
     return atoi(NoMagicMap);
   } else {
@@ -2814,7 +2814,7 @@ int getPetMailFlg(void) {
 }
 int getPetMailPetid(unsigned int index) {
   char petid[256];
-  if (getStringFromIndexWithDelim(gServerConfig.somepetmail, ",", index + 1,
+  if (getDelimitedField(gServerConfig.somepetmail, ",", index + 1,
                                   petid, sizeof(petid)) == TRUE) {
     return atoi(petid);
   } else {

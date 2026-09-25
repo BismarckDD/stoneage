@@ -311,10 +311,10 @@ void SaacClient_DBGetEntryString_recv(int saac_fd, char *result, char *value,
       mode = 0;
     }
     makeStringFromEscaped(key);
-    if (!getStringFromIndexWithDelim(key, "_", 1, cdkey, sizeof(cdkey))) {
+    if (!getDelimitedField(key, "_", 1, cdkey, sizeof(cdkey))) {
       return;
     }
-    if (!getStringFromIndexWithDelim(key, "_", 2, charaname,
+    if (!getDelimitedField(key, "_", 2, charaname,
                                      sizeof(charaname))) {
       return;
     }
@@ -756,43 +756,43 @@ void SaacClient_ACLoadFmPk_recv(int saac_fd, char *data) {
     return;
   }
   //
-  if (getStringFromIndexWithDelim(data, "|", 2, token, sizeof(token))) {
+  if (getDelimitedField(data, "|", 2, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].dueltime = atoi(token);
   }
   // 主队 familyindex
-  if (getStringFromIndexWithDelim(data, "|", 3, token, sizeof(token))) {
+  if (getDelimitedField(data, "|", 3, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].host_index = atoi(token);
   }
   // 主队 家族名
-  if (getStringFromIndexWithDelim(data, "|", 4, token, sizeof(token))) {
+  if (getDelimitedField(data, "|", 4, token, sizeof(token))) {
     strcpy(fmpks[fmpks_pos + 1].host_name, makeStringFromEscaped(token));
   }
   // No.5 family_index
-  if (getStringFromIndexWithDelim(data, "|", 5, token, sizeof(token))) {
+  if (getDelimitedField(data, "|", 5, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].guest_index = atoi(token);
   }
   // 客队 家族名
-  if (getStringFromIndexWithDelim(data, "|", 6, token, sizeof(token))) {
+  if (getDelimitedField(data, "|", 6, token, sizeof(token))) {
     strcpy(fmpks[fmpks_pos + 1].guest_name, makeStringFromEscaped(token));
   }
   // 准备时间
-  if (getStringFromIndexWithDelim(data, "|", 7, token, sizeof(token))) {
+  if (getDelimitedField(data, "|", 7, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].prepare_time = atoi(token);
   }
   // 精灵管理
-  if (getStringFromIndexWithDelim(data, "|", 8, token, sizeof(token))) {
+  if (getDelimitedField(data, "|", 8, token, sizeof(token))) {
     int maxnum = atoi(token);
     if (maxnum < 50)
       maxnum = 50;
     fmpks[fmpks_pos + 1].max_player = maxnum;
   }
   // 管理
-  if (getStringFromIndexWithDelim(data, "|", 9, token, sizeof(token))) {
+  if (getDelimitedField(data, "|", 9, token, sizeof(token))) {
     fmpks[fmpks_pos + 1].flag = atoi(token);
   }
   if (fmpks[fmpks_pos + 1].flag == FMPKS_FLAG_MANOR_OTHERPLANET) {
     // 对战星球
-    if (getStringFromIndexWithDelim(data, "|", 10, token, sizeof(token))) {
+    if (getDelimitedField(data, "|", 10, token, sizeof(token))) {
       strcpy(fmpks[fmpks_pos + 2].host_name, makeStringFromEscaped(token));
       strcpy(skip, makeStringFromEscaped(token));
       if (strcmp(getGameservername(), skip) == 0) {
@@ -818,12 +818,12 @@ void SaacClient_ACManorPKAck_recv(int saac_fd, char *data) {
   for (i = 0; i < char_max; i++) {
     if (CHAR_getCharUse(i)) {
       if (CHAR_getInt(i, CHAR_WHICHTYPE) == CHAR_TYPEMANORSCHEDULEMAN) {
-        if (getStringFromIndexWithDelim(data, "|", 1, token, sizeof(token))) {
+        if (getDelimitedField(data, "|", 1, token, sizeof(token))) {
           if (CHAR_getWorkInt(i, CHAR_NPCWORKINT2) == atoi(token)) { // manor id
             int fmpks_pos = CHAR_getWorkInt(i, CHAR_NPCWORKINT1) * MAX_SCHEDULE;
 
             // 对战星球
-            if (getStringFromIndexWithDelim(data, "|", 10, token,
+            if (getDelimitedField(data, "|", 10, token,
                                             sizeof(token))) {
               strcpy(skip, makeStringFromEscaped(token));
               print("ACManorPKAck: %d %s\n", fmpks_pos, skip);
@@ -832,49 +832,49 @@ void SaacClient_ACManorPKAck_recv(int saac_fd, char *data) {
                 strcpy(fmpks[fmpks_pos + 2].host_name, skip);
 
                 // 时间
-                if (getStringFromIndexWithDelim(data, "|", 2, token,
+                if (getDelimitedField(data, "|", 2, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].dueltime = atoi(token);
                 }
                 // 主队 familyindex
-                if (getStringFromIndexWithDelim(data, "|", 3, token,
+                if (getDelimitedField(data, "|", 3, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].host_index = atoi(token);
                 }
                 // 主队 家族名
-                if (getStringFromIndexWithDelim(data, "|", 4, token,
+                if (getDelimitedField(data, "|", 4, token,
                                                 sizeof(token))) {
                   strcpy(fmpks[fmpks_pos + 1].host_name,
                          makeStringFromEscaped(token));
                 }
                 // 客队 familyindex
-                if (getStringFromIndexWithDelim(data, "|", 5, token,
+                if (getDelimitedField(data, "|", 5, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].guest_index = atoi(token);
                 }
                 // 客队 家族名
-                if (getStringFromIndexWithDelim(data, "|", 6, token,
+                if (getDelimitedField(data, "|", 6, token,
                                                 sizeof(token))) {
                   strcpy(fmpks[fmpks_pos + 1].guest_name,
                          makeStringFromEscaped(token));
                 }
                 // 准备时间
-                if (getStringFromIndexWithDelim(data, "|", 7, token,
+                if (getDelimitedField(data, "|", 7, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].prepare_time = atoi(token);
                 }
                 // 精灵管理
-                if (getStringFromIndexWithDelim(data, "|", 8, token,
+                if (getDelimitedField(data, "|", 8, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].max_player = atoi(token);
                 }
                 // 管理
-                if (getStringFromIndexWithDelim(data, "|", 9, token,
+                if (getDelimitedField(data, "|", 9, token,
                                                 sizeof(token))) {
                   fmpks[fmpks_pos + 1].flag = atoi(token);
                 }
                 // 对战星球
-                if (getStringFromIndexWithDelim(data, "|", 10, token,
+                if (getDelimitedField(data, "|", 10, token,
                                                 sizeof(token))) {
                   strcpy(fmpks[fmpks_pos + 2].host_name,
                          makeStringFromEscaped(token));
@@ -1099,27 +1099,27 @@ void SaacClient_ACMissionTable_recv(int saac_fd, int num, int type, char *data,
         print("取得一笔资料!!:%s\n", data);
 
       for (di = 1; di < MAXMISSIONTABLE; di++) {
-        if (!getStringFromIndexWithDelim(data, " ", di, onedata,
+        if (!getDelimitedField(data, " ", di, onedata,
                                          sizeof(onedata)))
           break;
         if (onedata[0] == '\0' || onedata[0] == ' ')
           break;
         print("资料%d:%s\n", di, onedata);
-        getStringFromIndexWithDelim(onedata, "|", 1, token, sizeof(token));
+        getDelimitedField(onedata, "|", 1, token, sizeof(token));
         ti = atoi(token);
         if (ti < 0 || ti >= MAXMISSIONTABLE)
           continue;
-        getStringFromIndexWithDelim(onedata, "|", 2, token, sizeof(token));
+        getDelimitedField(onedata, "|", 2, token, sizeof(token));
         strcpy(missiontable[ti].angelinfo, token);
-        getStringFromIndexWithDelim(onedata, "|", 3, token, sizeof(token));
+        getDelimitedField(onedata, "|", 3, token, sizeof(token));
         strcpy(missiontable[ti].heroinfo, token);
-        getStringFromIndexWithDelim(onedata, "|", 4, token, sizeof(token));
+        getDelimitedField(onedata, "|", 4, token, sizeof(token));
         missiontable[ti].mission = atoi(token);
-        getStringFromIndexWithDelim(onedata, "|", 5, token, sizeof(token));
+        getDelimitedField(onedata, "|", 5, token, sizeof(token));
         missiontable[ti].flag = atoi(token);
-        getStringFromIndexWithDelim(onedata, "|", 6, token, sizeof(token));
+        getDelimitedField(onedata, "|", 6, token, sizeof(token));
         missiontable[ti].time = atoi(token);
-        getStringFromIndexWithDelim(onedata, "|", 7, token, sizeof(token));
+        getDelimitedField(onedata, "|", 7, token, sizeof(token));
         missiontable[ti].limittime = atoi(token);
       }
     }
@@ -1247,7 +1247,7 @@ void SaacClient_NewVipShop_recv(int client_fd, int point, char *buf, int flag) {
     char buff[256];
     int ret;
 
-    if (getStringFromIndexWithDelim(buf, ",", 1, buff, sizeof(buff)) != FALSE)
+    if (getDelimitedField(buf, ",", 1, buff, sizeof(buff)) != FALSE)
       itemID = atoi(buf);
 
     itemindex = CHAR_findEmptyItemBox(charaindex);
@@ -1292,7 +1292,7 @@ void SaacClient_NewVipShop_recv(int client_fd, int point, char *buf, int flag) {
     int i, j;
     int petindex, petindex2, petid;
 
-    if (getStringFromIndexWithDelim(buf, ",", 1, buf1, sizeof(buf1)) == FALSE)
+    if (getDelimitedField(buf, ",", 1, buf1, sizeof(buf1)) == FALSE)
       return;
 #ifdef _PET_MM
     if (strstr(buf1, "MM1") || strstr(buf1, "MM3"))
@@ -1488,15 +1488,15 @@ void SaacClient_OnlineBuy_recv(int client_fd, char *data) {
     int enemyid;
     int i;
     int vital, str, tough, dex;
-    getStringFromIndexWithDelim(data, "|", 2, buf, sizeof(buf));
+    getDelimitedField(data, "|", 2, buf, sizeof(buf));
     enemyid = atoi(buf);
-    getStringFromIndexWithDelim(data, "|", 3, buf, sizeof(buf));
+    getDelimitedField(data, "|", 3, buf, sizeof(buf));
     vital = atoi(buf);
-    getStringFromIndexWithDelim(data, "|", 4, buf, sizeof(buf));
+    getDelimitedField(data, "|", 4, buf, sizeof(buf));
     str = atoi(buf);
-    getStringFromIndexWithDelim(data, "|", 5, buf, sizeof(buf));
+    getDelimitedField(data, "|", 5, buf, sizeof(buf));
     tough = atoi(buf);
-    getStringFromIndexWithDelim(data, "|", 6, buf, sizeof(buf));
+    getDelimitedField(data, "|", 6, buf, sizeof(buf));
     dex = atoi(buf);
 
     enemynum = ENEMY_getEnemyNum();
@@ -1552,7 +1552,7 @@ void SaacClient_OnlineBuy_recv(int client_fd, char *data) {
   } else if (data[0] == '1') {
     int emptyitemindexinchara, itemindex;
     int itemid;
-    getStringFromIndexWithDelim(data, "|", 2, buf, sizeof(buf));
+    getDelimitedField(data, "|", 2, buf, sizeof(buf));
     itemid = atoi(buf);
     emptyitemindexinchara = CHAR_findEmptyItemBox(charaindex);
 
@@ -1575,7 +1575,7 @@ void SaacClient_OnlineBuy_recv(int client_fd, char *data) {
       CHAR_talkToCli(charaindex, -1, "", CHAR_COLORYELLOW);
     }
   } else if (data[0] == '2') {
-    getStringFromIndexWithDelim(data, "|", 2, buf, sizeof(buf));
+    getDelimitedField(data, "|", 2, buf, sizeof(buf));
     int gold = atoi(buf);
     CHAR_setInt(charaindex, CHAR_GOLD,
                 CHAR_getInt(charaindex, CHAR_GOLD) + gold);
@@ -1619,7 +1619,7 @@ void SaacClient_LotterySystem_recv(char *data) {
   int i;
   char token[256];
   for (i = 0; i < 7; i++) {
-    if (getStringFromIndexWithDelim(data, ",", i + 1, token, sizeof(token)) ==
+    if (getDelimitedField(data, ",", i + 1, token, sizeof(token)) ==
         TRUE) {
       todayaward[i] = atoi(token);
     } else {

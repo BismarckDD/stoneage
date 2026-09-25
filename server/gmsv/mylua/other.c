@@ -32,7 +32,7 @@ static int getString(lua_State *L)
 	const int index = luaL_checkint(L, 3);
 
 	char token[256];
-	if (getStringFromIndexWithDelim(data, delim, index, token, sizeof(token)))
+	if (getDelimitedField(data, delim, index, token, sizeof(token)))
 		lua_pushstring(L, token);
 	else
 		lua_pushstring(L, "");

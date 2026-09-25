@@ -57,7 +57,7 @@ static int CreateVsEnemyLv(lua_State *L) {
     enemytable[i] = -1;
     enemylvtable[i] = -1;
   }
-  while (getStringFromIndexWithDelim(enemytablebuf, ",", j, tmpenemytablebuf,
+  while (getDelimitedField(enemytablebuf, ",", j, tmpenemytablebuf,
                                      sizeof(tmpenemytablebuf)) != FALSE) {
     int enemyid = atoi(tmpenemytablebuf);
     int curEnemy = ENEMY_getEnemyArrayFromId(enemyid);
@@ -68,7 +68,7 @@ static int CreateVsEnemyLv(lua_State *L) {
     }
     j++;
   }
-  while (getStringFromIndexWithDelim(enemylvtablebuf, ",", k,
+  while (getDelimitedField(enemylvtablebuf, ",", k,
                                      tmpenemylvtablebuf,
                                      sizeof(tmpenemylvtablebuf)) != FALSE) {
     enemylvtable[k - 1] = atoi(tmpenemylvtablebuf);

@@ -49,7 +49,7 @@ char *Pet_TalkGetFunStr(char *temp, char *buf, int len) {
   char line[4096];
   BOOL find = FALSE;
   talkfun[0] = '\0';
-  while (getStringFromIndexWithDelim(pettalktext, "&", talkNo, buf1,
+  while (getDelimitedField(pettalktext, "&", talkNo, buf1,
                                      sizeof(buf1)) != FALSE) {
     talkNo++;
     if (NPC_Util_GetStrFromStrWithDelim(buf1, "PETTEMPNO", buf2,
@@ -57,12 +57,12 @@ char *Pet_TalkGetFunStr(char *temp, char *buf, int len) {
       continue;
     mark = 2;
     strcpy(filename, "\0");
-    while (getStringFromIndexWithDelim(buf2, ",", mark, buf3, sizeof(buf3)) !=
+    while (getDelimitedField(buf2, ",", mark, buf3, sizeof(buf3)) !=
            FALSE) {
       mark++;
       if (!strcmp(buf3, temp)) {
         print("\n buf2=%s", buf2);
-        if (getStringFromIndexWithDelim(buf2, ",", 1, filename,
+        if (getDelimitedField(buf2, ",", 1, filename,
                                         sizeof(filename)) == FALSE)
           return NULL;
         find = TRUE;
@@ -92,7 +92,7 @@ char *Pet_TalkGetFunStr(char *temp, char *buf, int len) {
     return NULL;
   }
   talkNo = 1;
-  while (getStringFromIndexWithDelim(talkfun, "}", talkNo, buf, len) != FALSE) {
+  while (getDelimitedField(talkfun, "}", talkNo, buf, len) != FALSE) {
     talkNo++;
     if (NPC_Util_GetStrFromStrWithDelim(buf, "PETTEMPNO", buf2, sizeof(buf2)) ==
         NULL)
@@ -178,10 +178,10 @@ void PET_Talkfunc(int meindex, int talkerindex, char *msg, int color) {
   j = 0;
 
 #ifdef _PET_TALKPRO
-  while (getStringFromIndexWithDelim(pettalktext[tPage].DATA, "OVER", talkNo,
+  while (getDelimitedField(pettalktext[tPage].DATA, "OVER", talkNo,
                                      buf2, sizeof(buf2)) != FALSE) {
 #else
-  while (getStringFromIndexWithDelim(buf1, "OVER", talkNo, buf2,
+  while (getDelimitedField(buf1, "OVER", talkNo, buf2,
                                      sizeof(buf2)) != FALSE) {
 #endif
     talkNo++;
@@ -216,10 +216,10 @@ void PET_Talkfunc(int meindex, int talkerindex, char *msg, int color) {
   if (FREEs == FALSE) { // 如果全部条件都不成立
     j = 0;
 #ifdef _PET_TALKPRO
-    while (getStringFromIndexWithDelim(pettalktext[tPage].DATA, "OVER", talkNo,
+    while (getDelimitedField(pettalktext[tPage].DATA, "OVER", talkNo,
                                        buf2, sizeof(buf2)) != FALSE) {
 #else
-    while (getStringFromIndexWithDelim(buf1, "OVER", talkNo, buf2,
+    while (getDelimitedField(buf1, "OVER", talkNo, buf2,
                                        sizeof(buf2)) != FALSE) {
 #endif
       talkNo++;
@@ -228,7 +228,7 @@ void PET_Talkfunc(int meindex, int talkerindex, char *msg, int color) {
       if (NPC_Util_GetStrFromStrWithDelim(buf2, "TalkMsg", buf3,
                                           sizeof(buf3)) == NULL)
         continue;
-      while (getStringFromIndexWithDelim(buf3, ",", j + 1, AllTalk[j],
+      while (getDelimitedField(buf3, ",", j + 1, AllTalk[j],
                                          sizeof(AllTalk[j])) != FALSE) {
         j++;
       }
@@ -258,7 +258,7 @@ BOOL PetTalk_CheckMyFloor(int meindex, int talker, char *buf, int flg) {
   int Myfloor = -1;
   Myfloor = CHAR_getInt(talker, CHAR_FLOOR);
   if (strstr(buf, "!") != NULL) {
-    getStringFromIndexWithDelim(buf, "!", 2, buf1, sizeof(buf1));
+    getDelimitedField(buf, "!", 2, buf1, sizeof(buf1));
     if (Myfloor == atoi(buf1)) {
       return FALSE;
     }
@@ -300,7 +300,7 @@ BOOL PetTalk_DelItem(int meindex, int talker, char *buf) {
   char buf2[32];
   int item_index;
 
-  while (getStringFromIndexWithDelim(buf, ",", k, buff3, sizeof(buff3)) !=
+  while (getDelimitedField(buf, ",", k, buff3, sizeof(buff3)) !=
          FALSE) {
     k++;
     if (strstr(buff3, "*") != NULL) {
@@ -309,9 +309,9 @@ BOOL PetTalk_DelItem(int meindex, int talker, char *buf) {
       int id;
       int cnt = 0;
 
-      getStringFromIndexWithDelim(buff3, "*", 1, buf2, sizeof(buf2));
+      getDelimitedField(buff3, "*", 1, buf2, sizeof(buf2));
       itemno = atoi(buf2);
-      getStringFromIndexWithDelim(buff3, "*", 2, buf2, sizeof(buf2));
+      getDelimitedField(buff3, "*", 2, buf2, sizeof(buf2));
       kosuu = atoi(buf2);
 #ifdef _NEW_ITEM_
       int itemMax = CheckCharMaxItem(talker);
@@ -401,7 +401,7 @@ BOOL PetTalk_AddItem(int meindex, int talker, char *buf) {
 
 #endif
 
-  while (getStringFromIndexWithDelim(buf, ",", k, buff3, sizeof(buff3)) !=
+  while (getDelimitedField(buf, ",", k, buff3, sizeof(buff3)) !=
          FALSE) {
     k++;
     for (i = spaceNum;
@@ -433,7 +433,7 @@ BOOL PetTalk_AddItem(int meindex, int talker, char *buf) {
     }
   }
   k = 1;
-  while (getStringFromIndexWithDelim(buf, ",", k, buff3, sizeof(buff3)) !=
+  while (getDelimitedField(buf, ",", k, buff3, sizeof(buff3)) !=
          FALSE) {
     k++;
     itemID = atoi(buff3);
@@ -469,7 +469,7 @@ BOOL PetTalk_CheckPetEvent(int meindex, int toindex, char *buf) {
   if (NPC_Util_GetStrFromStrWithDelim(buf, "EndSetFlg", buf1, sizeof(buf1)) !=
       NULL) {
     k = 1;
-    while (getStringFromIndexWithDelim(buf1, ",", k, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buf1, ",", k, buf2, sizeof(buf2)) !=
            FALSE) {
       k++;
       NPC_EventSetFlg(toindex, atoi(buf2));
@@ -478,7 +478,7 @@ BOOL PetTalk_CheckPetEvent(int meindex, int toindex, char *buf) {
   if (NPC_Util_GetStrFromStrWithDelim(buf, "NowSetFlg", buf1, sizeof(buf1)) !=
       NULL) {
     k = 1;
-    while (getStringFromIndexWithDelim(buf1, ",", k, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buf1, ",", k, buf2, sizeof(buf2)) !=
            FALSE) {
       k++;
       NPC_NowEventSetFlg(toindex, atoi(buf2));
@@ -506,13 +506,13 @@ BOOL PetTalk_CheckFree(int meindex, int talker, char *buf) {
   char buff3[128];
   int i = 1, j = 1;
   int loop = 0;
-  while (getStringFromIndexWithDelim(buf, ",", i, buff2, sizeof(buff2)) !=
+  while (getDelimitedField(buf, ",", i, buff2, sizeof(buff2)) !=
          FALSE) {
     i++;
     if (strstr(buff2, "&") != NULL) {
       j = 1;
       loop = 0;
-      while (getStringFromIndexWithDelim(buff2, "&", j, buff3, sizeof(buff3)) !=
+      while (getDelimitedField(buff2, "&", j, buff3, sizeof(buff3)) !=
              FALSE) {
         j++;
         if (PetTalk_BSCheck(meindex, talker, buff3) == FALSE) {
@@ -541,31 +541,31 @@ BOOL PetTalk_BSCheck(int meindex, int talker, char *buf) {
   char buff1[128], buff3[128];
   if (strstr(buf, "-") != NULL) {
     // buff3为抓宠物ID
-    getStringFromIndexWithDelim(buf, "-", 2, buff3, sizeof(buff3));
+    getDelimitedField(buf, "-", 2, buff3, sizeof(buff3));
     temp = atoi(buff3);
-    getStringFromIndexWithDelim(buf, "-", 1, buff1, sizeof(buff1));
+    getDelimitedField(buf, "-", 1, buff1, sizeof(buff1));
     strcpy(buf, buff1);
   }
   if (strstr(buf, "<") != NULL) {
-    getStringFromIndexWithDelim(buf, "<", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, "<", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, "<", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "<", 1, buff2, sizeof(buff2));
 
     if (PetTalk_FreeIfCheck(meindex, talker, buff2, kosuu, 1, temp) == TRUE) {
       return TRUE;
     }
   } else if (strstr(buf, ">") != NULL) {
-    getStringFromIndexWithDelim(buf, ">", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, ">", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, ">", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, ">", 1, buff2, sizeof(buff2));
 
     if (PetTalk_FreeIfCheck(meindex, talker, buff2, kosuu, 2, temp) == TRUE) {
       return TRUE;
     }
   } else if (strstr(buf, "!") != NULL) {
-    getStringFromIndexWithDelim(buf, "!=", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, "!=", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, "!=", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "!=", 1, buff2, sizeof(buff2));
     if (PetTalk_FreeIfCheck(meindex, talker, buff2, kosuu, 0, temp) == TRUE) {
       return FALSE;
     } else {
@@ -573,9 +573,9 @@ BOOL PetTalk_BSCheck(int meindex, int talker, char *buf) {
     }
 
   } else if (strstr(buf, "=") != NULL) {
-    getStringFromIndexWithDelim(buf, "=", 2, buff2, sizeof(buff2));
+    getDelimitedField(buf, "=", 2, buff2, sizeof(buff2));
     kosuu = atoi(buff2);
-    getStringFromIndexWithDelim(buf, "=", 1, buff2, sizeof(buff2));
+    getDelimitedField(buf, "=", 1, buff2, sizeof(buff2));
 
     if (strstr(buf, "PET")) {
       flg = 3;
@@ -674,10 +674,10 @@ BOOL PetTalk_WarpManReduce(int meindex, int talker, char *buf) {
   int kosuu;
   int cnt = 0;
 
-  getStringFromIndexWithDelim(buf, "=", 2, buf2, sizeof(buf2));
-  getStringFromIndexWithDelim(buf2, "*", 1, buf3, sizeof(buf3));
+  getDelimitedField(buf, "=", 2, buf2, sizeof(buf2));
+  getDelimitedField(buf2, "*", 1, buf3, sizeof(buf3));
   itemno = atoi(buf3);
-  getStringFromIndexWithDelim(buf2, "*", 2, buf3, sizeof(buf3));
+  getDelimitedField(buf2, "*", 2, buf3, sizeof(buf3));
   kosuu = atoi(buf3);
 #ifdef _NEW_ITEM_
 

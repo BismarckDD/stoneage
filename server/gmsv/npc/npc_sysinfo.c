@@ -292,7 +292,7 @@ void NPC_SysinfoTalked( int meindex, int tindex, char *msg, int color)
 		if( strncmp( msgwk, cmd_msg[NPC_SYSINFO_MSG_STARTINFO].msg,
 					strlen( cmd_msg[NPC_SYSINFO_MSG_STARTINFO].msg)) == 0)
 		{
-			if( getStringFromIndexWithDelim( msgwk, " ", 2, buff, len)
+			if( getDelimitedField( msgwk, " ", 2, buff, len)
 				== TRUE )
 			{
 				if( strcmp( buff, CHAR_getWorkChar( meindex, CHAR_WORKCHAR_PASSWD))
@@ -425,7 +425,7 @@ static void NPC_Sysinfo_Msg_SendNo( int meindex, int tindex, char *msg)
 	char	buff[32];
 	char	msgbuf[512];
 
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE )
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE )
 	{
 		int	num;
 		num = atoi( buff);
@@ -444,7 +444,7 @@ static void NPC_Sysinfo_Msg_SendMsg( int meindex, int tindex, char *msg)
 {
 	char	buff[512];
 
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE )
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE )
 	{
 		NPC_Sysinfo_SendMsgToAll( meindex, buff);
 	}
@@ -468,7 +468,7 @@ static void NPC_Sysinfo_Msg_Msgcol( int meindex, int tindex, char *msg)
 		{ 255, "white"},
 	};
 
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE )
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE )
 	{
 		int		i;
 		for( i = 0; i < 7; i ++ ) {
@@ -520,7 +520,7 @@ static void NPC_Sysinfo_Msg_Shutdown( int meindex, int tindex, char *msg)
 	NPC_Sysinfo_SendMsg( meindex, tindex, NPC_SYSINFO_ARG_SHUTDOWN_MSG);
 	/* 凛棉本永玄 */
 	CHAR_setWorkInt( meindex, CHAR_WORK_SHUTDOWNTIME, NowTime.tv_sec);
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE )
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE )
 	{
 		hun = atoi( buff);
 		if( hun <= 0 ) {
@@ -574,7 +574,7 @@ static void NPC_Sysinfo_All_NoSee( int meindex, int tindex, char *msg ){
 	char	buff[256];
 
 	buff[0] = buff[1] = 0;
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE )
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE )
 	{
 		if( strncmp( buff, "on", strlen( buff ) ) == 0 ){
 			all_nosee = 1;
@@ -605,7 +605,7 @@ static void NPC_Sysinfo_All_NoBody( int meindex, int tindex, char *msg ){
 	char	buff[256];
 
 	buff[0] = buff[1] = 0;
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE )
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE )
 	{
 		if( strncmp( buff, "on", strlen( buff ) ) == 0 ){
 			all_nobody = 1;
@@ -637,7 +637,7 @@ static void NPC_Sysinfo_Move_Num( int meindex, int tindex, char *msg ){
 	int		work;
 	buff[0] = buff[1] = 0;
 
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE )
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE )
 	{
 		work = atoi( buff );
 		if( work <= 0 ) {
@@ -660,7 +660,7 @@ static void NPC_Sysinfo_Born_Num( int meindex, int tindex, char *msg ){
 	char	buff[256];
 	int		work;
 	buff[0] = buff[1] = 0;
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE )
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE )
 	{
 		work = atoi( buff );
 		if( work <= 0 ) {
@@ -721,7 +721,7 @@ static void NPC_Sysinfo_SetWalkTime( int meindex, int tindex, char *msg)
 	int interval;
 	char	msgbuf[256];
 	char	buff[256];
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
 		interval = atoi( buff);
 		if( interval > 0 ) {
 			setWalksendinterval( (unsigned)interval);
@@ -737,7 +737,7 @@ static void NPC_Sysinfo_SetCATime( int meindex, int tindex, char *msg)
 	int interval;
 	char	msgbuf[256];
 	char	buff[256];
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
 		interval = atoi( buff);
 		if( interval > 0 ) {
 			setCAsendinterval_ms( (unsigned)interval);
@@ -753,7 +753,7 @@ static void NPC_Sysinfo_SetCDTime( int meindex, int tindex, char *msg)
 	int interval;
 	char	msgbuf[256];
 	char	buff[256];
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
 		interval = atoi( buff);
 		if( interval > 0 ) {
 			setCDsendinterval_ms( (unsigned)interval);
@@ -769,7 +769,7 @@ static void NPC_Sysinfo_SetOneloop( int meindex, int tindex, char *msg)
 	int interval;
 	char	msgbuf[256];
 	char	buff[256];
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
 		interval = atoi( buff);
 		if( interval > 0 ) {
 			setOnelooptime_ms( (unsigned)interval);
@@ -802,7 +802,7 @@ static void NPC_Sysinfo_SetSaacwrite( int meindex, int tindex, char *msg)
 	int interval;
 	char	msgbuf[256];
 	char	buff[256];
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
 		interval = atoi( buff);
 		if( interval > 0 ) {
 			setSaacwritenum( (unsigned)interval);
@@ -817,7 +817,7 @@ static void NPC_Sysinfo_SetSaacread( int meindex, int tindex, char *msg)
 	int interval;
 	char msgbuf[256];
 	char buff[256];
-	if( getStringFromIndexWithDelim( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
+	if( getDelimitedField( msg, " ", 2, buff, sizeof( buff)) == TRUE ) {
 		interval = atoi( buff);
 		if( interval > 0 ) {
 			setSaacreadnum( (unsigned)interval);

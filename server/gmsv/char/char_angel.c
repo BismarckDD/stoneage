@@ -230,7 +230,7 @@ void selectAngel(int char_index, int heroindex, int mission, int gm_cmd) {
       j = 0;
       while (1) {
         j++;
-        if (getStringFromIndexWithDelim(eventlist, ";", j, buf, sizeof(buf)) ==
+        if (getDelimitedField(eventlist, ";", j, buf, sizeof(buf)) ==
             FALSE)
           break;
         if (buf[0] != '!') { // 必要旗标或禁止旗标
@@ -331,9 +331,9 @@ int AngelCreate(int angelindex) {
     return TRUE;
   }
 
-  getStringFromIndexWithDelim(missiontable[mindex].heroinfo, ":", 1, herocdkey,
+  getDelimitedField(missiontable[mindex].heroinfo, ":", 1, herocdkey,
                               sizeof(herocdkey));
-  getStringFromIndexWithDelim(missiontable[mindex].heroinfo, ":", 2, heroname,
+  getDelimitedField(missiontable[mindex].heroinfo, ":", 2, heroname,
                               sizeof(heroname));
 
   angeltokenindex = ITEM_makeItemAndRegist(ANGELITEM);
@@ -522,7 +522,7 @@ void Use_AngelToken(int char_index, int toindex, int haveitem_index) {
     min = (lefttime % (60 * 60)) / 60;
     if (missiontable[mindex].flag == MISSION_DOING) {
       // 显示任务资料
-      getStringFromIndexWithDelim(missiontable[mindex].heroinfo, ":", 2,
+      getDelimitedField(missiontable[mindex].heroinfo, ":", 2,
                                   tokenbuf, sizeof(tokenbuf));
       sprintf(msg, "你的使命是将勇者的信物交给 %s ，%s，时间还剩余%d小时%d分。",
               tokenbuf, missionlist[missiontable[mindex].mission].detail, hour,
@@ -530,7 +530,7 @@ void Use_AngelToken(int char_index, int toindex, int haveitem_index) {
       CHAR_talkToCli(char_index, -1, msg, CHAR_COLORRED);
     } else if (missiontable[mindex].flag == MISSION_HERO_COMPLETE) {
       // 可以去领奖了
-      getStringFromIndexWithDelim(missiontable[mindex].heroinfo, ":", 2,
+      getDelimitedField(missiontable[mindex].heroinfo, ":", 2,
                                   tokenbuf, sizeof(tokenbuf));
       sprintf(
           msg,
@@ -555,9 +555,9 @@ void Use_AngelToken(int char_index, int toindex, int haveitem_index) {
       return;
     }
 
-    getStringFromIndexWithDelim(missiontable[mindex].angelinfo, ":", 1, cdkey,
+    getDelimitedField(missiontable[mindex].angelinfo, ":", 1, cdkey,
                                 sizeof(cdkey));
-    getStringFromIndexWithDelim(missiontable[mindex].angelinfo, ":", 2, name,
+    getDelimitedField(missiontable[mindex].angelinfo, ":", 2, name,
                                 sizeof(name));
     maxchar = CHAR_getPlayerMaxNum();
     for (i = 0; i < maxchar; i++) {
@@ -684,9 +684,9 @@ void Use_HeroToken(int char_index, int toindex, int haveitem_index) {
       return;
     }
 
-    getStringFromIndexWithDelim(missiontable[mindex].heroinfo, ":", 1, cdkey,
+    getDelimitedField(missiontable[mindex].heroinfo, ":", 1, cdkey,
                                 sizeof(cdkey));
-    getStringFromIndexWithDelim(missiontable[mindex].heroinfo, ":", 2, name,
+    getDelimitedField(missiontable[mindex].heroinfo, ":", 2, name,
                                 sizeof(name));
     maxchar = CHAR_getPlayerMaxNum();
     for (i = 0; i < maxchar; i++) {

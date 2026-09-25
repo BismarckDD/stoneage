@@ -80,13 +80,13 @@ void NPC_WelfareWindowTalked( int meindex, int talkerindex,
 	}
 
 	makeStringFromEscaped( data);
-	getStringFromIndexWithDelim(data,"|",1,buf,sizeof(buf));
+	getDelimitedField(data,"|",1,buf,sizeof(buf));
 	skill=atoi(buf);
-	getStringFromIndexWithDelim(data,"|",2,buf,sizeof(buf));
+	getDelimitedField(data,"|",2,buf,sizeof(buf));
 	cost=atoi(buf);
 	
 	if( NPC_Util_GetStrFromStrWithDelim( argstr, "profession_skill", msg, sizeof( msg)) != NULL){
-		getStringFromIndexWithDelim(msg,",",skill,buf,sizeof(buf));
+		getDelimitedField(msg,",",skill,buf,sizeof(buf));
 		skillID=atoi(buf);
 	}
 
@@ -352,7 +352,7 @@ void NPC_WelfareMakeStr(int meindex,int toindex,int select)
 		char buf[64];
 
 		i=1;
-	    while( getStringFromIndexWithDelim(msg,",",i,buf,sizeof(buf)) !=FALSE ){
+	    while( getDelimitedField(msg,",",i,buf,sizeof(buf)) !=FALSE ){
 			i++;
 			skillID=atoi(buf);
 

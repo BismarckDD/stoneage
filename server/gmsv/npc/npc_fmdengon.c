@@ -112,7 +112,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 			int fmindex_wk;
 			char tmp_buffer[4096],tmp[4096];
 			
-			getStringFromIndexWithDelim(data,"|",1,tmp_buffer,sizeof(tmp_buffer));
+			getDelimitedField(data,"|",1,tmp_buffer,sizeof(tmp_buffer));
 			dengonindex = atoi(tmp_buffer);
 			
 			fmindex_wk = CHAR_getWorkInt( talker, CHAR_WORKFMINDEXI);
@@ -210,7 +210,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						dengonindex = 6;
 					
 					memcpy( &tm1, localtime( (time_t *)&NowTime.tv_sec), sizeof(struct tm));
-					getStringFromIndexWithDelim(data,"|",2,tmp_buffer,sizeof(tmp_buffer));
+					getDelimitedField(data,"|",2,tmp_buffer,sizeof(tmp_buffer));
 					sprintf( m_buf,"%s|%2d/%02d %2d:%02d %s",
 						tmp_buffer,
 						tm1.tm_mon +1, tm1.tm_mday, tm1.tm_hour, tm1.tm_min,
@@ -269,7 +269,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
     {
 			int dengonindex;
 			char tmp_buffer[4096],tmp[4096];
-			getStringFromIndexWithDelim(data,"|",1,tmp_buffer,sizeof(tmp_buffer));
+			getDelimitedField(data,"|",1,tmp_buffer,sizeof(tmp_buffer));
 			dengonindex = atoi(tmp_buffer);
 			
 			switch( select ){
@@ -383,7 +383,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 							dengonindex = 6;
 						
 						memcpy( &tm1, localtime( (time_t *)&NowTime.tv_sec), sizeof( tm1));
-						getStringFromIndexWithDelim(data,"|",2,tmp_buffer,sizeof(tmp_buffer));
+						getDelimitedField(data,"|",2,tmp_buffer,sizeof(tmp_buffer));
 						sprintf( m_buf,"%s|%2d/%02d %2d:%02d %s",
 							tmp_buffer,
 							tm1.tm_mon +1, tm1.tm_mday, tm1.tm_hour, tm1.tm_min,
@@ -1189,8 +1189,8 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 						for( i=0; i<FMPOINTNUM; i++){
 							char tmpbuf[256]="";
 
-							getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 6, fmname, sizeof(fmname));
-							getStringFromIndexWithDelim(fmpointlist.pointlistarray[i], "|", 10, fmtime, sizeof(fmtime));
+							getDelimitedField(fmpointlist.pointlistarray[i], "|", 6, fmname, sizeof(fmname));
+							getDelimitedField(fmpointlist.pointlistarray[i], "|", 10, fmtime, sizeof(fmtime));
 							sprintf(tmpbuf, "\n%s|%s|%d"
 														, fmname
 														, fmtime
@@ -1226,11 +1226,11 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
 			fmindex_wk = CHAR_getWorkInt( talker, CHAR_WORKFMINDEXI);
 			if( fmindex_wk < 0 || fmindex_wk >= FMMAXNUM) return;
 			
-			getStringFromIndexWithDelim(data,"|",1,tmp_buffer,sizeof(tmp_buffer));
+			getDelimitedField(data,"|",1,tmp_buffer,sizeof(tmp_buffer));
 			numberlistindex = atoi(tmp_buffer);
-			getStringFromIndexWithDelim(data,"|",2,tmp_buffer,sizeof(tmp_buffer));
+			getDelimitedField(data,"|",2,tmp_buffer,sizeof(tmp_buffer));
 			buttonevent = atoi(tmp_buffer);
-			getStringFromIndexWithDelim(data,"|",3,dutybuf,sizeof(dutybuf));
+			getDelimitedField(data,"|",3,dutybuf,sizeof(dutybuf));
 			
 #ifdef _FMVER21
 			//        if( buttonevent>=1 && buttonevent<=11 && 
@@ -1384,7 +1384,7 @@ void NPC_FmDengonWindowTalked( int index, int talker, int seqno, int select, cha
     {
 			char listbuf[4096],tmp_buffer[4096];
 			int  listindex;
-			getStringFromIndexWithDelim(data,"|",1,tmp_buffer,sizeof(tmp_buffer));
+			getDelimitedField(data,"|",1,tmp_buffer,sizeof(tmp_buffer));
 			listindex = atoi(tmp_buffer);
 			
 			switch( select ){

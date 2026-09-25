@@ -235,7 +235,7 @@ void NPC_FamilymanWindowTalked( int meindex, int talkerindex,
 			j = 0;
 			for( i=1 ; i<=8 ; i++  ) {
 				if( i > gFamilyNumTotal )	break;
-				if( getStringFromIndexWithDelim( gFamilyList, "|", i, subbuf,
+				if( getDelimitedField( gFamilyList, "|", i, subbuf,
 				        sizeof(subbuf) ) == FALSE)	break;
 				strcat( buf, "|" );
 				strcat( buf, subbuf );
@@ -401,7 +401,7 @@ static BOOL NPC_Familyman_readData( int meindex, int windowno, BOOL chkflg)
 			if( i != 0 ) strcpy( line, buf);
 
 			/* delim "=" 匹  赓(1)及玄□弁件毛  月*/
-			ret = getStringFromIndexWithDelim( line, "=",  1, firstToken,
+			ret = getDelimitedField( line, "=",  1, firstToken,
 											   sizeof( firstToken ) );
 			if( ret == FALSE ){
 				print( "Find error at %s in line %d. Ignore\n",
@@ -409,7 +409,7 @@ static BOOL NPC_Familyman_readData( int meindex, int windowno, BOOL chkflg)
 				continue;
 			}
 			/* delim "=" 匹2    及玄□弁件毛  月*/
-			ret = getStringFromIndexWithDelim( line, "=", 2, secondToken,
+			ret = getDelimitedField( line, "=", 2, secondToken,
 											   sizeof( secondToken ) );
 			if( ret == FALSE ){
 				print( "Find error at %s in line %d. Ignore\n",
@@ -633,7 +633,7 @@ static int NPC_Familyman_restoreButtontype( char *data )
 	char	buff[1024];
 	
 	for( i = 1; ; i ++ ) {
-		rc = getStringFromIndexWithDelim( data, "|",  i, buff,
+		rc = getDelimitedField( data, "|",  i, buff,
 											   sizeof( buff ) );
 		if( rc == FALSE) break;
 		if( strcasecmp( buff, "ok") == 0 ) {

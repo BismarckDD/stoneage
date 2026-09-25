@@ -483,7 +483,7 @@ BOOL TRADE_Search(int fd, int meindex, char *message)
 
   strcpy(mycharaname, CHAR_getChar(meindex, CHAR_NAME));
 
-  if (getStringFromIndexWithDelim(message, "|", 2, token,
+  if (getDelimitedField(message, "|", 2, token,
                                   sizeof(token)) == FALSE)
     return FALSE;
   // 设定状态交易请求中
@@ -686,13 +686,13 @@ void TRADE_Close(int fd, int meindex, char *message)
 
 #else
   char token[256];
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) == FALSE)
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) == FALSE)
     return;
   tofd = atoi(token);
   toindex = CONNECT_getCharaindex(tofd);
   if (!CHAR_CHECKINDEX(toindex))
     return;
-  if (getStringFromIndexWithDelim(message, "|", 3, token, sizeof(token)) == FALSE)
+  if (getDelimitedField(message, "|", 3, token, sizeof(token)) == FALSE)
     return;
 
   snprintf(msg, sizeof(msg), TRADE_CANCEL, mycharaname);
@@ -712,7 +712,7 @@ void TRADE_Close(int fd, int meindex, char *message)
   if (!CHAR_CHECKINDEX(toindex))
   {
     char buf[256];
-    if (getStringFromIndexWithDelim(message, "|", 2, buf, sizeof(buf)) == FALSE)
+    if (getDelimitedField(message, "|", 2, buf, sizeof(buf)) == FALSE)
       return;
     tofd = atoi(buf);
     toindex = CONNECT_getCharaindex(tofd);
@@ -814,7 +814,7 @@ void TRADE_ShowItem(int fd, int meindex, char *message)
   }
   tofd = getfdFromCharaIndex(toindex);
 #else
-  if (getStringFromIndexWithDelim(message, "|", 2, token, sizeof(token)) == FALSE)
+  if (getDelimitedField(message, "|", 2, token, sizeof(token)) == FALSE)
     return;
   tofd = atoi(token);
   toindex = CONNECT_getCharaindex(tofd);
@@ -829,12 +829,12 @@ void TRADE_ShowItem(int fd, int meindex, char *message)
   if ((CHAR_getWorkInt(toindex, CHAR_WORKPARTYMODE) != CHAR_PARTY_NONE) || (CHAR_getWorkInt(toindex, CHAR_WORKBATTLEMODE) != BATTLE_CHARMODE_NONE))
     return;
 
-  if (getStringFromIndexWithDelim(message, "|", 3, tocharaname, sizeof(tocharaname)) == FALSE)
+  if (getDelimitedField(message, "|", 3, tocharaname, sizeof(tocharaname)) == FALSE)
     return;
-  if (getStringFromIndexWithDelim(message, "|", 5, token, sizeof(token)) == FALSE)
+  if (getDelimitedField(message, "|", 5, token, sizeof(token)) == FALSE)
     return;
   showindex = atoi(token);
-  if (getStringFromIndexWithDelim(message, "|", 4, token, sizeof(token)) == FALSE)
+  if (getDelimitedField(message, "|", 4, token, sizeof(token)) == FALSE)
     return;
 
 #ifdef _TRADESYSTEM2 // (不可开) Syu ADD 新交易系统
@@ -1498,53 +1498,53 @@ int TRADE_CheckItembuf(int fd, int meindex, int toindex, int tofd, char *mychara
   CONNECT_getTradeTmp(tofd, toitembuf, sizeof(toitembuf));
 
   // 比对双方之最後交易协定
-  if (getStringFromIndexWithDelim(itembuf, "|", 5, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 5, token, sizeof(token)) == TRUE)
     strcpy(a, token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 6, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 6, token, sizeof(token)) == TRUE)
     item_index1 = atoi(token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 7, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 7, token, sizeof(token)) == TRUE)
     strcpy(b, token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 8, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 8, token, sizeof(token)) == TRUE)
     item_index2 = atoi(token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 9, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 9, token, sizeof(token)) == TRUE)
     strcpy(c, token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 10, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 10, token, sizeof(token)) == TRUE)
     item_index3 = atoi(token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 11, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 11, token, sizeof(token)) == TRUE)
     strcpy(d, token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 12, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 12, token, sizeof(token)) == TRUE)
     item_index4 = atoi(token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 13, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 13, token, sizeof(token)) == TRUE)
     strcpy(e, token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 14, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 14, token, sizeof(token)) == TRUE)
     item_index5 = atoi(token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 15, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 15, token, sizeof(token)) == TRUE)
     strcpy(f, token);
-  if (getStringFromIndexWithDelim(itembuf, "|", 16, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(itembuf, "|", 16, token, sizeof(token)) == TRUE)
     item_index6 = atoi(token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 5, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 5, token, sizeof(token)) == TRUE)
     strcpy(g, token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 6, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 6, token, sizeof(token)) == TRUE)
     toitem_index1 = atoi(token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 7, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 7, token, sizeof(token)) == TRUE)
     strcpy(h, token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 8, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 8, token, sizeof(token)) == TRUE)
     toitem_index2 = atoi(token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 9, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 9, token, sizeof(token)) == TRUE)
     strcpy(i, token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 10, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 10, token, sizeof(token)) == TRUE)
     toitem_index3 = atoi(token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 11, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 11, token, sizeof(token)) == TRUE)
     strcpy(j, token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 12, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 12, token, sizeof(token)) == TRUE)
     toitem_index4 = atoi(token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 13, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 13, token, sizeof(token)) == TRUE)
     strcpy(k, token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 14, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 14, token, sizeof(token)) == TRUE)
     toitem_index5 = atoi(token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 15, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 15, token, sizeof(token)) == TRUE)
     strcpy(l, token);
-  if (getStringFromIndexWithDelim(toitembuf, "|", 16, token, sizeof(token)) == TRUE)
+  if (getDelimitedField(toitembuf, "|", 16, token, sizeof(token)) == TRUE)
     toitem_index6 = atoi(token);
 
   // shan hjj add 洗道具
@@ -2041,7 +2041,7 @@ BOOL TRADE_HandleItem(int meindex, int showindex, char *message, char *outmess)
   if (CHAR_getWorkInt(meindex, CHAR_WORKTRADEMODE) != CHAR_TRADE_TRADING || CHAR_getWorkInt(meindex, CHAR_WORKTRADEMODE) == CHAR_TRADE_LOCK)
     return FALSE;
 
-  if (getStringFromIndexWithDelim(message, "|", 6, token, sizeof(token)) == FALSE)
+  if (getDelimitedField(message, "|", 6, token, sizeof(token)) == FALSE)
     return FALSE;
   item = atoi(token);
 
@@ -2111,7 +2111,7 @@ BOOL TRADE_HandleGold(int meindex, int showindex, char *message, char *outmess)
   if (CHAR_getWorkInt(meindex, CHAR_WORKTRADEMODE) != CHAR_TRADE_TRADING || CHAR_getWorkInt(meindex, CHAR_WORKTRADEMODE) == CHAR_TRADE_LOCK)
     return FALSE;
   tmpgold = CHAR_getInt(meindex, CHAR_GOLD);
-  if (getStringFromIndexWithDelim(message, "|", 6, token, sizeof(token)) == FALSE)
+  if (getDelimitedField(message, "|", 6, token, sizeof(token)) == FALSE)
     return FALSE;
   if ((gold = atoi(token)) < 0)
     return FALSE;
@@ -2134,7 +2134,7 @@ BOOL TRADE_HandlePet(int meindex, int showindex, char *message, char *outmess)
     return FALSE;
   if (CHAR_getWorkInt(meindex, CHAR_WORKTRADEMODE) != CHAR_TRADE_TRADING || CHAR_getWorkInt(meindex, CHAR_WORKTRADEMODE) == CHAR_TRADE_LOCK)
     return FALSE;
-  if (getStringFromIndexWithDelim(message, "|", 6, token, sizeof(token)) == FALSE)
+  if (getDelimitedField(message, "|", 6, token, sizeof(token)) == FALSE)
     return FALSE;
   if ((havepetindex = atoi(token)) < 0)
     return FALSE;
@@ -2153,19 +2153,19 @@ BOOL TRADE_HandlePet(int meindex, int showindex, char *message, char *outmess)
     int value = 0;
     int type = 0;
 
-    if (getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 1, buff, sizeof(buff)) == TRUE)
+    if (getDelimitedField(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 1, buff, sizeof(buff)) == TRUE)
     {
       type = atoi(buff);
     }
-    if (getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 2, buff, sizeof(buff)) == TRUE)
+    if (getDelimitedField(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 2, buff, sizeof(buff)) == TRUE)
     {
       value += atoi(buff);
     }
-    if (getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 3, buff, sizeof(buff)) == TRUE)
+    if (getDelimitedField(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 3, buff, sizeof(buff)) == TRUE)
     {
       value += atoi(buff);
     }
-    if (getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 4, buff, sizeof(buff)) == TRUE)
+    if (getDelimitedField(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 4, buff, sizeof(buff)) == TRUE)
     {
       value += atoi(buff);
     }
@@ -2192,13 +2192,13 @@ BOOL TRADE_HandlePet(int meindex, int showindex, char *message, char *outmess)
       workdex = CHAR_getWorkInt(petindex, CHAR_WORKQUICK);
       if (CHAR_getChar(petindex, CHAR_VB) != NULL)
       {
-        getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_VB), "|", 2, buff2, sizeof(buff2));
+        getDelimitedField(CHAR_getChar(petindex, CHAR_VB), "|", 2, buff2, sizeof(buff2));
         if (atoi(buff2) > 0)
           workatt = -1 * (workatt);
-        getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_VB), "|", 3, buff2, sizeof(buff2));
+        getDelimitedField(CHAR_getChar(petindex, CHAR_VB), "|", 3, buff2, sizeof(buff2));
         if (atoi(buff2) > 0)
           workdef = -1 * (workdef);
-        getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_VB), "|", 4, buff2, sizeof(buff2));
+        getDelimitedField(CHAR_getChar(petindex, CHAR_VB), "|", 4, buff2, sizeof(buff2));
         if (atoi(buff2) > 0)
           workdex = -1 * (workdex);
       }
@@ -2259,19 +2259,19 @@ BOOL TRADE_HandlePet(int meindex, int showindex, char *message, char *outmess)
       int value = 0;
       int type = 0;
 
-      if (getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 1, buff, sizeof(buff)) == TRUE)
+      if (getDelimitedField(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 1, buff, sizeof(buff)) == TRUE)
       {
         type = atoi(buff);
       }
-      if (getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 2, buff, sizeof(buff)) == TRUE)
+      if (getDelimitedField(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 2, buff, sizeof(buff)) == TRUE)
       {
         value += atoi(buff);
       }
-      if (getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 3, buff, sizeof(buff)) == TRUE)
+      if (getDelimitedField(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 3, buff, sizeof(buff)) == TRUE)
       {
         value += atoi(buff);
       }
-      if (getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 4, buff, sizeof(buff)) == TRUE)
+      if (getDelimitedField(CHAR_getChar(petindex, CHAR_POWER_UP), "|", 4, buff, sizeof(buff)) == TRUE)
       {
         value += atoi(buff);
       }
@@ -2298,7 +2298,7 @@ BOOL TRADE_HandlePet(int meindex, int showindex, char *message, char *outmess)
         workhp = CHAR_getWorkInt(petindex, CHAR_WORKMAXHP);
         if (CHAR_getChar(petindex, CHAR_VB) != NULL)
         {
-          getStringFromIndexWithDelim(CHAR_getChar(petindex, CHAR_VB), "|", 1, buff2, sizeof(buff2));
+          getDelimitedField(CHAR_getChar(petindex, CHAR_VB), "|", 1, buff2, sizeof(buff2));
           if (atoi(buff2) > 0)
             workhp = -1 * (workhp);
         }

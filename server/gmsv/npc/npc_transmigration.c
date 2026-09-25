@@ -141,7 +141,7 @@ static void NPC_Transmigration_selectWindow(int meindex, int toindex, int num) {
 
   sprintf(s_tensei, "TENSEI:%d", tenseiNo);
 
-  while (getStringFromIndexWithDelim(npcarg, "END", i, buf, sizeof(buf)) !=
+  while (getDelimitedField(npcarg, "END", i, buf, sizeof(buf)) !=
          FALSE) {
     i++;
     if (strstr(buf, s_tensei) != NULL) {
@@ -446,20 +446,20 @@ BOOL NPC_TransmigratiomWarp(int meindex, int toindex, char *buf) {
   int i = 1;
   int ret;
 
-  while (getStringFromIndexWithDelim(buf, ",", i, buf2, sizeof(buf2)) !=
+  while (getDelimitedField(buf, ",", i, buf2, sizeof(buf2)) !=
          FALSE) {
     i++;
     if (strstr(buf2, "Warp") != NULL) {
-      getStringFromIndexWithDelim(buf2, "=", 2, buf3, sizeof(buf3));
-      ret = getStringFromIndexWithDelim(buf3, ".", 1, buf4, sizeof(buf4));
+      getDelimitedField(buf2, "=", 2, buf3, sizeof(buf3));
+      ret = getDelimitedField(buf3, ".", 1, buf4, sizeof(buf4));
       if (ret == FALSE)
         return FALSE;
       floor = atoi(buf4);
-      ret = getStringFromIndexWithDelim(buf3, ".", 2, buf4, sizeof(buf4));
+      ret = getDelimitedField(buf3, ".", 2, buf4, sizeof(buf4));
       if (ret == FALSE)
         return FALSE;
       x = atoi(buf4);
-      ret = getStringFromIndexWithDelim(buf3, ".", 3, buf4, sizeof(buf4));
+      ret = getDelimitedField(buf3, ".", 3, buf4, sizeof(buf4));
       if (ret == FALSE)
         return FALSE;
       y = atoi(buf4);
@@ -775,21 +775,21 @@ BOOL NPC_TransmigrationMain(int meindex, int toindex, char *buf) {
   pet_sum += 5;   // 限制最大的寄宠数
 
 #endif
-  while (getStringFromIndexWithDelim(buf, ",", i, buf2, sizeof(buf2)) !=
+  while (getDelimitedField(buf, ",", i, buf2, sizeof(buf2)) !=
          FALSE) {
     i++;
 
     if (strstr(buf2, "Item") != NULL) {
-      getStringFromIndexWithDelim(buf2, "=", 2, buf3, sizeof(buf3));
+      getDelimitedField(buf2, "=", 2, buf3, sizeof(buf3));
       item = atoi(buf3);
     } else if (strstr(buf2, "Pet") != NULL) {
-      getStringFromIndexWithDelim(buf2, "=", 2, buf3, sizeof(buf3));
+      getDelimitedField(buf2, "=", 2, buf3, sizeof(buf3));
       pet = atoi(buf3);
     } else if (strstr(buf2, "Present") != NULL) {
       ten_no = CHAR_getInt(toindex, CHAR_TRANSMIGRATION);
       ten_no++;
-      getStringFromIndexWithDelim(buf2, "=", 2, buf3, sizeof(buf3));
-      getStringFromIndexWithDelim(buf3, ".", ten_no, buf4, sizeof(buf4));
+      getDelimitedField(buf2, "=", 2, buf3, sizeof(buf3));
+      getDelimitedField(buf3, ".", ten_no, buf4, sizeof(buf4));
       present = atoi(buf4);
     }
   }
@@ -1479,7 +1479,7 @@ void NPC_PetTransMan_selectWindow(int meindex, int toindex, int num,
   sprintf(s_tensei, "PETTRANS:");
 
   // 比对npc谈话
-  while (getStringFromIndexWithDelim(npcarg, "END", i, buf, sizeof(buf)) !=
+  while (getDelimitedField(npcarg, "END", i, buf, sizeof(buf)) !=
          FALSE) {
     i++;
     if (strstr(buf, s_tensei) != NULL) {

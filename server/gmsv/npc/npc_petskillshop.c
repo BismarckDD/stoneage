@@ -29,7 +29,7 @@ BOOL NPC_PetSkillShopInit( int meindex )
 	if( NPC_Util_GetStrFromStrWithDelim( argstr, "pet_skill", msg, sizeof( msg)) != NULL){
 		char buf[256], filename[256];
 		int k=1, skillID, skillarray;
-		while( getStringFromIndexWithDelim( msg, ",", k, buf, sizeof( buf) ) ){
+		while( getDelimitedField( msg, ",", k, buf, sizeof( buf) ) ){
 			k++;
 			skillID=atoi(buf);
 			skillarray = PETSKILL_getPetskillArray( skillID);
@@ -106,17 +106,17 @@ void NPC_PetSkillShopWindowTalked( int meindex, int talkerindex,
 		return;
 	}
 	makeStringFromEscaped( data);
-	getStringFromIndexWithDelim(data,"|",1,buf,sizeof(buf));
+	getDelimitedField(data,"|",1,buf,sizeof(buf));
 	skill=atoi(buf);
-	getStringFromIndexWithDelim(data,"|",2,buf,sizeof(buf));
+	getDelimitedField(data,"|",2,buf,sizeof(buf));
 	pet=atoi(buf);
-	getStringFromIndexWithDelim(data,"|",3,buf,sizeof(buf));
+	getDelimitedField(data,"|",3,buf,sizeof(buf));
 	slot=atoi(buf);
-	getStringFromIndexWithDelim(data,"|",4,buf,sizeof(buf));
+	getDelimitedField(data,"|",4,buf,sizeof(buf));
 	cost=atoi(buf);
 
 	if( NPC_Util_GetStrFromStrWithDelim( argstr, "pet_skill", msg, sizeof( msg)) != NULL){
-		getStringFromIndexWithDelim(msg,",",skill,buf,sizeof(buf));
+		getDelimitedField(msg,",",skill,buf,sizeof(buf));
 		skillID=atoi(buf);
 	}
 
@@ -219,7 +219,7 @@ BOOL NPC_PetSkillMakeStr(int meindex,int toindex,int select)
 		char buf[64];
 
 		i=1;
-	    while( getStringFromIndexWithDelim(msg,",",i,buf,sizeof(buf)) !=FALSE ){
+	    while( getDelimitedField(msg,",",i,buf,sizeof(buf)) !=FALSE ){
 			i++;
 			skillID=atoi(buf);
 			skillarray = PETSKILL_getPetskillArray( skillID);

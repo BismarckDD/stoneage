@@ -105,12 +105,12 @@ BOOL NPC_FMWarpManInit( int meindex )
 		return FALSE;
 	}
 
-	getStringFromIndexWithDelim(buf,",",1,buff2,sizeof(buff2));
+	getDelimitedField(buf,",",1,buff2,sizeof(buff2));
 	fl=atoi(buff2);
 	CHAR_setWorkInt(meindex, NPC_WORK_WARPFLOOR, fl);
-	getStringFromIndexWithDelim(buf,",",2,buff2,sizeof(buff2));
+	getDelimitedField(buf,",",2,buff2,sizeof(buff2));
 	x=atoi(buff2);
-	getStringFromIndexWithDelim(buf,",",3,buff2,sizeof(buff2));
+	getDelimitedField(buf,",",3,buff2,sizeof(buff2));
 	y=atoi(buff2);
 
 	if( MAP_IsValidCoordinate( fl,x,y )== FALSE ){
@@ -124,12 +124,12 @@ BOOL NPC_FMWarpManInit( int meindex )
 		print("FMWarpman Err");
 		return FALSE;
 	}
-	getStringFromIndexWithDelim(buf,",",1,buff2,sizeof(buff2));
+	getDelimitedField(buf,",",1,buff2,sizeof(buff2));
 	fl1=atoi(buff2);
 	CHAR_setWorkInt(meindex, NPC_WORK_WARPFLOOR, fl);
-	getStringFromIndexWithDelim(buf,",",2,buff2,sizeof(buff2));
+	getDelimitedField(buf,",",2,buff2,sizeof(buff2));
 	x1=atoi(buff2);
-	getStringFromIndexWithDelim(buf,",",3,buff2,sizeof(buff2));
+	getDelimitedField(buf,",",3,buff2,sizeof(buff2));
 	y1=atoi(buff2);
 	if( MAP_IsValidCoordinate( fl1,x1,y1 )== FALSE ){
 		print( "FMWarp NPC:Invalid warpman ERR" );
@@ -432,7 +432,7 @@ void NPC_FMWarpManLoop(int meindex)
 						int fmid;
 						char fmindex[4];
 						for (fmid=0; fmid<MANORNUM; fmid++){	// 10个庄园
-				       getStringFromIndexWithDelim(fmpointlist.pointlistarray[fmid], "|", 5, fmindex, sizeof(fmindex));
+				       getDelimitedField(fmpointlist.pointlistarray[fmid], "|", 5, fmindex, sizeof(fmindex));
 				       if (fmpks[fmpks_pos].guest_index==atoi(fmindex)-1)
 				       	 break;
 				    }
@@ -638,11 +638,11 @@ void NPC_FMWarpManWindowTalked( int meindex, int talkerindex,
 		CHAR_talkToCli( talkerindex, meindex, "你并非对战双方所属任一家族成员！", CHAR_COLORYELLOW);
 		return;
 	}
-	getStringFromIndexWithDelim(buf,",",1,buff2,sizeof(buff2));
+	getDelimitedField(buf,",",1,buff2,sizeof(buff2));
 	fl=atoi(buff2);
-	getStringFromIndexWithDelim(buf,",",2,buff2,sizeof(buff2));
+	getDelimitedField(buf,",",2,buff2,sizeof(buff2));
 	x=atoi(buff2);
-	getStringFromIndexWithDelim(buf,",",3,buff2,sizeof(buff2));
+	getDelimitedField(buf,",",3,buff2,sizeof(buff2));
 	y=atoi(buff2);
 
 
@@ -813,7 +813,7 @@ static void NPC_FMWarpMan_selectWindow( int meindex, int toindex, int num,int se
 	/*--涩烂白央奶伙及  卞白夫失谛醒互隙烂今木化中月井今木化中木壬白夫失谛醒及喃曰请仄*/
 	if(strstr(npcarg,"%4d")!=NULL){
 		NPC_Util_GetStrFromStrWithDelim( npcarg, "WARP1", buf, sizeof( buf));
-		getStringFromIndexWithDelim(buf,",",1,buf3,sizeof(buf3));
+		getDelimitedField(buf,",",1,buf3,sizeof(buf3));
 		fl = NPC_FMFloorUse(atoi(buf3));
 	}
 	   	

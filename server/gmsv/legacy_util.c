@@ -124,7 +124,7 @@ void getFourIntsFromString(char *text, int *value1, int *value2, int *value3,
     char token[128];
     if (outputs[index] == NULL)
       continue;
-    if (getStringFromIndexWithDelim(text, ",", index + 1, token,
+    if (getDelimitedField(text, ",", index + 1, token,
                                     sizeof(token)))
       *outputs[index] = atoi(token);
     else

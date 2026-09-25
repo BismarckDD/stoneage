@@ -48,13 +48,13 @@ BOOL NPC_WindowHealerInit(int meindex) {
   CHAR_setInt(meindex, CHAR_WHICHTYPE, CHAR_TYPEHEALER);
   npcarg = CHAR_getChar(meindex, CHAR_NPCARGUMENT);
 
-  if (getStringFromIndexWithDelim(npcarg, "|", 1, buf2, sizeof(buf2)) !=
+  if (getDelimitedField(npcarg, "|", 1, buf2, sizeof(buf2)) !=
       FALSE) {
     CHAR_setWorkInt(meindex, CHAR_WORK_LEVEL, atoi(buf2));
   } else {
     return FALSE;
   }
-  if (getStringFromIndexWithDelim(npcarg, "|", 2, buf2, sizeof(buf2)) !=
+  if (getDelimitedField(npcarg, "|", 2, buf2, sizeof(buf2)) !=
       FALSE) {
     drate = atof(buf2);
     if (drate == 0) {
@@ -64,7 +64,7 @@ BOOL NPC_WindowHealerInit(int meindex) {
     }
     CHAR_setWorkInt(meindex, CHAR_WORK_HP, rate);
   }
-  if (getStringFromIndexWithDelim(npcarg, "|", 3, buf2, sizeof(buf2)) !=
+  if (getDelimitedField(npcarg, "|", 3, buf2, sizeof(buf2)) !=
       FALSE) {
     drate = atof(buf2);
     if (drate == 0) {
@@ -74,7 +74,7 @@ BOOL NPC_WindowHealerInit(int meindex) {
     }
     CHAR_setWorkInt(meindex, CHAR_WORK_MP, rate);
   }
-  if (getStringFromIndexWithDelim(npcarg, "|", 4, buf2, sizeof(buf2)) !=
+  if (getDelimitedField(npcarg, "|", 4, buf2, sizeof(buf2)) !=
       FALSE) {
     range = atoi(buf2);
     if (range == 0) {

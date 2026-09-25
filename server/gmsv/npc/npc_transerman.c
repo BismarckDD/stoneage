@@ -176,7 +176,7 @@ BOOL TranserMan_GetMenuStr( int meindex, int toindex, char *npcarg, char *token)
 	}
 	sprintf( token, "%s\n", buf1);
 
-	while( getStringFromIndexWithDelim( npcarg,"}",talkNo, buf1, sizeof( buf1)) != FALSE )	{
+	while( getDelimitedField( npcarg,"}",talkNo, buf1, sizeof( buf1)) != FALSE )	{
 		talkNo++;
 		memset( buf2, 0, sizeof( buf2));
 		if( NPC_Util_GetStrFromStrWithDelim( buf1, "MenuStr", buf2, sizeof( buf2)) == NULL  )

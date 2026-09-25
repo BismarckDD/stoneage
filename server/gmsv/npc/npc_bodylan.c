@@ -45,7 +45,7 @@ BOOL NPC_BodyLanInit(int meindex) {
 
   for (i = 0;; i++) {
     //   邰卅赐
-    if (getStringFromIndexWithDelim(szP, ",", i, buf, sizeof(buf)) != FALSE) {
+    if (getDelimitedField(szP, ",", i, buf, sizeof(buf)) != FALSE) {
       needSeq = atoi(buf);
       // 穴奶瓜旦互  凶日仇仇引匹
       if (needSeq < 0) {
@@ -187,7 +187,7 @@ void NPC_BodyLanWatch(int objmeindex, int objmoveindex, CHAR_ACTION act, int x,
   }
 
   //   邰卅赐
-  if (getStringFromIndexWithDelim(szP, ",", seqNo, buf, sizeof(buf)) != FALSE) {
+  if (getDelimitedField(szP, ",", seqNo, buf, sizeof(buf)) != FALSE) {
     needSeq = atoi(buf);
   } else {
     // 卅兮井卅井匀凶日  赓井日

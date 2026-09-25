@@ -66,12 +66,12 @@ BOOL SKILL_makeSkillFromStringToArg(char *src, Skill *sk) {
     char second[256];
     int i;
 
-    ret = getStringFromIndexWithDelim(src, NONCHAR_DELIMITER, readindex,
+    ret = getDelimitedField(src, NONCHAR_DELIMITER, readindex,
                                       linebuf, sizeof(linebuf));
     if (ret == FALSE)
       break;
 
-    ret = getStringFromIndexWithDelim(linebuf, "=", 1, first, sizeof(first));
+    ret = getDelimitedField(linebuf, "=", 1, first, sizeof(first));
     if (ret == FALSE)
       return FALSE;
     strncpysafe(second, sizeof(second), linebuf + strlen(first) + strlen("="));

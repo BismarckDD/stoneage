@@ -1726,13 +1726,13 @@ static int FindPetFormEnemyTempID(lua_State *L) {
   int enemytempid = -1, lv = 0;
   int i;
 
-  if (getStringFromIndexWithDelim(data, "-", 1, token, sizeof(token)) == TRUE) {
+  if (getDelimitedField(data, "-", 1, token, sizeof(token)) == TRUE) {
     lv = atoi(token);
   } else {
     lua_pushinteger(L, -1);
   }
 
-  if (getStringFromIndexWithDelim(data, "-", 2, token, sizeof(token)) == TRUE) {
+  if (getDelimitedField(data, "-", 2, token, sizeof(token)) == TRUE) {
     enemytempid = atoi(token);
   } else {
     lua_pushinteger(L, -1);

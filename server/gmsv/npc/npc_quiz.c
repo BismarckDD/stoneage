@@ -290,7 +290,7 @@ static void NPC_Quiz_selectWindow(int meindex, int talker, int num) {
 
           } else {
 
-            getStringFromIndexWithDelim(buf, ",", okflg + 1, buf3,
+            getDelimitedField(buf, ",", okflg + 1, buf3,
                                         sizeof(buf3));
             if (NPC_QuizAddItem(talker, buf3) == FALSE)
               return;
@@ -309,7 +309,7 @@ static void NPC_Quiz_selectWindow(int meindex, int talker, int num) {
 
           } else {
 
-            getStringFromIndexWithDelim(buf, ",", okflg + 1, buf2,
+            getDelimitedField(buf, ",", okflg + 1, buf2,
                                         sizeof(buf2));
             CHAR_talkToCli(talker, meindex, buf2, CHAR_COLORWHITE);
           }
@@ -322,13 +322,13 @@ static void NPC_Quiz_selectWindow(int meindex, int talker, int num) {
           if (warp_flg != -1) {
             char warpbuf[32];
 
-            getStringFromIndexWithDelim(buf, ",", warp_flg + 1, buf2,
+            getDelimitedField(buf, ",", warp_flg + 1, buf2,
                                         sizeof(buf2));
-            getStringFromIndexWithDelim(buf2, ".", 1, warpbuf, sizeof(warpbuf));
+            getDelimitedField(buf2, ".", 1, warpbuf, sizeof(warpbuf));
             floor = atoi(warpbuf);
-            getStringFromIndexWithDelim(buf2, ".", 2, warpbuf, sizeof(warpbuf));
+            getDelimitedField(buf2, ".", 2, warpbuf, sizeof(warpbuf));
             x = atoi(warpbuf);
-            getStringFromIndexWithDelim(buf2, ".", 3, warpbuf, sizeof(warpbuf));
+            getDelimitedField(buf2, ".", 3, warpbuf, sizeof(warpbuf));
             y = atoi(warpbuf);
           }
         }
@@ -611,7 +611,7 @@ int NPC_QuizBorderLine(int ans, char *buf) {
   int j = 1;
   int border;
 
-  while (getStringFromIndexWithDelim(buf, ",", j, buf2, sizeof(buf2)) !=
+  while (getDelimitedField(buf, ",", j, buf2, sizeof(buf2)) !=
          FALSE) {
     border = atoi(buf2);
 
@@ -631,7 +631,7 @@ int NPC_QuizWarpBorderLine(int ans, char *buf) {
   int j = 1;
   int border;
 
-  while (getStringFromIndexWithDelim(buf, ",", j, buf2, sizeof(buf2)) !=
+  while (getDelimitedField(buf, ",", j, buf2, sizeof(buf2)) !=
          FALSE) {
     border = atoi(buf2);
 
@@ -655,17 +655,17 @@ BOOL NPC_QuizAddItem(int talker, char *buf) {
   char token[512];
 
   /*--呁醒操圴午仄化失奶泛丞互涩烂今木化中月桦宁反仿件母丞匹蓟少--*/
-  while (getStringFromIndexWithDelim(buf, ".", i, buf2, sizeof(buf2)) !=
+  while (getDelimitedField(buf, ".", i, buf2, sizeof(buf2)) !=
          FALSE) {
     i++;
   }
   i--;
   if (i == 1) {
-    getStringFromIndexWithDelim(buf, ".", i, buf2, sizeof(buf2));
+    getDelimitedField(buf, ".", i, buf2, sizeof(buf2));
   } else {
     /*--仿件母丞--*/
     i = (rand() % i) + 1;
-    getStringFromIndexWithDelim(buf, ".", i, buf2, sizeof(buf2));
+    getDelimitedField(buf, ".", i, buf2, sizeof(buf2));
   }
 
   item_index = ITEM_makeItemAndRegist(atoi(buf2));
@@ -1010,32 +1010,32 @@ BOOL QUIZ_initQuiz(char *filename) {
       strcpy(line, buf);
     }
 
-    if (getStringFromIndexWithDelim(line, ",", 1, buf2, sizeof(buf2)) == FALSE)
+    if (getDelimitedField(line, ",", 1, buf2, sizeof(buf2)) == FALSE)
       continue;
     Quiz[linenum].no = atoi(buf2);
 
-    if (getStringFromIndexWithDelim(line, ",", 2, buf2, sizeof(buf2)) == FALSE)
+    if (getDelimitedField(line, ",", 2, buf2, sizeof(buf2)) == FALSE)
       continue;
     Quiz[linenum].type = atoi(buf2);
-    if (getStringFromIndexWithDelim(line, ",", 3, buf2, sizeof(buf2)) == FALSE)
+    if (getDelimitedField(line, ",", 3, buf2, sizeof(buf2)) == FALSE)
       continue;
     Quiz[linenum].level = atoi(buf2);
-    if (getStringFromIndexWithDelim(line, ",", 4, buf2, sizeof(buf2)) == FALSE)
+    if (getDelimitedField(line, ",", 4, buf2, sizeof(buf2)) == FALSE)
       continue;
     Quiz[linenum].answertype = atoi(buf2);
-    if (getStringFromIndexWithDelim(line, ",", 5, buf2, sizeof(buf2)) == FALSE)
+    if (getDelimitedField(line, ",", 5, buf2, sizeof(buf2)) == FALSE)
       continue;
     Quiz[linenum].answerNo = atoi(buf2);
-    if (getStringFromIndexWithDelim(line, ",", 6, buf2, sizeof(buf2)) == FALSE)
+    if (getDelimitedField(line, ",", 6, buf2, sizeof(buf2)) == FALSE)
       continue;
     memcpy(Quiz[linenum].question, buf2, sizeof(Quiz[linenum].question));
-    if (getStringFromIndexWithDelim(line, ",", 7, buf3, sizeof(buf3)) == FALSE)
+    if (getDelimitedField(line, ",", 7, buf3, sizeof(buf3)) == FALSE)
       continue;
     memcpy(Quiz[linenum].select1, buf3, sizeof(Quiz[linenum].select1));
-    if (getStringFromIndexWithDelim(line, ",", 8, buf3, sizeof(buf3)) == FALSE)
+    if (getDelimitedField(line, ",", 8, buf3, sizeof(buf3)) == FALSE)
       continue;
     memcpy(Quiz[linenum].select2, buf3, sizeof(Quiz[linenum].select2));
-    if (getStringFromIndexWithDelim(line, ",", 9, buf3, sizeof(buf3)) == FALSE)
+    if (getDelimitedField(line, ",", 9, buf3, sizeof(buf3)) == FALSE)
       continue;
     memcpy(Quiz[linenum].select3, buf3, sizeof(Quiz[linenum].select3));
 
@@ -1108,9 +1108,9 @@ int *NPC_GetQuestion(int meindex) {
   scope1 = quizcnt;
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "Scope", buf, sizeof(buf)) !=
       NULL) {
-    getStringFromIndexWithDelim(buf, "-", 1, buf3, sizeof(buf3));
+    getDelimitedField(buf, "-", 1, buf3, sizeof(buf3));
     scope0 = atoi(buf3);
-    getStringFromIndexWithDelim(buf, "-", 2, buf3, sizeof(buf3));
+    getDelimitedField(buf, "-", 2, buf3, sizeof(buf3));
     scope1 = atoi(buf3);
   }
 #endif
@@ -1256,7 +1256,7 @@ BOOL NPC_EntryItemDel(int talker, char *buf) {
   char buf2[32];
   int item_index;
 
-  while (getStringFromIndexWithDelim(buf, ",", k, buff3, sizeof(buff3)) !=
+  while (getDelimitedField(buf, ",", k, buff3, sizeof(buff3)) !=
          FALSE) {
     k++;
     if (strstr(buff3, "*") != NULL) {
@@ -1264,9 +1264,9 @@ BOOL NPC_EntryItemDel(int talker, char *buf) {
       int kosuu;
       int id;
       int cnt = 0;
-      getStringFromIndexWithDelim(buff3, "*", 1, buf2, sizeof(buf2));
+      getDelimitedField(buff3, "*", 1, buf2, sizeof(buf2));
       itemno = atoi(buf2);
-      getStringFromIndexWithDelim(buff3, "*", 2, buf2, sizeof(buf2));
+      getDelimitedField(buff3, "*", 2, buf2, sizeof(buf2));
       kosuu = atoi(buf2);
       int itemMax = CheckCharMaxItem(talker);
       for (i = 0; i < itemMax; i++) {
@@ -1342,16 +1342,16 @@ BOOL NPC_EntryItemCheck(int talker, char *buf) {
   int cnt = 0;
   int k = 1;
 
-  while (getStringFromIndexWithDelim(buf, ",", k, buf2, sizeof(buf2)) !=
+  while (getDelimitedField(buf, ",", k, buf2, sizeof(buf2)) !=
          FALSE) {
     flg = FALSE;
     k++;
 
     if (strstr(buf2, "*") != NULL) {
       cnt = 0;
-      getStringFromIndexWithDelim(buf2, "*", 1, buf3, sizeof(buf3));
+      getDelimitedField(buf2, "*", 1, buf3, sizeof(buf3));
       itemno = atoi(buf3);
-      getStringFromIndexWithDelim(buf2, "*", 2, buf3, sizeof(buf3));
+      getDelimitedField(buf2, "*", 2, buf3, sizeof(buf3));
       kosuu = atoi(buf3);
       int itemMax = CheckCharMaxItem(talker);
       for (i = 0; i < itemMax; i++) {

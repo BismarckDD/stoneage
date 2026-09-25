@@ -317,7 +317,7 @@ BOOL TITLE_initTitleName(char *filename) {
       char token[256];
       int ret;
       /*  夫午勾户及玄□弁件毛苇月 */
-      ret = getStringFromIndexWithDelim(line, ",", 1, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 1, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -325,7 +325,7 @@ BOOL TITLE_initTitleName(char *filename) {
       TITLE_table[title_readlen].index = atoi(token);
 
       /*  2勾户及玄□弁件毛苇月    */
-      ret = getStringFromIndexWithDelim(line, ",", 2, token, sizeof(token));
+      ret = getDelimitedField(line, ",", 2, token, sizeof(token));
       if (ret == FALSE) {
         printEx("文件语法错误:%s 第%d行\n", filename, linenum);
         continue;
@@ -429,7 +429,7 @@ static int TITLE_getParamData(int readarray, int array, char *src) {
   char wk[64];
 
   for (cnt = 1;; cnt++) {
-    ret = getStringFromIndexWithDelim(src, "|", cnt, wk, sizeof(wk));
+    ret = getDelimitedField(src, "|", cnt, wk, sizeof(wk));
     if (ret) {
       TITLE_ConfigTable[readarray].param[array][cnt - 1] = atoi(wk);
     } else {
@@ -519,7 +519,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
       BOOL errflg = FALSE;
       for (i = 1;; i++) {
         /*  玄□弁件毛苇月    */
-        ret = getStringFromIndexWithDelim(line, ",", i, token, sizeof(token));
+        ret = getDelimitedField(line, ",", i, token, sizeof(token));
         if (ret == FALSE) {
           break;
         }
@@ -530,7 +530,7 @@ BOOL TITLE_initTitleConfig(char *filename) {
         /* 惫寞隙烂毛譬屯月 */
         if (strncmp("TITLE", token, 5) == 0) {
           char buf[64];
-          ret = getStringFromIndexWithDelim(token, "=", 2, buf, sizeof(buf));
+          ret = getDelimitedField(token, "=", 2, buf, sizeof(buf));
           if (ret == FALSE) {
             printEx("文件语法错误:%s 第%d行\n", filename, linenum);
             TITLE_initTitleData(titlecfg_readlen);

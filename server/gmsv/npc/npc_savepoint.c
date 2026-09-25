@@ -46,11 +46,11 @@ BOOL NPC_SavePointInit(int meindex) {
 
   oldmanid = atoi(buf2);
   NPC_Util_GetStrFromStrWithDelim(argstr, "Born", buf2, sizeof(buf2));
-  getStringFromIndexWithDelim(buf2, ",", 1, token, sizeof(token));
+  getDelimitedField(buf2, ",", 1, token, sizeof(token));
   bornfl = atoi(token);
-  getStringFromIndexWithDelim(buf2, ",", 2, token, sizeof(token));
+  getDelimitedField(buf2, ",", 2, token, sizeof(token));
   bornx = atoi(token);
-  getStringFromIndexWithDelim(buf2, ",", 3, token, sizeof(token));
+  getDelimitedField(buf2, ",", 3, token, sizeof(token));
   borny = atoi(token);
 
   CHAR_setWorkInt(meindex, CHAR_WORKOLDMANID, oldmanid);
@@ -243,13 +243,13 @@ BOOL NPC_AndReduce(int meindex, int talker, char *buf, int flg) {
 
   if (flg == 0) {
 
-    while (getStringFromIndexWithDelim(buf, "&", j, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buf, "&", j, buf2, sizeof(buf2)) !=
            FALSE) {
       j++;
       if (strstr(buf2, "*") != NULL) {
-        getStringFromIndexWithDelim(buf2, "*", 1, buf3, sizeof(buf3));
+        getDelimitedField(buf2, "*", 1, buf3, sizeof(buf3));
         itemNo = atoi(buf3);
-        getStringFromIndexWithDelim(buf2, "*", 2, buf3, sizeof(buf3));
+        getDelimitedField(buf2, "*", 2, buf3, sizeof(buf3));
         kosuu = atoi(buf3);
 
         /*--民尼永弁乒□玉--*/
@@ -269,9 +269,9 @@ BOOL NPC_AndReduce(int meindex, int talker, char *buf, int flg) {
 
   } else {
     if (strstr(buf, "*") != NULL) {
-      getStringFromIndexWithDelim(buf, "*", 1, buf3, sizeof(buf3));
+      getDelimitedField(buf, "*", 1, buf3, sizeof(buf3));
       itemNo = atoi(buf3);
-      getStringFromIndexWithDelim(buf, "*", 2, buf3, sizeof(buf3));
+      getDelimitedField(buf, "*", 2, buf3, sizeof(buf3));
       kosuu = atoi(buf3);
 
       /*--民尼永弁乒□玉--*/
@@ -301,13 +301,13 @@ BOOL NPC_AndReduceDelete(int meindex, int talker, char *buf, int flg) {
 
   if (flg == 0) {
 
-    while (getStringFromIndexWithDelim(buf, "&", j, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buf, "&", j, buf2, sizeof(buf2)) !=
            FALSE) {
       j++;
       if (strstr(buf2, "*") != NULL) {
-        getStringFromIndexWithDelim(buf2, "*", 1, buf3, sizeof(buf3));
+        getDelimitedField(buf2, "*", 1, buf3, sizeof(buf3));
         itemNo = atoi(buf3);
-        getStringFromIndexWithDelim(buf2, "*", 2, buf3, sizeof(buf3));
+        getDelimitedField(buf2, "*", 2, buf3, sizeof(buf3));
         kosuu = atoi(buf3);
 
         /*--绰轮乒□玉--*/
@@ -326,9 +326,9 @@ BOOL NPC_AndReduceDelete(int meindex, int talker, char *buf, int flg) {
 
   } else {
     if (strstr(buf, "*") != NULL) {
-      getStringFromIndexWithDelim(buf, "*", 1, buf3, sizeof(buf3));
+      getDelimitedField(buf, "*", 1, buf3, sizeof(buf3));
       itemNo = atoi(buf3);
-      getStringFromIndexWithDelim(buf, "*", 2, buf3, sizeof(buf3));
+      getDelimitedField(buf, "*", 2, buf3, sizeof(buf3));
       kosuu = atoi(buf3);
 
       /*--绰轮乒□玉--*/
@@ -368,7 +368,7 @@ BOOL NPC_UsedCheck(int meindex, int talker, int flg) {
   if (NPC_Util_GetStrFromStrWithDelim(argstr, "GetItem", buf, sizeof(buf)) !=
       NULL) {
     i = 1;
-    while (getStringFromIndexWithDelim(buf, ",", i, buf2, sizeof(buf2)) !=
+    while (getDelimitedField(buf, ",", i, buf2, sizeof(buf2)) !=
            FALSE) {
       i++;
       if (strstr(buf2, "&") != NULL) {
